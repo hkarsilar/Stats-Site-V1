@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Central Limit Theorem — hakan.science</title>
+  <meta name="description" content="Watch the Central Limit Theorem happen: take samples from any weird distribution, average them, and see a normal curve appear." />
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-1" data-section="central-limit-theorem">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 1.8</span>
+        <h1>The Central Limit Theorem</h1>
+
+        <p class="lede">Here's one of the most surprising ideas in all of statistics: take samples from <em>almost any</em> distribution — lopsided, lumpy, whatever — average each sample, and those averages pile up into a smooth, predictable bell curve. Let's not take that on faith. Let's watch it happen.</p>
+
+        <h2>The setup</h2>
+        <p>Imagine a population — say, the reaction times of every student in a huge psychology study. The shape of that population can be anything. Most real data is <strong>not</strong> a tidy bell curve; reaction times are usually skewed, with a long tail of slow responses.</p>
+        <p>Now we do something simple and repeat it over and over:</p>
+        <ol>
+          <li>Reach into the population and grab a random <strong>sample of size <em>n</em></strong>.</li>
+          <li>Compute the <strong>mean</strong> of just that sample — one number.</li>
+          <li>Write that number down, and do it all again.</li>
+        </ol>
+        <p>The collection of all those sample means has its own distribution — the <strong>sampling distribution of the mean</strong>. The Central Limit Theorem tells us what it looks like.</p>
+
+        <!-- ============ INTERACTIVE PLAYGROUND ============ -->
+        <div class="viz" id="clt">
+          <p class="viz-title">🎮 Sampling Distribution Playground</p>
+          <p class="viz-sub">Pick a population shape, choose a sample size, then draw samples and watch the averages collect below.</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>Population shape</label>
+              <div class="seg" id="pop-seg">
+                <button data-pop="skewed" class="active">Skewed</button>
+                <button data-pop="uniform">Uniform</button>
+                <button data-pop="bimodal">Bimodal</button>
+              </div>
+            </div>
+            <div class="control">
+              <label>Sample size <span class="val" id="n-val">n = 5</span></label>
+              <input type="range" id="n-range" min="1" max="50" value="5" />
+            </div>
+            <div class="control">
+              <button class="btn btn-primary btn-sm" id="draw-1">Draw 1 sample</button>
+            </div>
+            <div class="control">
+              <button class="btn btn-ghost btn-sm" id="draw-many">Draw 200 (animated)</button>
+            </div>
+            <div class="control">
+              <button class="btn btn-ghost btn-sm" id="reset">Reset</button>
+            </div>
+          </div>
+
+          <p class="viz-sub" style="margin:.25rem 0">① The population you're sampling from</p>
+          <canvas id="pop-canvas"></canvas>
+
+          <p class="viz-sub" style="margin:1rem 0 .25rem">② Your most recent sample of n values (their average is the orange line)</p>
+          <canvas id="sample-canvas"></canvas>
+
+          <p class="viz-sub" style="margin:1rem 0 .25rem">③ The sampling distribution — every orange average lands here. The dashed curve is the bell curve the CLT predicts.</p>
+          <canvas id="sampling-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Samples drawn</span><span class="v" id="stat-count">0</span></div>
+            <div class="stat"><span class="k">Mean of the averages</span><span class="v" id="stat-mean">—</span></div>
+            <div class="stat"><span class="k">Spread of averages (SE)</span><span class="v" id="stat-se">—</span></div>
+            <div class="stat"><span class="k">CLT predicts SE = σ/√n</span><span class="v" id="stat-se-th">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /PLAYGROUND ============ -->
+
+        <h2>What you should notice</h2>
+        <p>Play with it for a minute, and three things jump out — these <em>are</em> the Central Limit Theorem:</p>
+        <div class="callout key">
+          <p><strong>1. The averages form a bell curve</strong> — even when the population is skewed or lumpy. Start with the "Skewed" or "Bimodal" population and you'll still get a symmetric bell in panel ③.</p>
+        </div>
+        <div class="callout key">
+          <p><strong>2. Bigger samples → tighter bell.</strong> Drag <em>n</em> from 1 up to 50 and watch panel ③ get narrower. Averaging more values per sample makes the averages cluster more tightly around the truth.</p>
+        </div>
+        <div class="callout key">
+          <p><strong>3. The bell is centered on the population mean.</strong> The averages don't drift — they pile up right over the true mean of the population.</p>
+        </div>
+
+        <h2>The one formula worth remembering</h2>
+        <p>The spread of the sampling distribution has a name — the <strong>standard error</strong> — and a tidy formula:</p>
+        <p style="text-align:center;font-size:1.25rem;margin:1.25rem 0">
+          <strong>SE&nbsp;=&nbsp;σ&nbsp;/&nbsp;√<span style="text-decoration:overline">n</span></strong>
+        </p>
+        <p>where <code>σ</code> is the population's standard deviation and <code>n</code> is your sample size. Notice the <code>√n</code> on the bottom: to <em>halve</em> the standard error, you need <em>four times</em> the data. That diminishing return is why the playground's bell tightens quickly at first, then more slowly. Compare the "SE" you measured with the "σ/√n" the theorem predicts — they should match closely once you've drawn enough samples.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> almost everything that comes next — confidence intervals, t-tests, p-values — leans on the fact that sample means behave predictably like this. The CLT is the bridge from "messy real data" to "clean, usable inference."</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="/assets/js/curriculum.js"></script>
+  <script src="/assets/js/site.js"></script>
+
+  <!-- ============ Central Limit Theorem visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var LO = 0, HI = 100;          // display range for everything
+    var popType = "skewed";
+    var n = 5;
+    var means = [];                 // accumulated sample means
+    var lastSample = [];            // most recent raw sample
+    var popMean = 0, popSD = 1;     // computed per population
+    var animId = null;
+
+    var css = function (name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); };
+
+    /* ---- population samplers (return a value in [LO, HI]) ---- */
+    function gauss(mu, sd) {
+      var u = 1 - Math.random(), v = Math.random();
+      return mu + sd * Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+    }
+    function clamp(x) { return x < LO ? LO : x > HI ? HI : x; }
+    var samplers = {
+      uniform: function () { return Math.random() * 100; },
+      skewed:  function () { return clamp(-Math.log(1 - Math.random()) * 16); },
+      bimodal: function () { return clamp(gauss(Math.random() < 0.5 ? 28 : 72, 8)); }
+    };
+
+    /* ---- compute population mean & sd empirically ---- */
+    function computePopStats() {
+      var N = 60000, s = 0, s2 = 0, f = samplers[popType];
+      for (var i = 0; i < N; i++) { var x = f(); s += x; s2 += x * x; }
+      popMean = s / N;
+      popSD = Math.sqrt(s2 / N - popMean * popMean);
+    }
+
+    /* ---- canvas helpers ---- */
+    function fit(canvas, h) {
+      var ratio = window.devicePixelRatio || 1;
+      var w = canvas.clientWidth || canvas.parentElement.clientWidth;
+      canvas.width = w * ratio; canvas.height = h * ratio;
+      canvas.style.height = h + "px";
+      var ctx = canvas.getContext("2d");
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      return { ctx: ctx, w: w, h: h };
+    }
+    function bin(data, bins) {
+      var counts = new Array(bins).fill(0), bw = (HI - LO) / bins;
+      for (var i = 0; i < data.length; i++) {
+        var b = Math.floor((data[i] - LO) / bw);
+        if (b === bins) b = bins - 1;
+        if (b >= 0 && b < bins) counts[b]++;
+      }
+      return { counts: counts, bw: bw };
+    }
+    function axis(ctx, w, h) {
+      ctx.strokeStyle = css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(0, h - 0.5); ctx.lineTo(w, h - 0.5); ctx.stroke();
+    }
+
+    /* histogram normalized to its own max (panels ① and ②) */
+    function drawHist(c, data, color, bins) {
+      var ctx = c.ctx, w = c.w, h = c.h, pad = 6;
+      ctx.clearRect(0, 0, w, h);
+      axis(ctx, w, h);
+      if (!data.length) return;
+      var r = bin(data, bins), max = Math.max.apply(null, r.counts) || 1;
+      var bwPx = w / bins;
+      ctx.fillStyle = color;
+      for (var i = 0; i < bins; i++) {
+        if (!r.counts[i]) continue;
+        var bh = (r.counts[i] / max) * (h - pad);
+        ctx.fillRect(i * bwPx + 0.5, h - bh, bwPx - 1, bh);
+      }
+    }
+
+    /* sampling distribution: density-scaled histogram + theoretical normal */
+    function drawSampling(c) {
+      var ctx = c.ctx, w = c.w, h = c.h, pad = 8, bins = 60;
+      ctx.clearRect(0, 0, w, h);
+      axis(ctx, w, h);
+      var se = popSD / Math.sqrt(n);
+      var normPeak = se > 0 ? 1 / (se * Math.sqrt(2 * Math.PI)) : 0;
+      var maxDensity = normPeak;
+      var r = null;
+      if (means.length) {
+        r = bin(means, bins);
+        for (var i = 0; i < bins; i++) {
+          var d = r.counts[i] / (means.length * r.bw);
+          if (d > maxDensity) maxDensity = d;
+        }
+      }
+      if (maxDensity <= 0) return;
+      var scale = (h - pad) / maxDensity;
+      // bars
+      if (r) {
+        var bwPx = w / bins;
+        ctx.fillStyle = css("--primary"); ctx.globalAlpha = 0.85;
+        for (var j = 0; j < bins; j++) {
+          if (!r.counts[j]) continue;
+          var dens = r.counts[j] / (means.length * r.bw);
+          var bh = dens * scale;
+          ctx.fillRect(j * bwPx + 0.5, h - bh, bwPx - 1, bh);
+        }
+        ctx.globalAlpha = 1;
+      }
+      // theoretical normal curve N(popMean, se)
+      if (se > 0) {
+        ctx.strokeStyle = css("--secondary"); ctx.lineWidth = 2; ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        for (var px = 0; px <= w; px += 2) {
+          var x = LO + (px / w) * (HI - LO);
+          var pdf = Math.exp(-0.5 * Math.pow((x - popMean) / se, 2)) / (se * Math.sqrt(2 * Math.PI));
+          var y = h - pdf * scale;
+          if (px === 0) ctx.moveTo(px, y); else ctx.lineTo(px, y);
+        }
+        ctx.stroke(); ctx.setLineDash([]);
+      }
+      // population-mean reference line
+      var mx = ((popMean - LO) / (HI - LO)) * w;
+      ctx.strokeStyle = css("--text-faint"); ctx.lineWidth = 1; ctx.setLineDash([2, 3]);
+      ctx.beginPath(); ctx.moveTo(mx, 0); ctx.lineTo(mx, h); ctx.stroke(); ctx.setLineDash([]);
+    }
+
+    /* draw the most recent sample as dots + mean line */
+    function drawSample(c) {
+      var ctx = c.ctx, w = c.w, h = c.h;
+      ctx.clearRect(0, 0, w, h);
+      axis(ctx, w, h);
+      if (!lastSample.length) return;
+      ctx.fillStyle = css("--text-muted");
+      for (var i = 0; i < lastSample.length; i++) {
+        var x = ((lastSample[i] - LO) / (HI - LO)) * w;
+        var y = h - 8 - (i % 5) * 6;   // jitter rows so dots don't fully overlap
+        ctx.beginPath(); ctx.arc(x, y, 3, 0, 2 * Math.PI); ctx.fill();
+      }
+      var m = lastSample.reduce(function (a, b) { return a + b; }, 0) / lastSample.length;
+      var mx = ((m - LO) / (HI - LO)) * w;
+      ctx.strokeStyle = "#f97316"; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(mx, 0); ctx.lineTo(mx, h); ctx.stroke();
+    }
+
+    /* ---- canvases ---- */
+    var popC, sampC, sampling;
+    var popData = [];
+    function rebuildPopData() {
+      popData = []; var f = samplers[popType];
+      for (var i = 0; i < 4000; i++) popData.push(f());
+    }
+    function sizeCanvases() {
+      popC = fit(document.getElementById("pop-canvas"), 120);
+      sampC = fit(document.getElementById("sample-canvas"), 90);
+      sampling = fit(document.getElementById("sampling-canvas"), 200);
+    }
+
+    function renderAll() {
+      drawHist(popC, popData, css("--text-faint"), 60);
+      drawSample(sampC);
+      drawSampling(sampling);
+      updateStats();
+    }
+    function updateStats() {
+      document.getElementById("stat-count").textContent = means.length;
+      if (means.length) {
+        var m = means.reduce(function (a, b) { return a + b; }, 0) / means.length;
+        var v = means.reduce(function (a, b) { return a + (b - m) * (b - m); }, 0) / means.length;
+        document.getElementById("stat-mean").textContent = m.toFixed(1);
+        document.getElementById("stat-se").textContent = Math.sqrt(v).toFixed(2);
+      } else {
+        document.getElementById("stat-mean").textContent = "—";
+        document.getElementById("stat-se").textContent = "—";
+      }
+      document.getElementById("stat-se-th").textContent = (popSD / Math.sqrt(n)).toFixed(2);
+    }
+
+    /* ---- actions ---- */
+    function drawOne() {
+      var f = samplers[popType], s = [], sum = 0;
+      for (var i = 0; i < n; i++) { var x = f(); s.push(x); sum += x; }
+      lastSample = s;
+      means.push(sum / n);
+    }
+    function drawMany(total) {
+      if (animId) cancelAnimationFrame(animId);
+      var added = 0;
+      (function step() {
+        var batch = Math.min(8, total - added);
+        for (var i = 0; i < batch; i++) drawOne();
+        added += batch;
+        renderAll();
+        if (added < total) animId = requestAnimationFrame(step);
+        else animId = null;
+      })();
+    }
+    function resetMeans() {
+      if (animId) { cancelAnimationFrame(animId); animId = null; }
+      means = []; lastSample = [];
+      renderAll();
+    }
+    function changePop(p) {
+      popType = p;
+      Array.prototype.forEach.call(document.querySelectorAll("#pop-seg button"), function (b) {
+        b.classList.toggle("active", b.dataset.pop === p);
+      });
+      computePopStats(); rebuildPopData(); resetMeans();
+    }
+
+    /* ---- wire up ---- */
+    document.getElementById("pop-seg").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (b) changePop(b.dataset.pop);
+    });
+    var range = document.getElementById("n-range");
+    range.addEventListener("input", function () {
+      n = +range.value;
+      document.getElementById("n-val").textContent = "n = " + n;
+      resetMeans();
+    });
+    document.getElementById("draw-1").addEventListener("click", function () { drawOne(); renderAll(); });
+    document.getElementById("draw-many").addEventListener("click", function () { drawMany(200); });
+    document.getElementById("reset").addEventListener("click", resetMeans);
+
+    window.addEventListener("resize", function () { sizeCanvases(); renderAll(); });
+    // redraw when the theme flips (canvas colors are read from CSS vars)
+    new MutationObserver(renderAll).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+    /* ---- start ---- */
+    computePopStats();
+    rebuildPopData();
+    sizeCanvases();
+    renderAll();
+  })();
+  </script>
+</body>
+</html>
