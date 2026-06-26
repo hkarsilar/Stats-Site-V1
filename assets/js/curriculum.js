@@ -16,7 +16,7 @@ window.CURRICULUM = [
       { n: "1.2",  slug: "types-of-data",                       title: "Types of Data" },
       { n: "1.3",  slug: "describing-data",                     title: "Describing Data" },
       { n: "1.4",  slug: "visualizing-data",                    title: "Visualizing Data" },
-      { n: "1.5",  slug: "z-scores-and-the-normal-distribution",title: "Z-Scores & The Normal Distribution" },
+      { n: "1.5",  slug: "z-scores-and-the-normal-distribution",title: "Z-Scores & The Normal Distribution", ready: true },
       { n: "1.6",  slug: "probability-basics",                  title: "Probability Basics" },
       { n: "1.7",  slug: "sampling-distributions",              title: "Sampling Distributions" },
       { n: "1.8",  slug: "central-limit-theorem",               title: "Central Limit Theorem", ready: true },
