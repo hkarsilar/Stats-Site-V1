@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Types of Data — hakan.science</title>
+  <meta name="description" content="Nominal, ordinal, interval, ratio — the four kinds of data and why the distinction decides which statistics you're allowed to use. Test yourself." />
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-1" data-section="types-of-data">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 1.2</span>
+        <h1>Types of Data</h1>
+
+        <p class="lede">Before you can analyze a variable, you have to know what <em>kind</em> of variable it is. The type decides everything downstream: which chart makes sense, which average is meaningful, which test is even legal. Calculating the "mean eye color" is nonsense — and knowing why is the whole point of this section.</p>
+
+        <h2>The big split: categorical vs. quantitative</h2>
+        <p><strong>Categorical</strong> (qualitative) variables put things into groups — labels, not amounts. <strong>Quantitative</strong> variables are genuine numbers you can do arithmetic on. Each splits again into two finer levels, giving four in total:</p>
+        <ul>
+          <li><strong>Nominal</strong> (categorical) — named categories with no order. <em>Eye color, country, blood type.</em></li>
+          <li><strong>Ordinal</strong> (categorical) — ordered categories, but the gaps aren't equal or measurable. <em>Survey "agree/neutral/disagree," movie star-ratings, education level.</em></li>
+          <li><strong>Interval</strong> (quantitative) — equal gaps, but <em>no true zero</em>, so ratios are meaningless. <em>Temperature in °C, calendar years.</em> (20 °C isn't "twice as hot" as 10 °C.)</li>
+          <li><strong>Ratio</strong> (quantitative) — equal gaps <em>and</em> a true zero, so ratios work. <em>Height, weight, reaction time, income.</em> (10 kg really is twice 5 kg.)</li>
+        </ul>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="tdviz">
+          <p class="viz-title">🎮 Name That Data Type</p>
+          <p class="viz-sub">Classify each variable. You'll get instant feedback and a one-line reason.</p>
+
+          <div style="margin:.5rem 0 1rem">
+            <div style="font-size:.8rem;color:var(--text-faint)">Variable <span id="q-progress"></span></div>
+            <div id="q-text" style="font-size:1.35rem;font-weight:650;margin-top:.25rem">—</div>
+          </div>
+
+          <div id="q-options" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.6rem">
+            <button class="btn btn-ghost" data-t="nominal">Nominal</button>
+            <button class="btn btn-ghost" data-t="ordinal">Ordinal</button>
+            <button class="btn btn-ghost" data-t="interval">Interval</button>
+            <button class="btn btn-ghost" data-t="ratio">Ratio</button>
+          </div>
+
+          <div id="q-feedback" style="margin-top:1rem;min-height:2.5rem"></div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.5rem">
+            <span class="stat"><span class="k">Score</span><span class="v" id="q-score" style="font-size:1.1rem">0 / 0</span></span>
+            <button class="btn btn-primary btn-sm" id="q-next" style="visibility:hidden">Next variable →</button>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <div class="callout key">
+          <p><strong>The litmus tests:</strong> Can you put the categories in a meaningful order? If no → <strong>nominal</strong>; if yes, keep going. Are the gaps between values equal and numeric? If no → <strong>ordinal</strong>; if yes, keep going. Is "zero" a true absence of the thing (making "twice as much" meaningful)? No → <strong>interval</strong>; yes → <strong>ratio</strong>.</p>
+        </div>
+
+        <h2>Why the label matters</h2>
+        <p>The data type is a gatekeeper for what's meaningful:</p>
+        <ul>
+          <li>You can count and find the <strong>mode</strong> of nominal data, but not its mean or median.</li>
+          <li>Ordinal data has a median, but its "mean" is shaky (the gaps aren't equal).</li>
+          <li>Only interval and ratio data support means, standard deviations, and most of the tests in this course.</li>
+        </ul>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> nearly every "which test do I use?" question starts with "what type is your outcome variable?" Getting this right at the start saves you from analyses that produce numbers but no meaning.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="/assets/js/curriculum.js"></script>
+  <script src="/assets/js/site.js"></script>
+
+  <!-- ============ classification quiz ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var Q = [
+      { v: "A person's blood type (A, B, AB, O)", t: "nominal", why: "Named categories with no inherent order." },
+      { v: "Finishing place in a race (1st, 2nd, 3rd)", t: "ordinal", why: "Ordered, but the gaps between places aren't equal time differences." },
+      { v: "Temperature in degrees Celsius", t: "interval", why: "Equal gaps, but 0 °C isn't 'no temperature,' so ratios don't hold." },
+      { v: "Reaction time in milliseconds", t: "ratio", why: "Equal gaps and a true zero — 400 ms really is twice 200 ms." },
+      { v: "T-shirt size (S, M, L, XL)", t: "ordinal", why: "Ordered sizes, but the differences aren't equal measured amounts." },
+      { v: "Annual income in dollars", t: "ratio", why: "True zero (no income) and meaningful ratios." },
+      { v: "Country of birth", t: "nominal", why: "Pure labels — no order, no arithmetic." },
+      { v: "Year of a historical event (e.g., 1969)", t: "interval", why: "Equal gaps, but year 0 is arbitrary, not 'no time.'" },
+      { v: "Number of siblings", t: "ratio", why: "Counts with a true zero; ratios make sense." },
+      { v: "Survey response: disagree / neutral / agree", t: "ordinal", why: "Ordered attitudes, but the spacing isn't numerically equal." }
+    ];
+    var order = Q.map(function (_, i) { return i; }).sort(function () { return Math.random() - 0.5; });
+    var pos = 0, score = 0, answered = false;
+
+    var qText = document.getElementById("q-text"), qProg = document.getElementById("q-progress");
+    var fb = document.getElementById("q-feedback"), next = document.getElementById("q-next"), scoreEl = document.getElementById("q-score");
+    var opts = Array.prototype.slice.call(document.querySelectorAll("#q-options button"));
+
+    function show() {
+      answered = false;
+      var item = Q[order[pos]];
+      qText.textContent = item.v;
+      qProg.textContent = (pos + 1) + " of " + Q.length;
+      fb.innerHTML = ""; next.style.visibility = "hidden";
+      opts.forEach(function (b) { b.disabled = false; b.style.borderColor = ""; b.style.background = ""; b.style.color = ""; });
+    }
+    function pick(btn) {
+      if (answered) return;
+      answered = true;
+      var item = Q[order[pos]], correct = item.t, chosen = btn.dataset.t;
+      opts.forEach(function (b) { b.disabled = true; if (b.dataset.t === correct) { b.style.background = "color-mix(in srgb, #22c55e 18%, transparent)"; b.style.borderColor = "#22c55e"; } });
+      if (chosen === correct) { score++; fb.innerHTML = '<span style="color:#22c55e;font-weight:650">Correct.</span> ' + item.why; }
+      else { btn.style.background = "color-mix(in srgb, #ef4444 16%, transparent)"; btn.style.borderColor = "#ef4444"; fb.innerHTML = '<span style="color:#ef4444;font-weight:650">Not quite — it\'s ' + correct + '.</span> ' + item.why; }
+      scoreEl.textContent = score + " / " + (pos + 1);
+      next.style.visibility = "visible";
+      next.textContent = pos + 1 < Q.length ? "Next variable →" : "Start over";
+    }
+    opts.forEach(function (b) { b.addEventListener("click", function () { pick(b); }); });
+    next.addEventListener("click", function () {
+      if (pos + 1 < Q.length) { pos++; show(); }
+      else { order = Q.map(function (_, i) { return i; }).sort(function () { return Math.random() - 0.5; }); pos = 0; score = 0; scoreEl.textContent = "0 / 0"; show(); }
+    });
+    show();
+  })();
+  </script>
+</body>
+</html>

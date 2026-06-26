@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Visualizing Data — hakan.science</title>
+  <meta name="description" content="A histogram's bin width changes the whole story. Slide it and watch a distribution's shape appear, blur, and shatter." />
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-1" data-section="visualizing-data">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 1.4</span>
+        <h1>Visualizing Data</h1>
+
+        <p class="lede">A good picture shows you in a second what a table of numbers hides for an hour. The single most useful chart for one quantitative variable is the <strong>histogram</strong> — and it comes with a hidden dial, the <strong>bin width</strong>, that can reveal a distribution's true shape or completely distort it.</p>
+
+        <h2>What a histogram shows</h2>
+        <p>A histogram chops the number line into equal-width <strong>bins</strong> and draws a bar for how many values land in each. Unlike a bar chart (which compares separate categories), a histogram's bars touch, because they cover a continuous range. At a glance it reveals the three things you most want to know about a distribution:</p>
+        <ul>
+          <li><strong>Shape</strong> — symmetric and bell-like, skewed to one side, or with multiple peaks?</li>
+          <li><strong>Center</strong> — roughly where do the values pile up?</li>
+          <li><strong>Spread</strong> — tightly clustered or widely scattered, and any outliers stranded out in the tails?</li>
+        </ul>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="vdviz">
+          <p class="viz-title">🎮 The Bin-Width Dial</p>
+          <p class="viz-sub">Same data, different number of bins. Too few bins hides the shape; too many turns it into noise. Find the bin count that tells the truth.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:240px">
+              <label>Number of bins <span class="val" id="bins-val">12</span></label>
+              <input type="range" id="bins-range" min="2" max="60" step="1" value="12" style="width:100%" />
+            </div>
+            <div class="control">
+              <label>Underlying shape</label>
+              <div class="seg" id="shape-seg">
+                <button data-shape="normal" class="active">Bell</button>
+                <button data-shape="skewed">Skewed</button>
+                <button data-shape="bimodal">Two peaks</button>
+              </div>
+            </div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="resample">New data</button></div>
+          </div>
+
+          <canvas id="vd-canvas"></canvas>
+          <label style="display:flex;align-items:center;gap:.5rem;font-size:.85rem;color:var(--text-muted);margin-top:.5rem">
+            <input type="checkbox" id="show-center" style="accent-color:var(--primary)" /> show mean (orange) &amp; median (teal)
+          </label>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <div class="callout key">
+          <p><strong>The bin-width lesson:</strong> with only 2–3 bins, a two-peaked distribution looks like a single blob — the structure is smoothed away. With 50+ bins, even bell-shaped data looks jagged and random. The right number of bins (often somewhere around 10–20 for a few hundred points) shows the real shape without inventing fake detail. Always try a couple of bin widths before you trust a histogram.</p>
+        </div>
+
+        <h2>Other workhorses</h2>
+        <ul>
+          <li><strong>Bar chart</strong> — for categorical data: one bar per category, with gaps between them (the categories aren't a continuum).</li>
+          <li><strong>Boxplot</strong> — a compact five-number summary (min, quartiles, max) that's great for spotting outliers and comparing groups side by side.</li>
+          <li><strong>Scatterplot</strong> — for two quantitative variables at once; the gateway to <a href="/stats-2/correlation/">correlation</a> and <a href="/stats-2/simple-linear-regression/">regression</a>.</li>
+        </ul>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> visualizing first is a discipline, not a decoration. The shape you see decides which summaries are honest (mean vs. median) and which tests are valid — so the picture always comes before the formula.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="/assets/js/curriculum.js"></script>
+  <script src="/assets/js/site.js"></script>
+  <script src="/assets/js/viz.js"></script>
+
+  <!-- ============ histogram visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var LO = 0, HI = 100, bins = 12, shape = "normal", data = [], showCenter = false;
+    var canvas = document.getElementById("vd-canvas"), ctx, W = 0, H = 240;
+
+    function clamp(v) { return v < LO ? LO : v > HI ? HI : v; }
+    var gens = {
+      normal: function () { return clamp(VIZ.gauss(50, 13)); },
+      skewed: function () { return clamp(-Math.log(1 - Math.random()) * 18 + 5); },
+      bimodal: function () { return clamp(VIZ.gauss(Math.random() < 0.5 ? 33 : 67, 8)); }
+    };
+    function resample() { data = []; var f = gens[shape]; for (var i = 0; i < 400; i++) data.push(f()); draw(); }
+
+    function vx(v) { return 16 + ((v - LO) / (HI - LO)) * (W - 32); }
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+
+    function draw() {
+      var baseY = H - 24;
+      ctx.clearRect(0, 0, W, H);
+      var counts = new Array(bins).fill(0), bw = (HI - LO) / bins;
+      for (var i = 0; i < data.length; i++) { var b = Math.floor((data[i] - LO) / bw); if (b === bins) b = bins - 1; if (b >= 0 && b < bins) counts[b]++; }
+      var max = Math.max.apply(null, counts) || 1, bwPx = (W - 32) / bins;
+      ctx.fillStyle = VIZ.css("--primary");
+      for (var k = 0; k < bins; k++) { if (!counts[k]) continue; var bh = (counts[k] / max) * (baseY - 14); ctx.globalAlpha = 0.85; ctx.fillRect(16 + k * bwPx + 0.5, baseY - bh, bwPx - 1, bh); }
+      ctx.globalAlpha = 1;
+      // axis
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(16, baseY); ctx.lineTo(W - 16, baseY); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px ui-monospace, monospace"; ctx.textAlign = "center";
+      for (var t = 0; t <= 100; t += 20) ctx.fillText(t, vx(t), baseY + 16);
+      // center markers
+      if (showCenter && data.length) {
+        function mk(v, color, label, side) { var mx = vx(v); ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(mx, 6); ctx.lineTo(mx, baseY); ctx.stroke(); ctx.fillStyle = color; ctx.textAlign = side < 0 ? "right" : "left"; ctx.font = "600 12px Inter, sans-serif"; ctx.fillText(label, mx + side * 6, 14); }
+        var s = data.slice().sort(function (a, b) { return a - b; }), m = s.length >> 1, med = s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+        mk(med, VIZ.css("--secondary"), "median", -1);
+        mk(VIZ.mean(data), "#f97316", "mean", 1);
+      }
+    }
+
+    document.getElementById("bins-range").addEventListener("input", function () { bins = +this.value; document.getElementById("bins-val").textContent = bins; draw(); });
+    document.getElementById("shape-seg").addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; shape = b.dataset.shape; Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x.dataset.shape === shape); }); resample(); });
+    document.getElementById("resample").addEventListener("click", resample);
+    document.getElementById("show-center").addEventListener("change", function () { showCenter = this.checked; draw(); });
+    window.addEventListener("resize", function () { fit(); draw(); });
+    VIZ.onTheme(draw);
+
+    fit(); resample();
+  })();
+  </script>
+</body>
+</html>
