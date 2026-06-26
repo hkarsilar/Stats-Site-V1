@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sampling Distributions — hakan.science</title>
+  <meta name="description" content="A statistic computed from a sample is itself random. Draw samples and watch the distribution of the sample statistic take shape." />
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-1" data-section="sampling-distributions">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 1.7</span>
+        <h1>Sampling Distributions</h1>
+
+        <p class="lede">Here's an idea that quietly powers all of inference: any number you calculate from a sample — its mean, its median, its standard deviation — is itself a <strong>random quantity</strong>. Take a different sample and you'd get a slightly different value. The pattern those values make, over many samples, is a <strong>sampling distribution</strong>.</p>
+
+        <h2>One sample gives one estimate</h2>
+        <p>Suppose the truth is fixed but unknown — the average reaction time of an entire population. You can't measure everyone, so you take a sample of <em>n</em> people and compute their mean. That single number is your <strong>estimate</strong>. But it came from a random draw, so it's a little high or a little low by luck.</p>
+        <p>The crucial move is to imagine repeating the study thousands of times. Each repetition gives one estimate; collect them all, and you get the sampling distribution of that statistic. It tells you how much your estimate bounces around — and that's exactly what you need to judge how trustworthy a single estimate is.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="sdviz">
+          <p class="viz-title">🎮 Build a Sampling Distribution</p>
+          <p class="viz-sub">Each draw grabs n values from the population (top) and drops the sample's statistic into the collection (bottom).</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>Sample size <span class="val" id="n-val">n = 10</span></label>
+              <input type="range" id="n-range" min="2" max="50" step="1" value="10" />
+            </div>
+            <div class="control">
+              <label>Statistic</label>
+              <div class="seg" id="stat-seg">
+                <button data-stat="mean" class="active">Sample mean</button>
+                <button data-stat="median">Sample median</button>
+              </div>
+            </div>
+            <div class="control"><button class="btn btn-primary btn-sm" id="draw-1">Draw 1</button></div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="draw-many">Draw 300</button></div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="reset">Reset</button></div>
+          </div>
+
+          <p class="viz-sub" style="margin:.25rem 0">The population (fixed, and deliberately skewed)</p>
+          <canvas id="pop-canvas"></canvas>
+
+          <p class="viz-sub" style="margin:1rem 0 .25rem">The sampling distribution of your chosen statistic</p>
+          <canvas id="samp-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Draws</span><span class="v" id="stat-count">0</span></div>
+            <div class="stat"><span class="k">Average estimate</span><span class="v" id="stat-mean">—</span></div>
+            <div class="stat"><span class="k">Standard error (SD of estimates)</span><span class="v" id="stat-se">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Two things to take away</h2>
+        <div class="callout key">
+          <p><strong>1. The spread of the sampling distribution is the standard error.</strong> It measures how much your estimate would vary from study to study. A small standard error means a single estimate is trustworthy; a large one means "take this with a grain of salt."</p>
+        </div>
+        <div class="callout key">
+          <p><strong>2. Bigger samples give tighter sampling distributions.</strong> Slide <em>n</em> up and the bottom distribution narrows — more data per sample means each estimate lands closer to the truth, so the standard error shrinks.</p>
+        </div>
+
+        <h2>Different statistics, different distributions</h2>
+        <p>Switch the statistic from mean to median and the sampling distribution changes shape and width. Every statistic has its <em>own</em> sampling distribution. That's a big deal: it means we can reason about the reliability of <em>any</em> estimate, not just the mean.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> the sampling distribution is the bridge between one sample and a claim about the whole population. Next, the <a href="/stats-1/central-limit-theorem/">Central Limit Theorem</a> tells us its shape is predictable, and <a href="/stats-1/confidence-intervals/">confidence intervals</a> turn its width into an honest margin of error.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="/assets/js/curriculum.js"></script>
+  <script src="/assets/js/site.js"></script>
+
+  <!-- ============ Sampling-distribution visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var LO = 0, HI = 100, n = 10, statKind = "mean", ests = [], anim = null;
+
+    function css(x) { return getComputedStyle(document.documentElement).getPropertyValue(x).trim(); }
+    function clamp(v) { return v < LO ? LO : v > HI ? HI : v; }
+    function popSampler() { return clamp(-Math.log(1 - Math.random()) * 16); }
+
+    var popData = [], popMean = 0;
+    (function build() {
+      var N = 60000, s = 0; for (var i = 0; i < N; i++) { var x = popSampler(); s += x; if (popData.length < 4000) popData.push(x); }
+      popMean = s / N;
+    })();
+
+    function fit(id, h) {
+      var c = document.getElementById(id), r = window.devicePixelRatio || 1;
+      var w = c.clientWidth || c.parentElement.clientWidth;
+      c.width = w * r; c.height = h * r; c.style.height = h + "px";
+      var ctx = c.getContext("2d"); ctx.setTransform(r, 0, 0, r, 0, 0);
+      return { ctx: ctx, w: w, h: h };
+    }
+    function binCounts(d, bins) {
+      var c = new Array(bins).fill(0), bw = (HI - LO) / bins;
+      for (var i = 0; i < d.length; i++) { var b = Math.floor((d[i] - LO) / bw); if (b === bins) b = bins - 1; if (b >= 0 && b < bins) c[b]++; }
+      return c;
+    }
+    function base(ctx, w, h) { ctx.strokeStyle = css("--border"); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, h - .5); ctx.lineTo(w, h - .5); ctx.stroke(); }
+
+    function drawHist(o, data, color, bins) {
+      var ctx = o.ctx, w = o.w, h = o.h; ctx.clearRect(0, 0, w, h); base(ctx, w, h);
+      if (!data.length) return;
+      var c = binCounts(data, bins), max = Math.max.apply(null, c) || 1, bw = w / bins;
+      ctx.fillStyle = color;
+      for (var i = 0; i < bins; i++) { if (!c[i]) continue; var bh = (c[i] / max) * (h - 6); ctx.fillRect(i * bw + .5, h - bh, bw - 1, bh); }
+      // population mean reference on the sampling plot
+      if (color !== css("--text-faint")) {
+        var mx = ((popMean - LO) / (HI - LO)) * w;
+        ctx.strokeStyle = css("--text-faint"); ctx.setLineDash([3, 3]); ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(mx, 0); ctx.lineTo(mx, h); ctx.stroke(); ctx.setLineDash([]);
+      }
+    }
+
+    var popC, sampC;
+    function size() { popC = fit("pop-canvas", 90); sampC = fit("samp-canvas", 150); }
+
+    function statOf(arr) {
+      if (statKind === "mean") return arr.reduce(function (s, v) { return s + v; }, 0) / arr.length;
+      var s = arr.slice().sort(function (a, b) { return a - b; }), m = s.length >> 1;
+      return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+    }
+    function one() { var a = []; for (var i = 0; i < n; i++) a.push(popSampler()); ests.push(statOf(a)); }
+
+    function render() {
+      drawHist(popC, popData, css("--text-faint"), 60);
+      drawHist(sampC, ests, css("--primary"), 60);
+      document.getElementById("stat-count").textContent = ests.length;
+      if (ests.length) {
+        var m = ests.reduce(function (s, v) { return s + v; }, 0) / ests.length;
+        var sd = Math.sqrt(ests.reduce(function (s, v) { return s + (v - m) * (v - m); }, 0) / ests.length);
+        document.getElementById("stat-mean").textContent = m.toFixed(1);
+        document.getElementById("stat-se").textContent = sd.toFixed(2);
+      } else { document.getElementById("stat-mean").textContent = "—"; document.getElementById("stat-se").textContent = "—"; }
+    }
+    function many(total) { if (anim) cancelAnimationFrame(anim); var a = 0; (function step() { var b = Math.min(10, total - a); for (var i = 0; i < b; i++) one(); a += b; render(); if (a < total) anim = requestAnimationFrame(step); else anim = null; })(); }
+    function reset() { if (anim) { cancelAnimationFrame(anim); anim = null; } ests = []; render(); }
+
+    document.getElementById("n-range").addEventListener("input", function () { n = +this.value; document.getElementById("n-val").textContent = "n = " + n; reset(); });
+    document.getElementById("stat-seg").addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; statKind = b.dataset.stat; Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x.dataset.stat === statKind); }); reset(); });
+    document.getElementById("draw-1").addEventListener("click", function () { one(); render(); });
+    document.getElementById("draw-many").addEventListener("click", function () { many(300); });
+    document.getElementById("reset").addEventListener("click", reset);
+    window.addEventListener("resize", function () { size(); render(); });
+    new MutationObserver(render).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+    size(); render();
+  })();
+  </script>
+</body>
+</html>

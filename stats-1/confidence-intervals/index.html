@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Confidence Intervals — hakan.science</title>
+  <meta name="description" content="What does 95% confidence really mean? Build interval after interval and watch how often they capture the true mean." />
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-1" data-section="confidence-intervals">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 1.9</span>
+        <h1>Confidence Intervals</h1>
+
+        <p class="lede">A single estimate — "the average is 102" — pretends to a precision it doesn't have. A <strong>confidence interval</strong> is more honest: instead of one number, it reports a <em>range</em> of plausible values, like "somewhere between 99 and 105." But the phrase "95% confident" trips almost everyone up. Let's pin down what it actually means.</p>
+
+        <h2>From estimate to interval</h2>
+        <p>Recall that a sample mean has a <a href="/stats-1/sampling-distributions/">sampling distribution</a> with a known spread (the standard error). A confidence interval just wraps a margin around the estimate:</p>
+        <p style="text-align:center;font-size:1.2rem;margin:1.25rem 0"><strong>estimate&nbsp;±&nbsp;(critical value)&nbsp;×&nbsp;(standard error)</strong></p>
+        <p>Pick a higher confidence level and the critical value grows, so the interval gets wider — you trade precision for a better chance of being right. The playground makes that trade-off, and the real meaning of "95%," impossible to miss.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="civiz">
+          <p class="viz-title">🎮 Confidence Interval Coverage</p>
+          <p class="viz-sub">The dashed line is the true mean (normally unknown — here we cheat and show it). Each horizontal bar is one study's interval. Green bars caught the truth; red ones missed.</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>Sample size <span class="val" id="n-val">n = 30</span></label>
+              <input type="range" id="n-range" min="5" max="100" step="1" value="30" />
+            </div>
+            <div class="control">
+              <label>Confidence level</label>
+              <div class="seg" id="lvl-seg">
+                <button data-lvl="90">90%</button>
+                <button data-lvl="95" class="active">95%</button>
+                <button data-lvl="99">99%</button>
+              </div>
+            </div>
+            <div class="control"><button class="btn btn-primary btn-sm" id="draw-1">Draw 1 study</button></div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="draw-many">Draw 50</button></div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="reset">Reset</button></div>
+          </div>
+
+          <canvas id="ci-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Intervals built</span><span class="v" id="stat-total">0</span></div>
+            <div class="stat"><span class="k">Captured the truth</span><span class="v" id="stat-hit">0</span></div>
+            <div class="stat"><span class="k">Capture rate</span><span class="v" id="stat-rate">—</span></div>
+            <div class="stat"><span class="k">Target</span><span class="v" id="stat-target">95%</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>What "95% confident" really means</h2>
+        <p>Keep drawing studies and watch the capture rate settle near your chosen level. <strong>That</strong> is the meaning of confidence:</p>
+        <div class="callout key">
+          <p>"95% confidence" is a statement about the <em>procedure</em>, not about any single interval. If you repeated the study endlessly, about 95% of the intervals you'd build would contain the true value. Any one interval either contains it or doesn't — there's no "95% probability" hiding inside a single result.</p>
+        </div>
+        <p>This is why the red bars matter. At 95% confidence, roughly 1 interval in 20 <em>misses</em> entirely — and that's not a bug, it's the advertised failure rate. Switch to 99% and misses become rare, but every interval gets wider (less precise). Switch to 90% and intervals tighten, but you miss more often.</p>
+
+        <h2>What changes the width</h2>
+        <ul>
+          <li><strong>Confidence level ↑ → wider.</strong> More certainty demands more room.</li>
+          <li><strong>Sample size ↑ → narrower.</strong> More data shrinks the standard error, so the margin shrinks. Slide <em>n</em> up and watch the bars tighten around the truth.</li>
+        </ul>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> confidence intervals are how good science reports uncertainty — not a false-precision point estimate, but a range plus a stated reliability. They're also two sides of the same coin as <a href="/stats-1/hypothesis-testing-logic/">hypothesis tests</a>, which come next.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="/assets/js/curriculum.js"></script>
+  <script src="/assets/js/site.js"></script>
+
+  <!-- ============ Confidence-interval visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var MU = 100, SD = 15, n = 30, level = 95, intervals = [], hits = 0, anim = null;
+    var Z = { "90": 1.645, "95": 1.960, "99": 2.576 };
+    var LO = MU - 3.2 * SD, HI = MU + 3.2 * SD, MAXROWS = 26;
+
+    function css(x) { return getComputedStyle(document.documentElement).getPropertyValue(x).trim(); }
+    function gauss() { var u = 1 - Math.random(), v = Math.random(); return MU + SD * Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+    function xToPx(v, w) { return 8 + ((v - LO) / (HI - LO)) * (w - 16); }
+
+    var canvas = document.getElementById("ci-canvas"), ctx, W = 0, H = 360;
+    function fit() {
+      var r = window.devicePixelRatio || 1; W = canvas.clientWidth || canvas.parentElement.clientWidth;
+      canvas.width = W * r; canvas.height = H * r; canvas.style.height = H + "px";
+      ctx = canvas.getContext("2d"); ctx.setTransform(r, 0, 0, r, 0, 0);
+    }
+
+    function build() {
+      var s = [], sum = 0; for (var i = 0; i < n; i++) { var x = gauss(); s.push(x); sum += x; }
+      var m = sum / n;
+      var sd = Math.sqrt(s.reduce(function (a, v) { return a + (v - m) * (v - m); }, 0) / (n - 1));
+      var half = Z[level] * sd / Math.sqrt(n);
+      var lo = m - half, hi = m + half, hit = lo <= MU && MU <= hi;
+      if (hit) hits++;
+      intervals.push({ m: m, lo: lo, hi: hi, hit: hit });
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      var top = 8, bottom = H - 22, rows = Math.min(intervals.length, MAXROWS);
+      var muX = xToPx(MU, W);
+      // true-mean reference line
+      ctx.strokeStyle = css("--text-faint"); ctx.setLineDash([4, 4]); ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(muX, 0); ctx.lineTo(muX, bottom); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = css("--text-faint"); ctx.font = "11px ui-monospace, monospace"; ctx.textAlign = "center";
+      ctx.fillText("true mean", muX, bottom + 16);
+      // most recent intervals (newest at top)
+      var show = intervals.slice(-MAXROWS).reverse();
+      var rowH = (bottom - top) / MAXROWS;
+      for (var i = 0; i < show.length; i++) {
+        var iv = show[i], y = top + i * rowH + rowH / 2;
+        var col = iv.hit ? "#22c55e" : "#ef4444";
+        ctx.strokeStyle = col; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(xToPx(iv.lo, W), y); ctx.lineTo(xToPx(iv.hi, W), y); ctx.stroke();
+        // caps
+        ctx.beginPath(); ctx.moveTo(xToPx(iv.lo, W), y - 3); ctx.lineTo(xToPx(iv.lo, W), y + 3);
+        ctx.moveTo(xToPx(iv.hi, W), y - 3); ctx.lineTo(xToPx(iv.hi, W), y + 3); ctx.stroke();
+        // point estimate
+        ctx.fillStyle = col; ctx.beginPath(); ctx.arc(xToPx(iv.m, W), y, 2.5, 0, 2 * Math.PI); ctx.fill();
+      }
+    }
+
+    function stats() {
+      var t = intervals.length;
+      document.getElementById("stat-total").textContent = t;
+      document.getElementById("stat-hit").textContent = hits;
+      document.getElementById("stat-rate").textContent = t ? (100 * hits / t).toFixed(1) + "%" : "—";
+      document.getElementById("stat-target").textContent = level + "%";
+    }
+    function render() { draw(); stats(); }
+    function many(total) { if (anim) cancelAnimationFrame(anim); var a = 0; (function step() { var b = Math.min(3, total - a); for (var i = 0; i < b; i++) build(); a += b; render(); if (a < total) anim = requestAnimationFrame(step); else anim = null; })(); }
+    function reset() { if (anim) { cancelAnimationFrame(anim); anim = null; } intervals = []; hits = 0; render(); }
+
+    document.getElementById("n-range").addEventListener("input", function () { n = +this.value; document.getElementById("n-val").textContent = "n = " + n; reset(); });
+    document.getElementById("lvl-seg").addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; level = +b.dataset.lvl; Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", +x.dataset.lvl === level); }); reset(); });
+    document.getElementById("draw-1").addEventListener("click", function () { build(); render(); });
+    document.getElementById("draw-many").addEventListener("click", function () { many(50); });
+    document.getElementById("reset").addEventListener("click", reset);
+    window.addEventListener("resize", function () { fit(); render(); });
+    new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+    fit(); render();
+  })();
+  </script>
+</body>
+</html>
