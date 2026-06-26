@@ -4,25 +4,52 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Page not found — hakan.science</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-  <link rel="stylesheet" href="/assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <style>
+    /* Self-contained: a 404 can be served at any URL depth, so it can't
+       rely on relative links to the stylesheet. Keep everything inline. */
+    :root { color-scheme: light dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center; padding: 2rem;
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: #ffffff; color: #0f172a;
+    }
+    @media (prefers-color-scheme: dark) { body { background: #0b1120; color: #e7ecf5; } }
+    .code { font-size: clamp(4rem, 16vw, 9rem); font-weight: 800; letter-spacing: -.04em; color: #6366f1; line-height: 1; margin: 0; }
+    h1 { font-size: 1.5rem; font-weight: 700; margin: .5rem 0 0; }
+    p { color: #64748b; max-width: 32rem; margin: .75rem 0 0; line-height: 1.6; }
+    .actions { margin-top: 2rem; display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center; }
+    a.btn {
+      display: inline-block; padding: .75rem 1.4rem; border-radius: 12px; font-weight: 600; text-decoration: none;
+      transition: transform .15s;
+    }
+    a.primary { background: #6366f1; color: #fff; }
+    a.ghost { border: 1px solid #cbd5e1; color: inherit; }
+    @media (prefers-color-scheme: dark) { a.ghost { border-color: #334155; } }
+    a.btn:hover { transform: translateY(-1px); }
+  </style>
 </head>
 <body>
-  <nav class="nav" id="nav"></nav>
-  <main>
-    <section class="hero">
-      <div class="hero-inner">
-        <h1 style="font-size:clamp(3rem,10vw,6rem);margin-bottom:.5rem">404</h1>
-        <p class="lead">That page doesn't exist (yet). It may still be on the "coming soon" list.</p>
-        <div class="hero-cta">
-          <a class="btn btn-primary" href="/">Back to home</a>
-          <a class="btn btn-ghost" href="/#curriculum">Browse the curriculum</a>
-        </div>
-      </div>
-    </section>
-  </main>
-  <script src="/assets/js/curriculum.js"></script>
-  <script src="/assets/js/site.js"></script>
+  <p class="code">404</p>
+  <h1>That page doesn't exist (yet)</h1>
+  <p>It may still be on the "coming soon" list, or the link might be off. Let's get you back on track.</p>
+  <div class="actions">
+    <a class="btn primary" id="home" href="/">Back to home</a>
+    <a class="btn ghost" id="curriculum" href="/">Browse the curriculum</a>
+  </div>
+  <script>
+    /* Figure out where "home" is. On a GitHub project page the site lives at
+       /<repo>/; on a custom domain or user site it's at the root. */
+    (function () {
+      var home = "/";
+      if (location.hostname.indexOf("github.io") !== -1) {
+        var seg = location.pathname.split("/")[1];
+        if (seg) home = "/" + seg + "/";
+      }
+      document.getElementById("home").setAttribute("href", home);
+      document.getElementById("curriculum").setAttribute("href", home + "#curriculum");
+    })();
+  </script>
 </body>
 </html>

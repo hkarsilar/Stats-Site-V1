@@ -6,6 +6,12 @@
 (function () {
   "use strict";
 
+  /* ---------- base path ----------
+     Lesson pages live two folders deep (/<course>/<slug>/), the homepage
+     at the root. Using relative links keeps the whole site working no
+     matter what the repo/folder is named or how deep it's hosted. */
+  var BASE = (document.body && document.body.getAttribute("data-section")) ? "../../" : "";
+
   /* ---------- theme ---------- */
   var root = document.documentElement;
   function setTheme(t) {
@@ -27,10 +33,10 @@
     if (!nav) return;
     nav.innerHTML =
       '<div class="nav-inner">' +
-        '<a class="brand" href="/">hakan<span class="dot">.</span>science</a>' +
+        '<a class="brand" href="' + (BASE || "./") + '">hakan<span class="dot">.</span>science</a>' +
         '<div class="nav-links">' +
-          '<a class="nav-link hide-mobile" href="/#curriculum">Curriculum</a>' +
-          '<a class="nav-link hide-mobile" href="/#about">About</a>' +
+          '<a class="nav-link hide-mobile" href="' + BASE + '#curriculum">Curriculum</a>' +
+          '<a class="nav-link hide-mobile" href="' + BASE + '#about">About</a>' +
           '<button id="theme-toggle" class="icon-btn" aria-label="Toggle theme"></button>' +
         '</div>' +
       '</div>';
@@ -51,7 +57,7 @@
           '<span class="sec-dot"></span>' +
           '<span><span class="sec-num">' + s.n + '</span>' + s.title + '</span>';
         return s.ready
-          ? '<li><a href="/' + c.slug + '/' + s.slug + '/">' + inner + '</a></li>'
+          ? '<li><a href="' + BASE + c.slug + '/' + s.slug + '/">' + inner + '</a></li>'
           : '<li><a style="cursor:default;opacity:.65" title="Coming soon">' + inner +
               '<span style="margin-left:auto;font-size:.68rem;color:var(--text-faint)">soon</span></a></li>';
       }).join("");
@@ -74,7 +80,7 @@
         var cls = s.slug === here ? "active" : "";
         var label = '<span class="n">' + s.n + '</span>' + s.title;
         if (s.ready || s.slug === here) {
-          return '<a class="' + cls + '" href="/' + c.slug + '/' + s.slug + '/">' + label + '</a>';
+          return '<a class="' + cls + '" href="' + BASE + c.slug + '/' + s.slug + '/">' + label + '</a>';
         }
         return '<a style="cursor:default;opacity:.55" title="Coming soon">' + label + '</a>';
       }).join("");
@@ -96,11 +102,11 @@
     var arrowL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>';
     var arrowR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
     if (prev) {
-      html += '<a class="prev" href="/' + prev.course + '/' + prev.slug + '/">' + arrowL +
+      html += '<a class="prev" href="' + BASE + prev.course + '/' + prev.slug + '/">' + arrowL +
         '<span><span class="lbl">Previous</span>' + prev.n + ' ' + prev.title + '</span></a>';
     }
     if (next) {
-      html += '<a class="next" href="/' + next.course + '/' + next.slug + '/">' +
+      html += '<a class="next" href="' + BASE + next.course + '/' + next.slug + '/">' +
         '<span><span class="lbl">Next</span>' + next.n + ' ' + next.title + '</span>' + arrowR + '</a>';
     }
     host.innerHTML = html;

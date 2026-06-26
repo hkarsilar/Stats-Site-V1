@@ -30,13 +30,16 @@ Then visit http://localhost:8099/ . (Run it from inside this folder.)
 
 ## Publish / update (GitHub Desktop)
 
+The site uses **relative paths**, so it works under any repo name (served from
+`https://<user>.github.io/<repo>/`), at a custom domain, or locally.
+
 First time:
 1. In GitHub Desktop: **File → Add local repository**, choose this folder.
-2. Click **Publish repository**. Name it `your-username.github.io` (so it serves
-   at the site root), keep it public.
+2. Click **Publish repository**. Name it whatever you like (e.g. `Stats-Toolbox`),
+   keep it public.
 3. On GitHub: **Settings → Pages → Build and deployment → Source: Deploy from a
    branch → `main` / `(root)` → Save.** Wait ~1 minute; your site is live at
-   `https://your-username.github.io/`.
+   `https://<user>.github.io/<repo>/`.
 
 Every time after: make changes → **Commit** → **Push** in GitHub Desktop. The
 live site updates automatically in under a minute. No uploads, no Hostinger.
