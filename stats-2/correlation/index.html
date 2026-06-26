@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Correlation — hakan.science</title>
+  <meta name="description" content="See what a correlation coefficient looks like: set the strength, drag points, and watch r respond to the shape of the cloud." />
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-2" data-section="correlation">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 2.8</span>
+        <h1>Correlation</h1>
+
+        <p class="lede">Two things vary together — taller people tend to weigh more, more study hours tend to mean higher grades. <strong>Correlation</strong> puts a single number on that co-movement: the <strong>correlation coefficient <em>r</em></strong>, which runs from −1 to +1 and captures both the <em>direction</em> and the <em>strength</em> of a straight-line relationship.</p>
+
+        <h2>Reading the number</h2>
+        <ul>
+          <li><strong>Sign = direction.</strong> Positive <em>r</em>: as one goes up, so does the other. Negative <em>r</em>: as one goes up, the other goes down.</li>
+          <li><strong>Size = strength.</strong> Near ±1 the points hug a straight line; near 0 they're a shapeless blob with no linear trend.</li>
+        </ul>
+        <p>Numbers are abstract, though. The fastest way to build intuition is to <em>see</em> what an <em>r</em> of 0.3 versus 0.9 actually looks like — and to break a tidy relationship by dragging a single point.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="corrviz">
+          <p class="viz-title">🎮 Correlation Explorer</p>
+          <p class="viz-sub">Set a target strength to generate a cloud, then drag any point. The coefficient <em>r</em> is computed live from whatever is on screen.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:220px">
+              <label>Target correlation <span class="val" id="rho-val">+0.70</span></label>
+              <input type="range" id="rho-range" min="-100" max="100" step="5" value="70" style="width:100%" />
+            </div>
+            <div class="control"><button class="btn btn-primary btn-sm" id="newcloud">New cloud</button></div>
+          </div>
+
+          <canvas id="corr-canvas" style="touch-action:none;cursor:grab"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Correlation r</span><span class="v" id="stat-r">+0.70</span></div>
+            <div class="stat"><span class="k">Strength</span><span class="v" id="stat-strength" style="font-size:1rem">strong positive</span></div>
+            <div class="stat"><span class="k">Points</span><span class="v" id="stat-n">40</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Three things people get wrong</h2>
+        <div class="callout key">
+          <p><strong>1. Correlation only sees straight lines.</strong> A perfect U-shape (y = x²) can have <em>r</em> ≈ 0 even though the variables are perfectly related. Low <em>r</em> means "no <em>linear</em> trend," not "no relationship." Always look at the scatter.</p>
+        </div>
+        <div class="callout key">
+          <p><strong>2. Correlation is not causation.</strong> Ice-cream sales and drowning deaths rise together (both driven by hot weather). A strong <em>r</em> tells you two things move together — never <em>why</em>.</p>
+        </div>
+        <div class="callout key">
+          <p><strong>3. A single outlier can fake — or hide — a correlation.</strong> Drag one point far away in the playground and watch <em>r</em> lurch. Real analyses always check whether one stray point is doing all the work.</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> correlation is the first measure of "do these two move together?" — and it's the direct stepping stone to <a href="/stats-2/simple-linear-regression/">regression</a>, which turns that relationship into a predictive line.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="/assets/js/curriculum.js"></script>
+  <script src="/assets/js/site.js"></script>
+  <script src="/assets/js/viz.js"></script>
+
+  <!-- ============ Correlation visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var LO = -3.4, HI = 3.4, N = 40, rho = 0.7, pts = [], drag = -1;
+    var canvas = document.getElementById("corr-canvas"), ctx, W = 0, H = 320, pad = 30;
+
+    function vx(v) { return pad + ((v - LO) / (HI - LO)) * (W - 2 * pad); }
+    function vy(v) { return (H - pad) - ((v - LO) / (HI - LO)) * (H - 2 * pad); }
+    function px2x(p) { return LO + ((p - pad) / (W - 2 * pad)) * (HI - LO); }
+    function py2y(p) { return LO + (((H - pad) - p) / (H - 2 * pad)) * (HI - LO); }
+    function clamp(v) { return v < LO ? LO : v > HI ? HI : v; }
+
+    function gen() {
+      pts = [];
+      for (var i = 0; i < N; i++) {
+        var x = VIZ.randn();
+        var y = rho * x + Math.sqrt(Math.max(0, 1 - rho * rho)) * VIZ.randn();
+        pts.push({ x: clamp(x), y: clamp(y) });
+      }
+    }
+    function pearson() {
+      var n = pts.length, mx = 0, my = 0;
+      for (var i = 0; i < n; i++) { mx += pts[i].x; my += pts[i].y; }
+      mx /= n; my /= n;
+      var sxy = 0, sxx = 0, syy = 0;
+      for (var j = 0; j < n; j++) { var dx = pts[j].x - mx, dy = pts[j].y - my; sxy += dx * dy; sxx += dx * dx; syy += dy * dy; }
+      return (sxx === 0 || syy === 0) ? 0 : sxy / Math.sqrt(sxx * syy);
+    }
+    function strengthLabel(r) {
+      var a = Math.abs(r), dir = r > 0 ? "positive" : "negative";
+      if (a < 0.1) return "no linear trend";
+      if (a < 0.3) return "weak " + dir;
+      if (a < 0.5) return "moderate " + dir;
+      if (a < 0.7) return "strong " + dir;
+      return "very strong " + dir;
+    }
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      // axes through the means (origin ~ 0,0 here)
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(vx(0), pad - 6); ctx.lineTo(vx(0), H - pad + 6); ctx.moveTo(pad - 6, vy(0)); ctx.lineTo(W - pad + 6, vy(0)); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px Inter, sans-serif";
+      ctx.textAlign = "right"; ctx.fillText("y", vx(0) - 6, pad);
+      ctx.textAlign = "left"; ctx.fillText("x", W - pad, vy(0) + 14);
+      // points
+      for (var i = 0; i < pts.length; i++) {
+        ctx.fillStyle = VIZ.css("--primary"); ctx.globalAlpha = i === drag ? 1 : 0.7;
+        ctx.beginPath(); ctx.arc(vx(pts[i].x), vy(pts[i].y), 5, 0, 2 * Math.PI); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+    function update() {
+      var r = pearson();
+      document.getElementById("stat-r").textContent = (r >= 0 ? "+" : "") + r.toFixed(2);
+      document.getElementById("stat-strength").textContent = strengthLabel(r);
+      document.getElementById("stat-n").textContent = pts.length;
+      draw();
+    }
+
+    function nearest(mx, my) {
+      var best = -1, bd = 16;
+      for (var i = 0; i < pts.length; i++) { var d = Math.hypot(vx(pts[i].x) - mx, vy(pts[i].y) - my); if (d < bd) { bd = d; best = i; } }
+      return best;
+    }
+    canvas.addEventListener("pointerdown", function (e) { drag = nearest(e.offsetX, e.offsetY); if (drag >= 0) { canvas.setPointerCapture(e.pointerId); canvas.style.cursor = "grabbing"; update(); } });
+    canvas.addEventListener("pointermove", function (e) { if (drag < 0) return; pts[drag] = { x: clamp(px2x(e.offsetX)), y: clamp(py2y(e.offsetY)) }; update(); });
+    function end() { drag = -1; canvas.style.cursor = "grab"; update(); }
+    canvas.addEventListener("pointerup", end);
+    canvas.addEventListener("pointercancel", end);
+
+    document.getElementById("rho-range").addEventListener("input", function () {
+      rho = this.value / 100; document.getElementById("rho-val").textContent = (rho >= 0 ? "+" : "") + rho.toFixed(2); gen(); update();
+    });
+    document.getElementById("newcloud").addEventListener("click", function () { gen(); update(); });
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(draw);
+
+    fit(); gen(); update();
+  })();
+  </script>
+</body>
+</html>

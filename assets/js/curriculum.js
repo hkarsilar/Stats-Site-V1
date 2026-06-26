@@ -40,8 +40,8 @@ window.CURRICULUM = [
       { n: "2.5",  slug: "assumptions-and-when-they-break",title: "Assumptions & When They Break" },
       { n: "2.6",  slug: "non-parametric-alternatives",    title: "Non-Parametric Alternatives" },
       { n: "2.7",  slug: "chi-square-tests",               title: "Chi-Square Tests" },
-      { n: "2.8",  slug: "correlation",                    title: "Correlation" },
-      { n: "2.9",  slug: "simple-linear-regression",       title: "Simple Linear Regression" },
+      { n: "2.8",  slug: "correlation",                    title: "Correlation", ready: true },
+      { n: "2.9",  slug: "simple-linear-regression",       title: "Simple Linear Regression", ready: true },
       { n: "2.10", slug: "regression-diagnostics",         title: "Regression Diagnostics" }
     ]
   },
