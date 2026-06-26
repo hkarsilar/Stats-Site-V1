@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hypothesis Testing Logic — hakan.science</title>
+  <meta name="description" content="The logic behind p-values, made visual: assume the null, see how surprising your data is, and decide. Drag the observed statistic and watch the p-value." />
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-1" data-section="hypothesis-testing-logic">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 1.10</span>
+        <h1>Hypothesis Testing Logic</h1>
+
+        <p class="lede">A hypothesis test is a structured way to answer "could this result just be a fluke?" The logic mirrors a courtroom: the null hypothesis is <em>presumed innocent</em>, and we only convict — reject it — when the evidence would be genuinely surprising if it were true.</p>
+
+        <h2>The four moves</h2>
+        <ol>
+          <li><strong>State two hypotheses.</strong> The <strong>null (H₀)</strong> is the boring "nothing's going on" claim (no effect, no difference). The <strong>alternative (H₁)</strong> is what you suspect instead.</li>
+          <li><strong>Assume H₀ is true.</strong> This gives you a <strong>null distribution</strong> — the range of results you'd expect from chance alone if there really were no effect.</li>
+          <li><strong>Measure surprise.</strong> Find where your actual result falls on that distribution. The <strong>p-value</strong> is the probability of getting a result <em>this extreme or more</em>, just by chance, if H₀ were true.</li>
+          <li><strong>Decide.</strong> If the p-value is below a pre-set threshold <strong>α</strong> (usually 0.05), the result is "too surprising to be chance" — reject H₀. Otherwise, fail to reject it.</li>
+        </ol>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="htviz">
+          <p class="viz-title">🎮 P-Value Explorer</p>
+          <p class="viz-sub">The bell is the null distribution — what chance alone would produce. Slide your observed result and watch how much of the curve is "this extreme or worse" (the shaded p-value).</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:240px">
+              <label>Observed statistic (z) <span class="val" id="z-val">+1.50</span></label>
+              <input type="range" id="z-range" min="-400" max="400" step="1" value="150" style="width:100%" />
+            </div>
+            <div class="control">
+              <label>Alternative</label>
+              <div class="seg" id="tail-seg">
+                <button data-tail="two" class="active">Two-sided</button>
+                <button data-tail="right">Right</button>
+                <button data-tail="left">Left</button>
+              </div>
+            </div>
+            <div class="control">
+              <label>α</label>
+              <div class="seg" id="alpha-seg">
+                <button data-a="0.10">.10</button>
+                <button data-a="0.05" class="active">.05</button>
+                <button data-a="0.01">.01</button>
+              </div>
+            </div>
+          </div>
+
+          <canvas id="ht-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">p-value</span><span class="v" id="stat-p">0.134</span></div>
+            <div class="stat"><span class="k">Threshold α</span><span class="v" id="stat-a">0.05</span></div>
+            <div class="stat"><span class="k">Decision</span><span class="v" id="stat-dec" style="font-size:1rem">Fail to reject H₀</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>What a p-value is — and isn't</h2>
+        <p>Slide the statistic out toward the tails and the p-value shrinks: extreme results are unlikely under chance, so they count as evidence against H₀. But the p-value is slippery, and two misreadings are everywhere:</p>
+        <div class="callout key">
+          <p><strong>A p-value is NOT the probability that H₀ is true.</strong> It's the probability of data this extreme <em>assuming</em> H₀ is true. Those are different questions. p = 0.03 does not mean "3% chance there's no effect."</p>
+        </div>
+        <div class="callout key">
+          <p><strong>"Fail to reject" is NOT "proven true."</strong> A courtroom's "not guilty" doesn't mean "definitely innocent" — just "not enough evidence." Likewise, a non-significant result means we couldn't rule out chance, not that H₀ is correct.</p>
+        </div>
+
+        <h2>Two ways to be wrong</h2>
+        <ul>
+          <li><strong>Type I error (false positive):</strong> rejecting H₀ when it's actually true. Its rate is exactly α — set α = 0.05 and you'll wrongly "find" an effect 5% of the time by chance.</li>
+          <li><strong>Type II error (false negative):</strong> failing to detect a real effect. Lowering α (demanding stronger evidence) guards against Type I errors but makes Type II errors more likely — a genuine trade-off, explored in <a href="/stats-1/effect-size-and-power/">effect size &amp; power</a>.</li>
+        </ul>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> every test you'll meet — t-tests, ANOVA, chi-square, regression — runs this exact playbook. Master the logic once here, and the rest is just swapping in different null distributions.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="/assets/js/curriculum.js"></script>
+  <script src="/assets/js/site.js"></script>
+  <script src="/assets/js/viz.js"></script>
+
+  <!-- ============ p-value visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var LO = -4, HI = 4, z = 1.5, tail = "two", alpha = 0.05;
+    var canvas = document.getElementById("ht-canvas"), ctx, W = 0, H = 220, pad = 24;
+
+    function vx(v) { return pad + ((v - LO) / (HI - LO)) * (W - 2 * pad); }
+    function pdf(v) { return Math.exp(-0.5 * v * v) / Math.sqrt(2 * Math.PI); }
+
+    function pValue() {
+      var hi = VIZ.normCdf(z);
+      if (tail === "right") return 1 - hi;
+      if (tail === "left") return hi;
+      return 2 * (1 - VIZ.normCdf(Math.abs(z)));
+    }
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function shadeRegion(from, to, scale, baseY) {
+      ctx.beginPath();
+      var x0 = vx(from);
+      ctx.moveTo(x0, baseY);
+      for (var v = from; v <= to; v += (to - from) / 80) ctx.lineTo(vx(v), baseY - pdf(v) * scale);
+      ctx.lineTo(vx(to), baseY); ctx.closePath(); ctx.fill();
+    }
+    function draw() {
+      var baseY = H - 22, peak = pdf(0), scale = (H - pad - 22) / peak;
+      ctx.clearRect(0, 0, W, H);
+      // axis
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(0, baseY); ctx.lineTo(W, baseY); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px ui-monospace, monospace"; ctx.textAlign = "center";
+      for (var t = -3; t <= 3; t++) { ctx.fillText(t, vx(t), baseY + 16); }
+
+      // shaded p-value region(s)
+      ctx.fillStyle = "#f97316"; ctx.globalAlpha = 0.3;
+      if (tail === "right") shadeRegion(z, HI, scale, baseY);
+      else if (tail === "left") shadeRegion(LO, z, scale, baseY);
+      else { var a = Math.abs(z); shadeRegion(a, HI, scale, baseY); shadeRegion(LO, -a, scale, baseY); }
+      ctx.globalAlpha = 1;
+
+      // curve
+      ctx.strokeStyle = VIZ.css("--primary"); ctx.lineWidth = 2.5; ctx.beginPath();
+      for (var px = 0; px <= W; px += 1.5) { var v = LO + (px / W) * (HI - LO); var y = baseY - pdf(v) * scale; if (px === 0) ctx.moveTo(px, y); else ctx.lineTo(px, y); }
+      ctx.stroke();
+
+      // observed-statistic marker
+      var zx = vx(z);
+      ctx.strokeStyle = "#f97316"; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(zx, 6); ctx.lineTo(zx, baseY); ctx.stroke();
+      ctx.fillStyle = "#f97316"; ctx.textAlign = "center"; ctx.font = "600 12px Inter, sans-serif";
+      ctx.fillText("your result", zx, 16);
+    }
+
+    function update() {
+      var p = pValue(), reject = p < alpha;
+      document.getElementById("z-val").textContent = (z >= 0 ? "+" : "") + z.toFixed(2);
+      document.getElementById("stat-p").textContent = p < 0.001 ? "< 0.001" : p.toFixed(3);
+      document.getElementById("stat-a").textContent = alpha.toFixed(2);
+      var dec = document.getElementById("stat-dec");
+      dec.textContent = reject ? "Reject H₀" : "Fail to reject H₀";
+      dec.style.color = reject ? "#22c55e" : VIZ.css("--text");
+      draw();
+    }
+
+    document.getElementById("z-range").addEventListener("input", function () { z = this.value / 100; update(); });
+    document.getElementById("tail-seg").addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; tail = b.dataset.tail; Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x.dataset.tail === tail); }); update(); });
+    document.getElementById("alpha-seg").addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; alpha = +b.dataset.a; Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", +x.dataset.a === alpha); }); update(); });
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(draw);
+
+    fit(); update();
+  })();
+  </script>
+</body>
+</html>
