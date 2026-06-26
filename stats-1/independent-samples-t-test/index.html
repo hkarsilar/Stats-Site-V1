@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Independent Samples t-Test — hakan.science</title>
+  <meta name="description" content="Comparing two groups is a tug-of-war between the gap in their means and the noise within them. Adjust both and watch t and the p-value respond." />
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-1" data-section="independent-samples-t-test">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 1.12</span>
+        <h1>Independent Samples t-Test</h1>
+
+        <p class="lede">This is the test you reach for constantly: do two <em>separate</em> groups — treatment vs. control, men vs. women, version A vs. version B — differ on average? Unlike the paired test, the groups are made of different individuals, so we compare their two means head to head.</p>
+
+        <h2>Signal over noise</h2>
+        <p>The logic is a ratio. On top, the <strong>signal</strong>: how far apart the two sample means are. On the bottom, the <strong>noise</strong>: how much the scores bounce around <em>within</em> each group, adjusted for sample size. That ratio is the t-statistic:</p>
+        <p style="text-align:center;font-size:1.15rem;margin:1.25rem 0"><strong>t = (x̄₁ − x̄₂) / (standard error of the difference)</strong></p>
+        <p>A big t — a clear signal sticking out of the noise — means the groups probably really differ. A small t means the gap could easily be chance. Crucially, the same mean difference can be convincing or meaningless depending on the noise and the sample size. The playground makes that tug-of-war visible.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="itviz">
+          <p class="viz-title">🎮 Two-Group Tug-of-War</p>
+          <p class="viz-sub">Each dot is a person. Move the groups apart, dial the within-group noise up and down, and change the sample size — then watch t and p react.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:200px">
+              <label>Gap between groups <span class="val" id="gap-val">8</span></label>
+              <input type="range" id="gap-range" min="0" max="25" step="1" value="8" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:200px">
+              <label>Within-group noise (SD) <span class="val" id="sd-val">10</span></label>
+              <input type="range" id="sd-range" min="3" max="25" step="1" value="10" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:200px">
+              <label>Sample size per group <span class="val" id="n-val">n = 20</span></label>
+              <input type="range" id="n-range" min="5" max="80" step="1" value="20" style="width:100%" />
+            </div>
+            <div class="control"><button class="btn btn-primary btn-sm" id="resample">New samples</button></div>
+          </div>
+
+          <canvas id="it-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Observed mean difference</span><span class="v" id="stat-diff">—</span></div>
+            <div class="stat"><span class="k">t-statistic</span><span class="v" id="stat-t">—</span></div>
+            <div class="stat"><span class="k">p-value</span><span class="v" id="stat-p">—</span></div>
+            <div class="stat"><span class="k">Decision (α = .05)</span><span class="v" id="stat-dec" style="font-size:1rem">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Three levers, one conclusion</h2>
+        <ul>
+          <li><strong>Bigger gap → bigger t.</strong> A larger real difference is easier to detect.</li>
+          <li><strong>More noise → smaller t.</strong> If scores within each group are all over the place, a gap between the means is less convincing.</li>
+          <li><strong>Bigger samples → bigger t.</strong> More data per group shrinks the standard error, so even a modest gap can become significant.</li>
+        </ul>
+        <p>Try this: set a gap of 8 with high noise and small n — likely not significant. Now slide n up. The means barely move, but the p-value tumbles past 0.05. Same effect, more evidence. This is exactly why sample size and <a href="/stats-1/effect-size-and-power/">power</a> matter so much.</p>
+
+        <div class="callout key">
+          <p><strong>Report the effect size too.</strong> A significant t with a huge sample might reflect a difference too small to care about. Always pair the p-value with <a href="/stats-1/effect-size-and-power/">Cohen's d</a> — the gap measured in standard deviations — to judge whether the difference actually matters.</p>
+        </div>
+
+        <h2>What you're assuming</h2>
+        <ul>
+          <li>The two groups are <strong>independent</strong> (different people, no pairing).</li>
+          <li>Each group is roughly normal, or both samples are large enough for the <a href="/stats-1/central-limit-theorem/">CLT</a>.</li>
+          <li>Similar spread in both groups — and if not, the <strong>Welch</strong> version of the test relaxes that requirement.</li>
+        </ul>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> comparing two group means is one of the most common tasks in all of research. When you have <em>more</em> than two groups, you don't run a pile of t-tests — you move up to <a href="/stats-2/one-way-anova/">ANOVA</a>, which is where Stats 2 begins.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="/assets/js/curriculum.js"></script>
+  <script src="/assets/js/site.js"></script>
+  <script src="/assets/js/viz.js"></script>
+
+  <!-- ============ two-sample t-test visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var gap = 8, sd = 10, n = 20, A = [], B = [];
+    var LO = 20, HI = 80, BASE = 50;
+    var canvas = document.getElementById("it-canvas"), ctx, W = 0, H = 190;
+
+    function clamp(v) { return v < LO ? LO : v > HI ? HI : v; }
+    function resample() {
+      A = []; B = [];
+      var mA = BASE - gap / 2, mB = BASE + gap / 2;
+      for (var i = 0; i < n; i++) { A.push(clamp(VIZ.gauss(mA, sd))); B.push(clamp(VIZ.gauss(mB, sd))); }
+      update();
+    }
+
+    // numeric two-tailed p-value from the t-distribution
+    function pValue(t, dfv) {
+      t = Math.abs(t);
+      function pdfUn(x) { return Math.pow(1 + x * x / dfv, -(dfv + 1) / 2); }
+      var half = 0, tail = 0, step = 0.005;
+      for (var x = step / 2; x < 16; x += step) { var f = pdfUn(x) * step; half += f; if (x >= t) tail += f; }
+      return Math.min(1, tail / half);
+    }
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function vx(v) { return 16 + ((v - LO) / (HI - LO)) * (W - 32); }
+
+    function strip(arr, yC, color) {
+      ctx.fillStyle = color; ctx.globalAlpha = 0.7;
+      for (var i = 0; i < arr.length; i++) ctx.beginPath(), ctx.arc(vx(arr[i]), yC + ((i % 6) - 2.5) * 5, 3, 0, 2 * Math.PI), ctx.fill();
+      ctx.globalAlpha = 1;
+      var m = VIZ.mean(arr), mx = vx(m);
+      ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(mx, yC - 26); ctx.lineTo(mx, yC + 26); ctx.stroke();
+    }
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      for (var t = 20; t <= 80; t += 10) { var x = vx(t); ctx.globalAlpha = 0.5; ctx.beginPath(); ctx.moveTo(x, 10); ctx.lineTo(x, H - 18); ctx.stroke(); ctx.globalAlpha = 1; ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center"; ctx.fillText(t, x, H - 4); }
+      strip(A, H * 0.32, VIZ.css("--primary"));
+      strip(B, H * 0.68, "#f97316");
+      ctx.fillStyle = VIZ.css("--primary"); ctx.font = "600 11px Inter,sans-serif"; ctx.textAlign = "left"; ctx.fillText("group 1", 8, 12);
+      ctx.fillStyle = "#f97316"; ctx.fillText("group 2", 8, H * 0.68 - 30);
+    }
+
+    function update() {
+      var m1 = VIZ.mean(A), m2 = VIZ.mean(B);
+      var s1 = VIZ.sd(A) * Math.sqrt(n / (n - 1)), s2 = VIZ.sd(B) * Math.sqrt(n / (n - 1)); // sample SD
+      var sp = Math.sqrt(((n - 1) * s1 * s1 + (n - 1) * s2 * s2) / (2 * n - 2));
+      var se = sp * Math.sqrt(2 / n), tval = (m2 - m1) / se, dfv = 2 * n - 2;
+      var p = pValue(tval, dfv), reject = p < 0.05;
+      document.getElementById("gap-val").textContent = gap;
+      document.getElementById("sd-val").textContent = sd;
+      document.getElementById("n-val").textContent = "n = " + n;
+      document.getElementById("stat-diff").textContent = (m2 - m1).toFixed(1);
+      document.getElementById("stat-t").textContent = tval.toFixed(2);
+      document.getElementById("stat-p").textContent = p < 0.001 ? "< 0.001" : p.toFixed(3);
+      var dec = document.getElementById("stat-dec");
+      dec.textContent = reject ? "Significant difference" : "Not significant";
+      dec.style.color = reject ? "#22c55e" : VIZ.css("--text");
+      draw();
+    }
+
+    document.getElementById("gap-range").addEventListener("input", function () { gap = +this.value; resample(); });
+    document.getElementById("sd-range").addEventListener("input", function () { sd = +this.value; resample(); });
+    document.getElementById("n-range").addEventListener("input", function () { n = +this.value; resample(); });
+    document.getElementById("resample").addEventListener("click", resample);
+    window.addEventListener("resize", function () { fit(); draw(); });
+    VIZ.onTheme(draw);
+
+    fit(); resample();
+  })();
+  </script>
+</body>
+</html>

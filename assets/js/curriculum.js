@@ -22,8 +22,8 @@ window.CURRICULUM = [
       { n: "1.8",  slug: "central-limit-theorem",               title: "Central Limit Theorem", ready: true },
       { n: "1.9",  slug: "confidence-intervals",                title: "Confidence Intervals", ready: true },
       { n: "1.10", slug: "hypothesis-testing-logic",            title: "Hypothesis Testing Logic", ready: true },
-      { n: "1.11", slug: "one-sample-and-paired-t-tests",       title: "One-Sample & Paired t-Tests" },
-      { n: "1.12", slug: "independent-samples-t-test",          title: "Independent Samples t-Test" },
+      { n: "1.11", slug: "one-sample-and-paired-t-tests",       title: "One-Sample & Paired t-Tests", ready: true },
+      { n: "1.12", slug: "independent-samples-t-test",          title: "Independent Samples t-Test", ready: true },
       { n: "1.13", slug: "effect-size-and-power",               title: "Effect Size & Power", ready: true }
     ]
   },
