@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Effect Size & Power — hakan.science</title>
+  <meta name="description" content="Significance says whether an effect exists; effect size says how big; power says whether you could even detect it. See how effect size and sample size drive power." />
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-1" data-section="effect-size-and-power">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 1.13</span>
+        <h1>Effect Size &amp; Power</h1>
+
+        <p class="lede">A <a href="/stats-1/hypothesis-testing-logic/">p-value</a> answers one narrow question: is there an effect at all? It says nothing about <em>how big</em> the effect is, or whether your study was even capable of finding it. Those two questions — answered by <strong>effect size</strong> and <strong>power</strong> — are what separate a meaningful result from a misleading one.</p>
+
+        <h2>Effect size: how big, not just whether</h2>
+        <p>With a huge sample, a trivially small difference can be "statistically significant." With a tiny sample, a huge difference can miss significance. Significance is tangled up with sample size — so we need a measure of the effect that <em>isn't</em>. That's <strong>effect size</strong>. For a difference between two means, the standard one is <strong>Cohen's d</strong>: the gap between the means measured in standard deviations.</p>
+        <p style="text-align:center;font-size:1.2rem;margin:1.25rem 0"><strong>d = (mean₁ − mean₂) / standard deviation</strong></p>
+        <p>Rough conventions: d ≈ 0.2 is small, 0.5 medium, 0.8 large. It's the same currency as a <a href="/stats-1/z-scores-and-the-normal-distribution/">z-score</a> — a standardized distance — so it's comparable across studies and scales.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="powviz">
+          <p class="viz-title">🎮 Effect Size &amp; Power Explorer</p>
+          <p class="viz-sub">Two groups, one real difference. The curves show the effect size (their overlap); the readout shows your power — the chance a study with this n actually detects the effect at α = .05.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:220px">
+              <label>Effect size (Cohen's d) <span class="val" id="d-val">0.50</span></label>
+              <input type="range" id="d-range" min="0" max="200" step="1" value="50" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:220px">
+              <label>Sample size per group <span class="val" id="n-val">n = 30</span></label>
+              <input type="range" id="n-range" min="5" max="200" step="1" value="30" style="width:100%" />
+            </div>
+          </div>
+
+          <canvas id="pow-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Cohen's d</span><span class="v" id="stat-d">0.50</span></div>
+            <div class="stat"><span class="k">Effect label</span><span class="v" id="stat-label" style="font-size:1rem">medium</span></div>
+            <div class="stat"><span class="k">Power</span><span class="v" id="stat-power">—</span></div>
+            <div class="stat"><span class="k">Type II error (miss)</span><span class="v" id="stat-beta">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Power: could you even detect it?</h2>
+        <p><strong>Power</strong> is the probability that your study correctly rejects the null when a real effect exists — your chance of <em>not</em> missing it. The convention is to aim for at least 80%. Play with the sliders and three levers emerge:</p>
+        <div class="callout key">
+          <p><strong>Bigger effect → more power.</strong> Slide d up: the curves pull apart, overlap shrinks, and a real difference becomes easy to catch. Tiny effects are genuinely hard to detect and need lots of data.</p>
+        </div>
+        <div class="callout key">
+          <p><strong>Bigger sample → more power.</strong> Slide n up and power climbs even with d fixed. More data sharpens the estimate, so smaller effects become detectable.</p>
+        </div>
+
+        <h2>Why underpowered studies are dangerous</h2>
+        <p>If power is only 40%, you'll miss a real effect more often than you find it — and a "non-significant" result tells you almost nothing. Worse, the few significant results that <em>do</em> squeak through tend to overestimate the effect. This is why researchers run a <strong>power analysis before collecting data</strong>: pick the effect size you care about, the power you want (say 80%), and solve for the sample size you need.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> reporting an effect size alongside the p-value, and planning for adequate power, is the difference between research that replicates and research that doesn't. Significance is the start of the story, never the whole of it.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="/assets/js/curriculum.js"></script>
+  <script src="/assets/js/site.js"></script>
+  <script src="/assets/js/viz.js"></script>
+
+  <!-- ============ effect-size / power visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var d = 0.5, n = 30;
+    var canvas = document.getElementById("pow-canvas"), ctx, W = 0, H = 200, pad = 14;
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function powerOf() {
+      var delta = d * Math.sqrt(n / 2), zc = 1.959964;       // two-sample, equal n, α=.05 two-sided
+      return VIZ.normCdf(delta - zc) + VIZ.normCdf(-delta - zc);
+    }
+    function label() { return d < 0.2 ? "negligible" : d < 0.35 ? "small" : d < 0.65 ? "medium" : d < 1.1 ? "large" : "very large"; }
+
+    function draw() {
+      var lo = -3.6, hi = 3.6 + d, baseY = H - 16, peak = VIZ.normPdf(0, 0, 1), scale = (H - pad - 16) / peak;
+      function vx(v) { return pad + ((v - lo) / (hi - lo)) * (W - 2 * pad); }
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(0, baseY); ctx.lineTo(W, baseY); ctx.stroke();
+      function curve(mu, color, fillAlpha) {
+        ctx.beginPath();
+        for (var px = 0; px <= W; px += 1.5) { var v = lo + (px / W) * (hi - lo); var y = baseY - VIZ.normPdf(v, mu, 1) * scale; if (px === 0) ctx.moveTo(px, y); else ctx.lineTo(px, y); }
+        ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.stroke();
+        ctx.lineTo(W, baseY); ctx.lineTo(0, baseY); ctx.closePath();
+        ctx.fillStyle = color; ctx.globalAlpha = fillAlpha; ctx.fill(); ctx.globalAlpha = 1;
+      }
+      curve(0, VIZ.css("--primary"), 0.12);
+      curve(d, "#f97316", 0.12);
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "600 12px Inter, sans-serif";
+      ctx.textAlign = "center"; ctx.fillText("group 1", vx(0), 14); ctx.fillText("group 2", vx(d), 14);
+    }
+    function update() {
+      var pw = powerOf();
+      document.getElementById("d-val").textContent = d.toFixed(2);
+      document.getElementById("n-val").textContent = "n = " + n;
+      document.getElementById("stat-d").textContent = d.toFixed(2);
+      document.getElementById("stat-label").textContent = label();
+      var pe = document.getElementById("stat-power");
+      pe.textContent = (pw * 100).toFixed(0) + "%";
+      pe.style.color = pw >= 0.8 ? "#22c55e" : pw >= 0.5 ? "#f97316" : "#ef4444";
+      document.getElementById("stat-beta").textContent = ((1 - pw) * 100).toFixed(0) + "%";
+      draw();
+    }
+    document.getElementById("d-range").addEventListener("input", function () { d = this.value / 100; update(); });
+    document.getElementById("n-range").addEventListener("input", function () { n = +this.value; update(); });
+    window.addEventListener("resize", function () { fit(); draw(); });
+    VIZ.onTheme(draw);
+
+    fit(); update();
+  })();
+  </script>
+</body>
+</html>

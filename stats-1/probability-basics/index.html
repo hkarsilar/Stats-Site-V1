@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Probability Basics — hakan.science</title>
+  <meta name="description" content="Probability is long-run frequency. Flip a (possibly biased) coin thousands of times and watch the proportion settle onto the true probability." />
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-1" data-section="probability-basics">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 1.6</span>
+        <h1>Probability Basics</h1>
+
+        <p class="lede">Probability is how we put a number on uncertainty. A probability is just a value between 0 (impossible) and 1 (certain) that says how likely something is. The most useful way to think about it: a probability is the <strong>long-run frequency</strong> of an event if you could repeat the situation over and over.</p>
+
+        <h2>Probability as long-run frequency</h2>
+        <p>Say a coin has a 0.5 chance of heads. That doesn't promise heads on any particular flip, or even 5 heads in 10. It's a statement about the long run: flip it enough times and the <em>proportion</em> of heads will close in on 0.5. This is the <strong>Law of Large Numbers</strong>, and it's the bridge between abstract probability and actual data.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="pbviz">
+          <p class="viz-title">🎮 Law of Large Numbers</p>
+          <p class="viz-sub">Set how biased the coin is, then flip. The jagged line is the running proportion of heads; the dashed line is the true probability it's chasing.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:240px">
+              <label>True P(heads) <span class="val" id="p-val">0.50</span></label>
+              <input type="range" id="p-range" min="0" max="100" step="1" value="50" style="width:100%" />
+            </div>
+            <div class="control"><button class="btn btn-primary btn-sm" id="flip-1">Flip once</button></div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="flip-many">Flip 500</button></div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="reset">Reset</button></div>
+          </div>
+
+          <canvas id="pb-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Flips</span><span class="v" id="stat-flips">0</span></div>
+            <div class="stat"><span class="k">Heads</span><span class="v" id="stat-heads">0</span></div>
+            <div class="stat"><span class="k">Proportion heads</span><span class="v" id="stat-prop">—</span></div>
+            <div class="stat"><span class="k">True probability</span><span class="v" id="stat-true">0.50</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>Two things to notice: early on, the proportion swings wildly — a handful of flips tells you almost nothing. As the flips pile up, the line stops wandering and hugs the true value. (And note: even a "fair" coin spends most of its time slightly off 0.5 — it converges, but it never has to land exactly on it.)</p>
+
+        <h2>A few rules you'll lean on</h2>
+        <ul>
+          <li><strong>Range:</strong> every probability is between 0 and 1, and the probabilities of all possible outcomes sum to 1.</li>
+          <li><strong>Complement:</strong> P(not A) = 1 − P(A). The chance of <em>not</em> rolling a 6 is 1 − 1/6 = 5/6.</li>
+          <li><strong>Independent "and":</strong> if two events don't influence each other, P(A and B) = P(A) × P(B). Two fair coins both heads: ½ × ½ = ¼.</li>
+          <li><strong>Mutually exclusive "or":</strong> if two events can't both happen, P(A or B) = P(A) + P(B). Rolling a 1 or a 2: 1/6 + 1/6 = 1/3.</li>
+        </ul>
+
+        <div class="callout key">
+          <p><strong>Watch out for "independent."</strong> Multiplying only works when events truly don't affect each other. Drawing cards <em>without</em> replacement, or events that share a common cause, break independence — and most real-world probability mistakes come from assuming it when it doesn't hold.</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> every p-value, confidence level, and sampling distribution is a probability statement. "5% of intervals miss" and "p &lt; 0.05" only mean something because of the long-run logic you just watched unfold.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="/assets/js/curriculum.js"></script>
+  <script src="/assets/js/site.js"></script>
+  <script src="/assets/js/viz.js"></script>
+
+  <!-- ============ law-of-large-numbers visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var p = 0.5, flips = 0, heads = 0, hist = [], anim = null;
+    var canvas = document.getElementById("pb-canvas"), ctx, W = 0, H = 220, pad = 30;
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function record() { hist.push(heads / flips); if (hist.length > 3000) hist = hist.filter(function (_, i) { return i % 2 === 0; }); }
+
+    function draw() {
+      var x0 = pad, x1 = W - 10, y0 = 10, y1 = H - 22;
+      ctx.clearRect(0, 0, W, H);
+      // y gridlines at 0, .5, 1
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px ui-monospace, monospace"; ctx.textAlign = "right";
+      [0, 0.5, 1].forEach(function (yv) { var y = y1 - yv * (y1 - y0); ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke(); ctx.fillText(yv.toFixed(1), x0 - 6, y + 3); });
+      // true-probability line
+      var py = y1 - p * (y1 - y0);
+      ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([5, 4]); ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(x0, py); ctx.lineTo(x1, py); ctx.stroke(); ctx.setLineDash([]);
+      // running-proportion line
+      if (hist.length > 1) {
+        ctx.strokeStyle = VIZ.css("--primary"); ctx.lineWidth = 2; ctx.beginPath();
+        for (var i = 0; i < hist.length; i++) { var x = x0 + (i / (hist.length - 1)) * (x1 - x0); var y = y1 - hist[i] * (y1 - y0); if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
+        ctx.stroke();
+      }
+      ctx.textAlign = "center"; ctx.fillStyle = VIZ.css("--text-faint"); ctx.fillText("number of flips →", (x0 + x1) / 2, H - 4);
+    }
+
+    function update() {
+      document.getElementById("stat-flips").textContent = flips;
+      document.getElementById("stat-heads").textContent = heads;
+      document.getElementById("stat-prop").textContent = flips ? (heads / flips).toFixed(3) : "—";
+      document.getElementById("stat-true").textContent = p.toFixed(2);
+      draw();
+    }
+    function one() { flips++; if (Math.random() < p) heads++; record(); }
+    function many(total) { if (anim) cancelAnimationFrame(anim); var a = 0; (function step() { var b = Math.min(15, total - a); for (var i = 0; i < b; i++) one(); a += b; update(); if (a < total) anim = requestAnimationFrame(step); else anim = null; })(); }
+    function reset() { if (anim) { cancelAnimationFrame(anim); anim = null; } flips = 0; heads = 0; hist = []; update(); }
+
+    document.getElementById("p-range").addEventListener("input", function () { p = this.value / 100; document.getElementById("p-val").textContent = p.toFixed(2); reset(); });
+    document.getElementById("flip-1").addEventListener("click", function () { one(); update(); });
+    document.getElementById("flip-many").addEventListener("click", function () { many(500); });
+    document.getElementById("reset").addEventListener("click", reset);
+    window.addEventListener("resize", function () { fit(); draw(); });
+    VIZ.onTheme(draw);
+
+    fit(); update();
+  })();
+  </script>
+</body>
+</html>
