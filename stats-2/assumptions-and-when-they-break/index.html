@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Assumptions & When They Break — hakan.science</title>
+  <meta name="description" content="Every test has fine print. Learn the assumptions behind t-tests and ANOVA, and read a Q-Q plot to diagnose non-normality at a glance." />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-2" data-section="assumptions-and-when-they-break">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 2.5</span>
+        <h1>Assumptions &amp; When They Break</h1>
+
+        <p class="lede">Every test you've met comes with fine print — conditions that must roughly hold for its p-values to mean what they claim. Ignore them and the test still spits out a number; it's just the wrong number. The good news: the main assumptions are few, and most are easy to check by eye.</p>
+
+        <h2>The big three</h2>
+        <ul>
+          <li><strong>Normality</strong> — the data (or, more precisely, the sampling distribution of the mean) is roughly bell-shaped. Thanks to the <a href="../../stats-1/central-limit-theorem/">CLT</a>, this matters less as samples grow.</li>
+          <li><strong>Homogeneity of variance</strong> — the groups you're comparing have similar spread. t-tests and <a href="../../stats-2/one-way-anova/">ANOVA</a> assume it (Welch's versions relax it).</li>
+          <li><strong>Independence</strong> — observations don't influence each other. This is the <em>unforgiving</em> one: no clever correction saves a test when independence is violated by, say, repeated measurements treated as separate people.</li>
+        </ul>
+
+        <h2>Checking normality with a Q-Q plot</h2>
+        <p>A histogram hints at shape, but the sharpest tool is the <strong>Q-Q plot</strong>. It plots your sorted data against the values you'd expect if the data were perfectly normal. <strong>If the points fall on a straight line, the data is normal.</strong> Systematic curves away from the line reveal exactly how it deviates. Switch the underlying distribution below and learn to read the signatures.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="qqviz">
+          <p class="viz-title">🎮 Q-Q Plot Detective</p>
+          <p class="viz-sub">Top: a histogram of the sample. Bottom: its Q-Q plot. Normal data hugs the diagonal; departures tell you what's wrong.</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>Underlying distribution</label>
+              <div class="seg" id="dist-seg">
+                <button data-dist="normal" class="active">Normal</button>
+                <button data-dist="skewed">Skewed</button>
+                <button data-dist="heavy">Heavy tails</button>
+                <button data-dist="bimodal">Bimodal</button>
+              </div>
+            </div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="resample">New sample</button></div>
+          </div>
+
+          <p class="viz-sub" style="margin:.25rem 0">Histogram</p>
+          <canvas id="hist-canvas"></canvas>
+          <p class="viz-sub" style="margin:1rem 0 .25rem">Q-Q plot — sample quantiles vs. normal quantiles</p>
+          <canvas id="qq-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Diagnosis</span><span class="v" id="stat-diag" style="font-size:1rem">—</span></div>
+            <div class="stat"><span class="k">Sample skewness</span><span class="v" id="stat-skew">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <div class="callout key">
+          <p><strong>The Q-Q signatures:</strong> a <em>straight line</em> = normal. An <em>upward-curving arc</em> = right-skewed (a long high tail). An <em>S-shape</em> = heavy tails / outliers (extremes more extreme than normal). A <em>flat step in the middle</em> = bimodal. Once you've seen each a few times, you can diagnose a distribution in a glance.</p>
+        </div>
+
+        <h2>How much do violations matter?</h2>
+        <p>Not all violations are equal. t-tests and ANOVA are surprisingly <strong>robust to mild non-normality</strong>, especially with larger samples — the CLT does the heavy lifting. They're more sensitive to <strong>very unequal variances</strong> (use Welch's correction) and badly thrown off by <strong>outliers</strong> in small samples. And nothing rescues violated <strong>independence</strong> — that one you fix in the study design, not the analysis.</p>
+
+        <h2>When an assumption really is broken</h2>
+        <ul>
+          <li><strong>Transform</strong> the data (a log transform often tames right-skew).</li>
+          <li>Use a <strong>robust</strong> variant (Welch's t, trimmed means).</li>
+          <li>Switch to a <a href="../../stats-2/non-parametric-alternatives/">non-parametric test</a> that makes no normality assumption at all.</li>
+        </ul>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> checking assumptions is the difference between a result you can trust and a number that merely looks official. A 10-second glance at a Q-Q plot and a residual plot prevents a lot of embarrassing conclusions.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ Q-Q plot visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var dist = "normal", n = 90, data = [];
+    var gens = {
+      normal: function () { return VIZ.gauss(0, 1); },
+      skewed: function () { return Math.exp(VIZ.gauss(0, 0.6)) - 1; },
+      heavy: function () { return VIZ.gauss(0, 1) + (Math.random() < 0.12 ? VIZ.gauss(0, 4) : 0); },
+      bimodal: function () { return VIZ.gauss(Math.random() < 0.5 ? -2 : 2, 0.55); }
+    };
+    function resample() { data = []; for (var i = 0; i < n; i++) data.push(gens[dist]()); update(); }
+
+    function skewness(a) {
+      var m = VIZ.mean(a), s = VIZ.sd(a), sum = 0;
+      for (var i = 0; i < a.length; i++) sum += Math.pow((a[i] - m) / s, 3);
+      return sum / a.length;
+    }
+
+    var hc, qc;
+    function fit() { hc = VIZ.fit(document.getElementById("hist-canvas"), 120); qc = VIZ.fit(document.getElementById("qq-canvas"), 200); }
+
+    function drawHist() {
+      var ctx = hc.ctx, W = hc.w, H = hc.h, baseY = H - 6, bins = 26;
+      ctx.clearRect(0, 0, W, H);
+      var lo = Math.min.apply(null, data), hi = Math.max.apply(null, data), bw = (hi - lo) / bins || 1;
+      var counts = new Array(bins).fill(0);
+      for (var i = 0; i < data.length; i++) { var b = Math.floor((data[i] - lo) / bw); if (b >= bins) b = bins - 1; if (b >= 0) counts[b]++; }
+      var max = Math.max.apply(null, counts) || 1, bwPx = W / bins;
+      ctx.fillStyle = VIZ.css("--primary");
+      for (var k = 0; k < bins; k++) { if (!counts[k]) continue; var bh = (counts[k] / max) * (H - 12); ctx.globalAlpha = 0.85; ctx.fillRect(k * bwPx + 0.5, baseY - bh, bwPx - 1, bh); }
+      ctx.globalAlpha = 1; ctx.strokeStyle = VIZ.css("--border"); ctx.beginPath(); ctx.moveTo(0, baseY); ctx.lineTo(W, baseY); ctx.stroke();
+    }
+
+    function drawQQ() {
+      var ctx = qc.ctx, W = qc.w, H = qc.h, pad = 24;
+      ctx.clearRect(0, 0, W, H);
+      var sorted = data.slice().sort(function (a, b) { return a - b; });
+      var m = VIZ.mean(data), s = VIZ.sd(data);
+      var tq = sorted.map(function (_, i) { return VIZ.normInv((i + 0.5) / n); });
+      var ymin = sorted[0], ymax = sorted[n - 1];
+      function px(z) { return pad + ((z + 3) / 6) * (W - 2 * pad); }
+      function py(v) { return (H - pad) - ((v - ymin) / (ymax - ymin || 1)) * (H - 2 * pad); }
+      // reference line y = m + s*z
+      ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([5, 4]); ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(px(-3), py(m - 3 * s)); ctx.lineTo(px(3), py(m + 3 * s)); ctx.stroke(); ctx.setLineDash([]);
+      // points
+      ctx.fillStyle = VIZ.css("--primary"); ctx.globalAlpha = 0.75;
+      for (var i = 0; i < n; i++) { ctx.beginPath(); ctx.arc(px(tq[i]), py(sorted[i]), 3, 0, 2 * Math.PI); ctx.fill(); }
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px Inter,sans-serif"; ctx.textAlign = "center";
+      ctx.fillText("normal quantiles →", W / 2, H - 6);
+    }
+
+    function update() {
+      drawHist(); drawQQ();
+      var sk = skewness(data);
+      document.getElementById("stat-skew").textContent = (sk >= 0 ? "+" : "") + sk.toFixed(2);
+      var diag = document.getElementById("stat-diag"), labels = {
+        normal: ["looks normal ✓", "#22c55e"], skewed: ["right-skewed (arc)", "#f97316"],
+        heavy: ["heavy tails / outliers (S)", "#f97316"], bimodal: ["bimodal (flat step)", "#f97316"]
+      };
+      diag.textContent = labels[dist][0]; diag.style.color = labels[dist][1];
+    }
+
+    document.getElementById("dist-seg").addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; dist = b.dataset.dist; Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x.dataset.dist === dist); }); resample(); });
+    document.getElementById("resample").addEventListener("click", resample);
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(update);
+    fit(); resample();
+  })();
+  </script>
+</body>
+</html>

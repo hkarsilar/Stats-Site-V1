@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Non-Parametric Alternatives — hakan.science</title>
+  <meta name="description" content="Rank-based tests work on order, not raw values, so one wild outlier can't hijack them. Drag an outlier and watch the t-test panic while Mann-Whitney stays calm." />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-2" data-section="non-parametric-alternatives">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 2.6</span>
+        <h1>Non-Parametric Alternatives</h1>
+
+        <p class="lede">When the <a href="../../stats-2/assumptions-and-when-they-break/">assumptions</a> behind a t-test or ANOVA don't hold — heavy skew, nasty outliers, tiny samples — you don't have to give up. <strong>Non-parametric tests</strong> throw away the raw numbers and work with their <em>ranks</em> instead. That one move makes them remarkably tough.</p>
+
+        <h2>The trick: rank, don't measure</h2>
+        <p>Most parametric tests care about <em>how far apart</em> values are. Rank-based tests only care about <em>order</em> — who's bigger than whom. Replace the numbers <code>[2, 5, 9, 400]</code> with their ranks <code>[1, 2, 3, 4]</code> and that monstrous 400 becomes just "the biggest one." Its ability to distort the result evaporates. That's why non-parametric tests are so robust to outliers and skew.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="npviz">
+          <p class="viz-title">🎮 Outlier Stress Test</p>
+          <p class="viz-sub">Two small groups. Drag one of group 2's points out to an extreme and watch the two p-values diverge: the t-test lurches, the rank-based Mann-Whitney barely flinches.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:280px">
+              <label>Position of the highlighted point <span class="val" id="out-val">62</span></label>
+              <input type="range" id="out-range" min="40" max="100" step="1" value="62" style="width:100%" />
+            </div>
+          </div>
+
+          <canvas id="np-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k" style="color:#f97316">t-test p-value</span><span class="v" id="stat-tp">—</span></div>
+            <div class="stat"><span class="k" style="color:var(--primary)">Mann-Whitney p-value</span><span class="v" id="stat-up">—</span></div>
+            <div class="stat"><span class="k">t-test verdict</span><span class="v" id="stat-td" style="font-size:.95rem">—</span></div>
+            <div class="stat"><span class="k">Mann-Whitney verdict</span><span class="v" id="stat-ud" style="font-size:.95rem">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>Notice the asymmetry. As the point rockets upward, it inflates group 2's mean <em>and</em> its variance at the same time, yanking the t-statistic around — sometimes the t-test even <em>loses</em> significance because the variance blew up. The Mann-Whitney test? The point was already the highest; making it higher changes no ranks, so its p-value holds rock-steady.</p>
+
+        <h2>The non-parametric toolkit</h2>
+        <p>For most parametric tests there's a rank-based counterpart:</p>
+        <ul>
+          <li><strong>Mann-Whitney U</strong> (a.k.a. Wilcoxon rank-sum) — replaces the <a href="../../stats-1/independent-samples-t-test/">independent-samples t-test</a>.</li>
+          <li><strong>Wilcoxon signed-rank</strong> — replaces the <a href="../../stats-1/one-sample-and-paired-t-tests/">paired t-test</a>.</li>
+          <li><strong>Kruskal-Wallis</strong> — replaces <a href="../../stats-2/one-way-anova/">one-way ANOVA</a>.</li>
+          <li><strong>Spearman's ρ</strong> — a rank-based <a href="../../stats-2/correlation/">correlation</a>, robust to outliers and curved-but-monotonic relationships.</li>
+        </ul>
+
+        <h2>The trade-off</h2>
+        <div class="callout key">
+          <p><strong>Robustness isn't free.</strong> When the data <em>are</em> well-behaved and normal, the parametric test has slightly more <a href="../../stats-1/effect-size-and-power/">power</a> — by discarding the magnitudes, rank tests leave a little information on the table. The rule of thumb: use parametric tests when assumptions hold, and reach for non-parametric ones when they clearly don't (small samples, heavy skew, ordinal data, or outliers you can't explain away).</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> real data is messy — Likert scales, reaction times, income, anything with a few extreme values. Non-parametric tests give you a trustworthy answer exactly when the textbook assumptions fall apart.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ rank-robustness visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var A = [44, 47, 49, 51, 52, 55], Bbase = [50, 53, 56, 58, 60], outlier = 62;
+    var LO = 38, HI = 102;
+    var canvas = document.getElementById("np-canvas"), ctx, W = 0, H = 150;
+
+    function groupB() { return Bbase.concat([outlier]); }
+
+    function tTest() {
+      var B = groupB(), nA = A.length, nB = B.length;
+      var mA = VIZ.mean(A), mB = VIZ.mean(B);
+      var vA = A.reduce(function (s, v) { return s + (v - mA) * (v - mA); }, 0) / (nA - 1);
+      var vB = B.reduce(function (s, v) { return s + (v - mB) * (v - mB); }, 0) / (nB - 1);
+      var sp = Math.sqrt(((nA - 1) * vA + (nB - 1) * vB) / (nA + nB - 2));
+      var se = sp * Math.sqrt(1 / nA + 1 / nB), t = (mB - mA) / se, df = nA + nB - 2;
+      var p = VIZ.betai(df / 2, 0.5, df / (df + t * t));   // exact two-tailed t p-value
+      return { t: t, p: p };
+    }
+    function mannWhitney() {
+      var B = groupB(), nA = A.length, nB = B.length;
+      var all = A.map(function (v) { return { v: v, g: 0 }; }).concat(B.map(function (v) { return { v: v, g: 1 }; }));
+      all.sort(function (x, y) { return x.v - y.v; });
+      var rA = 0;
+      for (var i = 0; i < all.length; i++) if (all[i].g === 0) rA += i + 1;   // ranks (no ties in continuous data)
+      var U = rA - nA * (nA + 1) / 2;
+      var mu = nA * nB / 2, sig = Math.sqrt(nA * nB * (nA + nB + 1) / 12);
+      var z = (U - mu) / sig, p = 2 * VIZ.normCdf(-Math.abs(z));
+      return { U: U, p: p };
+    }
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function vx(v) { return 16 + ((v - LO) / (HI - LO)) * (W - 32); }
+    function strip(arr, y, color, highlightLast) {
+      ctx.fillStyle = color;
+      for (var i = 0; i < arr.length; i++) {
+        var r = (highlightLast && i === arr.length - 1) ? 6 : 4;
+        ctx.globalAlpha = (highlightLast && i === arr.length - 1) ? 1 : 0.7;
+        ctx.beginPath(); ctx.arc(vx(arr[i]), y, r, 0, 2 * Math.PI); ctx.fill();
+        if (highlightLast && i === arr.length - 1) { ctx.globalAlpha = 1; ctx.strokeStyle = VIZ.css("--text"); ctx.lineWidth = 2; ctx.stroke(); }
+      }
+      ctx.globalAlpha = 1;
+      var m = VIZ.mean(arr), mx = vx(m);
+      ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(mx, y - 22); ctx.lineTo(mx, y + 22); ctx.stroke();
+    }
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center";
+      for (var t = 40; t <= 100; t += 20) { var x = vx(t); ctx.globalAlpha = 0.4; ctx.beginPath(); ctx.moveTo(x, 12); ctx.lineTo(x, H - 14); ctx.stroke(); ctx.globalAlpha = 1; ctx.fillText(t, x, H - 2); }
+      strip(A, H * 0.34, VIZ.css("--secondary"), false);
+      strip(groupB(), H * 0.66, "#f97316", true);
+      ctx.fillStyle = VIZ.css("--secondary"); ctx.textAlign = "left"; ctx.font = "600 11px Inter,sans-serif"; ctx.fillText("group 1", 8, H * 0.34 - 26);
+      ctx.fillStyle = "#f97316"; ctx.fillText("group 2 (drag the ringed point)", 8, H * 0.66 - 26);
+    }
+
+    function update() {
+      var tt = tTest(), mw = mannWhitney();
+      document.getElementById("out-val").textContent = outlier;
+      document.getElementById("stat-tp").textContent = tt.p < 0.001 ? "< 0.001" : tt.p.toFixed(3);
+      document.getElementById("stat-up").textContent = mw.p < 0.001 ? "< 0.001" : mw.p.toFixed(3);
+      var td = document.getElementById("stat-td"), ud = document.getElementById("stat-ud");
+      td.textContent = tt.p < 0.05 ? "significant" : "not significant"; td.style.color = tt.p < 0.05 ? "#22c55e" : VIZ.css("--text-muted");
+      ud.textContent = mw.p < 0.05 ? "significant" : "not significant"; ud.style.color = mw.p < 0.05 ? "#22c55e" : VIZ.css("--text-muted");
+      draw();
+    }
+
+    document.getElementById("out-range").addEventListener("input", function () { outlier = +this.value; update(); });
+    window.addEventListener("resize", function () { fit(); draw(); });
+    VIZ.onTheme(draw);
+    fit(); update();
+  })();
+  </script>
+</body>
+</html>
