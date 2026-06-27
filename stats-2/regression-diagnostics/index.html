@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Regression Diagnostics — hakan.science</title>
+  <meta name="description" content="A regression line can fit the numbers and still be wrong. Learn to read residual plots to catch nonlinearity, non-constant variance, and influential outliers." />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-2" data-section="regression-diagnostics">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 2.10</span>
+        <h1>Regression Diagnostics</h1>
+
+        <p class="lede">You can fit a <a href="../../stats-2/simple-linear-regression/">regression line</a> to literally any cloud of points and get a slope, an intercept, and an R². None of that tells you whether a straight line was the <em>right</em> model. For that, you don't look at the line — you look at what it leaves behind: the <strong>residuals</strong>.</p>
+
+        <h2>The residual plot</h2>
+        <p>A residual is the gap between an actual point and the line's prediction. Plot the residuals against the fitted values and you get a diagnostic X-ray of your model. The thing you want to see is <strong>nothing</strong> — a formless, random cloud centered on zero. Any <em>pattern</em> in the residuals is the model telling you it missed something.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="rdviz">
+          <p class="viz-title">🎮 Residual Plot Reader</p>
+          <p class="viz-sub">Top: data with the least-squares line. Bottom: residuals vs. fitted values. Switch the scenario and learn each tell-tale shape.</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>Scenario</label>
+              <div class="seg" id="scen-seg">
+                <button data-s="good" class="active">Healthy</button>
+                <button data-s="curve">Nonlinear</button>
+                <button data-s="funnel">Non-constant variance</button>
+                <button data-s="outlier">Influential outlier</button>
+              </div>
+            </div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="resample">New sample</button></div>
+          </div>
+
+          <p class="viz-sub" style="margin:.25rem 0">Data &amp; fitted line</p>
+          <canvas id="scatter-canvas"></canvas>
+          <p class="viz-sub" style="margin:1rem 0 .25rem">Residuals vs. fitted (you want a shapeless cloud around zero)</p>
+          <canvas id="resid-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Diagnosis</span><span class="v" id="stat-diag" style="font-size:1rem">—</span></div>
+            <div class="stat"><span class="k">R²</span><span class="v" id="stat-r2">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <div class="callout key">
+          <p><strong>The residual signatures:</strong> a <em>shapeless cloud</em> = healthy. A <em>curve / U-shape</em> = the true relationship is nonlinear (a straight line is wrong — add a curve term). A <em>fan or funnel</em> = non-constant variance (heteroscedasticity), which breaks the standard errors. A <em>lone point far from the rest</em> = an influential outlier that may be single-handedly tilting the line.</p>
+        </div>
+
+        <h2>The four things to check</h2>
+        <ul>
+          <li><strong>Linearity</strong> — the residual cloud has no curve. If it bends, the relationship isn't a straight line.</li>
+          <li><strong>Constant variance</strong> — the vertical spread of residuals is the same all the way across. A funnel means it isn't.</li>
+          <li><strong>Normal residuals</strong> — best checked with a <a href="../../stats-2/assumptions-and-when-they-break/">Q-Q plot</a> of the residuals; matters most for small samples.</li>
+          <li><strong>Influential points</strong> — no single observation should dominate. High-leverage outliers can swing the slope dramatically; flag them with measures like Cook's distance.</li>
+        </ul>
+
+        <h2>What to do about it</h2>
+        <p>A curved pattern? Transform a variable or add a polynomial/nonlinear term. A funnel? Transform the outcome (logs often help) or use robust/weighted standard errors. An influential outlier? Investigate it — is it a data-entry error, or a real-but-rare case? — and report the fit with and without it.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> a high R² on a mis-specified model is a confident wrong answer. Residual plots are the cheapest insurance in all of statistics — a few seconds of looking saves you from trusting a model that doesn't fit. This habit carries straight into <a href="../../stats-3/multiple-regression/">multiple regression</a>.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ regression-diagnostics visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var scen = "good", pts = [], fit0 = 0, fit1 = 0, r2 = 0;
+    var DMIN = 0, DMAX = 10;
+    var sc, rc;
+
+    function gen() {
+      pts = [];
+      var npts = 40;
+      for (var i = 0; i < npts; i++) {
+        var x = 0.4 + Math.random() * 9.2, y;
+        if (scen === "good") y = 2 + 0.7 * x + VIZ.gauss(0, 0.9);
+        else if (scen === "curve") y = 1 + 0.18 * (x - 5) * (x - 5) + VIZ.gauss(0, 0.7);
+        else if (scen === "funnel") y = 2 + 0.7 * x + VIZ.gauss(0, 0.25 + 0.32 * x);
+        else y = 2 + 0.7 * x + VIZ.gauss(0, 0.8);
+        pts.push({ x: x, y: y });
+      }
+      if (scen === "outlier") pts.push({ x: 9.3, y: 1.0 });   // high-leverage point pulling the line down
+      // OLS
+      var mx = VIZ.mean(pts.map(function (p) { return p.x; })), my = VIZ.mean(pts.map(function (p) { return p.y; }));
+      var sxy = 0, sxx = 0, syy = 0;
+      pts.forEach(function (p) { sxy += (p.x - mx) * (p.y - my); sxx += (p.x - mx) * (p.x - mx); syy += (p.y - my) * (p.y - my); });
+      fit1 = sxy / sxx; fit0 = my - fit1 * mx; r2 = (sxy * sxy) / (sxx * syy);
+      update();
+    }
+    function fitc() { sc = VIZ.fit(document.getElementById("scatter-canvas"), 170); rc = VIZ.fit(document.getElementById("resid-canvas"), 150); }
+
+    function bounds(getter) { var vs = pts.map(getter); return { lo: Math.min.apply(null, vs), hi: Math.max.apply(null, vs) }; }
+
+    function drawScatter() {
+      var ctx = sc.ctx, W = sc.w, H = sc.h, pad = 16;
+      ctx.clearRect(0, 0, W, H);
+      var yb = bounds(function (p) { return p.y; }), ylo = yb.lo - 1, yhi = yb.hi + 1;
+      function px(x) { return pad + (x / DMAX) * (W - 2 * pad); }
+      function py(y) { return (H - pad) - ((y - ylo) / (yhi - ylo)) * (H - 2 * pad); }
+      ctx.strokeStyle = VIZ.css("--border"); ctx.strokeRect(pad, pad, W - 2 * pad, H - 2 * pad);
+      // fitted line
+      ctx.strokeStyle = VIZ.css("--primary"); ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(px(DMIN), py(fit0 + fit1 * DMIN)); ctx.lineTo(px(DMAX), py(fit0 + fit1 * DMAX)); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--secondary");
+      pts.forEach(function (p) { ctx.beginPath(); ctx.arc(px(p.x), py(p.y), 4, 0, 2 * Math.PI); ctx.fill(); });
+    }
+    function drawResid() {
+      var ctx = rc.ctx, W = rc.w, H = rc.h, pad = 16;
+      ctx.clearRect(0, 0, W, H);
+      var resid = pts.map(function (p) { return { f: fit0 + fit1 * p.x, r: p.y - (fit0 + fit1 * p.x) }; });
+      var fb = { lo: Math.min.apply(null, resid.map(function (z) { return z.f; })), hi: Math.max.apply(null, resid.map(function (z) { return z.f; })) };
+      var rmax = Math.max.apply(null, resid.map(function (z) { return Math.abs(z.r); })) * 1.15 || 1;
+      function px(f) { return pad + ((f - fb.lo) / (fb.hi - fb.lo || 1)) * (W - 2 * pad); }
+      function py(r) { return H / 2 - (r / rmax) * (H / 2 - pad); }
+      ctx.strokeStyle = VIZ.css("--border"); ctx.strokeRect(pad, pad, W - 2 * pad, H - 2 * pad);
+      ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([5, 4]); ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(pad, py(0)); ctx.lineTo(W - pad, py(0)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = "#f97316";
+      resid.forEach(function (z) { ctx.beginPath(); ctx.arc(px(z.f), py(z.r), 4, 0, 2 * Math.PI); ctx.fill(); });
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px Inter,sans-serif"; ctx.textAlign = "center";
+      ctx.fillText("fitted value →", W / 2, H - 4);
+    }
+    function update() {
+      drawScatter(); drawResid();
+      var labels = { good: ["healthy — random cloud ✓", "#22c55e"], curve: ["nonlinear — residuals curve", "#f97316"], funnel: ["non-constant variance — funnel", "#f97316"], outlier: ["influential outlier present", "#f97316"] };
+      var d = document.getElementById("stat-diag"); d.textContent = labels[scen][0]; d.style.color = labels[scen][1];
+      document.getElementById("stat-r2").textContent = r2.toFixed(2);
+    }
+
+    document.getElementById("scen-seg").addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; scen = b.dataset.s; Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x.dataset.s === scen); }); gen(); });
+    document.getElementById("resample").addEventListener("click", gen);
+    window.addEventListener("resize", function () { fitc(); update(); });
+    VIZ.onTheme(update);
+    fitc(); gen();
+  })();
+  </script>
+</body>
+</html>

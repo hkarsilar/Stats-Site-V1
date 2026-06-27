@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chi-Square Tests — hakan.science</title>
+  <meta name="description" content="Chi-square tests work on counts, not means. Adjust a contingency table and watch observed counts pull away from what independence predicts — driving chi-square up and p down." />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-2" data-section="chi-square-tests">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 2.7</span>
+        <h1>Chi-Square Tests</h1>
+
+        <p class="lede">Everything so far has compared <em>means</em> of numeric data. But what about <strong>counts</strong> — how many people picked option A vs. B, recovered vs. didn't, voted left vs. right? The <strong>chi-square (χ²) test</strong> works with frequencies in categories, and its most common job is asking: are two categorical variables <strong>associated</strong>, or independent?</p>
+
+        <h2>Observed vs. expected</h2>
+        <p>The whole test rests on one comparison. You have the <strong>observed</strong> counts — what actually happened. Then you compute the <strong>expected</strong> counts — what you'd see if the two variables were completely unrelated (each cell's expected count is just its row total × column total ÷ grand total). The bigger the gap between observed and expected, the more evidence of a real association:</p>
+        <p style="text-align:center;font-size:1.15rem;margin:1.25rem 0"><strong>χ² = Σ (observed − expected)² / expected</strong></p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="chiviz">
+          <p class="viz-title">🎮 Contingency Table Explorer</p>
+          <p class="viz-sub">A treatment trial. Each bar shows the recovery split for one group. When the two splits match the dashed "no-association" line, χ² is tiny. Pull them apart and watch χ² climb.</p>
+
+          <canvas id="chi-canvas"></canvas>
+
+          <div class="controls" style="margin-top:.75rem">
+            <div class="control"><label style="color:var(--primary)">Treatment · recovered <span class="val" id="va">45</span></label><input type="range" id="a" min="2" max="120" step="1" value="45" /></div>
+            <div class="control"><label>Treatment · did not <span class="val" id="vb">20</span></label><input type="range" id="b" min="2" max="120" step="1" value="20" /></div>
+            <div class="control"><label style="color:var(--primary)">Placebo · recovered <span class="val" id="vc">25</span></label><input type="range" id="c" min="2" max="120" step="1" value="25" /></div>
+            <div class="control"><label>Placebo · did not <span class="val" id="vd">40</span></label><input type="range" id="d" min="2" max="120" step="1" value="40" /></div>
+          </div>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">χ² statistic</span><span class="v" id="stat-chi">—</span></div>
+            <div class="stat"><span class="k">Degrees of freedom</span><span class="v" id="stat-df">1</span></div>
+            <div class="stat"><span class="k">p-value</span><span class="v" id="stat-p">—</span></div>
+            <div class="stat"><span class="k">Association?</span><span class="v" id="stat-dec" style="font-size:1rem">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Reading the result</h2>
+        <p>The degrees of freedom for a table are (rows − 1) × (columns − 1) — just 1 for our 2×2. A χ² statistic far from zero, with p &lt; 0.05, means the observed counts would be surprising if the variables were truly independent — so you conclude they're <strong>associated</strong>. In the trial: treatment and recovery are related.</p>
+        <div class="callout key">
+          <p><strong>Association, not amount.</strong> Like <a href="../../stats-2/correlation/">correlation</a>, a significant χ² tells you a relationship exists, not how strong it is. For strength, report an effect size such as <em>Cramér's V</em> or the odds ratio alongside the test.</p>
+        </div>
+
+        <h2>Two flavors of chi-square</h2>
+        <ul>
+          <li><strong>Test of independence</strong> — the one above: are two categorical variables related? (Treatment × outcome, gender × preference.)</li>
+          <li><strong>Goodness-of-fit</strong> — does one categorical variable match an expected distribution? (Is this die fair? Do customers pick the four flavors equally?)</li>
+        </ul>
+
+        <h2>What you're assuming</h2>
+        <ul>
+          <li>Counts are <strong>independent</strong> — each observation falls in exactly one cell, and one person's category doesn't affect another's.</li>
+          <li><strong>Expected counts are large enough</strong> — a common rule is every expected count ≥ 5. For small 2×2 tables, use Yates' continuity correction or <strong>Fisher's exact test</strong> instead.</li>
+        </ul>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> survey responses, A/B test conversions, medical outcomes, demographic breakdowns — categorical data is everywhere, and chi-square is the workhorse for testing whether the categories hang together.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ chi-square contingency visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var ids = ["a", "b", "c", "d"];
+    var canvas = document.getElementById("chi-canvas"), ctx, W = 0, H = 150, padL = 70, padR = 60;
+    function val(id) { return +document.getElementById(id).value; }
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+
+    function draw() {
+      var a = val("a"), b = val("b"), c = val("c"), d = val("d");
+      var n1 = a + b, n2 = c + d, N = a + b + c + d, overall = (a + c) / N;
+      ctx.clearRect(0, 0, W, H);
+      var x0 = padL, x1 = W - padR, barW = x1 - x0;
+      function bar(y, recov, tot, label) {
+        var p = recov / tot, split = x0 + p * barW;
+        ctx.fillStyle = VIZ.css("--primary"); ctx.globalAlpha = 0.85; ctx.fillRect(x0, y, split - x0, 30);
+        ctx.fillStyle = VIZ.css("--surface-2"); ctx.globalAlpha = 1; ctx.fillRect(split, y, x1 - split, 30);
+        ctx.strokeStyle = VIZ.css("--border"); ctx.strokeRect(x0, y, barW, 30);
+        ctx.fillStyle = VIZ.css("--text"); ctx.font = "600 12px Inter,sans-serif"; ctx.textAlign = "right";
+        ctx.fillText(label, x0 - 8, y + 19);
+        ctx.textAlign = "left"; ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px ui-monospace,monospace";
+        ctx.fillText((p * 100).toFixed(0) + "%", x1 + 6, y + 19);
+      }
+      bar(28, a, n1, "Treatment");
+      bar(86, c, n2, "Placebo");
+      // overall (expected) split line
+      var ex = x0 + overall * barW;
+      ctx.strokeStyle = "#f97316"; ctx.setLineDash([5, 4]); ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(ex, 18); ctx.lineTo(ex, 128); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = "#f97316"; ctx.textAlign = "center"; ctx.font = "10px Inter,sans-serif";
+      ctx.fillText("no-association split", ex, 12);
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px Inter,sans-serif"; ctx.textAlign = "left";
+      ctx.fillText("■ recovered", x0, H - 4);
+
+      // chi-square
+      var ea = n1 * (a + c) / N, eb = n1 * (b + d) / N, ec = n2 * (a + c) / N, ed = n2 * (b + d) / N;
+      var chi = (a - ea) * (a - ea) / ea + (b - eb) * (b - eb) / eb + (c - ec) * (c - ec) / ec + (d - ed) * (d - ed) / ed;
+      var p = VIZ.chiSqUpper(chi, 1);
+      ids.forEach(function (id) { document.getElementById("v" + id).textContent = val(id); });
+      document.getElementById("stat-chi").textContent = chi.toFixed(2);
+      document.getElementById("stat-p").textContent = p < 0.001 ? "< 0.001" : p.toFixed(3);
+      var dec = document.getElementById("stat-dec");
+      dec.textContent = p < 0.05 ? "Yes — associated" : "No — independent";
+      dec.style.color = p < 0.05 ? "#22c55e" : VIZ.css("--text");
+    }
+
+    ids.forEach(function (id) { document.getElementById(id).addEventListener("input", draw); });
+    window.addEventListener("resize", function () { fit(); draw(); });
+    VIZ.onTheme(draw);
+    fit(); draw();
+  })();
+  </script>
+</body>
+</html>
