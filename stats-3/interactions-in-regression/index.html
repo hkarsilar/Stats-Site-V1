@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Interactions in Regression — hakan.science</title>
+  <meta name="description" content="An interaction term lets the slope of one predictor depend on another. Slide the interaction and watch two regression lines go from parallel to fanning to crossing." />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-3" data-section="interactions-in-regression">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 3.4</span>
+        <h1>Interactions in Regression</h1>
+
+        <p class="lede">Sometimes the effect of one predictor <em>depends on</em> another. A training program might help beginners a lot and experts barely at all; a drug's benefit might grow with the dose only for younger patients. The <a href="../../stats-2/factorial-anova-two-way/">factorial-ANOVA interaction</a> idea lives in regression too — through an <strong>interaction term</strong>.</p>
+
+        <h2>Adding a product term</h2>
+        <p>A model with two predictors and their interaction looks like this:</p>
+        <p style="text-align:center;font-size:1.1rem;margin:1.2rem 0"><strong>ŷ = b₀ + b₁·x + b₂·group + b₃·(x × group)</strong></p>
+        <p>That last term — the <em>product</em> of the two predictors — is the whole trick. Its coefficient <strong>b₃ measures how much the slope of x changes between groups</strong>. If b₃ = 0, both groups share one slope (the lines are parallel — just a level difference). If b₃ ≠ 0, the groups have <em>different slopes</em>: x matters more for one than the other.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="ixviz">
+          <p class="viz-title">🎮 The Interaction Term Tilts the Lines</p>
+          <p class="viz-sub">Two groups, one continuous predictor x. Slide the interaction: at zero the lines are parallel; turn it up and the orange group's slope pulls away from the blue group's.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:300px">
+              <label>Interaction coefficient b₃ <span class="val" id="b3-val">0.0</span></label>
+              <input type="range" id="b3-range" min="-150" max="150" step="1" value="0" style="width:100%" />
+            </div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="resample">New sample</button></div>
+          </div>
+
+          <canvas id="ix-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k" style="color:var(--primary)">Group 1 slope</span><span class="v" id="stat-s1">—</span></div>
+            <div class="stat"><span class="k" style="color:#f97316">Group 2 slope</span><span class="v" id="stat-s2">—</span></div>
+            <div class="stat"><span class="k">Interaction b₃</span><span class="v" id="stat-b3">—</span></div>
+            <div class="stat"><span class="k">Effect of x…</span><span class="v" id="stat-msg" style="font-size:1rem">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Why the main effects get tricky</h2>
+        <p>When an interaction is present, the "main effect" of x is no longer a single number — it's different in each group, so quoting one average slope can be misleading. With a product term in the model, <strong>b₁ becomes the slope of x specifically when group = 0</strong> (the reference), not an overall effect. This is the #1 source of confusion in interpreting interaction models.</p>
+        <div class="callout key">
+          <p><strong>Center your predictors.</strong> Interpreting interactions is far easier when continuous predictors are mean-centered first. Then b₁ and b₂ read as effects "at the average" of the other variable, instead of at the often-meaningless value of zero. It also reduces <a href="../../stats-3/multicollinearity-and-variable-selection/">multicollinearity</a> between the predictors and their product.</p>
+        </div>
+
+        <h2>Continuous × continuous interactions</h2>
+        <p>Interactions aren't just for groups. Two continuous predictors can interact too — the effect of advertising spend on sales might depend on the season. These are harder to picture (the "lines" become a tilted surface), so we usually probe them with <strong>simple slopes</strong>: plot the effect of x at a few representative values of the moderator (say, low / medium / high), exactly as we did with two groups here.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> "it depends" is one of the most honest and useful things data can tell you, and interactions are how you say it rigorously. They're essential whenever an effect isn't one-size-fits-all — which is most of the time.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ interaction visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var b3 = 0, base1 = [], base2 = [];
+    var BASE_SLOPE = 0.5, LO = 0, HI = 100;
+    var canvas = document.getElementById("ix-canvas"), ctx, W = 0, H = 280, pad = 26;
+    var COL = ["#6366f1", "#f97316"];
+
+    function gen() {
+      base1 = []; base2 = [];
+      for (var i = 0; i < 22; i++) { var x = 5 + Math.random() * 90; base1.push({ x: x, n: VIZ.gauss(0, 6) }); }
+      for (var j = 0; j < 22; j++) { var x2 = 5 + Math.random() * 90; base2.push({ x: x2, n: VIZ.gauss(0, 6) }); }
+      update();
+    }
+    // group1: y = 30 + BASE_SLOPE*x ; group2: y = 30 + (BASE_SLOPE + b3)*x  (level matched at x=0)
+    function y1(x) { return 30 + BASE_SLOPE * x; }
+    function y2(x) { return 30 + (BASE_SLOPE + b3) * x; }
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function vx(x) { return pad + ((x - LO) / (HI - LO)) * (W - 2 * pad); }
+    function vy(y) { return (H - pad) - ((y - LO) / (HI - LO)) * (H - 2 * pad); }
+
+    function update() {
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = VIZ.css("--border"); ctx.strokeRect(pad, pad, W - 2 * pad, H - 2 * pad);
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px Inter,sans-serif"; ctx.textAlign = "center"; ctx.fillText("x →", W / 2, H - 6);
+      // points
+      ctx.fillStyle = COL[0]; ctx.globalAlpha = 0.6; base1.forEach(function (p) { ctx.beginPath(); ctx.arc(vx(p.x), vy(y1(p.x) + p.n), 4, 0, 2 * Math.PI); ctx.fill(); });
+      ctx.fillStyle = COL[1]; base2.forEach(function (p) { ctx.beginPath(); ctx.arc(vx(p.x), vy(y2(p.x) + p.n), 4, 0, 2 * Math.PI); ctx.fill(); });
+      ctx.globalAlpha = 1;
+      // lines (clipped)
+      ctx.save(); ctx.beginPath(); ctx.rect(pad, pad, W - 2 * pad, H - 2 * pad); ctx.clip();
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = COL[0]; ctx.beginPath(); ctx.moveTo(vx(LO), vy(y1(LO))); ctx.lineTo(vx(HI), vy(y1(HI))); ctx.stroke();
+      ctx.strokeStyle = COL[1]; ctx.beginPath(); ctx.moveTo(vx(LO), vy(y2(LO))); ctx.lineTo(vx(HI), vy(y2(HI))); ctx.stroke();
+      ctx.restore();
+      ctx.textAlign = "left"; ctx.font = "600 11px Inter,sans-serif";
+      ctx.fillStyle = COL[0]; ctx.fillText("group 1", pad + 6, pad + 14); ctx.fillStyle = COL[1]; ctx.fillText("group 2", pad + 6, pad + 28);
+
+      var s1 = BASE_SLOPE, s2 = BASE_SLOPE + b3;
+      document.getElementById("b3-val").textContent = b3.toFixed(2);
+      document.getElementById("stat-s1").textContent = s1.toFixed(2);
+      document.getElementById("stat-s2").textContent = s2.toFixed(2);
+      document.getElementById("stat-b3").textContent = (b3 >= 0 ? "+" : "") + b3.toFixed(2);
+      var msg = document.getElementById("stat-msg");
+      if (Math.abs(b3) < 0.05) { msg.textContent = "same in both groups"; msg.style.color = VIZ.css("--text"); }
+      else { msg.textContent = "depends on the group"; msg.style.color = "#f97316"; }
+    }
+
+    document.getElementById("b3-range").addEventListener("input", function () { b3 = this.value / 100; update(); });
+    document.getElementById("resample").addEventListener("click", gen);
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(update);
+    fit(); gen();
+  })();
+  </script>
+</body>
+</html>

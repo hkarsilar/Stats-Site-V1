@@ -53,8 +53,8 @@ window.CURRICULUM = [
     sections: [
       { n: "3.1",  slug: "multiple-regression",                     title: "Multiple Regression", ready: true },
       { n: "3.2",  slug: "multicollinearity-and-variable-selection",title: "Multicollinearity & Variable Selection", ready: true },
-      { n: "3.3",  slug: "categorical-predictors-and-dummy-coding", title: "Categorical Predictors & Dummy Coding" },
-      { n: "3.4",  slug: "interactions-in-regression",              title: "Interactions in Regression" },
+      { n: "3.3",  slug: "categorical-predictors-and-dummy-coding", title: "Categorical Predictors & Dummy Coding", ready: true },
+      { n: "3.4",  slug: "interactions-in-regression",              title: "Interactions in Regression", ready: true },
       { n: "3.5",  slug: "mediation-and-indirect-effects",          title: "Mediation & Indirect Effects" },
       { n: "3.6",  slug: "logistic-regression",                     title: "Logistic Regression" },
       { n: "3.7",  slug: "assumptions-of-regression",               title: "Assumptions of Regression" },
