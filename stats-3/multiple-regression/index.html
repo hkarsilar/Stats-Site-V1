@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Multiple Regression — hakan.science</title>
+  <meta name="description" content="Multiple regression isolates the effect of one predictor while holding others constant — sometimes reversing the naive conclusion entirely. See it happen." />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-3" data-section="multiple-regression">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 3.1</span>
+        <h1>Multiple Regression</h1>
+
+        <p class="lede">Real outcomes have many causes at once. Income depends on education <em>and</em> experience <em>and</em> region; health depends on diet <em>and</em> exercise <em>and</em> age. <strong>Multiple regression</strong> extends the <a href="../../stats-2/simple-linear-regression/">simple line</a> to several predictors at once — and in doing so unlocks its single most important idea: <em>holding everything else constant</em>.</p>
+
+        <h2>What a coefficient means now</h2>
+        <p>The model is just a line with more terms:</p>
+        <p style="text-align:center;font-size:1.1rem;margin:1.2rem 0"><strong>ŷ = b₀ + b₁x₁ + b₂x₂ + … + bₖxₖ</strong></p>
+        <p>The magic is in how you read each coefficient. <strong>b₁ is the effect of x₁ on y while holding every other predictor fixed.</strong> It's the "all else equal" effect — the bit of x₁'s influence that isn't already explained by the other variables. This is what lets regression <em>control for confounders</em>, and it can completely change the story.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="mrviz">
+          <p class="viz-title">🎮 The Power of "Controlling For"</p>
+          <p class="viz-sub">Outcome vs. x₁, with a lurking second variable shown by color (two groups). The gray line ignores it; the colored lines hold it constant. Increase the confounding and watch them disagree.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:280px">
+              <label>Strength of the confounder (x₂) <span class="val" id="conf-val">0.7</span></label>
+              <input type="range" id="conf-range" min="0" max="100" step="1" value="70" style="width:100%" />
+            </div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="resample">New sample</button></div>
+          </div>
+
+          <canvas id="mr-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Naive slope (ignoring x₂)</span><span class="v" id="stat-naive">—</span></div>
+            <div class="stat"><span class="k">Controlled slope (holding x₂ fixed)</span><span class="v" id="stat-ctrl">—</span></div>
+            <div class="stat"><span class="k">Conclusion flips?</span><span class="v" id="stat-flip" style="font-size:1rem">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>When the confounder is strong, the naive slope (gray) can point the <em>opposite</em> way from the true within-group effect (colored). The gray line says "higher x₁ goes with higher y"; control for the group and the real relationship is negative. This is <strong>Simpson's paradox</strong>, and it's exactly the kind of mistake multiple regression exists to prevent.</p>
+
+        <div class="callout key">
+          <p><strong>The headline idea:</strong> a multiple-regression coefficient answers "what's the effect of <em>this</em> variable, among people who are otherwise alike?" Leaving out an important predictor (an <em>omitted variable</em>) can bias the others — sometimes enough to reverse their sign.</p>
+        </div>
+
+        <h2>Reading the whole model</h2>
+        <ul>
+          <li>Each <strong>coefficient</strong> is a partial effect — holding the other predictors constant.</li>
+          <li><strong>R²</strong> now reports how much of the outcome's variation <em>all</em> the predictors explain together.</li>
+          <li>Each coefficient gets its own <strong>p-value</strong>, testing whether that predictor adds anything beyond the others.</li>
+        </ul>
+
+        <h2>A caution</h2>
+        <p>"Holding constant" is a <em>statistical</em> operation, not a real experiment. Regression can only adjust for variables you actually measured and put in the model — it can't control for confounders you forgot. And it never, by itself, proves causation. It's a powerful lens, not a magic wand.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> multiple regression is the workhorse of the social and health sciences, and the foundation for almost everything left in this course — <a href="../../stats-3/interactions-in-regression/">interactions</a>, <a href="../../stats-3/categorical-predictors-and-dummy-coding/">categorical predictors</a>, <a href="../../stats-3/logistic-regression/">logistic regression</a>, and more.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ controlling-for visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var conf = 0.7, groups = [[], []], WITHIN = -0.6;
+    var LO = 10, HI = 90;
+    var canvas = document.getElementById("mr-canvas"), ctx, W = 0, H = 280, pad = 26;
+    var COL = [ "#6366f1", "#f97316" ];
+
+    function gen() {
+      groups = [[], []];
+      for (var g = 0; g < 2; g++) {
+        var x1mean = 50 + (g - 0.5) * 2 * conf * 24;
+        var baseY = 50 + (g - 0.5) * 2 * conf * 24;
+        for (var i = 0; i < 26; i++) {
+          var x1 = x1mean + (Math.random() * 2 - 1) * 13;
+          var y = baseY + WITHIN * (x1 - x1mean) + VIZ.gauss(0, 4);
+          groups[g].push({ x: x1, y: y });
+        }
+      }
+      update();
+    }
+    function slope(pts) {
+      var mx = VIZ.mean(pts.map(function (p) { return p.x; })), my = VIZ.mean(pts.map(function (p) { return p.y; }));
+      var sxy = 0, sxx = 0; pts.forEach(function (p) { sxy += (p.x - mx) * (p.y - my); sxx += (p.x - mx) * (p.x - mx); });
+      return { b: sxy / sxx, mx: mx, my: my };
+    }
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function vx(x) { return pad + ((x - LO) / (HI - LO)) * (W - 2 * pad); }
+    function vy(y) { return (H - pad) - ((y - LO) / (HI - LO)) * (H - 2 * pad); }
+
+    function update() {
+      var all = groups[0].concat(groups[1]);
+      var naive = slope(all);
+      var s0 = slope(groups[0]), s1 = slope(groups[1]);
+      var ctrl = (s0.b + s1.b) / 2;
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = VIZ.css("--border"); ctx.strokeRect(pad, pad, W - 2 * pad, H - 2 * pad);
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px Inter,sans-serif"; ctx.textAlign = "center";
+      ctx.fillText("x₁ →", W / 2, H - 6); ctx.save(); ctx.translate(12, H / 2); ctx.rotate(-Math.PI / 2); ctx.fillText("outcome y", 0, 0); ctx.restore();
+      // points
+      for (var g = 0; g < 2; g++) { ctx.fillStyle = COL[g]; ctx.globalAlpha = 0.7; groups[g].forEach(function (p) { ctx.beginPath(); ctx.arc(vx(p.x), vy(p.y), 4, 0, 2 * Math.PI); ctx.fill(); }); }
+      ctx.globalAlpha = 1;
+      // within-group lines
+      [s0, s1].forEach(function (s, g) {
+        var xs = groups[g].map(function (p) { return p.x; }), lo = Math.min.apply(null, xs), hi = Math.max.apply(null, xs);
+        ctx.strokeStyle = COL[g]; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.moveTo(vx(lo), vy(s.my + s.b * (lo - s.mx))); ctx.lineTo(vx(hi), vy(s.my + s.b * (hi - s.mx))); ctx.stroke();
+      });
+      // naive line (gray, dashed)
+      ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([6, 4]); ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(vx(LO), vy(naive.my + naive.b * (LO - naive.mx))); ctx.lineTo(vx(HI), vy(naive.my + naive.b * (HI - naive.mx))); ctx.stroke(); ctx.setLineDash([]);
+
+      document.getElementById("conf-val").textContent = conf.toFixed(1);
+      document.getElementById("stat-naive").textContent = (naive.b >= 0 ? "+" : "") + naive.b.toFixed(2);
+      document.getElementById("stat-ctrl").textContent = (ctrl >= 0 ? "+" : "") + ctrl.toFixed(2);
+      var flip = document.getElementById("stat-flip"), flipped = (naive.b > 0) !== (ctrl > 0);
+      flip.textContent = flipped ? "yes — opposite signs!" : "no — same direction";
+      flip.style.color = flipped ? "#f97316" : VIZ.css("--text");
+    }
+
+    document.getElementById("conf-range").addEventListener("input", function () { conf = this.value / 100; gen(); });
+    document.getElementById("resample").addEventListener("click", gen);
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(update);
+    fit(); gen();
+  })();
+  </script>
+</body>
+</html>
