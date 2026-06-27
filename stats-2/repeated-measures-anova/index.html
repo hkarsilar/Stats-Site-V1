@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Repeated Measures ANOVA — hakan.science</title>
+  <meta name="description" content="Measuring the same people repeatedly lets you subtract out their individual differences — revealing a condition effect that between-subjects designs would drown in noise." />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-2" data-section="repeated-measures-anova">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 2.4</span>
+        <h1>Repeated Measures ANOVA</h1>
+
+        <p class="lede">When you measure the <em>same</em> people under several conditions — the same patients before, during, and after treatment — you have a repeated-measures design. Just as the <a href="../../stats-1/one-sample-and-paired-t-tests/">paired t-test</a> beats the independent one, repeated-measures ANOVA has a superpower: it can subtract out the fact that people just differ from each other.</p>
+
+        <h2>The problem with big individual differences</h2>
+        <p>Suppose you test three conditions and people vary enormously to begin with — some always score high, some always low. In a between-subjects design, that person-to-person variability becomes <em>noise</em> that swamps the condition effect. You might have a perfectly real effect and still fail to find it, buried under "well, people are just different."</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="rmviz">
+          <p class="viz-title">🎮 Removing the Individual Differences</p>
+          <p class="viz-sub">Eight people, three conditions — each line is one person. Crank up how different people are, then flip to the subject-centered view to see the condition pattern snap into focus.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:220px">
+              <label>How different people are <span class="val" id="bv-val">22</span></label>
+              <input type="range" id="bv-range" min="0" max="32" step="1" value="22" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:200px">
+              <label>True condition effect <span class="val" id="ce-val">9</span></label>
+              <input type="range" id="ce-range" min="0" max="20" step="1" value="9" style="width:100%" />
+            </div>
+            <div class="control">
+              <label>View</label>
+              <div class="seg" id="view-seg">
+                <button data-view="raw" class="active">Raw scores</button>
+                <button data-view="centered">Subject-centered</button>
+              </div>
+            </div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="resample">New people</button></div>
+          </div>
+
+          <canvas id="rm-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Between-person spread</span><span class="v" id="stat-bv">—</span></div>
+            <div class="stat"><span class="k">Condition spread (the signal)</span><span class="v" id="stat-cs">—</span></div>
+            <div class="stat"><span class="k">Condition effect stands out?</span><span class="v" id="stat-vis" style="font-size:1rem">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>The repeated-measures trick</h2>
+        <p>Because every person is measured in every condition, each person serves as their <strong>own control</strong>. The analysis can split off a "subjects" chunk of variation and set it aside, leaving a much cleaner comparison of the conditions. In the <strong>subject-centered</strong> view above — where each person's own average is subtracted out — the tangle of lines collapses into a clear shared pattern. That's exactly what repeated-measures ANOVA does mathematically.</p>
+        <div class="callout key">
+          <p><strong>The payoff is power.</strong> By removing stable individual differences from the error term, a repeated-measures design can detect a real effect with far fewer participants than a between-subjects design would need. Fewer people, more sensitivity — that's why it's so popular.</p>
+        </div>
+
+        <h2>The catch: sphericity</h2>
+        <p>Repeated measures come with their own assumption, <strong>sphericity</strong> — roughly, that the differences between every pair of conditions have similar variance. When it's violated (common with time-based data, where adjacent timepoints correlate more than distant ones), the test becomes too liberal. Standard corrections (Greenhouse-Geisser, Huynh-Feldt) adjust the degrees of freedom to compensate.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> within-subjects designs are everywhere in psychology, medicine, and UX research — anywhere you can measure the same unit repeatedly. Knowing that they trade a sphericity assumption for a big gain in power helps you design more efficient studies.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ repeated-measures visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var N = 8, K = 3, bv = 22, ce = 9, view = "raw", subjects = [];
+    var canvas = document.getElementById("rm-canvas"), ctx, W = 0, H = 260, padL = 34, padB = 26, padT = 14;
+    var pattern = [-1, 0, 1]; // shape of the condition effect across the 3 conditions
+
+    function build() {
+      subjects = [];
+      for (var s = 0; s < N; s++) {
+        var base = VIZ.gauss(50, bv), row = [];
+        for (var k = 0; k < K; k++) row.push(base + pattern[k] * ce + VIZ.gauss(0, 2.5));
+        subjects.push(row);
+      }
+      update();
+    }
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function vy(v) { return (H - padB) - ((v - 10) / 80) * (H - padB - padT); }
+    function cx(k) { return padL + (k + 0.5) * ((W - padL - 12) / K); }
+
+    function display() {
+      // raw, or each subject re-centered to the grand mean (50)
+      if (view === "raw") return subjects;
+      return subjects.map(function (row) { var m = VIZ.mean(row); return row.map(function (v) { return v - m + 50; }); });
+    }
+
+    function draw() {
+      var data = display();
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "right";
+      for (var t = 20; t <= 80; t += 20) { var y = vy(t); ctx.globalAlpha = 0.4; ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - 12, y); ctx.stroke(); ctx.globalAlpha = 1; ctx.fillText(t, padL - 5, y + 3); }
+      ctx.textAlign = "center"; ctx.font = "600 11px Inter,sans-serif"; ctx.fillStyle = VIZ.css("--text-faint");
+      for (var k = 0; k < K; k++) ctx.fillText("Cond " + (k + 1), cx(k), H - 8);
+      // each subject as a faint line
+      ctx.strokeStyle = VIZ.css("--text-faint"); ctx.globalAlpha = 0.55; ctx.lineWidth = 1.5;
+      data.forEach(function (row) { ctx.beginPath(); for (var k = 0; k < K; k++) { var x = cx(k), y = vy(row[k]); if (k === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); } ctx.stroke(); });
+      ctx.globalAlpha = 1;
+      // condition means as a thick line
+      var means = [];
+      for (var k2 = 0; k2 < K; k2++) { var s = 0; for (var i = 0; i < N; i++) s += data[i][k2]; means.push(s / N); }
+      ctx.strokeStyle = VIZ.css("--primary"); ctx.lineWidth = 3.5; ctx.beginPath();
+      means.forEach(function (m, k) { var x = cx(k), y = vy(m); if (k === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--primary"); means.forEach(function (m, k) { ctx.beginPath(); ctx.arc(cx(k), vy(m), 5, 0, 2 * Math.PI); ctx.fill(); });
+      return means;
+    }
+
+    function update() {
+      var means = draw();
+      document.getElementById("bv-val").textContent = bv;
+      document.getElementById("ce-val").textContent = ce;
+      // spread of all raw scores between people vs spread of condition means
+      var allBase = subjects.map(function (r) { return VIZ.mean(r); });
+      var condMeans = []; for (var k = 0; k < K; k++) { var s = 0; for (var i = 0; i < N; i++) s += subjects[i][k]; condMeans.push(s / N); }
+      var betweenSpread = VIZ.sd(allBase), condSpread = VIZ.sd(condMeans);
+      document.getElementById("stat-bv").textContent = betweenSpread.toFixed(1);
+      document.getElementById("stat-cs").textContent = condSpread.toFixed(1);
+      var ratio = condSpread / (betweenSpread + 0.001);
+      var vis = document.getElementById("stat-vis");
+      if (view === "centered") { vis.textContent = "yes — clearly (centered)"; vis.style.color = "#22c55e"; }
+      else if (ratio > 0.6) { vis.textContent = "yes, visible"; vis.style.color = "#22c55e"; }
+      else { vis.textContent = "hidden in the noise"; vis.style.color = "#f97316"; }
+    }
+
+    document.getElementById("bv-range").addEventListener("input", function () { bv = +this.value; build(); });
+    document.getElementById("ce-range").addEventListener("input", function () { ce = +this.value; build(); });
+    document.getElementById("view-seg").addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; view = b.dataset.view; Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x.dataset.view === view); }); update(); });
+    document.getElementById("resample").addEventListener("click", build);
+    window.addEventListener("resize", function () { fit(); draw(); });
+    VIZ.onTheme(draw);
+    fit(); build();
+  })();
+  </script>
+</body>
+</html>

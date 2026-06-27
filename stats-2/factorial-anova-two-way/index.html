@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Factorial ANOVA (Two-Way) — hakan.science</title>
+  <meta name="description" content="Two factors at once reveal something neither shows alone: the interaction. Drag the cell means and watch the interaction plot's lines go parallel or cross." />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-2" data-section="factorial-anova-two-way">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 2.3</span>
+        <h1>Factorial ANOVA (Two-Way)</h1>
+
+        <p class="lede">Real situations rarely involve just one factor. Does a drug's effect depend on dose <em>and</em> on age? Does a teaching method work differently for beginners than experts? A <strong>factorial ANOVA</strong> tests two (or more) factors at once — and reveals something no single-factor study ever could: the <strong>interaction</strong>.</p>
+
+        <h2>Three questions for the price of one</h2>
+        <p>A two-way design with factors A and B answers three separate questions:</p>
+        <ul>
+          <li><strong>Main effect of A</strong> — does A matter, averaging over B?</li>
+          <li><strong>Main effect of B</strong> — does B matter, averaging over A?</li>
+          <li><strong>A × B interaction</strong> — does the effect of A <em>depend on the level of</em> B? This is the one you can only get by studying them together.</li>
+        </ul>
+
+        <h2>The interaction plot</h2>
+        <p>The fastest way to read a two-way result is a picture. Put factor A on the x-axis and draw one line for each level of B. The rule is simple: <strong>parallel lines mean no interaction</strong> (A's effect is the same at every level of B); <strong>non-parallel lines mean there's an interaction</strong>. Drag the cell means below and watch it happen.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="faviz">
+          <p class="viz-title">🎮 Interaction Plot Explorer</p>
+          <p class="viz-sub">A 2×2 design. Set the average outcome in each of the four cells; the lines show how factor A's effect changes across the two levels of factor B.</p>
+
+          <div class="controls">
+            <div class="control"><button class="btn btn-ghost btn-sm" data-preset="none">No interaction</button></div>
+            <div class="control"><button class="btn btn-ghost btn-sm" data-preset="inter">Interaction</button></div>
+            <div class="control"><button class="btn btn-ghost btn-sm" data-preset="cross">Crossover</button></div>
+          </div>
+
+          <canvas id="fa-canvas"></canvas>
+
+          <div class="controls" style="margin-top:.75rem">
+            <div class="control"><label style="color:var(--primary)">B₁ at A₁ <span class="val" id="v11">60</span></label><input type="range" id="c11" min="0" max="100" step="1" value="60" /></div>
+            <div class="control"><label style="color:var(--primary)">B₁ at A₂ <span class="val" id="v21">75</span></label><input type="range" id="c21" min="0" max="100" step="1" value="75" /></div>
+            <div class="control"><label style="color:#f97316">B₂ at A₁ <span class="val" id="v12">40</span></label><input type="range" id="c12" min="0" max="100" step="1" value="40" /></div>
+            <div class="control"><label style="color:#f97316">B₂ at A₂ <span class="val" id="v22">55</span></label><input type="range" id="c22" min="0" max="100" step="1" value="55" /></div>
+          </div>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Main effect of A</span><span class="v" id="stat-a">—</span></div>
+            <div class="stat"><span class="k">Main effect of B</span><span class="v" id="stat-b">—</span></div>
+            <div class="stat"><span class="k">Interaction (A×B)</span><span class="v" id="stat-int">—</span></div>
+            <div class="stat"><span class="k">Lines are</span><span class="v" id="stat-lines" style="font-size:1rem">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Why interactions are the interesting part</h2>
+        <p>Often the interaction <em>is</em> the finding. "The drug works" is fine; "the drug works for young patients but not old ones" is far more useful — and it's an interaction. A famous trap: reporting only main effects when a strong interaction is present can be downright misleading. If a "crossover" interaction makes A helpful for B₁ but harmful for B₂, the <em>average</em> main effect of A might be zero, hiding two large, opposite real effects.</p>
+        <div class="callout key">
+          <p><strong>Read the interaction first.</strong> When lines are clearly non-parallel, interpret the main effects with caution — the effect of one factor genuinely differs depending on the other, so a single "average" effect can mislead.</p>
+        </div>
+
+        <h2>Reading the patterns</h2>
+        <ul>
+          <li><strong>Parallel lines</strong> — no interaction; both main effects mean what they say.</li>
+          <li><strong>Fanning lines</strong> (same direction, different slopes) — A helps in both conditions, but more in one.</li>
+          <li><strong>Crossing lines</strong> — a crossover interaction; A's effect reverses direction across levels of B. The most dramatic and easily-missed pattern.</li>
+        </ul>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> the world is full of "it depends." Factorial designs are how we test "it depends" rigorously — and interactions are the statistical home of conditional, context-dependent effects.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ interaction-plot visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var ids = ["c11", "c21", "c12", "c22"], canvas = document.getElementById("fa-canvas"), ctx, W = 0, H = 250, padL = 34, padB = 26, padT = 24;
+    function val(id) { return +document.getElementById(id).value; }
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function vy(v) { return (H - padB) - (v / 100) * (H - padB - padT); }
+    function xA(level) { return padL + (level === 0 ? 0.28 : 0.72) * (W - padL - 12); }
+
+    function draw() {
+      var c11 = val("c11"), c21 = val("c21"), c12 = val("c12"), c22 = val("c22");
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "right";
+      for (var t = 0; t <= 100; t += 25) { var y = vy(t); ctx.globalAlpha = 0.4; ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - 12, y); ctx.stroke(); ctx.globalAlpha = 1; ctx.fillText(t, padL - 5, y + 3); }
+      ctx.textAlign = "center"; ctx.font = "600 12px Inter,sans-serif"; ctx.fillStyle = VIZ.css("--text-faint");
+      ctx.fillText("A₁", xA(0), H - 8); ctx.fillText("A₂", xA(1), H - 8);
+      function line(va1, va2, color) {
+        ctx.strokeStyle = color; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(xA(0), vy(va1)); ctx.lineTo(xA(1), vy(va2)); ctx.stroke();
+        ctx.fillStyle = color;
+        [[xA(0), va1], [xA(1), va2]].forEach(function (p) { ctx.beginPath(); ctx.arc(p[0], vy(p[1]), 5, 0, 2 * Math.PI); ctx.fill(); });
+      }
+      line(c11, c21, VIZ.css("--primary"));
+      line(c12, c22, "#f97316");
+      ctx.textAlign = "left"; ctx.font = "600 11px Inter,sans-serif";
+      ctx.fillStyle = VIZ.css("--primary"); ctx.fillText("B₁", W - 30, 16);
+      ctx.fillStyle = "#f97316"; ctx.fillText("B₂", W - 30, 30);
+
+      var mainA = ((c21 + c22) - (c11 + c12)) / 2;
+      var mainB = ((c11 + c21) - (c12 + c22)) / 2;
+      var inter = (c22 - c12) - (c21 - c11);
+      document.getElementById("v11").textContent = c11; document.getElementById("v21").textContent = c21;
+      document.getElementById("v12").textContent = c12; document.getElementById("v22").textContent = c22;
+      document.getElementById("stat-a").textContent = (mainA >= 0 ? "+" : "") + mainA.toFixed(1);
+      document.getElementById("stat-b").textContent = (mainB >= 0 ? "+" : "") + mainB.toFixed(1);
+      document.getElementById("stat-int").textContent = (inter >= 0 ? "+" : "") + inter.toFixed(1);
+      var lines = document.getElementById("stat-lines");
+      var a = Math.abs(inter), crosses = (c11 - c12) * (c21 - c22) < 0;
+      lines.textContent = a < 4 ? "parallel — no interaction" : (crosses ? "crossing — interaction" : "non-parallel — interaction");
+      lines.style.color = a < 4 ? VIZ.css("--text") : "#f97316";
+    }
+
+    var presets = {
+      none:  { c11: 60, c21: 78, c12: 38, c22: 56 },
+      inter: { c11: 45, c21: 80, c12: 40, c22: 55 },
+      cross: { c11: 70, c21: 35, c12: 35, c22: 72 }
+    };
+    document.querySelectorAll("[data-preset]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var p = presets[b.dataset.preset];
+        ids.forEach(function (id) { document.getElementById(id).value = p[id]; });
+        draw();
+      });
+    });
+    ids.forEach(function (id) { document.getElementById(id).addEventListener("input", draw); });
+    window.addEventListener("resize", function () { fit(); draw(); });
+    VIZ.onTheme(draw);
+    fit(); draw();
+  })();
+  </script>
+</body>
+</html>

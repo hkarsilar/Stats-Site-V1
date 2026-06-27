@@ -35,8 +35,8 @@ window.CURRICULUM = [
     sections: [
       { n: "2.1",  slug: "one-way-anova",                  title: "One-Way ANOVA", ready: true },
       { n: "2.2",  slug: "post-hoc-tests",                 title: "Post-Hoc Tests", ready: true },
-      { n: "2.3",  slug: "factorial-anova-two-way",        title: "Factorial ANOVA (Two-Way)" },
-      { n: "2.4",  slug: "repeated-measures-anova",        title: "Repeated Measures ANOVA" },
+      { n: "2.3",  slug: "factorial-anova-two-way",        title: "Factorial ANOVA (Two-Way)", ready: true },
+      { n: "2.4",  slug: "repeated-measures-anova",        title: "Repeated Measures ANOVA", ready: true },
       { n: "2.5",  slug: "assumptions-and-when-they-break",title: "Assumptions & When They Break" },
       { n: "2.6",  slug: "non-parametric-alternatives",    title: "Non-Parametric Alternatives" },
       { n: "2.7",  slug: "chi-square-tests",               title: "Chi-Square Tests" },
