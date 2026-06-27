@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Assumptions of Regression — hakan.science</title>
+  <meta name="description" content="Regression rests on four assumptions (LINE), and a single high-leverage point can hijack the whole fit. Drag a point to extreme x and watch the line swing." />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-3" data-section="assumptions-of-regression">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 3.7</span>
+        <h1>Assumptions of Regression</h1>
+
+        <p class="lede">A regression coefficient and its p-value are only trustworthy if the model's assumptions hold. For ordinary least squares there are four, conveniently spelling <strong>LINE</strong> — and beyond them lurks a separate, sneaky threat: a single data point with enough leverage to bend the whole line to its will.</p>
+
+        <h2>The LINE assumptions</h2>
+        <ul>
+          <li><strong>L — Linearity:</strong> the relationship between predictors and the mean of <code>y</code> is actually a straight line (or plane). Check with <a href="../../stats-2/regression-diagnostics/">residual plots</a>.</li>
+          <li><strong>I — Independence:</strong> the errors are independent of each other. Violated by time series and clustered/repeated data.</li>
+          <li><strong>N — Normality of residuals:</strong> the errors are roughly normal. Matters most for small samples; check with a <a href="../../stats-2/assumptions-and-when-they-break/">Q-Q plot</a> of residuals.</li>
+          <li><strong>E — Equal variance (homoscedasticity):</strong> the residuals have constant spread across all fitted values. A funnel shape means trouble.</li>
+        </ul>
+
+        <h2>Leverage vs. influence vs. outlier</h2>
+        <p>These three get muddled, but they're distinct. An <strong>outlier</strong> has an unusual <code>y</code> (far from the line). A <strong>high-leverage</strong> point has an unusual <code>x</code> (far from the other predictors). A point is <strong>influential</strong> only when it's <em>both</em> — extreme in x <em>and</em> off the trend — so that removing it noticeably moves the line. Drag the point below and feel the difference.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="lvviz">
+          <p class="viz-title">🎮 Leverage &amp; Influence Playground</p>
+          <p class="viz-sub">Drag the ringed point. The solid line is fit <em>with</em> it; the dashed line is fit <em>without</em> it. Out at the edges (high leverage), small moves swing the whole line.</p>
+
+          <canvas id="lv-canvas" style="touch-action:none;cursor:grab"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Leverage of the point</span><span class="v" id="stat-lev" style="font-size:1rem">—</span></div>
+            <div class="stat"><span class="k">Slope with the point</span><span class="v" id="stat-sw">—</span></div>
+            <div class="stat"><span class="k">Slope without it</span><span class="v" id="stat-so">—</span></div>
+            <div class="stat"><span class="k">Influential?</span><span class="v" id="stat-inf" style="font-size:1rem">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>Park the point in the middle (average x) and even a big vertical move barely budges the line — low leverage. Drag it far left or right and the line snaps toward it: high leverage. A point is dangerous only when high leverage meets a large residual.</p>
+
+        <div class="callout key">
+          <p><strong>Cook's distance</strong> bundles leverage and residual size into a single number measuring how much the whole fit shifts when a point is removed. Points with a large Cook's distance deserve a hard look — but never delete data just because it's influential. Investigate first: is it an error, or a real and important case?</p>
+        </div>
+
+        <h2>When assumptions fail</h2>
+        <ul>
+          <li><strong>Nonlinearity</strong> → add polynomial or transformed terms.</li>
+          <li><strong>Non-independence</strong> → use models built for it (time-series, mixed/multilevel models).</li>
+          <li><strong>Non-normal or heteroscedastic errors</strong> → transform <code>y</code>, or use robust/bootstrapped standard errors.</li>
+          <li><strong>Influential points</strong> → report the fit with and without them, and explain the difference.</li>
+        </ul>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> the math will hand you a confident slope and a tidy p-value no matter how badly the assumptions are violated. Checking them — and watching for influential points — is what separates a defensible analysis from a fragile one.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ leverage/influence visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var base = [], drag = { x: 50, y: 50 }, dragging = false;
+    var LO = 5, HI = 95;
+    var canvas = document.getElementById("lv-canvas"), ctx, W = 0, H = 280, pad = 26;
+
+    (function build() { for (var i = 0; i < 13; i++) { var x = 12 + i * 6.2; base.push({ x: x, y: 18 + 0.62 * x + VIZ.gauss(0, 4) }); } })();
+
+    function slope(pts) {
+      var mx = VIZ.mean(pts.map(function (p) { return p.x; })), my = VIZ.mean(pts.map(function (p) { return p.y; }));
+      var sxy = 0, sxx = 0; pts.forEach(function (p) { sxy += (p.x - mx) * (p.y - my); sxx += (p.x - mx) * (p.x - mx); });
+      var b = sxy / sxx; return { b: b, a: my - b * mx };
+    }
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function vx(x) { return pad + ((x - LO) / (HI - LO)) * (W - 2 * pad); }
+    function vy(y) { return (H - pad) - ((y - LO) / (HI - LO)) * (H - 2 * pad); }
+
+    function update() {
+      var all = base.concat([drag]);
+      var fw = slope(all), fo = slope(base);
+      // leverage (hat value) of the dragged point
+      var xs = all.map(function (p) { return p.x; }), mx = VIZ.mean(xs);
+      var sxx = xs.reduce(function (s, x) { return s + (x - mx) * (x - mx); }, 0);
+      var h = 1 / all.length + (drag.x - mx) * (drag.x - mx) / sxx;
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = VIZ.css("--border"); ctx.strokeRect(pad, pad, W - 2 * pad, H - 2 * pad);
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px Inter,sans-serif"; ctx.textAlign = "center"; ctx.fillText("x →", W / 2, H - 6);
+      // lines
+      ctx.save(); ctx.beginPath(); ctx.rect(pad, pad, W - 2 * pad, H - 2 * pad); ctx.clip();
+      ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([6, 4]); ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(vx(LO), vy(fo.a + fo.b * LO)); ctx.lineTo(vx(HI), vy(fo.a + fo.b * HI)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.strokeStyle = VIZ.css("--primary"); ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(vx(LO), vy(fw.a + fw.b * LO)); ctx.lineTo(vx(HI), vy(fw.a + fw.b * HI)); ctx.stroke();
+      ctx.restore();
+      // base points
+      ctx.fillStyle = VIZ.css("--secondary"); base.forEach(function (p) { ctx.beginPath(); ctx.arc(vx(p.x), vy(p.y), 4, 0, 2 * Math.PI); ctx.fill(); });
+      // dragged point
+      ctx.fillStyle = "#f97316"; ctx.beginPath(); ctx.arc(vx(drag.x), vy(drag.y), 7, 0, 2 * Math.PI); ctx.fill();
+      ctx.strokeStyle = VIZ.css("--text"); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(vx(drag.x), vy(drag.y), 10, 0, 2 * Math.PI); ctx.stroke();
+
+      var dSlope = Math.abs(fw.b - fo.b);
+      document.getElementById("stat-lev").textContent = h > 0.4 ? "high" : h > 0.2 ? "moderate" : "low";
+      document.getElementById("stat-sw").textContent = fw.b.toFixed(2);
+      document.getElementById("stat-so").textContent = fo.b.toFixed(2);
+      var inf = document.getElementById("stat-inf");
+      if (dSlope > 0.15) { inf.textContent = "yes — bending the line"; inf.style.color = "#f97316"; }
+      else { inf.textContent = "no — line barely moves"; inf.style.color = "#22c55e"; }
+    }
+
+    function near(e) { return Math.hypot(vx(drag.x) - e.offsetX, vy(drag.y) - e.offsetY) < 18; }
+    canvas.addEventListener("pointerdown", function (e) { if (near(e)) { dragging = true; canvas.setPointerCapture(e.pointerId); canvas.style.cursor = "grabbing"; } });
+    canvas.addEventListener("pointermove", function (e) {
+      if (!dragging) return;
+      drag.x = Math.max(LO, Math.min(HI, LO + (e.offsetX - pad) / (W - 2 * pad) * (HI - LO)));
+      drag.y = Math.max(LO, Math.min(HI, LO + ((H - pad) - e.offsetY) / (H - 2 * pad) * (HI - LO)));
+      update();
+    });
+    function end() { dragging = false; canvas.style.cursor = "grab"; }
+    canvas.addEventListener("pointerup", end); canvas.addEventListener("pointercancel", end);
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(update);
+    fit(); update();
+  })();
+  </script>
+</body>
+</html>

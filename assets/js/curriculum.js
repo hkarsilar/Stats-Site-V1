@@ -57,8 +57,8 @@ window.CURRICULUM = [
       { n: "3.4",  slug: "interactions-in-regression",              title: "Interactions in Regression", ready: true },
       { n: "3.5",  slug: "mediation-and-indirect-effects",          title: "Mediation & Indirect Effects", ready: true },
       { n: "3.6",  slug: "logistic-regression",                     title: "Logistic Regression", ready: true },
-      { n: "3.7",  slug: "assumptions-of-regression",               title: "Assumptions of Regression" },
-      { n: "3.8",  slug: "model-comparison",                        title: "Model Comparison" },
+      { n: "3.7",  slug: "assumptions-of-regression",               title: "Assumptions of Regression", ready: true },
+      { n: "3.8",  slug: "model-comparison",                        title: "Model Comparison", ready: true },
       { n: "3.9",  slug: "factor-analysis-pca",                     title: "Factor Analysis / PCA" },
       { n: "3.10", slug: "power-analysis-for-complex-designs",      title: "Power Analysis for Complex Designs" }
     ]
