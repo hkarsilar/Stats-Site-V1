@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mediation & Indirect Effects — hakan.science</title>
+  <meta name="description" content="Mediation explains HOW one thing affects another, through a mechanism in between. Adjust the path coefficients and watch the indirect effect flow through the mediator." />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-3" data-section="mediation-and-indirect-effects">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 3.5</span>
+        <h1>Mediation &amp; Indirect Effects</h1>
+
+        <p class="lede"><a href="../../stats-2/simple-linear-regression/">Regression</a> tells you <em>that</em> X affects Y. <strong>Mediation</strong> asks the deeper question: <em>how</em>? It proposes a mechanism — a <strong>mediator</strong> M that sits in the causal chain between them. Stress (X) worsens health (Y)… but <em>through</em> poor sleep (M). Mediation analysis is how you test that story with numbers.</p>
+
+        <h2>Three paths, one diagram</h2>
+        <p>Mediation breaks the X → Y relationship into a chain of regression paths:</p>
+        <ul>
+          <li><strong>Path a</strong>: the effect of X on the mediator M.</li>
+          <li><strong>Path b</strong>: the effect of M on Y, controlling for X.</li>
+          <li><strong>Path c′</strong> (the <em>direct</em> effect): whatever effect of X on Y remains after accounting for M.</li>
+        </ul>
+        <p>The <strong>indirect effect</strong> — the part of X's influence that travels through M — is simply <strong>a × b</strong>. And the total effect of X on Y is the indirect plus the direct: <strong>a×b + c′</strong>.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="medviz">
+          <p class="viz-title">🎮 Path Diagram Explorer</p>
+          <p class="viz-sub">Adjust the three paths. The indirect effect (a×b) is how much of X's influence flows through the mediator. Shrink the direct path c′ toward zero for full mediation.</p>
+
+          <canvas id="med-canvas"></canvas>
+
+          <div class="controls" style="margin-top:.5rem">
+            <div class="control"><label>Path a (X → M) <span class="val" id="va">0.6</span></label><input type="range" id="a" min="-100" max="100" step="1" value="60" /></div>
+            <div class="control"><label>Path b (M → Y) <span class="val" id="vb">0.7</span></label><input type="range" id="b" min="-100" max="100" step="1" value="70" /></div>
+            <div class="control"><label>Path c′ (direct X → Y) <span class="val" id="vc">0.2</span></label><input type="range" id="c" min="-100" max="100" step="1" value="20" /></div>
+          </div>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Indirect effect (a×b)</span><span class="v" id="stat-ind">—</span></div>
+            <div class="stat"><span class="k">Direct effect (c′)</span><span class="v" id="stat-dir">—</span></div>
+            <div class="stat"><span class="k">Total effect</span><span class="v" id="stat-tot">—</span></div>
+            <div class="stat"><span class="k">Mediation</span><span class="v" id="stat-type" style="font-size:1rem">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Full vs. partial mediation</h2>
+        <ul>
+          <li><strong>Full mediation</strong> — the direct path c′ is essentially zero. X affects Y <em>only</em> through M; the mechanism explains the whole story.</li>
+          <li><strong>Partial mediation</strong> — c′ is still meaningful. M carries some of the effect, but X also reaches Y by other routes.</li>
+        </ul>
+        <p>The interesting quantity is usually the <strong>proportion mediated</strong> — the indirect effect as a share of the total. A large share means you've found a real mechanism, not just a correlation.</p>
+
+        <div class="callout key">
+          <p><strong>Test the indirect effect directly.</strong> The modern approach doesn't just check whether each path is "significant" — it puts a confidence interval on the <em>product</em> a×b, usually with <strong>bootstrapping</strong> (resampling the data thousands of times). The old Sobel test assumes a×b is normally distributed, which it often isn't, so bootstrapped intervals are preferred.</p>
+        </div>
+
+        <h2>A serious caution</h2>
+        <p>Mediation makes a strong <strong>causal</strong> claim — that X causes M causes Y, in that order. The statistics can't verify the ordering; they only quantify a pattern that's <em>consistent</em> with your proposed mechanism. Reverse the arrows and the math often still "works." So mediation is only as trustworthy as the theory and study design behind it. Cross-sectional mediation, in particular, is easy to over-interpret.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> "why" and "how" questions are the heart of science. Mediation is the main statistical tool for testing mechanisms — turning "X is associated with Y" into "X works <em>by way of</em> M."</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ mediation path-diagram visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var canvas = document.getElementById("med-canvas"), ctx, W = 0, H = 200;
+    function v(id) { return +document.getElementById(id).value / 100; }
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+
+    function box(cx, cy, label) {
+      var w = 64, h = 38;
+      ctx.fillStyle = VIZ.css("--surface"); ctx.strokeStyle = VIZ.css("--primary"); ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.roundRect(cx - w / 2, cy - h / 2, w, h, 8); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text"); ctx.font = "700 16px Inter,sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText(label, cx, cy); ctx.textBaseline = "alphabetic";
+      return { x: cx, y: cy, w: w, h: h };
+    }
+    function arrow(x1, y1, x2, y2, label, val) {
+      var col = Math.abs(val) < 0.04 ? VIZ.css("--text-faint") : (val > 0 ? VIZ.css("--secondary") : "#ef4444");
+      ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 1.5 + Math.min(3.5, Math.abs(val) * 3);
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+      var ang = Math.atan2(y2 - y1, x2 - x1);
+      ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - 9 * Math.cos(ang - 0.4), y2 - 9 * Math.sin(ang - 0.4)); ctx.lineTo(x2 - 9 * Math.cos(ang + 0.4), y2 - 9 * Math.sin(ang + 0.4)); ctx.closePath(); ctx.fill();
+      var mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+      ctx.fillStyle = VIZ.css("--bg"); ctx.fillRect(mx - 22, my - 9, 44, 18);
+      ctx.fillStyle = col; ctx.font = "600 12px ui-monospace,monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText(label + "=" + (val >= 0 ? "" : "") + val.toFixed(2), mx, my); ctx.textBaseline = "alphabetic";
+    }
+
+    function draw() {
+      var a = v("a"), b = v("b"), c = v("c");
+      ctx.clearRect(0, 0, W, H);
+      var X = { x: 70, y: H - 50 }, M = { x: W / 2, y: 46 }, Y = { x: W - 70, y: H - 50 };
+      arrow(X.x + 20, X.y - 18, M.x - 28, M.y + 16, "a", a);
+      arrow(M.x + 28, M.y + 16, Y.x - 20, Y.y - 18, "b", b);
+      arrow(X.x + 32, X.y, Y.x - 32, Y.y, "c′", c);
+      box(X.x, X.y, "X"); box(M.x, M.y, "M"); box(Y.x, Y.y, "Y");
+
+      var ind = a * b, tot = ind + c, prop = tot !== 0 ? ind / tot : 0;
+      document.getElementById("va").textContent = a.toFixed(2); document.getElementById("vb").textContent = b.toFixed(2); document.getElementById("vc").textContent = c.toFixed(2);
+      document.getElementById("stat-ind").textContent = (ind >= 0 ? "+" : "") + ind.toFixed(2);
+      document.getElementById("stat-dir").textContent = (c >= 0 ? "+" : "") + c.toFixed(2);
+      document.getElementById("stat-tot").textContent = (tot >= 0 ? "+" : "") + tot.toFixed(2);
+      var ty = document.getElementById("stat-type");
+      if (Math.abs(ind) < 0.04) { ty.textContent = "none — no indirect path"; ty.style.color = VIZ.css("--text"); }
+      else if (Math.abs(c) < 0.08) { ty.textContent = "full (" + (prop * 100).toFixed(0) + "% via M)"; ty.style.color = "#22c55e"; }
+      else { ty.textContent = "partial (" + (prop * 100).toFixed(0) + "% via M)"; ty.style.color = "#f97316"; }
+    }
+
+    ["a", "b", "c"].forEach(function (id) { document.getElementById(id).addEventListener("input", draw); });
+    window.addEventListener("resize", function () { fit(); draw(); });
+    VIZ.onTheme(draw);
+    fit(); draw();
+  })();
+  </script>
+</body>
+</html>
