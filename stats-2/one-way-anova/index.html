@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>One-Way ANOVA — hakan.science</title>
+  <meta name="description" content="ANOVA compares three or more group means by weighing the variation between groups against the variation within them. Adjust both and watch the F-ratio respond." />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-2" data-section="one-way-anova">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 2.1</span>
+        <h1>One-Way ANOVA</h1>
+
+        <p class="lede">The <a href="../../stats-1/independent-samples-t-test/">t-test</a> compares two groups. But what if you have three diets, four teaching methods, or five doses? <strong>Analysis of Variance (ANOVA)</strong> compares all the group means at once — and it does it with a beautiful trick: instead of comparing means directly, it compares <em>variances</em>.</p>
+
+        <h2>Why not just run lots of t-tests?</h2>
+        <p>With four groups there are six possible pairwise t-tests. Each carries a 5% false-positive risk, and those risks pile up — run enough and you're almost guaranteed a "significant" result by chance alone. ANOVA sidesteps this with a single <strong>omnibus test</strong>: one verdict on whether <em>any</em> of the groups differ.</p>
+
+        <h2>The F-ratio: signal vs. noise, again</h2>
+        <p>ANOVA splits the total variation in the data into two pieces and takes their ratio:</p>
+        <p style="text-align:center;font-size:1.15rem;margin:1.25rem 0"><strong>F = (variance <em>between</em> groups) / (variance <em>within</em> groups)</strong></p>
+        <p>If the groups really differ, their means are spread out (big between-group variance) relative to the scatter inside each group — so F is large. If the groups are all basically the same, the between-group variance is just noise of the same size as the within-group variance, and F sits near 1.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="anovaviz">
+          <p class="viz-title">🎮 The F-Ratio in Action</p>
+          <p class="viz-sub">Four groups. Pull their means apart (more signal) or crank up the within-group scatter (more noise), and watch F and the p-value respond. The dashed line is the grand mean.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:200px">
+              <label>Separation of group means <span class="val" id="sep-val">10</span></label>
+              <input type="range" id="sep-range" min="0" max="22" step="1" value="10" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:200px">
+              <label>Within-group noise (SD) <span class="val" id="sd-val">12</span></label>
+              <input type="range" id="sd-range" min="3" max="28" step="1" value="12" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:160px">
+              <label>n per group <span class="val" id="n-val">15</span></label>
+              <input type="range" id="n-range" min="4" max="40" step="1" value="15" style="width:100%" />
+            </div>
+            <div class="control"><button class="btn btn-primary btn-sm" id="resample">New samples</button></div>
+          </div>
+
+          <canvas id="anova-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Between-group MS</span><span class="v" id="stat-msb">—</span></div>
+            <div class="stat"><span class="k">Within-group MS</span><span class="v" id="stat-msw">—</span></div>
+            <div class="stat"><span class="k">F-ratio</span><span class="v" id="stat-f">—</span></div>
+            <div class="stat"><span class="k">p-value</span><span class="v" id="stat-p">—</span></div>
+            <div class="stat"><span class="k">Verdict (α=.05)</span><span class="v" id="stat-dec" style="font-size:1rem">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Reading the result</h2>
+        <p>The F-ratio comes with two degrees of freedom — one for the between part (number of groups minus 1) and one for the within part (total observations minus number of groups) — which together give the p-value. As usual, p &lt; 0.05 means "this much separation would be surprising if all the groups were really identical."</p>
+        <div class="callout key">
+          <p><strong>ANOVA is an omnibus test.</strong> A significant F tells you <em>that</em> the groups aren't all equal — but not <em>which</em> ones differ. Group A might tower over the rest while B, C, and D are identical. To find out where the differences actually are, you follow up with <a href="../../stats-2/post-hoc-tests/">post-hoc tests</a>.</p>
+        </div>
+
+        <h2>What you're assuming</h2>
+        <ul>
+          <li>The groups are independent, and observations within each are independent.</li>
+          <li>The outcome is roughly normal within each group (or samples are large).</li>
+          <li><strong>Homogeneity of variance</strong> — the groups have similar spread. When that's badly violated, you reach for a <a href="../../stats-2/non-parametric-alternatives/">robust or non-parametric alternative</a>.</li>
+        </ul>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> ANOVA is the backbone of experimental statistics. Once you can partition variation into "between" and "within," you can extend the idea to <a href="../../stats-2/factorial-anova-two-way/">multiple factors at once</a> and to <a href="../../stats-2/repeated-measures-anova/">repeated measurements</a>.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ one-way ANOVA visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var K = 4, sep = 10, sd = 12, n = 15, groups = [];
+    var LO = 0, HI = 100, GRAND = 50;
+    var COLORS = ["#6366f1", "#14b8a6", "#f97316", "#e24b4a"];
+    var canvas = document.getElementById("anova-canvas"), ctx, W = 0, H = 300, padL = 36, padB = 22, padT = 10;
+
+    function clamp(v) { return v < LO ? LO : v > HI ? HI : v; }
+    function resample() {
+      groups = [];
+      for (var g = 0; g < K; g++) {
+        var mu = GRAND + (g - (K - 1) / 2) * sep, arr = [];
+        for (var i = 0; i < n; i++) arr.push(clamp(VIZ.gauss(mu, sd)));
+        groups.push(arr);
+      }
+      update();
+    }
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function vy(v) { return (H - padB) - (v / HI) * (H - padB - padT); }
+    function gx(g) { return padL + (g + 0.5) * ((W - padL) / K); }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      // y axis
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "right";
+      for (var t = 0; t <= 100; t += 25) { var y = vy(t); ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W, y); ctx.globalAlpha = 0.4; ctx.stroke(); ctx.globalAlpha = 1; ctx.fillText(t, padL - 5, y + 3); }
+      // grand mean
+      var gm = vy(GRAND);
+      ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([5, 4]); ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(padL, gm); ctx.lineTo(W, gm); ctx.stroke(); ctx.setLineDash([]);
+      ctx.textAlign = "left"; ctx.fillText("grand mean", padL + 4, gm - 4);
+      // groups
+      for (var g = 0; g < K; g++) {
+        var cx = gx(g), colW = (W - padL) / K, col = COLORS[g];
+        ctx.fillStyle = col;
+        for (var i = 0; i < groups[g].length; i++) {
+          var jx = cx + ((i % 7) - 3) * 6;
+          ctx.globalAlpha = 0.6; ctx.beginPath(); ctx.arc(jx, vy(groups[g][i]), 3, 0, 2 * Math.PI); ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        var m = VIZ.mean(groups[g]), my = vy(m);
+        ctx.strokeStyle = col; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(cx - colW * 0.32, my); ctx.lineTo(cx + colW * 0.32, my); ctx.stroke();
+        ctx.fillStyle = VIZ.css("--text-faint"); ctx.textAlign = "center"; ctx.font = "600 11px Inter,sans-serif";
+        ctx.fillText(String.fromCharCode(65 + g), cx, H - 6);
+      }
+    }
+
+    function update() {
+      var all = [].concat.apply([], groups), grand = VIZ.mean(all);
+      var ssb = 0, ssw = 0;
+      for (var g = 0; g < K; g++) {
+        var m = VIZ.mean(groups[g]);
+        ssb += groups[g].length * (m - grand) * (m - grand);
+        for (var i = 0; i < groups[g].length; i++) ssw += (groups[g][i] - m) * (groups[g][i] - m);
+      }
+      var dfB = K - 1, dfW = all.length - K, msb = ssb / dfB, msw = ssw / dfW;
+      var F = msw > 0 ? msb / msw : 0, p = VIZ.fUpper(F, dfB, dfW);
+      document.getElementById("sep-val").textContent = sep;
+      document.getElementById("sd-val").textContent = sd;
+      document.getElementById("n-val").textContent = n;
+      document.getElementById("stat-msb").textContent = msb.toFixed(1);
+      document.getElementById("stat-msw").textContent = msw.toFixed(1);
+      document.getElementById("stat-f").textContent = F.toFixed(2);
+      document.getElementById("stat-p").textContent = p < 0.001 ? "< 0.001" : p.toFixed(3);
+      var dec = document.getElementById("stat-dec");
+      dec.textContent = p < 0.05 ? "Groups differ" : "No difference detected";
+      dec.style.color = p < 0.05 ? "#22c55e" : VIZ.css("--text");
+      draw();
+    }
+
+    document.getElementById("sep-range").addEventListener("input", function () { sep = +this.value; resample(); });
+    document.getElementById("sd-range").addEventListener("input", function () { sd = +this.value; resample(); });
+    document.getElementById("n-range").addEventListener("input", function () { n = +this.value; resample(); });
+    document.getElementById("resample").addEventListener("click", resample);
+    window.addEventListener("resize", function () { fit(); draw(); });
+    VIZ.onTheme(draw);
+
+    fit(); resample();
+  })();
+  </script>
+</body>
+</html>

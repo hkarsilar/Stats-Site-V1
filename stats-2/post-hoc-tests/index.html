@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Post-Hoc Tests — hakan.science</title>
+  <meta name="description" content="Run enough comparisons and a false positive becomes almost certain. See how the family-wise error rate inflates — and how corrections like Bonferroni rein it back in." />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-2" data-section="post-hoc-tests">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 2.2</span>
+        <h1>Post-Hoc Tests</h1>
+
+        <p class="lede">A significant <a href="../../stats-2/one-way-anova/">ANOVA</a> tells you the groups aren't all equal — but not <em>which</em> ones differ. To find out, you compare the groups pairwise. The catch: every extra comparison is another roll of the dice for a false positive, and they add up fast. Post-hoc tests are how we go hunting for differences without fooling ourselves.</p>
+
+        <h2>The multiple-comparisons problem</h2>
+        <p>Each test at α = 0.05 has a 5% chance of a false positive when nothing's really there. Run one test and you're fine. But four groups means six pairwise comparisons; six groups means fifteen. With enough comparisons, the chance that <em>at least one</em> comes up "significant" by pure luck — the <strong>family-wise error rate</strong> — balloons toward certainty.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="phviz">
+          <p class="viz-title">🎮 How Errors Pile Up</p>
+          <p class="viz-sub">Even when <em>every</em> group is truly identical, here's the chance of getting at least one bogus "significant" pair. Add groups and watch the uncorrected bar climb — then see Bonferroni hold the line at 5%.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:260px">
+              <label>Number of groups <span class="val" id="k-val">5</span> &rarr; <span id="m-val">10</span> comparisons</label>
+              <input type="range" id="k-range" min="3" max="12" step="1" value="5" style="width:100%" />
+            </div>
+            <div class="control"><button class="btn btn-primary btn-sm" id="run">Run 2,000 experiments</button></div>
+          </div>
+
+          <canvas id="ph-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Comparisons</span><span class="v" id="stat-m">10</span></div>
+            <div class="stat"><span class="k">Uncorrected error rate</span><span class="v" id="stat-unc" style="color:#ef4444">—</span></div>
+            <div class="stat"><span class="k">Per-test α after Bonferroni</span><span class="v" id="stat-bonf">—</span></div>
+            <div class="stat"><span class="k">Bonferroni error rate</span><span class="v" id="stat-bonfr" style="color:#22c55e">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>How corrections fix it</h2>
+        <p>The idea is to make each individual test more demanding so the <em>overall</em> error stays at 5%:</p>
+        <ul>
+          <li><strong>Bonferroni</strong> — the simplest: just divide your α by the number of comparisons. Ten comparisons? Each must clear p &lt; 0.005. Dead simple and always valid, but conservative (it can miss real differences).</li>
+          <li><strong>Tukey's HSD</strong> — purpose-built for comparing all pairs of means after ANOVA; more powerful than Bonferroni when you're doing every pairwise comparison.</li>
+          <li><strong>Holm</strong> — a step-down tweak on Bonferroni that's uniformly more powerful while still controlling the family-wise error.</li>
+        </ul>
+
+        <div class="callout key">
+          <p><strong>The trade-off:</strong> corrections trade some <a href="../../stats-1/effect-size-and-power/">power</a> for protection against false alarms. Be stingier (Bonferroni) and you'll miss some real effects; be lenient and you'll cry wolf. The right choice depends on how costly a false positive is in your context.</p>
+        </div>
+
+        <h2>Planned vs. post-hoc</h2>
+        <p>If you decided <em>before</em> seeing the data to test just a couple of specific comparisons (planned contrasts), you need little or no correction — you're not fishing. The heavy correction is the price of <em>exploring</em> all pairs after the fact, which is exactly what "post-hoc" (Latin for "after this") means.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> the multiple-comparisons problem is everywhere — A/B testing, genomics, brain imaging, dredging survey data. Understanding why error inflates, and how to control it, is one of the most practically important ideas in all of statistics.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ family-wise error visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var k = 5, ALPHA = 0.05, empUnc = null, empBonf = null;
+    var canvas = document.getElementById("ph-canvas"), ctx, W = 0, H = 170, padL = 12, padR = 12;
+
+    function comps() { return k * (k - 1) / 2; }
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function bx(p) { return padL + p * (W - padL - padR); }
+
+    function bar(y, frac, color, label, value) {
+      var x0 = padL, x1 = bx(frac);
+      ctx.fillStyle = VIZ.css("--surface-2"); ctx.fillRect(x0, y, W - padL - padR, 26);
+      ctx.fillStyle = color; ctx.globalAlpha = 0.85; ctx.fillRect(x0, y, x1 - x0, 26); ctx.globalAlpha = 1;
+      ctx.fillStyle = VIZ.css("--text"); ctx.font = "600 12px Inter,sans-serif"; ctx.textAlign = "left";
+      ctx.fillText(label, x0 + 4, y - 6);
+      ctx.textAlign = "right"; ctx.fillText(value, W - padR, y - 6);
+    }
+
+    function draw() {
+      var m = comps();
+      var uncTheory = 1 - Math.pow(1 - ALPHA, m);
+      var bonfAlpha = ALPHA / m;
+      var bonfTheory = 1 - Math.pow(1 - bonfAlpha, m);
+      ctx.clearRect(0, 0, W, H);
+
+      bar(34, uncTheory, "#ef4444", "No correction", (uncTheory * 100).toFixed(0) + "%");
+      bar(104, bonfTheory, "#22c55e", "Bonferroni", (bonfTheory * 100).toFixed(1) + "%");
+
+      // 5% target line across both bars
+      var tx = bx(0.05);
+      ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([4, 3]); ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(tx, 28); ctx.lineTo(tx, 138); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center";
+      ctx.fillText("5% target", tx, 150);
+
+      // empirical ticks from simulation
+      function tick(y, frac, label) {
+        if (frac == null) return;
+        var x = bx(frac); ctx.strokeStyle = VIZ.css("--text"); ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(x, y - 3); ctx.lineTo(x, y + 29); ctx.stroke();
+      }
+      tick(34, empUnc); tick(104, empBonf);
+
+      document.getElementById("k-val").textContent = k;
+      document.getElementById("m-val").textContent = m;
+      document.getElementById("stat-m").textContent = m;
+      document.getElementById("stat-unc").textContent = (uncTheory * 100).toFixed(0) + "%";
+      document.getElementById("stat-bonf").textContent = bonfAlpha.toFixed(4);
+      document.getElementById("stat-bonfr").textContent = (bonfTheory * 100).toFixed(1) + "%";
+    }
+
+    function run() {
+      var m = comps(), bonfAlpha = ALPHA / m, trials = 2000, hitUnc = 0, hitBonf = 0;
+      for (var e = 0; e < trials; e++) {
+        var anyUnc = false, anyBonf = false;
+        for (var c = 0; c < m; c++) {
+          var pv = Math.random();           // p-value of a test when the null is true ~ Uniform(0,1)
+          if (pv < ALPHA) anyUnc = true;
+          if (pv < bonfAlpha) anyBonf = true;
+        }
+        if (anyUnc) hitUnc++;
+        if (anyBonf) hitBonf++;
+      }
+      empUnc = hitUnc / trials; empBonf = hitBonf / trials;
+      draw();
+    }
+
+    document.getElementById("k-range").addEventListener("input", function () { k = +this.value; empUnc = empBonf = null; draw(); });
+    document.getElementById("run").addEventListener("click", run);
+    window.addEventListener("resize", function () { fit(); draw(); });
+    VIZ.onTheme(draw);
+
+    fit(); draw();
+  })();
+  </script>
+</body>
+</html>
