@@ -51,8 +51,8 @@ window.CURRICULUM = [
     subtitle: "Advanced Modeling",
     accent: "var(--success)",
     sections: [
-      { n: "3.1",  slug: "multiple-regression",                     title: "Multiple Regression" },
-      { n: "3.2",  slug: "multicollinearity-and-variable-selection",title: "Multicollinearity & Variable Selection" },
+      { n: "3.1",  slug: "multiple-regression",                     title: "Multiple Regression", ready: true },
+      { n: "3.2",  slug: "multicollinearity-and-variable-selection",title: "Multicollinearity & Variable Selection", ready: true },
       { n: "3.3",  slug: "categorical-predictors-and-dummy-coding", title: "Categorical Predictors & Dummy Coding" },
       { n: "3.4",  slug: "interactions-in-regression",              title: "Interactions in Regression" },
       { n: "3.5",  slug: "mediation-and-indirect-effects",          title: "Mediation & Indirect Effects" },
