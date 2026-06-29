@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Power Analysis for Complex Designs — hakan.science</title>
+  <meta name="description" content="Before collecting data, work out how many participants you need. Set an effect size and target power, and read the required sample size off the power curve." />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-3" data-section="power-analysis-for-complex-designs">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 3.10</span>
+        <h1>Power Analysis for Complex Designs</h1>
+
+        <p class="lede">You met <a href="../../stats-1/effect-size-and-power/">power</a> back in Stats 1 as "the chance of detecting a real effect." Here we put it to work as a <em>planning</em> tool. The single most valuable thing statistics can do for a study happens <strong>before any data is collected</strong>: telling you how many participants you'll need to give your effect a fair chance of being found.</p>
+
+        <h2>The four interlocking quantities</h2>
+        <p>Power analysis links four numbers — fix any three and the fourth is determined:</p>
+        <ul>
+          <li><strong>Effect size</strong> — how big the effect you care about is.</li>
+          <li><strong>Sample size (n)</strong> — how much data you collect.</li>
+          <li><strong>α</strong> — your false-positive rate (usually 0.05).</li>
+          <li><strong>Power</strong> — your chance of detecting the effect (target: ≥ 0.80).</li>
+        </ul>
+        <p>The most common use runs it backwards: you <em>choose</em> the effect size you'd hate to miss, set power to 0.80 and α to 0.05, and <strong>solve for the sample size</strong>. The power curve below does exactly that.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="paviz">
+          <p class="viz-title">🎮 Sample-Size Planner</p>
+          <p class="viz-sub">For a two-group comparison: pick the effect size and the power you want. The curve is power vs. sample size; the marker shows the smallest n per group that reaches your target.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:220px">
+              <label>Effect size (Cohen's d) <span class="val" id="d-val">0.50</span></label>
+              <input type="range" id="d-range" min="10" max="120" step="1" value="50" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:220px">
+              <label>Target power <span class="val" id="pw-val">0.80</span></label>
+              <input type="range" id="pw-range" min="50" max="99" step="1" value="80" style="width:100%" />
+            </div>
+          </div>
+
+          <canvas id="pa-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Required n per group</span><span class="v" id="stat-n">—</span></div>
+            <div class="stat"><span class="k">Total participants</span><span class="v" id="stat-total">—</span></div>
+            <div class="stat"><span class="k">Effect size label</span><span class="v" id="stat-label" style="font-size:1rem">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>Watch the punishing math of small effects. A large effect (d = 0.8) needs only a couple dozen per group; a small one (d = 0.2) can demand <em>hundreds</em>. Because power depends on effect size and n together, halving the effect you're chasing roughly <em>quadruples</em> the sample you need. This is why detecting subtle effects is so expensive — and why underpowered studies of small effects are nearly worthless.</p>
+
+        <h2>Why "complex designs" are harder</h2>
+        <p>For a simple two-group t-test you can almost read the answer off a table. Real studies are messier, and each wrinkle changes the power calculation:</p>
+        <ul>
+          <li><strong>More groups / factors</strong> (<a href="../../stats-2/factorial-anova-two-way/">factorial ANOVA</a>) — power depends on which specific effect (a main effect? an interaction?) you most want to detect; interactions are notoriously power-hungry.</li>
+          <li><strong>Repeated measures</strong> — the correlation between measurements changes the math, usually <em>boosting</em> power (the <a href="../../stats-2/repeated-measures-anova/">within-subjects advantage</a>).</li>
+          <li><strong>Multiple comparisons</strong> — correcting α (<a href="../../stats-2/post-hoc-tests/">Bonferroni</a> and friends) lowers per-test power, so you need more data to compensate.</li>
+          <li><strong>Clustered / multilevel data</strong> — students within classrooms aren't independent, which can drastically reduce effective sample size.</li>
+        </ul>
+        <div class="callout key">
+          <p><strong>When formulas run out, simulate.</strong> For genuinely complex designs there's often no clean formula. The modern approach is <strong>simulation</strong>: generate thousands of fake datasets with your assumed effect, run your planned analysis on each, and count how often it comes out significant. That proportion <em>is</em> your power — and it works for any design you can simulate.</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> a study that's too small wastes everyone's time and can't find what it's looking for; one that's needlessly huge wastes resources and over-tests participants. Power analysis is how responsible research is planned — and it's the perfect place to end, because it brings together effect size, sampling, hypothesis testing, and design into one practical decision.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ power-curve / sample-size visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var d = 0.5, target = 0.8;
+    var NMAX = 160;
+    var canvas = document.getElementById("pa-canvas"), ctx, W = 0, H = 250, padL = 40, padB = 28, padT = 12;
+
+    function power(n) { var delta = d * Math.sqrt(n / 2), zc = 1.959964; return VIZ.normCdf(delta - zc) + VIZ.normCdf(-delta - zc); }
+    function requiredN() { for (var n = 2; n <= NMAX; n++) if (power(n) >= target) return n; return NMAX + 1; }
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function px(n) { return padL + (n / NMAX) * (W - padL - 10); }
+    function py(p) { return (H - padB) - p * (H - padB - padT); }
+
+    function update() {
+      var reqN = requiredN();
+      ctx.clearRect(0, 0, W, H);
+      // axes + gridlines
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace";
+      ctx.textAlign = "right";
+      for (var p = 0; p <= 1; p += 0.25) { var y = py(p); ctx.globalAlpha = 0.4; ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - 10, y); ctx.stroke(); ctx.globalAlpha = 1; ctx.fillText(p.toFixed(2), padL - 5, y + 3); }
+      ctx.textAlign = "center";
+      for (var nn = 0; nn <= NMAX; nn += 40) ctx.fillText(nn, px(nn), H - padB + 14);
+      ctx.fillText("sample size per group →", W / 2, H - 4);
+      // target power line
+      ctx.strokeStyle = "#f97316"; ctx.setLineDash([5, 4]); ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(padL, py(target)); ctx.lineTo(W - 10, py(target)); ctx.stroke(); ctx.setLineDash([]);
+      // power curve
+      ctx.strokeStyle = VIZ.css("--primary"); ctx.lineWidth = 3; ctx.beginPath();
+      for (var n = 2; n <= NMAX; n++) { var x = px(n), y = py(power(n)); if (n === 2) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
+      ctx.stroke();
+      // required-n marker
+      if (reqN <= NMAX) {
+        var mx = px(reqN);
+        ctx.strokeStyle = VIZ.css("--secondary"); ctx.setLineDash([3, 3]); ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(mx, py(target)); ctx.lineTo(mx, H - padB); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = VIZ.css("--secondary"); ctx.beginPath(); ctx.arc(mx, py(power(reqN)), 5, 0, 2 * Math.PI); ctx.fill();
+      }
+
+      document.getElementById("d-val").textContent = d.toFixed(2);
+      document.getElementById("pw-val").textContent = target.toFixed(2);
+      document.getElementById("stat-n").textContent = reqN > NMAX ? "> " + NMAX : reqN;
+      document.getElementById("stat-total").textContent = reqN > NMAX ? "> " + (2 * NMAX) : 2 * reqN;
+      var lab = document.getElementById("stat-label");
+      lab.textContent = d < 0.35 ? "small (expensive!)" : d < 0.65 ? "medium" : "large";
+      lab.style.color = d < 0.35 ? "#f97316" : VIZ.css("--text");
+    }
+
+    document.getElementById("d-range").addEventListener("input", function () { d = this.value / 100; update(); });
+    document.getElementById("pw-range").addEventListener("input", function () { target = this.value / 100; update(); });
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(update);
+    fit(); update();
+  })();
+  </script>
+</body>
+</html>

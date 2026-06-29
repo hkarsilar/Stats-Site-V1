@@ -59,8 +59,8 @@ window.CURRICULUM = [
       { n: "3.6",  slug: "logistic-regression",                     title: "Logistic Regression", ready: true },
       { n: "3.7",  slug: "assumptions-of-regression",               title: "Assumptions of Regression", ready: true },
       { n: "3.8",  slug: "model-comparison",                        title: "Model Comparison", ready: true },
-      { n: "3.9",  slug: "factor-analysis-pca",                     title: "Factor Analysis / PCA" },
-      { n: "3.10", slug: "power-analysis-for-complex-designs",      title: "Power Analysis for Complex Designs" }
+      { n: "3.9",  slug: "factor-analysis-pca",                     title: "Factor Analysis / PCA", ready: true },
+      { n: "3.10", slug: "power-analysis-for-complex-designs",      title: "Power Analysis for Complex Designs", ready: true }
     ]
   }
 ];

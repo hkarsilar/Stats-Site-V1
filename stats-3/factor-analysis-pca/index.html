@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Factor Analysis / PCA — hakan.science</title>
+  <meta name="description" content="When many variables move together, a few hidden dimensions explain most of it. Watch principal components find the axes of maximum variance in a data cloud." />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-3" data-section="factor-analysis-pca">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 3.9</span>
+        <h1>Factor Analysis / PCA</h1>
+
+        <p class="lede">A personality survey might ask 50 questions, but they aren't 50 independent things — answers cluster, because they tap a handful of underlying traits. <strong>Factor analysis</strong> and <strong>Principal Component Analysis (PCA)</strong> are the tools that find those few hidden dimensions hiding inside many correlated variables. They turn "50 columns" into "5 things that actually matter."</p>
+
+        <h2>The core idea: directions of variance</h2>
+        <p>PCA looks for the directions in which the data <em>varies the most</em>. The <strong>first principal component</strong> is the single line that captures as much of the spread as possible; the second is the best remaining direction perpendicular to the first, and so on. When variables are highly correlated, almost all the variance lines up along one direction — so one component can stand in for many.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="pcaviz">
+          <p class="viz-title">🎮 Watch the Components Find the Cloud</p>
+          <p class="viz-sub">A cloud of two correlated variables. The long arrow is PC1 (most variance), the short one PC2. Crank up the correlation and watch the cloud stretch into a line — and one component swallow nearly all the variance.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:300px">
+              <label>Correlation between the variables <span class="val" id="r-val">0.50</span></label>
+              <input type="range" id="r-range" min="0" max="97" step="1" value="50" style="width:100%" />
+            </div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="resample">New sample</button></div>
+          </div>
+
+          <canvas id="pca-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Variance explained by PC1</span><span class="v" id="stat-pc1">—</span></div>
+            <div class="stat"><span class="k">Variance explained by PC2</span><span class="v" id="stat-pc2">—</span></div>
+            <div class="stat"><span class="k">Effective dimensions</span><span class="v" id="stat-dim" style="font-size:1rem">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>That last number is the whole point. Two variables technically live in 2D, but when they're strongly correlated the cloud is really a slightly fattened <em>line</em> — close to one-dimensional. PCA quantifies that: if PC1 explains 95% of the variance, you can describe the data with one number per point instead of two and lose almost nothing. Scale that up from 2 variables to 50 and you have serious <strong>dimensionality reduction</strong>.</p>
+
+        <h2>How many components to keep</h2>
+        <p>The usual aids are the <strong>scree plot</strong> (variance explained by each component — look for the "elbow" where it levels off), the <strong>Kaiser criterion</strong> (keep components with eigenvalue &gt; 1), and simply keeping enough to reach a target like 80–90% of total variance. There's judgment involved; interpretability matters as much as the numbers.</p>
+
+        <h2>PCA vs. factor analysis</h2>
+        <div class="callout key">
+          <p>They look similar but answer different questions. <strong>PCA</strong> is descriptive: it repackages the variance into uncorrelated components, no model assumed. <strong>Factor analysis</strong> is a model: it assumes real, unobserved <em>latent factors</em> (like "extraversion") that <em>cause</em> the observed responses, and separates shared variance from each variable's unique noise. Use PCA to compress; use factor analysis to argue that a hidden trait exists.</p>
+        </div>
+
+        <h2>Reading the result</h2>
+        <p>Each component has <strong>loadings</strong> — how strongly each original variable contributes to it. You interpret a component by looking at which variables load heavily on it: if questions about parties, talking, and meeting strangers all load on one factor, you might name it "sociability." Naming factors is part science, part art.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> PCA and factor analysis are everywhere data is wide — psychometrics, genomics, image compression, recommender systems. They're how you find structure and signal when you have far more variables than you can reason about one at a time.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ PCA visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var r = 0.5, pts = [];
+    var canvas = document.getElementById("pca-canvas"), ctx, W = 0, H = 300;
+
+    function gen() {
+      pts = [];
+      for (var i = 0; i < 90; i++) { var x = VIZ.randn(); var y = r * x + Math.sqrt(1 - r * r) * VIZ.randn(); pts.push({ x: x, y: y }); }
+      update();
+    }
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+
+    function eigen2(a, b, d) {
+      var tr = a + d, disc = Math.sqrt((a - d) * (a - d) + 4 * b * b);
+      var l1 = (tr + disc) / 2, l2 = (tr - disc) / 2;
+      var v1; if (Math.abs(b) > 1e-9) v1 = { x: l1 - d, y: b }; else v1 = (a >= d ? { x: 1, y: 0 } : { x: 0, y: 1 });
+      var n = Math.hypot(v1.x, v1.y); v1 = { x: v1.x / n, y: v1.y / n };
+      return { l1: l1, l2: l2, v1: v1, v2: { x: -v1.y, y: v1.x } };
+    }
+
+    function update() {
+      var mx = VIZ.mean(pts.map(function (p) { return p.x; })), my = VIZ.mean(pts.map(function (p) { return p.y; }));
+      var sxx = 0, syy = 0, sxy = 0;
+      pts.forEach(function (p) { sxx += (p.x - mx) * (p.x - mx); syy += (p.y - my) * (p.y - my); sxy += (p.x - mx) * (p.y - my); });
+      var n = pts.length; sxx /= n; syy /= n; sxy /= n;
+      var e = eigen2(sxx, sxy, syy);
+      var cx = W / 2, cy = H / 2, S = Math.min(W, H) / 7;
+      ctx.clearRect(0, 0, W, H);
+      // axes
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.globalAlpha = 0.5;
+      ctx.beginPath(); ctx.moveTo(cx, 8); ctx.lineTo(cx, H - 8); ctx.moveTo(20, cy); ctx.lineTo(W - 20, cy); ctx.stroke(); ctx.globalAlpha = 1;
+      // points
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.globalAlpha = 0.55;
+      pts.forEach(function (p) { ctx.beginPath(); ctx.arc(cx + p.x * S, cy - p.y * S, 3.5, 0, 2 * Math.PI); ctx.fill(); });
+      ctx.globalAlpha = 1;
+      // component arrows (length ~ sqrt(eigenvalue))
+      function arrow(v, len, color, label) {
+        var ex = cx + v.x * len, ey = cy - v.y * len;
+        ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(ex, ey); ctx.stroke();
+        var ang = Math.atan2(cy - ey, ex - cx);
+        ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(ex - 10 * Math.cos(ang - 0.4), ey + 10 * Math.sin(ang - 0.4)); ctx.lineTo(ex - 10 * Math.cos(ang + 0.4), ey + 10 * Math.sin(ang + 0.4)); ctx.closePath(); ctx.fill();
+        ctx.font = "700 13px Inter,sans-serif"; ctx.fillText(label, ex + 6 * Math.sign(v.x || 1), ey - 6);
+      }
+      arrow(e.v1, Math.sqrt(e.l1) * S * 2.3, VIZ.css("--primary"), "PC1");
+      arrow(e.v2, Math.sqrt(Math.max(e.l2, 0.0001)) * S * 2.3, "#f97316", "PC2");
+
+      var tot = e.l1 + e.l2, p1 = e.l1 / tot, p2 = e.l2 / tot;
+      document.getElementById("r-val").textContent = r.toFixed(2);
+      document.getElementById("stat-pc1").textContent = (p1 * 100).toFixed(0) + "%";
+      document.getElementById("stat-pc2").textContent = (p2 * 100).toFixed(0) + "%";
+      var dim = document.getElementById("stat-dim");
+      if (p1 > 0.9) { dim.textContent = "~1 (nearly a line)"; dim.style.color = "#22c55e"; }
+      else if (p1 > 0.7) { dim.textContent = "mostly 1"; dim.style.color = "#f97316"; }
+      else { dim.textContent = "genuinely 2"; dim.style.color = VIZ.css("--text"); }
+    }
+
+    document.getElementById("r-range").addEventListener("input", function () { r = this.value / 100; gen(); });
+    document.getElementById("resample").addEventListener("click", gen);
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(update);
+    fit(); gen();
+  })();
+  </script>
+</body>
+</html>
