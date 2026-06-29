@@ -46,7 +46,7 @@
               </div>
             </div>
             <div class="control"><button class="btn btn-primary btn-sm" id="draw-1">Draw 1 study</button></div>
-            <div class="control"><button class="btn btn-ghost btn-sm" id="draw-many">Draw 50</button></div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="draw-many">Draw 25</button></div>
             <div class="control"><button class="btn btn-ghost btn-sm" id="reset">Reset</button></div>
           </div>
 
@@ -153,13 +153,18 @@
       document.getElementById("stat-target").textContent = level + "%";
     }
     function render() { draw(); stats(); }
-    function many(total) { if (anim) cancelAnimationFrame(anim); var a = 0; (function step() { var b = Math.min(3, total - a); for (var i = 0; i < b; i++) build(); a += b; render(); if (a < total) anim = requestAnimationFrame(step); else anim = null; })(); }
+    function many(total) {
+      if (anim) cancelAnimationFrame(anim);
+      var a = 0, last = null;
+      function step(ts) { if (last === null) last = ts; if (ts - last >= 75) { build(); a++; last = ts; render(); } if (a < total) anim = requestAnimationFrame(step); else anim = null; }
+      anim = requestAnimationFrame(step);
+    }
     function reset() { if (anim) { cancelAnimationFrame(anim); anim = null; } intervals = []; hits = 0; render(); }
 
     document.getElementById("n-range").addEventListener("input", function () { n = +this.value; document.getElementById("n-val").textContent = "n = " + n; reset(); });
     document.getElementById("lvl-seg").addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; level = +b.dataset.lvl; Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", +x.dataset.lvl === level); }); reset(); });
     document.getElementById("draw-1").addEventListener("click", function () { build(); render(); });
-    document.getElementById("draw-many").addEventListener("click", function () { many(50); });
+    document.getElementById("draw-many").addEventListener("click", function () { many(25); });
     document.getElementById("reset").addEventListener("click", reset);
     window.addEventListener("resize", function () { fit(); render(); });
     new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });

@@ -44,7 +44,7 @@
               </div>
             </div>
             <div class="control"><button class="btn btn-primary btn-sm" id="draw-1">Draw 1</button></div>
-            <div class="control"><button class="btn btn-ghost btn-sm" id="draw-many">Draw 300</button></div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="draw-many">Draw 50</button></div>
             <div class="control"><button class="btn btn-ghost btn-sm" id="reset">Reset</button></div>
           </div>
 
@@ -155,13 +155,18 @@
         document.getElementById("stat-se").textContent = sd.toFixed(2);
       } else { document.getElementById("stat-mean").textContent = "—"; document.getElementById("stat-se").textContent = "—"; }
     }
-    function many(total) { if (anim) cancelAnimationFrame(anim); var a = 0; (function step() { var b = Math.min(10, total - a); for (var i = 0; i < b; i++) one(); a += b; render(); if (a < total) anim = requestAnimationFrame(step); else anim = null; })(); }
+    function many(total) {
+      if (anim) cancelAnimationFrame(anim);
+      var a = 0, last = null;
+      function step(ts) { if (last === null) last = ts; if (ts - last >= 30) { one(); a++; last = ts; render(); } if (a < total) anim = requestAnimationFrame(step); else anim = null; }
+      anim = requestAnimationFrame(step);
+    }
     function reset() { if (anim) { cancelAnimationFrame(anim); anim = null; } ests = []; render(); }
 
     document.getElementById("n-range").addEventListener("input", function () { n = +this.value; document.getElementById("n-val").textContent = "n = " + n; reset(); });
     document.getElementById("stat-seg").addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; statKind = b.dataset.stat; Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x.dataset.stat === statKind); }); reset(); });
     document.getElementById("draw-1").addEventListener("click", function () { one(); render(); });
-    document.getElementById("draw-many").addEventListener("click", function () { many(300); });
+    document.getElementById("draw-many").addEventListener("click", function () { many(50); });
     document.getElementById("reset").addEventListener("click", reset);
     window.addEventListener("resize", function () { size(); render(); });
     new MutationObserver(render).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });

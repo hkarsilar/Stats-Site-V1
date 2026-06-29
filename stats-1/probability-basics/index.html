@@ -36,7 +36,7 @@
               <input type="range" id="p-range" min="0" max="100" step="1" value="50" style="width:100%" />
             </div>
             <div class="control"><button class="btn btn-primary btn-sm" id="flip-1">Flip once</button></div>
-            <div class="control"><button class="btn btn-ghost btn-sm" id="flip-many">Flip 500</button></div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="flip-many">Flip 100</button></div>
             <div class="control"><button class="btn btn-ghost btn-sm" id="reset">Reset</button></div>
           </div>
 
@@ -120,12 +120,17 @@
       draw();
     }
     function one() { flips++; if (Math.random() < p) heads++; record(); }
-    function many(total) { if (anim) cancelAnimationFrame(anim); var a = 0; (function step() { var b = Math.min(15, total - a); for (var i = 0; i < b; i++) one(); a += b; update(); if (a < total) anim = requestAnimationFrame(step); else anim = null; })(); }
+    function many(total) {
+      if (anim) cancelAnimationFrame(anim);
+      var a = 0, last = null;
+      function step(ts) { if (last === null) last = ts; if (ts - last >= 18) { one(); a++; last = ts; update(); } if (a < total) anim = requestAnimationFrame(step); else anim = null; }
+      anim = requestAnimationFrame(step);
+    }
     function reset() { if (anim) { cancelAnimationFrame(anim); anim = null; } flips = 0; heads = 0; hist = []; update(); }
 
     document.getElementById("p-range").addEventListener("input", function () { p = this.value / 100; document.getElementById("p-val").textContent = p.toFixed(2); reset(); });
     document.getElementById("flip-1").addEventListener("click", function () { one(); update(); });
-    document.getElementById("flip-many").addEventListener("click", function () { many(500); });
+    document.getElementById("flip-many").addEventListener("click", function () { many(100); });
     document.getElementById("reset").addEventListener("click", reset);
     window.addEventListener("resize", function () { fit(); draw(); });
     VIZ.onTheme(draw);

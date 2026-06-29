@@ -54,7 +54,7 @@
               <button class="btn btn-primary btn-sm" id="draw-1">Draw 1 sample</button>
             </div>
             <div class="control">
-              <button class="btn btn-ghost btn-sm" id="draw-many">Draw 200 (animated)</button>
+              <button class="btn btn-ghost btn-sm" id="draw-many">Draw 50 (animated)</button>
             </div>
             <div class="control">
               <button class="btn btn-ghost btn-sm" id="reset">Reset</button>
@@ -297,15 +297,14 @@
     }
     function drawMany(total) {
       if (animId) cancelAnimationFrame(animId);
-      var added = 0;
-      (function step() {
-        var batch = Math.min(8, total - added);
-        for (var i = 0; i < batch; i++) drawOne();
-        added += batch;
-        renderAll();
+      var added = 0, last = null;
+      function step(ts) {
+        if (last === null) last = ts;
+        if (ts - last >= 30) { drawOne(); added++; last = ts; renderAll(); }
         if (added < total) animId = requestAnimationFrame(step);
         else animId = null;
-      })();
+      }
+      animId = requestAnimationFrame(step);
     }
     function resetMeans() {
       if (animId) { cancelAnimationFrame(animId); animId = null; }
@@ -331,7 +330,7 @@
       resetMeans();
     });
     document.getElementById("draw-1").addEventListener("click", function () { drawOne(); renderAll(); });
-    document.getElementById("draw-many").addEventListener("click", function () { drawMany(200); });
+    document.getElementById("draw-many").addEventListener("click", function () { drawMany(50); });
     document.getElementById("reset").addEventListener("click", resetMeans);
 
     window.addEventListener("resize", function () { sizeCanvases(); renderAll(); });
