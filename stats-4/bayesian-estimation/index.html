@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bayesian Estimation & Credible Intervals — hakan.science</title>
+  <meta name="description" content="Turn a posterior distribution into concrete answers: a point estimate and a credible interval you can actually interpret as a probability." />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-4" data-section="bayesian-estimation">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 4.3</span>
+        <h1>Bayesian Estimation &amp; Credible Intervals</h1>
+
+        <p class="lede"><a href="../../stats-4/bayesian-thinking/">Bayesian updating</a> hands you a whole posterior distribution. That's wonderfully complete — but eventually someone asks "so what's your estimate, and how sure are you?" Boiling the posterior down to a number and a range is <strong>Bayesian estimation</strong>, and the range it produces — the <strong>credible interval</strong> — finally means what everyone always <em>wished</em> a confidence interval meant.</p>
+
+        <h2>Two summaries of a posterior</h2>
+        <ul>
+          <li>A <strong>point estimate</strong>: usually the <em>posterior mean</em> (the balance point), but sometimes the <em>median</em> or the <em>mode</em> (the peak, called the MAP — maximum a posteriori).</li>
+          <li>A <strong>credible interval</strong>: a range that contains a stated share of the posterior probability — say 95%. The most common version is the <em>central</em> interval, chopping 2.5% off each tail.</li>
+        </ul>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="cibviz">
+          <p class="viz-title">🎮 Read the Credible Interval Off the Posterior</p>
+          <p class="viz-sub">Estimating a proportion with a flat prior. The purple curve is your posterior; the shaded band holds the central credibility you choose. Add data and watch it tighten.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:200px"><label>Data collected (trials) <span class="val" id="n-val">30</span></label><input type="range" id="n-range" min="2" max="300" step="1" value="30" /></div>
+            <div class="control" style="flex:1;min-width:200px"><label>Observed rate of success <span class="val" id="obs-val">0.60</span></label><input type="range" id="obs-range" min="0" max="100" step="1" value="60" /></div>
+            <div class="control">
+              <label>Credibility</label>
+              <div class="seg" id="lvl-seg">
+                <button data-lvl="0.90">90%</button>
+                <button data-lvl="0.95" class="active">95%</button>
+                <button data-lvl="0.99">99%</button>
+              </div>
+            </div>
+          </div>
+
+          <canvas id="cib-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Posterior mean</span><span class="v" id="stat-mean">—</span></div>
+            <div class="stat"><span class="k">Credible interval</span><span class="v" id="stat-ci" style="font-size:1rem">—</span></div>
+            <div class="stat"><span class="k">Interval width</span><span class="v" id="stat-width">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>The interpretation everyone wants</h2>
+        <div class="callout key">
+          <p>A 95% <strong>credible</strong> interval means exactly what it sounds like: <em>given your data and prior, there is a 95% probability the parameter lies in this range.</em> Compare that to a <a href="../../stats-1/confidence-intervals/">frequentist confidence interval</a>, where the 95% refers to the long-run behavior of the <em>procedure</em>, not this particular interval. The Bayesian statement is the direct probability claim people instinctively (but wrongly) read into confidence intervals.</p>
+        </div>
+
+        <h2>Central vs. highest-density intervals</h2>
+        <p>The shaded band above is a <strong>central</strong> interval — equal probability trimmed from each tail. An alternative is the <strong>highest posterior density (HPD)</strong> interval: the <em>shortest</em> range containing the target probability. For a symmetric posterior they're identical; for a skewed one the HPD hugs the peak and is a little narrower. Both are legitimate — central intervals are simpler, HPD intervals are tightest.</p>
+
+        <h2>Watch it tighten</h2>
+        <p>Slide the trials up and the posterior narrows, so the credible interval shrinks — more data, more certainty, exactly as it should. Crank the credibility from 90% to 99% and the band widens: demanding more certainty means admitting a wider range, the same precision-vs-confidence trade-off you saw with confidence intervals.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> credible intervals are how Bayesian results get reported — in trials, forecasts, and industry experiments. They deliver an honest, directly-interpretable measure of uncertainty, which is a big part of why Bayesian methods have surged in popularity.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ credible-interval visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var level = 0.95;
+    var canvas = document.getElementById("cib-canvas"), ctx, W = 0, H = 230, pad = 28;
+    function val(id) { return +document.getElementById(id).value; }
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function vx(p) { return pad + p * (W - 2 * pad); }
+    function betaPdf(p, a, b) { if (p <= 0 || p >= 1) return 0; var lB = VIZ.gammaln(a) + VIZ.gammaln(b) - VIZ.gammaln(a + b); return Math.exp((a - 1) * Math.log(p) + (b - 1) * Math.log(1 - p) - lB); }
+    function betaInv(a, b, target) { var lo = 0, hi = 1; for (var i = 0; i < 60; i++) { var m = (lo + hi) / 2; if (VIZ.betai(a, b, m) < target) lo = m; else hi = m; } return (lo + hi) / 2; }
+
+    function update() {
+      var n = val("n-range"), obs = val("obs-range") / 100, k = Math.round(obs * n);
+      var a = 1 + k, b = 1 + (n - k);                 // flat Beta(1,1) prior
+      var lo = betaInv(a, b, (1 - level) / 2), hi = betaInv(a, b, 1 - (1 - level) / 2);
+      var mean = a / (a + b);
+
+      var baseY = H - 20, top = 14, peak = 0;
+      for (var i = 0; i <= 200; i++) { var v = betaPdf(i / 200, a, b); if (v > peak) peak = v; }
+      var scale = (baseY - top) / (peak || 1);
+      ctx.clearRect(0, 0, W, H);
+      // shaded credible band
+      ctx.fillStyle = "#8b5cf6"; ctx.globalAlpha = 0.22;
+      ctx.beginPath(); ctx.moveTo(vx(lo), baseY);
+      for (var p = lo; p <= hi; p += (hi - lo) / 120) ctx.lineTo(vx(p), baseY - betaPdf(p, a, b) * scale);
+      ctx.lineTo(vx(hi), baseY); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
+      // posterior curve
+      ctx.strokeStyle = "#8b5cf6"; ctx.lineWidth = 3; ctx.beginPath();
+      for (var q = 0; q <= 200; q++) { var pp = q / 200, x = vx(pp), y = baseY - betaPdf(pp, a, b) * scale; if (q === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
+      ctx.stroke();
+      // axis + bounds + mean
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(pad, baseY); ctx.lineTo(W - pad, baseY); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center";
+      for (var t = 0; t <= 1; t += 0.25) ctx.fillText(t.toFixed(2), vx(t), baseY + 14);
+      ctx.fillText("possible value of p →", W / 2, H - 3);
+      ctx.strokeStyle = "#8b5cf6"; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]);
+      [lo, hi].forEach(function (v) { ctx.beginPath(); ctx.moveTo(vx(v), top); ctx.lineTo(vx(v), baseY); ctx.stroke(); }); ctx.setLineDash([]);
+      ctx.strokeStyle = "#f97316"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(vx(mean), top); ctx.lineTo(vx(mean), baseY); ctx.stroke();
+      ctx.fillStyle = "#f97316"; ctx.textAlign = "center"; ctx.font = "600 11px Inter,sans-serif"; ctx.fillText("mean", vx(mean), top - 2);
+
+      document.getElementById("n-val").textContent = n;
+      document.getElementById("obs-val").textContent = obs.toFixed(2);
+      document.getElementById("stat-mean").textContent = mean.toFixed(3);
+      document.getElementById("stat-ci").textContent = "[" + lo.toFixed(3) + ", " + hi.toFixed(3) + "]";
+      document.getElementById("stat-width").textContent = (hi - lo).toFixed(3);
+    }
+
+    document.getElementById("lvl-seg").addEventListener("click", function (e) { var btn = e.target.closest("button"); if (!btn) return; level = +btn.dataset.lvl; Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", +x.dataset.lvl === level); }); update(); });
+    ["n-range", "obs-range"].forEach(function (id) { document.getElementById(id).addEventListener("input", update); });
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(update);
+    fit(); update();
+  })();
+  </script>
+</body>
+</html>

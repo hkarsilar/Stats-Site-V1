@@ -71,7 +71,7 @@ window.CURRICULUM = [
     sections: [
       { n: "4.1", slug: "bootstrap-and-resampling",        title: "Bootstrap & Resampling", ready: true },
       { n: "4.2", slug: "bayesian-thinking",               title: "Bayesian Thinking", ready: true },
-      { n: "4.3", slug: "bayesian-estimation",             title: "Bayesian Estimation & Credible Intervals" },
+      { n: "4.3", slug: "bayesian-estimation",             title: "Bayesian Estimation & Credible Intervals", ready: true },
       { n: "4.4", slug: "generalized-linear-models",       title: "Generalized Linear Models" },
       { n: "4.5", slug: "mixed-and-multilevel-models",     title: "Mixed & Multilevel Models (GLMMs)" }
     ]
