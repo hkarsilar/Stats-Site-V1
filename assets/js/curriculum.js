@@ -62,6 +62,19 @@ window.CURRICULUM = [
       { n: "3.9",  slug: "factor-analysis-pca",                     title: "Factor Analysis / PCA", ready: true },
       { n: "3.10", slug: "power-analysis-for-complex-designs",      title: "Power Analysis for Complex Designs", ready: true }
     ]
+  },
+  {
+    slug: "stats-4",
+    title: "Stats 4",
+    subtitle: "Modern & Advanced",
+    accent: "#8b5cf6",
+    sections: [
+      { n: "4.1", slug: "bootstrap-and-resampling",        title: "Bootstrap & Resampling", ready: true },
+      { n: "4.2", slug: "bayesian-thinking",               title: "Bayesian Thinking", ready: true },
+      { n: "4.3", slug: "bayesian-estimation",             title: "Bayesian Estimation & Credible Intervals" },
+      { n: "4.4", slug: "generalized-linear-models",       title: "Generalized Linear Models" },
+      { n: "4.5", slug: "mixed-and-multilevel-models",     title: "Mixed & Multilevel Models (GLMMs)" }
+    ]
   }
 ];
 

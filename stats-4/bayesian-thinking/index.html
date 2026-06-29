@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bayesian Thinking — hakan.science</title>
+  <meta name="description" content="Bayesian statistics treats probability as belief and updates it with data. Watch a prior turn into a posterior as evidence arrives." />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-4" data-section="bayesian-thinking">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 4.2</span>
+        <h1>Bayesian Thinking</h1>
+
+        <p class="lede">Everything so far has been <em>frequentist</em>: probability means long-run frequency, and parameters are fixed-but-unknown numbers we estimate. <strong>Bayesian statistics</strong> reframes the whole thing. Probability becomes a <strong>degree of belief</strong>, parameters get full probability distributions, and learning from data is just one mechanical rule applied over and over: update your belief.</p>
+
+        <h2>Bayes' rule, in words</h2>
+        <p>You start with a <strong>prior</strong> — what you believed before seeing the data. You collect data, whose <strong>likelihood</strong> says how well each possible parameter value explains what you saw. Multiply them and renormalize, and you get the <strong>posterior</strong> — your updated belief:</p>
+        <p style="text-align:center;font-size:1.15rem;margin:1.2rem 0"><strong>posterior ∝ likelihood × prior</strong></p>
+        <p>That's the entire engine. The posterior from today becomes the prior for tomorrow, and beliefs evolve as evidence accumulates.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="bayesviz">
+          <p class="viz-title">🎮 Prior → Data → Posterior</p>
+          <p class="viz-sub">Estimating a proportion (say, a coin's chance of heads). Set your prior belief, then pour in data and watch the posterior (purple) form between your prior and what the data alone suggests.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:200px"><label>Prior belief (where p is) <span class="val" id="pm-val">0.50</span></label><input type="range" id="pm-range" min="5" max="95" step="1" value="50" /></div>
+            <div class="control" style="flex:1;min-width:200px"><label>Prior confidence <span class="val" id="ps-val">weak</span></label><input type="range" id="ps-range" min="2" max="80" step="1" value="6" /></div>
+          </div>
+          <div class="controls" style="margin-bottom:.5rem">
+            <div class="control" style="flex:1;min-width:200px"><label>Data collected (trials) <span class="val" id="n-val">20</span></label><input type="range" id="n-range" min="0" max="200" step="1" value="20" /></div>
+            <div class="control" style="flex:1;min-width:200px"><label>Observed rate of success <span class="val" id="obs-val">0.70</span></label><input type="range" id="obs-range" min="0" max="100" step="1" value="70" /></div>
+          </div>
+
+          <canvas id="bayes-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k" style="color:var(--text-faint)">Prior mean</span><span class="v" id="stat-prior">—</span></div>
+            <div class="stat"><span class="k">Data so far</span><span class="v" id="stat-data" style="font-size:1rem">—</span></div>
+            <div class="stat"><span class="k" style="color:#8b5cf6">Posterior mean</span><span class="v" id="stat-post">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>What the playground shows</h2>
+        <div class="callout key">
+          <p><strong>Data overwhelms the prior.</strong> With little data the posterior sits close to your prior. Slide the trials up and the posterior marches toward the observed rate and gets sharper — with enough evidence, your starting belief barely matters. Strong priors resist longer; flat (weak) priors let the data speak immediately.</p>
+        </div>
+        <ul>
+          <li>A <strong>flat / weak prior</strong> says "I don't know much" — the posterior is driven almost entirely by the data, and often looks a lot like the frequentist answer.</li>
+          <li>A <strong>strong prior</strong> encodes real prior knowledge — useful when data is scarce, but it should be defensible, because it genuinely shifts your conclusions.</li>
+        </ul>
+
+        <h2>Why people love (and argue about) Bayes</h2>
+        <p>The Bayesian framework gives you exactly what you usually want: a full distribution for the parameter, so you can say "there's a 95% probability the rate is between X and Y" — a statement frequentist <a href="../../stats-1/confidence-intervals/">confidence intervals</a> famously can't make. The flip side is the prior: it must be chosen, and different priors can give different answers when data is thin. Done transparently, that's a feature, not a bug.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> Bayesian methods are everywhere now — A/B testing, clinical trials, machine learning, election forecasting. They handle uncertainty in a uniquely intuitive way, and modern computing has made them practical. Next we'll turn the posterior into concrete summaries with <a href="../../stats-4/bayesian-estimation/">credible intervals</a>.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ Bayesian updating visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var canvas = document.getElementById("bayes-canvas"), ctx, W = 0, H = 240, pad = 28;
+    function val(id) { return +document.getElementById(id).value; }
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function vx(p) { return pad + p * (W - 2 * pad); }
+
+    function logBetaPdf(p, a, b) {
+      if (p <= 0 || p >= 1) return -Infinity;
+      var lB = VIZ.gammaln(a) + VIZ.gammaln(b) - VIZ.gammaln(a + b);
+      return (a - 1) * Math.log(p) + (b - 1) * Math.log(1 - p) - lB;
+    }
+    function curve(fn) { var pts = [], mx = -Infinity; for (var i = 0; i <= 240; i++) { var p = i / 240, y = fn(p); pts.push({ p: p, y: y }); if (y > mx) mx = y; } return { pts: pts, max: mx }; }
+
+    function update() {
+      var pm = val("pm-range") / 100, strength = val("ps-range");
+      var a0 = pm * strength, b0 = (1 - pm) * strength;
+      var n = val("n-range"), obs = val("obs-range") / 100, k = Math.round(obs * n);
+      var a1 = a0 + k, b1 = b0 + (n - k);
+
+      var baseY = H - 20, top = 14;
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(pad, baseY); ctx.lineTo(W - pad, baseY); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center";
+      for (var t = 0; t <= 1; t += 0.25) ctx.fillText(t.toFixed(2), vx(t), baseY + 14);
+      ctx.fillText("possible value of p →", W / 2, H - 3);
+
+      var prior = curve(function (p) { return Math.exp(logBetaPdf(p, a0, b0)); });
+      // likelihood ∝ p^k (1-p)^(n-k)
+      var like = curve(function (p) { return (n > 0) ? Math.exp(k * Math.log(Math.max(p, 1e-9)) + (n - k) * Math.log(Math.max(1 - p, 1e-9))) : 0; });
+      var post = curve(function (p) { return Math.exp(logBetaPdf(p, a1, b1)); });
+      function plot(c, color, width, dash) {
+        if (!isFinite(c.max) || c.max <= 0) return;
+        ctx.strokeStyle = color; ctx.lineWidth = width; ctx.setLineDash(dash || []); ctx.beginPath();
+        c.pts.forEach(function (pt, i) { var x = vx(pt.p), y = baseY - (pt.y / c.max) * (baseY - top); if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); });
+        ctx.stroke(); ctx.setLineDash([]);
+      }
+      plot(prior, VIZ.css("--text-faint"), 2, [5, 4]);
+      if (n > 0) plot(like, VIZ.css("--secondary"), 2, [2, 3]);
+      plot(post, "#8b5cf6", 3.5);
+      // legend
+      ctx.textAlign = "left"; ctx.font = "600 11px Inter,sans-serif";
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.fillText("- - prior", pad + 4, top); ctx.fillStyle = VIZ.css("--secondary"); ctx.fillText("· · likelihood (data)", pad + 64, top); ctx.fillStyle = "#8b5cf6"; ctx.fillText("posterior", pad + 184, top);
+
+      document.getElementById("pm-val").textContent = pm.toFixed(2);
+      document.getElementById("ps-val").textContent = strength < 12 ? "weak" : strength < 35 ? "moderate" : "strong";
+      document.getElementById("n-val").textContent = n;
+      document.getElementById("obs-val").textContent = obs.toFixed(2);
+      document.getElementById("stat-prior").textContent = pm.toFixed(2);
+      document.getElementById("stat-data").textContent = n > 0 ? k + " / " + n + " (" + (k / n).toFixed(2) + ")" : "none yet";
+      document.getElementById("stat-post").textContent = (a1 / (a1 + b1)).toFixed(3);
+    }
+
+    ["pm-range", "ps-range", "n-range", "obs-range"].forEach(function (id) { document.getElementById(id).addEventListener("input", update); });
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(update);
+    fit(); update();
+  })();
+  </script>
+</body>
+</html>
