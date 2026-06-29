@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Generalized Linear Models — hakan.science</title>
+  <meta name="description" content="One framework unifies linear, logistic, and Poisson regression: a linear predictor plus a link function. Switch the family and watch the straight line bend to fit." />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-4" data-section="generalized-linear-models">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 4.4</span>
+        <h1>Generalized Linear Models</h1>
+
+        <p class="lede">Ordinary <a href="../../stats-2/simple-linear-regression/">regression</a> assumes a continuous outcome with normal, constant-variance errors. Counts, yes/no outcomes, and rates break those rules. Rather than invent a brand-new method for each, <strong>generalized linear models (GLMs)</strong> stretch one elegant framework to cover them all — and you've already met two members of the family without knowing it.</p>
+
+        <h2>Two ingredients</h2>
+        <p>Every GLM is built from the same two pieces:</p>
+        <ul>
+          <li>A <strong>linear predictor</strong> — the familiar straight line, <code>η = b₀ + b₁x</code>.</li>
+          <li>A <strong>link function</strong> that connects that line to the <em>mean</em> of the outcome, <code>g(μ) = η</code> — or equivalently <code>μ = g⁻¹(η)</code>.</li>
+        </ul>
+        <p>The link is the clever bit. It keeps the predicted mean in a sensible range, so a straight line on the "link scale" becomes whatever shape the data needs on the response scale.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="glmviz">
+          <p class="viz-title">🎮 One Line, Three Shapes</p>
+          <p class="viz-sub">Pick an outcome type. The model is <em>always</em> a straight line on the link scale — but the link bends it into the right shape (and keeps it in range) for the data.</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>Outcome type</label>
+              <div class="seg" id="fam-seg">
+                <button data-fam="linear">Continuous</button>
+                <button data-fam="logistic" class="active">Yes / no</button>
+                <button data-fam="poisson">Counts</button>
+              </div>
+            </div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="resample">New data</button></div>
+          </div>
+          <div class="controls" style="margin-bottom:.5rem">
+            <div class="control" style="flex:1;min-width:200px"><label>Intercept b₀ <span class="val" id="b0-val">—</span></label><input type="range" id="b0-range" /></div>
+            <div class="control" style="flex:1;min-width:200px"><label>Slope b₁ <span class="val" id="b1-val">—</span></label><input type="range" id="b1-range" /></div>
+          </div>
+
+          <canvas id="glm-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Family · link</span><span class="v" id="stat-link" style="font-size:1rem">—</span></div>
+            <div class="stat"><span class="k">What a +1 change in x does</span><span class="v" id="stat-slope" style="font-size:.95rem">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>The family you already know</h2>
+        <ul>
+          <li><strong>Continuous outcome → identity link → ordinary regression.</strong> The link does nothing; the line stays a line.</li>
+          <li><strong>Yes/no outcome → logit link → <a href="../../stats-3/logistic-regression/">logistic regression</a>.</strong> The line becomes an S-curve trapped between 0 and 1, and the slope is a log-odds (so e<sup>b₁</sup> is an odds ratio).</li>
+          <li><strong>Count outcome → log link → Poisson regression.</strong> The line becomes an exponential curve that can't go negative, and e<sup>b₁</sup> is a multiplicative rate ratio.</li>
+        </ul>
+
+        <div class="callout key">
+          <p><strong>The unifying idea:</strong> coefficients always act linearly — just on the link scale, not the response scale. That's why interpreting them means undoing the link: exponentiate for logistic and Poisson, read directly for ordinary regression. Learn the pattern once and every GLM follows the same logic.</p>
+        </div>
+
+        <h2>Fitting and assumptions</h2>
+        <p>GLMs are fit by <strong>maximum likelihood</strong> rather than least squares, and each family carries its own mean–variance relationship (for Poisson, the variance equals the mean — watch for <em>overdispersion</em> when real counts vary more than that). But the modeling workflow — pick predictors, fit, check, interpret — is exactly the one you've been practicing all along.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> real outcomes are rarely tidy and continuous. GLMs let you bring the entire regression toolkit — multiple predictors, <a href="../../stats-3/interactions-in-regression/">interactions</a>, categorical variables — to bear on binary, count, and rate data, all under one roof. They're the practical backbone of applied statistics.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ GLM visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var XMAX = 10;
+    var FAM = {
+      linear:   { link: "Gaussian · identity link", b0: { min: 0, max: 40, step: 1, val: 10 }, b1: { min: -4, max: 8, step: 0.2, val: 4 }, ylo: 0, yhi: 60,
+                  inv: function (e) { return e; }, slope: function (b1) { return "adds " + b1.toFixed(1) + " to the mean"; },
+                  gen: function (x, b0, b1) { return b0 + b1 * x + VIZ.gauss(0, 4); } },
+      logistic: { link: "Binomial · logit link", b0: { min: -12, max: 12, step: 0.5, val: -5 }, b1: { min: -3, max: 3, step: 0.1, val: 1 }, ylo: -0.15, yhi: 1.15,
+                  inv: function (e) { return 1 / (1 + Math.exp(-e)); }, slope: function (b1) { return "multiplies the odds by " + Math.exp(b1).toFixed(2); },
+                  gen: function (x, b0, b1) { return Math.random() < 1 / (1 + Math.exp(-(b0 + b1 * x))) ? 1 : 0; } },
+      poisson:  { link: "Poisson · log link", b0: { min: -2, max: 3.5, step: 0.1, val: 0.2 }, b1: { min: -0.6, max: 0.6, step: 0.02, val: 0.28 }, ylo: 0, yhi: 26,
+                  inv: function (e) { return Math.exp(e); }, slope: function (b1) { return "multiplies the mean count by " + Math.exp(b1).toFixed(2); },
+                  gen: function (x, b0, b1) { var L = Math.exp(b0 + b1 * x), k = 0, p = 1; do { k++; p *= Math.random(); } while (p > Math.exp(-L)); return k - 1; } }
+    };
+    var fam = "logistic", data = [];
+    var canvas = document.getElementById("glm-canvas"), ctx, W = 0, H = 250, pad = 30;
+    var b0in = document.getElementById("b0-range"), b1in = document.getElementById("b1-range");
+
+    function cfgSlider(input, c) { input.min = c.min; input.max = c.max; input.step = c.step; input.value = c.val; }
+    function setFamily(f) {
+      fam = f; var F = FAM[f];
+      Array.prototype.forEach.call(document.querySelectorAll("#fam-seg button"), function (b) { b.classList.toggle("active", b.dataset.fam === f); });
+      cfgSlider(b0in, F.b0); cfgSlider(b1in, F.b1);
+      gen();
+    }
+    function gen() { var F = FAM[fam]; data = []; for (var i = 0; i < 32; i++) { var x = Math.random() * XMAX; data.push({ x: x, y: F.gen(x, F.b0.val, F.b1.val) }); } update(); }
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function vx(x) { return pad + (x / XMAX) * (W - 2 * pad); }
+    function vy(y, F) { return (H - pad) - ((y - F.ylo) / (F.yhi - F.ylo)) * (H - 2 * pad); }
+
+    function update() {
+      var F = FAM[fam], b0 = +b0in.value, b1 = +b1in.value;
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = VIZ.css("--border"); ctx.strokeRect(pad, pad, W - 2 * pad, H - 2 * pad);
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px Inter,sans-serif"; ctx.textAlign = "center"; ctx.fillText("x →", W / 2, H - 6);
+      // reference lines for logistic (0 and 1)
+      if (fam === "logistic") { [0, 1].forEach(function (yv) { ctx.strokeStyle = VIZ.css("--border"); ctx.setLineDash([3, 3]); ctx.globalAlpha = 0.6; ctx.beginPath(); ctx.moveTo(pad, vy(yv, F)); ctx.lineTo(W - pad, vy(yv, F)); ctx.stroke(); ctx.globalAlpha = 1; ctx.setLineDash([]); }); }
+      // data
+      ctx.fillStyle = VIZ.css("--secondary"); ctx.globalAlpha = 0.6;
+      data.forEach(function (p) { ctx.beginPath(); ctx.arc(vx(p.x), vy(Math.max(F.ylo, Math.min(F.yhi, p.y)), F), 4, 0, 2 * Math.PI); ctx.fill(); });
+      ctx.globalAlpha = 1;
+      // mean curve
+      ctx.save(); ctx.beginPath(); ctx.rect(pad, pad, W - 2 * pad, H - 2 * pad); ctx.clip();
+      ctx.strokeStyle = "#8b5cf6"; ctx.lineWidth = 3; ctx.beginPath();
+      for (var px = 0; px <= W; px += 2) { var x = (px - pad) / (W - 2 * pad) * XMAX; var mu = F.inv(b0 + b1 * x); var y = vy(mu, F); if (px === 0) ctx.moveTo(px, y); else ctx.lineTo(px, y); }
+      ctx.stroke(); ctx.restore();
+
+      document.getElementById("b0-val").textContent = b0.toFixed(fam === "poisson" ? 1 : (fam === "logistic" ? 1 : 0));
+      document.getElementById("b1-val").textContent = b1.toFixed(2);
+      document.getElementById("stat-link").textContent = F.link;
+      document.getElementById("stat-slope").textContent = F.slope(b1);
+    }
+
+    document.getElementById("fam-seg").addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) setFamily(b.dataset.fam); });
+    document.getElementById("resample").addEventListener("click", gen);
+    b0in.addEventListener("input", update); b1in.addEventListener("input", update);
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(update);
+    fit(); setFamily("logistic");
+  })();
+  </script>
+</body>
+</html>

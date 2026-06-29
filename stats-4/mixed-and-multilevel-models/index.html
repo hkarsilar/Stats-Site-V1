@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mixed & Multilevel Models (GLMMs) — hakan.science</title>
+  <meta name="description" content="When data is grouped, mixed models share information across groups — pulling noisy estimates toward the overall mean. Watch partial pooling and shrinkage in action." />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body data-course="stats-4" data-section="mixed-and-multilevel-models">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 4.5</span>
+        <h1>Mixed &amp; Multilevel Models (GLMMs)</h1>
+
+        <p class="lede">Data is often <strong>grouped</strong>: students within schools, patients within hospitals, repeated measurements within people. Those observations aren't independent — and pretending they are breaks your standard errors. <strong>Mixed (multilevel) models</strong> handle grouping head-on, and they come with a genuinely magical trick: groups <em>borrow strength</em> from each other.</p>
+
+        <h2>Fixed effects vs. random effects</h2>
+        <p>A mixed model has two kinds of terms. <strong>Fixed effects</strong> are the usual coefficients — effects assumed constant across the whole population. <strong>Random effects</strong> let each group have its own intercept (and sometimes its own slope), drawn from a distribution the model estimates. Instead of estimating every group in isolation, the model learns "how much do groups vary?" and uses that to inform each one.</p>
+
+        <h2>The three ways to handle groups</h2>
+        <ul>
+          <li><strong>Complete pooling</strong> — ignore the groups entirely; one estimate for everyone. Simple, but throws away real group differences.</li>
+          <li><strong>No pooling</strong> — estimate each group on its own. Honest, but tiny or noisy groups get wild, unreliable estimates.</li>
+          <li><strong>Partial pooling</strong> — the mixed-model compromise: each group's estimate is pulled toward the overall mean, <em>more so when the group has little data or lots of noise</em>. This is <strong>shrinkage</strong>.</li>
+        </ul>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="glmmviz">
+          <p class="viz-title">🎮 Shrinkage in Action</p>
+          <p class="viz-sub">Each row is a group. The open circle is its own raw mean (no pooling); the filled purple circle is the partial-pooled estimate. Drag the group-variation slider down and watch the estimates pulled toward the overall mean (dashed line) — small groups move most.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:300px">
+              <label>How much groups truly vary (τ) <span class="val" id="tau-val">14</span></label>
+              <input type="range" id="tau-range" min="1" max="30" step="1" value="8" style="width:100%" />
+            </div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="resample">New groups</button></div>
+          </div>
+
+          <canvas id="glmm-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Overall mean</span><span class="v" id="stat-grand">—</span></div>
+            <div class="stat"><span class="k">Average shrinkage toward it</span><span class="v" id="stat-shrink">—</span></div>
+            <div class="stat"><span class="k">Pooling regime</span><span class="v" id="stat-regime" style="font-size:1rem">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Why shrinkage is a good thing</h2>
+        <div class="callout key">
+          <p>It feels like cheating to move a group's estimate away from its own data — but it <em>improves</em> accuracy on average. A group of 3 with a freakishly high mean is probably just lucky; pulling it toward the overall mean is usually closer to the truth. This is the same logic behind why a rookie's hot first week doesn't predict their season. Partial pooling formalizes "regression to the mean."</p>
+        </div>
+        <p>Notice in the playground: when τ is large (groups really do differ a lot), there's little shrinkage — the data is trusted. When τ is small (groups are mostly alike), estimates collapse toward the overall mean. And at any setting, the <em>small</em> groups shrink more than the big ones, because they carry less independent information.</p>
+
+        <h2>The "G" in GLMM</h2>
+        <p>Combine this grouping machinery with a <a href="../../stats-4/generalized-linear-models/">link function</a> and you get a <strong>generalized linear mixed model (GLMM)</strong> — random effects on top of logistic or Poisson regression. That covers an enormous swath of real research: yes/no outcomes measured repeatedly within people, event counts nested within regions, and far more.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> mixed models are now the default for grouped and repeated-measures data across psychology, ecology, medicine, and education — they respect the data's structure and make better predictions for small groups. They're a fitting place to end the course: the full power of the linear model, finally set loose on the messy, nested data of the real world.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · hakan.science</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ shrinkage / partial-pooling visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var K = 9, GRAND = 50, SIGMA = 11, tau = 8, groups = [];
+    var LO = 15, HI = 85;
+    var canvas = document.getElementById("glmm-canvas"), ctx, W = 0, H = 300, padL = 60, padR = 18, padT = 14, padB = 24;
+
+    function gen() {
+      groups = [];
+      for (var g = 0; g < K; g++) {
+        var trueMean = GRAND + VIZ.gauss(0, 13);
+        var nj = 2 + Math.floor(Math.random() * 18);     // group sizes vary 2..19
+        var sum = 0; for (var i = 0; i < nj; i++) sum += VIZ.gauss(trueMean, SIGMA);
+        groups.push({ raw: sum / nj, n: nj });
+      }
+      update();
+    }
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function vx(v) { return padL + ((v - LO) / (HI - LO)) * (W - padL - padR); }
+
+    function update() {
+      // overall mean weighted by n
+      var totN = 0, totSum = 0; groups.forEach(function (gp) { totN += gp.n; totSum += gp.raw * gp.n; });
+      var grand = totSum / totN;
+      var rowH = (H - padT - padB) / K, shrinkSum = 0;
+      ctx.clearRect(0, 0, W, H);
+      // axis
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center";
+      for (var t = 20; t <= 80; t += 20) { var x = vx(t); ctx.globalAlpha = 0.35; ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, H - padB); ctx.stroke(); ctx.globalAlpha = 1; ctx.fillText(t, x, H - padB + 14); }
+      // grand mean line
+      ctx.strokeStyle = "#f97316"; ctx.setLineDash([5, 4]); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(vx(grand), padT - 4); ctx.lineTo(vx(grand), H - padB); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = "#f97316"; ctx.fillText("overall", vx(grand), padT - 6);
+
+      for (var g = 0; g < K; g++) {
+        var gp = groups[g], y = padT + (g + 0.5) * rowH;
+        var w = (gp.n / (SIGMA * SIGMA)) / (gp.n / (SIGMA * SIGMA) + 1 / (tau * tau));  // weight on own data
+        var est = w * gp.raw + (1 - w) * grand;
+        shrinkSum += (1 - w);
+        // connector
+        ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(vx(gp.raw), y); ctx.lineTo(vx(est), y); ctx.stroke();
+        // raw (open circle), sized by n
+        var r = 3 + Math.min(7, gp.n * 0.4);
+        ctx.strokeStyle = VIZ.css("--text-faint"); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(vx(gp.raw), y, r, 0, 2 * Math.PI); ctx.stroke();
+        // partial-pooled (filled)
+        ctx.fillStyle = "#8b5cf6"; ctx.beginPath(); ctx.arc(vx(est), y, 5, 0, 2 * Math.PI); ctx.fill();
+        // group label with n
+        ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px Inter,sans-serif"; ctx.textAlign = "right"; ctx.fillText("n=" + gp.n, padL - 8, y + 3);
+      }
+      // legend
+      ctx.textAlign = "left"; ctx.font = "600 10px Inter,sans-serif"; ctx.fillStyle = VIZ.css("--text-faint"); ctx.fillText("○ raw mean", padL, H - 4); ctx.fillStyle = "#8b5cf6"; ctx.fillText("● pooled estimate", padL + 72, H - 4);
+
+      var avgShrink = shrinkSum / K;
+      document.getElementById("tau-val").textContent = tau;
+      document.getElementById("stat-grand").textContent = grand.toFixed(1);
+      document.getElementById("stat-shrink").textContent = (avgShrink * 100).toFixed(0) + "%";
+      var rg = document.getElementById("stat-regime");
+      if (avgShrink > 0.6) { rg.textContent = "near complete pooling"; rg.style.color = "#f97316"; }
+      else if (avgShrink < 0.1) { rg.textContent = "near no pooling"; rg.style.color = "#8b5cf6"; }
+      else { rg.textContent = "partial pooling"; rg.style.color = VIZ.css("--text"); }
+    }
+
+    document.getElementById("tau-range").addEventListener("input", function () { tau = +this.value; update(); });
+    document.getElementById("resample").addEventListener("click", gen);
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(update);
+    fit(); gen();
+  })();
+  </script>
+</body>
+</html>
