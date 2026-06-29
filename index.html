@@ -42,8 +42,8 @@
         <div class="hero-demo">
           <canvas id="hero-bell"></canvas>
           <div class="hero-slider">
-            <input type="range" id="var-slider" min="55" max="320" step="1" value="100" aria-label="capybara population variance" />
-            <label for="var-slider">Drag me to change the capybara population variance!</label>
+            <input type="range" id="var-slider" min="45" max="200" step="1" value="90" aria-label="capybara population variance" />
+            <label for="var-slider">Drag me to spread out the capybara population! (a.k.a. its variance)</label>
           </div>
         </div>
 
@@ -117,27 +117,53 @@
   <script>
   (function () {
     var c = document.getElementById("hero-bell"); if (!c) return;
-    var slider = document.getElementById("var-slider"), ctx, W = 0, H = 230, sigma = 1;
+    var slider = document.getElementById("var-slider"), ctx, W = 0, H = 250, sigma = 0.9;
     function css(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+    function randn() { var u = 1 - Math.random(), v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+
+    // a fixed population of capybaras: each keeps its standard-normal "rank" z (and a little jitter),
+    // so x = mean + sigma*z slides them apart/together as you drag the variance.
+    var N = 34, herd = [];
+    for (var i = 0; i < N; i++) herd.push({ z: Math.max(-2.7, Math.min(2.7, randn())), jit: Math.random(), tilt: (Math.random() - 0.5) * 0.5 });
+
+    function capy(x, y, s, tilt) {
+      ctx.save(); ctx.translate(x, y); ctx.rotate(tilt * 0.12);
+      var w = s, h = s * 0.92;
+      ctx.fillStyle = "#b3824f";
+      ctx.beginPath(); ctx.ellipse(-w * 0.27, -h * 0.42, s * 0.15, s * 0.14, 0, 0, 6.2832); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(w * 0.27, -h * 0.42, s * 0.15, s * 0.14, 0, 0, 6.2832); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(0, 0, w * 0.5, h * 0.5, 0, 0, 6.2832); ctx.fill();
+      ctx.fillStyle = "#9a6f43"; ctx.beginPath(); ctx.ellipse(0, h * 0.2, w * 0.33, h * 0.24, 0, 0, 6.2832); ctx.fill();
+      ctx.fillStyle = "#3a2a1b";
+      ctx.beginPath(); ctx.arc(-w * 0.18, -h * 0.08, s * 0.058, 0, 6.2832); ctx.fill();
+      ctx.beginPath(); ctx.arc(w * 0.18, -h * 0.08, s * 0.058, 0, 6.2832); ctx.fill();
+      ctx.beginPath(); ctx.arc(-w * 0.1, h * 0.22, s * 0.04, 0, 6.2832); ctx.fill();
+      ctx.beginPath(); ctx.arc(w * 0.1, h * 0.22, s * 0.04, 0, 6.2832); ctx.fill();
+      ctx.restore();
+    }
+
     function fit() { var r = window.devicePixelRatio || 1; W = c.clientWidth; c.width = W * r; c.height = H * r; c.style.height = H + "px"; ctx = c.getContext("2d"); ctx.setTransform(r, 0, 0, r, 0, 0); }
     function draw() {
-      var lo = -4, hi = 4, baseY = H - 14, top = 16;
-      var maxPeak = 1 / (0.55 * Math.sqrt(2 * Math.PI));      // tallest possible (smallest sigma) sets the scale
-      var scale = (baseY - top) / maxPeak;
-      function pdf(x) { return Math.exp(-0.5 * x * x / (sigma * sigma)) / (sigma * Math.sqrt(2 * Math.PI)); }
+      var center = W / 2, baseY = H - 30, top = 16, pxPerUnit = (W * 0.44) / 5;
       ctx.clearRect(0, 0, W, H);
-      var grad = ctx.createLinearGradient(0, 0, W, 0);
-      grad.addColorStop(0, css("--primary")); grad.addColorStop(1, css("--secondary"));
-      // filled area
+      // the bell curve the herd makes (area-true, so a tight herd makes a tall peak)
+      var maxPeak = 1 / (0.45 * Math.sqrt(2 * Math.PI)), scale = (baseY - top) / maxPeak;
+      function pdfPx(px) { var u = (px - center) / pxPerUnit; return Math.exp(-0.5 * u * u / (sigma * sigma)) / (sigma * Math.sqrt(2 * Math.PI)); }
+      var grad = ctx.createLinearGradient(0, 0, W, 0); grad.addColorStop(0, css("--primary")); grad.addColorStop(1, css("--secondary"));
       ctx.beginPath(); ctx.moveTo(0, baseY);
-      for (var px = 0; px <= W; px += 2) { var x = lo + (px / W) * (hi - lo); ctx.lineTo(px, baseY - pdf(x) * scale); }
-      ctx.lineTo(W, baseY); ctx.closePath(); ctx.globalAlpha = 0.18; ctx.fillStyle = grad; ctx.fill(); ctx.globalAlpha = 1;
-      // curve
+      for (var px = 0; px <= W; px += 3) ctx.lineTo(px, baseY - pdfPx(px) * scale);
+      ctx.lineTo(W, baseY); ctx.closePath(); ctx.globalAlpha = 0.15; ctx.fillStyle = grad; ctx.fill(); ctx.globalAlpha = 1;
       ctx.beginPath();
-      for (var p2 = 0; p2 <= W; p2 += 2) { var xx = lo + (p2 / W) * (hi - lo); var y = baseY - pdf(xx) * scale; if (p2 === 0) ctx.moveTo(p2, y); else ctx.lineTo(p2, y); }
-      ctx.strokeStyle = css("--primary"); ctx.lineWidth = 3.5; ctx.lineJoin = "round"; ctx.stroke();
-      // baseline
+      for (var p2 = 0; p2 <= W; p2 += 3) { var y = baseY - pdfPx(p2) * scale; if (p2 === 0) ctx.moveTo(p2, y); else ctx.lineTo(p2, y); }
+      ctx.strokeStyle = css("--primary"); ctx.lineWidth = 3; ctx.lineJoin = "round"; ctx.stroke();
+      // baseline + mean marker
       ctx.strokeStyle = css("--border"); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, baseY + 0.5); ctx.lineTo(W, baseY + 0.5); ctx.stroke();
+      ctx.strokeStyle = "#f97316"; ctx.setLineDash([4, 4]); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(center, top); ctx.lineTo(center, baseY); ctx.stroke(); ctx.setLineDash([]);
+      // the capybaras
+      herd.forEach(function (cb) {
+        var x = Math.max(16, Math.min(W - 16, center + sigma * cb.z * pxPerUnit));
+        capy(x, baseY - 16 - cb.jit * 34, 23, cb.tilt);
+      });
     }
     slider.addEventListener("input", function () { sigma = +slider.value / 100; draw(); });
     window.addEventListener("resize", function () { fit(); draw(); });
