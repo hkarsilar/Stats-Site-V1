@@ -36,6 +36,7 @@
         '<a class="brand" href="' + (BASE || "./") + '">hakan<span class="dot">.</span>science</a>' +
         '<div class="nav-links">' +
           '<a class="nav-link hide-mobile" href="' + BASE + '#curriculum">Curriculum</a>' +
+          '<a class="nav-link" href="' + BASE + 'quiz.html">Quiz</a>' +
           '<a class="nav-link hide-mobile" href="' + BASE + '#about">About</a>' +
           '<button id="theme-toggle" class="icon-btn" aria-label="Toggle theme"></button>' +
         '</div>' +

@@ -6,7 +6,6 @@
   <title>Assumptions of Regression — hakan.science</title>
   <meta name="description" content="Regression rests on four assumptions (LINE), and a single high-leverage point can hijack the whole fit. Drag a point to extreme x and watch the line swing." />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
 </head>
@@ -125,7 +124,7 @@
       ctx.strokeStyle = VIZ.css("--text"); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(vx(drag.x), vy(drag.y), 10, 0, 2 * Math.PI); ctx.stroke();
 
       var dSlope = Math.abs(fw.b - fo.b);
-      document.getElementById("stat-lev").textContent = h > 0.4 ? "high" : h > 0.2 ? "moderate" : "low";
+      document.getElementById("stat-lev").textContent = h > 0.28 ? "high" : h > 0.15 ? "moderate" : "low";
       document.getElementById("stat-sw").textContent = fw.b.toFixed(2);
       document.getElementById("stat-so").textContent = fo.b.toFixed(2);
       var inf = document.getElementById("stat-inf");
