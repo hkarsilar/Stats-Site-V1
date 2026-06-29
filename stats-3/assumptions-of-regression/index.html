@@ -134,7 +134,7 @@
     }
 
     function near(e) { return Math.hypot(vx(drag.x) - e.offsetX, vy(drag.y) - e.offsetY) < 18; }
-    canvas.addEventListener("pointerdown", function (e) { if (near(e)) { dragging = true; canvas.setPointerCapture(e.pointerId); canvas.style.cursor = "grabbing"; } });
+    canvas.addEventListener("pointerdown", function (e) { if (near(e)) { dragging = true; try { canvas.setPointerCapture(e.pointerId); } catch (err) {} canvas.style.cursor = "grabbing"; } });
     canvas.addEventListener("pointermove", function (e) {
       if (!dragging) return;
       drag.x = Math.max(LO, Math.min(HI, LO + (e.offsetX - pad) / (W - 2 * pad) * (HI - LO)));
