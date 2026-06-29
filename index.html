@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>hakan.science — Statistics You Can See, Touch, and Understand</title>
+  <title>StatsCapybara — Statistics You Can See, Touch, and Understand</title>
   <meta name="description" content="A free, interactive statistics course for people with no stats background. Learn by watching the ideas happen, not memorizing formulas." />
   <!-- Social share cards. If you move to a custom domain, update the absolute URLs below. -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="hakan.science — Statistics You Can See, Touch, and Understand" />
+  <meta property="og:title" content="StatsCapybara — Statistics You Can See, Touch, and Understand" />
   <meta property="og:description" content="A free, interactive statistics course for visual learners — 38 hands-on lessons from the basics to Bayesian and multilevel models." />
-  <meta property="og:image" content="https://hkarsilar.github.io/Stats-Site-V1/assets/og.png" />
-  <meta property="og:url" content="https://hkarsilar.github.io/Stats-Site-V1/" />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="hakan.science — Statistics You Can See, Touch, and Understand" />
+  <meta name="twitter:title" content="StatsCapybara — Statistics You Can See, Touch, and Understand" />
   <meta name="twitter:description" content="A free, interactive statistics course for visual learners — 38 hands-on lessons, basics to Bayesian." />
-  <meta name="twitter:image" content="https://hkarsilar.github.io/Stats-Site-V1/assets/og.png" />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="assets/css/styles.css" />
   <!-- set theme before paint to avoid a flash -->
@@ -24,19 +24,36 @@
   <nav class="nav" id="nav"></nav>
 
   <main>
-    <!-- HERO (compact) -->
+    <!-- HERO -->
     <section class="hero" style="min-height:auto">
-      <div class="hero-inner animate-up" style="max-width:54rem;padding:3.25rem 1.5rem 2.25rem">
+      <div class="hero-inner animate-up" style="max-width:60rem;padding:2.25rem 1.5rem 1.75rem">
+        <p class="hero-eyebrow">
+          <svg viewBox="0 0 64 60" width="24" height="24" aria-hidden="true" style="vertical-align:-6px">
+            <ellipse cx="19" cy="15" rx="7" ry="6" fill="#9a6f43"/><ellipse cx="45" cy="15" rx="7" ry="6" fill="#9a6f43"/>
+            <rect x="9" y="14" width="46" height="40" rx="17" fill="#b3824f"/><ellipse cx="32" cy="44" rx="16" ry="12" fill="#9a6f43"/>
+            <circle cx="23" cy="31" r="2.7" fill="#3a2a1b"/><circle cx="41" cy="31" r="2.7" fill="#3a2a1b"/>
+            <ellipse cx="26.5" cy="45" rx="2.3" ry="1.6" fill="#3a2a1b"/><ellipse cx="37.5" cy="45" rx="2.3" ry="1.6" fill="#3a2a1b"/>
+          </svg>
+          Meet StatsCapybara — your chill guide to statistics
+        </p>
         <h1>Statistics You Can <span class="see">See</span>, <span class="touch">Touch</span>, and Understand</h1>
-        <p class="lead">A free, interactive course — <strong>38 hands-on lessons</strong> from the basics all the way to Bayesian and multilevel models. Don't just read the formulas; drag the sliders and watch the ideas happen.</p>
+        <p class="lead">The friendly stats course where every idea is a toy you can play with. No intimidating walls of formulas — just drag, poke, and watch it finally click. Go on, try it right now:</p>
+
+        <div class="hero-demo">
+          <canvas id="hero-bell"></canvas>
+          <div class="hero-slider">
+            <input type="range" id="var-slider" min="55" max="320" step="1" value="100" aria-label="capybara population variance" />
+            <label for="var-slider">Drag me to change the capybara population variance!</label>
+          </div>
+        </div>
+
         <div class="hero-cta">
-          <a class="btn btn-primary" href="stats-1/what-is-statistics/">
-            Start from the beginning
+          <a class="btn btn-primary" href="stats-1/what-is-statistics/">Start from the beginning
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </a>
           <a class="btn btn-ghost" href="stats-1/central-limit-theorem/">Try a live demo</a>
         </div>
-        <p style="margin-top:1.6rem;font-size:.92rem;color:var(--text-muted)">4 courses · 38 interactive lessons · free forever, no sign-up</p>
+        <p style="margin-top:1.4rem;font-size:.92rem;color:var(--text-muted)">4 courses · 38 interactive lessons · free forever, no sign-up</p>
       </div>
     </section>
 
@@ -87,7 +104,7 @@
 
   <footer class="footer">
     <div class="container">
-      <span>© <span id="year"></span> Hakan Karsilar · hakan.science</span>
+      <span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span>
       <span>Made for visual learners.</span>
     </div>
   </footer>
@@ -95,5 +112,38 @@
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
   <script src="assets/js/curriculum.js"></script>
   <script src="assets/js/site.js"></script>
+
+  <!-- ============ hero: live bell curve ============ -->
+  <script>
+  (function () {
+    var c = document.getElementById("hero-bell"); if (!c) return;
+    var slider = document.getElementById("var-slider"), ctx, W = 0, H = 230, sigma = 1;
+    function css(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+    function fit() { var r = window.devicePixelRatio || 1; W = c.clientWidth; c.width = W * r; c.height = H * r; c.style.height = H + "px"; ctx = c.getContext("2d"); ctx.setTransform(r, 0, 0, r, 0, 0); }
+    function draw() {
+      var lo = -4, hi = 4, baseY = H - 14, top = 16;
+      var maxPeak = 1 / (0.55 * Math.sqrt(2 * Math.PI));      // tallest possible (smallest sigma) sets the scale
+      var scale = (baseY - top) / maxPeak;
+      function pdf(x) { return Math.exp(-0.5 * x * x / (sigma * sigma)) / (sigma * Math.sqrt(2 * Math.PI)); }
+      ctx.clearRect(0, 0, W, H);
+      var grad = ctx.createLinearGradient(0, 0, W, 0);
+      grad.addColorStop(0, css("--primary")); grad.addColorStop(1, css("--secondary"));
+      // filled area
+      ctx.beginPath(); ctx.moveTo(0, baseY);
+      for (var px = 0; px <= W; px += 2) { var x = lo + (px / W) * (hi - lo); ctx.lineTo(px, baseY - pdf(x) * scale); }
+      ctx.lineTo(W, baseY); ctx.closePath(); ctx.globalAlpha = 0.18; ctx.fillStyle = grad; ctx.fill(); ctx.globalAlpha = 1;
+      // curve
+      ctx.beginPath();
+      for (var p2 = 0; p2 <= W; p2 += 2) { var xx = lo + (p2 / W) * (hi - lo); var y = baseY - pdf(xx) * scale; if (p2 === 0) ctx.moveTo(p2, y); else ctx.lineTo(p2, y); }
+      ctx.strokeStyle = css("--primary"); ctx.lineWidth = 3.5; ctx.lineJoin = "round"; ctx.stroke();
+      // baseline
+      ctx.strokeStyle = css("--border"); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, baseY + 0.5); ctx.lineTo(W, baseY + 0.5); ctx.stroke();
+    }
+    slider.addEventListener("input", function () { sigma = +slider.value / 100; draw(); });
+    window.addEventListener("resize", function () { fit(); draw(); });
+    new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    fit(); draw();
+  })();
+  </script>
 </body>
 </html>

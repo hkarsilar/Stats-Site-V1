@@ -12,6 +12,18 @@
      matter what the repo/folder is named or how deep it's hosted. */
   var BASE = (document.body && document.body.getAttribute("data-section")) ? "../../" : "";
 
+  /* ---------- mascot ---------- */
+  function capy(size) {
+    var s = size || 26;
+    return '<svg viewBox="0 0 64 60" width="' + s + '" height="' + s + '" aria-hidden="true" style="vertical-align:-6px;flex-shrink:0">' +
+      '<ellipse cx="19" cy="15" rx="7" ry="6" fill="#9a6f43"/><ellipse cx="45" cy="15" rx="7" ry="6" fill="#9a6f43"/>' +
+      '<rect x="9" y="14" width="46" height="40" rx="17" fill="#b3824f"/>' +
+      '<ellipse cx="32" cy="44" rx="16" ry="12" fill="#9a6f43"/>' +
+      '<circle cx="23" cy="31" r="2.7" fill="#3a2a1b"/><circle cx="41" cy="31" r="2.7" fill="#3a2a1b"/>' +
+      '<ellipse cx="26.5" cy="45" rx="2.3" ry="1.6" fill="#3a2a1b"/><ellipse cx="37.5" cy="45" rx="2.3" ry="1.6" fill="#3a2a1b"/>' +
+      '</svg>';
+  }
+
   /* ---------- theme ---------- */
   var root = document.documentElement;
   function setTheme(t) {
@@ -33,7 +45,7 @@
     if (!nav) return;
     nav.innerHTML =
       '<div class="nav-inner">' +
-        '<a class="brand" href="' + (BASE || "./") + '">hakan<span class="dot">.</span>science</a>' +
+        '<a class="brand" href="' + (BASE || "./") + '" style="display:inline-flex;align-items:center;gap:.45rem">' + capy(28) + 'Stats<span class="dot">Capybara</span></a>' +
         '<div class="nav-links">' +
           '<a class="nav-link hide-mobile" href="' + BASE + '#curriculum">Curriculum</a>' +
           '<a class="nav-link" href="' + BASE + 'quiz.html">Quiz</a>' +
@@ -113,12 +125,25 @@
     host.innerHTML = html;
   }
 
+  /* ---------- "Buy me a coffee" (every page) ---------- */
+  function renderKofi() {
+    var c = document.querySelector(".footer .container");
+    if (!c || c.querySelector(".kofi")) return;
+    var a = document.createElement("a");
+    a.className = "kofi"; a.href = "https://ko-fi.com/M3E322A3ML"; a.target = "_blank"; a.rel = "noopener";
+    a.style.cssText = "display:inline-flex;align-items:center;order:2";
+    a.innerHTML = '<img height="34" loading="lazy" style="border:0;height:34px" src="https://storage.ko-fi.com/cdn/kofi2.png?v=6" alt="Buy Me a Coffee at ko-fi.com" />';
+    // keep it centered between the two footer spans
+    c.insertBefore(a, c.lastElementChild);
+  }
+
   /* ---------- go ---------- */
   function init() {
     renderNav();
     renderCurriculum();
     renderSidebar();
     renderLessonNav();
+    renderKofi();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
