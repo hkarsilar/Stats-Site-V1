@@ -418,7 +418,9 @@ li a:hover .sec-dot { border-color: var(--primary); }
    ============================================================ */
 @media print {
   .nav, .sidebar, .lesson-nav, .footer, .kofi, .skip-link, .search-overlay,
-  .resume-bar, .lesson-done, .lesson-progress-head, .hero-cta, .nav-actions { display: none !important; }
+  .resume-bar, .lesson-done, .lesson-progress-head, .hero-cta, .nav-actions,
+  .lesson-toc, .tc-copy { display: none !important; }
+  .try-code { break-inside: avoid; border: 1px solid #ccc; box-shadow: none; }
   main { padding-top: 0; }
   .lesson-wrap { display: block; padding: 0; }
   .lesson { max-width: none; }
@@ -443,3 +445,35 @@ li a:hover .sec-dot { border-color: var(--primary); }
 .quiz-pick .qp-name { font-weight: 700; font-size: 1rem; }
 .quiz-pick .qp-sub { font-size: .78rem; color: var(--text-muted); }
 .quiz-pick .qp-count { font-size: .72rem; color: var(--text-faint); font-family: var(--mono); margin-top: .2rem; }
+
+/* ============================================================
+   "ON THIS PAGE" MINI-TOC (auto-injected on longer lessons)
+   ============================================================ */
+.lesson-toc {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .9rem;
+  border: 1px solid var(--border); border-radius: 12px; background: var(--bg-soft);
+  padding: .6rem 1rem; margin: 1.25rem 0 0; font-size: .84rem;
+}
+.lesson-toc .toc-label { font-size: .68rem; text-transform: uppercase; letter-spacing: .07em; color: var(--text-faint); font-weight: 700; margin-right: .2rem; }
+.lesson-toc a { color: var(--primary); font-weight: 600; }
+.lesson-toc a:hover { text-decoration: underline; }
+
+/* ============================================================
+   "TRY IT YOURSELF" R / PYTHON SNIPPETS (auto-injected)
+   ============================================================ */
+.try-code {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); box-shadow: var(--shadow); margin: 2.5rem 0 0; overflow: hidden;
+}
+.tc-head { display: flex; align-items: center; gap: .8rem; padding: .55rem .9rem; border-bottom: 1px solid var(--border); }
+.tc-title { font-weight: 700; font-size: .9rem; }
+.tc-copy {
+  margin-left: auto; cursor: pointer; font: inherit; font-size: .78rem; font-weight: 600;
+  color: var(--text-muted); background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: .3rem .7rem; transition: .15s;
+}
+.tc-copy:hover { color: var(--text); background: var(--surface-2); }
+.try-code pre {
+  margin: 0; padding: 1rem 1.1rem; overflow-x: auto; background: var(--bg-soft);
+  font-family: var(--mono); font-size: .8rem; line-height: 1.6; color: var(--text);
+}

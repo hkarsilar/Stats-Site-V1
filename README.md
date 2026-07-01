@@ -1,57 +1,44 @@
-# hakan.science
+# StatsCapybara
 
-A free, interactive statistics course for people with no stats background — built for visual learners. Plain static HTML/CSS/JS, no build step, hosted on GitHub Pages.
+A free, interactive statistics course for people with no stats background —
+built for visual learners. 43 lessons across 4 courses, each pairing a written
+explanation with a hands-on canvas visualization. Plain static HTML/CSS/JS,
+no build step, hosted on GitHub Pages at **[statscapybara.com](https://statscapybara.com/)**.
 
 ## How it's structured
 
 ```
-index.html                  Homepage
-404.html                    Shown for any unknown URL
+index.html                  Homepage (hero demo + curriculum grid)
+quiz.html                   Per-course quizzes with instant feedback
+glossary.html               Searchable glossary, terms linked to lessons
+404.html                    Shown for any unknown URL (self-contained)
 assets/css/styles.css       The whole design system (light + dark)
 assets/js/curriculum.js     Single source of truth — every course & section
-assets/js/site.js           Shared nav, theme toggle, sidebar, prev/next
-stats-1/<topic>/index.html  One folder per lesson  → clean URL + refresh-proof
+assets/js/site.js           Shared chrome: nav, sidebar, search, progress, prev/next
+assets/js/viz.js            Shared math/canvas helpers (exact special functions)
+assets/js/snippets.js       "Try it in R / Python" snippets, keyed by lesson slug
+stats-1/<topic>/index.html  One folder per lesson → clean URL + refresh-proof
 ```
 
 To **add or rename a lesson**, edit `assets/js/curriculum.js` (set `ready: true`
-once the page exists). The homepage index, every sidebar, and the prev/next
-links all read from that one file.
+once the page exists). The homepage grid, every sidebar, the search overlay,
+and the prev/next links all read from that one file. Then update the per-page
+SEO tags, `sitemap.xml`, the glossary, the quiz bank, and `snippets.js`.
 
 ## Preview locally
 
-Lessons use root-absolute paths (`/assets/...`), so open them through a tiny
-local server rather than double-clicking:
+All paths are **relative**, so the site works from any base — but lessons live
+in subfolders, so use a tiny local server rather than double-clicking files:
 
 ```
 python -m http.server 8099
 ```
 
-Then visit http://localhost:8099/ . (Run it from inside this folder.)
+Then visit http://localhost:8099/ (run it from inside this folder).
 
 ## Publish / update (GitHub Desktop)
 
-The site uses **relative paths**, so it works under any repo name (served from
-`https://<user>.github.io/<repo>/`), at a custom domain, or locally.
-
-First time:
-1. In GitHub Desktop: **File → Add local repository**, choose this folder.
-2. Click **Publish repository**. Name it whatever you like (e.g. `Stats-Toolbox`),
-   keep it public.
-3. On GitHub: **Settings → Pages → Build and deployment → Source: Deploy from a
-   branch → `main` / `(root)` → Save.** Wait ~1 minute; your site is live at
-   `https://<user>.github.io/<repo>/`.
-
-Every time after: make changes → **Commit** → **Push** in GitHub Desktop. The
-live site updates automatically in under a minute. No uploads, no Hostinger.
-
-## Custom domain (hakan.science) — optional
-
-Keep the domain registered (it can stay at Hostinger as registrar — you only
-drop the *hosting* plan), then:
-1. GitHub repo **Settings → Pages → Custom domain → `hakan.science` → Save**
-   (this commits a `CNAME` file for you).
-2. At your DNS provider, point the domain at GitHub Pages:
-   - `A` records for the apex `@` → `185.199.108.153`, `185.199.109.153`,
-     `185.199.110.153`, `185.199.111.153`
-   - `CNAME` for `www` → `your-username.github.io`
-3. Back in Pages settings, tick **Enforce HTTPS**.
+Make changes → **Commit** → **Push**. GitHub Pages serves the `main` branch
+from the repo root and the live site updates in under a minute. The custom
+domain is set by the `CNAME` file (statscapybara.com) plus DNS `A`/`CNAME`
+records pointing at GitHub Pages, with **Enforce HTTPS** on.

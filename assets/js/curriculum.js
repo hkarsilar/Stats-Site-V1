@@ -73,7 +73,12 @@ window.CURRICULUM = [
       { n: "4.2", slug: "bayesian-thinking",               title: "Bayesian Thinking", ready: true },
       { n: "4.3", slug: "bayesian-estimation",             title: "Bayesian Estimation & Credible Intervals", ready: true },
       { n: "4.4", slug: "generalized-linear-models",       title: "Generalized Linear Models", ready: true },
-      { n: "4.5", slug: "mixed-and-multilevel-models",     title: "Mixed & Multilevel Models (GLMMs)", ready: true }
+      { n: "4.5", slug: "mixed-and-multilevel-models",     title: "Mixed & Multilevel Models (GLMMs)", ready: true },
+      { n: "4.6", slug: "cross-validation-and-overfitting",title: "Cross-Validation & Overfitting", ready: true },
+      { n: "4.7", slug: "causal-dags-and-confounding",     title: "Causal DAGs & Confounding", ready: true },
+      { n: "4.8", slug: "survival-analysis",               title: "Survival Analysis & Kaplan–Meier", ready: true },
+      { n: "4.9", slug: "missing-data",                    title: "Missing Data & Imputation", ready: true },
+      { n: "4.10",slug: "meta-analysis",                   title: "Meta-Analysis & Forest Plots", ready: true }
     ]
   }
 ];

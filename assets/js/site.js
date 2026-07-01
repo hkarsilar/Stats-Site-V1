@@ -231,6 +231,76 @@
     else article.appendChild(wrap);
   }
 
+  /* ---------- "On this page" mini-TOC (longer lessons only) ---------- */
+  function renderTOC() {
+    if (!HERE) return;
+    var art = document.querySelector(".lesson");
+    if (!art) return;
+    var hs = art.querySelectorAll("h2");
+    if (hs.length < 4) return;
+    var used = {};
+    var items = Array.prototype.map.call(hs, function (h) {
+      var id = h.id || h.textContent.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      while (used[id]) id += "-x";
+      used[id] = 1; h.id = id;
+      return '<a href="#' + id + '">' + h.textContent + '</a>';
+    }).join("");
+    var box = document.createElement("nav");
+    box.className = "lesson-toc";
+    box.setAttribute("aria-label", "On this page");
+    box.innerHTML = '<span class="toc-label">On this page</span>' + items;
+    var lede = art.querySelector(".lede");
+    if (lede) lede.parentNode.insertBefore(box, lede.nextSibling);
+  }
+
+  /* ---------- "Try it yourself" R / Python snippets ----------
+     Snippet data lives in assets/js/snippets.js, loaded lazily so
+     non-lesson pages never pay for it. */
+  function renderTryCode() {
+    if (!HERE) return;
+    var s = document.createElement("script");
+    s.src = BASE + "assets/js/snippets.js";
+    s.async = true;
+    s.onload = function () {
+      var sn = window.SNIPPETS && window.SNIPPETS[HERE];
+      if (!sn) return;
+      var nav = document.getElementById("lesson-nav");
+      var host = nav ? nav.parentNode : document.querySelector(".lesson");
+      if (!host) return;
+      var box = document.createElement("div");
+      box.className = "try-code";
+      box.innerHTML =
+        '<div class="tc-head"><span class="tc-title">💻 Try it yourself</span>' +
+          '<span class="seg"><button class="active" data-lang="r">R</button><button data-lang="py">Python</button></span>' +
+          '<button class="tc-copy" type="button">Copy</button></div>' +
+        '<pre><code></code></pre>';
+      var code = box.querySelector("code"), lang = "r";
+      function show() { code.textContent = sn[lang]; }
+      Array.prototype.forEach.call(box.querySelectorAll("[data-lang]"), function (b) {
+        b.addEventListener("click", function () {
+          lang = b.getAttribute("data-lang");
+          Array.prototype.forEach.call(box.querySelectorAll("[data-lang]"), function (b2) {
+            b2.className = b2 === b ? "active" : "";
+          });
+          show();
+        });
+      });
+      var copyBtn = box.querySelector(".tc-copy");
+      copyBtn.addEventListener("click", function () {
+        try {
+          navigator.clipboard.writeText(sn[lang]).then(function () {
+            copyBtn.textContent = "Copied!";
+            setTimeout(function () { copyBtn.textContent = "Copy"; }, 1200);
+          });
+        } catch (e) {}
+      });
+      show();
+      var anchor = document.querySelector(".lesson-progress-head") || nav;
+      host.insertBefore(box, anchor);
+    };
+    document.body.appendChild(s);
+  }
+
   /* ============================================================
      SEARCH OVERLAY
      ============================================================ */
@@ -362,6 +432,8 @@
     renderSidebar();
     renderLessonNav();
     renderLessonDone();
+    renderTOC();
+    renderTryCode();
     renderKofi();
     wireSearchShortcuts();
     // record this lesson as visited + the resume anchor
