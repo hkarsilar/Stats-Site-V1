@@ -266,6 +266,21 @@ li a:hover .sec-dot { border-color: var(--primary); }
 
 .btn-sm { padding: .5rem .9rem; font-size: .85rem; border-radius: 10px; }
 
+/* numeric inputs (tables/calculator pages) */
+.control input.num {
+  font: inherit; font-family: var(--mono); font-size: .9rem; width: 7.5rem;
+  padding: .45rem .6rem; border: 1px solid var(--border); border-radius: 10px;
+  background: var(--surface); color: var(--text);
+}
+.control input.num:focus { outline: none; border-color: var(--primary); }
+
+/* reference tables (e.g. common critical values) */
+.ref-table { width: 100%; border-collapse: collapse; font-size: .92rem; margin: 1rem 0; }
+.ref-table th { text-align: left; font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: var(--text-faint); }
+.ref-table th, .ref-table td { padding: .55rem .75rem; border-bottom: 1px solid var(--border); }
+.ref-table td { color: var(--text-muted); }
+.ref-table td:nth-child(2) { font-family: var(--mono); color: var(--text); }
+
 /* ---------- nav actions + mobile menu ---------- */
 .nav-links { margin-left: auto; }
 .nav-actions { display: inline-flex; align-items: center; gap: .35rem; }
@@ -457,6 +472,64 @@ li a:hover .sec-dot { border-color: var(--primary); }
 .lesson-toc .toc-label { font-size: .68rem; text-transform: uppercase; letter-spacing: .07em; color: var(--text-faint); font-weight: 700; margin-right: .2rem; }
 .lesson-toc a { color: var(--primary); font-weight: 600; }
 .lesson-toc a:hover { text-decoration: underline; }
+
+/* ============================================================
+   "WHICH TEST?" DECISION TREE
+   ============================================================ */
+.wt-crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem; margin-bottom: .9rem; min-height: 1rem; }
+.wt-crumb {
+  font: inherit; font-size: .74rem; font-weight: 600; cursor: pointer;
+  color: var(--text-muted); background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 999px; padding: .2rem .65rem; transition: .12s;
+}
+.wt-crumb:hover { color: var(--text); border-color: var(--primary); }
+.wt-crumb.wt-restart { background: transparent; color: var(--text-faint); }
+.wt-sep { color: var(--text-faint); font-size: .8rem; }
+.wt-q { font-size: 1.2rem; font-weight: 700; margin: .25rem 0 1rem; color: var(--text); }
+.wt-opts { display: flex; flex-direction: column; gap: .6rem; }
+.wt-opt {
+  display: flex; flex-direction: column; gap: .1rem; text-align: left; cursor: pointer;
+  font: inherit; padding: .8rem 1rem; border: 1px solid var(--border); border-radius: 12px;
+  background: var(--bg-soft); color: var(--text); transition: .13s;
+}
+.wt-opt:hover { border-color: var(--primary); transform: translateY(-1px); box-shadow: var(--shadow); }
+.wt-opt-label { font-weight: 650; font-size: .97rem; }
+.wt-opt-desc { font-size: .82rem; color: var(--text-muted); }
+.wt-result { padding: .35rem 0 .5rem; }
+.wt-result-eyebrow { font-family: var(--mono); font-size: .75rem; color: var(--secondary); text-transform: uppercase; letter-spacing: .06em; }
+.wt-result-name { font-size: 1.5rem; margin: .2rem 0 .5rem; }
+.wt-result-why { color: var(--text-muted); margin: 0 0 1.1rem; }
+.wt-alts-label { margin: 1.2rem 0 .3rem; font-size: .85rem; font-weight: 700; color: var(--text); }
+.wt-alts { margin: 0; padding-left: 1.2rem; font-size: .9rem; color: var(--text-muted); }
+.wt-alts a { color: var(--primary); font-weight: 600; }
+
+/* ============================================================
+   "CHECK YOUR UNDERSTANDING" (auto-injected on lessons)
+   ============================================================ */
+.checks {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); box-shadow: var(--shadow); margin: 2.5rem 0 0; overflow: hidden;
+}
+.ck-head { display: flex; align-items: center; justify-content: space-between; gap: .8rem; padding: .55rem .9rem 0.55rem 1.1rem; border-bottom: 1px solid var(--border); }
+.ck-title { font-weight: 700; font-size: .9rem; }
+.ck-score { font-family: var(--mono); font-size: .8rem; font-weight: 700; color: var(--success); }
+.ck-q { padding: .9rem 1.1rem .35rem; }
+.ck-q + .ck-q { border-top: 1px solid var(--border); }
+.ck-text { margin: 0 0 .6rem; font-weight: 650; color: var(--text); font-size: .95rem; }
+.ck-opts { display: flex; flex-direction: column; gap: .45rem; }
+.ck-opt {
+  font: inherit; font-size: .9rem; text-align: left; cursor: pointer;
+  padding: .55rem .85rem; border: 1px solid var(--border); border-radius: 10px;
+  background: var(--bg-soft); color: var(--text-muted); transition: .12s;
+}
+.ck-opt:hover:not(:disabled) { border-color: var(--primary); color: var(--text); }
+.ck-opt:disabled { cursor: default; }
+.ck-opt.right { border-color: #22c55e; background: color-mix(in srgb, #22c55e 14%, transparent); color: var(--text); }
+.ck-opt.wrong { border-color: #ef4444; background: color-mix(in srgb, #ef4444 12%, transparent); }
+.ck-fb { min-height: 1rem; margin: .6rem 0; font-size: .88rem; color: var(--text-muted); }
+.ck-fb .ok { color: #22c55e; }
+.ck-fb .no { color: #ef4444; }
+@media print { .checks { display: none !important; } }
 
 /* ============================================================
    "TRY IT YOURSELF" R / PYTHON SNIPPETS (auto-injected)

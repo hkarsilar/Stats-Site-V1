@@ -72,6 +72,8 @@
         '<a class="brand" href="' + (BASE || "./") + '" style="display:inline-flex;align-items:center;gap:.45rem">' + capy(28) + 'Stats<span class="dot">Capybara</span></a>' +
         '<nav class="nav-links" id="nav-links" aria-label="Primary">' +
           '<a class="nav-link" href="' + BASE + '#curriculum">Curriculum</a>' +
+          '<a class="nav-link" href="' + BASE + 'which-test.html">Which test?</a>' +
+          '<a class="nav-link" href="' + BASE + 'tables.html">Tables</a>' +
           '<a class="nav-link" href="' + BASE + 'quiz.html">Quiz</a>' +
           '<a class="nav-link" href="' + BASE + 'glossary.html">Glossary</a>' +
           '<a class="nav-link" href="' + BASE + '#about">About</a>' +
@@ -301,6 +303,94 @@
     document.body.appendChild(s);
   }
 
+  /* ---------- "Check your understanding" (lesson pages) ----------
+     Question data lives in assets/js/checks.js, loaded lazily like
+     the code snippets. Injected above the "Try it yourself" block
+     (or the progress head if snippets haven't landed yet). */
+  function renderChecks() {
+    if (!HERE) return;
+    var s = document.createElement("script");
+    s.src = BASE + "assets/js/checks.js";
+    s.async = true;
+    s.onload = function () {
+      var qs = window.CHECKS && window.CHECKS[HERE];
+      if (!qs || !qs.length) return;
+      var nav = document.getElementById("lesson-nav");
+      var host = nav ? nav.parentNode : document.querySelector(".lesson");
+      if (!host) return;
+      var box = document.createElement("section");
+      box.className = "checks";
+      box.setAttribute("aria-label", "Check your understanding");
+      var answered = 0, correct = 0;
+      var head = document.createElement("div");
+      head.className = "ck-head";
+      head.innerHTML = '<span class="ck-title">🧠 Check your understanding</span><span class="ck-score" aria-live="polite"></span>';
+      box.appendChild(head);
+      var scoreEl = head.querySelector(".ck-score");
+      qs.forEach(function (item, qi) {
+        var card = document.createElement("div");
+        card.className = "ck-q";
+        var p = document.createElement("p");
+        p.className = "ck-text";
+        p.textContent = (qi + 1) + ". " + item.q;
+        card.appendChild(p);
+        var opts = document.createElement("div");
+        opts.className = "ck-opts";
+        var fb = document.createElement("p");
+        fb.className = "ck-fb";
+        var done = false;
+        item.o.forEach(function (text, i) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.className = "ck-opt";
+          b.textContent = text;
+          b.addEventListener("click", function () {
+            if (done) return;
+            done = true; answered++;
+            var btns = opts.querySelectorAll("button");
+            Array.prototype.forEach.call(btns, function (b2, j) {
+              b2.disabled = true;
+              if (j === item.a) b2.classList.add("right");
+            });
+            if (i === item.a) { correct++; fb.innerHTML = '<strong class="ok">Correct.</strong> ' + item.why; }
+            else { b.classList.add("wrong"); fb.innerHTML = '<strong class="no">Not quite.</strong> ' + item.why; }
+            scoreEl.textContent = correct + " / " + qs.length;
+            if (answered === qs.length) {
+              scoreEl.textContent = correct + " / " + qs.length + (correct === qs.length ? " — nailed it!" : "");
+            }
+          });
+          opts.appendChild(b);
+        });
+        card.appendChild(opts);
+        card.appendChild(fb);
+        box.appendChild(card);
+      });
+      // keep the order: prose → checks → try-code → progress head → prev/next
+      var tryBox = host.querySelector(".try-code");
+      var anchor = tryBox || document.querySelector(".lesson-progress-head") || nav;
+      host.insertBefore(box, anchor);
+    };
+    document.body.appendChild(s);
+  }
+
+  /* ---------- ← / → jump to the previous / next lesson ---------- */
+  function wireLessonKeys() {
+    if (!HERE) return;
+    var flat = window.CURRICULUM_FLAT;
+    var i = flat.findIndex(function (s) { return s.slug === HERE; });
+    if (i < 0) return;
+    document.addEventListener("keydown", function (e) {
+      if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
+      var el = document.activeElement;
+      if (el && (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) || el.isContentEditable)) return;
+      if (searchEl && searchEl.classList.contains("open")) return;
+      var to = null;
+      if (e.key === "ArrowLeft" && flat[i - 1]) to = flat[i - 1];
+      else if (e.key === "ArrowRight" && flat[i + 1] && flat[i + 1].ready) to = flat[i + 1];
+      if (to) window.location.href = BASE + to.course + "/" + to.slug + "/";
+    });
+  }
+
   /* ============================================================
      SEARCH OVERLAY
      ============================================================ */
@@ -329,18 +419,30 @@
   }
   function openSearch() { buildSearch(); searchEl.classList.add("open"); searchInput.value = ""; runSearch(); searchInput.focus(); }
   function closeSearch() { if (searchEl) searchEl.classList.remove("open"); }
+  // site pages surfaced alongside lessons in the search overlay
+  var SEARCH_PAGES = [
+    { title: "Which Test Should I Use?", url: "which-test.html", tag: "Tool", kw: "chooser decision anova t-test regression choose" },
+    { title: "Statistical Tables & Calculators", url: "tables.html", tag: "Tool", kw: "z t chi-square f critical value p-value calculator table" },
+    { title: "Course Quiz", url: "quiz.html", tag: "Practice", kw: "test yourself questions practice" },
+    { title: "Statistics Glossary", url: "glossary.html", tag: "Reference", kw: "terms definitions dictionary" }
+  ];
   function runSearch() {
     var q = searchInput.value.trim().toLowerCase();
     var flat = window.CURRICULUM_FLAT.filter(function (s) { return s.ready; });
-    searchMatches = flat.filter(function (s) {
+    var lessons = flat.filter(function (s) {
       return !q || (s.title.toLowerCase().indexOf(q) >= 0 || s.n.indexOf(q) >= 0 || s.courseTitle.toLowerCase().indexOf(q) >= 0);
-    }).slice(0, 40);
+    });
+    var pages = SEARCH_PAGES.filter(function (p) {
+      return !q || p.title.toLowerCase().indexOf(q) >= 0 || p.kw.indexOf(q) >= 0;
+    }).map(function (p) { return { page: true, title: p.title, url: p.url, tag: p.tag }; });
+    searchMatches = pages.concat(lessons).slice(0, 40);
     searchIdx = 0;
     if (!searchMatches.length) { searchResults.innerHTML = '<li class="search-empty">No lessons match “' + q + '”.</li>'; return; }
     searchResults.innerHTML = searchMatches.map(function (s, i) {
-      return '<li><a class="' + (i === 0 ? "active" : "") + '" href="' + BASE + s.course + '/' + s.slug + '/">' +
-        '<span class="n">' + s.n + '</span><span>' + s.title + '</span>' +
-        '<span class="course-tag">' + s.courseTitle + '</span></a></li>';
+      var href = s.page ? BASE + s.url : BASE + s.course + "/" + s.slug + "/";
+      return '<li><a class="' + (i === 0 ? "active" : "") + '" href="' + href + '">' +
+        '<span class="n">' + (s.page ? "→" : s.n) + '</span><span>' + s.title + '</span>' +
+        '<span class="course-tag">' + (s.page ? s.tag : s.courseTitle) + '</span></a></li>';
     }).join("");
     Array.prototype.forEach.call(searchResults.querySelectorAll("a"), function (a, i) {
       a.addEventListener("mousemove", function () { setActive(i); });
@@ -434,8 +536,10 @@
     renderLessonDone();
     renderTOC();
     renderTryCode();
+    renderChecks();
     renderKofi();
     wireSearchShortcuts();
+    wireLessonKeys();
     // record this lesson as visited + the resume anchor
     if (HERE) {
       markVisited(HERE);

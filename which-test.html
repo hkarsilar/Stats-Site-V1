@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Which Statistical Test Should I Use? — Interactive Chooser — StatsCapybara</title>
+  <meta name="description" content="Answer a few plain-English questions about your data and design, and get the right statistical test — t-test, ANOVA, chi-square, correlation, regression, or beyond — each linked to an interactive lesson." />
+  <link rel="canonical" href="https://statscapybara.com/which-test.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Which Statistical Test Should I Use? — StatsCapybara" />
+  <meta property="og:description" content="An interactive decision tree: answer a few plain-English questions about your data and get the right test, linked to a hands-on lesson." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/which-test.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Which Statistical Test Should I Use? — StatsCapybara" />
+  <meta name="twitter:description" content="An interactive decision tree: answer a few plain-English questions about your data and get the right test, linked to a hands-on lesson." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body>
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="container narrow">
+      <article class="lesson" style="margin:0 auto">
+        <span class="lesson-eyebrow">Tools</span>
+        <h1>Which Test Should I Use?</h1>
+        <p class="lede">The eternal question. Answer a few plain-English questions about your data and design, and get a recommendation — plus the interactive lesson where you can see that test in action. No jargon required.</p>
+
+        <div class="viz" id="chooser">
+          <div id="wt-crumbs" class="wt-crumbs"></div>
+          <div id="wt-stage"></div>
+        </div>
+
+        <div class="callout key">
+          <p><strong>A recommendation, not a verdict.</strong> Real analyses depend on details no flowchart can see — check the test's assumptions (<a href="stats-2/assumptions-and-when-they-break/">Assumptions &amp; When They Break</a>), and remember that a significant p-value still needs an <a href="stats-1/effect-size-and-power/">effect size</a> next to it.</p>
+        </div>
+
+        <h2>The whole map on one screen</h2>
+        <p>Prefer to scan? Here's the cheat sheet version.</p>
+        <table class="ref-table">
+          <thead><tr><th>Your situation</th><th style="font-family:inherit">Test</th><th>Lesson</th></tr></thead>
+          <tbody>
+            <tr><td>One group vs. a known value</td><td>One-sample t-test</td><td><a href="stats-1/one-sample-and-paired-t-tests/">1.11</a></td></tr>
+            <tr><td>Same people, measured twice</td><td>Paired t-test</td><td><a href="stats-1/one-sample-and-paired-t-tests/">1.11</a></td></tr>
+            <tr><td>Two separate groups</td><td>Independent t-test (Welch)</td><td><a href="stats-1/independent-samples-t-test/">1.12</a></td></tr>
+            <tr><td>3+ separate groups, one factor</td><td>One-way ANOVA</td><td><a href="stats-2/one-way-anova/">2.1</a></td></tr>
+            <tr><td>3+ groups, two crossed factors</td><td>Factorial ANOVA</td><td><a href="stats-2/factorial-anova-two-way/">2.3</a></td></tr>
+            <tr><td>Same people, 3+ conditions</td><td>Repeated-measures ANOVA</td><td><a href="stats-2/repeated-measures-anova/">2.4</a></td></tr>
+            <tr><td>Any of the above, assumptions broken</td><td>Rank-based alternative</td><td><a href="stats-2/non-parametric-alternatives/">2.6</a></td></tr>
+            <tr><td>Two continuous variables, association</td><td>Pearson correlation</td><td><a href="stats-2/correlation/">2.8</a></td></tr>
+            <tr><td>Two categorical variables, association</td><td>Chi-square test</td><td><a href="stats-2/chi-square-tests/">2.7</a></td></tr>
+            <tr><td>Predict a number, one predictor</td><td>Simple linear regression</td><td><a href="stats-2/simple-linear-regression/">2.9</a></td></tr>
+            <tr><td>Predict a number, several predictors</td><td>Multiple regression</td><td><a href="stats-3/multiple-regression/">3.1</a></td></tr>
+            <tr><td>Predict yes/no</td><td>Logistic regression</td><td><a href="stats-3/logistic-regression/">3.6</a></td></tr>
+            <tr><td>Predict a count</td><td>Poisson / negative binomial GLM</td><td><a href="stats-4/generalized-linear-models/">4.4</a></td></tr>
+            <tr><td>Nested / clustered / repeated data</td><td>Mixed (multilevel) model</td><td><a href="stats-4/mixed-and-multilevel-models/">4.5</a></td></tr>
+            <tr><td>Time until an event, with dropouts</td><td>Kaplan–Meier / survival analysis</td><td><a href="stats-4/survival-analysis/">4.8</a></td></tr>
+            <tr><td>Combining many studies</td><td>Meta-analysis</td><td><a href="stats-4/meta-analysis/">4.10</a></td></tr>
+          </tbody>
+        </table>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="assets/js/curriculum.js"></script>
+  <script src="assets/js/site.js"></script>
+
+  <!-- ============ decision tree ============ -->
+  <script>
+  (function () {
+    "use strict";
+
+    /* Questions. Each option leads to another question (next) or a result (leaf). */
+    var NODES = {
+      start: { q: "What kind of question are you asking?", opts: [
+        { label: "Do groups differ, on average?", desc: "Compare means of a numeric outcome", next: "groups" },
+        { label: "Are two variables related?", desc: "Association, not group differences", next: "related" },
+        { label: "Can I predict an outcome from other variables?", desc: "Build a model with predictors", next: "predict" },
+        { label: "Do category counts differ from what's expected?", desc: "Frequencies, not means", next: "chi" },
+        { label: "How long until an event happens?", desc: "Time-to-event, some cases never observed", leaf: "survival" },
+        { label: "What do many studies say, combined?", desc: "Pooling published effects", leaf: "meta" }
+      ]},
+      groups: { q: "How many groups are you comparing?", opts: [
+        { label: "One group vs. a known value", desc: "e.g. is our class's mean IQ different from 100?", next: "g1" },
+        { label: "Two groups", next: "g2" },
+        { label: "Three or more groups", next: "g3" }
+      ]},
+      g1: { q: "Is the outcome roughly symmetric / is your sample decently sized?", opts: [
+        { label: "Yes, or n is large", desc: "The t-test's assumptions look fine", leaf: "one_t" },
+        { label: "No — small sample with strong skew or outliers", leaf: "wilcoxon" }
+      ]},
+      g2: { q: "Are the two sets of scores from the same people, or different people?", opts: [
+        { label: "Same people (or matched pairs)", desc: "before/after, twin pairs, both conditions each", next: "g2p" },
+        { label: "Different, unrelated people", desc: "e.g. treatment group vs. control group", next: "g2i" }
+      ]},
+      g2p: { q: "Do the difference scores look reasonably well-behaved?", opts: [
+        { label: "Yes, or n is large", leaf: "paired_t" },
+        { label: "No — heavy skew or outliers in a small sample", leaf: "wilcoxon" }
+      ]},
+      g2i: { q: "Do the assumptions look OK (roughly normal within groups, no wild outliers)?", opts: [
+        { label: "Yes, or n is large", leaf: "indep_t" },
+        { label: "No — badly skewed / ordinal / tiny sample", leaf: "mann" }
+      ]},
+      g3: { q: "Same people in every condition, or different people per group?", opts: [
+        { label: "Different people in each group", next: "g3b" },
+        { label: "Same people across all conditions", next: "g3w" }
+      ]},
+      g3b: { q: "How many independent variables (factors) define the groups?", opts: [
+        { label: "One factor", desc: "e.g. 4 different study methods", next: "g3b1" },
+        { label: "Two or more crossed factors", desc: "e.g. method × class size", leaf: "factorial" }
+      ]},
+      g3b1: { q: "Do the assumptions look OK (roughly normal, similar spreads)?", opts: [
+        { label: "Yes, or n is large", leaf: "anova1" },
+        { label: "No — badly skewed / ordinal / tiny groups", leaf: "kruskal" }
+      ]},
+      g3w: { q: "Do the assumptions look OK?", opts: [
+        { label: "Yes — carry on parametrically", leaf: "rm_anova" },
+        { label: "No — skewed or ordinal outcome", leaf: "friedman" }
+      ]},
+      related: { q: "What types are the two variables?", opts: [
+        { label: "Both numeric (continuous)", next: "rel_cc" },
+        { label: "Both categorical", leaf: "chi_ind" },
+        { label: "One numeric, one categorical", desc: "that's really a group comparison in disguise", next: "groups" }
+      ]},
+      rel_cc: { q: "Does the scatterplot look roughly linear, without extreme outliers?", opts: [
+        { label: "Yes", leaf: "pearson" },
+        { label: "No — curved, ordinal, or outlier-ridden", leaf: "spearman" }
+      ]},
+      predict: { q: "What kind of outcome are you predicting?", opts: [
+        { label: "A number (continuous)", next: "pred_n" },
+        { label: "Yes / no (binary)", leaf: "logistic" },
+        { label: "A count (0, 1, 2, …)", leaf: "poisson" },
+        { label: "The data are nested or repeated", desc: "students in schools, trials in people…", leaf: "mixed" },
+        { label: "Time until an event", leaf: "survival" }
+      ]},
+      pred_n: { q: "How many predictors?", opts: [
+        { label: "Just one", leaf: "simple_reg" },
+        { label: "Several", leaf: "mult_reg" }
+      ]},
+      chi: { q: "Which situation matches yours?", opts: [
+        { label: "One categorical variable vs. expected proportions", desc: "e.g. is this die fair? equal preference for 4 flavors?", leaf: "chi_gof" },
+        { label: "Two categorical variables — are they associated?", desc: "e.g. treatment × recovered, a contingency table", leaf: "chi_ind" }
+      ]}
+    };
+
+    /* Results. lesson = "course/slug", plus optional alternatives and a caution. */
+    var LEAVES = {
+      one_t:    { name: "One-sample t-test", why: "Compares one group's mean to a fixed reference value, using the t-distribution to account for estimating the SD from the sample.", lesson: "stats-1/one-sample-and-paired-t-tests", label: "One-Sample & Paired t-Tests", alts: [{ name: "Wilcoxon signed-rank", when: "if the data are badly skewed in a small sample", lesson: "stats-2/non-parametric-alternatives" }] },
+      paired_t: { name: "Paired t-test", why: "Same people, two measurements: analyze each person's difference score. Individual differences cancel out, which buys you power.", lesson: "stats-1/one-sample-and-paired-t-tests", label: "One-Sample & Paired t-Tests", alts: [{ name: "Wilcoxon signed-rank", when: "if the difference scores are badly skewed", lesson: "stats-2/non-parametric-alternatives" }] },
+      indep_t:  { name: "Independent-samples t-test", why: "Two unrelated groups, one numeric outcome. Prefer the Welch version (most software's default), which doesn't require equal variances.", lesson: "stats-1/independent-samples-t-test", label: "Independent Samples t-Test", alts: [{ name: "Mann-Whitney U", when: "if assumptions fail badly", lesson: "stats-2/non-parametric-alternatives" }] },
+      mann:     { name: "Mann-Whitney U test", why: "The rank-based cousin of the independent t-test — robust to outliers and skew, and happy with ordinal outcomes.", lesson: "stats-2/non-parametric-alternatives", label: "Non-Parametric Alternatives", alts: [] },
+      wilcoxon: { name: "Wilcoxon signed-rank test", why: "The rank-based alternative for one-sample or paired designs — it works on the signed ranks of the (difference) scores, so outliers lose their leverage.", lesson: "stats-2/non-parametric-alternatives", label: "Non-Parametric Alternatives", alts: [] },
+      anova1:   { name: "One-way ANOVA", why: "One omnibus F-test across all groups keeps the false-positive rate honest; follow a significant result with post-hoc tests to see which groups differ.", lesson: "stats-2/one-way-anova", label: "One-Way ANOVA", alts: [{ name: "Post-hoc tests", when: "after a significant F", lesson: "stats-2/post-hoc-tests" }, { name: "Kruskal-Wallis", when: "if assumptions fail badly", lesson: "stats-2/non-parametric-alternatives" }] },
+      kruskal:  { name: "Kruskal-Wallis test", why: "The rank-based version of one-way ANOVA — compares three or more independent groups without normality assumptions.", lesson: "stats-2/non-parametric-alternatives", label: "Non-Parametric Alternatives", alts: [] },
+      factorial:{ name: "Factorial ANOVA", why: "Crossing factors tests each main effect and — usually the interesting part — their interaction, all in one design.", lesson: "stats-2/factorial-anova-two-way", label: "Factorial ANOVA (Two-Way)", alts: [] },
+      rm_anova: { name: "Repeated-measures ANOVA", why: "Each person serves as their own control, removing stable individual differences from the error term. Watch the sphericity assumption.", lesson: "stats-2/repeated-measures-anova", label: "Repeated Measures ANOVA", alts: [{ name: "Mixed models", when: "for missing data or unbalanced designs", lesson: "stats-4/mixed-and-multilevel-models" }] },
+      friedman: { name: "Friedman test", why: "The rank-based counterpart of repeated-measures ANOVA for three or more within-person conditions.", lesson: "stats-2/non-parametric-alternatives", label: "Non-Parametric Alternatives", alts: [{ name: "Mixed models", when: "a more flexible modern route", lesson: "stats-4/mixed-and-multilevel-models" }] },
+      pearson:  { name: "Pearson correlation (r)", why: "Measures the strength and direction of a straight-line relationship between two numeric variables. Always look at the scatterplot alongside it.", lesson: "stats-2/correlation", label: "Correlation", alts: [{ name: "Simple regression", when: "if you also want a prediction equation", lesson: "stats-2/simple-linear-regression" }] },
+      spearman: { name: "Spearman rank correlation", why: "Correlate the ranks instead of the raw values — it captures any monotone (consistently rising/falling) relationship and shrugs off outliers.", lesson: "stats-2/correlation", label: "Correlation", alts: [{ name: "Non-parametric tests", when: "for the broader rank-based toolkit", lesson: "stats-2/non-parametric-alternatives" }] },
+      chi_ind:  { name: "Chi-square test of independence", why: "Compares the observed contingency-table counts to those expected if the two categorical variables were unrelated. Report Cramér's V or an odds ratio for strength.", lesson: "stats-2/chi-square-tests", label: "Chi-Square Tests", alts: [] },
+      chi_gof:  { name: "Chi-square goodness-of-fit test", why: "Checks whether one categorical variable's counts match a hypothesized distribution (equal shares, or any expected proportions you specify).", lesson: "stats-2/chi-square-tests", label: "Chi-Square Tests", alts: [] },
+      simple_reg:{ name: "Simple linear regression", why: "Fits the least-squares line ŷ = a + bx, giving you both a significance test and an actual prediction equation.", lesson: "stats-2/simple-linear-regression", label: "Simple Linear Regression", alts: [{ name: "Regression diagnostics", when: "to sanity-check the fit", lesson: "stats-2/regression-diagnostics" }] },
+      mult_reg: { name: "Multiple regression", why: "Each coefficient is a predictor's effect holding the others constant — the workhorse for prediction and statistical control alike.", lesson: "stats-3/multiple-regression", label: "Multiple Regression", alts: [{ name: "Interactions", when: "if one predictor's effect depends on another", lesson: "stats-3/interactions-in-regression" }, { name: "Dummy coding", when: "for categorical predictors", lesson: "stats-3/categorical-predictors-and-dummy-coding" }] },
+      logistic: { name: "Logistic regression", why: "Models the probability of a yes/no outcome with an S-shaped curve; coefficients exponentiate into odds ratios.", lesson: "stats-3/logistic-regression", label: "Logistic Regression", alts: [{ name: "GLMs", when: "for the broader family this belongs to", lesson: "stats-4/generalized-linear-models" }] },
+      poisson:  { name: "Poisson regression (GLM)", why: "A generalized linear model with a log link keeps count predictions positive; switch to negative binomial if the counts are overdispersed.", lesson: "stats-4/generalized-linear-models", label: "Generalized Linear Models", alts: [] },
+      mixed:    { name: "Mixed / multilevel model", why: "Random effects absorb the correlation that comes from nesting (students in schools, trials in people), keeping your standard errors honest.", lesson: "stats-4/mixed-and-multilevel-models", label: "Mixed & Multilevel Models", alts: [] },
+      survival: { name: "Survival analysis (Kaplan–Meier)", why: "Time-to-event data with censoring: Kaplan–Meier curves estimate survival over time, the log-rank test compares groups, and Cox regression adds predictors.", lesson: "stats-4/survival-analysis", label: "Survival Analysis & Kaplan–Meier", alts: [] },
+      meta:     { name: "Meta-analysis", why: "Pool the effect sizes across studies, weighting by precision, and quantify how much the studies genuinely disagree (I²).", lesson: "stats-4/meta-analysis", label: "Meta-Analysis & Forest Plots", alts: [] }
+    };
+
+    var stage = document.getElementById("wt-stage");
+    var crumbsEl = document.getElementById("wt-crumbs");
+    var path = []; // { node, choiceLabel }
+
+    function renderCrumbs() {
+      if (!path.length) { crumbsEl.innerHTML = ""; return; }
+      crumbsEl.innerHTML = path.map(function (step, i) {
+        return '<button class="wt-crumb" data-i="' + i + '" title="Go back to this question">' + step.choiceLabel + '</button>';
+      }).join('<span class="wt-sep">›</span>') +
+      '<button class="wt-crumb wt-restart" data-i="-1">↺ start over</button>';
+      Array.prototype.forEach.call(crumbsEl.querySelectorAll(".wt-crumb"), function (b) {
+        b.addEventListener("click", function () {
+          var i = +b.getAttribute("data-i");
+          path = i < 0 ? [] : path.slice(0, i);
+          show(path.length ? path[path.length - 1].to : "start");
+        });
+      });
+    }
+
+    function show(id) {
+      renderCrumbs();
+      var leaf = LEAVES[id];
+      if (leaf) { showLeaf(leaf); return; }
+      var node = NODES[id];
+      stage.innerHTML = '<p class="wt-q">' + node.q + '</p>' +
+        '<div class="wt-opts">' + node.opts.map(function (o, i) {
+          return '<button class="wt-opt" data-i="' + i + '"><span class="wt-opt-label">' + o.label + '</span>' +
+            (o.desc ? '<span class="wt-opt-desc">' + o.desc + '</span>' : '') + '</button>';
+        }).join("") + '</div>';
+      Array.prototype.forEach.call(stage.querySelectorAll(".wt-opt"), function (b) {
+        b.addEventListener("click", function () {
+          var o = node.opts[+b.getAttribute("data-i")];
+          var to = o.leaf || o.next;
+          path.push({ node: id, choiceLabel: o.label, to: to });
+          show(to);
+        });
+      });
+    }
+
+    function showLeaf(leaf) {
+      var alts = leaf.alts.map(function (a) {
+        return '<li><a href="' + a.lesson + '/">' + a.name + '</a> — ' + a.when + '.</li>';
+      }).join("");
+      stage.innerHTML =
+        '<div class="wt-result">' +
+          '<span class="wt-result-eyebrow">Recommended test</span>' +
+          '<h3 class="wt-result-name">' + leaf.name + '</h3>' +
+          '<p class="wt-result-why">' + leaf.why + '</p>' +
+          '<a class="btn btn-primary btn-sm" href="' + leaf.lesson + '/">Open the interactive lesson: ' + leaf.label + ' →</a>' +
+          (alts ? '<p class="wt-alts-label">Also worth knowing:</p><ul class="wt-alts">' + alts + '</ul>' : '') +
+        '</div>';
+    }
+
+    show("start");
+  })();
+  </script>
+</body>
+</html>

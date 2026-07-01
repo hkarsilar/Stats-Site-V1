@@ -101,6 +101,45 @@ window.VIZ = (function () {
   // upper-tail p-values
   function fUpper(f, d1, d2) { return f <= 0 ? 1 : 1 - betai(d1 / 2, d2 / 2, d1 * f / (d1 * f + d2)); }
   function chiSqUpper(x, k) { return x <= 0 ? 1 : 1 - gammp(k / 2, x / 2); }
+  function tUpper(t, v) {
+    var p = 0.5 * betai(v / 2, 0.5, v / (v + t * t));
+    return t >= 0 ? p : 1 - p;
+  }
 
-  return { css: css, fit: fit, randn: randn, gauss: gauss, erf: erf, normCdf: normCdf, normPdf: normPdf, normInv: normInv, mean: mean, sd: sd, onTheme: onTheme, gammaln: gammaln, gammp: gammp, betai: betai, fUpper: fUpper, chiSqUpper: chiSqUpper };
+  /* ---- densities (for drawing the curves) ---- */
+  function tPdf(t, v) {
+    return Math.exp(gammaln((v + 1) / 2) - gammaln(v / 2) - 0.5 * Math.log(v * Math.PI) - ((v + 1) / 2) * Math.log(1 + t * t / v));
+  }
+  function chiSqPdf(x, k) {
+    if (x <= 0) return 0;
+    return Math.exp((k / 2 - 1) * Math.log(x) - x / 2 - gammaln(k / 2) - (k / 2) * Math.LN2);
+  }
+  function fPdf(x, d1, d2) {
+    if (x <= 0) return 0;
+    var lnB = gammaln(d1 / 2) + gammaln(d2 / 2) - gammaln((d1 + d2) / 2);
+    return Math.exp(0.5 * (d1 * Math.log(d1 * x) + d2 * Math.log(d2) - (d1 + d2) * Math.log(d1 * x + d2)) - Math.log(x) - lnB);
+  }
+
+  /* ---- inverse (quantile) functions: value with upper-tail area = alpha.
+     Bisection on the exact CDFs — slow-ish but rock solid. ---- */
+  function invUpper(fn, alpha) {
+    if (alpha <= 0 || alpha >= 1) return NaN;
+    var hi = 1;
+    while (fn(hi) > alpha && hi < 1e12) hi *= 2;
+    var lo = 0;
+    for (var i = 0; i < 200; i++) {
+      var mid = (lo + hi) / 2;
+      if (fn(mid) > alpha) lo = mid; else hi = mid;
+    }
+    return (lo + hi) / 2;
+  }
+  function tInv(alpha, v) {           // upper-tail critical t (alpha < .5 → positive)
+    if (alpha === 0.5) return 0;
+    return alpha < 0.5 ? invUpper(function (t) { return tUpper(t, v); }, alpha)
+                       : -invUpper(function (t) { return tUpper(t, v); }, 1 - alpha);
+  }
+  function chiSqInv(alpha, k) { return invUpper(function (x) { return chiSqUpper(x, k); }, alpha); }
+  function fInv(alpha, d1, d2) { return invUpper(function (x) { return fUpper(x, d1, d2); }, alpha); }
+
+  return { css: css, fit: fit, randn: randn, gauss: gauss, erf: erf, normCdf: normCdf, normPdf: normPdf, normInv: normInv, mean: mean, sd: sd, onTheme: onTheme, gammaln: gammaln, gammp: gammp, betai: betai, fUpper: fUpper, chiSqUpper: chiSqUpper, tUpper: tUpper, tPdf: tPdf, chiSqPdf: chiSqPdf, fPdf: fPdf, tInv: tInv, chiSqInv: chiSqInv, fInv: fInv };
 })();

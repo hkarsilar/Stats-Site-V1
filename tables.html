@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Statistical Tables &amp; Calculators — z, t, Chi-Square, F — StatsCapybara</title>
+  <meta name="description" content="Free interactive statistical tables: exact p-values and critical values for the normal (z), t, chi-square, and F distributions — with the tail area drawn live, no table lookup needed." />
+  <link rel="canonical" href="https://statscapybara.com/tables.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Statistical Tables &amp; Calculators — StatsCapybara" />
+  <meta property="og:description" content="Exact p-values and critical values for z, t, chi-square, and F — with the distribution and tail area drawn live. The last stat table you'll ever need." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/tables.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Statistical Tables &amp; Calculators — StatsCapybara" />
+  <meta name="twitter:description" content="Exact p-values and critical values for z, t, chi-square, and F — with the distribution and tail area drawn live." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body>
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="container narrow">
+      <article class="lesson" style="margin:0 auto">
+        <span class="lesson-eyebrow">Tools</span>
+        <h1>Statistical Tables &amp; Calculators</h1>
+        <p class="lede">The tables at the back of your textbook, reimagined. Pick a distribution, type your statistic (or your α), and get the <strong>exact</strong> p-value or critical value — with the tail area drawn so you can see what the number means.</p>
+
+        <div class="viz" id="calc">
+          <p class="viz-title">🎛️ Distribution calculator</p>
+          <p class="viz-sub">Everything updates as you type. The shaded region is the probability being reported.</p>
+
+          <div class="controls">
+            <div class="control"><label>Distribution</label>
+              <span class="seg" id="seg-dist">
+                <button data-d="z" class="active">Normal (z)</button><button data-d="t">Student's t</button><button data-d="chi2">χ²</button><button data-d="f">F</button>
+              </span>
+            </div>
+            <div class="control"><label>I have…</label>
+              <span class="seg" id="seg-mode">
+                <button data-m="p" class="active">a statistic → p-value</button><button data-m="crit">an α → critical value</button>
+              </span>
+            </div>
+            <div class="control" id="ctl-tail"><label>Tail</label>
+              <span class="seg" id="seg-tail">
+                <button data-t="two" class="active">Two</button><button data-t="right">Right</button><button data-t="left">Left</button>
+              </span>
+            </div>
+          </div>
+
+          <div class="controls">
+            <div class="control" id="ctl-stat"><label id="stat-label">z statistic</label><input type="number" id="in-stat" class="num" value="1.96" step="0.01" /></div>
+            <div class="control" id="ctl-alpha" style="display:none"><label>α (significance level)</label><input type="number" id="in-alpha" class="num" value="0.05" step="0.01" min="0.0001" max="0.5" /></div>
+            <div class="control" id="ctl-df1" style="display:none"><label id="df1-label">df</label><input type="number" id="in-df1" class="num" value="10" step="1" min="1" /></div>
+            <div class="control" id="ctl-df2" style="display:none"><label>df₂ (denominator)</label><input type="number" id="in-df2" class="num" value="20" step="1" min="1" /></div>
+          </div>
+
+          <canvas id="dist-canvas"></canvas>
+
+          <div class="stat-row" id="result-row"></div>
+          <div class="stat-row" id="crit-row" style="margin-top:.5rem"></div>
+        </div>
+
+        <h2>How to use it</h2>
+        <ul>
+          <li><strong>Got a test statistic?</strong> (from software, a homework problem, or a formula) — choose its distribution, enter it, and read the exact p-value. For t and z, pick the tail your hypothesis calls for; χ² and F tests are naturally right-tailed.</li>
+          <li><strong>Need a critical value?</strong> Switch to the α mode. The shaded region is the rejection region: a statistic landing inside it means p &lt; α.</li>
+          <li><strong>Checking a printed table?</strong> The "critical values at common α" row below the chart is the entire relevant column of a z, t, χ², or F table for your degrees of freedom.</li>
+        </ul>
+
+        <div class="callout key">
+          <p><strong>These are exact values, not approximations.</strong> The calculator uses the same special functions (incomplete gamma and beta) that R and Python use under the hood — the numbers match <code>pnorm</code>, <code>pt</code>, <code>pchisq</code>, and <code>pf</code> to many decimal places.</p>
+        </div>
+
+        <h2>Common critical values worth memorizing</h2>
+        <table class="ref-table">
+          <thead><tr><th>Confidence / α (two-tailed)</th><th>z critical</th><th>Where you'll meet it</th></tr></thead>
+          <tbody>
+            <tr><td>90% &nbsp;·&nbsp; α = .10</td><td>1.645</td><td>Lenient exploratory cutoffs</td></tr>
+            <tr><td>95% &nbsp;·&nbsp; α = .05</td><td>1.960</td><td>The default in most of science</td></tr>
+            <tr><td>99% &nbsp;·&nbsp; α = .01</td><td>2.576</td><td>Stricter confirmatory tests</td></tr>
+            <tr><td>99.9% &nbsp;·&nbsp; α = .001</td><td>3.291</td><td>Very strong evidence claims</td></tr>
+          </tbody>
+        </table>
+        <p>t critical values are always a little larger than these (fatter tails), and they shrink toward the z values as degrees of freedom grow — by df ≈ 120 the difference barely matters. Try it above.</p>
+
+        <h2>Where these distributions come from</h2>
+        <ul>
+          <li><strong>Normal (z)</strong> — the bell curve behind z-scores and the Central Limit Theorem. <a href="stats-1/z-scores-and-the-normal-distribution/">See the lesson →</a></li>
+          <li><strong>Student's t</strong> — the fat-tailed cousin used when the SD is estimated from the sample. <a href="stats-1/one-sample-and-paired-t-tests/">See the lesson →</a></li>
+          <li><strong>Chi-square (χ²)</strong> — the distribution of squared deviations, used for tests on counts. <a href="stats-2/chi-square-tests/">See the lesson →</a></li>
+          <li><strong>F</strong> — the ratio of two variances, the engine of ANOVA and regression tests. <a href="stats-2/one-way-anova/">See the lesson →</a></li>
+        </ul>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="assets/js/curriculum.js"></script>
+  <script src="assets/js/site.js"></script>
+  <script src="assets/js/viz.js"></script>
+
+  <!-- ============ calculator ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var V = window.VIZ;
+    var canvas = document.getElementById("dist-canvas");
+    var dist = "z", mode = "p", tail = "two";
+
+    var el = function (id) { return document.getElementById(id); };
+    function num(id, fallback) { var v = parseFloat(el(id).value); return isFinite(v) ? v : fallback; }
+
+    /* ---- per-distribution plumbing: pdf, upper-tail cdf, inverse ---- */
+    function dfs() {
+      var d1 = Math.max(1, Math.round(num("in-df1", 10)));
+      var d2 = Math.max(1, Math.round(num("in-df2", 20)));
+      return [d1, d2];
+    }
+    function pdf(x) {
+      var d = dfs();
+      if (dist === "z") return V.normPdf(x, 0, 1);
+      if (dist === "t") return V.tPdf(x, d[0]);
+      if (dist === "chi2") return V.chiSqPdf(x, d[0]);
+      return V.fPdf(x, d[0], d[1]);
+    }
+    function upper(x) {
+      var d = dfs();
+      if (dist === "z") return 1 - V.normCdf(x);
+      if (dist === "t") return V.tUpper(x, d[0]);
+      if (dist === "chi2") return V.chiSqUpper(x, d[0]);
+      return V.fUpper(x, d[0], d[1]);
+    }
+    function inv(alpha) { // value with upper-tail area = alpha
+      var d = dfs();
+      if (dist === "z") return V.normInv(1 - alpha);
+      if (dist === "t") return V.tInv(alpha, d[0]);
+      if (dist === "chi2") return V.chiSqInv(alpha, d[0]);
+      return V.fInv(alpha, d[0], d[1]);
+    }
+    function symmetric() { return dist === "z" || dist === "t"; }
+
+    function fmtP(p) {
+      if (!isFinite(p)) return "—";
+      if (p < 0.0001) return p.toExponential(2);
+      return p.toFixed(4);
+    }
+    function fmtV(x) {
+      if (!isFinite(x)) return "—";
+      return Math.abs(x) >= 100 ? x.toFixed(1) : x.toFixed(3);
+    }
+
+    /* ---- what to mark and shade ---- */
+    function currentAlpha() { return Math.min(0.5, Math.max(0.0001, num("in-alpha", 0.05))); }
+    function critFor(alpha) { return symmetric() && tail === "two" ? inv(alpha / 2) : inv(alpha); }
+
+    function pValues(stat) {
+      var up = upper(stat);
+      return { right: up, left: 1 - up, two: symmetric() ? Math.min(1, 2 * upper(Math.abs(stat))) : up };
+    }
+
+    /* ---- results ---- */
+    function renderResults() {
+      var res = el("result-row"), critRow = el("crit-row"), d = dfs();
+      var dfNote = dist === "z" ? "" : dist === "f" ? " (df = " + d[0] + ", " + d[1] + ")" : " (df = " + d[0] + ")";
+      if (mode === "p") {
+        var stat = num("in-stat", 0);
+        var ps = pValues(stat);
+        if (symmetric()) {
+          res.innerHTML =
+            '<div class="stat"><span class="k">' + (tail === "two" ? "Two-tailed" : tail + "-tail") + ' p-value' + dfNote + '</span><span class="v" style="color:var(--primary)">' + fmtP(ps[tail]) + '</span></div>' +
+            '<div class="stat"><span class="k">Two-tailed</span><span class="v" style="font-size:1rem">' + fmtP(ps.two) + '</span></div>' +
+            '<div class="stat"><span class="k">Right tail</span><span class="v" style="font-size:1rem">' + fmtP(ps.right) + '</span></div>' +
+            '<div class="stat"><span class="k">Left tail</span><span class="v" style="font-size:1rem">' + fmtP(ps.left) + '</span></div>';
+        } else {
+          res.innerHTML =
+            '<div class="stat"><span class="k">Upper-tail p-value' + dfNote + '</span><span class="v" style="color:var(--primary)">' + fmtP(ps.right) + '</span></div>' +
+            '<div class="stat"><span class="k">Decision at α = .05</span><span class="v" style="font-size:1rem">' + (ps.right < 0.05 ? "reject H₀" : "fail to reject") + '</span></div>';
+        }
+      } else {
+        var a = currentAlpha(), c = critFor(a);
+        var label = symmetric() && tail === "two" ? "±" + fmtV(c) : fmtV(symmetric() && tail === "left" ? -c : c);
+        res.innerHTML =
+          '<div class="stat"><span class="k" style="text-transform:none">Critical value at α = ' + a + dfNote + '</span><span class="v" style="color:var(--primary)">' + label + '</span></div>' +
+          '<div class="stat"><span class="k">Rejection region</span><span class="v" style="font-size:1rem">' +
+            (symmetric() ? (tail === "two" ? "|stat| > " + fmtV(c) : tail === "right" ? "stat > " + fmtV(c) : "stat < " + fmtV(-c)) : "stat > " + fmtV(c)) + '</span></div>';
+      }
+      var alphas = [0.10, 0.05, 0.01];
+      critRow.innerHTML = alphas.map(function (a2) {
+        var c2 = critFor(a2);
+        var lb = symmetric() && tail === "two" ? "±" + fmtV(c2) : fmtV(symmetric() && tail === "left" ? -c2 : c2);
+        return '<div class="stat"><span class="k" style="text-transform:none">critical value, α = ' + a2.toFixed(2) + '</span><span class="v" style="font-size:1rem">' + lb + '</span></div>';
+      }).join("");
+    }
+
+    /* ---- drawing ---- */
+    var H = 230;
+    function draw() {
+      var f = V.fit(canvas, H), ctx = f.ctx, W = f.w;
+      ctx.clearRect(0, 0, W, H);
+      var marker = mode === "p" ? num("in-stat", 0) : critFor(currentAlpha());
+      var xmin, xmax;
+      if (symmetric()) {
+        var L = Math.min(30, Math.max(4.2, Math.abs(marker) * 1.15 + 0.5));
+        xmin = -L; xmax = L;
+      } else {
+        xmin = 0;
+        xmax = Math.max(inv(0.01) * 1.35, (isFinite(marker) ? marker : 0) * 1.15 + 1, 3);
+        xmax = Math.min(xmax, 1e4);
+      }
+      var pad = 12, baseY = H - 26, top = 14;
+      var toX = function (x) { return pad + (x - xmin) / (xmax - xmin) * (W - 2 * pad); };
+      // sample the density (skip the very edge so χ²/F spikes at 0 don't flatten everything)
+      var N = 420, xs = [], ys = [], ymax = 0;
+      for (var i = 0; i <= N; i++) {
+        var x = xmin + (xmax - xmin) * i / N;
+        var y = pdf(x);
+        xs.push(x); ys.push(y);
+        if (i > N * 0.015 && isFinite(y) && y > ymax) ymax = y;
+      }
+      ymax = ymax * 1.08 || 1;
+      var toY = function (y) { return baseY - Math.min(y / ymax, 1) * (baseY - top); };
+
+      // shaded region(s)
+      var regions = [];
+      if (mode === "p") {
+        if (!symmetric() || tail === "right") regions.push([marker, xmax]);
+        else if (tail === "left") regions.push([xmin, marker]);
+        else { var m = Math.abs(marker); regions.push([m, xmax]); regions.push([xmin, -m]); }
+      } else {
+        var c = critFor(currentAlpha());
+        if (!symmetric() || tail === "right") regions.push([c, xmax]);
+        else if (tail === "left") regions.push([xmin, -c]);
+        else { regions.push([c, xmax]); regions.push([xmin, -c]); }
+      }
+      ctx.fillStyle = "rgba(249,115,22,.35)";
+      regions.forEach(function (r) {
+        var a = Math.max(xmin, r[0]), b = Math.min(xmax, r[1]);
+        if (b <= a) return;
+        ctx.beginPath(); ctx.moveTo(toX(a), baseY);
+        for (var j = 0; j <= 80; j++) { var xx = a + (b - a) * j / 80; ctx.lineTo(toX(xx), toY(pdf(xx))); }
+        ctx.lineTo(toX(b), baseY); ctx.closePath(); ctx.fill();
+      });
+
+      // the curve
+      ctx.beginPath();
+      for (var k = 0; k <= N; k++) { var px = toX(xs[k]), py = toY(ys[k]); if (k === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py); }
+      ctx.strokeStyle = V.css("--primary"); ctx.lineWidth = 2.5; ctx.lineJoin = "round"; ctx.stroke();
+
+      // baseline + axis labels
+      ctx.strokeStyle = V.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(pad, baseY + 0.5); ctx.lineTo(W - pad, baseY + 0.5); ctx.stroke();
+      ctx.fillStyle = V.css("--text-faint"); ctx.font = "11px " + V.css("--mono");
+      var ticks = symmetric() ? [xmin, xmin / 2, 0, xmax / 2, xmax] : [0, xmax / 4, xmax / 2, 3 * xmax / 4, xmax];
+      ticks.forEach(function (t2) {
+        ctx.textAlign = "center";
+        var tx = Math.min(Math.max(toX(t2), pad + 16), W - pad - 16);
+        ctx.fillText(fmtV(t2).replace(/\.000$/, ""), tx, baseY + 16);
+      });
+
+      // marker line(s)
+      function markAt(x, label) {
+        ctx.strokeStyle = "#f97316"; ctx.setLineDash([4, 4]); ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(toX(x), top); ctx.lineTo(toX(x), baseY); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = "#f97316"; ctx.font = "bold 12px " + V.css("--mono"); ctx.textAlign = "center";
+        var lx = Math.min(Math.max(toX(x), pad + 18), W - pad - 18);
+        ctx.fillText(label, lx, top - 2 + 12);
+      }
+      if (mode === "p") {
+        if (symmetric() && tail === "two") { markAt(Math.abs(marker), fmtV(Math.abs(marker))); markAt(-Math.abs(marker), fmtV(-Math.abs(marker))); }
+        else markAt(marker, fmtV(marker));
+      } else {
+        var c2 = critFor(currentAlpha());
+        if (symmetric() && tail === "two") { markAt(c2, "+" + fmtV(c2)); markAt(-c2, "−" + fmtV(c2)); }
+        else if (symmetric() && tail === "left") markAt(-c2, fmtV(-c2));
+        else markAt(c2, fmtV(c2));
+      }
+    }
+
+    /* ---- UI wiring ---- */
+    function segWire(id, attr, fn) {
+      var seg = el(id);
+      seg.addEventListener("click", function (e) {
+        var b = e.target.closest("button"); if (!b) return;
+        Array.prototype.forEach.call(seg.querySelectorAll("button"), function (b2) { b2.classList.toggle("active", b2 === b); });
+        fn(b.getAttribute(attr));
+      });
+    }
+    var DEFAULTS = { z: "1.96", t: "2.09", chi2: "7.81", f: "3.10" };
+    function refreshControls() {
+      el("ctl-tail").style.display = symmetric() ? "" : "none";
+      el("ctl-df1").style.display = dist === "z" ? "none" : "";
+      el("ctl-df2").style.display = dist === "f" ? "" : "none";
+      el("df1-label").textContent = dist === "f" ? "df₁ (numerator)" : "df";
+      el("ctl-stat").style.display = mode === "p" ? "" : "none";
+      el("ctl-alpha").style.display = mode === "crit" ? "" : "none";
+      el("stat-label").textContent = (dist === "z" ? "z" : dist === "t" ? "t" : dist === "chi2" ? "χ²" : "F") + " statistic";
+    }
+    function update() { refreshControls(); renderResults(); draw(); }
+
+    segWire("seg-dist", "data-d", function (v) {
+      dist = v;
+      el("in-stat").value = DEFAULTS[v];
+      if (v === "chi2") el("in-df1").value = 3;
+      else if (v === "t") el("in-df1").value = 19;
+      else if (v === "f") { el("in-df1").value = 3; el("in-df2").value = 20; }
+      update();
+    });
+    segWire("seg-mode", "data-m", function (v) { mode = v; update(); });
+    segWire("seg-tail", "data-t", function (v) { tail = v; update(); });
+    ["in-stat", "in-alpha", "in-df1", "in-df2"].forEach(function (id) {
+      el(id).addEventListener("input", update);
+    });
+    window.addEventListener("resize", draw);
+    V.onTheme(draw);
+    update();
+  })();
+  </script>
+</body>
+</html>
