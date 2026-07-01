@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Statistics Glossary — StatsCapybara</title>
+  <meta name="description" content="Plain-language definitions of the statistics terms used across the course — from population and p-value to random effects and credible intervals. Filter as you type." />
+  <link rel="canonical" href="https://statscapybara.com/glossary.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Statistics Glossary — StatsCapybara" />
+  <meta property="og:description" content="Plain-language definitions of the statistics terms used across the course, each linked to the lesson where you can see it in action." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/glossary.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Statistics Glossary — StatsCapybara" />
+  <meta name="twitter:description" content="Plain-language definitions of every key statistics term in the course, filterable as you type." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body>
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="container narrow">
+      <article class="lesson" style="margin:0 auto">
+        <span class="lesson-eyebrow">Reference</span>
+        <h1>Statistics Glossary</h1>
+        <p class="lede">Every key term in the course, in plain language. Start typing to filter, and click a term's link to jump to the lesson where you can see it in action.</p>
+
+        <input type="text" id="gloss-filter" class="glossary-filter" placeholder="Filter terms… (e.g. p-value, variance, prior)" autocomplete="off" aria-label="Filter glossary terms" />
+        <p id="gloss-count" style="font-size:.82rem;color:var(--text-faint);margin:-.75rem 0 1.25rem"></p>
+
+        <div id="gloss-host"></div>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="assets/js/curriculum.js"></script>
+  <script src="assets/js/site.js"></script>
+
+  <!-- ============ glossary ============ -->
+  <script>
+  (function () {
+    "use strict";
+    // term, def, and optional { s: "course/slug", l: "lesson label" } link.
+    var TERMS = [
+      { t: "Alpha (significance level)", d: "The Type I error rate you accept in advance — the probability of rejecting a true null hypothesis. Conventionally 0.05.", s: "stats-1/hypothesis-testing-logic", l: "Hypothesis Testing Logic" },
+      { t: "Alternative hypothesis (H₁)", d: "The claim you're gathering evidence for — that an effect, difference, or relationship exists.", s: "stats-1/hypothesis-testing-logic", l: "Hypothesis Testing Logic" },
+      { t: "ANOVA", d: "Analysis of Variance — a test for whether three or more group means differ, by comparing variance between groups to variance within groups.", s: "stats-2/one-way-anova", l: "One-Way ANOVA" },
+      { t: "AIC / BIC", d: "Information criteria that score a model on fit while penalizing complexity, so you can compare non-nested models. Lower is better.", s: "stats-3/model-comparison", l: "Model Comparison" },
+      { t: "Bayesian inference", d: "An approach that treats unknown parameters as having probability distributions, updating a prior belief with data to get a posterior.", s: "stats-4/bayesian-thinking", l: "Bayesian Thinking" },
+      { t: "Between-groups variance", d: "How much the group means differ from the overall mean — the 'signal' in the numerator of the ANOVA F-ratio.", s: "stats-2/one-way-anova", l: "One-Way ANOVA" },
+      { t: "Bonferroni correction", d: "A conservative fix for multiple comparisons: divide your alpha by the number of tests to keep the overall error rate in check.", s: "stats-2/post-hoc-tests", l: "Post-Hoc Tests" },
+      { t: "Bootstrap", d: "Estimating uncertainty by resampling your data with replacement thousands of times, instead of relying on a formula.", s: "stats-4/bootstrap-and-resampling", l: "Bootstrap & Resampling" },
+      { t: "Categorical variable", d: "A variable whose values are labels or categories (e.g. condition, group) rather than measured quantities.", s: "stats-1/types-of-data", l: "Types of Data" },
+      { t: "Central Limit Theorem", d: "The result that the distribution of the sample mean approaches normal as n grows, whatever the population's shape.", s: "stats-1/central-limit-theorem", l: "Central Limit Theorem" },
+      { t: "Chi-square test", d: "A test for association between categorical variables, comparing observed counts to the counts expected under independence.", s: "stats-2/chi-square-tests", l: "Chi-Square Tests" },
+      { t: "Cohen's d", d: "A standardized effect size for the difference between two means, expressed in standard-deviation units.", s: "stats-1/effect-size-and-power", l: "Effect Size & Power" },
+      { t: "Confidence interval", d: "A range that, over many repeated samples, would contain the true parameter a stated percentage of the time (e.g. 95%).", s: "stats-1/confidence-intervals", l: "Confidence Intervals" },
+      { t: "Confounding variable", d: "A lurking third variable that influences both the predictor and the outcome, distorting their apparent relationship.", s: "stats-3/multiple-regression", l: "Multiple Regression" },
+      { t: "Correlation (Pearson r)", d: "A number from −1 to +1 measuring the strength and direction of a straight-line relationship between two variables.", s: "stats-2/correlation", l: "Correlation" },
+      { t: "Credible interval", d: "The Bayesian counterpart of a confidence interval: a range that contains the parameter with a stated posterior probability.", s: "stats-4/bayesian-estimation", l: "Bayesian Estimation" },
+      { t: "Degrees of freedom", d: "The number of values free to vary when estimating a statistic — it sets the exact shape of t, F, and χ² distributions.", s: "stats-1/one-sample-and-paired-t-tests", l: "One-Sample & Paired t-Tests" },
+      { t: "Descriptive statistics", d: "Summaries of the data you actually have — means, spreads, charts — making no claim beyond the sample.", s: "stats-1/what-is-statistics", l: "What Is Statistics?" },
+      { t: "Dummy coding", d: "Representing a categorical predictor as 0/1 indicator variables so it can enter a regression, relative to a reference category.", s: "stats-3/categorical-predictors-and-dummy-coding", l: "Categorical Predictors & Dummy Coding" },
+      { t: "Effect size", d: "How big an effect is, independent of sample size — the practical significance that a p-value alone can't tell you.", s: "stats-1/effect-size-and-power", l: "Effect Size & Power" },
+      { t: "Eigenvalue", d: "In factor analysis / PCA, the amount of total variance captured by a component; used to decide how many factors to keep.", s: "stats-3/factor-analysis-pca", l: "Factor Analysis / PCA" },
+      { t: "Expected frequency", d: "The count you'd expect in a contingency-table cell if the two variables were independent — the baseline χ² compares against.", s: "stats-2/chi-square-tests", l: "Chi-Square Tests" },
+      { t: "F-ratio", d: "The test statistic in ANOVA and regression: the ratio of explained (between) variance to unexplained (within) variance.", s: "stats-2/one-way-anova", l: "One-Way ANOVA" },
+      { t: "Factorial ANOVA", d: "An ANOVA with two or more factors, letting you test each main effect and their interaction at once.", s: "stats-2/factorial-anova-two-way", l: "Factorial ANOVA (Two-Way)" },
+      { t: "Fixed effect", d: "A model term whose specific levels are the ones you care about and want to estimate directly (contrast with random effect).", s: "stats-4/mixed-and-multilevel-models", l: "Mixed & Multilevel Models" },
+      { t: "Generalized linear model (GLM)", d: "A regression framework that extends linear models to other outcomes (counts, binary) via a link function and non-normal errors.", s: "stats-4/generalized-linear-models", l: "Generalized Linear Models" },
+      { t: "Heteroscedasticity", d: "Non-constant spread of residuals across the range of a predictor — a violation of a key regression assumption.", s: "stats-2/regression-diagnostics", l: "Regression Diagnostics" },
+      { t: "Homogeneity of variance", d: "The assumption that compared groups have equal population variances; checked with tests like Levene's.", s: "stats-2/assumptions-and-when-they-break", l: "Assumptions & When They Break" },
+      { t: "Independent-samples t-test", d: "A test comparing the means of two separate, unrelated groups.", s: "stats-1/independent-samples-t-test", l: "Independent Samples t-Test" },
+      { t: "Indirect effect", d: "In mediation, the part of an X→Y effect that passes through a mediator M (the X→M→Y path).", s: "stats-3/mediation-and-indirect-effects", l: "Mediation & Indirect Effects" },
+      { t: "Inferential statistics", d: "Using a sample to make uncertainty-aware statements about the larger population you didn't measure.", s: "stats-1/what-is-statistics", l: "What Is Statistics?" },
+      { t: "Interaction effect", d: "When the effect of one variable on the outcome depends on the level of another variable.", s: "stats-3/interactions-in-regression", l: "Interactions in Regression" },
+      { t: "Interquartile range (IQR)", d: "The spread of the middle 50% of the data (Q3 − Q1) — a measure of spread that ignores extreme outliers.", s: "stats-1/describing-data", l: "Describing Data" },
+      { t: "Intraclass correlation (ICC)", d: "The share of total variance that lies between groups/clusters — how much observations within a group resemble each other.", s: "stats-4/mixed-and-multilevel-models", l: "Mixed & Multilevel Models" },
+      { t: "Least squares", d: "The fitting principle behind linear regression: choose the line that minimizes the sum of squared residuals.", s: "stats-2/simple-linear-regression", l: "Simple Linear Regression" },
+      { t: "Likelihood", d: "How probable the observed data are under a given parameter value — the engine of both maximum-likelihood and Bayesian estimation.", s: "stats-4/bayesian-thinking", l: "Bayesian Thinking" },
+      { t: "Logistic regression", d: "A model for a binary outcome that predicts the log-odds of 'yes' with an S-shaped curve bounded between 0 and 1.", s: "stats-3/logistic-regression", l: "Logistic Regression" },
+      { t: "Main effect", d: "The overall effect of one factor on the outcome, averaged across the levels of the other factors.", s: "stats-2/factorial-anova-two-way", l: "Factorial ANOVA (Two-Way)" },
+      { t: "Mean", d: "The arithmetic average — every value summed and divided by the count. Sensitive to outliers.", s: "stats-1/describing-data", l: "Describing Data" },
+      { t: "Median", d: "The middle value when the data are ordered — a measure of center robust to extreme values.", s: "stats-1/describing-data", l: "Describing Data" },
+      { t: "Mediation", d: "A causal chain in which a predictor affects an outcome partly or wholly through an intervening variable.", s: "stats-3/mediation-and-indirect-effects", l: "Mediation & Indirect Effects" },
+      { t: "Moderation", d: "When a third variable changes the strength or direction of the relationship between two others (an interaction).", s: "stats-3/interactions-in-regression", l: "Interactions in Regression" },
+      { t: "Multicollinearity", d: "High correlation among predictors in a regression, which inflates standard errors and makes coefficients unstable.", s: "stats-3/multicollinearity-and-variable-selection", l: "Multicollinearity & Variable Selection" },
+      { t: "Multilevel / mixed model", d: "A model for nested data (students in schools, trials in people) with both fixed effects and random effects.", s: "stats-4/mixed-and-multilevel-models", l: "Mixed & Multilevel Models" },
+      { t: "Multiple regression", d: "Predicting an outcome from several predictors at once, so each coefficient is the effect holding the others constant.", s: "stats-3/multiple-regression", l: "Multiple Regression" },
+      { t: "Non-parametric test", d: "A test that avoids assuming a specific distribution, often by working with ranks (e.g. Mann-Whitney, Kruskal-Wallis).", s: "stats-2/non-parametric-alternatives", l: "Non-Parametric Alternatives" },
+      { t: "Normal distribution", d: "The symmetric bell-shaped distribution defined by its mean and standard deviation; central to much of inference.", s: "stats-1/z-scores-and-the-normal-distribution", l: "Z-Scores & The Normal Distribution" },
+      { t: "Null hypothesis (H₀)", d: "The default 'nothing is going on' claim — no effect, no difference — that a test tries to rule out.", s: "stats-1/hypothesis-testing-logic", l: "Hypothesis Testing Logic" },
+      { t: "Odds ratio", d: "In logistic regression, the multiplicative change in the odds of the outcome for a one-unit rise in a predictor.", s: "stats-3/logistic-regression", l: "Logistic Regression" },
+      { t: "Outlier", d: "An observation far from the rest of the data, which can strongly distort means, variances, and regression lines.", s: "stats-1/describing-data", l: "Describing Data" },
+      { t: "Overfitting", d: "A model that captures noise as if it were signal — great on its own data, poor on new data.", s: "stats-3/model-comparison", l: "Model Comparison" },
+      { t: "p-value", d: "The probability of data at least this extreme if the null hypothesis were true — not the probability the null is true.", s: "stats-1/hypothesis-testing-logic", l: "Hypothesis Testing Logic" },
+      { t: "Parameter", d: "A true, usually unknown number describing a population (like the mean μ) that we estimate from a sample.", s: "stats-1/what-is-statistics", l: "What Is Statistics?" },
+      { t: "Population", d: "The entire set of people or things you want to draw conclusions about.", s: "stats-1/what-is-statistics", l: "What Is Statistics?" },
+      { t: "Post-hoc test", d: "A follow-up comparison run after a significant ANOVA to find which specific groups differ, with corrected error rates.", s: "stats-2/post-hoc-tests", l: "Post-Hoc Tests" },
+      { t: "Posterior distribution", d: "In Bayesian inference, your updated belief about a parameter after combining the prior with the data.", s: "stats-4/bayesian-estimation", l: "Bayesian Estimation" },
+      { t: "Power (statistical)", d: "The probability a test detects a real effect of a given size — 1 minus the Type II error rate.", s: "stats-1/effect-size-and-power", l: "Effect Size & Power" },
+      { t: "Principal component analysis (PCA)", d: "A technique that re-expresses correlated variables as a smaller set of uncorrelated components capturing most variance.", s: "stats-3/factor-analysis-pca", l: "Factor Analysis / PCA" },
+      { t: "Prior distribution", d: "In Bayesian inference, the belief about a parameter you hold before seeing the current data.", s: "stats-4/bayesian-thinking", l: "Bayesian Thinking" },
+      { t: "R² (coefficient of determination)", d: "The proportion of variance in the outcome explained by the model — from 0 (nothing) to 1 (perfect).", s: "stats-2/simple-linear-regression", l: "Simple Linear Regression" },
+      { t: "Random effect", d: "A model term whose levels are a random sample from a larger population (e.g. specific participants or schools).", s: "stats-4/mixed-and-multilevel-models", l: "Mixed & Multilevel Models" },
+      { t: "Regression coefficient", d: "The predicted change in the outcome for a one-unit increase in a predictor, holding the others constant.", s: "stats-3/multiple-regression", l: "Multiple Regression" },
+      { t: "Repeated-measures ANOVA", d: "An ANOVA for designs where the same subjects are measured under several conditions, accounting for within-subject correlation.", s: "stats-2/repeated-measures-anova", l: "Repeated Measures ANOVA" },
+      { t: "Residual", d: "The gap between an observed value and the value a model predicts — what the model failed to explain.", s: "stats-2/regression-diagnostics", l: "Regression Diagnostics" },
+      { t: "Sample", d: "The subset of the population you actually measure and compute statistics from.", s: "stats-1/what-is-statistics", l: "What Is Statistics?" },
+      { t: "Sampling distribution", d: "The distribution of a statistic (like the mean) across all possible samples — the bridge from sample to inference.", s: "stats-1/sampling-distributions", l: "Sampling Distributions" },
+      { t: "Skewness", d: "Asymmetry in a distribution: a long right tail is positive skew, a long left tail is negative skew.", s: "stats-1/describing-data", l: "Describing Data" },
+      { t: "Standard deviation", d: "The typical distance of values from their mean — the square root of the variance.", s: "stats-1/describing-data", l: "Describing Data" },
+      { t: "Standard error", d: "The standard deviation of a statistic's sampling distribution — how much an estimate bounces from sample to sample.", s: "stats-1/sampling-distributions", l: "Sampling Distributions" },
+      { t: "Statistic", d: "A number computed from a sample (like x̄) used to estimate a population parameter.", s: "stats-1/what-is-statistics", l: "What Is Statistics?" },
+      { t: "t-test", d: "A test comparing means using the t-distribution, which accounts for extra uncertainty when the SD is estimated from a small sample.", s: "stats-1/one-sample-and-paired-t-tests", l: "One-Sample & Paired t-Tests" },
+      { t: "Type I error", d: "A false positive — rejecting a null hypothesis that is actually true. Its rate is alpha.", s: "stats-1/hypothesis-testing-logic", l: "Hypothesis Testing Logic" },
+      { t: "Type II error", d: "A false negative — failing to reject a null hypothesis that is actually false. Its rate is beta.", s: "stats-1/effect-size-and-power", l: "Effect Size & Power" },
+      { t: "Variance", d: "The average squared distance of values from their mean — a foundational measure of spread.", s: "stats-1/describing-data", l: "Describing Data" },
+      { t: "Variance inflation factor (VIF)", d: "A diagnostic for multicollinearity: how much a predictor's variance is inflated by its correlation with other predictors.", s: "stats-3/multicollinearity-and-variable-selection", l: "Multicollinearity & Variable Selection" },
+      { t: "Z-score", d: "How many standard deviations a value sits above or below the mean: z = (x − μ) / σ.", s: "stats-1/z-scores-and-the-normal-distribution", l: "Z-Scores & The Normal Distribution" }
+    ];
+
+    var host = document.getElementById("gloss-host");
+    var countEl = document.getElementById("gloss-count");
+    var filter = document.getElementById("gloss-filter");
+    function slugify(s) { return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
+
+    function render(q) {
+      q = (q || "").trim().toLowerCase();
+      var matches = TERMS.filter(function (x) {
+        return !q || x.t.toLowerCase().indexOf(q) >= 0 || x.d.toLowerCase().indexOf(q) >= 0;
+      }).sort(function (a, b) { return a.t.localeCompare(b.t); });
+
+      countEl.textContent = matches.length + " of " + TERMS.length + " terms";
+      if (!matches.length) { host.innerHTML = '<p class="gloss-empty">No terms match “' + q + '”. Try a shorter word.</p>'; return; }
+
+      var html = "", letter = "";
+      matches.forEach(function (x) {
+        var first = x.t[0].toUpperCase();
+        if (first !== letter) { letter = first; html += '<div class="gloss-letter">' + letter + '</div>'; }
+        var link = x.s ? ' <a class="gloss-link" href="' + x.s + '/">' + (x.l || "See lesson") + ' →</a>' : "";
+        html += '<div class="gloss-item" id="' + slugify(x.t) + '"><h3>' + x.t + '</h3><p>' + x.d + link + '</p></div>';
+      });
+      host.innerHTML = '<div class="gloss-list">' + html + '</div>';
+    }
+
+    filter.addEventListener("input", function () { render(filter.value); });
+    render("");
+    // support deep links like glossary.html#p-value
+    if (location.hash) {
+      var el = document.getElementById(location.hash.slice(1));
+      if (el) el.scrollIntoView();
+    }
+  })();
+  </script>
+</body>
+</html>

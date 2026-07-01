@@ -12,16 +12,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Course Quiz — StatsCapybara</title>
-  <meta name="description" content="Test yourself with a quick 10-question quiz spanning the whole statistics course, with instant feedback on every answer." />
+  <meta name="description" content="Test yourself with instant-feedback quizzes spanning all four courses — from the basics through Bayesian and multilevel models. Pick a course or mix it up." />
   <link rel="canonical" href="https://statscapybara.com/quiz.html" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Course Quiz — StatsCapybara" />
-  <meta property="og:description" content="Test yourself with a quick 10-question quiz spanning the whole statistics course, with instant feedback on every answer." />
+  <meta property="og:description" content="Test yourself with instant-feedback quizzes spanning all four courses, from the basics to Bayesian and multilevel models." />
   <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
   <meta property="og:url" content="https://statscapybara.com/quiz.html" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Course Quiz — StatsCapybara" />
-  <meta name="twitter:description" content="Test yourself with a quick 10-question quiz spanning the whole statistics course, with instant feedback on every answer." />
+  <meta name="twitter:description" content="Test yourself with instant-feedback quizzes spanning all four courses, from the basics to Bayesian and multilevel models." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="assets/css/styles.css" />
@@ -35,11 +35,18 @@
       <article class="lesson" style="margin:0 auto">
         <span class="lesson-eyebrow">Practice</span>
         <h1>Course Quiz</h1>
-        <p class="lede">Ten quick questions spanning Stats 1, 2, and 3. You get instant feedback and a short explanation after each one — nothing is saved or graded, so guess freely and learn as you go.</p>
+        <p class="lede">Quick, instant-feedback questions across the whole course. Pick a single course or mix them all — nothing is saved or graded, so guess freely and learn as you go.</p>
 
         <div class="viz" id="quiz">
+          <!-- start screen: choose a set -->
+          <div id="start">
+            <p class="viz-title">Choose your quiz</p>
+            <p class="viz-sub">Each round pulls up to 10 questions at random, so it's a little different every time.</p>
+            <div id="quiz-picker" class="quiz-picker"></div>
+          </div>
+
           <!-- question stage -->
-          <div id="stage">
+          <div id="stage" style="display:none">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
               <span style="font-size:.8rem;color:var(--text-faint)" id="progress">Question 1 of 10</span>
               <span class="stat" style="text-align:right"><span class="v" id="score" style="font-size:1.1rem">0 correct</span></span>
@@ -47,15 +54,18 @@
             <div id="q-text" style="font-size:1.25rem;font-weight:650;margin:.25rem 0 1rem">—</div>
             <div id="options" style="display:flex;flex-direction:column;gap:.6rem"></div>
             <div id="feedback" style="margin-top:1rem;min-height:2.5rem;color:var(--text-muted)"></div>
-            <div style="text-align:right;margin-top:.5rem">
+            <div style="display:flex;justify-content:space-between;margin-top:.5rem">
+              <button class="btn btn-ghost btn-sm" id="quit">← All quizzes</button>
               <button class="btn btn-primary btn-sm" id="next" style="visibility:hidden">Next →</button>
             </div>
           </div>
+
           <!-- results screen -->
           <div id="results" style="display:none;text-align:center;padding:1rem 0">
             <div style="font-size:3rem;font-weight:800;color:var(--primary)" id="final-score">—</div>
             <p id="final-msg" style="font-size:1.1rem;margin:.5rem 0 1.5rem"></p>
             <button class="btn btn-primary" id="restart">Try again</button>
+            <button class="btn btn-ghost" id="pick-again">Pick another quiz</button>
             <a class="btn btn-ghost" href="./#curriculum">Back to lessons</a>
           </div>
         </div>
@@ -75,31 +85,99 @@
   <script>
   (function () {
     "use strict";
-    var Q = [
-      { q: "Which measure of center gets dragged the most by a single extreme outlier?", o: ["The mean", "The median", "The mode", "They're affected equally"], a: 0, why: "The mean uses every value, so one extreme number pulls it; the median only cares about the middle position." },
-      { q: "A value with a z-score of 0 is…", o: ["An outlier", "Exactly at the mean", "Two SDs below the mean", "Impossible"], a: 1, why: "z = (x − μ)/σ, so z = 0 means x equals the mean." },
-      { q: "The Central Limit Theorem says the distribution of sample means is approximately normal…", o: ["only if the population is normal", "regardless of the population's shape (for large enough n)", "only for n below 30", "never"], a: 1, why: "That's the surprise of the CLT — even skewed populations produce bell-shaped sampling distributions of the mean." },
-      { q: "A p-value is the probability of…", o: ["the null hypothesis being true", "the alternative being true", "data at least this extreme, assuming the null is true", "making a Type II error"], a: 2, why: "It's P(data this extreme | H₀ true) — NOT the probability that H₀ is true." },
-      { q: "\"95% confidence\" means…", o: ["there's a 95% chance the true value is in this one interval", "about 95% of such intervals, over many studies, contain the true value", "the result is 95% accurate", "p = 0.95"], a: 1, why: "Confidence is a property of the procedure across repeated samples, not of any single interval." },
-      { q: "A correlation of r = 0 tells you there is…", o: ["no relationship of any kind", "no linear relationship (a curved one is still possible)", "a perfect relationship", "a negative relationship"], a: 1, why: "r only measures straight-line association; a strong U-shaped relationship can have r ≈ 0." },
-      { q: "One-way ANOVA decides whether groups differ by comparing…", o: ["each pair of means with a t-test", "variance between groups to variance within groups", "the medians", "the sample sizes"], a: 1, why: "The F-ratio is between-group variance over within-group variance — signal over noise." },
-      { q: "In multiple regression, a coefficient is the effect of its predictor…", o: ["ignoring all other predictors", "holding the other predictors constant", "only if predictors are uncorrelated", "on the sample size"], a: 1, why: "Each coefficient is a partial effect — 'all else equal,' which is what lets regression control for confounders." },
-      { q: "Holding the effect size fixed, increasing the sample size…", o: ["decreases statistical power", "has no effect on power", "increases statistical power", "increases the p-value"], a: 2, why: "More data shrinks the standard error, making a real effect easier to detect — higher power." },
-      { q: "You'd reach for logistic regression when the outcome variable is…", o: ["a continuous number", "binary (yes/no)", "always normally distributed", "a date"], a: 1, why: "Logistic regression models the probability of a yes/no outcome with an S-curve bounded between 0 and 1." }
+
+    // Question bank — each tagged with its course (s1..s4).
+    var BANK = [
+      /* ---------- Stats 1 — Foundations ---------- */
+      { c: "s1", q: "Which measure of center gets dragged the most by a single extreme outlier?", o: ["The mean", "The median", "The mode", "They're affected equally"], a: 0, why: "The mean uses every value, so one extreme number pulls it; the median only cares about the middle position." },
+      { c: "s1", q: "A value with a z-score of 0 is…", o: ["An outlier", "Exactly at the mean", "Two SDs below the mean", "Impossible"], a: 1, why: "z = (x − μ)/σ, so z = 0 means x equals the mean." },
+      { c: "s1", q: "The Central Limit Theorem says the distribution of sample means is approximately normal…", o: ["only if the population is normal", "regardless of the population's shape (for large enough n)", "only for n below 30", "never"], a: 1, why: "That's the surprise of the CLT — even skewed populations produce bell-shaped sampling distributions of the mean." },
+      { c: "s1", q: "A p-value is the probability of…", o: ["the null hypothesis being true", "the alternative being true", "data at least this extreme, assuming the null is true", "making a Type II error"], a: 2, why: "It's P(data this extreme | H₀ true) — NOT the probability that H₀ is true." },
+      { c: "s1", q: "\"95% confidence\" means…", o: ["there's a 95% chance the true value is in this one interval", "about 95% of such intervals, over many studies, contain the true value", "the result is 95% accurate", "p = 0.95"], a: 1, why: "Confidence is a property of the procedure across repeated samples, not of any single interval." },
+      { c: "s1", q: "Holding the effect size fixed, increasing the sample size…", o: ["decreases statistical power", "has no effect on power", "increases statistical power", "increases the p-value"], a: 2, why: "More data shrinks the standard error, making a real effect easier to detect — higher power." },
+      { c: "s1", q: "Which of these is an ordinal variable?", o: ["Reaction time in milliseconds", "Finishing place in a race (1st, 2nd, 3rd)", "Blood type", "Temperature in °C"], a: 1, why: "Finishing place has a clear order but unequal, undefined gaps between ranks — the definition of ordinal." },
+      { c: "s1", q: "The standard error of the mean measures…", o: ["the spread of the raw data", "how much the sample mean varies from sample to sample", "the full range of the population", "the bias of the estimate"], a: 1, why: "The standard error is the standard deviation of the sampling distribution of the mean — its sample-to-sample wobble." },
+      { c: "s1", q: "A Type I error is…", o: ["a false positive — rejecting a true null", "a false negative — missing a real effect", "a correct rejection", "using a biased sample"], a: 0, why: "Type I = false positive; its long-run rate is your significance level, alpha." },
+      { c: "s1", q: "In a normal distribution, about 68% of values fall within…", o: ["1 standard deviation of the mean", "2 standard deviations", "3 standard deviations", "the interquartile range"], a: 0, why: "The 68–95–99.7 rule: ~68% within ±1 SD, ~95% within ±2 SD, ~99.7% within ±3 SD." },
+
+      /* ---------- Stats 2 — Comparing Groups & Relationships ---------- */
+      { c: "s2", q: "A correlation of r = 0 tells you there is…", o: ["no relationship of any kind", "no linear relationship (a curved one is still possible)", "a perfect relationship", "a negative relationship"], a: 1, why: "r only measures straight-line association; a strong U-shaped relationship can have r ≈ 0." },
+      { c: "s2", q: "One-way ANOVA decides whether groups differ by comparing…", o: ["each pair of means with a t-test", "variance between groups to variance within groups", "the medians", "the sample sizes"], a: 1, why: "The F-ratio is between-group variance over within-group variance — signal over noise." },
+      { c: "s2", q: "Why run a post-hoc test after a significant ANOVA?", o: ["to increase power", "to find which specific groups differ", "to check normality", "to compute the grand mean"], a: 1, why: "ANOVA only says 'somewhere there's a difference'; post-hoc tests locate which pairs differ while controlling error." },
+      { c: "s2", q: "A chi-square test of independence is used for…", o: ["two continuous variables", "the association between two categorical variables", "comparing three means", "predicting a number"], a: 1, why: "It compares observed cell counts to those expected if the two categorical variables were independent." },
+      { c: "s2", q: "Ice-cream sales and drownings rise together across the year. The most likely explanation is…", o: ["ice cream causes drowning", "a confounder — hot weather drives both", "pure coincidence", "a calculation error"], a: 1, why: "Correlation isn't causation: a lurking variable (summer heat) raises both. Watch for confounders." },
+      { c: "s2", q: "In the regression line ŷ = 2 + 3x, the number 3 is…", o: ["the value of y when x = 0", "the slope — y rises by 3 for each 1-unit rise in x", "the correlation", "the residual"], a: 1, why: "The slope is the change in ŷ per one-unit change in x; the 2 is the intercept (y at x = 0)." },
+      { c: "s2", q: "You'd reach for a Mann-Whitney U test instead of a t-test when…", o: ["the data are perfectly normal", "assumptions like normality are badly violated", "you have three or more groups", "the outcome is a date"], a: 1, why: "Non-parametric tests work on ranks, so they hold up when the t-test's distributional assumptions fail." },
+      { c: "s2", q: "Levene's test checks the assumption of…", o: ["normality", "equal variances across groups", "independence of observations", "linearity"], a: 1, why: "Levene's test targets homogeneity of variance — whether the groups have similar spread." },
+      { c: "s2", q: "An R² of 0.40 in a regression means…", o: ["a correlation of 40%", "40% of the variance in Y is explained by the model", "the slope equals 0.40", "40% of predictions are wrong"], a: 1, why: "R² is the proportion of the outcome's variance the model accounts for — here, 40%." },
+
+      /* ---------- Stats 3 — Advanced Modeling ---------- */
+      { c: "s3", q: "In multiple regression, a coefficient is the effect of its predictor…", o: ["ignoring all other predictors", "holding the other predictors constant", "only if predictors are uncorrelated", "on the sample size"], a: 1, why: "Each coefficient is a partial effect — 'all else equal,' which is what lets regression control for confounders." },
+      { c: "s3", q: "You'd reach for logistic regression when the outcome variable is…", o: ["a continuous number", "binary (yes/no)", "always normally distributed", "a date"], a: 1, why: "Logistic regression models the probability of a yes/no outcome with an S-curve bounded between 0 and 1." },
+      { c: "s3", q: "Multicollinearity in a regression means…", o: ["the predictors are highly correlated with each other", "the outcome is skewed", "the residuals are non-normal", "the sample is too small"], a: 0, why: "When predictors overlap heavily, their individual coefficients become unstable and standard errors inflate." },
+      { c: "s3", q: "An interaction between two predictors means…", o: ["they are correlated", "the effect of one depends on the level of the other", "both are statistically significant", "both are categorical"], a: 1, why: "Interaction = the slope for one variable changes across levels of another; effects aren't simply additive." },
+      { c: "s3", q: "In mediation, the indirect effect is the path…", o: ["X → Y directly", "X → M → Y, through a mediator", "Y → X", "the residual error"], a: 1, why: "Mediation decomposes an effect into direct (X→Y) and indirect (X→M→Y) routes through the mediator." },
+      { c: "s3", q: "In logistic regression, an odds ratio of 2 for a predictor means…", o: ["the probability of the outcome doubles", "the odds of the outcome double for each one-unit increase", "predictions are twice as accurate", "the correlation is 2"], a: 1, why: "Coefficients act on the odds: an OR of 2 multiplies the odds (not the probability) by 2 per unit." },
+      { c: "s3", q: "Adjusted R² differs from ordinary R² because it…", o: ["is always larger", "penalizes adding predictors that don't earn their keep", "ignores the sample size", "measures correlation instead of variance"], a: 1, why: "Plain R² never falls when you add predictors; adjusted R² docks you for useless ones, discouraging overfitting." },
+
+      /* ---------- Stats 4 — Modern & Advanced ---------- */
+      { c: "s4", q: "The bootstrap estimates uncertainty by…", o: ["assuming a normal distribution", "resampling your data with replacement many times", "always collecting a bigger sample", "deleting the outliers"], a: 1, why: "By resampling the data thousands of times, the bootstrap builds a sampling distribution without a formula." },
+      { c: "s4", q: "In a Bayesian analysis, the prior represents…", o: ["the observed data", "your belief about the parameter before seeing the data", "the p-value", "the sample size"], a: 1, why: "The prior encodes pre-data belief; combined with the data's likelihood it yields the posterior." },
+      { c: "s4", q: "Bayes' theorem updates the prior using the ___ to produce the posterior.", o: ["p-value", "likelihood of the observed data", "confidence interval", "sample mean"], a: 1, why: "Posterior ∝ prior × likelihood: the data enter through the likelihood term." },
+      { c: "s4", q: "A 95% credible interval means…", o: ["95% of such intervals contain the truth in the long run", "given the model and prior, there's a 95% probability the parameter is in this interval", "exactly the same thing as a confidence interval", "p = 0.95"], a: 1, why: "Unlike a confidence interval, a credible interval makes a direct probability statement about the parameter." },
+      { c: "s4", q: "A generalized linear model handles non-normal outcomes (like counts) using a…", o: ["link function", "larger sample", "post-hoc test", "dummy code"], a: 0, why: "The link function connects the linear predictor to the mean of a non-normal outcome (log link for counts, logit for binary)." },
+      { c: "s4", q: "Multilevel (mixed) models are designed for data that are…", o: ["perfectly independent", "nested or clustered (e.g. students within schools)", "always binary", "always missing"], a: 1, why: "They model the correlation induced by nesting, with random effects for the grouping levels." },
+      { c: "s4", q: "A random effect treats its levels (say, individual participants) as…", o: ["the only ones of interest", "a random sample from a larger population", "fixed constants to estimate directly", "the outcome variable"], a: 1, why: "Random effects generalize beyond the observed levels by treating them as draws from a population." }
     ];
-    var order = Q.map(function (_, i) { return i; }).sort(function () { return Math.random() - 0.5; });
-    var pos = 0, score = 0, answered = false;
+
+    var SETS = [
+      { id: "all", name: "Everything", sub: "A mix from all four courses" },
+      { id: "s1", name: "Stats 1", sub: "Foundations" },
+      { id: "s2", name: "Stats 2", sub: "Comparing groups & relationships" },
+      { id: "s3", name: "Stats 3", sub: "Advanced modeling" },
+      { id: "s4", name: "Stats 4", sub: "Modern & advanced" }
+    ];
+    var MAXQ = 10;
+
     var el = function (id) { return document.getElementById(id); };
+    var quiz = [], pos = 0, score = 0, answered = false, activeSet = "all";
+
+    function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = (Math.random() * (i + 1)) | 0; var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+    function poolFor(id) { return id === "all" ? BANK : BANK.filter(function (x) { return x.c === id; }); }
+
+    /* ----- start screen ----- */
+    function renderPicker() {
+      el("quiz-picker").innerHTML = SETS.map(function (s) {
+        var n = poolFor(s.id).length;
+        return '<button class="quiz-pick" data-set="' + s.id + '">' +
+          '<span class="qp-name">' + s.name + '</span>' +
+          '<span class="qp-sub">' + s.sub + '</span>' +
+          '<span class="qp-count">' + n + ' questions</span></button>';
+      }).join("");
+      Array.prototype.forEach.call(el("quiz-picker").querySelectorAll(".quiz-pick"), function (b) {
+        b.addEventListener("click", function () { begin(b.getAttribute("data-set")); });
+      });
+    }
+
+    function begin(setId) {
+      activeSet = setId;
+      quiz = shuffle(poolFor(setId)).slice(0, MAXQ);
+      pos = 0; score = 0;
+      el("start").style.display = "none";
+      el("results").style.display = "none";
+      el("stage").style.display = "block";
+      render();
+    }
 
     function render() {
       answered = false;
-      var item = Q[order[pos]];
-      el("progress").textContent = "Question " + (pos + 1) + " of " + Q.length;
+      var item = quiz[pos];
+      el("progress").textContent = "Question " + (pos + 1) + " of " + quiz.length;
       el("score").textContent = score + " correct";
       el("q-text").textContent = item.q;
       el("feedback").innerHTML = "";
       el("next").style.visibility = "hidden";
-      el("next").textContent = pos + 1 < Q.length ? "Next →" : "See results →";
+      el("next").textContent = pos + 1 < quiz.length ? "Next →" : "See results →";
       var opts = el("options"); opts.innerHTML = "";
       item.o.forEach(function (text, i) {
         var b = document.createElement("button");
@@ -111,7 +189,7 @@
     }
     function pick(i, btn) {
       if (answered) return; answered = true;
-      var item = Q[order[pos]], correct = item.a;
+      var item = quiz[pos], correct = item.a;
       var buttons = el("options").querySelectorAll("button");
       buttons.forEach(function (b, j) {
         b.disabled = true;
@@ -125,22 +203,28 @@
     function finish() {
       el("stage").style.display = "none";
       var r = el("results"); r.style.display = "block";
-      el("final-score").textContent = score + " / " + Q.length;
-      var pct = score / Q.length;
+      el("final-score").textContent = score + " / " + quiz.length;
+      var pct = score / quiz.length;
       el("final-msg").textContent = pct === 1 ? "Perfect score — you've really got this." :
         pct >= 0.7 ? "Strong work. Skim the ones you missed and you're solid." :
         pct >= 0.4 ? "Good start — revisit a few lessons and run it again." :
         "Plenty to explore — head back to the lessons and give it another go.";
     }
+
     el("next").addEventListener("click", function () {
-      if (pos + 1 < Q.length) { pos++; render(); }
+      if (pos + 1 < quiz.length) { pos++; render(); }
       else finish();
     });
-    el("restart").addEventListener("click", function () {
-      order = Q.map(function (_, i) { return i; }).sort(function () { return Math.random() - 0.5; });
-      pos = 0; score = 0; el("results").style.display = "none"; el("stage").style.display = "block"; render();
-    });
-    render();
+    el("quit").addEventListener("click", backToStart);
+    el("pick-again").addEventListener("click", backToStart);
+    el("restart").addEventListener("click", function () { begin(activeSet); });
+    function backToStart() {
+      el("stage").style.display = "none";
+      el("results").style.display = "none";
+      el("start").style.display = "block";
+    }
+
+    renderPicker();
   })();
   </script>
 </body>
