@@ -114,19 +114,31 @@
     var canvas = document.getElementById("mr-canvas"), ctx, W = 0, H = 280, pad = 26;
     var COL = [ "#6366f1", "#f97316" ];
 
+    /* Frozen noise: each point keeps a fixed within-group offset and error,
+       so the confounding slider slides the SAME two clouds apart or together
+       instead of scattering new points. "New data" reseeds. */
+    var U = [], E = [];
+    function seed() {
+      U = [[], []]; E = [[], []];
+      for (var g = 0; g < 2; g++) for (var i = 0; i < 26; i++) {
+        U[g].push(Math.random() * 2 - 1);
+        E[g].push(VIZ.randn());
+      }
+    }
     function gen() {
       groups = [[], []];
       for (var g = 0; g < 2; g++) {
         var x1mean = 50 + (g - 0.5) * 2 * conf * 24;
         var baseY = 50 + (g - 0.5) * 2 * conf * 24;
         for (var i = 0; i < 26; i++) {
-          var x1 = x1mean + (Math.random() * 2 - 1) * 13;
-          var y = baseY + WITHIN * (x1 - x1mean) + VIZ.gauss(0, 4);
+          var x1 = x1mean + U[g][i] * 13;
+          var y = baseY + WITHIN * (x1 - x1mean) + 4 * E[g][i];
           groups[g].push({ x: x1, y: y });
         }
       }
       update();
     }
+    function reseed() { seed(); gen(); }
     function slope(pts) {
       var mx = VIZ.mean(pts.map(function (p) { return p.x; })), my = VIZ.mean(pts.map(function (p) { return p.y; }));
       var sxy = 0, sxx = 0; pts.forEach(function (p) { sxy += (p.x - mx) * (p.y - my); sxx += (p.x - mx) * (p.x - mx); });
@@ -167,10 +179,10 @@
     }
 
     document.getElementById("conf-range").addEventListener("input", function () { conf = this.value / 100; gen(); });
-    document.getElementById("resample").addEventListener("click", gen);
+    document.getElementById("resample").addEventListener("click", reseed);
     window.addEventListener("resize", function () { fit(); update(); });
     VIZ.onTheme(update);
-    fit(); gen();
+    fit(); reseed();
   })();
   </script>
 </body>

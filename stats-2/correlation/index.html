@@ -115,11 +115,19 @@
     function py2y(p) { return LO + (((H - pad) - p) / (H - 2 * pad)) * (HI - LO); }
     function clamp(v) { return v < LO ? LO : v > HI ? HI : v; }
 
+    /* Frozen noise: each point keeps a fixed (x, error) pair, so dragging
+       the ρ slider morphs the SAME cloud — points slide toward or away from
+       the trend line — instead of scattering a new one. */
+    var zx = [], ze = [];
+    function seed() {
+      zx = []; ze = [];
+      for (var i = 0; i < N; i++) { zx.push(VIZ.randn()); ze.push(VIZ.randn()); }
+    }
     function gen() {
       pts = [];
       for (var i = 0; i < N; i++) {
-        var x = VIZ.randn();
-        var y = rho * x + Math.sqrt(Math.max(0, 1 - rho * rho)) * VIZ.randn();
+        var x = zx[i];
+        var y = rho * x + Math.sqrt(Math.max(0, 1 - rho * rho)) * ze[i];
         pts.push({ x: clamp(x), y: clamp(y) });
       }
     }
@@ -178,11 +186,11 @@
     document.getElementById("rho-range").addEventListener("input", function () {
       rho = this.value / 100; document.getElementById("rho-val").textContent = (rho >= 0 ? "+" : "") + rho.toFixed(2); gen(); update();
     });
-    document.getElementById("newcloud").addEventListener("click", function () { gen(); update(); });
+    document.getElementById("newcloud").addEventListener("click", function () { seed(); gen(); update(); });
     window.addEventListener("resize", function () { fit(); update(); });
     VIZ.onTheme(draw);
 
-    fit(); gen(); update();
+    fit(); seed(); gen(); update();
   })();
   </script>
 </body>

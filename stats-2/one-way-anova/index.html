@@ -54,7 +54,7 @@
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="anovaviz">
           <p class="viz-title">🎮 The F-Ratio in Action</p>
-          <p class="viz-sub">Four groups. Pull their means apart (more signal) or crank up the within-group scatter (more noise), and watch F and the p-value respond. The dashed line is the grand mean.</p>
+          <p class="viz-sub">Four groups of the <em>same</em> people throughout — pull their means apart (more signal) or crank up the within-group scatter (more noise), and watch F and the p-value respond. The dashed line is the grand mean; “New samples” draws fresh people.</p>
 
           <div class="controls">
             <div class="control" style="flex:1;min-width:200px">
@@ -125,15 +125,28 @@
     var canvas = document.getElementById("anova-canvas"), ctx, W = 0, H = 300, padL = 36, padB = 22, padT = 10;
 
     function clamp(v) { return v < LO ? LO : v > HI ? HI : v; }
-    function resample() {
+    /* Frozen noise: every person keeps a fixed z-score, so the sliders
+       transform the SAME dots (means slide apart, spread grows/shrinks)
+       instead of drawing a brand-new sample each time. */
+    var NMAX = 40, Z = [];
+    function seed() {
+      Z = [];
+      for (var g = 0; g < K; g++) {
+        var col = [];
+        for (var i = 0; i < NMAX; i++) col.push(VIZ.randn());
+        Z.push(col);
+      }
+    }
+    function rebuild() {
       groups = [];
       for (var g = 0; g < K; g++) {
         var mu = GRAND + (g - (K - 1) / 2) * sep, arr = [];
-        for (var i = 0; i < n; i++) arr.push(clamp(VIZ.gauss(mu, sd)));
+        for (var i = 0; i < n; i++) arr.push(clamp(mu + sd * Z[g][i]));
         groups.push(arr);
       }
       update();
     }
+    function resample() { seed(); rebuild(); }
 
     function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
     function vy(v) { return (H - padB) - (v / HI) * (H - padB - padT); }
@@ -189,9 +202,9 @@
       draw();
     }
 
-    document.getElementById("sep-range").addEventListener("input", function () { sep = +this.value; resample(); });
-    document.getElementById("sd-range").addEventListener("input", function () { sd = +this.value; resample(); });
-    document.getElementById("n-range").addEventListener("input", function () { n = +this.value; resample(); });
+    document.getElementById("sep-range").addEventListener("input", function () { sep = +this.value; rebuild(); });
+    document.getElementById("sd-range").addEventListener("input", function () { sd = +this.value; rebuild(); });
+    document.getElementById("n-range").addEventListener("input", function () { n = +this.value; rebuild(); });
     document.getElementById("resample").addEventListener("click", resample);
     window.addEventListener("resize", function () { fit(); draw(); });
     VIZ.onTheme(draw);

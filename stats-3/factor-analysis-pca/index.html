@@ -38,7 +38,7 @@
       <aside class="sidebar" id="sidebar"></aside>
 
       <article class="lesson">
-        <span class="lesson-eyebrow">Section 3.9</span>
+        <span class="lesson-eyebrow">Section 3.10</span>
         <h1>Factor Analysis / PCA</h1>
 
         <p class="lede">A personality survey might ask 50 questions, but they aren't 50 independent things — answers cluster, because they tap a handful of underlying traits. <strong>Factor analysis</strong> and <strong>Principal Component Analysis (PCA)</strong> are the tools that find those few hidden dimensions hiding inside many correlated variables. They turn "50 columns" into "5 things that actually matter."</p>
@@ -107,11 +107,20 @@
     var r = 0.5, pts = [];
     var canvas = document.getElementById("pca-canvas"), ctx, W = 0, H = 300;
 
+    /* Frozen noise: fixed (x, error) draws per point, so the r slider
+       stretches the SAME cloud along the first component instead of
+       scattering a new one. "New data" reseeds. */
+    var zx = [], ze = [];
+    function seed() {
+      zx = []; ze = [];
+      for (var i = 0; i < 90; i++) { zx.push(VIZ.randn()); ze.push(VIZ.randn()); }
+    }
     function gen() {
       pts = [];
-      for (var i = 0; i < 90; i++) { var x = VIZ.randn(); var y = r * x + Math.sqrt(1 - r * r) * VIZ.randn(); pts.push({ x: x, y: y }); }
+      for (var i = 0; i < 90; i++) { var x = zx[i]; var y = r * x + Math.sqrt(1 - r * r) * ze[i]; pts.push({ x: x, y: y }); }
       update();
     }
+    function reseed() { seed(); gen(); }
     function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
 
     function eigen2(a, b, d) {
@@ -160,10 +169,10 @@
     }
 
     document.getElementById("r-range").addEventListener("input", function () { r = this.value / 100; gen(); });
-    document.getElementById("resample").addEventListener("click", gen);
+    document.getElementById("resample").addEventListener("click", reseed);
     window.addEventListener("resize", function () { fit(); update(); });
     VIZ.onTheme(update);
-    fit(); gen();
+    fit(); reseed();
   })();
   </script>
 </body>

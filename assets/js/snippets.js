@@ -112,6 +112,10 @@ window.SNIPPETS = {
     r: 'df$group <- factor(df$group)              # R dummy-codes for you\nfit <- lm(score ~ group, data = df)\nsummary(fit)   # each coefficient vs the reference level\ndf$group <- relevel(df$group, ref = "B")  # change the baseline',
     py: 'import statsmodels.formula.api as smf\nfit = smf.ols("score ~ C(group)", data=df).fit()\nprint(fit.params)   # each coefficient vs the reference level\nfit2 = smf.ols(\'score ~ C(group, Treatment(reference="B"))\',\n               data=df).fit()'
   },
+  "ancova": {
+    r: 'fit <- lm(post ~ group + pretest, data = df)   # ANCOVA = ANOVA + covariate\nsummary(fit)          # the group coefficient IS the adjusted difference\ncar::Anova(fit, type = 3)                      # classic ANCOVA table\n# check homogeneity of slopes first:\nanova(lm(post ~ group * pretest, data = df))   # interaction should be n.s.',
+    py: 'import statsmodels.formula.api as smf\nimport statsmodels.api as sm\nfit = smf.ols("post ~ C(group) + pretest", data=df).fit()\nprint(sm.stats.anova_lm(fit, typ=3))\n# homogeneity of slopes: the interaction should be n.s.\nslopes = smf.ols("post ~ C(group) * pretest", data=df).fit()\nprint(sm.stats.anova_lm(slopes, typ=3))'
+  },
   "interactions-in-regression": {
     r: 'fit <- lm(score ~ hours * anxiety, data = df)  # main effects + product\nsummary(fit)\n# center predictors first to make main effects interpretable:\ndf$hours_c <- scale(df$hours, scale = FALSE)',
     py: 'import statsmodels.formula.api as smf\nfit = smf.ols("score ~ hours * anxiety", data=df).fit()\nprint(fit.summary())   # hours:anxiety row is the interaction'
@@ -135,6 +139,10 @@ window.SNIPPETS = {
   "factor-analysis-pca": {
     r: 'pc <- prcomp(df_items, scale. = TRUE)\nsummary(pc); plot(pc, type = "l")     # scree plot\nlibrary(psych)\nfa(df_items, nfactors = 2, rotate = "oblimin")   # proper EFA',
     py: 'from sklearn.decomposition import PCA\nfrom sklearn.preprocessing import StandardScaler\nZ = StandardScaler().fit_transform(df_items)\npc = PCA().fit(Z)\nprint(pc.explained_variance_ratio_)   # scree by numbers\n# proper EFA: pip install factor_analyzer'
+  },
+  "manova": {
+    r: 'fit <- manova(cbind(anxiety, depression) ~ group, data = df)\nsummary(fit, test = "Pillai")   # robust default (also "Wilks")\nsummary.aov(fit)                # univariate follow-ups per outcome\n# MANCOVA: just add the covariate\nfit2 <- manova(cbind(anxiety, depression) ~ group + pretest, data = df)',
+    py: 'from statsmodels.multivariate.manova import MANOVA\nm = MANOVA.from_formula("anxiety + depression ~ group", data=df)\nprint(m.mv_test())   # Wilks, Pillai, Hotelling-Lawley, Roy\n# MANCOVA: "anxiety + depression ~ group + pretest"',
   },
   "power-analysis-for-complex-designs": {
     r: 'library(pwr)\npwr.anova.test(k = 3, f = 0.25, power = 0.80)   # one-way ANOVA\n# for mixed/complex designs, simulate instead:\nlibrary(simr)   # power by simulation for lmer models',

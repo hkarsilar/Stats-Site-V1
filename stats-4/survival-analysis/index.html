@@ -115,13 +115,22 @@
     var gA = [], gB = [];                    // arrays of {t, e} (time, event flag)
     var canvas = document.getElementById("km-canvas"), ctx, W = 0, H = 300;
 
-    function expRand(lam) { return -Math.log(1 - Math.random()) / lam; }
+    /* Frozen noise: every patient keeps fixed uniform draws for their event
+       and censoring times, so the sliders morph the SAME cohort (curves
+       bend smoothly with HR, censoring marks appear in place) instead of
+       simulating a new trial. "New trial" reseeds. */
+    var NPMAX = 150, UP = [];
+    function seed() {
+      UP = [];
+      for (var i = 0; i < NPMAX; i++) UP.push([[Math.random(), Math.random()], [Math.random(), Math.random()]]);
+    }
     function gen() {
       gA = []; gB = [];
       for (var i = 0; i < nPer; i++) {
         [LAM_A, LAM_A * HR].forEach(function (lam, g) {
-          var T = expRand(lam);
-          var C = cHaz > 0 ? Math.min(expRand(cHaz), TMAX) : TMAX;
+          var u = UP[i][g];
+          var T = -Math.log(1 - u[0]) / lam;
+          var C = cHaz > 0 ? Math.min(-Math.log(1 - u[1]) / cHaz, TMAX) : TMAX;
           var t = Math.min(T, C), e = T <= C;
           (g === 0 ? gA : gB).push({ t: t, e: e });
         });
@@ -246,11 +255,11 @@
       document.getElementById("c-val").textContent = cHaz === 0 ? "none" : cHaz <= 0.02 ? "low" : cHaz <= 0.04 ? "medium" : "heavy";
       gen(); update();
     });
-    document.getElementById("resample").addEventListener("click", function () { gen(); update(); });
+    document.getElementById("resample").addEventListener("click", function () { seed(); gen(); update(); });
     window.addEventListener("resize", function () { fit(); update(); });
     VIZ.onTheme(update);
 
-    fit(); gen(); update();
+    fit(); seed(); gen(); update();
   })();
   </script>
 </body>

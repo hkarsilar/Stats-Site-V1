@@ -115,15 +115,29 @@
     var canvas = document.getElementById("rm-canvas"), ctx, W = 0, H = 260, padL = 34, padB = 26, padT = 14;
     var pattern = [-1, 0, 1]; // shape of the condition effect across the 3 conditions
 
+    /* Frozen noise: each person keeps a fixed baseline z and per-condition
+       wiggle, so the sliders morph the SAME people (lines fan out or squeeze
+       together) instead of generating a new sample. "New people" reseeds. */
+    var zBase = [], zNoise = [];
+    function seed() {
+      zBase = []; zNoise = [];
+      for (var s = 0; s < N; s++) {
+        zBase.push(VIZ.randn());
+        var row = [];
+        for (var k = 0; k < K; k++) row.push(VIZ.randn());
+        zNoise.push(row);
+      }
+    }
     function build() {
       subjects = [];
       for (var s = 0; s < N; s++) {
-        var base = VIZ.gauss(50, bv), row = [];
-        for (var k = 0; k < K; k++) row.push(base + pattern[k] * ce + VIZ.gauss(0, 2.5));
+        var base = 50 + bv * zBase[s], row = [];
+        for (var k = 0; k < K; k++) row.push(base + pattern[k] * ce + 2.5 * zNoise[s][k]);
         subjects.push(row);
       }
       update();
     }
+    function reseed() { seed(); build(); }
     function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
     function vy(v) { return (H - padB) - ((v - 10) / 80) * (H - padB - padT); }
     function cx(k) { return padL + (k + 0.5) * ((W - padL - 12) / K); }
@@ -174,10 +188,10 @@
     document.getElementById("bv-range").addEventListener("input", function () { bv = +this.value; build(); });
     document.getElementById("ce-range").addEventListener("input", function () { ce = +this.value; build(); });
     document.getElementById("view-seg").addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; view = b.dataset.view; Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x.dataset.view === view); }); update(); });
-    document.getElementById("resample").addEventListener("click", build);
+    document.getElementById("resample").addEventListener("click", reseed);
     window.addEventListener("resize", function () { fit(); draw(); });
     VIZ.onTheme(draw);
-    fit(); build();
+    fit(); reseed();
   })();
   </script>
 </body>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MANOVA &amp; Multivariate Tests — StatsCapybara</title>
+  <meta name="description" content="Several outcome variables, one honest test. See how MANOVA finds group differences that separate ANOVAs miss, and decode Wilks' Λ, Pillai's trace, Hotelling's T², and MANCOVA." />
+  <link rel="canonical" href="https://statscapybara.com/stats-3/manova/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="MANOVA &amp; Multivariate Tests — StatsCapybara" />
+  <meta property="og:description" content="Several outcome variables, one honest test. See how MANOVA finds group differences that separate ANOVAs miss, and decode Wilks' Λ, Pillai's trace, Hotelling's T², and MANCOVA." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/stats-3/manova/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="MANOVA &amp; Multivariate Tests — StatsCapybara" />
+  <meta name="twitter:description" content="Several outcome variables, one honest test. See how MANOVA finds group differences that separate ANOVAs miss, and decode Wilks' Λ, Pillai's trace, Hotelling's T², and MANCOVA." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "MANOVA & Multivariate Tests", "description": "Several outcome variables, one honest test. See how MANOVA finds group differences that separate ANOVAs miss, and decode Wilks' Λ, Pillai's trace, Hotelling's T², and MANCOVA.", "url": "https://statscapybara.com/stats-3/manova/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced Modeling", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "MANOVA & Multivariate Tests", "item": "https://statscapybara.com/stats-3/manova/"}]}]
+  </script>
+</head>
+<body data-course="stats-3" data-section="manova">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 3.11</span>
+        <h1>MANOVA &amp; Multivariate Tests</h1>
+
+        <p class="lede">Real studies rarely measure one outcome. A therapy trial tracks anxiety <em>and</em> depression <em>and</em> sleep; a memory experiment logs accuracy <em>and</em> reaction time. <strong>MANOVA</strong> (Multivariate ANOVA) tests whether groups differ on a whole <em>set</em> of outcomes at once — and it can see differences that testing each outcome separately will flat-out miss.</p>
+
+        <h2>Why not just run several ANOVAs?</h2>
+        <p>Two reasons. First, the familiar <a href="../../stats-2/post-hoc-tests/">multiple-testing problem</a>: five outcomes at α = .05 gives you roughly a 23% chance of at least one false alarm. Second — and less obvious — separate ANOVAs are <strong>blind to the correlation structure</strong>. Outcomes usually travel together, and a pattern that's unremarkable variable-by-variable can be wildly improbable as a <em>combination</em>. MANOVA looks at the cloud of outcomes as a shape, not as a list.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="mnviz">
+          <p class="viz-title">🎮 Two Outcomes, One Verdict</p>
+          <p class="viz-sub">Every dot is a person measured on two outcomes. Slide the group differences and the correlation between outcomes, then compare the three verdicts below. The arrow is the <strong>discriminant direction</strong> — the single best combination of the two outcomes for telling the groups apart. (The same people stay on screen while you drag; "New sample" redraws.)</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:170px">
+              <label>Group difference on outcome 1 <span class="val" id="d1-val">+0.50</span></label>
+              <input type="range" id="d1-range" min="-100" max="100" step="5" value="50" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:170px">
+              <label>Group difference on outcome 2 <span class="val" id="d2-val">+0.30</span></label>
+              <input type="range" id="d2-range" min="-100" max="100" step="5" value="30" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:170px">
+              <label>Correlation between outcomes <span class="val" id="r-val">0.60</span></label>
+              <input type="range" id="r-range" min="0" max="90" step="5" value="60" style="width:100%" />
+            </div>
+            <div class="control"><button class="btn btn-primary btn-sm" id="magic">✨ The magic combo</button></div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="resample">New sample</button></div>
+          </div>
+
+          <canvas id="mn-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">ANOVA on outcome 1 alone</span><span class="v" id="stat-p1">—</span></div>
+            <div class="stat"><span class="k">ANOVA on outcome 2 alone</span><span class="v" id="stat-p2">—</span></div>
+            <div class="stat"><span class="k">MANOVA (both at once)</span><span class="v" id="stat-pm">—</span></div>
+            <div class="stat"><span class="k">Verdict</span><span class="v" id="stat-verdict" style="font-size:.95rem">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>How it works: the smartest composite</h2>
+        <p>MANOVA effectively asks: <em>is there any weighted combination of the outcomes on which the groups clearly differ?</em> It finds the combination that maximizes the between-group difference relative to the within-group spread — the <strong>discriminant direction</strong> in the plot — and tests the groups on that. Distance is measured the multivariate way (<strong>Mahalanobis distance</strong>): not "how far apart are the means?" but "how far apart are they <em>given the shape of the cloud</em>?"</p>
+        <p>That's the secret behind the ✨ button. When two outcomes are strongly correlated, they normally move together — so a treatment that pushes them in <em>opposite</em> directions is extremely surprising, even if each individual shift is small. Each univariate ANOVA sees a small, non-significant nudge; MANOVA sees a pattern the correlation structure says should almost never happen.</p>
+
+        <div class="callout key">
+          <p><strong>Don't skip the ✨ demo:</strong> small opposite differences (+0.35 and −0.35) with a strong correlation (r ≈ 0.8). Both univariate p-values hover far above .05 — separately, nothing to see. The MANOVA p-value collapses below .001. Now drag the correlation to 0 and watch the advantage evaporate: with independent outcomes, MANOVA is roughly just the two tests glued together.</p>
+        </div>
+
+        <h2>The statistics you'll meet in the output</h2>
+        <p>Software reports four multivariate test statistics, all summarizing how much of the outcome-space variation the group factor explains:</p>
+        <ul>
+          <li><strong>Wilks' Λ (lambda)</strong> — the share of variance <em>not</em> explained by groups; smaller = stronger effect. The most commonly reported.</li>
+          <li><strong>Pillai's trace</strong> — the most robust to assumption violations; many texts recommend it as your default.</li>
+          <li><strong>Hotelling–Lawley trace</strong> and <strong>Roy's largest root</strong> — variations on the same theme; Roy's focuses only on the single best discriminant direction.</li>
+        </ul>
+        <p>With exactly two groups they all collapse into one number — <strong>Hotelling's T²</strong>, the multivariate cousin of the t-test, which is what the playground above computes. With three-plus groups and several outcomes they can disagree slightly; that's when Pillai's robustness earns its keep.</p>
+
+        <h2>The wider multivariate family</h2>
+        <ul>
+          <li><strong>MANCOVA</strong> = MANOVA + covariates: compare groups on several outcomes at once <em>while</em> adjusting for baselines, exactly like <a href="../../stats-3/ancova/">ANCOVA</a> but multivariate.</li>
+          <li><strong>Multivariate multiple regression</strong> — the regression counterpart: several outcome variables predicted by several predictors simultaneously; MANOVA is the special case where the predictors are group dummies.</li>
+          <li><strong>Discriminant analysis</strong> — MANOVA run in reverse: instead of testing whether groups differ, it uses the discriminant directions to <em>classify</em> new cases into groups.</li>
+          <li><strong>Canonical correlation</strong> — the fully symmetric version: find the linked combinations of two whole <em>sets</em> of variables.</li>
+        </ul>
+
+        <p>A significant MANOVA is a licence to look closer, not a final answer. Standard follow-ups: univariate ANOVAs on each outcome (with a <a href="../../stats-2/post-hoc-tests/">correction</a>) to see <em>which</em> outcomes carry the difference, or a discriminant analysis to see <em>what combination</em> separates the groups.</p>
+
+        <div class="callout">
+          <p><strong>Assumptions, briefly:</strong> independent observations, multivariate normality (roughly: each outcome normal, jointly well-behaved), and similar covariance matrices across groups (Box's M test — though it's oversensitive; with equal group sizes MANOVA is fairly forgiving). And choose outcomes that <em>belong together conceptually</em> — stuffing ten unrelated variables into a MANOVA dilutes real effects instead of revealing them.</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> multivariate outcomes are the rule, not the exception — batteries of symptoms, panels of biomarkers, bundles of test scores. MANOVA and its family are how you test the <em>profile</em> honestly, without either alpha inflation or throwing away the structure that makes your measures informative.</p>
+        </div>
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ MANOVA visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var d1 = 0.5, d2 = 0.3, r = 0.6, n = 40;
+    var G = [[], []];                          // per group: [{a, b}] (the two outcomes)
+    var canvas = document.getElementById("mn-canvas"), ctx, W = 0, H = 340;
+    var LOV = -3.2, HIV = 3.6;                 // shared range for both outcomes (SD units)
+    var COL = ["#6366f1", "#f97316"];
+
+    /* Frozen noise: fixed z-pairs per person; the sliders morph the SAME
+       cloud (offsets shift it, r reshapes it). "New sample" reseeds. */
+    var Z = [];
+    function seed() {
+      Z = [[], []];
+      for (var g = 0; g < 2; g++) for (var i = 0; i < n; i++) Z[g].push([VIZ.randn(), VIZ.randn()]);
+    }
+    function gen() {
+      G = [[], []];
+      var rr = Math.sqrt(Math.max(0, 1 - r * r));
+      for (var g = 0; g < 2; g++) for (var i = 0; i < n; i++) {
+        var z = Z[g][i];
+        var a = z[0] + (g ? d1 : 0);
+        var b = r * z[0] + rr * z[1] + (g ? d2 : 0);
+        G[g].push({ a: a, b: b });
+      }
+      update();
+    }
+
+    /* ---- statistics ---- */
+    function stats() {
+      var m = [[0, 0], [0, 0]], g, i;
+      for (g = 0; g < 2; g++) { for (i = 0; i < n; i++) { m[g][0] += G[g][i].a; m[g][1] += G[g][i].b; } m[g][0] /= n; m[g][1] /= n; }
+      // pooled within-group covariance matrix
+      var saa = 0, sbb = 0, sab = 0;
+      for (g = 0; g < 2; g++) for (i = 0; i < n; i++) {
+        var da = G[g][i].a - m[g][0], db = G[g][i].b - m[g][1];
+        saa += da * da; sbb += db * db; sab += da * db;
+      }
+      var df = 2 * n - 2;
+      saa /= df; sbb /= df; sab /= df;
+      var diff = [m[1][0] - m[0][0], m[1][1] - m[0][1]];
+      // univariate t-tests
+      var se1 = Math.sqrt(saa * 2 / n), se2 = Math.sqrt(sbb * 2 / n);
+      var p1 = 2 * VIZ.tUpper(Math.abs(diff[0] / se1), df);
+      var p2 = 2 * VIZ.tUpper(Math.abs(diff[1] / se2), df);
+      // Hotelling's T² and its exact F transform (p outcomes = 2)
+      var det = saa * sbb - sab * sab;
+      var i00 = sbb / det, i01 = -sab / det, i11 = saa / det;
+      var maha = diff[0] * (i00 * diff[0] + i01 * diff[1]) + diff[1] * (i01 * diff[0] + i11 * diff[1]);
+      var T2 = (n * n / (2 * n)) * maha;
+      var N = 2 * n, F = (N - 3) / (2 * (N - 2)) * T2;
+      var pM = VIZ.fUpper(F, 2, N - 3);
+      // discriminant direction ∝ S⁻¹ · diff
+      var w = [i00 * diff[0] + i01 * diff[1], i01 * diff[0] + i11 * diff[1]];
+      return { m: m, saa: saa, sbb: sbb, sab: sab, p1: p1, p2: p2, pM: pM, w: w };
+    }
+
+    /* ---- drawing ---- */
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    var padL = 40, padR = 14, padT = 12, padB = 34;
+    function sx(v) { return padL + (v - LOV) / (HIV - LOV) * (W - padL - padR); }
+    function sy(v) { return (H - padB) - (v - LOV) / (HIV - LOV) * (H - padB - padT); }
+
+    function ellipse(mx, my, saa, sbb, sab, color) {
+      // 2-SD covariance ellipse via eigen-decomposition
+      var tr = saa + sbb, disc = Math.sqrt((saa - sbb) * (saa - sbb) + 4 * sab * sab);
+      var l1 = (tr + disc) / 2, l2 = Math.max((tr - disc) / 2, 1e-9);
+      var ang = Math.abs(sab) > 1e-9 ? Math.atan2(l1 - saa, sab) : (saa >= sbb ? 0 : Math.PI / 2);
+      ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.globalAlpha = 0.65; ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      for (var t = 0; t <= 2 * Math.PI + 0.05; t += 0.08) {
+        var ex = 2 * Math.sqrt(l1) * Math.cos(t), ey = 2 * Math.sqrt(l2) * Math.sin(t);
+        var vxr = mx + ex * Math.cos(ang) - ey * Math.sin(ang);
+        var vyr = my + ex * Math.sin(ang) + ey * Math.cos(ang);
+        if (t === 0) ctx.moveTo(sx(vxr), sy(vyr)); else ctx.lineTo(sx(vxr), sy(vyr));
+      }
+      ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
+    }
+
+    function draw(s) {
+      ctx.clearRect(0, 0, W, H);
+      var border = VIZ.css("--border"), faint = VIZ.css("--text-faint");
+      // axes through 0
+      ctx.strokeStyle = border; ctx.lineWidth = 1; ctx.globalAlpha = 0.6;
+      ctx.beginPath(); ctx.moveTo(sx(0), padT); ctx.lineTo(sx(0), H - padB); ctx.moveTo(padL, sy(0)); ctx.lineTo(W - padR, sy(0)); ctx.stroke();
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = faint; ctx.font = "600 11px Inter,sans-serif"; ctx.textAlign = "center";
+      ctx.fillText("outcome 1 →", (padL + W - padR) / 2, H - 8);
+      ctx.save(); ctx.translate(12, (padT + H - padB) / 2); ctx.rotate(-Math.PI / 2); ctx.fillText("outcome 2 →", 0, 0); ctx.restore();
+      // points
+      for (var g = 0; g < 2; g++) {
+        ctx.fillStyle = COL[g]; ctx.globalAlpha = 0.55;
+        for (var i = 0; i < n; i++) { ctx.beginPath(); ctx.arc(sx(G[g][i].a), sy(G[g][i].b), 3.5, 0, 2 * Math.PI); ctx.fill(); }
+        ctx.globalAlpha = 1;
+      }
+      // covariance ellipses + mean crosses
+      for (g = 0; g < 2; g++) {
+        ellipse(s.m[g][0], s.m[g][1], s.saa, s.sbb, s.sab, COL[g]);
+        ctx.strokeStyle = COL[g]; ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(sx(s.m[g][0]) - 7, sy(s.m[g][1])); ctx.lineTo(sx(s.m[g][0]) + 7, sy(s.m[g][1]));
+        ctx.moveTo(sx(s.m[g][0]), sy(s.m[g][1]) - 7); ctx.lineTo(sx(s.m[g][0]), sy(s.m[g][1]) + 7);
+        ctx.stroke();
+      }
+      // discriminant direction through the grand mean
+      var cx = (s.m[0][0] + s.m[1][0]) / 2, cy = (s.m[0][1] + s.m[1][1]) / 2;
+      var wl = Math.hypot(s.w[0], s.w[1]);
+      if (wl > 1e-6) {
+        var ux = s.w[0] / wl, uy = s.w[1] / wl, L = 1.6;
+        var x1 = cx - ux * L, y1 = cy - uy * L, x2 = cx + ux * L, y2 = cy + uy * L;
+        ctx.strokeStyle = "#22c55e"; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.moveTo(sx(x1), sy(y1)); ctx.lineTo(sx(x2), sy(y2)); ctx.stroke();
+        // arrowhead
+        var ah = 8, angA = Math.atan2(sy(y2) - sy(y1), sx(x2) - sx(x1));
+        ctx.fillStyle = "#22c55e";
+        ctx.beginPath();
+        ctx.moveTo(sx(x2), sy(y2));
+        ctx.lineTo(sx(x2) - ah * Math.cos(angA - 0.4), sy(y2) - ah * Math.sin(angA - 0.4));
+        ctx.lineTo(sx(x2) - ah * Math.cos(angA + 0.4), sy(y2) - ah * Math.sin(angA + 0.4));
+        ctx.closePath(); ctx.fill();
+        ctx.font = "600 11px Inter,sans-serif"; ctx.textAlign = "left";
+        ctx.fillText("discriminant direction", sx(x2) + 6, sy(y2) + 4);
+      }
+      // legend
+      ctx.font = "600 11px Inter,sans-serif"; ctx.textAlign = "left";
+      ctx.fillStyle = COL[0]; ctx.fillText("control", padL + 6, padT + 10);
+      ctx.fillStyle = COL[1]; ctx.fillText("treatment", padL + 58, padT + 10);
+    }
+
+    function fmtP(p) { return p < 0.001 ? "< .001" : p.toFixed(3); }
+    function paintP(el, p) { el.textContent = fmtP(p); el.style.color = p < 0.05 ? "#22c55e" : VIZ.css("--text"); }
+    function update() {
+      var s = stats();
+      document.getElementById("d1-val").textContent = (d1 >= 0 ? "+" : "") + d1.toFixed(2);
+      document.getElementById("d2-val").textContent = (d2 >= 0 ? "+" : "") + d2.toFixed(2);
+      document.getElementById("r-val").textContent = r.toFixed(2);
+      paintP(document.getElementById("stat-p1"), s.p1);
+      paintP(document.getElementById("stat-p2"), s.p2);
+      paintP(document.getElementById("stat-pm"), s.pM);
+      var v = document.getElementById("stat-verdict");
+      var uni = s.p1 < 0.05 || s.p2 < 0.05, multi = s.pM < 0.05;
+      if (multi && !uni) { v.textContent = "only MANOVA sees it ✨"; v.style.color = "#22c55e"; }
+      else if (multi) { v.textContent = "groups differ"; v.style.color = "#22c55e"; }
+      else if (uni) { v.textContent = "univariate only — check α inflation"; v.style.color = "#f97316"; }
+      else { v.textContent = "no difference detected"; v.style.color = VIZ.css("--text"); }
+      draw(s);
+    }
+
+    function setSliders() {
+      document.getElementById("d1-range").value = Math.round(d1 * 100);
+      document.getElementById("d2-range").value = Math.round(d2 * 100);
+      document.getElementById("r-range").value = Math.round(r * 100);
+    }
+    document.getElementById("d1-range").addEventListener("input", function () { d1 = this.value / 100; gen(); });
+    document.getElementById("d2-range").addEventListener("input", function () { d2 = this.value / 100; gen(); });
+    document.getElementById("r-range").addEventListener("input", function () { r = this.value / 100; gen(); });
+    document.getElementById("magic").addEventListener("click", function () {
+      d1 = 0.35; d2 = -0.35; r = 0.8; setSliders();
+      // draw samples until the textbook picture shows cleanly:
+      // both univariate tests clearly n.s., MANOVA overwhelming
+      for (var tries = 0; tries < 80; tries++) {
+        seed(); gen();
+        var s = stats();
+        if (s.p1 > 0.15 && s.p2 > 0.15 && s.pM < 0.001) break;
+      }
+    });
+    document.getElementById("resample").addEventListener("click", function () { seed(); gen(); });
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(update);
+
+    fit(); seed(); gen();
+  })();
+  </script>
+</body>
+</html>

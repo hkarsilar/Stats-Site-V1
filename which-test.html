@@ -57,12 +57,14 @@
             <tr><td>3+ separate groups, one factor</td><td>One-way ANOVA</td><td><a href="stats-2/one-way-anova/">2.1</a></td></tr>
             <tr><td>3+ groups, two crossed factors</td><td>Factorial ANOVA</td><td><a href="stats-2/factorial-anova-two-way/">2.3</a></td></tr>
             <tr><td>Same people, 3+ conditions</td><td>Repeated-measures ANOVA</td><td><a href="stats-2/repeated-measures-anova/">2.4</a></td></tr>
+            <tr><td>Group comparison, adjusting for a covariate</td><td>ANCOVA</td><td><a href="stats-3/ancova/">3.4</a></td></tr>
+            <tr><td>Groups compared on several outcomes at once</td><td>MANOVA</td><td><a href="stats-3/manova/">3.11</a></td></tr>
             <tr><td>Any of the above, assumptions broken</td><td>Rank-based alternative</td><td><a href="stats-2/non-parametric-alternatives/">2.6</a></td></tr>
             <tr><td>Two continuous variables, association</td><td>Pearson correlation</td><td><a href="stats-2/correlation/">2.8</a></td></tr>
             <tr><td>Two categorical variables, association</td><td>Chi-square test</td><td><a href="stats-2/chi-square-tests/">2.7</a></td></tr>
             <tr><td>Predict a number, one predictor</td><td>Simple linear regression</td><td><a href="stats-2/simple-linear-regression/">2.9</a></td></tr>
             <tr><td>Predict a number, several predictors</td><td>Multiple regression</td><td><a href="stats-3/multiple-regression/">3.1</a></td></tr>
-            <tr><td>Predict yes/no</td><td>Logistic regression</td><td><a href="stats-3/logistic-regression/">3.6</a></td></tr>
+            <tr><td>Predict yes/no</td><td>Logistic regression</td><td><a href="stats-3/logistic-regression/">3.7</a></td></tr>
             <tr><td>Predict a count</td><td>Poisson / negative binomial GLM</td><td><a href="stats-4/generalized-linear-models/">4.4</a></td></tr>
             <tr><td>Nested / clustered / repeated data</td><td>Mixed (multilevel) model</td><td><a href="stats-4/mixed-and-multilevel-models/">4.5</a></td></tr>
             <tr><td>Time until an event, with dropouts</td><td>Kaplan–Meier / survival analysis</td><td><a href="stats-4/survival-analysis/">4.8</a></td></tr>
@@ -90,6 +92,7 @@
     var NODES = {
       start: { q: "What kind of question are you asking?", opts: [
         { label: "Do groups differ, on average?", desc: "Compare means of a numeric outcome", next: "groups" },
+        { label: "Do groups differ on several outcomes at once?", desc: "e.g. anxiety + depression + stress, tested jointly", leaf: "manova" },
         { label: "Are two variables related?", desc: "Association, not group differences", next: "related" },
         { label: "Can I predict an outcome from other variables?", desc: "Build a model with predictors", next: "predict" },
         { label: "Do category counts differ from what's expected?", desc: "Frequencies, not means", next: "chi" },
@@ -163,10 +166,10 @@
     var LEAVES = {
       one_t:    { name: "One-sample t-test", why: "Compares one group's mean to a fixed reference value, using the t-distribution to account for estimating the SD from the sample.", lesson: "stats-1/one-sample-and-paired-t-tests", label: "One-Sample & Paired t-Tests", alts: [{ name: "Wilcoxon signed-rank", when: "if the data are badly skewed in a small sample", lesson: "stats-2/non-parametric-alternatives" }] },
       paired_t: { name: "Paired t-test", why: "Same people, two measurements: analyze each person's difference score. Individual differences cancel out, which buys you power.", lesson: "stats-1/one-sample-and-paired-t-tests", label: "One-Sample & Paired t-Tests", alts: [{ name: "Wilcoxon signed-rank", when: "if the difference scores are badly skewed", lesson: "stats-2/non-parametric-alternatives" }] },
-      indep_t:  { name: "Independent-samples t-test", why: "Two unrelated groups, one numeric outcome. Prefer the Welch version (most software's default), which doesn't require equal variances.", lesson: "stats-1/independent-samples-t-test", label: "Independent Samples t-Test", alts: [{ name: "Mann-Whitney U", when: "if assumptions fail badly", lesson: "stats-2/non-parametric-alternatives" }] },
+      indep_t:  { name: "Independent-samples t-test", why: "Two unrelated groups, one numeric outcome. Prefer the Welch version (most software's default), which doesn't require equal variances.", lesson: "stats-1/independent-samples-t-test", label: "Independent Samples t-Test", alts: [{ name: "Mann-Whitney U", when: "if assumptions fail badly", lesson: "stats-2/non-parametric-alternatives" }, { name: "ANCOVA", when: "to adjust for a baseline covariate", lesson: "stats-3/ancova" }] },
       mann:     { name: "Mann-Whitney U test", why: "The rank-based cousin of the independent t-test — robust to outliers and skew, and happy with ordinal outcomes.", lesson: "stats-2/non-parametric-alternatives", label: "Non-Parametric Alternatives", alts: [] },
       wilcoxon: { name: "Wilcoxon signed-rank test", why: "The rank-based alternative for one-sample or paired designs — it works on the signed ranks of the (difference) scores, so outliers lose their leverage.", lesson: "stats-2/non-parametric-alternatives", label: "Non-Parametric Alternatives", alts: [] },
-      anova1:   { name: "One-way ANOVA", why: "One omnibus F-test across all groups keeps the false-positive rate honest; follow a significant result with post-hoc tests to see which groups differ.", lesson: "stats-2/one-way-anova", label: "One-Way ANOVA", alts: [{ name: "Post-hoc tests", when: "after a significant F", lesson: "stats-2/post-hoc-tests" }, { name: "Kruskal-Wallis", when: "if assumptions fail badly", lesson: "stats-2/non-parametric-alternatives" }] },
+      anova1:   { name: "One-way ANOVA", why: "One omnibus F-test across all groups keeps the false-positive rate honest; follow a significant result with post-hoc tests to see which groups differ.", lesson: "stats-2/one-way-anova", label: "One-Way ANOVA", alts: [{ name: "Post-hoc tests", when: "after a significant F", lesson: "stats-2/post-hoc-tests" }, { name: "ANCOVA", when: "to adjust for a baseline covariate", lesson: "stats-3/ancova" }, { name: "Kruskal-Wallis", when: "if assumptions fail badly", lesson: "stats-2/non-parametric-alternatives" }] },
       kruskal:  { name: "Kruskal-Wallis test", why: "The rank-based version of one-way ANOVA — compares three or more independent groups without normality assumptions.", lesson: "stats-2/non-parametric-alternatives", label: "Non-Parametric Alternatives", alts: [] },
       factorial:{ name: "Factorial ANOVA", why: "Crossing factors tests each main effect and — usually the interesting part — their interaction, all in one design.", lesson: "stats-2/factorial-anova-two-way", label: "Factorial ANOVA (Two-Way)", alts: [] },
       rm_anova: { name: "Repeated-measures ANOVA", why: "Each person serves as their own control, removing stable individual differences from the error term. Watch the sphericity assumption.", lesson: "stats-2/repeated-measures-anova", label: "Repeated Measures ANOVA", alts: [{ name: "Mixed models", when: "for missing data or unbalanced designs", lesson: "stats-4/mixed-and-multilevel-models" }] },
@@ -181,7 +184,8 @@
       poisson:  { name: "Poisson regression (GLM)", why: "A generalized linear model with a log link keeps count predictions positive; switch to negative binomial if the counts are overdispersed.", lesson: "stats-4/generalized-linear-models", label: "Generalized Linear Models", alts: [] },
       mixed:    { name: "Mixed / multilevel model", why: "Random effects absorb the correlation that comes from nesting (students in schools, trials in people), keeping your standard errors honest.", lesson: "stats-4/mixed-and-multilevel-models", label: "Mixed & Multilevel Models", alts: [] },
       survival: { name: "Survival analysis (Kaplan–Meier)", why: "Time-to-event data with censoring: Kaplan–Meier curves estimate survival over time, the log-rank test compares groups, and Cox regression adds predictors.", lesson: "stats-4/survival-analysis", label: "Survival Analysis & Kaplan–Meier", alts: [] },
-      meta:     { name: "Meta-analysis", why: "Pool the effect sizes across studies, weighting by precision, and quantify how much the studies genuinely disagree (I²).", lesson: "stats-4/meta-analysis", label: "Meta-Analysis & Forest Plots", alts: [] }
+      meta:     { name: "Meta-analysis", why: "Pool the effect sizes across studies, weighting by precision, and quantify how much the studies genuinely disagree (I²).", lesson: "stats-4/meta-analysis", label: "Meta-Analysis & Forest Plots", alts: [] },
+      manova:   { name: "MANOVA", why: "One multivariate test across all the outcomes at once — it controls the false-alarm rate and uses the correlations between outcomes, catching patterns no single outcome shows.", lesson: "stats-3/manova", label: "MANOVA & Multivariate Tests", alts: [{ name: "MANCOVA", when: "if you also need to adjust for covariates", lesson: "stats-3/manova" }, { name: "Follow-up ANOVAs with a correction", when: "after a significant MANOVA", lesson: "stats-2/post-hoc-tests" }] }
     };
 
     var stage = document.getElementById("wt-stage");

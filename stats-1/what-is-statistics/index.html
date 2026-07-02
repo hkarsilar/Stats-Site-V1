@@ -148,11 +148,20 @@
       if (sample.length) mk(VIZ.mean(sample), "#f97316", "x̄", 1);
     }
 
+    /* Frozen draw order: a fixed shuffled queue of population members, so
+       growing n adds MORE of the same people (x̄ settles visibly) instead of
+       redrawing everyone. "Sample again" reshuffles the queue. */
+    var NMAX = 300, queue = [];
+    function seed() {
+      queue = [];
+      for (var i = 0; i < NMAX; i++) queue.push((Math.random() * pop.length) | 0);
+    }
     function take() {
       sample = [];
-      for (var i = 0; i < n; i++) sample.push(pop[(Math.random() * pop.length) | 0]);
+      for (var i = 0; i < n; i++) sample.push(pop[queue[i]]);
       update();
     }
+    function retake() { seed(); take(); }
     function update() {
       document.getElementById("stat-mu").textContent = popMean.toFixed(1);
       if (sample.length) {
@@ -164,11 +173,11 @@
     }
 
     document.getElementById("n-range").addEventListener("input", function () { n = +this.value; document.getElementById("n-val").textContent = "n = " + n; take(); });
-    document.getElementById("sample").addEventListener("click", take);
+    document.getElementById("sample").addEventListener("click", retake);
     window.addEventListener("resize", function () { fit(); draw(); });
     VIZ.onTheme(draw);
 
-    fit(); take();
+    fit(); retake();
   })();
   </script>
 </body>

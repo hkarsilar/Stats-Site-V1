@@ -50,38 +50,57 @@
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="powviz">
-          <p class="viz-title">🎮 Effect Size &amp; Power Explorer</p>
-          <p class="viz-sub">Two groups, one real difference. The curves show the effect size (their overlap); the readout shows your power — the chance a study with this n actually detects the effect at α = .05.</p>
+          <p class="viz-title">🎮 The Power Playground</p>
+          <p class="viz-sub"><strong>Top panel:</strong> the two populations — this is what an effect of size d looks like in the world. <strong>Bottom panel:</strong> what your <em>test</em> sees — the distribution of results you could observe if there were no effect (H₀) vs. the effect being real (H₁). Power is the green area: the share of possible study outcomes that lands past the significance cutoff. Turn all four dials and watch the areas fight.</p>
 
           <div class="controls">
-            <div class="control" style="flex:1;min-width:220px">
-              <label>Effect size (Cohen's d) <span class="val" id="d-val">0.50</span></label>
+            <div class="control" style="flex:1;min-width:200px">
+              <label>True effect size (Cohen's d) <span class="val" id="d-val">0.50</span></label>
               <input type="range" id="d-range" min="0" max="200" step="1" value="50" style="width:100%" />
             </div>
-            <div class="control" style="flex:1;min-width:220px">
+            <div class="control" style="flex:1;min-width:200px">
               <label>Sample size per group <span class="val" id="n-val">n = 30</span></label>
               <input type="range" id="n-range" min="5" max="200" step="1" value="30" style="width:100%" />
+            </div>
+            <div class="control">
+              <label>Significance level α</label>
+              <div class="seg" id="alpha-seg">
+                <button type="button" data-a="0.001">.001</button><button type="button" data-a="0.01">.01</button><button type="button" data-a="0.05" class="active">.05</button><button type="button" data-a="0.1">.10</button>
+              </div>
+            </div>
+            <div class="control">
+              <label>Test</label>
+              <div class="seg" id="tail-seg">
+                <button type="button" data-t="2" class="active">Two-tailed</button><button type="button" data-t="1">One-tailed</button>
+              </div>
             </div>
           </div>
 
           <canvas id="pow-canvas"></canvas>
 
           <div class="stat-row">
-            <div class="stat"><span class="k">Cohen's d</span><span class="v" id="stat-d">0.50</span></div>
-            <div class="stat"><span class="k">Effect label</span><span class="v" id="stat-label" style="font-size:1rem">medium</span></div>
-            <div class="stat"><span class="k">Power</span><span class="v" id="stat-power">—</span></div>
-            <div class="stat"><span class="k">Type II error (miss)</span><span class="v" id="stat-beta">—</span></div>
+            <div class="stat"><span class="k">Power (chance to detect)</span><span class="v" id="stat-power">—</span></div>
+            <div class="stat"><span class="k">β — Type II (miss) risk</span><span class="v" id="stat-beta">—</span></div>
+            <div class="stat"><span class="k">Smallest significant d̂</span><span class="v" id="stat-crit">—</span></div>
+            <div class="stat"><span class="k">n/group for 80% power</span><span class="v" id="stat-n80">—</span></div>
+            <div class="stat"><span class="k">Population overlap</span><span class="v" id="stat-overlap">—</span></div>
           </div>
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
         <h2>Power: could you even detect it?</h2>
-        <p><strong>Power</strong> is the probability that your study correctly rejects the null when a real effect exists — your chance of <em>not</em> missing it. The convention is to aim for at least 80%. Play with the sliders and three levers emerge:</p>
+        <p><strong>Power</strong> is the probability that your study correctly rejects the null when a real effect exists — your chance of <em>not</em> missing it. The convention is to aim for at least 80%. Power analysis is really a four-way negotiation; the playground gives you all four dials:</p>
+        <ul>
+          <li><strong>Effect size (d)</strong> — slide it up and the two populations pull apart <em>and</em> the H₁ curve below slides away from the cutoff: the green area swells. Tiny effects are genuinely hard to detect.</li>
+          <li><strong>Sample size (n)</strong> — the populations don't move an inch, but the <em>sampling</em> curves below sharpen dramatically. Same effect, narrower curves, less overlap across the cutoff → more power. This is the dial you usually control.</li>
+          <li><strong>Significance level (α)</strong> — a stricter α (say .001) drags the cutoff away from zero, shrinking the false-alarm area but eating your power with it. There's no free lunch: α and β trade off.</li>
+          <li><strong>One- vs. two-tailed</strong> — committing to a direction moves the cutoff closer to zero and buys power, at the price of being blind to an effect in the other direction.</li>
+        </ul>
         <div class="callout key">
-          <p><strong>Bigger effect → more power.</strong> Slide d up: the curves pull apart, overlap shrinks, and a real difference becomes easy to catch. Tiny effects are genuinely hard to detect and need lots of data.</p>
+          <p><strong>Try this:</strong> set d = 0.30 (a realistic effect in psychology), α = .05, two-tailed. At n = 30 the power readout is a coin flip at best. Now drag n until the green area hits 80% — that's a <em>power analysis</em>, and it's exactly the calculation you should run before collecting a single data point. Then set d = 0 and notice power equals α: with no real effect, "detections" are pure false alarms.</p>
         </div>
         <div class="callout key">
-          <p><strong>Bigger sample → more power.</strong> Slide n up and power climbs even with d fixed. More data sharpens the estimate, so smaller effects become detectable.</p>
+          <p><strong>Read the bottom panel like a story.</strong> Your one study will land somewhere under the orange H₁ curve. If it lands past the dashed cutoff, you celebrate a significant result; if it lands short, you miss a real effect (β). Power is simply how much of your future self's luck is green.</p>
         </div>
 
         <h2>Why underpowered studies are dangerous</h2>
@@ -109,48 +128,170 @@
   <script>
   (function () {
     "use strict";
-    var d = 0.5, n = 30;
-    var canvas = document.getElementById("pow-canvas"), ctx, W = 0, H = 200, pad = 14;
+    var d = 0.5, n = 30, alpha = 0.05, tails = 2;
+    var canvas = document.getElementById("pow-canvas"), ctx, W = 0, H = 430;
+    var LOX = -3.6, HIX = 5.7, padX = 12;                       // shared x-axis (outcome, SD units)
+    var GREEN = "#22c55e", RED = "#ef4444", ORANGE = "#f97316";
 
     function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function vx(v) { return padX + ((v - LOX) / (HIX - LOX)) * (W - 2 * padX); }
+
+    /* two-sample test on the observed standardized difference d̂:
+       under H0, d̂ ~ N(0, SE);  under H1, d̂ ~ N(d, SE);  SE = √(2/n) */
+    function se() { return Math.sqrt(2 / n); }
+    function zcrit() { return VIZ.normInv(1 - alpha / tails); }
+    function dcrit() { return zcrit() * se(); }
     function powerOf() {
-      var delta = d * Math.sqrt(n / 2), zc = 1.959964;       // two-sample, equal n, α=.05 two-sided
-      return VIZ.normCdf(delta - zc) + VIZ.normCdf(-delta - zc);
+      var s = se(), c = dcrit();
+      var p = 1 - VIZ.normCdf((c - d) / s);
+      if (tails === 2) p += VIZ.normCdf((-c - d) / s);
+      return p;
     }
-    function label() { return d < 0.2 ? "negligible" : d < 0.35 ? "small" : d < 0.65 ? "medium" : d < 1.1 ? "large" : "very large"; }
+    function n80() {          // normal-approx n per group for 80% power
+      if (d <= 0) return null;
+      var zb = VIZ.normInv(0.8);
+      return Math.ceil(2 * Math.pow((zcrit() + zb) / d, 2));
+    }
+
+    /* draw one normal curve scaled into a panel; optionally fill [a,b] */
+    function curvePath(mu, sd, scale, baseY) {
+      ctx.beginPath();
+      for (var px = padX; px <= W - padX; px += 1.5) {
+        var v = LOX + ((px - padX) / (W - 2 * padX)) * (HIX - LOX);
+        var y = baseY - VIZ.normPdf(v, mu, sd) * scale;
+        if (px === padX) ctx.moveTo(px, y); else ctx.lineTo(px, y);
+      }
+    }
+    function fillRegion(mu, sd, scale, baseY, a, b, color, alphaF) {
+      a = Math.max(a, LOX); b = Math.min(b, HIX);
+      if (b <= a) return;
+      ctx.beginPath();
+      ctx.moveTo(vx(a), baseY);
+      for (var v = a; v <= b; v += (HIX - LOX) / 400) ctx.lineTo(vx(v), baseY - VIZ.normPdf(v, mu, sd) * scale);
+      ctx.lineTo(vx(b), baseY - VIZ.normPdf(b, mu, sd) * scale);
+      ctx.lineTo(vx(b), baseY);
+      ctx.closePath();
+      ctx.fillStyle = color; ctx.globalAlpha = alphaF; ctx.fill(); ctx.globalAlpha = 1;
+    }
+    function panelTitle(text, y) {
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "600 11.5px Inter,sans-serif"; ctx.textAlign = "left";
+      ctx.fillText(text, padX + 2, y);
+    }
+    function legendDot(x, y, color, label) {
+      ctx.fillStyle = color; ctx.globalAlpha = 0.75;
+      ctx.fillRect(x, y - 8, 10, 10); ctx.globalAlpha = 1;
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px Inter,sans-serif"; ctx.textAlign = "left";
+      ctx.fillText(label, x + 14, y);
+      return x + 14 + ctx.measureText(label).width + 16;
+    }
 
     function draw() {
-      var lo = -3.6, hi = 3.6 + d, baseY = H - 16, peak = VIZ.normPdf(0, 0, 1), scale = (H - pad - 16) / peak;
-      function vx(v) { return pad + ((v - lo) / (hi - lo)) * (W - 2 * pad); }
       ctx.clearRect(0, 0, W, H);
-      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(0, baseY); ctx.lineTo(W, baseY); ctx.stroke();
-      function curve(mu, color, fillAlpha) {
-        ctx.beginPath();
-        for (var px = 0; px <= W; px += 1.5) { var v = lo + (px / W) * (hi - lo); var y = baseY - VIZ.normPdf(v, mu, 1) * scale; if (px === 0) ctx.moveTo(px, y); else ctx.lineTo(px, y); }
-        ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.stroke();
-        ctx.lineTo(W, baseY); ctx.lineTo(0, baseY); ctx.closePath();
-        ctx.fillStyle = color; ctx.globalAlpha = fillAlpha; ctx.fill(); ctx.globalAlpha = 1;
+      var s = se(), c = dcrit(), pw = powerOf();
+      var primary = VIZ.css("--primary"), border = VIZ.css("--border"), faint = VIZ.css("--text-faint");
+
+      /* ---------- panel 1: the populations ---------- */
+      var base1 = 168, top1 = 34, scale1 = (base1 - top1) / VIZ.normPdf(0, 0, 1);
+      panelTitle("1 · THE POPULATIONS — what “d = " + d.toFixed(2) + "” means in the world", 16);
+      ctx.strokeStyle = border; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padX, base1); ctx.lineTo(W - padX, base1); ctx.stroke();
+      // overlap region
+      var mid = d / 2;
+      fillRegion(0, 1, scale1, base1, mid, HIX, primary, 0.10);
+      fillRegion(d, 1, scale1, base1, LOX, mid, primary, 0.10);
+      curvePath(0, 1, scale1, base1); ctx.strokeStyle = primary; ctx.lineWidth = 2.5; ctx.stroke();
+      curvePath(d, 1, scale1, base1); ctx.strokeStyle = ORANGE; ctx.stroke();
+      // mean markers + d bracket
+      ctx.setLineDash([4, 3]); ctx.lineWidth = 1.5;
+      ctx.strokeStyle = primary; ctx.beginPath(); ctx.moveTo(vx(0), base1); ctx.lineTo(vx(0), top1 + 4); ctx.stroke();
+      ctx.strokeStyle = ORANGE; ctx.beginPath(); ctx.moveTo(vx(d), base1); ctx.lineTo(vx(d), top1 + 4); ctx.stroke();
+      ctx.setLineDash([]);
+      if (d > 0.03) {
+        var by = top1 - 4;
+        ctx.strokeStyle = faint; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(vx(0), by); ctx.lineTo(vx(d), by); ctx.stroke();
+        ctx.fillStyle = faint; ctx.font = "600 11px Inter,sans-serif"; ctx.textAlign = "center";
+        ctx.fillText("d = " + d.toFixed(2), vx(d / 2), by - 5);
       }
-      curve(0, VIZ.css("--primary"), 0.12);
-      curve(d, "#f97316", 0.12);
-      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "600 12px Inter, sans-serif";
-      ctx.textAlign = "center"; ctx.fillText("group 1", vx(0), 14); ctx.fillText("group 2", vx(d), 14);
+      ctx.font = "600 11px Inter,sans-serif"; ctx.textAlign = "center";
+      ctx.fillStyle = primary; ctx.fillText("control", vx(0), base1 + 14);
+      ctx.fillStyle = ORANGE; ctx.fillText("treatment", vx(Math.max(d, 0.65)), base1 + 14);
+
+      /* ---------- panel 2: what the test sees ---------- */
+      var base2 = 396, top2 = 244, peak2 = VIZ.normPdf(0, 0, s), scale2 = (base2 - top2) / peak2;
+      panelTitle("2 · YOUR STUDY (n = " + n + "/group) — possible results d̂ and the " + (tails === 2 ? "two" : "one") + "-tailed cutoff at α = " + alpha, 210);
+      ctx.strokeStyle = border; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padX, base2); ctx.lineTo(W - padX, base2); ctx.stroke();
+
+      // shaded areas first (under the curves)
+      fillRegion(d, s, scale2, base2, c, HIX, GREEN, 0.35);            // power
+      if (tails === 2) fillRegion(d, s, scale2, base2, LOX, -c, GREEN, 0.35);
+      fillRegion(d, s, scale2, base2, tails === 2 ? -c : LOX, c, "#9ca3af", 0.30);  // β (miss)
+      fillRegion(0, s, scale2, base2, c, HIX, RED, 0.40);              // α
+      if (tails === 2) fillRegion(0, s, scale2, base2, LOX, -c, RED, 0.40);
+
+      // curves
+      curvePath(0, s, scale2, base2); ctx.strokeStyle = primary; ctx.lineWidth = 2.5; ctx.setLineDash([6, 4]); ctx.stroke(); ctx.setLineDash([]);
+      curvePath(d, s, scale2, base2); ctx.strokeStyle = ORANGE; ctx.stroke();
+
+      // cutoff line(s)
+      function cut(x) {
+        ctx.strokeStyle = VIZ.css("--text"); ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]);
+        ctx.beginPath(); ctx.moveTo(vx(x), base2 + 4); ctx.lineTo(vx(x), top2 - 6); ctx.stroke(); ctx.setLineDash([]);
+      }
+      cut(c); if (tails === 2) cut(-c);
+      ctx.fillStyle = VIZ.css("--text"); ctx.font = "600 11px Inter,sans-serif"; ctx.textAlign = "center";
+      ctx.fillText("significance cutoff", vx(c), top2 - 14);
+      ctx.font = "10.5px Inter,sans-serif"; ctx.fillStyle = faint;
+      ctx.fillText("← “not significant”", vx(c) - 62, base2 + 16);
+      ctx.fillText("“significant!” →", vx(c) + 52, base2 + 16);
+
+      // curve labels
+      ctx.font = "600 11px Inter,sans-serif";
+      ctx.fillStyle = primary; ctx.textAlign = "right"; ctx.fillText("if H₀ were true", vx(0) - 8, top2 + 14);
+      ctx.fillStyle = ORANGE; ctx.textAlign = "left"; ctx.fillText("if the effect is real (H₁)", vx(Math.max(d, 0.4)) + 8, top2 + 14);
+
+      // big power number inside the green mass
+      if (pw > 0.02) {
+        ctx.fillStyle = GREEN; ctx.font = "800 " + (pw > 0.35 ? 21 : 14) + "px Inter,sans-serif"; ctx.textAlign = "left";
+        ctx.fillText((pw * 100).toFixed(0) + "%", vx(Math.max(c, d) ) + 8, base2 - 12);
+      }
+
+      // legend
+      var lx = padX + 2;
+      lx = legendDot(lx, 426, GREEN, "power — real effect detected");
+      lx = legendDot(lx, 426, "#9ca3af", "β — real effect missed");
+      legendDot(lx, 426, RED, "α — false alarm");
     }
+
     function update() {
-      var pw = powerOf();
+      var pw = powerOf(), c = dcrit(), nn = n80();
       document.getElementById("d-val").textContent = d.toFixed(2);
       document.getElementById("n-val").textContent = "n = " + n;
-      document.getElementById("stat-d").textContent = d.toFixed(2);
-      document.getElementById("stat-label").textContent = label();
       var pe = document.getElementById("stat-power");
-      pe.textContent = (pw * 100).toFixed(0) + "%";
-      pe.style.color = pw >= 0.8 ? "#22c55e" : pw >= 0.5 ? "#f97316" : "#ef4444";
+      pe.textContent = (pw * 100).toFixed(pw < 0.995 ? 0 : 1) + "%";
+      pe.style.color = pw >= 0.8 ? GREEN : pw >= 0.5 ? ORANGE : RED;
       document.getElementById("stat-beta").textContent = ((1 - pw) * 100).toFixed(0) + "%";
+      document.getElementById("stat-crit").textContent = (tails === 2 ? "±" : "") + c.toFixed(2);
+      document.getElementById("stat-n80").textContent = nn === null ? "∞" : "≈ " + nn;
+      document.getElementById("stat-overlap").textContent = (200 * VIZ.normCdf(-Math.abs(d) / 2)).toFixed(0) + "%";
       draw();
     }
+
     document.getElementById("d-range").addEventListener("input", function () { d = this.value / 100; update(); });
     document.getElementById("n-range").addEventListener("input", function () { n = +this.value; update(); });
+    document.getElementById("alpha-seg").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      alpha = +b.dataset.a;
+      Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x === b); });
+      update();
+    });
+    document.getElementById("tail-seg").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      tails = +b.dataset.t;
+      Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x === b); });
+      update();
+    });
     window.addEventListener("resize", function () { fit(); draw(); });
     VIZ.onTheme(draw);
 

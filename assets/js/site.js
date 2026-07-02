@@ -90,6 +90,7 @@
           '<a class="nav-link" href="' + BASE + '#about">About</a>' +
         '</nav>' +
         '<div class="nav-actions">' +
+          '<a class="nav-kofi" href="https://ko-fi.com/M3E322A3ML" target="_blank" rel="noopener" title="Support StatsCapybara on Ko-fi">☕<span>Buy me a coffee</span></a>' +
           '<button id="nav-search" class="icon-btn" aria-label="Search lessons (press /)">' + iconSearch() + '</button>' +
           '<button id="theme-toggle" class="icon-btn" aria-label="Toggle theme"></button>' +
           '<button id="nav-toggle" class="icon-btn nav-toggle" aria-label="Menu" aria-controls="nav-links" aria-expanded="false">' + iconMenu() + '</button>' +
@@ -308,8 +309,64 @@
         } catch (e) {}
       });
       show();
-      var anchor = document.querySelector(".lesson-progress-head") || nav;
+      var anchor = document.querySelector(".apa-report") || document.querySelector(".lesson-progress-head") || nav;
       host.insertBefore(box, anchor);
+    };
+    document.body.appendChild(s);
+  }
+
+  /* ---------- "Run it in SPSS / JASP" + "Write it up (APA 7)" ----------
+     Data lives in assets/js/software.js, loaded lazily like the snippets.
+     Final on-page order (whichever async script lands first):
+     checks → SPSS/JASP → R/Python → APA → progress head. */
+  function renderSoftware() {
+    if (!HERE) return;
+    var s = document.createElement("script");
+    s.src = BASE + "assets/js/software.js";
+    s.async = true;
+    s.onload = function () {
+      var sw = window.SOFTWARE && window.SOFTWARE[HERE];
+      if (!sw) return;
+      var nav = document.getElementById("lesson-nav");
+      var host = nav ? nav.parentNode : document.querySelector(".lesson");
+      if (!host) return;
+
+      if (sw.spss || sw.jasp) {
+        var box = document.createElement("section");
+        box.className = "software";
+        box.setAttribute("aria-label", "Run this analysis in SPSS or JASP");
+        box.innerHTML =
+          '<div class="sw-head"><span class="sw-title">🖱️ Run it in SPSS / JASP</span>' +
+            '<span class="seg"><button type="button" class="active" data-app="spss">SPSS</button><button type="button" data-app="jasp">JASP</button></span></div>' +
+          '<ol class="sw-steps"></ol>';
+        var list = box.querySelector(".sw-steps"), app = "spss";
+        var showSteps = function () {
+          list.innerHTML = (sw[app] || []).map(function (step) { return "<li>" + step + "</li>"; }).join("");
+        };
+        Array.prototype.forEach.call(box.querySelectorAll("[data-app]"), function (b) {
+          b.addEventListener("click", function () {
+            app = b.getAttribute("data-app");
+            Array.prototype.forEach.call(box.querySelectorAll("[data-app]"), function (b2) { b2.className = b2 === b ? "active" : ""; });
+            showSteps();
+          });
+        });
+        showSteps();
+        var anchor1 = host.querySelector(".try-code") || document.querySelector(".apa-report") || document.querySelector(".lesson-progress-head") || nav;
+        host.insertBefore(box, anchor1);
+      }
+
+      if (sw.apa) {
+        var apa = document.createElement("section");
+        apa.className = "apa-report";
+        apa.setAttribute("aria-label", "How to report this analysis in APA style");
+        apa.innerHTML =
+          '<div class="sw-head"><span class="sw-title">📝 Write it up (APA 7)</span></div>' +
+          '<p class="apa-label">Example results paragraph:</p>' +
+          '<blockquote class="apa-quote">' + sw.apa + '</blockquote>' +
+          (sw.tips && sw.tips.length ? '<ul class="apa-tips">' + sw.tips.map(function (t) { return "<li>" + t + "</li>"; }).join("") + "</ul>" : "");
+        var anchor2 = document.querySelector(".lesson-progress-head") || nav;
+        host.insertBefore(apa, anchor2);
+      }
     };
     document.body.appendChild(s);
   }
@@ -392,9 +449,9 @@
         card.appendChild(fb);
         box.appendChild(card);
       });
-      // keep the order: prose → checks → try-code → progress head → prev/next
-      var tryBox = host.querySelector(".try-code");
-      var anchor = tryBox || document.querySelector(".lesson-progress-head") || nav;
+      // keep the order: prose → checks → SPSS/JASP → try-code → APA → progress head
+      var anchor = document.querySelector(".software") || host.querySelector(".try-code") ||
+                   document.querySelector(".apa-report") || document.querySelector(".lesson-progress-head") || nav;
       host.insertBefore(box, anchor);
     };
     document.body.appendChild(s);
@@ -444,7 +501,19 @@
       else if (e.key === "Escape") { closeSearch(); }
     });
   }
-  function openSearch() { buildSearch(); searchEl.classList.add("open"); searchInput.value = ""; runSearch(); searchInput.focus(); }
+  /* full-text index (assets/js/search-index.js) — fetched once, the first
+     time the overlay opens, so normal page loads never pay for it */
+  var indexRequested = false;
+  function loadSearchIndex() {
+    if (indexRequested || window.SEARCH_INDEX) return;
+    indexRequested = true;
+    var s = document.createElement("script");
+    s.src = BASE + "assets/js/search-index.js";
+    s.async = true;
+    s.onload = function () { if (searchEl && searchEl.classList.contains("open")) runSearch(); };
+    document.body.appendChild(s);
+  }
+  function openSearch() { buildSearch(); loadSearchIndex(); searchEl.classList.add("open"); searchInput.value = ""; runSearch(); searchInput.focus(); }
   function closeSearch() { if (searchEl) searchEl.classList.remove("open"); }
   // site pages surfaced alongside lessons in the search overlay
   var SEARCH_PAGES = [
@@ -455,6 +524,16 @@
     { title: "Course Quiz", url: "quiz.html", tag: "Practice", kw: "test yourself questions practice" },
     { title: "Statistics Glossary", url: "glossary.html", tag: "Reference", kw: "terms definitions dictionary" }
   ];
+  function escHtml(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  /* a short excerpt around the first occurrence of q, with the match <mark>ed */
+  function snippetFor(txt, q) {
+    var at = txt.toLowerCase().indexOf(q);
+    if (at < 0) return null;
+    var from = Math.max(0, at - 36), to = Math.min(txt.length, at + q.length + 72);
+    return (from > 0 ? "…" : "") +
+      escHtml(txt.slice(from, at)) + "<mark>" + escHtml(txt.slice(at, at + q.length)) + "</mark>" +
+      escHtml(txt.slice(at + q.length, to)) + (to < txt.length ? "…" : "");
+  }
   function runSearch() {
     var q = searchInput.value.trim().toLowerCase();
     var flat = window.CURRICULUM_FLAT.filter(function (s) { return s.ready; });
@@ -464,13 +543,38 @@
     var pages = SEARCH_PAGES.filter(function (p) {
       return !q || p.title.toLowerCase().indexOf(q) >= 0 || p.kw.indexOf(q) >= 0;
     }).map(function (p) { return { page: true, title: p.title, url: p.url, tag: p.tag }; });
-    searchMatches = pages.concat(lessons).slice(0, 40);
+
+    /* full-text pass: lessons/pages whose BODY mentions the query but whose
+       title didn't already match — shown below title matches, with a snippet */
+    var deep = [];
+    if (q.length >= 3 && window.SEARCH_INDEX) {
+      var seen = {};
+      lessons.forEach(function (s) { seen[s.slug] = 1; });
+      pages.forEach(function (p) { seen[p.url] = 1; });
+      flat.forEach(function (s) {
+        if (seen[s.slug]) return;
+        var txt = window.SEARCH_INDEX.lessons[s.slug];
+        if (!txt) return;
+        var sn = snippetFor(txt, q);
+        if (sn) deep.push({ course: s.course, slug: s.slug, n: s.n, title: s.title, courseTitle: s.courseTitle, snip: sn });
+      });
+      (window.SEARCH_INDEX.pages || []).forEach(function (p) {
+        if (seen[p.u]) return;
+        var meta = null;
+        for (var i = 0; i < SEARCH_PAGES.length; i++) if (SEARCH_PAGES[i].url === p.u) meta = SEARCH_PAGES[i];
+        var sn = snippetFor(p.txt, q);
+        if (meta && sn) deep.push({ page: true, title: meta.title, url: meta.url, tag: meta.tag, snip: sn });
+      });
+    }
+
+    searchMatches = pages.concat(lessons).concat(deep).slice(0, 40);
     searchIdx = 0;
     if (!searchMatches.length) { searchResults.innerHTML = '<li class="search-empty">No lessons match “' + q + '”.</li>'; return; }
     searchResults.innerHTML = searchMatches.map(function (s, i) {
       var href = s.page ? BASE + s.url : BASE + s.course + "/" + s.slug + "/";
       return '<li><a class="' + (i === 0 ? "active" : "") + '" href="' + href + '">' +
-        '<span class="n">' + (s.page ? "→" : s.n) + '</span><span>' + s.title + '</span>' +
+        '<span class="n">' + (s.page ? "→" : s.n) + '</span><span>' + s.title +
+        (s.snip ? '<small class="snip">' + s.snip + '</small>' : '') + '</span>' +
         '<span class="course-tag">' + (s.page ? s.tag : s.courseTitle) + '</span></a></li>';
     }).join("");
     Array.prototype.forEach.call(searchResults.querySelectorAll("a"), function (a, i) {
@@ -566,9 +670,17 @@
     renderTOC();
     renderTryCode();
     renderChecks();
+    renderSoftware();
     renderKofi();
     wireSearchShortcuts();
     wireLessonKeys();
+    // ?q=… deep link (also the target of the sitewide SearchAction schema)
+    var qm = /[?&]q=([^&]+)/.exec(window.location.search);
+    if (qm) {
+      openSearch();
+      searchInput.value = decodeURIComponent(qm[1].replace(/\+/g, " "));
+      runSearch();
+    }
     // record this lesson as visited + the resume anchor
     if (HERE) {
       markVisited(HERE);

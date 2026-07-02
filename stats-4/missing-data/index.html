@@ -129,17 +129,21 @@
       return sxy / Math.sqrt(sxx * syy);
     }
 
+    var U = [];   // fixed per-point uniform draws — see note below
     function gen() {
-      X = []; Y = [];
+      X = []; Y = []; U = [];
       for (var i = 0; i < N; i++) {
         var x = Math.max(2, Math.min(38, VIZ.gauss(20, 6)));
         X.push(x);
         Y.push(Math.max(20, Math.min(100, 40 + 1.8 * x + VIZ.gauss(0, 8))));
+        U.push(Math.random());
       }
       applyMissing();
     }
     function applyMissing() {
-      // rank-based probabilities: E[missing] = p, but who goes missing depends on the mechanism
+      // rank-based probabilities: E[missing] = p, but who goes missing depends on the mechanism.
+      // Each point keeps a fixed uniform draw U[i], so moving the % slider fades the SAME points
+      // out in a stable order instead of reshuffling which ones vanish.
       var driver = mech === "mar" ? X : Y;    // MAR: driven by observed X; MNAR: by Y itself
       var order = X.map(function (_, i) { return i; });
       if (mech !== "mcar") order.sort(function (a, b) { return driver[a] - driver[b]; });
@@ -147,7 +151,7 @@
       order.forEach(function (idx, pos) { rank[idx] = pos; });
       miss = X.map(function (_, i) {
         var pi = mech === "mcar" ? p : Math.min(0.95, p * 2 * (rank[i] + 0.5) / N);
-        return Math.random() < pi;
+        return U[i] < pi;
       });
     }
 

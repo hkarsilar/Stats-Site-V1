@@ -51,7 +51,7 @@
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="itviz">
           <p class="viz-title">🎮 Two-Group Tug-of-War</p>
-          <p class="viz-sub">Each dot is a person. Move the groups apart, dial the within-group noise up and down, and change the sample size — then watch t and p react.</p>
+          <p class="viz-sub">Each dot is a person — and the <em>same</em> people stay on screen while you drag the sliders, so you can watch the groups slide apart or spread out. Hit “New samples” for a fresh random draw.</p>
 
           <div class="controls">
             <div class="control" style="flex:1;min-width:200px">
@@ -126,12 +126,21 @@
     var canvas = document.getElementById("it-canvas"), ctx, W = 0, H = 190;
 
     function clamp(v) { return v < LO ? LO : v > HI ? HI : v; }
-    function resample() {
+    /* Frozen noise: each person keeps the same z-score, so the sliders
+       move the SAME dots around instead of drawing a new sample. Only
+       "New samples" refreshes the underlying draws. */
+    var NMAX = 80, zA = [], zB = [];
+    function seed() {
+      zA = []; zB = [];
+      for (var i = 0; i < NMAX; i++) { zA.push(VIZ.randn()); zB.push(VIZ.randn()); }
+    }
+    function rebuild() {
       A = []; B = [];
       var mA = BASE - gap / 2, mB = BASE + gap / 2;
-      for (var i = 0; i < n; i++) { A.push(clamp(VIZ.gauss(mA, sd))); B.push(clamp(VIZ.gauss(mB, sd))); }
+      for (var i = 0; i < n; i++) { A.push(clamp(mA + sd * zA[i])); B.push(clamp(mB + sd * zB[i])); }
       update();
     }
+    function resample() { seed(); rebuild(); }
 
     // numeric two-tailed p-value from the t-distribution
     function pValue(t, dfv) {
@@ -180,9 +189,9 @@
       draw();
     }
 
-    document.getElementById("gap-range").addEventListener("input", function () { gap = +this.value; resample(); });
-    document.getElementById("sd-range").addEventListener("input", function () { sd = +this.value; resample(); });
-    document.getElementById("n-range").addEventListener("input", function () { n = +this.value; resample(); });
+    document.getElementById("gap-range").addEventListener("input", function () { gap = +this.value; rebuild(); });
+    document.getElementById("sd-range").addEventListener("input", function () { sd = +this.value; rebuild(); });
+    document.getElementById("n-range").addEventListener("input", function () { n = +this.value; rebuild(); });
     document.getElementById("resample").addEventListener("click", resample);
     window.addEventListener("resize", function () { fit(); draw(); });
     VIZ.onTheme(draw);

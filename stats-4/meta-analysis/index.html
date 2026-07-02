@@ -114,13 +114,22 @@
     var studies = [];   // {d, se, n}
     var canvas = document.getElementById("meta-canvas"), ctx, W = 0, H = 300;
 
+    /* Frozen noise: every potential study keeps a fixed size draw and two
+       fixed z-draws, so the μ / τ / k sliders morph the SAME forest plot
+       (studies shift and spread; k reveals more of the same list) instead
+       of rerolling it. "New studies" reseeds. */
+    var KMAX = 15, POOL = [];
+    function seed() {
+      POOL = [];
+      for (var i = 0; i < KMAX; i++) POOL.push({ u: Math.random(), z1: VIZ.randn(), z2: VIZ.randn() });
+    }
     function gen() {
       studies = [];
       for (var i = 0; i < k; i++) {
-        var n = 30 + Math.round(Math.random() * 270);          // total N, two equal arms
+        var n = 30 + Math.round(POOL[i].u * 270);               // total N, two equal arms
         var se = Math.sqrt(4 / n);                              // SE of an SMD, to first order
-        var theta = mu + tau * VIZ.randn();                     // this study's own true effect
-        studies.push({ d: theta + se * VIZ.randn(), se: se, n: n });
+        var theta = mu + tau * POOL[i].z1;                      // this study's own true effect
+        studies.push({ d: theta + se * POOL[i].z2, se: se, n: n });
       }
     }
 
@@ -218,11 +227,11 @@
     document.getElementById("tau-range").addEventListener("input", function () {
       tau = +this.value; document.getElementById("tau-val").textContent = "τ = " + tau.toFixed(2); gen(); update();
     });
-    document.getElementById("resample").addEventListener("click", function () { gen(); update(); });
+    document.getElementById("resample").addEventListener("click", function () { seed(); gen(); update(); });
     window.addEventListener("resize", update);
     VIZ.onTheme(update);
 
-    gen(); update();
+    seed(); gen(); update();
   })();
   </script>
 </body>

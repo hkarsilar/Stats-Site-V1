@@ -152,18 +152,27 @@
       return out;   // [intercept, b_x1, b_x2]
     }
 
+    /* Frozen noise: each observation keeps three fixed z-draws, so the
+       β and γ sliders morph the SAME data points instead of rerolling
+       the sample. "New sample" reseeds. */
+    var ZP = [];
+    function seed() {
+      ZP = [];
+      for (var i = 0; i < N; i++) ZP.push([VIZ.randn(), VIZ.randn(), VIZ.randn()]);
+    }
     function gen() {
       X = []; Y = []; Z = [];
       for (var i = 0; i < N; i++) {
+        var zp = ZP[i];
         if (mode === "conf") {
-          var z = VIZ.randn();
-          var x = gam * z + 0.8 * VIZ.randn();
-          var y = beta * x + gam * z + 0.8 * VIZ.randn();
+          var z = zp[0];
+          var x = gam * z + 0.8 * zp[1];
+          var y = beta * x + gam * z + 0.8 * zp[2];
           X.push(x); Y.push(y); Z.push(z);
         } else {
-          var x2 = VIZ.randn();
-          var y2 = beta * x2 + 0.9 * VIZ.randn();
-          var c = gam * x2 + gam * y2 + 0.6 * VIZ.randn();
+          var x2 = zp[0];
+          var y2 = beta * x2 + 0.9 * zp[1];
+          var c = gam * x2 + gam * y2 + 0.6 * zp[2];
           X.push(x2); Y.push(y2); Z.push(c);
         }
       }
@@ -269,11 +278,11 @@
     document.getElementById("g-range").addEventListener("input", function () {
       gam = +this.value; document.getElementById("g-val").textContent = "γ = " + gam.toFixed(2); gen(); update();
     });
-    document.getElementById("resample").addEventListener("click", function () { gen(); update(); });
+    document.getElementById("resample").addEventListener("click", function () { seed(); gen(); update(); });
     window.addEventListener("resize", function () { fit(); update(); });
     VIZ.onTheme(update);
 
-    fit(); gen(); update();
+    fit(); seed(); gen(); update();
   })();
   </script>
 </body>

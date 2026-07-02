@@ -286,6 +286,18 @@ li a:hover .sec-dot { border-color: var(--primary); }
 .nav-actions { display: inline-flex; align-items: center; gap: .35rem; }
 .nav-toggle { display: none; }               /* hamburger — shown only on mobile */
 
+/* "Buy me a coffee" pill in the nav (Ko-fi) */
+.nav-kofi {
+  display: inline-flex; align-items: center; gap: .35rem; white-space: nowrap;
+  padding: .42rem .75rem; border-radius: 999px; font-weight: 700; font-size: .82rem;
+  color: #fff; background: #ff5e5b; transition: .15s;
+}
+.nav-kofi:hover { filter: brightness(1.06); transform: translateY(-1px); color: #fff; }
+@media (max-width: 1080px) {
+  .nav-kofi span { display: none; }            /* just the ☕ when space is tight */
+  .nav-kofi { padding: .42rem .55rem; }
+}
+
 .animate-up { animation: up .6s ease both; }
 @keyframes up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 
@@ -358,6 +370,9 @@ li a:hover .sec-dot { border-color: var(--primary); }
 .search-results li a .n { font-family: var(--mono); font-size: .72rem; color: var(--text-faint); min-width: 2.4rem; }
 .search-results li a .course-tag { margin-left: auto; font-size: .7rem; color: var(--text-faint); }
 .search-results li a.active, .search-results li a:hover { background: var(--surface-2); color: var(--text); }
+/* full-text match excerpt under the title */
+.search-results .snip { display: block; margin-top: .15rem; font-size: .74rem; line-height: 1.45; color: var(--text-faint); }
+.search-results .snip mark { background: color-mix(in srgb, var(--primary) 22%, transparent); color: inherit; border-radius: 3px; padding: 0 .1em; }
 .search-empty { padding: 1rem 1.15rem; color: var(--text-faint); font-size: .92rem; }
 .search-hint { padding: .55rem 1.15rem; border-top: 1px solid var(--border); color: var(--text-faint); font-size: .72rem; display: flex; gap: 1rem; }
 .search-hint kbd { font-family: var(--mono); background: var(--surface-2); border: 1px solid var(--border); border-radius: 5px; padding: 0 .3rem; }
@@ -550,3 +565,28 @@ li a:hover .sec-dot { border-color: var(--primary); }
   margin: 0; padding: 1rem 1.1rem; overflow-x: auto; background: var(--bg-soft);
   font-family: var(--mono); font-size: .8rem; line-height: 1.6; color: var(--text);
 }
+
+/* ============================================================
+   "RUN IT IN SPSS / JASP" + "WRITE IT UP (APA 7)" (auto-injected)
+   ============================================================ */
+.software, .apa-report {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); box-shadow: var(--shadow); margin: 2.5rem 0 0; overflow: hidden;
+}
+.sw-head { display: flex; align-items: center; justify-content: space-between; gap: .8rem; padding: .55rem .9rem .55rem 1.1rem; border-bottom: 1px solid var(--border); }
+.sw-title { font-weight: 700; font-size: .9rem; }
+.sw-steps { margin: 0; padding: .9rem 1.1rem .9rem 2.3rem; font-size: .9rem; color: var(--text-muted); }
+.sw-steps li { margin: .35rem 0; line-height: 1.55; }
+.sw-steps li::marker { color: var(--primary); font-weight: 700; }
+.sw-steps strong, .apa-tips strong { color: var(--text); }
+.apa-label { margin: .8rem 1.1rem 0; font-size: .78rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--text-faint); }
+.apa-quote {
+  margin: .5rem 1.1rem .9rem; padding: .8rem 1rem; border-left: 3px solid var(--primary);
+  background: var(--bg-soft); border-radius: 0 10px 10px 0;
+  font-size: .92rem; line-height: 1.65; color: var(--text);
+}
+.apa-quote p { margin: 0; }
+.apa-quote p + p { margin-top: .6rem; }
+.apa-tips { margin: 0 1.1rem .95rem; padding-left: 1.2rem; font-size: .86rem; color: var(--text-muted); }
+.apa-tips li { margin: .3rem 0; line-height: 1.55; }
+@media print { .software .seg { display: none; } }

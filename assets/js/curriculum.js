@@ -54,13 +54,15 @@ window.CURRICULUM = [
       { n: "3.1",  slug: "multiple-regression",                     title: "Multiple Regression", ready: true },
       { n: "3.2",  slug: "multicollinearity-and-variable-selection",title: "Multicollinearity & Variable Selection", ready: true },
       { n: "3.3",  slug: "categorical-predictors-and-dummy-coding", title: "Categorical Predictors & Dummy Coding", ready: true },
-      { n: "3.4",  slug: "interactions-in-regression",              title: "Interactions in Regression", ready: true },
-      { n: "3.5",  slug: "mediation-and-indirect-effects",          title: "Mediation & Indirect Effects", ready: true },
-      { n: "3.6",  slug: "logistic-regression",                     title: "Logistic Regression", ready: true },
-      { n: "3.7",  slug: "assumptions-of-regression",               title: "Assumptions of Regression", ready: true },
-      { n: "3.8",  slug: "model-comparison",                        title: "Model Comparison", ready: true },
-      { n: "3.9",  slug: "factor-analysis-pca",                     title: "Factor Analysis / PCA", ready: true },
-      { n: "3.10", slug: "power-analysis-for-complex-designs",      title: "Power Analysis for Complex Designs", ready: true }
+      { n: "3.4",  slug: "ancova",                                  title: "ANCOVA: Controlling for Covariates", ready: true },
+      { n: "3.5",  slug: "interactions-in-regression",              title: "Interactions in Regression", ready: true },
+      { n: "3.6",  slug: "mediation-and-indirect-effects",          title: "Mediation & Indirect Effects", ready: true },
+      { n: "3.7",  slug: "logistic-regression",                     title: "Logistic Regression", ready: true },
+      { n: "3.8",  slug: "assumptions-of-regression",               title: "Assumptions of Regression", ready: true },
+      { n: "3.9",  slug: "model-comparison",                        title: "Model Comparison", ready: true },
+      { n: "3.10", slug: "factor-analysis-pca",                     title: "Factor Analysis / PCA", ready: true },
+      { n: "3.11", slug: "manova",                                  title: "MANOVA & Multivariate Tests", ready: true },
+      { n: "3.12", slug: "power-analysis-for-complex-designs",      title: "Power Analysis for Complex Designs", ready: true }
     ]
   },
   {

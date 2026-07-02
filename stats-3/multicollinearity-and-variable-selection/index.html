@@ -116,11 +116,23 @@
     var LOB = -4, HIB = 6;   // display range for b1 estimates
     var canvas = document.getElementById("mc-canvas"), ctx, W = 0, H = 150, pad = 16;
 
-    function fitOne(n) {
-      var x1 = [], x2 = [], y = [];
+    /* Frozen noise: each of the 60 simulated studies keeps its own fixed
+       random draws, so moving the r slider morphs the SAME 60 estimates
+       (they fan out as r rises) instead of rerolling them. */
+    var SIMS = 60, NOBS = 40, ZP = [];
+    function seed() {
+      ZP = [];
+      for (var k = 0; k < SIMS; k++) {
+        var za = [], zb = [], zey = [];
+        for (var i = 0; i < NOBS; i++) { za.push(VIZ.randn()); zb.push(VIZ.randn()); zey.push(VIZ.randn()); }
+        ZP.push({ a: za, b: zb, e: zey });
+      }
+    }
+    function fitOne(k) {
+      var n = NOBS, zp = ZP[k], x1 = [], x2 = [], y = [];
       for (var i = 0; i < n; i++) {
-        var a = VIZ.randn(), b = r * a + Math.sqrt(1 - r * r) * VIZ.randn();
-        x1.push(a); x2.push(b); y.push(a + b + VIZ.gauss(0, 1));   // true b1 = b2 = 1
+        var a = zp.a[i], b = r * a + Math.sqrt(1 - r * r) * zp.b[i];
+        x1.push(a); x2.push(b); y.push(a + b + zp.e[i]);   // true b1 = b2 = 1
       }
       var m1 = VIZ.mean(x1), m2 = VIZ.mean(x2), my = VIZ.mean(y);
       var S11 = 0, S22 = 0, S12 = 0, S1y = 0, S2y = 0;
@@ -128,7 +140,8 @@
       var det = S11 * S22 - S12 * S12;
       return (S22 * S1y - S12 * S2y) / det;   // b1 estimate
     }
-    function run() { estimates = []; for (var k = 0; k < 60; k++) estimates.push(fitOne(40)); update(); }
+    function run() { estimates = []; for (var k = 0; k < SIMS; k++) estimates.push(fitOne(k)); update(); }
+    function reseed() { seed(); run(); }
 
     function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
     function bx(b) { return pad + ((Math.max(LOB, Math.min(HIB, b)) - LOB) / (HIB - LOB)) * (W - 2 * pad); }
@@ -161,10 +174,10 @@
     }
 
     document.getElementById("r-range").addEventListener("input", function () { r = this.value / 100; run(); });
-    document.getElementById("rerun").addEventListener("click", run);
+    document.getElementById("rerun").addEventListener("click", reseed);
     window.addEventListener("resize", function () { fit(); update(); });
     VIZ.onTheme(update);
-    fit(); run();
+    fit(); reseed();
   })();
   </script>
 </body>
