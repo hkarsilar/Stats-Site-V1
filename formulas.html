@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Statistics Formula Sheet — StatsCapybara</title>
+  <meta name="description" content="A free, printable statistics formula sheet: every formula from descriptive statistics through t-tests, ANOVA, chi-square, regression, logistic models, Bayes, and survival analysis — each with a plain-English reading." />
+  <link rel="canonical" href="https://statscapybara.com/formulas.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Statistics Formula Sheet — StatsCapybara" />
+  <meta property="og:description" content="Every formula from the course on one printable page — descriptives to survival analysis, each with a plain-English reading." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/formulas.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Statistics Formula Sheet — StatsCapybara" />
+  <meta name="twitter:description" content="Every formula from the course on one printable page — descriptives to survival analysis, each with a plain-English reading." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body>
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="container narrow">
+      <article class="lesson" style="margin:0 auto">
+        <span class="lesson-eyebrow">Reference</span>
+        <h1>Statistics Formula Sheet</h1>
+        <p class="lede">Every formula from the course, with a plain-English reading next to each one. Print it, fold it, tape it inside your notebook — and click any course heading to revisit the lessons where the formula is a toy you can play with.</p>
+
+        <p style="display:flex;gap:.75rem;flex-wrap:wrap">
+          <button class="btn btn-primary btn-sm" id="print-btn" type="button">🖨️ Print / save as PDF</button>
+          <a class="btn btn-ghost btn-sm" href="tables.html">Need a critical value? → Tables &amp; calculators</a>
+        </p>
+
+        <h2 style="color:var(--primary)"><a href="./#curriculum" style="color:inherit">Stats 1 — Foundations</a></h2>
+        <table class="ref-table">
+          <thead><tr><th>Concept</th><th>Formula</th><th>Read it as</th></tr></thead>
+          <tbody>
+            <tr><td>Mean</td><td>x̄ = Σxᵢ / n</td><td>Add everything, divide by the count.</td></tr>
+            <tr><td>Sample variance</td><td>s² = Σ(xᵢ − x̄)² / (n − 1)</td><td>Average squared distance from the mean (n − 1 because it's a sample).</td></tr>
+            <tr><td>Standard deviation</td><td>s = √s²</td><td>Typical distance from the mean, back in the original units.</td></tr>
+            <tr><td>Z-score</td><td>z = (x − μ) / σ</td><td>How many SDs a value sits above or below the mean.</td></tr>
+            <tr><td>Standard error of the mean</td><td>SE = s / √n</td><td>How much x̄ wobbles from sample to sample.</td></tr>
+            <tr><td>Confidence interval (mean)</td><td>x̄ ± t* · SE</td><td>Estimate ± margin of error; t* from df = n − 1 (≈ 2 for 95%).</td></tr>
+            <tr><td>One-sample t</td><td>t = (x̄ − μ₀) / (s / √n)</td><td>Distance from the reference value, in standard-error units. df = n − 1.</td></tr>
+            <tr><td>Paired t</td><td>t = d̄ / (s<sub>d</sub> / √n)</td><td>The one-sample t, run on each person's difference score.</td></tr>
+            <tr><td>Independent t</td><td>t = (x̄₁ − x̄₂) / SE<sub>diff</sub></td><td>The gap between two means over its standard error (Welch: no pooling).</td></tr>
+            <tr><td>Cohen's d</td><td>d = (x̄₁ − x̄₂) / s<sub>pooled</sub></td><td>Mean difference in SD units — 0.2 / 0.5 / 0.8 ≈ small / medium / large.</td></tr>
+            <tr><td>Empirical rule</td><td>68% · 95% · 99.7%</td><td>Share of a normal distribution within ±1, ±2, ±3 SD.</td></tr>
+          </tbody>
+        </table>
+
+        <h2 style="color:var(--secondary)"><a href="./#curriculum" style="color:inherit">Stats 2 — Comparing Groups &amp; Relationships</a></h2>
+        <table class="ref-table">
+          <thead><tr><th>Concept</th><th>Formula</th><th>Read it as</th></tr></thead>
+          <tbody>
+            <tr><td>F-ratio (ANOVA)</td><td>F = MS<sub>between</sub> / MS<sub>within</sub></td><td>Signal over noise; each MS = SS / df.</td></tr>
+            <tr><td>ANOVA df</td><td>df<sub>b</sub> = k − 1, df<sub>w</sub> = N − k</td><td>k groups, N total observations.</td></tr>
+            <tr><td>Eta-squared</td><td>η² = SS<sub>between</sub> / SS<sub>total</sub></td><td>Share of outcome variance explained by group membership.</td></tr>
+            <tr><td>Bonferroni correction</td><td>α<sub>each</sub> = α / m</td><td>Split your alpha across m comparisons.</td></tr>
+            <tr><td>Chi-square</td><td>χ² = Σ (O − E)² / E</td><td>How far observed counts stray from what independence expects.</td></tr>
+            <tr><td>Expected count</td><td>E = (row total × column total) / N</td><td>Each cell's count if the two variables were unrelated.</td></tr>
+            <tr><td>Chi-square df</td><td>df = (r − 1)(c − 1)</td><td>Rows and columns of the contingency table.</td></tr>
+            <tr><td>Cramér's V</td><td>V = √( χ² / (N · (min(r,c) − 1)) )</td><td>Effect size for χ², from 0 to 1.</td></tr>
+            <tr><td>Pearson r</td><td>r = Σ z<sub>x</sub>z<sub>y</sub> / (n − 1)</td><td>The average product of paired z-scores.</td></tr>
+            <tr><td>Regression slope</td><td>b = r · (s<sub>y</sub> / s<sub>x</sub>)</td><td>Predicted change in y per one-unit rise in x.</td></tr>
+            <tr><td>Intercept</td><td>a = ȳ − b·x̄</td><td>The least-squares line always passes through (x̄, ȳ).</td></tr>
+            <tr><td>R²</td><td>R² = 1 − SS<sub>res</sub> / SS<sub>tot</sub></td><td>Share of y's variance the model explains.</td></tr>
+          </tbody>
+        </table>
+
+        <h2 style="color:var(--success)"><a href="./#curriculum" style="color:inherit">Stats 3 — Advanced Modeling</a></h2>
+        <table class="ref-table">
+          <thead><tr><th>Concept</th><th>Formula</th><th>Read it as</th></tr></thead>
+          <tbody>
+            <tr><td>Multiple regression</td><td>ŷ = b₀ + b₁x₁ + … + b<sub>k</sub>x<sub>k</sub></td><td>Each bⱼ is that predictor's effect holding the others constant.</td></tr>
+            <tr><td>Adjusted R²</td><td>1 − (1 − R²)(n − 1) / (n − k − 1)</td><td>R² with rent charged per predictor.</td></tr>
+            <tr><td>VIF</td><td>VIF<sub>j</sub> = 1 / (1 − R²<sub>j</sub>)</td><td>How much overlap with other predictors inflates bⱼ's variance (worry near 10).</td></tr>
+            <tr><td>Interaction model</td><td>ŷ = b₀ + b₁x + b₂m + b₃(x·m)</td><td>x's slope becomes b₁ + b₃m — it depends on the moderator.</td></tr>
+            <tr><td>Indirect effect</td><td>a × b</td><td>X→M path times M→Y path; test it with a bootstrap CI.</td></tr>
+            <tr><td>Effect decomposition</td><td>c = c′ + a·b</td><td>Total effect = direct + indirect (through the mediator).</td></tr>
+            <tr><td>Logistic model</td><td>ln( p / (1 − p) ) = b₀ + b₁x</td><td>A straight line — on the log-odds scale.</td></tr>
+            <tr><td>Odds ratio</td><td>OR = e<sup>b</sup></td><td>Multiplies the odds per one-unit rise in the predictor.</td></tr>
+            <tr><td>AIC / BIC</td><td>−2·lnL + 2k &nbsp;·&nbsp; −2·lnL + k·ln(n)</td><td>Fit plus a complexity penalty; lower wins. BIC punishes harder as n grows.</td></tr>
+          </tbody>
+        </table>
+
+        <h2 style="color:#8b5cf6"><a href="./#curriculum" style="color:inherit">Stats 4 — Modern &amp; Advanced</a></h2>
+        <table class="ref-table">
+          <thead><tr><th>Concept</th><th>Formula</th><th>Read it as</th></tr></thead>
+          <tbody>
+            <tr><td>Bayes' theorem</td><td>P(θ | data) ∝ P(data | θ) · P(θ)</td><td>Posterior ∝ likelihood × prior.</td></tr>
+            <tr><td>Beta–Binomial update</td><td>Beta(a, b) → Beta(a + k, b + n − k)</td><td>See k successes in n trials: add them straight into the prior.</td></tr>
+            <tr><td>Percentile bootstrap CI</td><td>[2.5th, 97.5th percentile]</td><td>…of the statistic across thousands of with-replacement resamples.</td></tr>
+            <tr><td>GLM</td><td>g(μ) = b₀ + b₁x₁ + …</td><td>Link g puts the line on the right scale: logit (binary), log (counts).</td></tr>
+            <tr><td>Intraclass correlation</td><td>ICC = τ² / (τ² + σ²)</td><td>Share of total variance sitting between clusters.</td></tr>
+            <tr><td>Kaplan–Meier</td><td>Ŝ(t) = Π (1 − dᵢ / nᵢ)</td><td>Multiply survival through each event time (censored cases stay in nᵢ while observed).</td></tr>
+            <tr><td>Cox model</td><td>h(t) = h₀(t) · e<sup>b₁x₁ + …</sup></td><td>e<sup>b</sup> is the hazard ratio for that predictor.</td></tr>
+            <tr><td>Meta-analysis weight</td><td>wᵢ = 1 / vᵢ &nbsp;(random-effects: 1 / (vᵢ + τ²))</td><td>Precise studies pull the pooled estimate hardest.</td></tr>
+            <tr><td>I²</td><td>share of spread beyond chance</td><td>≈ 25 / 50 / 75% — low / moderate / high heterogeneity.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <p><strong>Formulas are the receipts, not the idea.</strong> If any row feels like symbols instead of a picture, that's the lesson to revisit — every one of these has an interactive where you can watch the formula happen.</p>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="assets/js/curriculum.js"></script>
+  <script src="assets/js/site.js"></script>
+  <script>document.getElementById('print-btn').addEventListener('click', function () { window.print(); });</script>
+</body>
+</html>

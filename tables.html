@@ -102,6 +102,7 @@
           <li><strong>Chi-square (χ²)</strong> — the distribution of squared deviations, used for tests on counts. <a href="stats-2/chi-square-tests/">See the lesson →</a></li>
           <li><strong>F</strong> — the ratio of two variances, the engine of ANOVA and regression tests. <a href="stats-2/one-way-anova/">See the lesson →</a></li>
         </ul>
+        <p>Want to drag their parameters around and watch the shapes respond? Try the <a href="distributions.html">Distribution Playground</a> — and the <a href="formulas.html">formula sheet</a> has every formula these tests are built from.</p>
       </article>
     </div>
   </main>
@@ -327,6 +328,7 @@
       el(id).addEventListener("input", update);
     });
     window.addEventListener("resize", draw);
+    if (window.ResizeObserver) new ResizeObserver(draw).observe(canvas);
     V.onTheme(draw);
     update();
   })();

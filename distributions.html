@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Distribution Playground — See Every Probability Distribution Move — StatsCapybara</title>
+  <meta name="description" content="An interactive probability distribution explorer: drag the parameters of the normal, t, chi-square, F, binomial, Poisson, exponential, uniform, and Beta distributions and watch the shape, mean, and spread respond." />
+  <link rel="canonical" href="https://statscapybara.com/distributions.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Distribution Playground — StatsCapybara" />
+  <meta property="og:description" content="Drag the parameters of nine probability distributions and watch the shape, mean, and spread respond — with normal-approximation overlays." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/distributions.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Distribution Playground — StatsCapybara" />
+  <meta name="twitter:description" content="Drag the parameters of nine probability distributions and watch the shape, mean, and spread respond." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body>
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="container narrow">
+      <article class="lesson" style="margin:0 auto">
+        <span class="lesson-eyebrow">Tools</span>
+        <h1>Distribution Playground</h1>
+        <p class="lede">Every distribution in one sandbox. Pick one, drag its parameters, and watch the shape respond — the dashed line is the mean, the dotted lines sit one standard deviation to each side. Formulas can't show you this; sliders can.</p>
+
+        <div class="viz" id="playground">
+          <div class="controls">
+            <div class="control"><label>Distribution</label>
+              <span class="seg" id="seg-dist" style="flex-wrap:wrap"></span>
+            </div>
+          </div>
+          <p class="viz-sub" id="dist-caption" style="margin-bottom:.75rem"></p>
+          <div class="controls" id="param-controls"></div>
+          <canvas id="dist-canvas"></canvas>
+          <div class="stat-row" id="stat-row"></div>
+        </div>
+
+        <h2>What to try</h2>
+        <ul>
+          <li><strong>t vs. normal:</strong> pick Student's t, turn on the normal overlay, and drag df from 1 upward — the fat tails melt away. That's why t-tables stop mattering around df ≈ 100. (<a href="stats-1/one-sample-and-paired-t-tests/">lesson</a>)</li>
+          <li><strong>The normal approximation:</strong> pick Binomial with the overlay on. At n = 5 the bell is a bad costume; by n = 50 it fits beautifully — the Central Limit Theorem in action. (<a href="stats-1/central-limit-theorem/">lesson</a>)</li>
+          <li><strong>Skew that won't quit:</strong> chi-square with small df is heavily right-skewed; drag df up and watch it slowly normalize. (<a href="stats-2/chi-square-tests/">lesson</a>)</li>
+          <li><strong>Beta as belief:</strong> Beta(2, 5) says "probably a low proportion"; Beta(20, 50) says the same thing with confidence. This is exactly how Bayesian updating sharpens a prior. (<a href="stats-4/bayesian-thinking/">lesson</a>)</li>
+          <li><strong>Counts:</strong> Poisson's variance equals its mean — watch the spread grow with λ. When real data spread more than that, you've met overdispersion. (<a href="stats-4/generalized-linear-models/">lesson</a>)</li>
+        </ul>
+
+        <div class="callout key">
+          <p><strong>Need probabilities, not shapes?</strong> The <a href="tables.html">tables &amp; calculators page</a> turns any z, t, χ², or F statistic into an exact p-value or critical value.</p>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="assets/js/curriculum.js"></script>
+  <script src="assets/js/site.js"></script>
+  <script src="assets/js/viz.js"></script>
+
+  <!-- ============ playground ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var V = window.VIZ, G = V.gammaln;
+    var canvas = document.getElementById("dist-canvas");
+
+    function binomPmf(k, n, p) {
+      if (k < 0 || k > n) return 0;
+      return Math.exp(G(n + 1) - G(k + 1) - G(n - k + 1) + k * Math.log(p) + (n - k) * Math.log(1 - p));
+    }
+    function poisPmf(k, lam) { return k < 0 ? 0 : Math.exp(k * Math.log(lam) - lam - G(k + 1)); }
+    function betaPdf(x, a, b) {
+      if (x <= 0 || x >= 1) return 0;
+      return Math.exp((a - 1) * Math.log(x) + (b - 1) * Math.log(1 - x) - (G(a) + G(b) - G(a + b)));
+    }
+
+    /* Each distribution: params (sliders), pdf/pmf, mean/sd, x-range, caption,
+       and optionally a normal-approximation overlay. P = current param values. */
+    var DISTS = {
+      normal: { name: "Normal", discrete: false,
+        params: [{ id: "mu", label: "mean μ", min: -5, max: 5, step: 0.1, val: 0 }, { id: "sigma", label: "SD σ", min: 0.3, max: 3, step: 0.05, val: 1 }],
+        pdf: function (x, P) { return V.normPdf(x, P.mu, P.sigma); },
+        mean: function (P) { return P.mu; }, sd: function (P) { return P.sigma; },
+        range: function (P) { return [P.mu - 4 * P.sigma, P.mu + 4 * P.sigma]; },
+        caption: "The bell curve: sums of many small influences, measurement noise, and — thanks to the CLT — sampling distributions of means." },
+      t: { name: "Student's t", discrete: false, overlay: true,
+        params: [{ id: "df", label: "df", min: 1, max: 60, step: 1, val: 3 }],
+        pdf: function (x, P) { return V.tPdf(x, P.df); },
+        mean: function (P) { return P.df > 1 ? 0 : NaN; },
+        sd: function (P) { return P.df > 2 ? Math.sqrt(P.df / (P.df - 2)) : NaN; },
+        range: function () { return [-6, 6]; },
+        caption: "The fat-tailed bell used when the SD is estimated from the sample. Toggle the overlay and drag df up — it becomes the normal.",
+        approx: function (P) { return { mu: 0, sd: 1, label: "standard normal" }; } },
+      chi2: { name: "χ²", discrete: false,
+        params: [{ id: "df", label: "df", min: 1, max: 30, step: 1, val: 4 }],
+        pdf: function (x, P) { return V.chiSqPdf(x, P.df); },
+        mean: function (P) { return P.df; }, sd: function (P) { return Math.sqrt(2 * P.df); },
+        range: function (P) { return [0, V.chiSqInv(0.002, P.df) * 1.05]; },
+        caption: "Sums of squared z-scores — the engine of count-table tests. Mean = df; heavily right-skewed at small df." },
+      f: { name: "F", discrete: false,
+        params: [{ id: "d1", label: "df₁ (numerator)", min: 1, max: 30, step: 1, val: 3 }, { id: "d2", label: "df₂ (denominator)", min: 1, max: 60, step: 1, val: 20 }],
+        pdf: function (x, P) { return V.fPdf(x, P.d1, P.d2); },
+        mean: function (P) { return P.d2 > 2 ? P.d2 / (P.d2 - 2) : NaN; },
+        sd: function (P) {
+          if (P.d2 <= 4) return NaN;
+          return Math.sqrt(2 * P.d2 * P.d2 * (P.d1 + P.d2 - 2) / (P.d1 * Math.pow(P.d2 - 2, 2) * (P.d2 - 4)));
+        },
+        range: function (P) { return [0, Math.min(V.fInv(0.01, P.d1, P.d2) * 1.25, 50)]; },
+        caption: "The ratio of two variances — what ANOVA and regression F-tests live on. Hovers near 1 when nothing is going on." },
+      binom: { name: "Binomial", discrete: true, overlay: true,
+        params: [{ id: "n", label: "trials n", min: 1, max: 60, step: 1, val: 20 }, { id: "p", label: "success prob. p", min: 0.02, max: 0.98, step: 0.01, val: 0.5 }],
+        pdf: function (k, P) { return binomPmf(k, P.n, P.p); },
+        mean: function (P) { return P.n * P.p; }, sd: function (P) { return Math.sqrt(P.n * P.p * (1 - P.p)); },
+        range: function (P) { return [0, P.n]; },
+        caption: "Number of successes in n independent yes/no trials — heads in n flips, correct guesses on a quiz. Overlay shows the normal approximation.",
+        approx: function (P) { return { mu: P.n * P.p, sd: Math.sqrt(P.n * P.p * (1 - P.p)), label: "normal approximation" }; } },
+      pois: { name: "Poisson", discrete: true, overlay: true,
+        params: [{ id: "lam", label: "rate λ", min: 0.2, max: 30, step: 0.1, val: 4 }],
+        pdf: function (k, P) { return poisPmf(k, P.lam); },
+        mean: function (P) { return P.lam; }, sd: function (P) { return Math.sqrt(P.lam); },
+        range: function (P) { return [0, Math.ceil(P.lam + 4 * Math.sqrt(P.lam) + 3)]; },
+        caption: "Counts of events in a fixed window — emails per hour, typos per page. Its defining quirk: variance = mean.",
+        approx: function (P) { return { mu: P.lam, sd: Math.sqrt(P.lam), label: "normal approximation" }; } },
+      expo: { name: "Exponential", discrete: false,
+        params: [{ id: "lam", label: "rate λ", min: 0.2, max: 5, step: 0.05, val: 1 }],
+        pdf: function (x, P) { return x < 0 ? 0 : P.lam * Math.exp(-P.lam * x); },
+        mean: function (P) { return 1 / P.lam; }, sd: function (P) { return 1 / P.lam; },
+        range: function (P) { return [0, 5.5 / P.lam]; },
+        caption: "Waiting time until the next random event. Memoryless: having waited changes nothing about the wait ahead." },
+      unif: { name: "Uniform", discrete: false,
+        params: [{ id: "a", label: "start a", min: -5, max: 5, step: 0.1, val: 0 }, { id: "w", label: "width", min: 0.5, max: 10, step: 0.1, val: 4 }],
+        pdf: function (x, P) { return x >= P.a && x <= P.a + P.w ? 1 / P.w : 0; },
+        mean: function (P) { return P.a + P.w / 2; }, sd: function (P) { return P.w / Math.sqrt(12); },
+        range: function (P) { return [P.a - 0.18 * P.w, P.a + 1.18 * P.w]; },
+        caption: "Every value in the interval equally likely — random number generators, and the 'I have no idea' of distributions." },
+      beta: { name: "Beta", discrete: false,
+        params: [{ id: "a", label: "α (successes + 1)", min: 0.2, max: 12, step: 0.1, val: 2 }, { id: "b", label: "β (failures + 1)", min: 0.2, max: 12, step: 0.1, val: 5 }],
+        pdf: function (x, P) { return betaPdf(x, P.a, P.b); },
+        mean: function (P) { return P.a / (P.a + P.b); },
+        sd: function (P) { var s = P.a + P.b; return Math.sqrt(P.a * P.b / (s * s * (s + 1))); },
+        range: function () { return [0, 1]; },
+        caption: "A distribution over proportions (0 to 1) — the Bayesian's belief about a probability. More α and β = the same opinion, held more firmly." }
+    };
+    var ORDER = ["normal", "t", "chi2", "f", "binom", "pois", "expo", "unif", "beta"];
+    var cur = "normal", showOverlay = false;
+
+    var el = function (id) { return document.getElementById(id); };
+    function params() {
+      var d = DISTS[cur], P = {};
+      d.params.forEach(function (p) {
+        var v = parseFloat(el("p-" + p.id).value);
+        P[p.id] = isFinite(v) ? v : p.val;
+      });
+      return P;
+    }
+    function fmt(x) { return !isFinite(x) ? "—" : Math.abs(x) >= 100 ? x.toFixed(1) : x.toFixed(2); }
+
+    /* ---- controls ---- */
+    function renderSeg() {
+      el("seg-dist").innerHTML = ORDER.map(function (k) {
+        return '<button data-k="' + k + '" class="' + (k === cur ? "active" : "") + '">' + DISTS[k].name + '</button>';
+      }).join("");
+    }
+    function renderParams() {
+      var d = DISTS[cur];
+      var html = d.params.map(function (p) {
+        return '<div class="control"><label>' + p.label + ' <span class="val" id="v-' + p.id + '">' + p.val + '</span></label>' +
+          '<input type="range" id="p-' + p.id + '" min="' + p.min + '" max="' + p.max + '" step="' + p.step + '" value="' + p.val + '" /></div>';
+      }).join("");
+      if (d.overlay) {
+        html += '<div class="control"><label>&nbsp;</label><label style="display:inline-flex;align-items:center;gap:.4rem;font-size:.82rem;cursor:pointer">' +
+          '<input type="checkbox" id="overlay-box"' + (showOverlay ? " checked" : "") + ' style="accent-color:var(--secondary)" /> normal overlay</label></div>';
+      }
+      el("param-controls").innerHTML = html;
+      d.params.forEach(function (p) {
+        el("p-" + p.id).addEventListener("input", function () {
+          el("v-" + p.id).textContent = parseFloat(el("p-" + p.id).value);
+          update();
+        });
+      });
+      if (d.overlay) el("overlay-box").addEventListener("change", function () { showOverlay = el("overlay-box").checked; update(); });
+      el("dist-caption").textContent = d.caption;
+    }
+
+    /* ---- stats ---- */
+    function renderStats() {
+      var d = DISTS[cur], P = params();
+      var m = d.mean(P), s = d.sd(P);
+      el("stat-row").innerHTML =
+        '<div class="stat"><span class="k">Mean</span><span class="v" style="color:#f97316">' + fmt(m) + '</span></div>' +
+        '<div class="stat"><span class="k">Standard deviation</span><span class="v">' + fmt(s) + '</span></div>' +
+        '<div class="stat"><span class="k">Variance</span><span class="v" style="font-size:1rem">' + fmt(s * s) + '</span></div>' +
+        (isFinite(m) ? "" : '<div class="stat"><span class="k">Note</span><span class="v" style="font-size:.85rem">undefined at these df</span></div>');
+    }
+
+    /* ---- drawing ---- */
+    var H = 250;
+    function draw() {
+      var f = V.fit(canvas, H), ctx = f.ctx, W = f.w;
+      ctx.clearRect(0, 0, W, H);
+      var d = DISTS[cur], P = params();
+      var r = d.range(P), xmin = r[0], xmax = r[1];
+      var pad = 14, baseY = H - 26, top = 14;
+      var toX = function (x) { return pad + (x - xmin) / (xmax - xmin) * (W - 2 * pad); };
+
+      var ymax = 0, k;
+      if (d.discrete) {
+        for (k = Math.max(0, Math.floor(xmin)); k <= Math.ceil(xmax); k++) ymax = Math.max(ymax, d.pdf(k, P));
+      } else {
+        var N = 420;
+        for (var i = 0; i <= N; i++) {
+          var x = xmin + (xmax - xmin) * i / N;
+          var y = d.pdf(x, P);
+          if (i > N * 0.015 && i < N * 0.985 && isFinite(y)) ymax = Math.max(ymax, y);
+        }
+        if (cur === "unif") ymax = 1 / P.w; // flat top — no interior sampling quirks
+      }
+      ymax = ymax * 1.12 || 1;
+      var toY = function (y) { return baseY - Math.min(y / ymax, 1) * (baseY - top); };
+
+      // main shape
+      if (d.discrete) {
+        var kmax = Math.ceil(xmax), bw = (W - 2 * pad) / (kmax + 1);
+        ctx.fillStyle = V.css("--primary");
+        for (k = 0; k <= kmax; k++) {
+          var h = d.pdf(k, P) / ymax * (baseY - top);
+          ctx.globalAlpha = 0.75;
+          ctx.fillRect(pad + k * bw + bw * 0.12, baseY - h, bw * 0.76, h);
+          ctx.globalAlpha = 1;
+        }
+      } else {
+        var grad = ctx.createLinearGradient(0, top, 0, baseY);
+        grad.addColorStop(0, V.css("--primary")); grad.addColorStop(1, V.css("--primary"));
+        ctx.beginPath(); ctx.moveTo(toX(xmin), baseY);
+        var M = 420;
+        for (var j = 0; j <= M; j++) {
+          var xx = xmin + (xmax - xmin) * j / M;
+          ctx.lineTo(toX(xx), toY(d.pdf(xx, P)));
+        }
+        ctx.lineTo(toX(xmax), baseY); ctx.closePath();
+        ctx.globalAlpha = 0.14; ctx.fillStyle = grad; ctx.fill(); ctx.globalAlpha = 1;
+        ctx.beginPath();
+        for (var j2 = 0; j2 <= M; j2++) {
+          var x2 = xmin + (xmax - xmin) * j2 / M, y2 = toY(d.pdf(x2, P));
+          if (j2 === 0) ctx.moveTo(toX(x2), y2); else ctx.lineTo(toX(x2), y2);
+        }
+        ctx.strokeStyle = V.css("--primary"); ctx.lineWidth = 2.5; ctx.lineJoin = "round"; ctx.stroke();
+      }
+
+      // normal-approximation overlay
+      if (d.overlay && showOverlay) {
+        var ap = d.approx(P);
+        ctx.beginPath();
+        for (var j3 = 0; j3 <= 420; j3++) {
+          var x3 = xmin + (xmax - xmin) * j3 / 420, y3 = toY(V.normPdf(x3, ap.mu, ap.sd));
+          if (j3 === 0) ctx.moveTo(toX(x3), y3); else ctx.lineTo(toX(x3), y3);
+        }
+        ctx.strokeStyle = V.css("--secondary"); ctx.lineWidth = 2; ctx.setLineDash([6, 4]); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = V.css("--secondary"); ctx.font = "11px " + V.css("--font");
+        ctx.textAlign = "right"; ctx.fillText(ap.label, W - pad - 4, top + 12);
+      }
+
+      // baseline + ticks
+      ctx.strokeStyle = V.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(pad, baseY + 0.5); ctx.lineTo(W - pad, baseY + 0.5); ctx.stroke();
+      ctx.fillStyle = V.css("--text-faint"); ctx.font = "11px " + V.css("--mono");
+      [xmin, (xmin + xmax) / 2, xmax].forEach(function (t2) {
+        ctx.textAlign = "center";
+        var tx = Math.min(Math.max(toX(t2), pad + 16), W - pad - 16);
+        ctx.fillText((Math.abs(t2) >= 100 ? t2.toFixed(0) : +t2.toFixed(2)) + "", tx, baseY + 16);
+      });
+
+      // mean line + ±1 SD guides
+      var m = d.mean(P), s = d.sd(P);
+      if (isFinite(m)) {
+        ctx.strokeStyle = "#f97316"; ctx.setLineDash([4, 4]); ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(toX(m), top); ctx.lineTo(toX(m), baseY); ctx.stroke();
+        if (isFinite(s)) {
+          ctx.setLineDash([2, 4]); ctx.lineWidth = 1.2; ctx.globalAlpha = 0.7;
+          [m - s, m + s].forEach(function (g) {
+            if (g > xmin && g < xmax) { ctx.beginPath(); ctx.moveTo(toX(g), top + 8); ctx.lineTo(toX(g), baseY); ctx.stroke(); }
+          });
+          ctx.globalAlpha = 1;
+        }
+        ctx.setLineDash([]);
+        ctx.fillStyle = "#f97316"; ctx.font = "bold 12px " + V.css("--mono"); ctx.textAlign = "center";
+        ctx.fillText("mean " + fmt(m), Math.min(Math.max(toX(m), pad + 34), W - pad - 34), top + 10);
+      }
+    }
+
+    function update() { renderStats(); draw(); }
+
+    el("seg-dist").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      cur = b.getAttribute("data-k");
+      renderSeg(); renderParams(); update();
+    });
+    window.addEventListener("resize", draw);
+    if (window.ResizeObserver) new ResizeObserver(draw).observe(canvas);
+    V.onTheme(draw);
+    renderSeg(); renderParams(); update();
+  })();
+  </script>
+</body>
+</html>

@@ -63,6 +63,16 @@
   function setLast(rec) { try { localStorage.setItem(LKEY, JSON.stringify(rec)); } catch (e) {} }
   function getLast() { try { return JSON.parse(localStorage.getItem(LKEY)); } catch (e) { return null; } }
 
+  /* best "check your understanding" score per lesson — { slug: { c, t } } */
+  var CKEY = "sc-checks";
+  function loadCheckScores() { try { return JSON.parse(localStorage.getItem(CKEY)) || {}; } catch (e) { return {}; } }
+  function saveCheckScore(slug, correct, total) {
+    try {
+      var all = loadCheckScores();
+      if (!all[slug] || correct > all[slug].c) { all[slug] = { c: correct, t: total }; localStorage.setItem(CKEY, JSON.stringify(all)); }
+    } catch (e) {}
+  }
+
   /* ---------- top nav ---------- */
   function renderNav() {
     var nav = document.getElementById("nav");
@@ -74,6 +84,7 @@
           '<a class="nav-link" href="' + BASE + '#curriculum">Curriculum</a>' +
           '<a class="nav-link" href="' + BASE + 'which-test.html">Which test?</a>' +
           '<a class="nav-link" href="' + BASE + 'tables.html">Tables</a>' +
+          '<a class="nav-link" href="' + BASE + 'formulas.html">Formulas</a>' +
           '<a class="nav-link" href="' + BASE + 'quiz.html">Quiz</a>' +
           '<a class="nav-link" href="' + BASE + 'glossary.html">Glossary</a>' +
           '<a class="nav-link" href="' + BASE + '#about">About</a>' +
@@ -327,6 +338,8 @@
       head.innerHTML = '<span class="ck-title">🧠 Check your understanding</span><span class="ck-score" aria-live="polite"></span>';
       box.appendChild(head);
       var scoreEl = head.querySelector(".ck-score");
+      var prev = loadCheckScores()[HERE];
+      if (prev) scoreEl.textContent = "best so far: " + prev.c + " / " + prev.t;
       qs.forEach(function (item, qi) {
         var card = document.createElement("div");
         card.className = "ck-q";
@@ -357,6 +370,20 @@
             scoreEl.textContent = correct + " / " + qs.length;
             if (answered === qs.length) {
               scoreEl.textContent = correct + " / " + qs.length + (correct === qs.length ? " — nailed it!" : "");
+              saveCheckScore(HERE, correct, qs.length);
+              if (correct === qs.length && !isDone(HERE)) {
+                var doneBtn = document.createElement("button");
+                doneBtn.type = "button";
+                doneBtn.className = "btn btn-primary btn-sm";
+                doneBtn.style.margin = ".35rem 1.1rem  1rem";
+                doneBtn.textContent = "✓ Mark this lesson complete";
+                doneBtn.addEventListener("click", function () {
+                  var toggle = document.querySelector(".lesson-done");
+                  if (toggle && !isDone(HERE)) toggle.click();
+                  doneBtn.remove();
+                });
+                box.appendChild(doneBtn);
+              }
             }
           });
           opts.appendChild(b);
@@ -423,6 +450,8 @@
   var SEARCH_PAGES = [
     { title: "Which Test Should I Use?", url: "which-test.html", tag: "Tool", kw: "chooser decision anova t-test regression choose" },
     { title: "Statistical Tables & Calculators", url: "tables.html", tag: "Tool", kw: "z t chi-square f critical value p-value calculator table" },
+    { title: "Statistics Formula Sheet", url: "formulas.html", tag: "Reference", kw: "formula cheat sheet equations print reference" },
+    { title: "Distribution Playground", url: "distributions.html", tag: "Tool", kw: "normal binomial poisson beta exponential uniform pdf explore distribution" },
     { title: "Course Quiz", url: "quiz.html", tag: "Practice", kw: "test yourself questions practice" },
     { title: "Statistics Glossary", url: "glossary.html", tag: "Reference", kw: "terms definitions dictionary" }
   ];

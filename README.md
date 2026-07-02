@@ -12,6 +12,8 @@ index.html                  Homepage (hero demo + curriculum grid)
 quiz.html                   Per-course quizzes with instant feedback
 which-test.html             "Which test should I use?" interactive decision tree
 tables.html                 Exact z/t/χ²/F p-value & critical-value calculators
+formulas.html               Printable formula sheet for all four courses
+distributions.html          Interactive distribution playground (9 distributions)
 glossary.html               Searchable glossary, terms linked to lessons
 404.html                    Shown for any unknown URL (self-contained)
 assets/css/styles.css       The whole design system (light + dark)
