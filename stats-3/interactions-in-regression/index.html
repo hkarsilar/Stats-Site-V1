@@ -120,9 +120,17 @@
 
     function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
     function vx(x) { return pad + ((x - LO) / (HI - LO)) * (W - 2 * pad); }
-    function vy(y) { return (H - pad) - ((y - LO) / (HI - LO)) * (H - 2 * pad); }
+    // the y-axis stretches to whatever the tilted line needs, so the
+    // orange group never slides out of view at extreme interactions
+    var YLO = 0, YHI = 100;
+    function setYRange() {
+      var c = [0, 100, y1(LO), y1(HI), y2(LO), y2(HI)];
+      YLO = Math.min.apply(null, c) - 18; YHI = Math.max.apply(null, c) + 18;
+    }
+    function vy(y) { return (H - pad) - ((y - YLO) / (YHI - YLO)) * (H - 2 * pad); }
 
     function update() {
+      setYRange();
       ctx.clearRect(0, 0, W, H);
       ctx.strokeStyle = VIZ.css("--border"); ctx.strokeRect(pad, pad, W - 2 * pad, H - 2 * pad);
       ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px Inter,sans-serif"; ctx.textAlign = "center"; ctx.fillText("x →", W / 2, H - 6);

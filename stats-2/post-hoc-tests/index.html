@@ -49,23 +49,29 @@
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="phviz">
           <p class="viz-title">🎮 How Errors Pile Up</p>
-          <p class="viz-sub">Even when <em>every</em> group is truly identical, here's the chance of getting at least one bogus "significant" pair. Add groups and watch the uncorrected bar climb — then see Bonferroni hold the line at 5%.</p>
+          <p class="viz-sub">Every group here is <strong>truly identical</strong> — any "significant" pair is a false alarm. Each experiment tests all pairs at once: on the left every pair is tested at α = .05, on the right the same p-values must clear the stricter Bonferroni bar. Red tiles are the lies your data just told you.</p>
 
           <div class="controls">
             <div class="control" style="flex:1;min-width:260px">
               <label>Number of groups <span class="val" id="k-val">5</span> &rarr; <span id="m-val">10</span> comparisons</label>
               <input type="range" id="k-range" min="3" max="12" step="1" value="5" style="width:100%" />
             </div>
-            <div class="control"><button class="btn btn-primary btn-sm" id="run">Run 2,000 experiments</button></div>
+          </div>
+          <div class="controls" style="margin:-.25rem 0 1rem">
+            <div class="control" style="flex-direction:row;align-items:center;gap:.6rem">
+              <button class="btn btn-primary btn-sm" id="run-1">Run 1 experiment</button>
+              <button class="btn btn-ghost btn-sm" id="run-100">Run 100 (animated)</button>
+              <button class="btn btn-ghost btn-sm" id="ph-reset">Reset</button>
+            </div>
           </div>
 
           <canvas id="ph-canvas"></canvas>
 
           <div class="stat-row">
-            <div class="stat"><span class="k">Comparisons</span><span class="v" id="stat-m">10</span></div>
-            <div class="stat"><span class="k">Uncorrected error rate</span><span class="v" id="stat-unc" style="color:#ef4444">—</span></div>
-            <div class="stat"><span class="k">Per-test α after Bonferroni</span><span class="v" id="stat-bonf">—</span></div>
-            <div class="stat"><span class="k">Bonferroni error rate</span><span class="v" id="stat-bonfr" style="color:#22c55e">—</span></div>
+            <div class="stat"><span class="k">Comparisons per experiment</span><span class="v" id="stat-m">10</span></div>
+            <div class="stat"><span class="k">Bonferroni per-test α</span><span class="v" id="stat-bonf">—</span></div>
+            <div class="stat"><span class="k">Experiments fooled · no correction</span><span class="v" id="stat-unc" style="color:#ef4444">—</span></div>
+            <div class="stat"><span class="k">Experiments fooled · Bonferroni</span><span class="v" id="stat-bonfr" style="color:#22c55e">—</span></div>
           </div>
         </div>
         <!-- ============ /INTERACTIVE ============ -->
@@ -103,77 +109,121 @@
   <script src="../../assets/js/site.js"></script>
   <script src="../../assets/js/viz.js"></script>
 
-  <!-- ============ family-wise error visualization ============ -->
+  <!-- ============ family-wise error visualization ============
+       Two triangular "walls" of pairwise comparisons. Every experiment
+       draws one p ~ Uniform(0,1) per pair (the null is true for all of
+       them); a tile turns red when its p clears that side's threshold.
+       Running tallies show how often each strategy got fooled. ============ -->
   <script>
   (function () {
     "use strict";
-    var k = 5, ALPHA = 0.05, empUnc = null, empBonf = null;
-    var canvas = document.getElementById("ph-canvas"), ctx, W = 0, H = 170, padL = 12, padR = 12;
+    var k = 5, ALPHA = 0.05;
+    var lastP = null;                    // p-values of the most recent experiment
+    var runs = 0, hitU = 0, hitB = 0;    // experiments run / fooled tallies
+    var animId = null;
+    var canvas = document.getElementById("ph-canvas"), ctx, W = 0, H = 290;
 
     function comps() { return k * (k - 1) / 2; }
     function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
-    function bx(p) { return padL + p * (W - padL - padR); }
 
-    function bar(y, frac, color, label, value) {
-      var x0 = padL, x1 = bx(frac);
-      ctx.fillStyle = VIZ.css("--surface-2"); ctx.fillRect(x0, y, W - padL - padR, 26);
-      ctx.fillStyle = color; ctx.globalAlpha = 0.85; ctx.fillRect(x0, y, x1 - x0, 26); ctx.globalAlpha = 1;
-      ctx.fillStyle = VIZ.css("--text"); ctx.font = "600 12px Inter,sans-serif"; ctx.textAlign = "left";
-      ctx.fillText(label, x0 + 4, y - 6);
-      ctx.textAlign = "right"; ctx.fillText(value, W - padR, y - 6);
+    function experiment() {
+      var m = comps(), bonf = ALPHA / m, anyU = false, anyB = false;
+      lastP = [];
+      for (var c = 0; c < m; c++) {
+        var p = Math.random();           // p-value of a null test ~ Uniform(0,1)
+        lastP.push(p);
+        if (p < ALPHA) anyU = true;
+        if (p < bonf) anyB = true;
+      }
+      runs++; if (anyU) hitU++; if (anyB) hitB++;
+    }
+
+    /* one half of the canvas: title, triangle of tiles, tally bar */
+    function drawHalf(x0, width, title, thresh, hits, theory, color) {
+      var m = comps();
+      ctx.fillStyle = VIZ.css("--text"); ctx.font = "700 12px Inter,sans-serif"; ctx.textAlign = "left";
+      ctx.fillText(title, x0, 16);
+
+      // triangle of comparison tiles: row i = group i+1, col j = group j
+      var gridTop = 26, gridH = 168;
+      var cell = Math.min(20, gridH / (k - 1), (width - 4) / (k - 1));
+      var gap = Math.max(2, cell * 0.14), c = 0, flashed = 0;
+      for (var i = 1; i < k; i++) {
+        for (var j = 0; j < i; j++) {
+          var x = x0 + j * cell, y = gridTop + (i - 1) * cell;
+          var sig = lastP && lastP[c] < thresh;
+          if (sig) { ctx.fillStyle = "#ef4444"; flashed++; }
+          else { ctx.fillStyle = lastP ? VIZ.css("--surface-2") : VIZ.css("--border"); }
+          ctx.beginPath();
+          if (ctx.roundRect) ctx.roundRect(x, y, cell - gap, cell - gap, 3); else ctx.rect(x, y, cell - gap, cell - gap);
+          ctx.fill();
+          c++;
+        }
+      }
+      // verdict for the latest experiment
+      ctx.font = "600 11px Inter,sans-serif"; ctx.textAlign = "left";
+      if (lastP) {
+        ctx.fillStyle = flashed ? "#ef4444" : "#22c55e";
+        ctx.fillText(flashed ? flashed + " false alarm" + (flashed > 1 ? "s!" : "!") : "clean ✓", x0, gridTop + gridH + 16);
+      } else {
+        ctx.fillStyle = VIZ.css("--text-faint");
+        ctx.fillText("run an experiment →", x0, gridTop + gridH + 16);
+      }
+
+      // tally bar: fraction of experiments with ≥1 false alarm
+      var by = gridTop + gridH + 28, bh = 18, bw = width - 8;
+      ctx.fillStyle = VIZ.css("--surface-2"); ctx.fillRect(x0, by, bw, bh);
+      if (runs) {
+        ctx.fillStyle = color; ctx.globalAlpha = 0.85;
+        ctx.fillRect(x0, by, bw * (hits / runs), bh); ctx.globalAlpha = 1;
+      }
+      // theoretical FWER marker
+      var tx = x0 + bw * theory;
+      ctx.strokeStyle = VIZ.css("--text"); ctx.setLineDash([3, 3]); ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(tx, by - 3); ctx.lineTo(tx, by + bh + 3); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = VIZ.css("--text-muted"); ctx.font = "600 10.5px Inter,sans-serif"; ctx.textAlign = "left";
+      var pct = runs ? Math.round((hits / runs) * 100) + "%" : "—";
+      ctx.fillText("fooled in " + pct + " of " + runs + " runs (theory " + Math.round(theory * 100) + "%)", x0, by + bh + 15);
     }
 
     function draw() {
-      var m = comps();
-      var uncTheory = 1 - Math.pow(1 - ALPHA, m);
-      var bonfAlpha = ALPHA / m;
-      var bonfTheory = 1 - Math.pow(1 - bonfAlpha, m);
+      var m = comps(), bonf = ALPHA / m;
+      var thU = 1 - Math.pow(1 - ALPHA, m);
+      var thB = 1 - Math.pow(1 - bonf, m);
       ctx.clearRect(0, 0, W, H);
-
-      bar(34, uncTheory, "#ef4444", "No correction", (uncTheory * 100).toFixed(0) + "%");
-      bar(104, bonfTheory, "#22c55e", "Bonferroni", (bonfTheory * 100).toFixed(1) + "%");
-
-      // 5% target line across both bars
-      var tx = bx(0.05);
-      ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([4, 3]); ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.moveTo(tx, 28); ctx.lineTo(tx, 138); ctx.stroke(); ctx.setLineDash([]);
-      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center";
-      ctx.fillText("5% target", tx, 150);
-
-      // empirical ticks from simulation
-      function tick(y, frac, label) {
-        if (frac == null) return;
-        var x = bx(frac); ctx.strokeStyle = VIZ.css("--text"); ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.moveTo(x, y - 3); ctx.lineTo(x, y + 29); ctx.stroke();
-      }
-      tick(34, empUnc); tick(104, empBonf);
+      var half = (W - 36) / 2;
+      drawHalf(6, half, "No correction — every pair at α = .05", ALPHA, hitU, thU, "#ef4444");
+      drawHalf(30 + half, half, "Bonferroni — each pair needs p < " + bonf.toFixed(4), bonf, hitB, thB, "#22c55e");
 
       document.getElementById("k-val").textContent = k;
       document.getElementById("m-val").textContent = m;
       document.getElementById("stat-m").textContent = m;
-      document.getElementById("stat-unc").textContent = (uncTheory * 100).toFixed(0) + "%";
-      document.getElementById("stat-bonf").textContent = bonfAlpha.toFixed(4);
-      document.getElementById("stat-bonfr").textContent = (bonfTheory * 100).toFixed(1) + "%";
+      document.getElementById("stat-bonf").textContent = bonf.toFixed(4);
+      document.getElementById("stat-unc").textContent = runs ? Math.round((hitU / runs) * 100) + "%" : "—";
+      document.getElementById("stat-bonfr").textContent = runs ? Math.round((hitB / runs) * 100) + "%" : "—";
     }
 
-    function run() {
-      var m = comps(), bonfAlpha = ALPHA / m, trials = 2000, hitUnc = 0, hitBonf = 0;
-      for (var e = 0; e < trials; e++) {
-        var anyUnc = false, anyBonf = false;
-        for (var c = 0; c < m; c++) {
-          var pv = Math.random();           // p-value of a test when the null is true ~ Uniform(0,1)
-          if (pv < ALPHA) anyUnc = true;
-          if (pv < bonfAlpha) anyBonf = true;
-        }
-        if (anyUnc) hitUnc++;
-        if (anyBonf) hitBonf++;
+    function runMany(total) {
+      if (animId) cancelAnimationFrame(animId);
+      var done = 0, last = null;
+      function step(ts) {
+        if (last === null) last = ts;
+        if (ts - last >= 26) { experiment(); done++; last = ts; draw(); }
+        if (done < total) animId = requestAnimationFrame(step);
+        else animId = null;
       }
-      empUnc = hitUnc / trials; empBonf = hitBonf / trials;
+      animId = requestAnimationFrame(step);
+    }
+    function reset() {
+      if (animId) { cancelAnimationFrame(animId); animId = null; }
+      lastP = null; runs = hitU = hitB = 0;
       draw();
     }
 
-    document.getElementById("k-range").addEventListener("input", function () { k = +this.value; empUnc = empBonf = null; draw(); });
-    document.getElementById("run").addEventListener("click", run);
+    document.getElementById("k-range").addEventListener("input", function () { k = +this.value; reset(); });
+    document.getElementById("run-1").addEventListener("click", function () { experiment(); draw(); });
+    document.getElementById("run-100").addEventListener("click", function () { runMany(100); });
+    document.getElementById("ph-reset").addEventListener("click", reset);
     window.addEventListener("resize", function () { fit(); draw(); });
     VIZ.onTheme(draw);
 

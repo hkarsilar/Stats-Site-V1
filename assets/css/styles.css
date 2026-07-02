@@ -97,6 +97,56 @@ h1, h2, h3, h4 { line-height: 1.2; letter-spacing: -0.02em; }
   color: var(--text-muted); transition: .15s;
 }
 .nav-link:hover { color: var(--text); background: var(--surface-2); }
+/* the tab you're currently on */
+.nav-link.active {
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+/* ---------- Toolbox dropdown ---------- */
+.nav-drop { position: relative; }
+.nav-drop-btn {
+  display: inline-flex; align-items: center; gap: .35rem; cursor: pointer;
+  font: inherit; border: none; background: transparent;
+}
+.nav-drop-btn svg { transition: transform .15s; }
+.nav-drop.open .nav-drop-btn svg { transform: rotate(180deg); }
+.nav-drop-panel {
+  position: absolute; top: calc(100% + .5rem); left: 0; min-width: 19rem; z-index: 60;
+  display: none; flex-direction: column; gap: .1rem; padding: .45rem;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  box-shadow: var(--shadow-lg);
+}
+.nav-drop.open .nav-drop-panel { display: flex; }
+.nav-drop-item {
+  display: flex; align-items: center; gap: .7rem; padding: .5rem .65rem;
+  border-radius: 10px; transition: .12s;
+}
+.nav-drop-item:hover { background: var(--surface-2); }
+.nav-drop-item.active { background: color-mix(in srgb, var(--primary) 10%, transparent); }
+.nav-drop-item .nd-emoji { font-size: 1.15rem; flex-shrink: 0; }
+.nav-drop-item .nd-text { display: flex; flex-direction: column; min-width: 0; }
+.nav-drop-item .nd-title { font-weight: 650; font-size: .88rem; color: var(--text); }
+.nav-drop-item .nd-desc { font-size: .74rem; color: var(--text-faint); line-height: 1.35; }
+
+/* ---------- search pill (more visible than a lone icon) ---------- */
+.nav-search-btn {
+  display: inline-flex; align-items: center; gap: .45rem; cursor: pointer;
+  height: 2.25rem; padding: 0 .7rem; border-radius: 999px;
+  font: inherit; font-size: .84rem; font-weight: 600;
+  background: var(--surface-2); border: 1px solid var(--border); color: var(--text-muted);
+  transition: .15s;
+}
+.nav-search-btn:hover { color: var(--text); border-color: var(--primary); }
+.nav-search-btn .ns-kbd {
+  font-family: var(--mono); font-size: .7rem; line-height: 1;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 5px;
+  padding: .15rem .35rem; color: var(--text-faint);
+}
+@media (max-width: 1200px) {
+  .nav-search-btn .ns-label, .nav-search-btn .ns-kbd { display: none; }
+  .nav-search-btn { width: 2.25rem; padding: 0; justify-content: center; border-radius: 10px; }
+}
 
 .icon-btn {
   display: inline-flex; align-items: center; justify-content: center;
@@ -192,6 +242,18 @@ main { padding-top: var(--nav-h); }
 .sec-dot { width: .55rem; height: .55rem; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; }
 li a:hover .sec-dot { border-color: var(--accent, var(--primary)); }
 
+/* toolbox (homepage) — cards for every tool, rendered from site.js TOOLBOX */
+.toolbox-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem; }
+.tool-card {
+  display: flex; flex-direction: column; gap: .15rem;
+  border: 1px solid var(--border); border-radius: var(--radius); padding: 1.1rem 1.2rem;
+  background: var(--surface); box-shadow: var(--shadow); transition: .18s;
+}
+.tool-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
+.tool-card .tool-emoji { font-size: 1.7rem; margin-bottom: .35rem; }
+.tool-card .tool-title { font-weight: 700; font-size: 1rem; color: var(--text); }
+.tool-card .tool-desc { font-size: .84rem; color: var(--text-muted); line-height: 1.45; }
+
 /* about */
 .about { display: flex; flex-wrap: wrap; align-items: center; gap: 3rem; }
 .about .avatar {
@@ -202,10 +264,28 @@ li a:hover .sec-dot { border-color: var(--accent, var(--primary)); }
 }
 .about .bio { flex: 1; min-width: 16rem; }
 .about .bio p { color: var(--text-muted); }
+/* links in the bio should look like links */
+.about .bio p a {
+  color: var(--primary); font-weight: 600;
+  text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--primary) 45%, transparent);
+  transition: .15s;
+}
+.about .bio p a:hover { text-decoration-color: var(--primary); }
+.about-links { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.1rem; }
+.about-link {
+  display: inline-flex; align-items: center; gap: .45rem;
+  padding: .5rem .9rem; border: 1px solid var(--border); border-radius: 999px;
+  background: var(--surface); box-shadow: var(--shadow);
+  font-size: .86rem; font-weight: 600; color: var(--text); transition: .15s;
+}
+.about-link:hover { transform: translateY(-1px); border-color: var(--primary); box-shadow: var(--shadow-lg); }
 
 /* ---------- footer ---------- */
 .footer { border-top: 1px solid var(--border); padding: 2.5rem 0; color: var(--text-faint); font-size: .9rem; }
 .footer .container { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: center; }
+/* the page's capybara quip */
+.footer-quip { font-style: italic; font-size: .95rem; color: var(--text-muted); }
 
 /* ============================================================
    LESSON LAYOUT
@@ -240,11 +320,14 @@ li a:hover .sec-dot { border-color: var(--accent, var(--primary)); }
   font-weight: 650;
 }
 .sidebar a .n { font-family: var(--mono); font-size: .72rem; color: var(--text-faint); margin-right: .4rem; }
-/* the resident capybara, cheering quietly from the bottom of the sidebar */
+/* the resident capybara, with this page's words of wisdom — every page
+   tells a different one, so it's worth reading. Deliberately visible. */
 .sb-capy {
-  display: flex; align-items: center; gap: .6rem; margin: 1.1rem .1rem 0; padding: .65rem .75rem;
-  border: 1px dashed var(--border); border-radius: 12px;
-  font-size: .74rem; line-height: 1.45; color: var(--text-faint);
+  display: flex; align-items: center; gap: .65rem; margin: 1.1rem .1rem 0; padding: .8rem .85rem;
+  border: 1.5px dashed color-mix(in srgb, var(--course-accent, var(--primary)) 45%, var(--border));
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--course-accent, var(--primary)) 6%, transparent);
+  font-size: .84rem; font-weight: 500; font-style: italic; line-height: 1.5; color: var(--text);
 }
 
 .lesson { flex: 1; min-width: 0; max-width: 48rem; }
@@ -255,7 +338,7 @@ li a:hover .sec-dot { border-color: var(--accent, var(--primary)); }
 body[data-course="stats-1"] { --course-accent: var(--primary); }
 body[data-course="stats-2"] { --course-accent: var(--secondary); }
 body[data-course="stats-3"] { --course-accent: var(--success); }
-body[data-course="stats-4"] { --course-accent: #8b5cf6; }
+body[data-course="stats-4"] { --course-accent: #ec4899; }
 
 .lesson-eyebrow {
   font-family: var(--mono); font-size: .8rem; font-weight: 700;
@@ -369,6 +452,14 @@ body[data-course="stats-4"] { --course-accent: #8b5cf6; }
   .nav-links .nav-link { padding: .7rem .75rem; font-size: 1rem; border-radius: 10px; }
   .nav-actions { margin-left: auto; }
   .nav-toggle { display: inline-flex; }
+
+  /* in the mobile menu the Toolbox flattens into an always-visible group */
+  .nav-drop-btn { display: none; }
+  .nav-drop-panel {
+    display: flex; position: static; min-width: 0; padding: .2rem 0 .3rem;
+    border: none; border-radius: 0; box-shadow: none; background: transparent;
+    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin: .25rem 0;
+  }
 }
 
 /* ============================================================
@@ -440,13 +531,15 @@ body[data-course="stats-4"] { --course-accent: #8b5cf6; }
    (which was silently inflating the label to .85rem — the overlap bug) */
 .ring .ring-label, .course-card .ch .ring-label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: .68rem; font-weight: 700; color: var(--text-muted); }
 
-/* sidebar + curriculum completion marks */
+/* sidebar + curriculum completion marks — finished lessons fade back
+   so the lessons still ahead of you are the ones that stand out */
 .sec-check { margin-left: auto; font-size: .8rem; line-height: 1; color: var(--success); opacity: 0; }
 .course-card li a.done .sec-check { opacity: 1; }
 .course-card li a.done .sec-dot { border-color: var(--success); background: var(--success); }
+.course-card li a.done { color: var(--text-faint); }
 .course-card li a.visited .sec-dot { border-color: var(--accent, var(--primary)); }
 .sidebar a .tick { float: right; color: var(--success); font-size: .8rem; }
-.sidebar a.done { color: var(--text); }
+.sidebar a.done { color: var(--text-faint); }
 
 /* resume banner (homepage) */
 .resume-bar {
@@ -552,13 +645,31 @@ body[data-course="stats-4"] { --course-accent: #8b5cf6; }
 .wt-crumb.wt-restart { background: transparent; color: var(--text-faint); }
 .wt-sep { color: var(--text-faint); font-size: .8rem; }
 .wt-q { font-size: 1.2rem; font-weight: 700; margin: .25rem 0 1rem; color: var(--text); }
+/* step header: back button + "Question N" */
+.wt-head { display: flex; align-items: center; gap: .8rem; margin: 0 0 .6rem; min-height: 1.9rem; }
+.wt-back {
+  font: inherit; font-size: .82rem; font-weight: 650; cursor: pointer;
+  color: var(--text-muted); background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: .3rem .7rem; transition: .12s;
+}
+.wt-back:hover { color: var(--text); border-color: var(--primary); }
+.wt-step { font-family: var(--mono); font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-faint); }
+#wt-stage { animation: up .28s ease both; }
 .wt-opts { display: flex; flex-direction: column; gap: .6rem; }
 .wt-opt {
-  display: flex; flex-direction: column; gap: .1rem; text-align: left; cursor: pointer;
-  font: inherit; padding: .8rem 1rem; border: 1px solid var(--border); border-radius: 12px;
+  position: relative; display: flex; flex-direction: column; gap: .1rem; text-align: left; cursor: pointer;
+  font: inherit; padding: .8rem 2.4rem .8rem 1rem; border: 1px solid var(--border); border-radius: 12px;
   background: var(--bg-soft); color: var(--text); transition: .13s;
 }
+.wt-opt::after {
+  content: "→"; position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);
+  color: var(--primary); font-weight: 700; opacity: 0; transition: .13s;
+}
+.wt-opt:hover::after { opacity: 1; }
 .wt-opt:hover { border-color: var(--primary); transform: translateY(-1px); box-shadow: var(--shadow); }
+/* the cheat-sheet map: test names are real links to their lessons */
+.wt-map td a { color: var(--primary); font-weight: 600; }
+.wt-map td a:hover { text-decoration: underline; }
 .wt-opt-label { font-weight: 650; font-size: .97rem; }
 .wt-opt-desc { font-size: .82rem; color: var(--text-muted); }
 .wt-result { padding: .35rem 0 .5rem; }
@@ -576,7 +687,16 @@ body[data-course="stats-4"] { --course-accent: #8b5cf6; }
   border: 1px solid var(--border); border-radius: var(--radius);
   background: var(--surface); box-shadow: var(--shadow); margin: 2.5rem 0 0; overflow: hidden;
 }
-.ck-head { display: flex; align-items: center; justify-content: space-between; gap: .8rem; padding: .55rem .9rem 0.55rem 1.1rem; border-bottom: 1px solid var(--border); }
+.ck-head { display: flex; align-items: center; justify-content: space-between; gap: .8rem; padding: .7rem .9rem .7rem 1.1rem; }
+/* the checks block is a <details>: opening the questions is opt-in */
+summary.ck-head { cursor: pointer; list-style: none; user-select: none; transition: .12s; }
+summary.ck-head::-webkit-details-marker { display: none; }
+summary.ck-head:hover { filter: brightness(1.02); }
+.ck-cta { display: inline-flex; align-items: center; gap: .45rem; color: var(--text-faint); font-size: .78rem; font-weight: 600; white-space: nowrap; }
+.ck-cta .chev { transition: transform .18s; }
+details.checks[open] .ck-cta .chev { transform: rotate(180deg); }
+details.checks[open] summary.ck-head { border-bottom: 1px solid var(--border); }
+details.checks[open] .ck-open-label { display: none; }
 .ck-title { font-weight: 700; font-size: .9rem; }
 .ck-score { font-family: var(--mono); font-size: .8rem; font-weight: 700; color: var(--success); }
 .ck-q { padding: .9rem 1.1rem .35rem; }

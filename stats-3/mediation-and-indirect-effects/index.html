@@ -122,16 +122,29 @@
       ctx.fillText(label, cx, cy); ctx.textBaseline = "alphabetic";
       return { x: cx, y: cy, w: w, h: h };
     }
+    /* arrows first, labels last — so no line ever strikes through a label */
+    var labels = [];
     function arrow(x1, y1, x2, y2, label, val) {
       var col = Math.abs(val) < 0.04 ? VIZ.css("--text-faint") : (val > 0 ? VIZ.css("--secondary") : "#ef4444");
-      ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 1.5 + Math.min(3.5, Math.abs(val) * 3);
+      // thickness swings hard with the coefficient: a near-zero path is a
+      // hairline, a strong one is a beam
+      ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 0.6 + Math.min(7, Math.abs(val) * 6.5);
       ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
       var ang = Math.atan2(y2 - y1, x2 - x1);
-      ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - 9 * Math.cos(ang - 0.4), y2 - 9 * Math.sin(ang - 0.4)); ctx.lineTo(x2 - 9 * Math.cos(ang + 0.4), y2 - 9 * Math.sin(ang + 0.4)); ctx.closePath(); ctx.fill();
-      var mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
-      ctx.fillStyle = VIZ.css("--bg"); ctx.fillRect(mx - 22, my - 9, 44, 18);
-      ctx.fillStyle = col; ctx.font = "600 12px ui-monospace,monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-      ctx.fillText(label + "=" + (val >= 0 ? "" : "") + val.toFixed(2), mx, my); ctx.textBaseline = "alphabetic";
+      var ah = 7 + Math.min(6, Math.abs(val) * 5);
+      ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - ah * Math.cos(ang - 0.4), y2 - ah * Math.sin(ang - 0.4)); ctx.lineTo(x2 - ah * Math.cos(ang + 0.4), y2 - ah * Math.sin(ang + 0.4)); ctx.closePath(); ctx.fill();
+      labels.push({ mx: (x1 + x2) / 2, my: (y1 + y2) / 2, col: col, txt: label + " = " + val.toFixed(2) });
+    }
+    function drawLabels() {
+      ctx.font = "600 12px ui-monospace,monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      labels.forEach(function (L) {
+        var tw = ctx.measureText(L.txt).width;
+        ctx.fillStyle = VIZ.css("--bg");
+        ctx.fillRect(L.mx - tw / 2 - 6, L.my - 10, tw + 12, 20);
+        ctx.fillStyle = L.col; ctx.fillText(L.txt, L.mx, L.my);
+      });
+      ctx.textBaseline = "alphabetic";
+      labels = [];
     }
 
     function draw() {
@@ -142,6 +155,7 @@
       arrow(M.x + 28, M.y + 16, Y.x - 20, Y.y - 18, "b", b);
       arrow(X.x + 32, X.y, Y.x - 32, Y.y, "c′", c);
       box(X.x, X.y, "X"); box(M.x, M.y, "M"); box(Y.x, Y.y, "Y");
+      drawLabels();
 
       var ind = a * b, tot = ind + c, prop = tot !== 0 ? ind / tot : 0;
       document.getElementById("va").textContent = a.toFixed(2); document.getElementById("vb").textContent = b.toFixed(2); document.getElementById("vc").textContent = c.toFixed(2);

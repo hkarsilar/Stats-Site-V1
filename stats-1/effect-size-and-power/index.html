@@ -234,22 +234,29 @@
       curvePath(0, s, scale2, base2); ctx.strokeStyle = primary; ctx.lineWidth = 2.5; ctx.setLineDash([6, 4]); ctx.stroke(); ctx.setLineDash([]);
       curvePath(d, s, scale2, base2); ctx.strokeStyle = ORANGE; ctx.stroke();
 
-      // cutoff line(s)
+      // cutoff line(s) — they stop short of the label row above
       function cut(x) {
         ctx.strokeStyle = VIZ.css("--text"); ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]);
-        ctx.beginPath(); ctx.moveTo(vx(x), base2 + 4); ctx.lineTo(vx(x), top2 - 6); ctx.stroke(); ctx.setLineDash([]);
+        ctx.beginPath(); ctx.moveTo(vx(x), base2 + 4); ctx.lineTo(vx(x), top2 - 4); ctx.stroke(); ctx.setLineDash([]);
       }
       cut(c); if (tails === 2) cut(-c);
-      ctx.fillStyle = VIZ.css("--text"); ctx.font = "600 11px Inter,sans-serif"; ctx.textAlign = "center";
-      ctx.fillText("significance cutoff", vx(c), top2 - 14);
-      ctx.font = "10.5px Inter,sans-serif"; ctx.fillStyle = faint;
-      ctx.fillText("← “not significant”", vx(c) - 62, base2 + 16);
-      ctx.fillText("“significant!” →", vx(c) + 52, base2 + 16);
 
-      // curve labels
-      ctx.font = "600 11px Inter,sans-serif";
-      ctx.fillStyle = primary; ctx.textAlign = "right"; ctx.fillText("if H₀ were true", vx(0) - 8, top2 + 14);
-      ctx.fillStyle = ORANGE; ctx.textAlign = "left"; ctx.fillText("if the effect is real (H₁)", vx(Math.max(d, 0.4)) + 8, top2 + 14);
+      /* text labels go on last, each on a little background plate, so no
+         dashed line or curve can ever strike through them */
+      function plate(txt, x, y, align, color, font) {
+        ctx.font = font; ctx.textAlign = align;
+        var tw = ctx.measureText(txt).width;
+        var x0 = align === "center" ? x - tw / 2 : (align === "right" ? x - tw : x);
+        ctx.fillStyle = VIZ.css("--bg-soft"); ctx.globalAlpha = 0.9;
+        ctx.fillRect(x0 - 4, y - 11, tw + 8, 15); ctx.globalAlpha = 1;
+        ctx.fillStyle = color; ctx.fillText(txt, x, y);
+      }
+      plate("significance cutoff", vx(c), top2 - 12, "center", VIZ.css("--text"), "600 11px Inter,sans-serif");
+      plate("← “not significant”", vx(c) - 62, base2 + 16, "center", faint, "10.5px Inter,sans-serif");
+      plate("“significant!” →", vx(c) + 52, base2 + 16, "center", faint, "10.5px Inter,sans-serif");
+      // curve labels — H₁'s sits right of both the peak and the cutoff
+      plate("if H₀ were true", vx(0) - 10, top2 + 14, "right", primary, "600 11px Inter,sans-serif");
+      plate("if the effect is real (H₁)", vx(Math.max(d, Math.max(c, 0.4))) + 14, top2 + 14, "left", ORANGE, "600 11px Inter,sans-serif");
 
       // big power number inside the green mass
       if (pw > 0.02) {

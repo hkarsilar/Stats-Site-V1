@@ -69,7 +69,7 @@ window.CURRICULUM = [
     slug: "stats-4",
     title: "Stats 4",
     subtitle: "Modern & Advanced",
-    accent: "#8b5cf6",
+    accent: "#ec4899",
     sections: [
       { n: "4.1", slug: "bootstrap-and-resampling",        title: "Bootstrap & Resampling", ready: true },
       { n: "4.2", slug: "bayesian-thinking",               title: "Bayesian Thinking", ready: true },

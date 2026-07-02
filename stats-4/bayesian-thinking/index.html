@@ -67,7 +67,7 @@
           <div class="stat-row">
             <div class="stat"><span class="k" style="color:var(--text-faint)">Prior mean</span><span class="v" id="stat-prior">—</span></div>
             <div class="stat"><span class="k">Data so far</span><span class="v" id="stat-data" style="font-size:1rem">—</span></div>
-            <div class="stat"><span class="k" style="color:#8b5cf6">Posterior mean</span><span class="v" id="stat-post">—</span></div>
+            <div class="stat"><span class="k" style="color:#ec4899">Posterior mean</span><span class="v" id="stat-post">—</span></div>
           </div>
         </div>
         <!-- ============ /INTERACTIVE ============ -->
@@ -143,10 +143,10 @@
       }
       plot(prior, VIZ.css("--text-faint"), 2, [5, 4]);
       if (n > 0) plot(like, VIZ.css("--secondary"), 2, [2, 3]);
-      plot(post, "#8b5cf6", 3.5);
+      plot(post, "#ec4899", 3.5);
       // legend
       ctx.textAlign = "left"; ctx.font = "600 11px Inter,sans-serif";
-      ctx.fillStyle = VIZ.css("--text-faint"); ctx.fillText("- - prior", pad + 4, top); ctx.fillStyle = VIZ.css("--secondary"); ctx.fillText("· · likelihood (data)", pad + 64, top); ctx.fillStyle = "#8b5cf6"; ctx.fillText("posterior", pad + 184, top);
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.fillText("- - prior", pad + 4, top); ctx.fillStyle = VIZ.css("--secondary"); ctx.fillText("· · likelihood (data)", pad + 64, top); ctx.fillStyle = "#ec4899"; ctx.fillText("posterior", pad + 184, top);
 
       document.getElementById("pm-val").textContent = pm.toFixed(2);
       document.getElementById("ps-val").textContent = strength < 12 ? "weak" : strength < 35 ? "moderate" : "strong";

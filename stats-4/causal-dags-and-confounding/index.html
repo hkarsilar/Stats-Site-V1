@@ -78,7 +78,7 @@
           <div class="stat-row">
             <div class="stat"><span class="k">True effect β</span><span class="v" id="stat-true">—</span></div>
             <div class="stat"><span class="k" style="color:#f97316">Naive slope (Y ~ X)</span><span class="v" id="stat-naive">—</span></div>
-            <div class="stat"><span class="k" style="color:#8b5cf6">Adjusted slope</span><span class="v" id="stat-adj">—</span></div>
+            <div class="stat"><span class="k" style="color:#ec4899">Adjusted slope</span><span class="v" id="stat-adj">—</span></div>
           </div>
           <p id="dag-hint" style="margin:.75rem 0 0;font-size:.88rem;color:var(--text-muted)"></p>
         </div>
@@ -205,11 +205,11 @@
       if (mode === "conf") {
         var zx = cx, zy = 30, xx = cx - 120, xy = 96, yx = cx + 120, yy = 96;
         arrow(zx, zy, xx, xy, third); arrow(zx, zy, yx, yy, third); arrow(xx, xy, yx, yy, "#f97316");
-        node(zx, zy, "Z", third); node(xx, xy, "X", "#8b5cf6"); node(yx, yy, "Y", "#8b5cf6");
+        node(zx, zy, "Z", third); node(xx, xy, "X", "#ec4899"); node(yx, yy, "Y", "#ec4899");
       } else {
         var xx2 = cx - 120, xy2 = 30, yx2 = cx + 120, yy2 = 30, cxx = cx, cyy = 96;
         arrow(xx2, xy2, cxx, cyy, third); arrow(yx2, yy2, cxx, cyy, third); arrow(xx2, xy2, yx2, yy2, "#f97316");
-        node(xx2, xy2, "X", "#8b5cf6"); node(yx2, yy2, "Y", "#8b5cf6"); node(cxx, cyy, "C", third);
+        node(xx2, xy2, "X", "#ec4899"); node(yx2, yy2, "Y", "#ec4899"); node(cxx, cyy, "C", third);
       }
     }
     function draw() {
@@ -229,7 +229,7 @@
       // color by tercile of the third variable
       var sorted = Z.slice().sort(function (a, b2) { return a - b2; });
       var q1 = sorted[(N / 3) | 0], q2 = sorted[(2 * N / 3) | 0];
-      var cols = [VIZ.css("--secondary"), "#8b5cf6", "#f97316"];
+      var cols = [VIZ.css("--secondary"), "#ec4899", "#f97316"];
       for (var i = 0; i < N; i++) {
         if (X[i] < xmin || X[i] > xmax || Y[i] < ymin || Y[i] > ymax) continue;
         ctx.fillStyle = cols[Z[i] <= q1 ? 0 : Z[i] <= q2 ? 1 : 2];
@@ -250,7 +250,7 @@
         ctx.stroke(); ctx.setLineDash([]);
       }
       drawLine(nv.a, nv.b, "#f97316", false);
-      drawLine(adj[0] + adj[2] * zbar, adj[1], "#8b5cf6", true);
+      drawLine(adj[0] + adj[2] * zbar, adj[1], "#ec4899", true);
       return { naive: nv.b, adj: adj[1] };
     }
 

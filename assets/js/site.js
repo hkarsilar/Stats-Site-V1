@@ -39,8 +39,98 @@
   }
   function moon() { return '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'; }
   function sun() { return '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>'; }
-  function iconSearch() { return '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'; }
+  function iconSearch() { return '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'; }
   function iconMenu() { return '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>'; }
+
+  /* ---------- page identity (for quips + nav highlighting) ----------
+     Lesson pages are keyed by their slug; root pages by their file name
+     ("which-test", "quiz", …); the homepage is "home". */
+  function pageKey() {
+    if (HERE) return HERE;
+    var m = /([^\/]+)\.html$/.exec(window.location.pathname);
+    return m ? m[1] : "home";
+  }
+
+  /* ---------- capybara quips ----------
+     One per page — quirky on purpose. Lesson slugs and tool pages get a
+     topical quip; anything else falls back to the pool (picked by a
+     stable hash, so a given page always tells the same joke). */
+  var QUIPS = {
+    /* Stats 1 */
+    "what-is-statistics": "Capybaras don't fear data. They simply vibe with uncertainty. Be like capybara.",
+    "types-of-data": "A capybara is nominal, its chill level is ordinal, its bath temperature? Interval, bestie.",
+    "describing-data": "The average capybara is unbothered. The median capybara? Also unbothered. Skew who?",
+    "visualizing-data": "A capybara never lies with charts. It barely even moves with charts.",
+    "z-scores-and-the-normal-distribution": "A capybara 3 SDs above the mean chill is basically a warm rock with a heartbeat.",
+    "probability-basics": "50% of capybaras are napping. The other 50% are also napping. Probability!",
+    "sampling-distributions": "You can't meet every capybara. You sample a few and trust the vibes. That's inference.",
+    "central-limit-theorem": "Stack enough random capybara moods and you get a bell curve. Nature loves a bell.",
+    "confidence-intervals": "We're 95% confident the capybara is in the hot spring. The other 5%? Snack run.",
+    "hypothesis-testing-logic": "Null hypothesis: the capybara is unbothered. Honestly? Hard to reject.",
+    "one-sample-and-paired-t-tests": "Same capybara, before and after the spa — that's a paired design, bestie.",
+    "independent-samples-t-test": "Two unrelated capybara squads, one pool. It's giving independent samples.",
+    "effect-size-and-power": "The capybara's chill isn't just significant. The effect size is massive.",
+    /* Stats 2 */
+    "one-way-anova": "Three capybara herds walk into a pool. ANOVA asks: same vibe, or nah?",
+    "post-hoc-tests": "Run 20 comparisons and something turns 'significant'. Even the capybara is suspicious.",
+    "factorial-anova-two-way": "Warm water × good snacks — capybaras discovered interaction effects first.",
+    "repeated-measures-anova": "Measure the same capybara three times. It won't mind. It literally cannot mind.",
+    "assumptions-and-when-they-break": "Assumptions are pool floaties: nobody checks them until someone sinks.",
+    "non-parametric-alternatives": "Weird data? Rank it. Capybaras don't judge distributions either.",
+    "chi-square-tests": "Counting capybaras by category since 1900. Pearson would have loved a hot spring.",
+    "correlation": "Snacks up, chill up. Correlated? Sure. Causal? The capybara declines to comment.",
+    "simple-linear-regression": "Drawing one straight line through pure chaos and calling it a model. Iconic.",
+    "regression-diagnostics": "Even capybaras check the mirror. Residual plots are your model's mirror.",
+    /* Stats 3 */
+    "multiple-regression": "One predictor is a snack. Five predictors is a buffet. Pace yourself, bestie.",
+    "multicollinearity-and-variable-selection": "Two predictors in the same trench coat? That's multicollinearity, babes.",
+    "categorical-predictors-and-dummy-coding": "Dummy coding is not an insult. It's just capybara = 1, not-capybara = 0.",
+    "ancova": "ANCOVA is just ANOVA that remembered to control for the vibes.",
+    "interactions-in-regression": "Sometimes the effect of snacks depends on the pool. That's an interaction. Keep up.",
+    "mediation-and-indirect-effects": "Snacks → serenity → chill. The capybara understood mediation all along.",
+    "logistic-regression": "Will the capybara enter the pool? Yes / no. Logistic regression was born for this.",
+    "assumptions-of-regression": "A capybara never assumes. It checks the residual plots first.",
+    "model-comparison": "Two models enter, one AIC leaves. The capybara bets on the simpler one.",
+    "factor-analysis-pca": "43 personality questions, one latent trait: chill. PCA knew it all along.",
+    "manova": "Why vibe-check one outcome when you can vibe-check four at once? MANOVA energy.",
+    "power-analysis-for-complex-designs": "The capybara saw the effect clearly. Your n = 12 did not.",
+    /* Stats 4 */
+    "bootstrap-and-resampling": "Resample your own data 10,000 times. Capybaras call this self-care.",
+    "bayesian-thinking": "The capybara had priors about you. It updated them. That's growth.",
+    "bayesian-estimation": "The 95% credible interval: where the capybara actually believes the truth naps.",
+    "generalized-linear-models": "Not every relationship is a straight line. The capybara respects that.",
+    "mixed-and-multilevel-models": "Capybaras nested in herds nested in hot springs. Multilevel living.",
+    "cross-validation-and-overfitting": "Memorizing the training data is not learning. Even capybaras generalize.",
+    "causal-dags-and-confounding": "The pool didn't cause the chill. The capybara confounds us all.",
+    "survival-analysis": "How long until the capybara leaves the spa? Right-censored. It never left.",
+    "missing-data": "The missing capybaras were not missing at random. They found a better pond.",
+    "meta-analysis": "One study is an anecdote. Twenty studies is a forest plot full of capybaras.",
+    /* Root pages */
+    "home": "No rush — capybaras never cram.",
+    "which-test": "Lost? The capybara also can't pick a pool. That's literally why this page exists.",
+    "tables": "Capybaras have memorized exactly zero critical values. That's what this page is for.",
+    "formulas": "Print it, laminate it, take it into the bath. The capybara approves.",
+    "distributions": "Distributions are just personality types for data. Come meet the whole squad.",
+    "effect-sizes": "Statistically significant ≠ big. The capybara is significant AND big.",
+    "descriptives": "Paste your data. The capybara will not judge it. The capybara judges nothing.",
+    "quiz": "Test anxiety? Unknown to capybaras. Breathe in, breathe out, click an answer.",
+    "glossary": "Big words, small stress. The capybara defines, you vibe."
+  };
+  var QUIP_POOL = [
+    "Be the least stressed mammal in the room.",
+    "A capybara's p-value for panicking is always > .05.",
+    "Study tip from the capybara: hydrate, then estimate.",
+    "The capybara read the assumptions. The capybara is unbothered anyway.",
+    "Normality is a spectrum. Chill is a lifestyle.",
+    "Error bars? The capybara embraces uncertainty daily."
+  ];
+  function quipFor() {
+    var key = pageKey();
+    if (QUIPS[key]) return QUIPS[key];
+    var h = 0;
+    for (var i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
+    return QUIP_POOL[h % QUIP_POOL.length];
+  }
 
   /* ============================================================
      PROGRESS (localStorage)  —  { slug: { v: visitedTs, d: doneBool } }
@@ -73,25 +163,49 @@
     } catch (e) {}
   }
 
-  /* ---------- top nav ---------- */
+  /* ---------- top nav ----------
+     The learning tools live in a "Toolbox" dropdown so every page —
+     not just the homepage — can reach all of them. TOOLBOX is the
+     single source of truth; the homepage toolbox section reads it too. */
+  var TOOLBOX = [
+    { url: "which-test.html",    key: "which-test",    emoji: "🧭", title: "Which test should I use?", desc: "Answer a few questions, get the right test" },
+    { url: "tables.html",        key: "tables",        emoji: "🎛️", title: "Tables & calculators",     desc: "Exact z, t, χ² and F — no appendix flipping" },
+    { url: "distributions.html", key: "distributions", emoji: "🎢", title: "Distribution playground",  desc: "Poke 9 distributions and watch them wiggle" },
+    { url: "effect-sizes.html",  key: "effect-sizes",  emoji: "📏", title: "Effect-size converter",    desc: "d ↔ r ↔ η² — plus what they actually mean" },
+    { url: "descriptives.html",  key: "descriptives",  emoji: "🧮", title: "Descriptives calculator",  desc: "Paste data, get stats, a histogram & APA text" },
+    { url: "formulas.html",      key: "formulas",      emoji: "🖨️", title: "Formula sheet",            desc: "Every formula from the course, printable" },
+    { url: "glossary.html",      key: "glossary",      emoji: "📖", title: "Glossary",                 desc: "Every stats term, defined without the jargon" },
+    { url: "quiz.html",          key: "quiz",          emoji: "✅", title: "Quiz",                     desc: "Test yourself across all four courses" }
+  ];
   function renderNav() {
     var nav = document.getElementById("nav");
     if (!nav) return;
+    var page = pageKey();
+    var act = function (k) { return k === page ? " active" : ""; };
+    // lesson pages count as "Curriculum"
+    var curActive = (HERE || page === "home") ? " active" : "";
+    var toolboxActive = TOOLBOX.some(function (t) { return t.key === page; });
+    var toolboxItems = TOOLBOX.map(function (t) {
+      return '<a class="nav-drop-item' + act(t.key) + '" href="' + BASE + t.url + '">' +
+        '<span class="nd-emoji">' + t.emoji + '</span><span class="nd-text"><span class="nd-title">' + t.title + '</span><span class="nd-desc">' + t.desc + '</span></span></a>';
+    }).join("");
     nav.innerHTML =
       '<div class="nav-inner">' +
         '<a class="brand" href="' + (BASE || "./") + '" style="display:inline-flex;align-items:center;gap:.45rem">' + capy(28) + 'Stats<span class="dot">Capybara</span></a>' +
         '<nav class="nav-links" id="nav-links" aria-label="Primary">' +
-          '<a class="nav-link" href="' + BASE + '#curriculum">Curriculum</a>' +
-          '<a class="nav-link" href="' + BASE + 'which-test.html">Which test?</a>' +
-          '<a class="nav-link" href="' + BASE + 'tables.html">Tables</a>' +
-          '<a class="nav-link" href="' + BASE + 'formulas.html">Formulas</a>' +
-          '<a class="nav-link" href="' + BASE + 'quiz.html">Quiz</a>' +
-          '<a class="nav-link" href="' + BASE + 'glossary.html">Glossary</a>' +
-          '<a class="nav-link" href="' + BASE + '#about">About</a>' +
+          '<a class="nav-link' + curActive + '" href="' + (BASE || "./") + '#curriculum">Curriculum</a>' +
+          '<div class="nav-drop' + (toolboxActive ? " here" : "") + '" id="nav-drop">' +
+            '<button class="nav-link nav-drop-btn' + (toolboxActive ? " active" : "") + '" aria-expanded="false" aria-haspopup="true">Toolbox' +
+              '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>' +
+            '<div class="nav-drop-panel">' + toolboxItems + '</div>' +
+          '</div>' +
+          '<a class="nav-link' + act("quiz") + '" href="' + BASE + 'quiz.html">Quiz</a>' +
+          '<a class="nav-link' + act("glossary") + '" href="' + BASE + 'glossary.html">Glossary</a>' +
+          '<a class="nav-link" href="' + (BASE || "./") + '#about">About</a>' +
         '</nav>' +
         '<div class="nav-actions">' +
           '<a class="nav-kofi" href="https://ko-fi.com/M3E322A3ML" target="_blank" rel="noopener" title="Support StatsCapybara on Ko-fi">☕<span>Buy me a coffee</span></a>' +
-          '<button id="nav-search" class="icon-btn" aria-label="Search lessons (press /)">' + iconSearch() + '</button>' +
+          '<button id="nav-search" class="nav-search-btn" aria-label="Search lessons (press /)">' + iconSearch() + '<span class="ns-label">Search</span><kbd class="ns-kbd">/</kbd></button>' +
           '<button id="theme-toggle" class="icon-btn" aria-label="Toggle theme"></button>' +
           '<button id="nav-toggle" class="icon-btn nav-toggle" aria-label="Menu" aria-controls="nav-links" aria-expanded="false">' + iconMenu() + '</button>' +
         '</div>' +
@@ -102,6 +216,21 @@
     btn.addEventListener("click", function () { setTheme(currentTheme() === "dark" ? "light" : "dark"); });
 
     document.getElementById("nav-search").addEventListener("click", openSearch);
+
+    // Toolbox dropdown — click to toggle, click-away / Esc to close
+    var drop = document.getElementById("nav-drop");
+    var dropBtn = drop.querySelector(".nav-drop-btn");
+    dropBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var open = drop.classList.toggle("open");
+      dropBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    document.addEventListener("click", function (e) {
+      if (!drop.contains(e.target)) { drop.classList.remove("open"); dropBtn.setAttribute("aria-expanded", "false"); }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") { drop.classList.remove("open"); dropBtn.setAttribute("aria-expanded", "false"); }
+    });
 
     var tog = document.getElementById("nav-toggle");
     tog.addEventListener("click", function () {
@@ -152,6 +281,18 @@
           '<ul>' + items + '</ul>' +
         '</div>'
       );
+    }).join("");
+  }
+
+  /* ---------- homepage toolbox grid (reads TOOLBOX, same as the nav) ---------- */
+  function renderToolbox() {
+    var host = document.getElementById("toolbox-grid");
+    if (!host) return;
+    host.innerHTML = TOOLBOX.map(function (t) {
+      return '<a class="tool-card" href="' + BASE + t.url + '">' +
+        '<span class="tool-emoji" aria-hidden="true">' + t.emoji + '</span>' +
+        '<span class="tool-title">' + t.title + '</span>' +
+        '<span class="tool-desc">' + t.desc + '</span></a>';
     }).join("");
   }
 
@@ -206,7 +347,7 @@
         '<div class="sb-links">' + links + '</div>' +
       '</details>';
     }).join("");
-    html += '<div class="sb-capy">' + capy(30) + '<span>No rush — capybaras never cram.</span></div>';
+    html += '<div class="sb-capy">' + capy(34) + '<span>' + quipFor() + '</span></div>';
     host.innerHTML = '<div class="sidebar-sticky">' + html + '</div>';
   }
 
@@ -322,7 +463,7 @@
         } catch (e) {}
       });
       show();
-      var anchor = document.querySelector(".apa-report") || document.querySelector(".lesson-progress-head") || nav;
+      var anchor = document.querySelector(".lesson-progress-head") || nav;
       host.insertBefore(box, anchor);
     };
     document.body.appendChild(s);
@@ -331,7 +472,7 @@
   /* ---------- "Run it in SPSS / JASP" + "Write it up (APA 7)" ----------
      Data lives in assets/js/software.js, loaded lazily like the snippets.
      Final on-page order (whichever async script lands first):
-     checks → SPSS/JASP → R/Python → APA → progress head. */
+     checks → SPSS/JASP → APA → R/Python → progress head. */
   function renderSoftware() {
     if (!HERE) return;
     var s = document.createElement("script");
@@ -364,7 +505,7 @@
           });
         });
         showSteps();
-        var anchor1 = host.querySelector(".try-code") || document.querySelector(".apa-report") || document.querySelector(".lesson-progress-head") || nav;
+        var anchor1 = document.querySelector(".apa-report") || host.querySelector(".try-code") || document.querySelector(".lesson-progress-head") || nav;
         host.insertBefore(box, anchor1);
       }
 
@@ -377,7 +518,7 @@
           '<p class="apa-label">Example results paragraph:</p>' +
           '<blockquote class="apa-quote">' + sw.apa + '</blockquote>' +
           (sw.tips && sw.tips.length ? '<ul class="apa-tips">' + sw.tips.map(function (t) { return "<li>" + t + "</li>"; }).join("") + "</ul>" : "");
-        var anchor2 = document.querySelector(".lesson-progress-head") || nav;
+        var anchor2 = host.querySelector(".try-code") || document.querySelector(".lesson-progress-head") || nav;
         host.insertBefore(apa, anchor2);
       }
     };
@@ -399,13 +540,18 @@
       var nav = document.getElementById("lesson-nav");
       var host = nav ? nav.parentNode : document.querySelector(".lesson");
       if (!host) return;
-      var box = document.createElement("section");
+      /* a <details> so starting the questions is the student's choice,
+         not something the page imposes */
+      var box = document.createElement("details");
       box.className = "checks";
       box.setAttribute("aria-label", "Check your understanding");
       var answered = 0, correct = 0;
-      var head = document.createElement("div");
+      var head = document.createElement("summary");
       head.className = "ck-head";
-      head.innerHTML = '<span class="ck-title">🧠 Check your understanding</span><span class="ck-score" aria-live="polite"></span>';
+      head.innerHTML = '<span class="ck-title">🧠 Do you want to check your understanding?</span>' +
+        '<span class="ck-score" aria-live="polite"></span>' +
+        '<span class="ck-cta" aria-hidden="true"><span class="ck-open-label">' + qs.length + ' quick questions</span>' +
+        '<svg class="chev" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>';
       box.appendChild(head);
       var scoreEl = head.querySelector(".ck-score");
       var prev = loadCheckScores()[HERE];
@@ -462,9 +608,9 @@
         card.appendChild(fb);
         box.appendChild(card);
       });
-      // keep the order: prose → checks → SPSS/JASP → try-code → APA → progress head
-      var anchor = document.querySelector(".software") || host.querySelector(".try-code") ||
-                   document.querySelector(".apa-report") || document.querySelector(".lesson-progress-head") || nav;
+      // keep the order: prose → checks → SPSS/JASP → APA → try-code → progress head
+      var anchor = document.querySelector(".software") || document.querySelector(".apa-report") ||
+                   host.querySelector(".try-code") || document.querySelector(".lesson-progress-head") || nav;
       host.insertBefore(box, anchor);
     };
     document.body.appendChild(s);
@@ -534,6 +680,8 @@
     { title: "Statistical Tables & Calculators", url: "tables.html", tag: "Tool", kw: "z t chi-square f critical value p-value calculator table" },
     { title: "Statistics Formula Sheet", url: "formulas.html", tag: "Reference", kw: "formula cheat sheet equations print reference" },
     { title: "Distribution Playground", url: "distributions.html", tag: "Tool", kw: "normal binomial poisson beta exponential uniform pdf explore distribution" },
+    { title: "Effect-Size Converter", url: "effect-sizes.html", tag: "Tool", kw: "cohen d r eta squared odds ratio convert effect size overlap benchmark" },
+    { title: "Descriptives Calculator", url: "descriptives.html", tag: "Tool", kw: "mean sd median iqr descriptive statistics calculator paste data histogram boxplot outliers apa" },
     { title: "Course Quiz", url: "quiz.html", tag: "Practice", kw: "test yourself questions practice" },
     { title: "Statistics Glossary", url: "glossary.html", tag: "Reference", kw: "terms definitions dictionary" }
   ];
@@ -641,6 +789,21 @@
     if (first) first.innerHTML = '<span class="footer-capy" aria-hidden="true">' + capy(22) + '</span>' + first.innerHTML;
   }
 
+  /* the page's capybara quip, in the footer of every page (the sidebar
+     box shows it too on desktop lessons; the footer covers mobile and
+     the root pages) */
+  function renderFooterQuip() {
+    var c = document.querySelector(".footer .container");
+    if (!c || c.querySelector(".footer-quip")) return;
+    var spans = c.querySelectorAll(":scope > span");
+    var tag = spans[spans.length - 1];
+    var q = document.createElement("span");
+    q.className = "footer-quip";
+    q.textContent = "“" + quipFor() + "”";
+    if (tag && /visual learners/i.test(tag.textContent)) c.replaceChild(q, tag);
+    else c.appendChild(q);
+  }
+
   /* ============================================================
      ACCESSIBILITY + HEAD extras (injected once, so all 40 pages
      get them without editing every file)
@@ -688,6 +851,7 @@
     injectA11y();
     renderNav();
     renderCurriculum();
+    renderToolbox();
     renderResume();
     renderSidebar();
     renderLessonNav();
@@ -698,6 +862,7 @@
     renderSoftware();
     renderKofi();
     renderFooterCapy();
+    renderFooterQuip();
     wireSearchShortcuts();
     wireLessonKeys();
     // ?q=… deep link (also the target of the sitewide SearchAction schema)

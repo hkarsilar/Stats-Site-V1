@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Descriptive Statistics Calculator — Paste Data, Get Stats + APA Text — StatsCapybara</title>
+  <meta name="description" content="Paste your data and instantly get n, mean, SD, median, quartiles, a 95% confidence interval, skewness, outlier flags, a histogram and boxplot — plus a ready-to-copy APA-style sentence." />
+  <link rel="canonical" href="https://statscapybara.com/descriptives.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Descriptive Statistics Calculator — StatsCapybara" />
+  <meta property="og:description" content="Paste your data: mean, SD, median, CI, skewness, outliers, histogram, boxplot, and an APA-ready sentence — all in your browser." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/descriptives.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Descriptive Statistics Calculator — StatsCapybara" />
+  <meta name="twitter:description" content="Paste your data: mean, SD, median, CI, skewness, outliers, histogram, boxplot, and an APA-ready sentence." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body>
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="container narrow">
+      <article class="lesson" style="margin:0 auto">
+        <span class="lesson-eyebrow">Tools</span>
+        <h1>Descriptives Calculator</h1>
+        <p class="lede">Paste numbers, get the full descriptive rundown — mean, SD, median, quartiles, confidence interval, skewness, outlier flags, and a picture. Nothing leaves your browser, and the APA-style summary sentence writes itself.</p>
+
+        <div class="viz" id="dcviz">
+          <div class="controls" style="align-items:stretch">
+            <div class="control" style="flex:1;min-width:260px">
+              <label for="dc-input">Your data — numbers separated by spaces, commas, or new lines (decimal point, not comma)</label>
+              <textarea id="dc-input" rows="4" spellcheck="false" style="font-family:var(--mono);font-size:.85rem;padding:.6rem .7rem;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);resize:vertical" placeholder="e.g.  512 486 530 601 478 495 512 549 507 462"></textarea>
+            </div>
+          </div>
+          <div class="controls" style="margin:-.25rem 0 1rem">
+            <div class="control" style="flex-direction:row;align-items:center;gap:.6rem">
+              <button class="btn btn-primary btn-sm" id="dc-go">Calculate</button>
+              <button class="btn btn-ghost btn-sm" id="dc-demo">Load example data</button>
+              <span id="dc-msg" style="font-size:.84rem;color:var(--text-faint)"></span>
+            </div>
+          </div>
+
+          <canvas id="dc-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">n</span><span class="v" id="s-n">—</span></div>
+            <div class="stat"><span class="k">Mean</span><span class="v" id="s-mean">—</span></div>
+            <div class="stat"><span class="k">SD (sample)</span><span class="v" id="s-sd">—</span></div>
+            <div class="stat"><span class="k">SE</span><span class="v" id="s-se">—</span></div>
+            <div class="stat"><span class="k">95% CI of the mean</span><span class="v" id="s-ci">—</span></div>
+          </div>
+          <div class="stat-row">
+            <div class="stat"><span class="k">Median</span><span class="v" id="s-med">—</span></div>
+            <div class="stat"><span class="k">Q1 – Q3 (IQR)</span><span class="v" id="s-iqr">—</span></div>
+            <div class="stat"><span class="k">Min – Max</span><span class="v" id="s-range">—</span></div>
+            <div class="stat"><span class="k">Skewness</span><span class="v" id="s-skew">—</span></div>
+            <div class="stat"><span class="k">Outliers (1.5×IQR rule)</span><span class="v" id="s-out" style="font-size:.95rem">—</span></div>
+          </div>
+
+          <div id="dc-apa-wrap" style="display:none;margin-top:1rem">
+            <div class="sw-head" style="border:1px solid var(--border);border-radius:12px 12px 0 0"><span class="sw-title">📝 APA-style summary</span>
+              <button class="tc-copy" type="button" id="dc-copy">Copy</button></div>
+            <blockquote class="apa-quote" style="margin:0;border:1px solid var(--border);border-top:none;border-left:3px solid #f97316;border-radius:0 0 12px 12px" id="dc-apa"></blockquote>
+          </div>
+        </div>
+
+        <h2>What to check before you trust the mean</h2>
+        <ul>
+          <li><strong>Skewness far from 0?</strong> The mean is being dragged toward the tail — report the median too. (<a href="stats-1/describing-data/">Describing Data</a>)</li>
+          <li><strong>Outliers flagged?</strong> Don't delete them by reflex; find out what they are first. One typo can move a mean more than ten honest values. (<a href="stats-2/assumptions-and-when-they-break/">Assumptions &amp; When They Break</a>)</li>
+          <li><strong>Small n?</strong> The 95% CI here uses the t-distribution, so it's honest about small samples — but no formula fixes n = 5. (<a href="stats-1/confidence-intervals/">Confidence Intervals</a>)</li>
+        </ul>
+
+        <div class="callout key">
+          <p><strong>Privacy note:</strong> everything on this page runs locally in your browser — your data is never uploaded anywhere. Paste away.</p>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="assets/js/curriculum.js"></script>
+  <script src="assets/js/site.js"></script>
+  <script src="assets/js/viz.js"></script>
+
+  <!-- ============ descriptives calculator ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var canvas = document.getElementById("dc-canvas"), ctx, W = 0, H = 250;
+    var data = [];
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+
+    function parse(txt) {
+      return txt.split(/[,;\s]+/).map(parseFloat).filter(isFinite);
+    }
+    /* quantile, linear interpolation (R's default type 7) */
+    function q(sorted, p) {
+      var h = (sorted.length - 1) * p, lo = Math.floor(h);
+      return sorted[lo] + (h - lo) * (sorted[Math.min(lo + 1, sorted.length - 1)] - sorted[lo]);
+    }
+    function stats() {
+      var n = data.length, m = VIZ.mean(data);
+      var sd = VIZ.sd(data) * Math.sqrt(n / Math.max(1, n - 1));       // sample SD
+      var s = data.slice().sort(function (a, b) { return a - b; });
+      var med = q(s, 0.5), q1 = q(s, 0.25), q3 = q(s, 0.75), iqr = q3 - q1;
+      var se = sd / Math.sqrt(n);
+      var tcrit = n > 1 ? VIZ.tInv(0.025, n - 1) : NaN;
+      var g1 = 0;
+      if (n > 2 && sd > 0) {
+        var m3 = 0;
+        data.forEach(function (v) { m3 += Math.pow(v - m, 3); });
+        m3 /= n;
+        var popSD = VIZ.sd(data);
+        g1 = (m3 / Math.pow(popSD, 3)) * Math.sqrt(n * (n - 1)) / (n - 2);
+      }
+      var lo = q1 - 1.5 * iqr, hi = q3 + 1.5 * iqr;
+      var outliers = data.filter(function (v) { return v < lo || v > hi; });
+      return { n: n, mean: m, sd: sd, se: se, med: med, q1: q1, q3: q3, iqr: iqr,
+               min: s[0], max: s[n - 1], skew: g1, tcrit: tcrit,
+               fenceLo: lo, fenceHi: hi, outliers: outliers, sorted: s };
+    }
+
+    /* significant-digit formatter: keeps 4 significant figures, trims noise */
+    function f(v) {
+      if (!isFinite(v)) return "—";
+      var a = Math.abs(v);
+      var dp = a >= 1000 ? 0 : a >= 100 ? 1 : a >= 1 ? 2 : 3;
+      return v.toFixed(dp);
+    }
+
+    function draw(st) {
+      ctx.clearRect(0, 0, W, H);
+      if (!st) {
+        ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "600 13px Inter,sans-serif"; ctx.textAlign = "center";
+        ctx.fillText("Paste some numbers above and press Calculate — the capybara is ready.", W / 2, H / 2);
+        return;
+      }
+      var pad = 34, span = st.max - st.min || 1;
+      var LO = st.min - span * 0.06, HI = st.max + span * 0.06;
+      function vx(v) { return pad + ((v - LO) / (HI - LO)) * (W - pad - 14); }
+      /* histogram (top) */
+      var histBase = H - 92, histTop = 12;
+      var bins = Math.max(6, Math.min(30, Math.ceil(Math.sqrt(st.n) * 1.5)));
+      var counts = new Array(bins).fill(0), bw = (HI - LO) / bins;
+      data.forEach(function (v) {
+        var b = Math.min(bins - 1, Math.floor((v - LO) / bw));
+        counts[b]++;
+      });
+      var maxC = Math.max.apply(null, counts) || 1;
+      ctx.fillStyle = VIZ.css("--primary"); ctx.globalAlpha = 0.75;
+      for (var i = 0; i < bins; i++) {
+        if (!counts[i]) continue;
+        var x0 = vx(LO + i * bw), x1 = vx(LO + (i + 1) * bw);
+        var bh = (counts[i] / maxC) * (histBase - histTop);
+        ctx.fillRect(x0 + 0.5, histBase - bh, Math.max(1, x1 - x0 - 1), bh);
+      }
+      ctx.globalAlpha = 1;
+      // baseline + mean/median markers
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(pad, histBase + 0.5); ctx.lineTo(W - 14, histBase + 0.5); ctx.stroke();
+      ctx.setLineDash([4, 3]); ctx.lineWidth = 2;
+      ctx.strokeStyle = "#f97316"; ctx.beginPath(); ctx.moveTo(vx(st.mean), histTop); ctx.lineTo(vx(st.mean), histBase); ctx.stroke();
+      ctx.strokeStyle = VIZ.css("--secondary"); ctx.beginPath(); ctx.moveTo(vx(st.med), histTop); ctx.lineTo(vx(st.med), histBase); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.font = "600 11px Inter,sans-serif"; ctx.textAlign = "left";
+      ctx.fillStyle = "#f97316"; ctx.fillText("mean", Math.min(vx(st.mean) + 5, W - 48), histTop + 10);
+      ctx.fillStyle = VIZ.css("--secondary"); ctx.fillText("median", Math.min(vx(st.med) + 5, W - 54), histTop + 24);
+
+      /* boxplot (bottom) */
+      var by = H - 52, bh2 = 26;
+      ctx.strokeStyle = VIZ.css("--text-muted"); ctx.lineWidth = 1.5;
+      var wLo = Math.max(st.min, st.fenceLo), wHi = Math.min(st.max, st.fenceHi);
+      // whiskers
+      ctx.beginPath();
+      ctx.moveTo(vx(wLo), by + bh2 / 2); ctx.lineTo(vx(st.q1), by + bh2 / 2);
+      ctx.moveTo(vx(st.q3), by + bh2 / 2); ctx.lineTo(vx(wHi), by + bh2 / 2);
+      ctx.moveTo(vx(wLo), by + 5); ctx.lineTo(vx(wLo), by + bh2 - 5);
+      ctx.moveTo(vx(wHi), by + 5); ctx.lineTo(vx(wHi), by + bh2 - 5);
+      ctx.stroke();
+      // box
+      ctx.fillStyle = VIZ.css("--surface-2");
+      ctx.strokeStyle = VIZ.css("--text-muted");
+      ctx.fillRect(vx(st.q1), by, vx(st.q3) - vx(st.q1), bh2);
+      ctx.strokeRect(vx(st.q1), by, vx(st.q3) - vx(st.q1), bh2);
+      // median line
+      ctx.strokeStyle = VIZ.css("--secondary"); ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(vx(st.med), by); ctx.lineTo(vx(st.med), by + bh2); ctx.stroke();
+      // outlier dots
+      ctx.fillStyle = "#ef4444";
+      st.outliers.forEach(function (v) { ctx.beginPath(); ctx.arc(vx(v), by + bh2 / 2, 3.5, 0, 2 * Math.PI); ctx.fill(); });
+      // axis labels
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center";
+      [LO, (LO + HI) / 2, HI].forEach(function (t) { ctx.fillText(f(t), vx(t), H - 6); });
+    }
+
+    function update() {
+      data = parse(document.getElementById("dc-input").value);
+      var msg = document.getElementById("dc-msg");
+      if (data.length < 2) {
+        msg.textContent = data.length === 1 ? "One number is a fact, not a dataset — give me at least 2." : "";
+        draw(null);
+        ["s-n","s-mean","s-sd","s-se","s-ci","s-med","s-iqr","s-range","s-skew","s-out"].forEach(function (id) {
+          document.getElementById(id).textContent = "—";
+        });
+        document.getElementById("dc-apa-wrap").style.display = "none";
+        return;
+      }
+      var st = stats();
+      msg.textContent = "parsed " + st.n + " values ✓";
+      document.getElementById("s-n").textContent = st.n;
+      document.getElementById("s-mean").textContent = f(st.mean);
+      document.getElementById("s-sd").textContent = f(st.sd);
+      document.getElementById("s-se").textContent = f(st.se);
+      var ciLo = st.mean - st.tcrit * st.se, ciHi = st.mean + st.tcrit * st.se;
+      document.getElementById("s-ci").textContent = "[" + f(ciLo) + ", " + f(ciHi) + "]";
+      document.getElementById("s-med").textContent = f(st.med);
+      document.getElementById("s-iqr").textContent = f(st.q1) + " – " + f(st.q3);
+      document.getElementById("s-range").textContent = f(st.min) + " – " + f(st.max);
+      document.getElementById("s-skew").textContent = st.n > 2 ? f(st.skew) : "—";
+      var outEl = document.getElementById("s-out");
+      outEl.textContent = st.outliers.length ? st.outliers.map(f).join(", ") : "none";
+      outEl.style.color = st.outliers.length ? "#ef4444" : "#22c55e";
+      var apa = "Scores (N = " + st.n + ") averaged " + f(st.mean) + " (SD = " + f(st.sd) +
+        "), 95% CI [" + f(ciLo) + ", " + f(ciHi) + "], with a median of " + f(st.med) +
+        " (IQR = " + f(st.q1) + "–" + f(st.q3) + ") and a range of " + f(st.min) + "–" + f(st.max) + ".";
+      document.getElementById("dc-apa").innerHTML = "<p>" + apa.replace(/N = /g, "<em>N</em> = ").replace(/SD = /, "<em>SD</em> = ") + "</p>";
+      document.getElementById("dc-apa-wrap").style.display = "";
+      draw(st);
+    }
+
+    document.getElementById("dc-go").addEventListener("click", update);
+    document.getElementById("dc-input").addEventListener("input", function () {
+      // live update once there's clearly data being typed/pasted
+      if (parse(this.value).length >= 2) update();
+    });
+    document.getElementById("dc-demo").addEventListener("click", function () {
+      // right-skewed reaction times with one outlier — realistic and instructive
+      document.getElementById("dc-input").value =
+        "512 486 530 601 478 495 512 549 507 462 533 519 470 588 501 476 543 498 662 489 524 481 506 950";
+      update();
+    });
+    document.getElementById("dc-copy").addEventListener("click", function () {
+      var btn = this;
+      try {
+        navigator.clipboard.writeText(document.getElementById("dc-apa").textContent.trim()).then(function () {
+          btn.textContent = "Copied!";
+          setTimeout(function () { btn.textContent = "Copy"; }, 1200);
+        });
+      } catch (e) {}
+    });
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(update);
+    fit(); update();
+  })();
+  </script>
+</body>
+</html>

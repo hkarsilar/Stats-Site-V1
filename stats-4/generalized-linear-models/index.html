@@ -118,29 +118,51 @@
   (function () {
     "use strict";
     var XMAX = 10;
+    /* deterministic Poisson draw from a frozen uniform u (inverse CDF);
+       falls back to a normal approximation for large rates so extreme
+       slider positions can never hang the page */
+    function poissonInv(u, L, z) {
+      if (!isFinite(L) || L > 30) return Math.max(0, Math.round(L + Math.sqrt(L) * z));
+      var k = 0, p = Math.exp(-L), cdf = p;
+      while (u > cdf && k < 400) { k++; p *= L / k; cdf += p; }
+      return k;
+    }
     var FAM = {
-      linear:   { link: "Gaussian · identity link", b0: { min: 0, max: 40, step: 1, val: 10 }, b1: { min: -4, max: 8, step: 0.2, val: 4 }, ylo: 0, yhi: 60,
+      linear:   { link: "Gaussian · identity link", b0: { min: -30, max: 40, step: 1, val: 10 }, b1: { min: -4, max: 12, step: 0.2, val: 4 }, ylo: 0, yhi: 60,
                   inv: function (e) { return e; }, slope: function (b1) { return "adds " + b1.toFixed(1) + " to the mean"; },
-                  gen: function (x, b0, b1) { return b0 + b1 * x + VIZ.gauss(0, 4); } },
+                  gen: function (x, b0, b1, u, z) { return b0 + b1 * x + 4 * z; } },
       logistic: { link: "Binomial · logit link", b0: { min: -12, max: 12, step: 0.5, val: -5 }, b1: { min: -3, max: 3, step: 0.1, val: 1 }, ylo: -0.15, yhi: 1.15,
                   inv: function (e) { return 1 / (1 + Math.exp(-e)); }, slope: function (b1) { return "multiplies the odds by " + Math.exp(b1).toFixed(2); },
-                  gen: function (x, b0, b1) { return Math.random() < 1 / (1 + Math.exp(-(b0 + b1 * x))) ? 1 : 0; } },
+                  gen: function (x, b0, b1, u, z) { return u < 1 / (1 + Math.exp(-(b0 + b1 * x))) ? 1 : 0; } },
       poisson:  { link: "Poisson · log link", b0: { min: -2, max: 3.5, step: 0.1, val: 0.2 }, b1: { min: -0.6, max: 0.6, step: 0.02, val: 0.28 }, ylo: 0, yhi: 26,
                   inv: function (e) { return Math.exp(e); }, slope: function (b1) { return "multiplies the mean count by " + Math.exp(b1).toFixed(2); },
-                  gen: function (x, b0, b1) { var L = Math.exp(b0 + b1 * x), k = 0, p = 1; do { k++; p *= Math.random(); } while (p > Math.exp(-L)); return k - 1; } }
+                  gen: function (x, b0, b1, u, z) { return poissonInv(u, Math.exp(b0 + b1 * x), z); } }
     };
     var fam = "logistic", data = [];
     var canvas = document.getElementById("glm-canvas"), ctx, W = 0, H = 250, pad = 30;
     var b0in = document.getElementById("b0-range"), b1in = document.getElementById("b1-range");
+
+    /* Frozen noise: fixed x positions + one uniform and one normal draw per
+       point, so the sliders morph the SAME sample instead of rerolling it */
+    var N = 32, xs = [], us = [], zs = [];
+    function seed() {
+      xs = []; us = []; zs = [];
+      for (var i = 0; i < N; i++) { xs.push(Math.random() * XMAX); us.push(Math.random()); zs.push(VIZ.randn()); }
+    }
+    function rebuild() {
+      var F = FAM[fam], b0 = +b0in.value, b1 = +b1in.value;
+      data = [];
+      for (var i = 0; i < N; i++) data.push({ x: xs[i], y: F.gen(xs[i], b0, b1, us[i], zs[i]) });
+      update();
+    }
 
     function cfgSlider(input, c) { input.min = c.min; input.max = c.max; input.step = c.step; input.value = c.val; }
     function setFamily(f) {
       fam = f; var F = FAM[f];
       Array.prototype.forEach.call(document.querySelectorAll("#fam-seg button"), function (b) { b.classList.toggle("active", b.dataset.fam === f); });
       cfgSlider(b0in, F.b0); cfgSlider(b1in, F.b1);
-      gen();
+      rebuild();
     }
-    function gen() { var F = FAM[fam]; data = []; for (var i = 0; i < 32; i++) { var x = Math.random() * XMAX; data.push({ x: x, y: F.gen(x, F.b0.val, F.b1.val) }); } update(); }
 
     function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
     function vx(x) { return pad + (x / XMAX) * (W - 2 * pad); }
@@ -148,6 +170,13 @@
 
     function update() {
       var F = FAM[fam], b0 = +b0in.value, b1 = +b1in.value;
+      if (fam === "linear") {
+        // stretch the y-axis to the line, so a low intercept or steep slope
+        // never runs out of the picture
+        var yEnd = b0 + b1 * XMAX;
+        F.ylo = Math.min(0, b0, yEnd) - 14;
+        F.yhi = Math.max(60, b0, yEnd) + 14;
+      }
       ctx.clearRect(0, 0, W, H);
       ctx.strokeStyle = VIZ.css("--border"); ctx.strokeRect(pad, pad, W - 2 * pad, H - 2 * pad);
       ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px Inter,sans-serif"; ctx.textAlign = "center"; ctx.fillText("x →", W / 2, H - 6);
@@ -159,7 +188,7 @@
       ctx.globalAlpha = 1;
       // mean curve
       ctx.save(); ctx.beginPath(); ctx.rect(pad, pad, W - 2 * pad, H - 2 * pad); ctx.clip();
-      ctx.strokeStyle = "#8b5cf6"; ctx.lineWidth = 3; ctx.beginPath();
+      ctx.strokeStyle = "#ec4899"; ctx.lineWidth = 3; ctx.beginPath();
       for (var px = 0; px <= W; px += 2) { var x = (px - pad) / (W - 2 * pad) * XMAX; var mu = F.inv(b0 + b1 * x); var y = vy(mu, F); if (px === 0) ctx.moveTo(px, y); else ctx.lineTo(px, y); }
       ctx.stroke(); ctx.restore();
 
@@ -170,11 +199,11 @@
     }
 
     document.getElementById("fam-seg").addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) setFamily(b.dataset.fam); });
-    document.getElementById("resample").addEventListener("click", gen);
-    b0in.addEventListener("input", update); b1in.addEventListener("input", update);
+    document.getElementById("resample").addEventListener("click", function () { seed(); rebuild(); });
+    b0in.addEventListener("input", rebuild); b1in.addEventListener("input", rebuild);
     window.addEventListener("resize", function () { fit(); update(); });
     VIZ.onTheme(update);
-    fit(); setFamily("logistic");
+    fit(); seed(); setFamily("logistic");
   })();
   </script>
 </body>

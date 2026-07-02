@@ -141,10 +141,16 @@
 
     function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
     function shadeRegion(from, to, scale, baseY) {
+      // guard the empty region (slider at the very edge), and walk a fixed
+      // number of steps — a computed step of 0 would loop forever
+      if (!(to > from)) return;
+      var steps = 80;
       ctx.beginPath();
-      var x0 = vx(from);
-      ctx.moveTo(x0, baseY);
-      for (var v = from; v <= to; v += (to - from) / 80) ctx.lineTo(vx(v), baseY - pdf(v) * scale);
+      ctx.moveTo(vx(from), baseY);
+      for (var i = 0; i <= steps; i++) {
+        var v = from + ((to - from) * i) / steps;
+        ctx.lineTo(vx(v), baseY - pdf(v) * scale);
+      }
       ctx.lineTo(vx(to), baseY); ctx.closePath(); ctx.fill();
     }
     function draw() {

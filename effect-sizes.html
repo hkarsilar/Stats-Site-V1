@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Effect-Size Converter — d, r, η², Odds Ratio, and What They Mean — StatsCapybara</title>
+  <meta name="description" content="Convert between Cohen's d, correlation r, eta-squared, Cohen's f, and odds ratios — and see what each value really means: overlap between groups, probability of superiority, and the sample size you'd need." />
+  <link rel="canonical" href="https://statscapybara.com/effect-sizes.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Effect-Size Converter — StatsCapybara" />
+  <meta property="og:description" content="Convert between Cohen's d, r, η², f, and odds ratios — with a live picture of what the effect actually looks like." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/effect-sizes.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Effect-Size Converter — StatsCapybara" />
+  <meta name="twitter:description" content="Convert between Cohen's d, r, η², f, and odds ratios — with a live picture of what the effect actually looks like." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body>
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="container narrow">
+      <article class="lesson" style="margin:0 auto">
+        <span class="lesson-eyebrow">Tools</span>
+        <h1>Effect-Size Converter</h1>
+        <p class="lede">Papers report effects in different currencies — Cohen's <em>d</em> here, <em>r</em> there, η² in the ANOVA table, odds ratios in the medical journals. Type any one of them and get all the others — plus the thing benchmarks can't give you: a picture of what that effect actually looks like.</p>
+
+        <div class="viz" id="esviz">
+          <div class="controls">
+            <div class="control">
+              <label>I have…</label>
+              <div class="seg" id="measure-seg">
+                <button data-m="d" class="active">Cohen's d</button>
+                <button data-m="r">r</button>
+                <button data-m="eta">η²</button>
+                <button data-m="or">Odds ratio</button>
+              </div>
+            </div>
+            <div class="control">
+              <label id="val-label">Value</label>
+              <input class="num" id="val-num" type="number" step="0.01" value="0.50" />
+            </div>
+            <div class="control" style="flex:1;min-width:220px">
+              <label>…or drag it <span class="val" id="val-echo">0.50</span></label>
+              <input type="range" id="val-range" min="-200" max="200" step="1" value="50" style="width:100%" />
+            </div>
+          </div>
+
+          <canvas id="es-canvas"></canvas>
+          <p class="viz-sub" id="es-verdict" style="margin:.6rem 0 0;font-size:.95rem"></p>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Cohen's d</span><span class="v" id="o-d">—</span></div>
+            <div class="stat"><span class="k">r</span><span class="v" id="o-r">—</span></div>
+            <div class="stat"><span class="k">η² (= r²)</span><span class="v" id="o-eta">—</span></div>
+            <div class="stat"><span class="k">Cohen's f</span><span class="v" id="o-f">—</span></div>
+            <div class="stat"><span class="k">Odds ratio ≈</span><span class="v" id="o-or">—</span></div>
+          </div>
+          <div class="stat-row">
+            <div class="stat"><span class="k">Distribution overlap</span><span class="v" id="o-ovl">—</span></div>
+            <div class="stat"><span class="k">U₃ — treated above control mean</span><span class="v" id="o-u3">—</span></div>
+            <div class="stat"><span class="k">P(random treated &gt; random control)</span><span class="v" id="o-cles">—</span></div>
+            <div class="stat"><span class="k">n/group for 80% power</span><span class="v" id="o-n80">—</span></div>
+          </div>
+        </div>
+
+        <h2>How to read the numbers</h2>
+        <ul>
+          <li><strong>Cohen's d</strong> — the group difference in standard-deviation units. The most portable currency for two-group comparisons.</li>
+          <li><strong>r / η²</strong> — effect as (squared) correlation: the share of outcome variance the effect explains. The d ↔ r conversion here assumes two equal-sized groups.</li>
+          <li><strong>Cohen's f</strong> — ANOVA's effect currency (what G*Power asks for); for two groups f = d/2.</li>
+          <li><strong>Odds ratio</strong> — the logistic world's currency. The conversion (d = ln OR × √3⁄π) is an approximation — treat it as a ballpark, not an identity.</li>
+          <li><strong>U₃ and P(superiority)</strong> — the plain-language versions: what fraction of the treatment group beats the control average, and how often a random treated person beats a random control person.</li>
+        </ul>
+
+        <table class="ref-table">
+          <thead><tr><th>Benchmark (Cohen, 1988)</th><th>d</th><th>r</th><th>η²</th></tr></thead>
+          <tbody>
+            <tr><td>Small</td><td>0.20</td><td>.10</td><td>.01</td></tr>
+            <tr><td>Medium</td><td>0.50</td><td>.24</td><td>.06</td></tr>
+            <tr><td>Large</td><td>0.80</td><td>.37</td><td>.14</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout key">
+          <p><strong>Benchmarks are a last resort.</strong> Cohen himself said so. A "small" d = 0.2 on mortality is enormous; a "large" d = 0.8 on a reaction-time task might be trivia. Compare an effect to others in its own literature — the numbers above are for when you have nothing else. The full story lives in the <a href="stats-1/effect-size-and-power/">Effect Size &amp; Power lesson</a>.</p>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="assets/js/curriculum.js"></script>
+  <script src="assets/js/site.js"></script>
+  <script src="assets/js/viz.js"></script>
+
+  <!-- ============ effect-size converter ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var measure = "d", d = 0.5;
+    var canvas = document.getElementById("es-canvas"), ctx, W = 0, H = 240, pad = 16;
+    var ORANGE = "#f97316";
+
+    /* slider range + numeric step per measure */
+    var CFG = {
+      d:   { min: -200, max: 200, scale: 100, step: 0.01, label: "Cohen's d" },
+      r:   { min: -95,  max: 95,  scale: 100, step: 0.01, label: "correlation r" },
+      eta: { min: 0,    max: 50,  scale: 100, step: 0.005, label: "eta-squared η²" },
+      or:  { min: 10,   max: 1000, scale: 100, step: 0.05, label: "odds ratio" }
+    };
+    /* measure value → d (two equal groups assumed for r/η²; OR via logit approx) */
+    function toD(m, v) {
+      if (m === "d") return v;
+      if (m === "r") { v = Math.max(-0.99, Math.min(0.99, v)); return 2 * v / Math.sqrt(1 - v * v); }
+      if (m === "eta") { v = Math.max(0, Math.min(0.9, v)); return 2 * Math.sqrt(v / (1 - v)); }
+      /* or */ v = Math.max(0.01, v); return Math.log(v) * Math.sqrt(3) / Math.PI;
+    }
+    function fromD(m) {
+      if (m === "d") return d;
+      var r = d / Math.sqrt(d * d + 4);
+      if (m === "r") return r;
+      if (m === "eta") return r * r;
+      return Math.exp(d * Math.PI / Math.sqrt(3));
+    }
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function draw() {
+      var LOX = Math.min(-3.6, d - 3.6), HIX = Math.max(3.6, d + 3.6);
+      function vx(v) { return pad + ((v - LOX) / (HIX - LOX)) * (W - 2 * pad); }
+      var baseY = H - 26, top = 30, scale = (baseY - top) / VIZ.normPdf(0, 0, 1);
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(pad, baseY); ctx.lineTo(W - pad, baseY); ctx.stroke();
+
+      // overlap region: min of the two densities
+      ctx.fillStyle = VIZ.css("--primary"); ctx.globalAlpha = 0.14;
+      ctx.beginPath(); ctx.moveTo(vx(LOX), baseY);
+      for (var i = 0; i <= 300; i++) {
+        var x = LOX + ((HIX - LOX) * i) / 300;
+        var y = Math.min(VIZ.normPdf(x, 0, 1), VIZ.normPdf(x, d, 1));
+        ctx.lineTo(vx(x), baseY - y * scale);
+      }
+      ctx.lineTo(vx(HIX), baseY); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
+
+      // the two curves
+      function curve(mu, color) {
+        ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.beginPath();
+        for (var j = 0; j <= 300; j++) {
+          var x = LOX + ((HIX - LOX) * j) / 300;
+          var y = baseY - VIZ.normPdf(x, mu, 1) * scale;
+          if (j === 0) ctx.moveTo(vx(x), y); else ctx.lineTo(vx(x), y);
+        }
+        ctx.stroke();
+      }
+      curve(0, VIZ.css("--primary")); curve(d, ORANGE);
+      // mean markers + labels
+      ctx.setLineDash([4, 3]); ctx.lineWidth = 1.5;
+      ctx.strokeStyle = VIZ.css("--primary"); ctx.beginPath(); ctx.moveTo(vx(0), baseY); ctx.lineTo(vx(0), top); ctx.stroke();
+      ctx.strokeStyle = ORANGE; ctx.beginPath(); ctx.moveTo(vx(d), baseY); ctx.lineTo(vx(d), top); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.font = "600 11px Inter,sans-serif"; ctx.textAlign = "center";
+      ctx.fillStyle = VIZ.css("--primary"); ctx.fillText("control", vx(0), H - 8);
+      ctx.fillStyle = ORANGE; ctx.fillText("treatment", vx(d), H - 8);
+      // d bracket
+      if (Math.abs(d) > 0.04) {
+        ctx.strokeStyle = VIZ.css("--text-faint"); ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(vx(0), top - 8); ctx.lineTo(vx(d), top - 8); ctx.stroke();
+        ctx.fillStyle = VIZ.css("--text-faint");
+        ctx.fillText("d = " + d.toFixed(2), vx(d / 2), top - 13);
+      }
+    }
+
+    function fmt(v, dp) { return (v >= 0 ? "" : "−") + Math.abs(v).toFixed(dp); }
+    function update() {
+      var r = d / Math.sqrt(d * d + 4), eta = r * r, f = Math.abs(d) / 2;
+      var or = Math.exp(d * Math.PI / Math.sqrt(3));
+      var ovl = 2 * VIZ.normCdf(-Math.abs(d) / 2);
+      var u3 = VIZ.normCdf(d), cles = VIZ.normCdf(d / Math.SQRT2);
+      var n80 = Math.abs(d) < 0.01 ? null : Math.ceil(2 * Math.pow((1.959964 + 0.841621) / d, 2));
+      document.getElementById("o-d").textContent = fmt(d, 2);
+      document.getElementById("o-r").textContent = fmt(r, 2);
+      document.getElementById("o-eta").textContent = eta.toFixed(3);
+      document.getElementById("o-f").textContent = f.toFixed(2);
+      document.getElementById("o-or").textContent = or >= 100 ? or.toFixed(0) : or.toFixed(2);
+      document.getElementById("o-ovl").textContent = (ovl * 100).toFixed(0) + "%";
+      document.getElementById("o-u3").textContent = (u3 * 100).toFixed(0) + "%";
+      document.getElementById("o-cles").textContent = (cles * 100).toFixed(0) + "%";
+      document.getElementById("o-n80").textContent = n80 === null ? "∞" : "≈ " + n80;
+      var a = Math.abs(d), band = a < 0.1 ? "negligible" : a < 0.35 ? "small" : a < 0.65 ? "medium" : a < 1.2 ? "large" : "huge";
+      document.getElementById("es-verdict").innerHTML =
+        "By the usual benchmarks this is a <strong>" + band + "</strong> effect: the average treated person outscores <strong>" +
+        (u3 * 100).toFixed(0) + "%</strong> of the control group, yet the two distributions still share <strong>" +
+        (ovl * 100).toFixed(0) + "%</strong> of their area.";
+      draw();
+    }
+
+    /* keep the seg, slider, and number input in sync */
+    var num = document.getElementById("val-num"), rng = document.getElementById("val-range");
+    function applyCfg() {
+      var c = CFG[measure];
+      rng.min = c.min; rng.max = c.max;
+      num.step = c.step;
+      document.getElementById("val-label").textContent = c.label;
+      var v = fromD(measure);
+      num.value = v.toFixed(measure === "eta" ? 3 : 2);
+      rng.value = Math.max(c.min, Math.min(c.max, Math.round(v * c.scale)));
+      document.getElementById("val-echo").textContent = num.value;
+    }
+    document.getElementById("measure-seg").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      measure = b.dataset.m;
+      Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x === b); });
+      applyCfg();
+    });
+    rng.addEventListener("input", function () {
+      var v = +rng.value / CFG[measure].scale;
+      d = toD(measure, v);
+      num.value = v.toFixed(measure === "eta" ? 3 : 2);
+      document.getElementById("val-echo").textContent = num.value;
+      update();
+    });
+    num.addEventListener("input", function () {
+      var v = parseFloat(num.value);
+      if (!isFinite(v)) return;
+      d = Math.max(-4, Math.min(4, toD(measure, v)));
+      var c = CFG[measure];
+      rng.value = Math.max(c.min, Math.min(c.max, Math.round(v * c.scale)));
+      document.getElementById("val-echo").textContent = num.value;
+      update();
+    });
+
+    window.addEventListener("resize", function () { fit(); draw(); });
+    VIZ.onTheme(draw);
+    fit(); applyCfg(); update();
+  })();
+  </script>
+</body>
+</html>

@@ -276,8 +276,9 @@
 
       // marker line(s)
       function markAt(x, label) {
+        // the dashed line starts below the label, so the value stays readable
         ctx.strokeStyle = "#f97316"; ctx.setLineDash([4, 4]); ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.moveTo(toX(x), top); ctx.lineTo(toX(x), baseY); ctx.stroke(); ctx.setLineDash([]);
+        ctx.beginPath(); ctx.moveTo(toX(x), top + 16); ctx.lineTo(toX(x), baseY); ctx.stroke(); ctx.setLineDash([]);
         ctx.fillStyle = "#f97316"; ctx.font = "bold 12px " + V.css("--mono"); ctx.textAlign = "center";
         var lx = Math.min(Math.max(toX(x), pad + 18), W - pad - 18);
         ctx.fillText(label, lx, top - 2 + 12);

@@ -61,6 +61,14 @@
               <input type="range" id="rho-range" min="-100" max="100" step="5" value="70" style="width:100%" />
             </div>
             <div class="control"><button class="btn btn-primary btn-sm" id="newcloud">New cloud</button></div>
+            <div class="control" style="flex-direction:row;align-items:center;gap:.45rem">
+              <input type="checkbox" id="show-line" style="accent-color:#f97316;width:1rem;height:1rem" />
+              <label for="show-line" style="cursor:pointer">Show the "best-fitting" line</label>
+            </div>
+            <div class="control" style="flex-direction:row;align-items:center;gap:.45rem">
+              <input type="checkbox" id="show-ellipse" style="accent-color:var(--secondary);width:1rem;height:1rem" />
+              <label for="show-ellipse" style="cursor:pointer">Show the ellipse (wider = weaker r)</label>
+            </div>
           </div>
 
           <canvas id="corr-canvas" style="touch-action:none;cursor:grab"></canvas>
@@ -131,13 +139,17 @@
         pts.push({ x: clamp(x), y: clamp(y) });
       }
     }
-    function pearson() {
+    function cloudStats() {
       var n = pts.length, mx = 0, my = 0;
       for (var i = 0; i < n; i++) { mx += pts[i].x; my += pts[i].y; }
       mx /= n; my /= n;
       var sxy = 0, sxx = 0, syy = 0;
       for (var j = 0; j < n; j++) { var dx = pts[j].x - mx, dy = pts[j].y - my; sxy += dx * dy; sxx += dx * dx; syy += dy * dy; }
-      return (sxx === 0 || syy === 0) ? 0 : sxy / Math.sqrt(sxx * syy);
+      return { n: n, mx: mx, my: my, sxx: sxx, syy: syy, sxy: sxy };
+    }
+    function pearson() {
+      var s = cloudStats();
+      return (s.sxx === 0 || s.syy === 0) ? 0 : s.sxy / Math.sqrt(s.sxx * s.syy);
     }
     function strengthLabel(r) {
       var a = Math.abs(r), dir = r > 0 ? "positive" : "negative";
@@ -157,6 +169,35 @@
       ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px Inter, sans-serif";
       ctx.textAlign = "right"; ctx.fillText("y", vx(0) - 6, pad);
       ctx.textAlign = "left"; ctx.fillText("x", W - pad, vy(0) + 14);
+
+      var s = cloudStats();
+      ctx.save();
+      ctx.beginPath(); ctx.rect(pad - 8, pad - 8, W - 2 * pad + 16, H - 2 * pad + 16); ctx.clip();
+      // covariance ellipse (~95% region): its shape IS the correlation —
+      // a cigar means strong r, a beach ball means r ≈ 0
+      if (document.getElementById("show-ellipse").checked && s.sxx > 0 && s.syy > 0) {
+        var cxx = s.sxx / s.n, cyy = s.syy / s.n, cxy = s.sxy / s.n;
+        var tr2 = (cxx + cyy) / 2, det = Math.sqrt(Math.pow((cxx - cyy) / 2, 2) + cxy * cxy);
+        var l1 = Math.max(tr2 + det, 1e-9), l2 = Math.max(tr2 - det, 1e-9);
+        var ang = 0.5 * Math.atan2(2 * cxy, cxx - cyy);
+        var r1 = 2.45 * Math.sqrt(l1), r2 = 2.45 * Math.sqrt(l2); // χ²₂(.95) ≈ 5.99 → √ ≈ 2.45
+        ctx.strokeStyle = VIZ.css("--secondary"); ctx.lineWidth = 2; ctx.setLineDash([6, 5]);
+        ctx.beginPath();
+        for (var e = 0; e <= 72; e++) {
+          var th = (e / 72) * 2 * Math.PI;
+          var ex = s.mx + r1 * Math.cos(th) * Math.cos(ang) - r2 * Math.sin(th) * Math.sin(ang);
+          var ey = s.my + r1 * Math.cos(th) * Math.sin(ang) + r2 * Math.sin(th) * Math.cos(ang);
+          if (e === 0) ctx.moveTo(vx(ex), vy(ey)); else ctx.lineTo(vx(ex), vy(ey));
+        }
+        ctx.closePath(); ctx.stroke(); ctx.setLineDash([]);
+      }
+      // least-squares line, computed live from the points on screen
+      if (document.getElementById("show-line").checked && s.sxx > 0) {
+        var slope = s.sxy / s.sxx, icpt = s.my - slope * s.mx;
+        ctx.strokeStyle = "#f97316"; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.moveTo(vx(LO), vy(icpt + slope * LO)); ctx.lineTo(vx(HI), vy(icpt + slope * HI)); ctx.stroke();
+      }
+      ctx.restore();
       // points
       for (var i = 0; i < pts.length; i++) {
         ctx.fillStyle = VIZ.css("--primary"); ctx.globalAlpha = i === drag ? 1 : 0.7;
@@ -187,6 +228,8 @@
       rho = this.value / 100; document.getElementById("rho-val").textContent = (rho >= 0 ? "+" : "") + rho.toFixed(2); gen(); update();
     });
     document.getElementById("newcloud").addEventListener("click", function () { seed(); gen(); update(); });
+    document.getElementById("show-line").addEventListener("change", draw);
+    document.getElementById("show-ellipse").addEventListener("change", draw);
     window.addEventListener("resize", function () { fit(); update(); });
     VIZ.onTheme(draw);
 

@@ -139,8 +139,14 @@
       // shaded t critical tails
       ctx.fillStyle = "#f97316"; ctx.globalAlpha = 0.28;
       [[tstar, HI], [LO, -tstar]].forEach(function (seg) {
+        if (!(seg[1] > seg[0])) return;
+        // fixed step count: the last point lands exactly on seg[1], so the
+        // closing edge is perfectly vertical for every df
         ctx.beginPath(); ctx.moveTo(vx(seg[0]), baseY);
-        for (var v = seg[0]; v <= seg[1]; v += (seg[1] - seg[0]) / 60) ctx.lineTo(vx(v), baseY - tDensity(v, H2) * scale);
+        for (var i = 0; i <= 60; i++) {
+          var v = seg[0] + ((seg[1] - seg[0]) * i) / 60;
+          ctx.lineTo(vx(v), baseY - tDensity(v, H2) * scale);
+        }
         ctx.lineTo(vx(seg[1]), baseY); ctx.closePath(); ctx.fill();
       });
       ctx.globalAlpha = 1;

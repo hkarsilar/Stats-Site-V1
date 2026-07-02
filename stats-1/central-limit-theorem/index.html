@@ -71,22 +71,28 @@
               <label>Sample size <span class="val" id="n-val">n = 5</span></label>
               <input type="range" id="n-range" min="1" max="50" value="5" />
             </div>
-            <div class="control">
+          </div>
+          <!-- the three action buttons live on their own row, together -->
+          <div class="controls" style="margin:-.25rem 0 1rem">
+            <div class="control" style="flex-direction:row;align-items:center;gap:.6rem">
               <button class="btn btn-primary btn-sm" id="draw-1">Draw 1 sample</button>
-            </div>
-            <div class="control">
               <button class="btn btn-ghost btn-sm" id="draw-many">Draw 50 (animated)</button>
-            </div>
-            <div class="control">
               <button class="btn btn-ghost btn-sm" id="reset">Reset</button>
             </div>
           </div>
 
-          <p class="viz-sub" style="margin:.25rem 0">① The population you're sampling from</p>
-          <canvas id="pop-canvas"></canvas>
-
-          <p class="viz-sub" style="margin:1rem 0 .25rem">② Your most recent sample of n values (their average is the orange line)</p>
-          <canvas id="sample-canvas"></canvas>
+          <!-- panels ① and ② share a row at half width, so the sampling
+               distribution ③ below stays visible without scrolling -->
+          <div style="display:flex;gap:1.1rem;flex-wrap:wrap">
+            <div style="flex:1 1 240px;min-width:0">
+              <p class="viz-sub" style="margin:.25rem 0">① The population you're sampling from</p>
+              <canvas id="pop-canvas"></canvas>
+            </div>
+            <div style="flex:1 1 240px;min-width:0">
+              <p class="viz-sub" style="margin:.25rem 0">② Your latest sample (orange line = its average)</p>
+              <canvas id="sample-canvas"></canvas>
+            </div>
+          </div>
 
           <p class="viz-sub" style="margin:1rem 0 .25rem">③ The sampling distribution — every orange average lands here. The dashed curve is the bell curve the CLT predicts.</p>
           <canvas id="sampling-canvas"></canvas>
@@ -284,8 +290,9 @@
       for (var i = 0; i < 4000; i++) popData.push(f());
     }
     function sizeCanvases() {
-      popC = fit(document.getElementById("pop-canvas"), 120);
-      sampC = fit(document.getElementById("sample-canvas"), 90);
+      // ① and ② sit side by side, so they share a height
+      popC = fit(document.getElementById("pop-canvas"), 110);
+      sampC = fit(document.getElementById("sample-canvas"), 110);
       sampling = fit(document.getElementById("sampling-canvas"), 200);
     }
 

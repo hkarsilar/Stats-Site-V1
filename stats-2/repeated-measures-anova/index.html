@@ -139,7 +139,16 @@
     }
     function reseed() { seed(); build(); }
     function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
-    function vy(v) { return (H - padB) - ((v - 10) / 80) * (H - padB - padT); }
+    // y-axis follows the data, so cranking the between-person slider never
+    // pushes anyone off the chart
+    var yLO = 10, yHI = 90;
+    function setYRange(data) {
+      var mn = Infinity, mx = -Infinity;
+      data.forEach(function (row) { row.forEach(function (v) { if (v < mn) mn = v; if (v > mx) mx = v; }); });
+      yLO = Math.min(10, Math.floor((mn - 4) / 10) * 10);
+      yHI = Math.max(90, Math.ceil((mx + 4) / 10) * 10);
+    }
+    function vy(v) { return (H - padB) - ((v - yLO) / (yHI - yLO)) * (H - padB - padT); }
     function cx(k) { return padL + (k + 0.5) * ((W - padL - 12) / K); }
 
     function display() {
@@ -150,9 +159,11 @@
 
     function draw() {
       var data = display();
+      setYRange(data);
       ctx.clearRect(0, 0, W, H);
       ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "right";
-      for (var t = 20; t <= 80; t += 20) { var y = vy(t); ctx.globalAlpha = 0.4; ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - 12, y); ctx.stroke(); ctx.globalAlpha = 1; ctx.fillText(t, padL - 5, y + 3); }
+      var step = Math.max(20, Math.ceil((yHI - yLO) / 5 / 20) * 20);
+      for (var t = Math.ceil(yLO / step) * step; t <= yHI; t += step) { var y = vy(t); ctx.globalAlpha = 0.4; ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - 12, y); ctx.stroke(); ctx.globalAlpha = 1; ctx.fillText(t, padL - 5, y + 3); }
       ctx.textAlign = "center"; ctx.font = "600 11px Inter,sans-serif"; ctx.fillStyle = VIZ.css("--text-faint");
       for (var k = 0; k < K; k++) ctx.fillText("Cond " + (k + 1), cx(k), H - 8);
       // each subject as a faint line

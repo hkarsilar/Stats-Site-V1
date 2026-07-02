@@ -54,7 +54,7 @@
           <div class="controls">
             <div class="control" style="flex:1;min-width:300px">
               <label>Correlation between the two predictors <span class="val" id="r-val">0.50</span></label>
-              <input type="range" id="r-range" min="0" max="98" step="1" value="50" style="width:100%" />
+              <input type="range" id="r-range" min="0" max="99" step="1" value="50" style="width:100%" />
             </div>
             <div class="control"><button class="btn btn-ghost btn-sm" id="rerun">Re-run</button></div>
           </div>
@@ -113,7 +113,8 @@
   (function () {
     "use strict";
     var r = 0.5, estimates = [];
-    var LOB = -4, HIB = 6;   // display range for b1 estimates
+    var LOB = -3, HIB = 5;   // display range for b1 estimates — sized so the
+                             // r = .99 fan-out reaches the edges of the plot
     var canvas = document.getElementById("mc-canvas"), ctx, W = 0, H = 150, pad = 16;
 
     /* Frozen noise: each of the 60 simulated studies keeps its own fixed
