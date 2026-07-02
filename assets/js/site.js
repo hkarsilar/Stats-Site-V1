@@ -116,11 +116,11 @@
 
   /* ---------- progress ring (SVG) for homepage cards ---------- */
   function ring(frac, accent) {
-    var r = 15, c = 2 * Math.PI * r, off = c * (1 - frac), pct = Math.round(frac * 100);
+    var r = 20, c = 2 * Math.PI * r, off = c * (1 - frac), pct = Math.round(frac * 100);
     return '<span class="ring" title="' + pct + '% explored" style="--accent:' + accent + '">' +
-      '<svg width="40" height="40" viewBox="0 0 40 40">' +
-        '<circle class="ring-track" cx="20" cy="20" r="' + r + '" fill="none" stroke-width="4"/>' +
-        '<circle class="ring-fill" cx="20" cy="20" r="' + r + '" fill="none" stroke-width="4" stroke-linecap="round" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + off.toFixed(1) + '"/>' +
+      '<svg width="48" height="48" viewBox="0 0 48 48">' +
+        '<circle class="ring-track" cx="24" cy="24" r="' + r + '" fill="none" stroke-width="4.5"/>' +
+        '<circle class="ring-fill" cx="24" cy="24" r="' + r + '" fill="none" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + off.toFixed(1) + '"/>' +
       '</svg><span class="ring-label">' + pct + '%</span></span>';
   }
 
@@ -168,6 +168,7 @@
     var bar = document.createElement("div");
     bar.className = "resume-bar";
     bar.innerHTML =
+      capy(34) +
       '<span class="rb-text">Pick up where you left off — <strong>' + last.n + ' ' + last.title + '</strong></span>' +
       '<a class="btn btn-primary btn-sm" href="' + BASE + last.course + '/' + last.slug + '/">Resume →</a>';
     grid.parentNode.insertBefore(bar, grid);
@@ -178,11 +179,17 @@
     return null;
   }
 
-  /* ---------- lesson sidebar ---------- */
+  /* ---------- lesson sidebar ----------
+     Each course is a collapsible <details> group; only the course
+     containing the current lesson starts open, so the list never
+     feels like a wall (especially on mobile). */
   function renderSidebar() {
     var host = document.getElementById("sidebar");
     if (!host) return;
+    var chev = '<svg class="chev" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>';
     var html = window.CURRICULUM.map(function (c) {
+      var isCurrent = c.sections.some(function (s) { return s.slug === HERE; });
+      var doneN = c.sections.filter(function (s) { return isDone(s.slug); }).length;
       var links = c.sections.map(function (s) {
         var cls = (s.slug === HERE ? "active" : "") + (isDone(s.slug) ? " done" : "");
         var tick = isDone(s.slug) ? '<span class="tick" aria-hidden="true">✓</span>' : "";
@@ -192,8 +199,14 @@
         }
         return '<a style="cursor:default;opacity:.55" title="Coming soon">' + label + '</a>';
       }).join("");
-      return '<h4>' + c.title + '</h4>' + links;
+      return '<details class="sb-group"' + (isCurrent ? " open" : "") + ' style="--sb-accent:' + c.accent + '">' +
+        '<summary>' + c.title +
+          '<span class="sb-count">' + (doneN ? doneN + "/" + c.sections.length : c.sections.length) + '</span>' + chev +
+        '</summary>' +
+        '<div class="sb-links">' + links + '</div>' +
+      '</details>';
     }).join("");
+    html += '<div class="sb-capy">' + capy(30) + '<span>No rush — capybaras never cram.</span></div>';
     host.innerHTML = '<div class="sidebar-sticky">' + html + '</div>';
   }
 
@@ -569,7 +582,11 @@
 
     searchMatches = pages.concat(lessons).concat(deep).slice(0, 40);
     searchIdx = 0;
-    if (!searchMatches.length) { searchResults.innerHTML = '<li class="search-empty">No lessons match “' + q + '”.</li>'; return; }
+    if (!searchMatches.length) {
+      searchResults.innerHTML = '<li class="search-empty">' + capy(30) +
+        '<span>No matches for “' + escHtml(q) + '” — the capybara looked everywhere. Try a shorter word?</span></li>';
+      return;
+    }
     searchResults.innerHTML = searchMatches.map(function (s, i) {
       var href = s.page ? BASE + s.url : BASE + s.course + "/" + s.slug + "/";
       return '<li><a class="' + (i === 0 ? "active" : "") + '" href="' + href + '">' +
@@ -614,6 +631,14 @@
     a.style.cssText = "display:inline-flex;align-items:center;order:2";
     a.innerHTML = '<img height="34" loading="lazy" style="border:0;height:34px" src="https://storage.ko-fi.com/cdn/kofi2.png?v=6" alt="Buy Me a Coffee at ko-fi.com" />';
     c.insertBefore(a, c.lastElementChild);
+  }
+
+  /* a small capybara next to the copyright line, on every page */
+  function renderFooterCapy() {
+    var c = document.querySelector(".footer .container");
+    if (!c || c.querySelector(".footer-capy")) return;
+    var first = c.firstElementChild;
+    if (first) first.innerHTML = '<span class="footer-capy" aria-hidden="true">' + capy(22) + '</span>' + first.innerHTML;
   }
 
   /* ============================================================
@@ -672,6 +697,7 @@
     renderChecks();
     renderSoftware();
     renderKofi();
+    renderFooterCapy();
     wireSearchShortcuts();
     wireLessonKeys();
     // ?q=… deep link (also the target of the sitewide SearchAction schema)

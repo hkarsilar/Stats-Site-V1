@@ -56,6 +56,8 @@ html[data-theme="dark"] {
 
 * { box-sizing: border-box; }
 
+::selection { background: color-mix(in srgb, var(--primary) 24%, transparent); }
+
 html { scroll-behavior: smooth; }
 
 body {
@@ -171,9 +173,14 @@ main { padding-top: var(--nav-h); }
 .course-card {
   border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
   background: var(--surface); box-shadow: var(--shadow); border-left: 4px solid var(--accent, var(--primary));
+  transition: transform .18s, box-shadow .18s;
 }
-.course-card .ch { padding: 1.1rem 1.4rem; border-bottom: 1px solid var(--border); }
-.course-card .ch h3 { margin: 0; font-size: 1.15rem; }
+.course-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.course-card .ch {
+  padding: 1.1rem 1.4rem; border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--accent, var(--primary)) 6%, transparent);
+}
+.course-card .ch h3 { margin: 0; font-size: 1.15rem; color: color-mix(in srgb, var(--accent, var(--primary)) 70%, var(--text)); }
 .course-card .ch span { font-size: .85rem; color: var(--text-faint); }
 .course-card ul { list-style: none; margin: 0; padding: .4rem 0; }
 .course-card li a {
@@ -181,9 +188,9 @@ main { padding-top: var(--nav-h); }
   font-size: .92rem; color: var(--text-muted); transition: .12s;
 }
 .course-card li a:hover { background: var(--surface-2); color: var(--text); }
-.sec-num { font-family: var(--mono); font-size: .72rem; color: var(--primary); display: inline-block; min-width: 2.2rem; margin-right: .45rem; }
+.sec-num { font-family: var(--mono); font-size: .72rem; color: color-mix(in srgb, var(--accent, var(--primary)) 80%, var(--text)); display: inline-block; min-width: 2.2rem; margin-right: .45rem; }
 .sec-dot { width: .55rem; height: .55rem; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; }
-li a:hover .sec-dot { border-color: var(--primary); }
+li a:hover .sec-dot { border-color: var(--accent, var(--primary)); }
 
 /* about */
 .about { display: flex; flex-wrap: wrap; align-items: center; gap: 3rem; }
@@ -206,14 +213,54 @@ li a:hover .sec-dot { border-color: var(--primary); }
 .lesson-wrap { max-width: var(--maxw); margin: 0 auto; display: flex; gap: 2.5rem; padding: 1.5rem 1.25rem 4rem; }
 .sidebar { width: 16rem; flex-shrink: 0; }
 .sidebar-sticky { position: sticky; top: calc(var(--nav-h) + 1rem); max-height: calc(100vh - var(--nav-h) - 2rem); overflow-y: auto; padding-right: .5rem; }
-.sidebar h4 { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--text-faint); margin: 1.2rem 0 .5rem; }
+/* collapsible course groups — only the current course starts open.
+   Each group carries its course accent in --sb-accent (set inline by
+   site.js); mixing it with var(--text) keeps it readable in both themes. */
+.sidebar .sb-group { margin: 0 0 .2rem; }
+.sidebar summary {
+  display: flex; align-items: center; gap: .45rem; cursor: pointer; list-style: none;
+  font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800;
+  color: color-mix(in srgb, var(--sb-accent, var(--text-faint)) 65%, var(--text));
+  padding: .5rem .6rem; border-radius: 8px; margin: .2rem 0; user-select: none; transition: .12s;
+}
+.sidebar summary::-webkit-details-marker { display: none; }
+.sidebar summary:hover { background: var(--surface-2); }
+.sidebar summary .sb-count {
+  margin-left: auto; font-family: var(--mono); font-size: .68rem; font-weight: 600;
+  color: var(--text-faint); text-transform: none; letter-spacing: 0;
+}
+.sidebar summary .chev { flex-shrink: 0; color: var(--text-faint); transition: transform .18s; }
+.sidebar .sb-group[open] summary .chev { transform: rotate(90deg); }
+.sidebar .sb-links { padding: 0 0 .4rem; }
 .sidebar a { display: block; padding: .35rem .6rem; border-radius: 8px; font-size: .85rem; color: var(--text-muted); transition: .12s; }
 .sidebar a:hover { background: var(--surface-2); color: var(--text); }
-.sidebar a.active { background: color-mix(in srgb, var(--primary) 14%, transparent); color: var(--primary); font-weight: 650; }
+.sidebar a.active {
+  background: color-mix(in srgb, var(--sb-accent, var(--primary)) 13%, transparent);
+  color: color-mix(in srgb, var(--sb-accent, var(--primary)) 75%, var(--text));
+  font-weight: 650;
+}
 .sidebar a .n { font-family: var(--mono); font-size: .72rem; color: var(--text-faint); margin-right: .4rem; }
+/* the resident capybara, cheering quietly from the bottom of the sidebar */
+.sb-capy {
+  display: flex; align-items: center; gap: .6rem; margin: 1.1rem .1rem 0; padding: .65rem .75rem;
+  border: 1px dashed var(--border); border-radius: 12px;
+  font-size: .74rem; line-height: 1.45; color: var(--text-faint);
+}
 
 .lesson { flex: 1; min-width: 0; max-width: 48rem; }
-.lesson-eyebrow { font-family: var(--mono); font-size: .8rem; color: var(--primary); }
+
+/* each course gets its own chrome accent (eyebrow, prev/next, sidebar);
+   canvas visuals keep reading --primary etc. directly, so this is
+   presentation-only and never changes the math drawings */
+body[data-course="stats-1"] { --course-accent: var(--primary); }
+body[data-course="stats-2"] { --course-accent: var(--secondary); }
+body[data-course="stats-3"] { --course-accent: var(--success); }
+body[data-course="stats-4"] { --course-accent: #8b5cf6; }
+
+.lesson-eyebrow {
+  font-family: var(--mono); font-size: .8rem; font-weight: 700;
+  color: color-mix(in srgb, var(--course-accent, var(--primary)) 78%, var(--text));
+}
 .lesson h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); margin: .25rem 0 1.5rem; }
 .lesson h2 { font-size: 1.5rem; margin: 2.5rem 0 .75rem; }
 .lesson h3 { font-size: 1.15rem; margin: 1.75rem 0 .5rem; }
@@ -233,7 +280,7 @@ li a:hover .sec-dot { border-color: var(--primary); }
 
 /* prev / next nav */
 .lesson-nav { display: flex; justify-content: space-between; gap: 1rem; margin-top: 3.5rem; padding-top: 1.75rem; border-top: 1px solid var(--border); }
-.lesson-nav a { display: flex; align-items: center; gap: .7rem; color: var(--primary); font-weight: 600; max-width: 48%; }
+.lesson-nav a { display: flex; align-items: center; gap: .7rem; color: color-mix(in srgb, var(--course-accent, var(--primary)) 78%, var(--text)); font-weight: 600; max-width: 48%; }
 .lesson-nav a.next { margin-left: auto; text-align: right; }
 .lesson-nav .lbl { display: block; font-size: .72rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: .06em; }
 .lesson-nav svg { width: 1.1rem; height: 1.1rem; flex-shrink: 0; }
@@ -286,13 +333,14 @@ li a:hover .sec-dot { border-color: var(--primary); }
 .nav-actions { display: inline-flex; align-items: center; gap: .35rem; }
 .nav-toggle { display: none; }               /* hamburger — shown only on mobile */
 
-/* "Buy me a coffee" pill in the nav (Ko-fi) */
+/* "Buy me a coffee" pill in the nav (Ko-fi) — same warm yellow as the
+   official Ko-fi button in the footer (#ffda6e, dark text) */
 .nav-kofi {
   display: inline-flex; align-items: center; gap: .35rem; white-space: nowrap;
   padding: .42rem .75rem; border-radius: 999px; font-weight: 700; font-size: .82rem;
-  color: #fff; background: #ff5e5b; transition: .15s;
+  color: #202020; background: #ffda6e; transition: .15s;
 }
-.nav-kofi:hover { filter: brightness(1.06); transform: translateY(-1px); color: #fff; }
+.nav-kofi:hover { filter: brightness(1.04); transform: translateY(-1px); color: #202020; }
 @media (max-width: 1080px) {
   .nav-kofi span { display: none; }            /* just the ☕ when space is tight */
   .nav-kofi { padding: .42rem .55rem; }
@@ -306,6 +354,7 @@ li a:hover .sec-dot { border-color: var(--primary); }
   .lesson-wrap { flex-direction: column; padding-top: 1rem; }
   .sidebar { width: 100%; }
   .sidebar-sticky { position: static; max-height: none; }
+  .sb-capy { display: none; }   /* don't push lesson content down on mobile */
 
   /* nav-links become a dropdown panel toggled by the hamburger */
   .nav-links {
@@ -373,7 +422,7 @@ li a:hover .sec-dot { border-color: var(--primary); }
 /* full-text match excerpt under the title */
 .search-results .snip { display: block; margin-top: .15rem; font-size: .74rem; line-height: 1.45; color: var(--text-faint); }
 .search-results .snip mark { background: color-mix(in srgb, var(--primary) 22%, transparent); color: inherit; border-radius: 3px; padding: 0 .1em; }
-.search-empty { padding: 1rem 1.15rem; color: var(--text-faint); font-size: .92rem; }
+.search-empty { display: flex; align-items: center; gap: .65rem; padding: 1rem 1.15rem; color: var(--text-faint); font-size: .92rem; }
 .search-hint { padding: .55rem 1.15rem; border-top: 1px solid var(--border); color: var(--text-faint); font-size: .72rem; display: flex; gap: 1rem; }
 .search-hint kbd { font-family: var(--mono); background: var(--surface-2); border: 1px solid var(--border); border-radius: 5px; padding: 0 .3rem; }
 
@@ -383,17 +432,19 @@ li a:hover .sec-dot { border-color: var(--primary); }
 /* homepage: per-course ring in the card header */
 .course-card .ch { display: flex; align-items: center; gap: .9rem; }
 .course-card .ch .ch-text { flex: 1; min-width: 0; }
-.ring { position: relative; flex-shrink: 0; width: 40px; height: 40px; }
+.ring { position: relative; flex-shrink: 0; width: 48px; height: 48px; }
 .ring svg { transform: rotate(-90deg); display: block; }
 .ring .ring-track { stroke: var(--surface-2); }
 .ring .ring-fill { stroke: var(--accent, var(--primary)); transition: stroke-dashoffset .5s ease; }
-.ring .ring-label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: .6rem; font-weight: 700; color: var(--text-muted); }
+/* the extra .course-card .ch selector outranks ".course-card .ch span"
+   (which was silently inflating the label to .85rem — the overlap bug) */
+.ring .ring-label, .course-card .ch .ring-label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: .68rem; font-weight: 700; color: var(--text-muted); }
 
 /* sidebar + curriculum completion marks */
 .sec-check { margin-left: auto; font-size: .8rem; line-height: 1; color: var(--success); opacity: 0; }
 .course-card li a.done .sec-check { opacity: 1; }
 .course-card li a.done .sec-dot { border-color: var(--success); background: var(--success); }
-.course-card li a.visited .sec-dot { border-color: var(--primary); }
+.course-card li a.visited .sec-dot { border-color: var(--accent, var(--primary)); }
 .sidebar a .tick { float: right; color: var(--success); font-size: .8rem; }
 .sidebar a.done { color: var(--text); }
 
@@ -577,11 +628,11 @@ li a:hover .sec-dot { border-color: var(--primary); }
 .sw-title { font-weight: 700; font-size: .9rem; }
 .sw-steps { margin: 0; padding: .9rem 1.1rem .9rem 2.3rem; font-size: .9rem; color: var(--text-muted); }
 .sw-steps li { margin: .35rem 0; line-height: 1.55; }
-.sw-steps li::marker { color: var(--primary); font-weight: 700; }
+.sw-steps li::marker { color: var(--block-accent, var(--primary)); font-weight: 700; }
 .sw-steps strong, .apa-tips strong { color: var(--text); }
 .apa-label { margin: .8rem 1.1rem 0; font-size: .78rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--text-faint); }
 .apa-quote {
-  margin: .5rem 1.1rem .9rem; padding: .8rem 1rem; border-left: 3px solid var(--primary);
+  margin: .5rem 1.1rem .9rem; padding: .8rem 1rem; border-left: 3px solid var(--block-accent, var(--primary));
   background: var(--bg-soft); border-radius: 0 10px 10px 0;
   font-size: .92rem; line-height: 1.65; color: var(--text);
 }
@@ -590,3 +641,16 @@ li a:hover .sec-dot { border-color: var(--primary); }
 .apa-tips { margin: 0 1.1rem .95rem; padding-left: 1.2rem; font-size: .86rem; color: var(--text-muted); }
 .apa-tips li { margin: .3rem 0; line-height: 1.55; }
 @media print { .software .seg { display: none; } }
+
+/* ============================================================
+   PER-BLOCK ACCENTS — the injected learning blocks each get their
+   own color so the lesson footer isn't a wall of indigo:
+   checks = violet, SPSS/JASP = teal, R/Python = green, APA = orange.
+   Scoped so the .seg switches inside .viz controls stay indigo.
+   ============================================================ */
+.checks     { --block-accent: #8b5cf6; }
+.software   { --block-accent: #0d9488; }
+.try-code   { --block-accent: #16a34a; }
+.apa-report { --block-accent: #f97316; }
+.ck-head, .sw-head, .tc-head { background: color-mix(in srgb, var(--block-accent, var(--primary)) 7%, transparent); }
+.software .seg button.active, .try-code .seg button.active { background: var(--block-accent); }
