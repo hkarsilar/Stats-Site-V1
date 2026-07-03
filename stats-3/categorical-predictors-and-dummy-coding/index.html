@@ -29,6 +29,9 @@
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Categorical Predictors & Dummy Coding", "description": "Regression needs numbers, but groups aren't numeric. Dummy coding turns categories into 0/1 variables whose coefficients are just differences from a reference group.", "url": "https://statscapybara.com/stats-3/categorical-predictors-and-dummy-coding/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced Modeling", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Categorical Predictors & Dummy Coding", "item": "https://statscapybara.com/stats-3/categorical-predictors-and-dummy-coding/"}]}]
   </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why do I create k − 1 dummy variables instead of k?", "acceptedAnswer": {"@type": "Answer", "text": "Because the k-th dummy is perfectly redundant — if a case is 0 on all others, it must be the reference group, so a full set would be perfectly collinear with the intercept (the \"dummy variable trap\"; software would drop one anyway). The reference group's mean lives in the intercept, and each dummy coefficient measures a difference from it."}}, {"@type": "Question", "name": "How do I choose the reference category?", "acceptedAnswer": {"@type": "Answer", "text": "Statistically it doesn't matter — predictions and the overall fit are identical either way; only the comparisons the coefficients report change. Practically, pick the level that makes those comparisons meaningful: the control condition, the placebo, the standard treatment, or the largest group. Avoid tiny reference groups, whose noisy mean muddies every contrast against it."}}, {"@type": "Question", "name": "Is ANOVA just a special case of regression?", "acceptedAnswer": {"@type": "Answer", "text": "Yes — run a regression with one dummy-coded categorical predictor and you get literally the same F, p, and group means as the one-way ANOVA; two groups reduces further to the t-test. ANOVA, t-tests, ANCOVA, and regression are one linear model in different notation, which is why learning regression unlocks all of them at once."}}]}
+  </script>
 </head>
 <body data-course="stats-3" data-section="categorical-predictors-and-dummy-coding">
   <nav class="nav" id="nav"></nav>
@@ -91,6 +94,24 @@
         <div class="callout">
           <p><strong>Why it matters:</strong> almost every real dataset mixes numeric and categorical predictors. Dummy coding is what lets a single regression handle "dose (mg) and treatment group and sex and region" all at once — the foundation for the rest of applied modeling.</p>
         </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>Why do I create k − 1 dummy variables instead of k?</summary>
+            <div class="faq-a"><p>Because the k-th dummy is perfectly redundant — if a case is 0 on all others, it must be the reference group, so a full set would be perfectly collinear with the intercept (the "dummy variable trap"; software would drop one anyway). The reference group's mean lives in the intercept, and each dummy coefficient measures a difference from it.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>How do I choose the reference category?</summary>
+            <div class="faq-a"><p>Statistically it doesn't matter — predictions and the overall fit are identical either way; only the comparisons the coefficients report change. Practically, pick the level that makes those comparisons meaningful: the control condition, the placebo, the standard treatment, or the largest group. Avoid tiny reference groups, whose noisy mean muddies every contrast against it.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Is ANOVA just a special case of regression?</summary>
+            <div class="faq-a"><p>Yes — run a regression with one dummy-coded categorical predictor and you get literally the same F, p, and group means as the one-way ANOVA; two groups reduces further to the t-test. ANOVA, t-tests, ANCOVA, and regression are one linear model in different notation, which is why learning regression unlocks all of them at once.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
 
         <nav class="lesson-nav" id="lesson-nav"></nav>
       </article>

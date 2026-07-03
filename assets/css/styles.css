@@ -728,6 +728,39 @@ details.checks[open] .ck-open-label { display: none; }
 @media print { .checks { display: none !important; } }
 
 /* ============================================================
+   "COMMON QUESTIONS" — static per-lesson FAQ (in the HTML itself,
+   so search engines index it; also mirrored as FAQPage JSON-LD)
+   ============================================================ */
+.faq { margin: 2.5rem 0 0; }
+.faq > h2 { margin-bottom: .9rem; }
+.faq-item {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); box-shadow: var(--shadow);
+  margin: 0 0 .6rem; overflow: hidden;
+}
+.faq-item summary {
+  display: flex; align-items: center; justify-content: space-between; gap: .8rem;
+  cursor: pointer; list-style: none; user-select: none;
+  padding: .75rem 1rem .75rem 1.1rem; font-weight: 650; font-size: .95rem;
+  color: var(--text); transition: .12s;
+  background: color-mix(in srgb, var(--faq-accent) 6%, transparent);
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after {
+  content: "▾"; flex-shrink: 0; color: var(--text-faint);
+  font-size: .8rem; transition: transform .18s;
+}
+.faq-item[open] summary::after { transform: rotate(180deg); }
+.faq-item summary:hover { background: color-mix(in srgb, var(--faq-accent) 12%, transparent); }
+.faq-item[open] summary { border-bottom: 1px solid var(--border); }
+.faq-a { padding: .8rem 1.1rem .9rem; font-size: .92rem; line-height: 1.65; color: var(--text-muted); }
+.faq-a p { margin: 0; }
+.faq-a strong { color: var(--text); }
+.faq-a a { color: var(--primary); font-weight: 600; }
+.faq { --faq-accent: #0ea5e9; }
+@media print { .faq-item[open] summary::after { display: none; } }
+
+/* ============================================================
    "TRY IT YOURSELF" R / PYTHON SNIPPETS (auto-injected)
    ============================================================ */
 .try-code {

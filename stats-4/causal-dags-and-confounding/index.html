@@ -29,6 +29,9 @@
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Causal DAGs & Confounding", "description": "Draw your causal assumptions as a graph, then watch adjustment fix a confounder — and backfire on a collider. Statistical control is powerful and dangerous.", "url": "https://statscapybara.com/stats-4/causal-dags-and-confounding/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 4: Modern & Advanced", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Causal DAGs & Confounding", "item": "https://statscapybara.com/stats-4/causal-dags-and-confounding/"}]}]
   </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is a collider in simple terms?", "acceptedAnswer": {"@type": "Answer", "text": "A variable caused by two others: X → C ← Y. Left alone, it transmits nothing. But select or adjust on it and you create a spurious X–Y association. The classic intuition: among hospitalized patients (being hospitalized = the collider), two diseases look negatively correlated even if independent in the population — because having either one is enough to get you admitted."}}, {"@type": "Question", "name": "Should I control for every variable I measured?", "acceptedAnswer": {"@type": "Answer", "text": "Emphatically no — \"kitchen-sink regression\" is a recipe for bias, not rigor. Adjusting for confounders (common causes) removes bias; adjusting for colliders (common effects) creates it; adjusting for mediators erases the very effect you're estimating. Since the data alone can't tell these apart, the covariate list must come from a causal diagram of how the data was generated — that's the DAG's whole job."}}, {"@type": "Question", "name": "What is a backdoor path?", "acceptedAnswer": {"@type": "Answer", "text": "Any route from X to Y that starts with an arrow into X — like X ← Z → Y through a confounder Z. Backdoor paths leak non-causal association into the X–Y relationship. Pearl's backdoor criterion is the recipe: find an adjustment set that blocks every backdoor path while leaving directed (causal) paths alone — then, if your DAG is right, the adjusted estimate is the causal effect."}}]}
+  </script>
 </head>
 <body data-course="stats-4" data-section="causal-dags-and-confounding">
   <nav class="nav" id="nav"></nav>
@@ -93,6 +96,24 @@
         <div class="callout">
           <p><strong>Why it matters:</strong> statistical adjustment is a scalpel, not a vacuum cleaner. Controlling for a confounder removes bias; controlling for a collider creates it — and the data alone can't tell you which is which. Only a causal model of how the data came to be can.</p>
         </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What is a collider in simple terms?</summary>
+            <div class="faq-a"><p>A variable caused by two others: X → C ← Y. Left alone, it transmits nothing. But select or adjust on it and you <em>create</em> a spurious X–Y association. The classic intuition: among hospitalized patients (being hospitalized = the collider), two diseases look negatively correlated even if independent in the population — because having either one is enough to get you admitted.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Should I control for every variable I measured?</summary>
+            <div class="faq-a"><p>Emphatically no — "kitchen-sink regression" is a recipe for bias, not rigor. Adjusting for confounders (common causes) removes bias; adjusting for colliders (common effects) creates it; adjusting for mediators erases the very effect you're estimating. Since the data alone can't tell these apart, the covariate list must come from a causal diagram of how the data was generated — that's the DAG's whole job.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is a backdoor path?</summary>
+            <div class="faq-a"><p>Any route from X to Y that starts with an arrow <em>into</em> X — like X ← Z → Y through a confounder Z. Backdoor paths leak non-causal association into the X–Y relationship. Pearl's backdoor criterion is the recipe: find an adjustment set that blocks every backdoor path while leaving directed (causal) paths alone — then, if your DAG is right, the adjusted estimate is the causal effect.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
 
         <nav class="lesson-nav" id="lesson-nav"></nav>
       </article>

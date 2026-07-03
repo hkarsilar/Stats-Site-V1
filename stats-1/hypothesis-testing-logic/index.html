@@ -29,6 +29,9 @@
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Hypothesis Testing Logic", "description": "The logic behind p-values, made visual: assume the null, see how surprising your data is, and decide. Drag the observed statistic and watch the p-value.", "url": "https://statscapybara.com/stats-1/hypothesis-testing-logic/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Foundations", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Hypothesis Testing Logic", "item": "https://statscapybara.com/stats-1/hypothesis-testing-logic/"}]}]
   </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What does p < 0.05 actually mean?", "acceptedAnswer": {"@type": "Answer", "text": "It means: if there were truly no effect (H₀ true), data this extreme would occur less than 5% of the time by chance alone. Since that's rare, we treat the result as evidence against H₀. It does not mean there's a 95% chance the effect is real, and it says nothing about how large or important the effect is — that's the job of effect sizes."}}, {"@type": "Question", "name": "Why do we say 'fail to reject' the null instead of 'accept' it?", "acceptedAnswer": {"@type": "Answer", "text": "Because a non-significant result means the evidence wasn't strong enough to rule out chance — not that H₀ is true. Like a courtroom's \"not guilty,\" it reflects insufficient evidence, not established innocence. Small studies fail to reject false nulls all the time simply because they lack power."}}, {"@type": "Question", "name": "What is the difference between Type I and Type II errors?", "acceptedAnswer": {"@type": "Answer", "text": "A Type I error is a false alarm: rejecting H₀ when it's actually true — its rate is your α (5% by convention). A Type II error is a miss: failing to detect an effect that's really there — its rate is β, and 1 − β is the test's power. They trade off: demanding stronger evidence (lower α) makes misses more likely, which is why sample-size planning matters."}}]}
+  </script>
 </head>
 <body data-course="stats-1" data-section="hypothesis-testing-logic">
   <nav class="nav" id="nav"></nav>
@@ -107,6 +110,24 @@
         <div class="callout">
           <p><strong>Why it matters:</strong> every test you'll meet — t-tests, ANOVA, chi-square, regression — runs this exact playbook. Master the logic once here, and the rest is just swapping in different null distributions.</p>
         </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What does p < 0.05 actually mean?</summary>
+            <div class="faq-a"><p>It means: <em>if</em> there were truly no effect (H₀ true), data this extreme would occur less than 5% of the time by chance alone. Since that's rare, we treat the result as evidence against H₀. It does <strong>not</strong> mean there's a 95% chance the effect is real, and it says nothing about how large or important the effect is — that's the job of <a href="../../stats-1/effect-size-and-power/">effect sizes</a>.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Why do we say 'fail to reject' the null instead of 'accept' it?</summary>
+            <div class="faq-a"><p>Because a non-significant result means the evidence wasn't strong enough to rule out chance — not that H₀ is true. Like a courtroom's "not guilty," it reflects insufficient evidence, not established innocence. Small studies fail to reject false nulls all the time simply because they lack power.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is the difference between Type I and Type II errors?</summary>
+            <div class="faq-a"><p>A Type I error is a false alarm: rejecting H₀ when it's actually true — its rate is your α (5% by convention). A Type II error is a miss: failing to detect an effect that's really there — its rate is β, and 1 − β is the test's power. They trade off: demanding stronger evidence (lower α) makes misses more likely, which is why sample-size planning matters.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
 
         <nav class="lesson-nav" id="lesson-nav"></nav>
       </article>

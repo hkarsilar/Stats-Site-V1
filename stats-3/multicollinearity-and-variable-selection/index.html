@@ -29,6 +29,9 @@
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Multicollinearity & Variable Selection", "description": "When predictors overlap, regression can't tell their effects apart and the coefficients go haywire. Crank up the correlation and watch the estimates scatter as the VIF explodes.", "url": "https://statscapybara.com/stats-3/multicollinearity-and-variable-selection/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced Modeling", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Multicollinearity & Variable Selection", "item": "https://statscapybara.com/stats-3/multicollinearity-and-variable-selection/"}]}]
   </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What VIF value indicates a problem?", "acceptedAnswer": {"@type": "Answer", "text": "Common alarm thresholds are VIF > 5 (cautious) or VIF > 10 (lenient) — VIF = 5 means that predictor's coefficient variance is inflated 5-fold because other predictors largely explain it. Treat these as smoke detectors, not verdicts: a high VIF between a predictor and its own squared term is normal, while VIF 4 between two conceptually distinct predictors might still deserve thought."}}, {"@type": "Question", "name": "Does multicollinearity affect my model's predictions?", "acceptedAnswer": {"@type": "Answer", "text": "Barely — that's the key reassurance. Correlated predictors destabilize the individual coefficients (who gets credit), not the joint prediction (how much credit there is in total). If your goal is forecasting y, you can often live with it; if your goal is interpreting \"the effect of x₁ holding x₂ fixed,\" that's exactly what multicollinearity poisons."}}, {"@type": "Question", "name": "Why is stepwise regression frowned upon?", "acceptedAnswer": {"@type": "Answer", "text": "Because it runs many hidden tests and keeps whatever chanced below .05: the surviving p-values are biased low, R² is inflated, and small data perturbations produce entirely different \"final\" models. It also can't use what it doesn't know — theory. Choose predictors from domain knowledge, and if you need automatic selection for prediction, use penalized methods like the lasso with cross-validation."}}]}
+  </script>
 </head>
 <body data-course="stats-3" data-section="multicollinearity-and-variable-selection">
   <nav class="nav" id="nav"></nav>
@@ -93,6 +96,24 @@
         <div class="callout">
           <p><strong>Why it matters:</strong> with real datasets full of related measurements, multicollinearity is the rule, not the exception. Recognizing it stops you from over-interpreting a coefficient that's really just statistical noise.</p>
         </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What VIF value indicates a problem?</summary>
+            <div class="faq-a"><p>Common alarm thresholds are VIF > 5 (cautious) or VIF > 10 (lenient) — VIF = 5 means that predictor's coefficient variance is inflated 5-fold because other predictors largely explain it. Treat these as smoke detectors, not verdicts: a high VIF between a predictor and its own squared term is normal, while VIF 4 between two conceptually distinct predictors might still deserve thought.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Does multicollinearity affect my model's predictions?</summary>
+            <div class="faq-a"><p>Barely — that's the key reassurance. Correlated predictors destabilize the <em>individual coefficients</em> (who gets credit), not the joint prediction (how much credit there is in total). If your goal is forecasting y, you can often live with it; if your goal is interpreting "the effect of x₁ holding x₂ fixed," that's exactly what multicollinearity poisons.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Why is stepwise regression frowned upon?</summary>
+            <div class="faq-a"><p>Because it runs many hidden tests and keeps whatever chanced below .05: the surviving p-values are biased low, R² is inflated, and small data perturbations produce entirely different "final" models. It also can't use what it doesn't know — theory. Choose predictors from domain knowledge, and if you need automatic selection for prediction, use penalized methods like the lasso with cross-validation.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
 
         <nav class="lesson-nav" id="lesson-nav"></nav>
       </article>

@@ -29,6 +29,9 @@
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Survival Analysis & Kaplan–Meier", "description": "Time-to-event data with a twist: some clocks are still running. Build Kaplan–Meier curves with censoring and compare two groups with the log-rank test.", "url": "https://statscapybara.com/stats-4/survival-analysis/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 4: Modern & Advanced", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Survival Analysis & Kaplan–Meier", "item": "https://statscapybara.com/stats-4/survival-analysis/"}]}]
   </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is censoring in survival analysis?", "acceptedAnswer": {"@type": "Answer", "text": "A censored observation is an unfinished clock: the event hadn't happened when you stopped observing (study ended, participant moved away) — so you know survival exceeded some time, but not by how much. It's information, not garbage: censored subjects rightly count in the at-risk pool while observed. Standard methods assume censoring is uninformative — dropping out mustn't be related to imminent risk."}}, {"@type": "Question", "name": "What does a hazard ratio mean?", "acceptedAnswer": {"@type": "Answer", "text": "The instantaneous event-rate multiplier between groups: HR = 2 means at any moment, the exposed group's event rate is double the reference group's. It is not \"twice as likely to die overall\" nor \"half the survival time.\" HR < 1 is protective; and a proportional-hazards model assumes this ratio is constant over follow-up — worth checking, not assuming."}}, {"@type": "Question", "name": "What is the difference between Kaplan–Meier and Cox regression?", "acceptedAnswer": {"@type": "Answer", "text": "Kaplan–Meier describes: a nonparametric survival curve per group, compared with the log-rank test — no covariates allowed. Cox proportional-hazards regression models: hazard ratios as a function of many predictors at once, adjusting for age, severity, and anything else. The pairing is standard: KM curves for the picture, Cox for the adjusted inference."}}]}
+  </script>
 </head>
 <body data-course="stats-4" data-section="survival-analysis">
   <nav class="nav" id="nav"></nav>
@@ -91,6 +94,24 @@
         <div class="callout">
           <p><strong>Why it matters:</strong> whenever the outcome is "time until something happens," some clocks will still be running when you stop watching. Kaplan–Meier and the log-rank test extract every drop of information from finished <em>and</em> unfinished observations alike — no guessing, no discarding.</p>
         </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What is censoring in survival analysis?</summary>
+            <div class="faq-a"><p>A censored observation is an unfinished clock: the event hadn't happened when you stopped observing (study ended, participant moved away) — so you know survival exceeded some time, but not by how much. It's information, not garbage: censored subjects rightly count in the at-risk pool while observed. Standard methods assume censoring is uninformative — dropping out mustn't be related to imminent risk.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What does a hazard ratio mean?</summary>
+            <div class="faq-a"><p>The instantaneous event-rate multiplier between groups: HR = 2 means at any moment, the exposed group's event rate is double the reference group's. It is <em>not</em> "twice as likely to die overall" nor "half the survival time." HR < 1 is protective; and a proportional-hazards model assumes this ratio is constant over follow-up — worth checking, not assuming.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is the difference between Kaplan–Meier and Cox regression?</summary>
+            <div class="faq-a"><p>Kaplan–Meier <em>describes</em>: a nonparametric survival curve per group, compared with the log-rank test — no covariates allowed. Cox proportional-hazards regression <em>models</em>: hazard ratios as a function of many predictors at once, adjusting for age, severity, and anything else. The pairing is standard: KM curves for the picture, Cox for the adjusted inference.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
 
         <nav class="lesson-nav" id="lesson-nav"></nav>
       </article>

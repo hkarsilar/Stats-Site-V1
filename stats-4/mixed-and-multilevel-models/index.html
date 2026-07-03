@@ -29,6 +29,9 @@
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Mixed & Multilevel Models (GLMMs)", "description": "When data is grouped, mixed models share information across groups — pulling noisy estimates toward the overall mean. Watch partial pooling and shrinkage in action.", "url": "https://statscapybara.com/stats-4/mixed-and-multilevel-models/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 4: Modern & Advanced", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Mixed & Multilevel Models (GLMMs)", "item": "https://statscapybara.com/stats-4/mixed-and-multilevel-models/"}]}]
   </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the difference between fixed and random effects?", "acceptedAnswer": {"@type": "Answer", "text": "Fixed effects are coefficients estimated for effects you care about specifically and would keep in a replication (treatment, age, condition). Random effects model sampled clusters — these particular schools, participants, litters — as draws from a population, estimating how much clusters vary rather than each one in isolation. Litmus test: would new data bring the same levels (fixed) or new ones (random)?"}}, {"@type": "Question", "name": "When do I need a multilevel model instead of ordinary regression?", "acceptedAnswer": {"@type": "Answer", "text": "Whenever observations come in clusters that share something — students within classrooms, repeated measures within people, patients within clinics. Ordinary regression assumes independence; clustered data violates it, shrinking standard errors and manufacturing false positives. Check the intraclass correlation (ICC): even a modest ICC of .10 badly distorts naive p-values once clusters are large."}}, {"@type": "Question", "name": "How many groups do I need to fit random effects?", "acceptedAnswer": {"@type": "Answer", "text": "Rules of thumb converge on: fewer than ~5 groups, don't — the model can't estimate between-group variance from 3 numbers (use fixed dummy codes instead); 10–20 groups works but estimates variance components roughly; 30+ is comfortable, and 50+ is preferred for random slopes or when the variance components are themselves the research question."}}]}
+  </script>
 </head>
 <body data-course="stats-4" data-section="mixed-and-multilevel-models">
   <nav class="nav" id="nav"></nav>
@@ -88,6 +91,24 @@
         <div class="callout">
           <p><strong>Why it matters:</strong> mixed models are now the default for grouped and repeated-measures data across psychology, ecology, medicine, and education — they respect the data's structure and make better predictions for small groups. They're a fitting place to end the course: the full power of the linear model, finally set loose on the messy, nested data of the real world.</p>
         </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What is the difference between fixed and random effects?</summary>
+            <div class="faq-a"><p>Fixed effects are coefficients estimated for effects you care about specifically and would keep in a replication (treatment, age, condition). Random effects model <em>sampled clusters</em> — these particular schools, participants, litters — as draws from a population, estimating how much clusters vary rather than each one in isolation. Litmus test: would new data bring the <em>same levels</em> (fixed) or new ones (random)?</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>When do I need a multilevel model instead of ordinary regression?</summary>
+            <div class="faq-a"><p>Whenever observations come in clusters that share something — students within classrooms, repeated measures within people, patients within clinics. Ordinary regression assumes independence; clustered data violates it, shrinking standard errors and manufacturing false positives. Check the intraclass correlation (ICC): even a modest ICC of .10 badly distorts naive p-values once clusters are large.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>How many groups do I need to fit random effects?</summary>
+            <div class="faq-a"><p>Rules of thumb converge on: fewer than ~5 groups, don't — the model can't estimate between-group variance from 3 numbers (use fixed dummy codes instead); 10–20 groups works but estimates variance components roughly; 30+ is comfortable, and 50+ is preferred for random <em>slopes</em> or when the variance components are themselves the research question.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
 
         <nav class="lesson-nav" id="lesson-nav"></nav>
       </article>

@@ -29,6 +29,9 @@
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Missing Data & Imputation", "description": "Data rarely go missing at random. Toggle MCAR, MAR, and MNAR mechanisms and watch complete-case analysis and mean imputation quietly distort your estimates.", "url": "https://statscapybara.com/stats-4/missing-data/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 4: Modern & Advanced", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Missing Data & Imputation", "item": "https://statscapybara.com/stats-4/missing-data/"}]}]
   </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How much missing data is too much?", "acceptedAnswer": {"@type": "Answer", "text": "Wrong first question — the mechanism outranks the amount. 5% missing not-at-random (MNAR) can bias conclusions more than 30% missing at random handled with multiple imputation. That said, practical strain grows past ~10% (report sensitivity analyses) and results lean heavily on the imputation model past ~40%. Always report how much was missing, why you believe it went missing, and how you handled it."}}, {"@type": "Question", "name": "Is it ever okay to just delete incomplete cases?", "acceptedAnswer": {"@type": "Answer", "text": "Listwise deletion is defensible when data is plausibly MCAR and the loss is small (a few percent, ample n remaining) — you sacrifice a little precision, no bias. It quietly betrays you when missingness relates to other variables (MAR): the surviving cases are no longer representative. With MAR data, multiple imputation or maximum likelihood recovers both the bias and the lost power."}}, {"@type": "Question", "name": "How many imputations should I use in multiple imputation?", "acceptedAnswer": {"@type": "Answer", "text": "The old advice of m = 5 came from an era of expensive computing. The modern heuristic: at least as many imputations as the percentage of incomplete cases (30% incomplete → m ≥ 30); m = 20–50 covers most studies and stabilizes standard errors and p-values across reruns. Computation is cheap now — err high."}}]}
+  </script>
 </head>
 <body data-course="stats-4" data-section="missing-data">
   <nav class="nav" id="nav"></nav>
@@ -100,6 +103,24 @@
         <div class="callout">
           <p><strong>Why it matters:</strong> deleting incomplete cases or plugging in averages silently rewrites your data with the strongest assumption possible — that the holes were harmless. Name the mechanism first (MCAR, MAR, MNAR), then choose a method built for it. "It's just a few missing values" is how biased conclusions are born.</p>
         </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>How much missing data is too much?</summary>
+            <div class="faq-a"><p>Wrong first question — the <em>mechanism</em> outranks the amount. 5% missing not-at-random (MNAR) can bias conclusions more than 30% missing at random handled with multiple imputation. That said, practical strain grows past ~10% (report sensitivity analyses) and results lean heavily on the imputation model past ~40%. Always report how much was missing, why you believe it went missing, and how you handled it.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Is it ever okay to just delete incomplete cases?</summary>
+            <div class="faq-a"><p>Listwise deletion is defensible when data is plausibly MCAR <em>and</em> the loss is small (a few percent, ample n remaining) — you sacrifice a little precision, no bias. It quietly betrays you when missingness relates to other variables (MAR): the surviving cases are no longer representative. With MAR data, multiple imputation or maximum likelihood recovers both the bias and the lost power.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>How many imputations should I use in multiple imputation?</summary>
+            <div class="faq-a"><p>The old advice of m = 5 came from an era of expensive computing. The modern heuristic: at least as many imputations as the percentage of incomplete cases (30% incomplete → m ≥ 30); m = 20–50 covers most studies and stabilizes standard errors and p-values across reruns. Computation is cheap now — err high.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
 
         <nav class="lesson-nav" id="lesson-nav"></nav>
       </article>

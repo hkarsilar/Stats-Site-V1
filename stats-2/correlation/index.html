@@ -29,6 +29,9 @@
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Correlation", "description": "See what a correlation coefficient looks like: set the strength, drag points, and watch r respond to the shape of the cloud.", "url": "https://statscapybara.com/stats-2/correlation/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: Comparing Groups & Relationships", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Correlation", "item": "https://statscapybara.com/stats-2/correlation/"}]}]
   </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What counts as a strong correlation?", "acceptedAnswer": {"@type": "Answer", "text": "Common benchmarks: |r| ≈ .10 small, .30 medium, .50+ large — psychology rarely sees field correlations above .5, while physics laughs at anything below .95. Context is everything: r = .3 between a cheap screening question and job performance is valuable; r = .8 between two versions of the same questionnaire is unremarkable. Always interpret r against what's typical for your domain."}}, {"@type": "Question", "name": "What is the difference between Pearson and Spearman correlation?", "acceptedAnswer": {"@type": "Answer", "text": "Pearson's r measures linear association using the actual values; Spearman's ρ replaces values with ranks first, so it measures monotonic association (\"consistently increasing, straight or not\"). Spearman is robust to outliers and fine for ordinal data — if the two disagree sharply, that's a clue your relationship is curved or an outlier is steering Pearson."}}, {"@type": "Question", "name": "What sample size do I need for a reliable correlation?", "acceptedAnswer": {"@type": "Answer", "text": "Correlations are noisy in small samples — with n = 25, a true r of .3 easily shows up anywhere between .0 and .6. Detecting r = .3 with 80% power needs about n = 84; and estimates only start stabilizing to a tight interval around n ≈ 150–250. Be suspicious of dramatic correlations from tiny samples."}}]}
+  </script>
 </head>
 <body data-course="stats-2" data-section="correlation">
   <nav class="nav" id="nav"></nav>
@@ -98,6 +101,24 @@
         <div class="callout">
           <p><strong>Why it matters:</strong> correlation is the first measure of "do these two move together?" — and it's the direct stepping stone to <a href="../../stats-2/simple-linear-regression/">regression</a>, which turns that relationship into a predictive line.</p>
         </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What counts as a strong correlation?</summary>
+            <div class="faq-a"><p>Common benchmarks: |r| ≈ .10 small, .30 medium, .50+ large — psychology rarely sees field correlations above .5, while physics laughs at anything below .95. Context is everything: r = .3 between a cheap screening question and job performance is valuable; r = .8 between two versions of the same questionnaire is unremarkable. Always interpret r against what's typical for your domain.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is the difference between Pearson and Spearman correlation?</summary>
+            <div class="faq-a"><p>Pearson's r measures <em>linear</em> association using the actual values; Spearman's ρ replaces values with ranks first, so it measures <em>monotonic</em> association ("consistently increasing, straight or not"). Spearman is robust to outliers and fine for ordinal data — if the two disagree sharply, that's a clue your relationship is curved or an outlier is steering Pearson.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What sample size do I need for a reliable correlation?</summary>
+            <div class="faq-a"><p>Correlations are noisy in small samples — with n = 25, a true r of .3 easily shows up anywhere between .0 and .6. Detecting r = .3 with 80% power needs about n = 84; and estimates only start stabilizing to a tight interval around n ≈ 150–250. Be suspicious of dramatic correlations from tiny samples.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
 
         <nav class="lesson-nav" id="lesson-nav"></nav>
       </article>

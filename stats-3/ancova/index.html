@@ -29,6 +29,9 @@
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "ANCOVA: Controlling for Covariates", "description": "Comparing groups is only fair if you account for where people started. See how ANCOVA adjusts group means for a covariate, when it rescues a comparison — and when 'controlling for' goes wrong.", "url": "https://statscapybara.com/stats-3/ancova/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced Modeling", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "ANCOVA: Controlling for Covariates", "item": "https://statscapybara.com/stats-3/ancova/"}]}]
   </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the difference between ANOVA and ANCOVA?", "acceptedAnswer": {"@type": "Answer", "text": "ANOVA compares raw group means. ANCOVA first removes the part of the outcome explained by a continuous covariate (pretest score, age, baseline severity), then compares the adjusted means. Two payoffs: it corrects for baseline imbalance between groups, and it soaks up noise — often shrinking p-values even in perfectly randomized experiments."}}, {"@type": "Question", "name": "Can ANCOVA fix pre-existing group differences in observational studies?", "acceptedAnswer": {"@type": "Answer", "text": "Only partially, and this deserves respect: adjustment removes confounding carried by the covariates you measured — never the ones you didn't. Worse, when groups differ substantially on the covariate, adjusted comparisons extrapolate into covariate territory where one group has no data (this is the heart of Lord's paradox). ANCOVA sharpens randomized experiments; in observational data it's an assumption-laden estimate, not a magic equalizer."}}, {"@type": "Question", "name": "What is homogeneity of regression slopes?", "acceptedAnswer": {"@type": "Answer", "text": "The assumption that the covariate–outcome relationship is the same in every group — parallel lines in the scatterplot. If the slopes genuinely differ, a single \"adjusted difference\" doesn't exist: the group effect depends on the covariate value. The fix is to model the group × covariate interaction and report how the effect varies."}}]}
+  </script>
 </head>
 <body data-course="stats-3" data-section="ancova">
   <nav class="nav" id="nav"></nav>
@@ -108,6 +111,24 @@
         <div class="callout">
           <p><strong>Why it matters:</strong> almost every serious group comparison in psychology, medicine, and education is covariate-adjusted — pre/post designs, clinical baselines, demographic controls. Knowing what the adjustment does (and what it can't do) is the difference between reading results and being fooled by them.</p>
         </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What is the difference between ANOVA and ANCOVA?</summary>
+            <div class="faq-a"><p>ANOVA compares raw group means. ANCOVA first removes the part of the outcome explained by a continuous covariate (pretest score, age, baseline severity), then compares the <em>adjusted</em> means. Two payoffs: it corrects for baseline imbalance between groups, and it soaks up noise — often shrinking p-values even in perfectly randomized experiments.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Can ANCOVA fix pre-existing group differences in observational studies?</summary>
+            <div class="faq-a"><p>Only partially, and this deserves respect: adjustment removes confounding carried by the covariates you measured — never the ones you didn't. Worse, when groups differ substantially on the covariate, adjusted comparisons extrapolate into covariate territory where one group has no data (this is the heart of Lord's paradox). ANCOVA sharpens randomized experiments; in observational data it's an assumption-laden estimate, not a magic equalizer.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is homogeneity of regression slopes?</summary>
+            <div class="faq-a"><p>The assumption that the covariate–outcome relationship is the same in every group — parallel lines in the scatterplot. If the slopes genuinely differ, a single "adjusted difference" doesn't exist: the group effect depends on the covariate value. The fix is to model the <a href="../../stats-3/interactions-in-regression/">group × covariate interaction</a> and report how the effect varies.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
 
         <nav class="lesson-nav" id="lesson-nav"></nav>
       </article>

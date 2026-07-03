@@ -29,6 +29,9 @@
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Interactions in Regression", "description": "An interaction term lets the slope of one predictor depend on another. Slide the interaction and watch two regression lines go from parallel to fanning to crossing.", "url": "https://statscapybara.com/stats-3/interactions-in-regression/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced Modeling", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Interactions in Regression", "item": "https://statscapybara.com/stats-3/interactions-in-regression/"}]}]
   </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why should I center variables before creating an interaction term?", "acceptedAnswer": {"@type": "Answer", "text": "Two reasons. Interpretability: with a product term in the model, b₁ is the effect of x₁ when the other variable equals zero — often a meaningless value (age 0, income 0); centering moves \"zero\" to the mean, so b₁ reads as the effect at a typical value. Stability: centering also reduces the artificial correlation between x and x×z, taming multicollinearity in the estimates."}}, {"@type": "Question", "name": "How do I interpret coefficients when there's an interaction term?", "acceptedAnswer": {"@type": "Answer", "text": "Carefully — the rules change. In ŷ = b₀ + b₁x + b₂z + b₃xz, the coefficient b₁ is the slope of x specifically when z = 0, not an overall effect; b₃ says how much that slope changes per unit of z. Nobody reads these raw numbers fluently: plot predicted lines at low/medium/high values of the moderator and interpret the picture."}}, {"@type": "Question", "name": "What are simple slopes?", "acceptedAnswer": {"@type": "Answer", "text": "The effect of x computed at chosen values of the moderator — conventionally at its mean and ±1 SD. They turn an abstract product coefficient into direct statements: \"among low-experience users the feature gains 4 points; among high-experience users, 0.5.\" Simple-slope tests then tell you at which moderator values the effect is significantly different from zero."}}]}
+  </script>
 </head>
 <body data-course="stats-3" data-section="interactions-in-regression">
   <nav class="nav" id="nav"></nav>
@@ -84,6 +87,24 @@
         <div class="callout">
           <p><strong>Why it matters:</strong> "it depends" is one of the most honest and useful things data can tell you, and interactions are how you say it rigorously. They're essential whenever an effect isn't one-size-fits-all — which is most of the time.</p>
         </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>Why should I center variables before creating an interaction term?</summary>
+            <div class="faq-a"><p>Two reasons. Interpretability: with a product term in the model, b₁ is the effect of x₁ <em>when the other variable equals zero</em> — often a meaningless value (age 0, income 0); centering moves "zero" to the mean, so b₁ reads as the effect at a typical value. Stability: centering also reduces the artificial correlation between x and x×z, taming multicollinearity in the estimates.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>How do I interpret coefficients when there's an interaction term?</summary>
+            <div class="faq-a"><p>Carefully — the rules change. In ŷ = b₀ + b₁x + b₂z + b₃xz, the coefficient b₁ is the slope of x <em>specifically when z = 0</em>, not an overall effect; b₃ says how much that slope changes per unit of z. Nobody reads these raw numbers fluently: plot predicted lines at low/medium/high values of the moderator and interpret the picture.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What are simple slopes?</summary>
+            <div class="faq-a"><p>The effect of x computed at chosen values of the moderator — conventionally at its mean and ±1 SD. They turn an abstract product coefficient into direct statements: "among low-experience users the feature gains 4 points; among high-experience users, 0.5." Simple-slope tests then tell you at which moderator values the effect is significantly different from zero.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
 
         <nav class="lesson-nav" id="lesson-nav"></nav>
       </article>

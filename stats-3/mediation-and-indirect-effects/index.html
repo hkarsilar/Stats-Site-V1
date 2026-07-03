@@ -29,6 +29,9 @@
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Mediation & Indirect Effects", "description": "Mediation explains HOW one thing affects another, through a mechanism in between. Adjust the path coefficients and watch the indirect effect flow through the mediator.", "url": "https://statscapybara.com/stats-3/mediation-and-indirect-effects/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced Modeling", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Mediation & Indirect Effects", "item": "https://statscapybara.com/stats-3/mediation-and-indirect-effects/"}]}]
   </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the difference between a mediator and a moderator?", "acceptedAnswer": {"@type": "Answer", "text": "A mediator is a mechanism: X causes M, which causes Y — stress harms sleep, which harms health (an arrow chain, tested with indirect effects). A moderator changes the strength of an effect: the training works for novices but not experts (an \"it depends,\" tested with interaction terms). Mediation answers \"how does it work?\"; moderation answers \"for whom / when?\""}}, {"@type": "Question", "name": "Why is bootstrapping used to test mediation?", "acceptedAnswer": {"@type": "Answer", "text": "The indirect effect is a product, a × b, and products of normal-ish estimates are themselves skewed — the old Sobel test pretends otherwise and loses power. Bootstrapping resamples the data thousands of times, computes a×b in each, and reads the confidence interval straight off that skewed distribution. If the interval excludes zero, the indirect effect is supported."}}, {"@type": "Question", "name": "Can mediation analysis prove causation?", "acceptedAnswer": {"@type": "Answer", "text": "No — it quantifies a pattern consistent with your proposed causal chain, but the statistics can't verify the arrows' directions; reversed or confounded models often fit equally well. The causal weight rests on design (temporal ordering, experiments, longitudinal data) and theory. Cross-sectional mediation, where X, M, and Y are measured simultaneously, deserves particular skepticism."}}]}
+  </script>
 </head>
 <body data-course="stats-3" data-section="mediation-and-indirect-effects">
   <nav class="nav" id="nav"></nav>
@@ -91,6 +94,24 @@
         <div class="callout">
           <p><strong>Why it matters:</strong> "why" and "how" questions are the heart of science. Mediation is the main statistical tool for testing mechanisms — turning "X is associated with Y" into "X works <em>by way of</em> M."</p>
         </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What is the difference between a mediator and a moderator?</summary>
+            <div class="faq-a"><p>A mediator is a <em>mechanism</em>: X causes M, which causes Y — stress harms sleep, which harms health (an arrow chain, tested with <em>indirect effects</em>). A moderator changes the <em>strength</em> of an effect: the training works for novices but not experts (an "it depends," tested with <a href="../../stats-3/interactions-in-regression/">interaction terms</a>). Mediation answers "how does it work?"; moderation answers "for whom / when?"</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Why is bootstrapping used to test mediation?</summary>
+            <div class="faq-a"><p>The indirect effect is a product, a × b, and products of normal-ish estimates are themselves skewed — the old Sobel test pretends otherwise and loses power. <a href="../../stats-4/bootstrap-and-resampling/">Bootstrapping</a> resamples the data thousands of times, computes a×b in each, and reads the confidence interval straight off that skewed distribution. If the interval excludes zero, the indirect effect is supported.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Can mediation analysis prove causation?</summary>
+            <div class="faq-a"><p>No — it quantifies a pattern <em>consistent with</em> your proposed causal chain, but the statistics can't verify the arrows' directions; reversed or confounded models often fit equally well. The causal weight rests on design (temporal ordering, experiments, longitudinal data) and theory. Cross-sectional mediation, where X, M, and Y are measured simultaneously, deserves particular skepticism.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
 
         <nav class="lesson-nav" id="lesson-nav"></nav>
       </article>

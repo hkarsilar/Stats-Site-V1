@@ -29,6 +29,9 @@
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Simple Linear Regression", "description": "Fit a line to data by hand, watch the sum of squared residuals, then see why least squares wins.", "url": "https://statscapybara.com/stats-2/simple-linear-regression/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: Comparing Groups & Relationships", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Simple Linear Regression", "item": "https://statscapybara.com/stats-2/simple-linear-regression/"}]}]
   </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What does R² mean in plain English?", "acceptedAnswer": {"@type": "Answer", "text": "The share of the outcome's variation the line accounts for. R² = 0.70 means 70% of the ups and downs in y are tracked by x through the fitted line; the remaining 30% is scatter the model can't explain. In simple regression it's literally the correlation squared — r = .5 gives R² = .25."}}, {"@type": "Question", "name": "What is the difference between correlation and regression?", "acceptedAnswer": {"@type": "Answer", "text": "Correlation gives one symmetric number describing how tightly two variables co-move — no direction, no units. Regression fits an equation (ŷ = b₀ + b₁x) for predicting y from x, with a slope in real units (\"each extra study hour buys 2.3 exam points\"). Correlation describes; regression predicts."}}, {"@type": "Question", "name": "Can I use my regression line to predict beyond my data's range?", "acceptedAnswer": {"@type": "Answer", "text": "That's extrapolation, and it's where regression goes to die. The line is only supported within the x-values you observed — beyond them, the relationship may bend, flatten, or reverse, and the model gives no warning (a child's growth line predicts 3-meter adults). Predict within the observed range; extrapolate only with strong theoretical justification and loud caveats."}}]}
+  </script>
 </head>
 <body data-course="stats-2" data-section="simple-linear-regression">
   <nav class="nav" id="nav"></nav>
@@ -101,6 +104,24 @@
         <div class="callout">
           <p><strong>Why it matters:</strong> simple regression is the foundation of nearly everything in Stats 3 — add more predictors and you've got <a href="../../stats-3/multiple-regression/">multiple regression</a>, the workhorse of modern data analysis.</p>
         </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What does R² mean in plain English?</summary>
+            <div class="faq-a"><p>The share of the outcome's variation the line accounts for. R² = 0.70 means 70% of the ups and downs in y are tracked by x through the fitted line; the remaining 30% is scatter the model can't explain. In simple regression it's literally the correlation squared — r = .5 gives R² = .25.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is the difference between correlation and regression?</summary>
+            <div class="faq-a"><p>Correlation gives one symmetric number describing how tightly two variables co-move — no direction, no units. Regression fits an equation (ŷ = b₀ + b₁x) for <em>predicting</em> y from x, with a slope in real units ("each extra study hour buys 2.3 exam points"). Correlation describes; regression predicts.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Can I use my regression line to predict beyond my data's range?</summary>
+            <div class="faq-a"><p>That's extrapolation, and it's where regression goes to die. The line is only supported within the x-values you observed — beyond them, the relationship may bend, flatten, or reverse, and the model gives no warning (a child's growth line predicts 3-meter adults). Predict within the observed range; extrapolate only with strong theoretical justification and loud caveats.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
 
         <nav class="lesson-nav" id="lesson-nav"></nav>
       </article>

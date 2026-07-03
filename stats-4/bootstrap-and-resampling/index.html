@@ -29,6 +29,9 @@
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Bootstrap & Resampling", "description": "The bootstrap builds a sampling distribution from your own data by resampling with replacement — no formulas, no normality assumption. Watch it happen.", "url": "https://statscapybara.com/stats-4/bootstrap-and-resampling/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 4: Modern & Advanced", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Bootstrap & Resampling", "item": "https://statscapybara.com/stats-4/bootstrap-and-resampling/"}]}]
   </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How many bootstrap resamples do I need?", "acceptedAnswer": {"@type": "Answer", "text": "For standard errors, ~1,000 is plenty; for confidence intervals — which depend on the distribution's tails — 5,000–10,000 is the modern norm, and since computation is cheap there's no reason to skimp. Note what B does and doesn't fix: more resamples reduce simulation noise, but the information ceiling is set by your original n. B = 100,000 can't rescue a sample of 12."}}, {"@type": "Question", "name": "When does the bootstrap fail?", "acceptedAnswer": {"@type": "Answer", "text": "Its known weak spots: very small samples (resampling 8 values just reshuffles 8 values), statistics driven by extremes (the maximum, extreme quantiles — the resamples can never exceed your observed max), and dependent data (time series, clustered observations) unless you use block or cluster variants. And no amount of resampling fixes a biased sample — the bootstrap replicates your data's flaws faithfully."}}, {"@type": "Question", "name": "What is the difference between bootstrapping and permutation tests?", "acceptedAnswer": {"@type": "Answer", "text": "Different questions. The bootstrap resamples with replacement to estimate uncertainty — standard errors and confidence intervals for an estimate. A permutation test reshuffles group labels to build the null distribution — \"what differences would chance produce if the labels meant nothing?\" — yielding an exact p-value. Estimation → bootstrap; hypothesis testing → permutation."}}]}
+  </script>
 </head>
 <body data-course="stats-4" data-section="bootstrap-and-resampling">
   <nav class="nav" id="nav"></nav>
@@ -86,6 +89,24 @@
         <div class="callout">
           <p><strong>Why it matters:</strong> the bootstrap is one of the most important ideas in modern statistics — it trades mathematical derivation for raw computation, which computers have in abundance. It's the bridge between the formula-based methods of Stats 1–3 and the simulation-driven mindset of modern data analysis.</p>
         </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>How many bootstrap resamples do I need?</summary>
+            <div class="faq-a"><p>For standard errors, ~1,000 is plenty; for confidence intervals — which depend on the distribution's tails — 5,000–10,000 is the modern norm, and since computation is cheap there's no reason to skimp. Note what B does and doesn't fix: more resamples reduce simulation noise, but the information ceiling is set by your original n. B = 100,000 can't rescue a sample of 12.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>When does the bootstrap fail?</summary>
+            <div class="faq-a"><p>Its known weak spots: very small samples (resampling 8 values just reshuffles 8 values), statistics driven by extremes (the maximum, extreme quantiles — the resamples can never exceed your observed max), and dependent data (time series, clustered observations) unless you use block or cluster variants. And no amount of resampling fixes a biased sample — the bootstrap replicates your data's flaws faithfully.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is the difference between bootstrapping and permutation tests?</summary>
+            <div class="faq-a"><p>Different questions. The bootstrap resamples <em>with replacement</em> to estimate uncertainty — standard errors and confidence intervals for an estimate. A permutation test <em>reshuffles group labels</em> to build the null distribution — "what differences would chance produce if the labels meant nothing?" — yielding an exact p-value. Estimation → bootstrap; hypothesis testing → permutation.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
 
         <nav class="lesson-nav" id="lesson-nav"></nav>
       </article>

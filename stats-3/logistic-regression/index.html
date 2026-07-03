@@ -29,6 +29,9 @@
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Logistic Regression", "description": "When the outcome is yes/no, a straight line predicts impossible probabilities. Logistic regression bends it into an S-curve that stays between 0 and 1.", "url": "https://statscapybara.com/stats-3/logistic-regression/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced Modeling", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Logistic Regression", "item": "https://statscapybara.com/stats-3/logistic-regression/"}]}]
   </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I interpret an odds ratio?", "acceptedAnswer": {"@type": "Answer", "text": "It's the multiplier on the odds for each one-unit increase in the predictor. OR = 1.5 means each extra unit multiplies the odds of the outcome by 1.5 (+50%); OR = 0.8 shrinks them by 20%; OR = 1 means no effect. Two cautions: \"odds\" are p/(1−p), not probability — and an impressive-sounding OR can mean a tiny absolute change when the baseline risk is low."}}, {"@type": "Question", "name": "Why can't I just use linear regression for a yes/no outcome?", "acceptedAnswer": {"@type": "Answer", "text": "A straight line happily predicts \"probabilities\" of −0.3 or 1.4, which are nonsense; and a binary outcome violates the constant-variance and normal-error assumptions that make linear regression's inference valid. The logistic curve fixes all of it at once: predictions squeezed into (0, 1), with a model fit by maximum likelihood on the scale where the relationship really is linear — log-odds."}}, {"@type": "Question", "name": "What is the difference between odds and probability?", "acceptedAnswer": {"@type": "Answer", "text": "Probability is successes ÷ all attempts; odds are successes ÷ failures. A 75% probability is odds of 3 (three successes per failure). They diverge most in the middle of the range (p = .5 is odds = 1) and converge for rare events — p = .01 is odds ≈ .0101, which is why odds ratios approximate risk ratios only when the outcome is uncommon."}}]}
+  </script>
 </head>
 <body data-course="stats-3" data-section="logistic-regression">
   <nav class="nav" id="nav"></nav>
@@ -91,6 +94,24 @@
         <div class="callout">
           <p><strong>Why it matters:</strong> binary outcomes are everywhere, and logistic regression is the standard, interpretable tool for them. It extends naturally to multiple predictors (numeric and <a href="../../stats-3/categorical-predictors-and-dummy-coding/">categorical</a>) exactly like ordinary regression — same linear model, new link function.</p>
         </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>How do I interpret an odds ratio?</summary>
+            <div class="faq-a"><p>It's the multiplier on the odds for each one-unit increase in the predictor. OR = 1.5 means each extra unit multiplies the odds of the outcome by 1.5 (+50%); OR = 0.8 shrinks them by 20%; OR = 1 means no effect. Two cautions: "odds" are p/(1−p), not probability — and an impressive-sounding OR can mean a tiny absolute change when the baseline risk is low.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Why can't I just use linear regression for a yes/no outcome?</summary>
+            <div class="faq-a"><p>A straight line happily predicts "probabilities" of −0.3 or 1.4, which are nonsense; and a binary outcome violates the constant-variance and normal-error assumptions that make linear regression's inference valid. The logistic curve fixes all of it at once: predictions squeezed into (0, 1), with a model fit by maximum likelihood on the scale where the relationship really is linear — log-odds.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is the difference between odds and probability?</summary>
+            <div class="faq-a"><p>Probability is successes ÷ all attempts; odds are successes ÷ failures. A 75% probability is odds of 3 (three successes per failure). They diverge most in the middle of the range (p = .5 is odds = 1) and converge for rare events — p = .01 is odds ≈ .0101, which is why odds ratios approximate risk ratios only when the outcome is uncommon.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
 
         <nav class="lesson-nav" id="lesson-nav"></nav>
       </article>

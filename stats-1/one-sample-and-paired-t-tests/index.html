@@ -29,6 +29,9 @@
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "One-Sample & Paired t-Tests", "description": "When you estimate the standard deviation from data, the normal curve becomes the t-distribution. See how degrees of freedom fatten the tails and move the critical value.", "url": "https://statscapybara.com/stats-1/one-sample-and-paired-t-tests/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Foundations", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "One-Sample & Paired t-Tests", "item": "https://statscapybara.com/stats-1/one-sample-and-paired-t-tests/"}]}]
   </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "When should I use a paired t-test instead of an independent t-test?", "acceptedAnswer": {"@type": "Answer", "text": "Use paired when the two sets of scores belong to the same (or matched) units — before/after measurements, twins, left/right comparisons. The pairing lets you analyze within-unit differences, cancelling stable individual differences and usually gaining a lot of power. Use the independent-samples test when the groups contain different, unrelated people."}}, {"@type": "Question", "name": "What are degrees of freedom in a t-test?", "acceptedAnswer": {"@type": "Answer", "text": "Roughly, the number of values free to vary once you've estimated the necessary quantities — for a one-sample or paired test, df = n − 1 (estimating the mean uses up one). Degrees of freedom set the t-distribution's shape: small df means fatter tails and a stricter critical value, reflecting the extra uncertainty of estimating the SD from little data."}}, {"@type": "Question", "name": "Can I run a t-test on a small sample?", "acceptedAnswer": {"@type": "Answer", "text": "Yes — small samples are exactly why the t-test exists; the t-distribution's heavy tails already price in the shakiness of estimating s from few observations. The caveat: with small n the data (or the paired differences) should be roughly normal, since the CLT can't rescue you yet. With visible skew or outliers in a small sample, a rank-based alternative is safer."}}]}
+  </script>
 </head>
 <body data-course="stats-1" data-section="one-sample-and-paired-t-tests">
   <nav class="nav" id="nav"></nav>
@@ -91,6 +94,24 @@
         <div class="callout">
           <p><strong>Why it matters:</strong> the one-sample and paired t-tests are the simplest members of a family that runs through the entire course. Understand the t-distribution here and the <a href="../../stats-1/independent-samples-t-test/">independent-samples t-test</a> next is a short step.</p>
         </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>When should I use a paired t-test instead of an independent t-test?</summary>
+            <div class="faq-a"><p>Use paired when the two sets of scores belong to the same (or matched) units — before/after measurements, twins, left/right comparisons. The pairing lets you analyze within-unit <em>differences</em>, cancelling stable individual differences and usually gaining a lot of power. Use the <a href="../../stats-1/independent-samples-t-test/">independent-samples test</a> when the groups contain different, unrelated people.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What are degrees of freedom in a t-test?</summary>
+            <div class="faq-a"><p>Roughly, the number of values free to vary once you've estimated the necessary quantities — for a one-sample or paired test, df = n − 1 (estimating the mean uses up one). Degrees of freedom set the t-distribution's shape: small df means fatter tails and a stricter critical value, reflecting the extra uncertainty of estimating the SD from little data.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Can I run a t-test on a small sample?</summary>
+            <div class="faq-a"><p>Yes — small samples are exactly why the t-test exists; the t-distribution's heavy tails already price in the shakiness of estimating s from few observations. The caveat: with small n the data (or the paired differences) should be roughly normal, since the CLT can't rescue you yet. With visible skew or outliers in a small sample, a <a href="../../stats-2/non-parametric-alternatives/">rank-based alternative</a> is safer.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
 
         <nav class="lesson-nav" id="lesson-nav"></nav>
       </article>

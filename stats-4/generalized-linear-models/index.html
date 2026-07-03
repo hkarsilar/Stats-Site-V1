@@ -29,6 +29,9 @@
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Generalized Linear Models", "description": "One framework unifies linear, logistic, and Poisson regression: a linear predictor plus a link function. Switch the family and watch the straight line bend to fit.", "url": "https://statscapybara.com/stats-4/generalized-linear-models/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 4: Modern & Advanced", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Generalized Linear Models", "item": "https://statscapybara.com/stats-4/generalized-linear-models/"}]}]
   </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is a link function in simple terms?", "acceptedAnswer": {"@type": "Answer", "text": "The bridge between a straight line and an outcome that can't follow one. The linear predictor b₀ + b₁x ranges over all numbers, but a probability lives in (0, 1) and a count rate must stay positive — so the link transforms the outcome's mean onto the unlimited scale where the line lives (logit for probabilities, log for counts). One linear machine, different adapters."}}, {"@type": "Question", "name": "What is overdispersion and how do I handle it?", "acceptedAnswer": {"@type": "Answer", "text": "Poisson regression hard-codes variance = mean, and real counts are almost always messier — more zeros, longer tails (event counts cluster within people, days, sites). The symptoms: deviance far exceeding its degrees of freedom, deceptively tiny standard errors. Standard fixes: a quasi-Poisson model (scales the errors) or, more commonly, a negative binomial model with its own dispersion parameter."}}, {"@type": "Question", "name": "Which GLM family should I use for my outcome?", "acceptedAnswer": {"@type": "Answer", "text": "Read it off the outcome type: continuous and roughly symmetric → Gaussian (ordinary regression); yes/no → binomial with logit link (logistic); counts of events → Poisson with log link (negative binomial if overdispersed); strictly positive skewed amounts (costs, durations) → Gamma, usually with a log link. The workflow — predictors, interactions, diagnostics — stays identical across all of them."}}]}
+  </script>
 </head>
 <body data-course="stats-4" data-section="generalized-linear-models">
   <nav class="nav" id="nav"></nav>
@@ -98,6 +101,24 @@
         <div class="callout">
           <p><strong>Why it matters:</strong> real outcomes are rarely tidy and continuous. GLMs let you bring the entire regression toolkit — multiple predictors, <a href="../../stats-3/interactions-in-regression/">interactions</a>, categorical variables — to bear on binary, count, and rate data, all under one roof. They're the practical backbone of applied statistics.</p>
         </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What is a link function in simple terms?</summary>
+            <div class="faq-a"><p>The bridge between a straight line and an outcome that can't follow one. The linear predictor b₀ + b₁x ranges over all numbers, but a probability lives in (0, 1) and a count rate must stay positive — so the link transforms the outcome's mean onto the unlimited scale where the line lives (logit for probabilities, log for counts). One linear machine, different adapters.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is overdispersion and how do I handle it?</summary>
+            <div class="faq-a"><p>Poisson regression hard-codes variance = mean, and real counts are almost always messier — more zeros, longer tails (event counts cluster within people, days, sites). The symptoms: deviance far exceeding its degrees of freedom, deceptively tiny standard errors. Standard fixes: a quasi-Poisson model (scales the errors) or, more commonly, a <strong>negative binomial</strong> model with its own dispersion parameter.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Which GLM family should I use for my outcome?</summary>
+            <div class="faq-a"><p>Read it off the outcome type: continuous and roughly symmetric → Gaussian (ordinary regression); yes/no → binomial with logit link (logistic); counts of events → Poisson with log link (negative binomial if overdispersed); strictly positive skewed amounts (costs, durations) → Gamma, usually with a log link. The workflow — predictors, interactions, diagnostics — stays identical across all of them.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
 
         <nav class="lesson-nav" id="lesson-nav"></nav>
       </article>

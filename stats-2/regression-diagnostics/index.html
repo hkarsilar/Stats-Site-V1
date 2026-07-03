@@ -29,6 +29,9 @@
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Regression Diagnostics", "description": "A regression line can fit the numbers and still be wrong. Learn to read residual plots to catch nonlinearity, non-constant variance, and influential outliers.", "url": "https://statscapybara.com/stats-2/regression-diagnostics/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: Comparing Groups & Relationships", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Regression Diagnostics", "item": "https://statscapybara.com/stats-2/regression-diagnostics/"}]}]
   </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What should a good residual plot look like?", "acceptedAnswer": {"@type": "Answer", "text": "Nothing — a structureless, horizontal band of points scattered evenly around zero, like static. Any visible pattern is the model confessing: a curve means the relationship isn't linear, a funnel means non-constant variance, a lone distant point means an observation with outsized pull. \"Boring\" is the goal."}}, {"@type": "Question", "name": "What is heteroscedasticity in simple terms?", "acceptedAnswer": {"@type": "Answer", "text": "Residual spread that changes across the range of predictions — typically a funnel: tight errors for small fitted values, wide ones for large (income data does this constantly). The slope estimate stays unbiased, but its standard errors and p-values become unreliable. Fixes: transform y (log is the usual medicine), or use robust (heteroscedasticity-consistent) standard errors."}}, {"@type": "Question", "name": "Should I delete outliers from my regression?", "acceptedAnswer": {"@type": "Answer", "text": "Not as a reflex. First investigate: a data-entry error (age = 250) gets fixed or removed; a genuine-but-extreme case is information about the world. For real outliers, check influence (Cook's distance), then report the model with and without the point — if conclusions flip on one observation, that fragility is the finding."}}]}
+  </script>
 </head>
 <body data-course="stats-2" data-section="regression-diagnostics">
   <nav class="nav" id="nav"></nav>
@@ -94,6 +97,24 @@
         <div class="callout">
           <p><strong>Why it matters:</strong> a high R² on a mis-specified model is a confident wrong answer. Residual plots are the cheapest insurance in all of statistics — a few seconds of looking saves you from trusting a model that doesn't fit. This habit carries straight into <a href="../../stats-3/multiple-regression/">multiple regression</a>.</p>
         </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What should a good residual plot look like?</summary>
+            <div class="faq-a"><p>Nothing — a structureless, horizontal band of points scattered evenly around zero, like static. Any visible pattern is the model confessing: a curve means the relationship isn't linear, a funnel means non-constant variance, a lone distant point means an observation with outsized pull. "Boring" is the goal.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is heteroscedasticity in simple terms?</summary>
+            <div class="faq-a"><p>Residual spread that changes across the range of predictions — typically a funnel: tight errors for small fitted values, wide ones for large (income data does this constantly). The slope estimate stays unbiased, but its standard errors and p-values become unreliable. Fixes: transform y (log is the usual medicine), or use robust (heteroscedasticity-consistent) standard errors.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Should I delete outliers from my regression?</summary>
+            <div class="faq-a"><p>Not as a reflex. First investigate: a data-entry error (age = 250) gets fixed or removed; a genuine-but-extreme case is information about the world. For real outliers, check influence (Cook's distance), then report the model with and without the point — if conclusions flip on one observation, that fragility <em>is</em> the finding.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
 
         <nav class="lesson-nav" id="lesson-nav"></nav>
       </article>

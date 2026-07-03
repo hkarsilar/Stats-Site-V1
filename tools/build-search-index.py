@@ -79,5 +79,5 @@ out = (
     + ";\n"
 )
 dest = ROOT / "assets" / "js" / "search-index.js"
-dest.write_text(out, encoding="utf-8")
+dest.write_text(out, encoding="utf-8", newline="\n")
 print(f"wrote {dest} ({dest.stat().st_size / 1024:.0f} KB, {len(lessons)} lessons, {len(pages)} pages)")

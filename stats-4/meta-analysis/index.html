@@ -29,6 +29,9 @@
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Meta-Analysis & Forest Plots", "description": "Pool a whole literature into one estimate: build forest plots, weight studies by precision, and see when random effects and I² tell you the studies disagree.", "url": "https://statscapybara.com/stats-4/meta-analysis/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 4: Modern & Advanced", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Meta-Analysis & Forest Plots", "item": "https://statscapybara.com/stats-4/meta-analysis/"}]}]
   </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What does I² tell you in a meta-analysis?", "acceptedAnswer": {"@type": "Answer", "text": "The share of visible between-study variation that reflects real differences in effects rather than sampling noise. Rough bands: 25% low, 50% moderate, 75% high heterogeneity. High I² isn't a defect — it's a finding: the effect genuinely varies across populations or protocols, the fixed-effect summary is too confident, and the interesting question becomes what moderates the effect."}}, {"@type": "Question", "name": "Should I use a fixed-effect or random-effects model?", "acceptedAnswer": {"@type": "Answer", "text": "Fixed-effect assumes every study estimates one identical true effect — defensible only for near-exact replications. Random-effects allows true effects to vary across studies and widens the pooled interval honestly; with real-world literatures (different populations, doses, designs), it's the sensible default. When heterogeneity is genuinely zero the two coincide anyway — you lose nothing."}}, {"@type": "Question", "name": "What is a funnel plot and what does asymmetry mean?", "acceptedAnswer": {"@type": "Answer", "text": "Each study plotted as effect size vs. precision: big precise studies cluster at the top, small noisy ones fan out below — symmetrically, if all results reached publication. A missing lower corner (typically small null studies) suggests publication bias, testable with Egger's regression and probed with trim-and-fill. Caveat: asymmetry has innocent causes too, like small studies using different populations."}}]}
+  </script>
 </head>
 <body data-course="stats-4" data-section="meta-analysis">
   <nav class="nav" id="nav"></nav>
@@ -91,6 +94,24 @@
         <div class="callout">
           <p><strong>Why it matters:</strong> single studies whisper; literatures speak. Meta-analysis turns a pile of noisy, conflicting results into a weighted answer with honest uncertainty — and I² tells you when "the studies disagree" is itself the headline finding.</p>
         </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What does I² tell you in a meta-analysis?</summary>
+            <div class="faq-a"><p>The share of visible between-study variation that reflects real differences in effects rather than sampling noise. Rough bands: 25% low, 50% moderate, 75% high heterogeneity. High I² isn't a defect — it's a finding: the effect genuinely varies across populations or protocols, the fixed-effect summary is too confident, and the interesting question becomes <em>what moderates the effect</em>.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Should I use a fixed-effect or random-effects model?</summary>
+            <div class="faq-a"><p>Fixed-effect assumes every study estimates one identical true effect — defensible only for near-exact replications. Random-effects allows true effects to vary across studies and widens the pooled interval honestly; with real-world literatures (different populations, doses, designs), it's the sensible default. When heterogeneity is genuinely zero the two coincide anyway — you lose nothing.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is a funnel plot and what does asymmetry mean?</summary>
+            <div class="faq-a"><p>Each study plotted as effect size vs. precision: big precise studies cluster at the top, small noisy ones fan out below — symmetrically, if all results reached publication. A missing lower corner (typically small null studies) suggests publication bias, testable with Egger's regression and probed with trim-and-fill. Caveat: asymmetry has innocent causes too, like small studies using different populations.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
 
         <nav class="lesson-nav" id="lesson-nav"></nav>
       </article>

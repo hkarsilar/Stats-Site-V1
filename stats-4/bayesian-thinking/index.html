@@ -29,6 +29,9 @@
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Bayesian Thinking", "description": "Bayesian statistics treats probability as belief and updates it with data. Watch a prior turn into a posterior as evidence arrives.", "url": "https://statscapybara.com/stats-4/bayesian-thinking/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 4: Modern & Advanced", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Bayesian Thinking", "item": "https://statscapybara.com/stats-4/bayesian-thinking/"}]}]
   </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the main difference between Bayesian and frequentist statistics?", "acceptedAnswer": {"@type": "Answer", "text": "What \"probability\" means. Frequentists treat parameters as fixed unknowns and put probability on data procedures (\"5% of such intervals miss\"); Bayesians put probability on parameter values themselves, as degrees of belief updated by evidence (\"the rate is 95% likely between .55 and .72\"). The Bayesian version answers the question people naturally ask — at the price of specifying a prior."}}, {"@type": "Question", "name": "How do I choose a prior?", "acceptedAnswer": {"@type": "Answer", "text": "Match it to your honest knowledge. Know little? A flat or weakly-informative prior lets the data dominate (and typically lands near the frequentist answer). Know a lot — previous studies, physical limits? Encoding it is the whole point, especially when data is scarce. Two guardrails: be transparent about the choice, and run a sensitivity check — if reasonable priors give conflicting conclusions, your data is speaking too softly."}}, {"@type": "Question", "name": "What is a Bayes factor?", "acceptedAnswer": {"@type": "Answer", "text": "The evidence ratio between two hypotheses: how much more probable the observed data is under H₁ than under H₀. BF = 10 means the data favors H₁ ten-to-one; BF = 1 means the data can't tell them apart. It's the Bayesian counterpart to significance testing, with two perks p-values lack: it can quantify evidence for a null, and it doesn't inflate with optional stopping."}}]}
+  </script>
 </head>
 <body data-course="stats-4" data-section="bayesian-thinking">
   <nav class="nav" id="nav"></nav>
@@ -87,6 +90,24 @@
         <div class="callout">
           <p><strong>Why it matters:</strong> Bayesian methods are everywhere now — A/B testing, clinical trials, machine learning, election forecasting. They handle uncertainty in a uniquely intuitive way, and modern computing has made them practical. Next we'll turn the posterior into concrete summaries with <a href="../../stats-4/bayesian-estimation/">credible intervals</a>.</p>
         </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What is the main difference between Bayesian and frequentist statistics?</summary>
+            <div class="faq-a"><p>What "probability" means. Frequentists treat parameters as fixed unknowns and put probability on <em>data procedures</em> ("5% of such intervals miss"); Bayesians put probability on <em>parameter values themselves</em>, as degrees of belief updated by evidence ("the rate is 95% likely between .55 and .72"). The Bayesian version answers the question people naturally ask — at the price of specifying a prior.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>How do I choose a prior?</summary>
+            <div class="faq-a"><p>Match it to your honest knowledge. Know little? A flat or weakly-informative prior lets the data dominate (and typically lands near the frequentist answer). Know a lot — previous studies, physical limits? Encoding it is the whole point, especially when data is scarce. Two guardrails: be transparent about the choice, and run a sensitivity check — if reasonable priors give conflicting conclusions, your data is speaking too softly.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is a Bayes factor?</summary>
+            <div class="faq-a"><p>The evidence ratio between two hypotheses: how much more probable the observed data is under H₁ than under H₀. BF = 10 means the data favors H₁ ten-to-one; BF = 1 means the data can't tell them apart. It's the Bayesian counterpart to significance testing, with two perks p-values lack: it can quantify evidence <em>for</em> a null, and it doesn't inflate with optional stopping.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
 
         <nav class="lesson-nav" id="lesson-nav"></nav>
       </article>

@@ -29,6 +29,9 @@
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Assumptions & When They Break", "description": "Every test has fine print. Learn the assumptions behind t-tests and ANOVA, and read a Q-Q plot to diagnose non-normality at a glance.", "url": "https://statscapybara.com/stats-2/assumptions-and-when-they-break/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: Comparing Groups & Relationships", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Assumptions & When They Break", "item": "https://statscapybara.com/stats-2/assumptions-and-when-they-break/"}]}]
   </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I check if my data is normally distributed?", "acceptedAnswer": {"@type": "Answer", "text": "Look, don't just test: a Q-Q plot (points hugging the diagonal = normal) plus a histogram tells you more than any p-value. Formal tests like Shapiro–Wilk have a trap: in large samples they flag trivial, harmless deviations, and in small samples they miss serious ones — exactly backwards from what you need. Learn the Q-Q signatures in the playground above and trust your eyes."}}, {"@type": "Question", "name": "What should I do if my data isn't normal?", "acceptedAnswer": {"@type": "Answer", "text": "First ask whether it matters: with decent sample sizes the CLT makes t-tests and ANOVA quite robust to mild non-normality. If it's serious — heavy skew, wild outliers, small n — the standard escalation is: transform (a log often tames right-skew), switch to a robust variant (Welch, trimmed means), or go non-parametric."}}, {"@type": "Question", "name": "Which statistical assumption matters most?", "acceptedAnswer": {"@type": "Answer", "text": "Independence, without question. Mild non-normality is usually forgiven by the CLT, and unequal variances have Welch-style fixes — but treating correlated observations (repeated measures, students in the same classroom) as independent silently shrinks your standard errors and manufactures significance. No correction rescues it afterward; it's fixed by design or by models built for structure, like multilevel models."}}]}
+  </script>
 </head>
 <body data-course="stats-2" data-section="assumptions-and-when-they-break">
   <nav class="nav" id="nav"></nav>
@@ -100,6 +103,24 @@
         <div class="callout">
           <p><strong>Why it matters:</strong> checking assumptions is the difference between a result you can trust and a number that merely looks official. A 10-second glance at a Q-Q plot and a residual plot prevents a lot of embarrassing conclusions.</p>
         </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>How do I check if my data is normally distributed?</summary>
+            <div class="faq-a"><p>Look, don't just test: a Q-Q plot (points hugging the diagonal = normal) plus a histogram tells you more than any p-value. Formal tests like Shapiro–Wilk have a trap: in large samples they flag trivial, harmless deviations, and in small samples they miss serious ones — exactly backwards from what you need. Learn the Q-Q signatures in the playground above and trust your eyes.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What should I do if my data isn't normal?</summary>
+            <div class="faq-a"><p>First ask whether it matters: with decent sample sizes the CLT makes t-tests and ANOVA quite robust to mild non-normality. If it's serious — heavy skew, wild outliers, small n — the standard escalation is: transform (a log often tames right-skew), switch to a robust variant (Welch, trimmed means), or go <a href="../../stats-2/non-parametric-alternatives/">non-parametric</a>.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Which statistical assumption matters most?</summary>
+            <div class="faq-a"><p>Independence, without question. Mild non-normality is usually forgiven by the CLT, and unequal variances have Welch-style fixes — but treating correlated observations (repeated measures, students in the same classroom) as independent silently shrinks your standard errors and manufactures significance. No correction rescues it afterward; it's fixed by design or by models built for structure, like <a href="../../stats-4/mixed-and-multilevel-models/">multilevel models</a>.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
 
         <nav class="lesson-nav" id="lesson-nav"></nav>
       </article>

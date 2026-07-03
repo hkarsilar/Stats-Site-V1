@@ -29,6 +29,9 @@
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Cross-Validation & Overfitting", "description": "Watch a model memorize noise: crank up a polynomial's flexibility, then let 5-fold cross-validation reveal which complexity actually generalizes to new data.", "url": "https://statscapybara.com/stats-4/cross-validation-and-overfitting/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 4: Modern & Advanced", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Cross-Validation & Overfitting", "item": "https://statscapybara.com/stats-4/cross-validation-and-overfitting/"}]}]
   </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What value of k should I use for k-fold cross-validation?", "acceptedAnswer": {"@type": "Answer", "text": "k = 5 or k = 10 is the standard, well-studied compromise: each fold's training set is nearly the full data (low bias), without the variance and cost of leave-one-out (k = n). Small datasets lean toward k = 10 or repeated CV (multiple random fold splits, averaged) to stabilize the estimate. There's rarely a reason to deviate."}}, {"@type": "Question", "name": "What is the difference between a validation set and a test set?", "acceptedAnswer": {"@type": "Answer", "text": "The validation set is used during modeling — comparing candidate models, tuning complexity — so decisions get optimized against it, and its error estimate becomes optimistic. The test set is opened exactly once, after all decisions are final, to report honest performance. Cross-validation typically replaces the validation set; the untouched final test set remains best practice."}}, {"@type": "Question", "name": "Does cross-validation prevent overfitting?", "acceptedAnswer": {"@type": "Answer", "text": "It detects overfitting — it can't stop you from responding badly to what it shows. Two classic ways to overfit anyway: hammering CV repeatedly while hand-tweaking until the score looks good (you've now overfit to the folds), and data leakage — preprocessing (scaling, feature selection) computed on all data before splitting. Leakage-proof rule: every step that learns from data must live inside the CV loop."}}]}
+  </script>
 </head>
 <body data-course="stats-4" data-section="cross-validation-and-overfitting">
   <nav class="nav" id="nav"></nav>
@@ -83,6 +86,24 @@
         <div class="callout">
           <p><strong>Why it matters:</strong> training-data fit flatters every model, so it can never be the judge. Evaluating on held-out data — via a test set or k-fold cross-validation — is the single most reliable habit for building models that survive contact with new data.</p>
         </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What value of k should I use for k-fold cross-validation?</summary>
+            <div class="faq-a"><p>k = 5 or k = 10 is the standard, well-studied compromise: each fold's training set is nearly the full data (low bias), without the variance and cost of leave-one-out (k = n). Small datasets lean toward k = 10 or repeated CV (multiple random fold splits, averaged) to stabilize the estimate. There's rarely a reason to deviate.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is the difference between a validation set and a test set?</summary>
+            <div class="faq-a"><p>The validation set is used <em>during</em> modeling — comparing candidate models, tuning complexity — so decisions get optimized against it, and its error estimate becomes optimistic. The test set is opened exactly once, after all decisions are final, to report honest performance. Cross-validation typically replaces the validation set; the untouched final test set remains best practice.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Does cross-validation prevent overfitting?</summary>
+            <div class="faq-a"><p>It <em>detects</em> overfitting — it can't stop you from responding badly to what it shows. Two classic ways to overfit anyway: hammering CV repeatedly while hand-tweaking until the score looks good (you've now overfit to the folds), and data leakage — preprocessing (scaling, feature selection) computed on all data before splitting. Leakage-proof rule: every step that learns from data must live inside the CV loop.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
 
         <nav class="lesson-nav" id="lesson-nav"></nav>
       </article>
