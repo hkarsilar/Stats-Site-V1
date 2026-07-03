@@ -60,7 +60,7 @@
           <div class="controls" style="margin:-.25rem 0 1rem">
             <div class="control" style="flex-direction:row;align-items:center;gap:.6rem">
               <button class="btn btn-primary btn-sm" id="run-1">Run 1 experiment</button>
-              <button class="btn btn-ghost btn-sm" id="run-100">Run 100 (animated)</button>
+              <button class="btn btn-ghost btn-sm" id="run-20">Run 20 (animated)</button>
               <button class="btn btn-ghost btn-sm" id="ph-reset">Reset</button>
             </div>
           </div>
@@ -207,8 +207,10 @@
       if (animId) cancelAnimationFrame(animId);
       var done = 0, last = null;
       function step(ts) {
-        if (last === null) last = ts;
-        if (ts - last >= 26) { experiment(); done++; last = ts; draw(); }
+        if (last === null) last = ts - 400;   // fire the first one right away
+        // ~400 ms per experiment: slow enough to actually watch each
+        // wall light up (or stay clean) before the next one lands
+        if (ts - last >= 400) { experiment(); done++; last = ts; draw(); }
         if (done < total) animId = requestAnimationFrame(step);
         else animId = null;
       }
@@ -222,7 +224,7 @@
 
     document.getElementById("k-range").addEventListener("input", function () { k = +this.value; reset(); });
     document.getElementById("run-1").addEventListener("click", function () { experiment(); draw(); });
-    document.getElementById("run-100").addEventListener("click", function () { runMany(100); });
+    document.getElementById("run-20").addEventListener("click", function () { runMany(20); });
     document.getElementById("ph-reset").addEventListener("click", reset);
     window.addEventListener("resize", function () { fit(); draw(); });
     VIZ.onTheme(draw);

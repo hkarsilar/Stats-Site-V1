@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Statistics Toolbox — Calculators, Guides & Practice — StatsCapybara</title>
+  <meta name="description" content="Every StatsCapybara tool in one place: the test chooser, exact statistical tables, effect-size and descriptives calculators, the distribution playground, a printable formula sheet, the glossary, and the course quiz. Free, in your browser, no sign-up." />
+  <link rel="canonical" href="https://statscapybara.com/toolbox.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="The Statistics Toolbox — StatsCapybara" />
+  <meta property="og:description" content="Calculators, guides, and practice for statistics students — the test chooser, exact tables, effect sizes, descriptives, distributions, formulas, glossary, and quiz." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/toolbox.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="The Statistics Toolbox — StatsCapybara" />
+  <meta name="twitter:description" content="Calculators, guides, and practice for statistics students — all free, all in your browser." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body>
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="container narrow">
+      <article class="lesson" style="margin:0 auto">
+        <span class="lesson-eyebrow">Tools</span>
+        <h1>The Statistics Toolbox</h1>
+        <p class="lede">Everything that works <em>alongside</em> the lessons, in one place: pick the right test, look nothing up in a textbook appendix ever again, convert effect sizes, crunch your own data, and check what you've learned. Free, no sign-up, and nothing you paste here ever leaves your browser.</p>
+
+        <div id="tbx-groups"></div>
+
+        <h2>Capybara pro-tips</h2>
+        <ul>
+          <li><strong>Press <code>/</code> anywhere</strong> (or <code>Ctrl/⌘ K</code>) to search every lesson and tool — it searches full lesson text, not just titles.</li>
+          <li><strong>Arrow keys move you between lessons:</strong> on any lesson page, <code>←</code> and <code>→</code> jump to the previous / next section.</li>
+          <li><strong>The formula sheet is built to print</strong> — so are the lessons. Hit <code>Ctrl/⌘ P</code> and the chrome disappears, leaving clean study notes.</li>
+          <li><strong>Your progress lives in your browser.</strong> Finished lessons fade back in the lists, courses show a progress ring, and the homepage offers to resume where you left off. No account, no tracking — clearing your browser data resets it.</li>
+          <li><strong>Every statistic here is exact.</strong> The calculators use the same special functions as professional software (verified against known critical values and G*Power), not textbook approximations.</li>
+        </ul>
+
+        <div class="callout key">
+          <p><strong>A suggested workflow for an assignment:</strong> ① not sure what analysis you need? Start at <a href="which-test.html">Which test should I use?</a> → ② open the linked interactive lesson to understand it → ③ run it in SPSS/JASP with the lesson's step-by-step box → ④ get the exact p-value or critical value from the <a href="tables.html">tables</a> → ⑤ report it with the lesson's APA example and an effect size from the <a href="effect-sizes.html">converter</a>. The capybara has never once panicked on a deadline this way.</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Missing a tool you wish existed?</strong> The toolbox grows — <a href="./#about">say hi</a> and tell me what would make your stats life easier.</p>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="assets/js/curriculum.js"></script>
+  <script src="assets/js/site.js"></script>
+
+  <!-- ============ grouped tool grid (rendered from site.js's TOOLBOX) ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var GROUPS = [
+      { id: "guide",    title: "🧭 Decide & look up",   sub: "For when you know what you need but not what it's called — or the other way round." },
+      { id: "calc",     title: "🎛️ Calculate",          sub: "Exact numbers for your homework and write-ups — no appendix tables, no approximations." },
+      { id: "practice", title: "🎮 Explore & practice", sub: "Build intuition by playing, then prove to yourself it stuck." }
+    ];
+    var host = document.getElementById("tbx-groups");
+    var TB = window.TOOLBOX || [];
+    host.innerHTML = GROUPS.map(function (g) {
+      var cards = TB.filter(function (t) { return t.group === g.id; }).map(function (t) {
+        return '<a class="tool-card" href="' + t.url + '">' +
+          '<span class="tool-emoji" aria-hidden="true">' + t.emoji + '</span>' +
+          '<span class="tool-title">' + t.title + '</span>' +
+          '<span class="tool-desc">' + t.desc + '</span></a>';
+      }).join("");
+      return '<h2>' + g.title + '</h2><p style="margin:.25rem 0 1rem">' + g.sub + '</p>' +
+        '<div class="toolbox-grid" style="margin-bottom:1.75rem">' + cards + '</div>';
+    }).join("");
+  })();
+  </script>
+</body>
+</html>

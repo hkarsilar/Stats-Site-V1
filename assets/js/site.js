@@ -107,6 +107,7 @@
     "meta-analysis": "One study is an anecdote. Twenty studies is a forest plot full of capybaras.",
     /* Root pages */
     "home": "No rush — capybaras never cram.",
+    "toolbox": "A capybara's toolbox: warm water, good snacks, zero deadlines. Yours has calculators too.",
     "which-test": "Lost? The capybara also can't pick a pool. That's literally why this page exists.",
     "tables": "Capybaras have memorized exactly zero critical values. That's what this page is for.",
     "formulas": "Print it, laminate it, take it into the bath. The capybara approves.",
@@ -164,19 +165,21 @@
   }
 
   /* ---------- top nav ----------
-     The learning tools live in a "Toolbox" dropdown so every page —
-     not just the homepage — can reach all of them. TOOLBOX is the
-     single source of truth; the homepage toolbox section reads it too. */
+     The learning tools live under "Statistics Toolbox": hovering the nav
+     item drops the full menu, clicking it opens the dedicated hub page
+     (toolbox.html). TOOLBOX is the single source of truth — the dropdown,
+     the homepage grid, and the toolbox page all read it. */
   var TOOLBOX = [
-    { url: "which-test.html",    key: "which-test",    emoji: "🧭", title: "Which test should I use?", desc: "Answer a few questions, get the right test" },
-    { url: "tables.html",        key: "tables",        emoji: "🎛️", title: "Tables & calculators",     desc: "Exact z, t, χ² and F — no appendix flipping" },
-    { url: "distributions.html", key: "distributions", emoji: "🎢", title: "Distribution playground",  desc: "Poke 9 distributions and watch them wiggle" },
-    { url: "effect-sizes.html",  key: "effect-sizes",  emoji: "📏", title: "Effect-size converter",    desc: "d ↔ r ↔ η² — plus what they actually mean" },
-    { url: "descriptives.html",  key: "descriptives",  emoji: "🧮", title: "Descriptives calculator",  desc: "Paste data, get stats, a histogram & APA text" },
-    { url: "formulas.html",      key: "formulas",      emoji: "🖨️", title: "Formula sheet",            desc: "Every formula from the course, printable" },
-    { url: "glossary.html",      key: "glossary",      emoji: "📖", title: "Glossary",                 desc: "Every stats term, defined without the jargon" },
-    { url: "quiz.html",          key: "quiz",          emoji: "✅", title: "Quiz",                     desc: "Test yourself across all four courses" }
+    { url: "which-test.html",    key: "which-test",    group: "guide",    emoji: "🧭", title: "Which test should I use?", desc: "Answer a few questions, get the right test" },
+    { url: "tables.html",        key: "tables",        group: "calc",     emoji: "🎛️", title: "Tables & calculators",     desc: "Exact z, t, χ² and F — no appendix flipping" },
+    { url: "distributions.html", key: "distributions", group: "practice", emoji: "🎢", title: "Distribution playground",  desc: "Poke 9 distributions and watch them wiggle" },
+    { url: "effect-sizes.html",  key: "effect-sizes",  group: "calc",     emoji: "📏", title: "Effect-size converter",    desc: "d ↔ r ↔ η² — plus what they actually mean" },
+    { url: "descriptives.html",  key: "descriptives",  group: "calc",     emoji: "🧮", title: "Descriptives calculator",  desc: "Paste data, get stats, a histogram & APA text" },
+    { url: "formulas.html",      key: "formulas",      group: "guide",    emoji: "🖨️", title: "Formula sheet",            desc: "Every formula from the course, printable" },
+    { url: "glossary.html",      key: "glossary",      group: "guide",    emoji: "📖", title: "Glossary",                 desc: "Every stats term, defined without the jargon" },
+    { url: "quiz.html",          key: "quiz",          group: "practice", emoji: "✅", title: "Quiz",                     desc: "Test yourself across all four courses" }
   ];
+  window.TOOLBOX = TOOLBOX;   // toolbox.html renders its grouped grid from this
   function renderNav() {
     var nav = document.getElementById("nav");
     if (!nav) return;
@@ -184,7 +187,7 @@
     var act = function (k) { return k === page ? " active" : ""; };
     // lesson pages count as "Curriculum"
     var curActive = (HERE || page === "home") ? " active" : "";
-    var toolboxActive = TOOLBOX.some(function (t) { return t.key === page; });
+    var toolboxActive = page === "toolbox" || TOOLBOX.some(function (t) { return t.key === page; });
     var toolboxItems = TOOLBOX.map(function (t) {
       return '<a class="nav-drop-item' + act(t.key) + '" href="' + BASE + t.url + '">' +
         '<span class="nd-emoji">' + t.emoji + '</span><span class="nd-text"><span class="nd-title">' + t.title + '</span><span class="nd-desc">' + t.desc + '</span></span></a>';
@@ -194,17 +197,14 @@
         '<a class="brand" href="' + (BASE || "./") + '" style="display:inline-flex;align-items:center;gap:.45rem">' + capy(28) + 'Stats<span class="dot">Capybara</span></a>' +
         '<nav class="nav-links" id="nav-links" aria-label="Primary">' +
           '<a class="nav-link' + curActive + '" href="' + (BASE || "./") + '#curriculum">Curriculum</a>' +
-          '<div class="nav-drop' + (toolboxActive ? " here" : "") + '" id="nav-drop">' +
-            '<button class="nav-link nav-drop-btn' + (toolboxActive ? " active" : "") + '" aria-expanded="false" aria-haspopup="true">Toolbox' +
-              '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>' +
+          '<div class="nav-drop" id="nav-drop">' +
+            '<a class="nav-link nav-drop-btn' + (toolboxActive ? " active" : "") + '" href="' + BASE + 'toolbox.html" aria-haspopup="true">Statistics Toolbox' +
+              '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></a>' +
             '<div class="nav-drop-panel">' + toolboxItems + '</div>' +
           '</div>' +
-          '<a class="nav-link' + act("quiz") + '" href="' + BASE + 'quiz.html">Quiz</a>' +
-          '<a class="nav-link' + act("glossary") + '" href="' + BASE + 'glossary.html">Glossary</a>' +
           '<a class="nav-link" href="' + (BASE || "./") + '#about">About</a>' +
         '</nav>' +
         '<div class="nav-actions">' +
-          '<a class="nav-kofi" href="https://ko-fi.com/M3E322A3ML" target="_blank" rel="noopener" title="Support StatsCapybara on Ko-fi">☕<span>Buy me a coffee</span></a>' +
           '<button id="nav-search" class="nav-search-btn" aria-label="Search lessons (press /)">' + iconSearch() + '<span class="ns-label">Search</span><kbd class="ns-kbd">/</kbd></button>' +
           '<button id="theme-toggle" class="icon-btn" aria-label="Toggle theme"></button>' +
           '<button id="nav-toggle" class="icon-btn nav-toggle" aria-label="Menu" aria-controls="nav-links" aria-expanded="false">' + iconMenu() + '</button>' +
@@ -216,21 +216,6 @@
     btn.addEventListener("click", function () { setTheme(currentTheme() === "dark" ? "light" : "dark"); });
 
     document.getElementById("nav-search").addEventListener("click", openSearch);
-
-    // Toolbox dropdown — click to toggle, click-away / Esc to close
-    var drop = document.getElementById("nav-drop");
-    var dropBtn = drop.querySelector(".nav-drop-btn");
-    dropBtn.addEventListener("click", function (e) {
-      e.stopPropagation();
-      var open = drop.classList.toggle("open");
-      dropBtn.setAttribute("aria-expanded", open ? "true" : "false");
-    });
-    document.addEventListener("click", function (e) {
-      if (!drop.contains(e.target)) { drop.classList.remove("open"); dropBtn.setAttribute("aria-expanded", "false"); }
-    });
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") { drop.classList.remove("open"); dropBtn.setAttribute("aria-expanded", "false"); }
-    });
 
     var tog = document.getElementById("nav-toggle");
     tog.addEventListener("click", function () {
@@ -335,8 +320,13 @@
         var cls = (s.slug === HERE ? "active" : "") + (isDone(s.slug) ? " done" : "");
         var tick = isDone(s.slug) ? '<span class="tick" aria-hidden="true">✓</span>' : "";
         var label = '<span class="n">' + s.n + '</span>' + s.title + tick;
+        // the resident capybara sits right under the lesson you're on,
+        // so its per-page quip is always in view
+        var quip = s.slug === HERE
+          ? '<div class="sb-capy">' + capy(30) + '<span>' + quipFor() + '</span></div>'
+          : "";
         if (s.ready || s.slug === HERE) {
-          return '<a class="' + cls.trim() + '" href="' + BASE + c.slug + '/' + s.slug + '/">' + label + '</a>';
+          return '<a class="' + cls.trim() + '" href="' + BASE + c.slug + '/' + s.slug + '/">' + label + '</a>' + quip;
         }
         return '<a style="cursor:default;opacity:.55" title="Coming soon">' + label + '</a>';
       }).join("");
@@ -347,7 +337,6 @@
         '<div class="sb-links">' + links + '</div>' +
       '</details>';
     }).join("");
-    html += '<div class="sb-capy">' + capy(34) + '<span>' + quipFor() + '</span></div>';
     host.innerHTML = '<div class="sidebar-sticky">' + html + '</div>';
   }
 
@@ -676,6 +665,7 @@
   function closeSearch() { if (searchEl) searchEl.classList.remove("open"); }
   // site pages surfaced alongside lessons in the search overlay
   var SEARCH_PAGES = [
+    { title: "Statistics Toolbox", url: "toolbox.html", tag: "Tool", kw: "tools toolbox calculators references practice hub all" },
     { title: "Which Test Should I Use?", url: "which-test.html", tag: "Tool", kw: "chooser decision anova t-test regression choose" },
     { title: "Statistical Tables & Calculators", url: "tables.html", tag: "Tool", kw: "z t chi-square f critical value p-value calculator table" },
     { title: "Statistics Formula Sheet", url: "formulas.html", tag: "Reference", kw: "formula cheat sheet equations print reference" },

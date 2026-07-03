@@ -59,6 +59,7 @@ for fname, title in [
     ("which-test.html", "Which Test Should I Use?"),
     ("effect-sizes.html", "Effect-Size Converter"),
     ("descriptives.html", "Descriptives Calculator"),
+    ("toolbox.html", "Statistics Toolbox"),
 ]:
     p = ROOT / fname
     if p.exists():

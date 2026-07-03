@@ -103,21 +103,23 @@ h1, h2, h3, h4 { line-height: 1.2; letter-spacing: -0.02em; }
   background: color-mix(in srgb, var(--primary) 10%, transparent);
 }
 
-/* ---------- Toolbox dropdown ---------- */
+/* ---------- Statistics Toolbox dropdown ----------
+   Hovering (or keyboard-focusing) the nav item drops the menu;
+   clicking the item itself navigates to the toolbox.html hub page. */
 .nav-drop { position: relative; }
-.nav-drop-btn {
-  display: inline-flex; align-items: center; gap: .35rem; cursor: pointer;
-  font: inherit; border: none; background: transparent;
-}
+.nav-drop-btn { display: inline-flex; align-items: center; gap: .35rem; }
 .nav-drop-btn svg { transition: transform .15s; }
-.nav-drop.open .nav-drop-btn svg { transform: rotate(180deg); }
+.nav-drop:hover .nav-drop-btn svg, .nav-drop:focus-within .nav-drop-btn svg { transform: rotate(180deg); }
+/* invisible bridge so the pointer can cross the gap to the panel */
+.nav-drop::after { content: ""; position: absolute; top: 100%; left: 0; right: 0; height: .6rem; display: none; }
+.nav-drop:hover::after { display: block; }
 .nav-drop-panel {
   position: absolute; top: calc(100% + .5rem); left: 0; min-width: 19rem; z-index: 60;
   display: none; flex-direction: column; gap: .1rem; padding: .45rem;
   background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
   box-shadow: var(--shadow-lg);
 }
-.nav-drop.open .nav-drop-panel { display: flex; }
+.nav-drop:hover .nav-drop-panel, .nav-drop:focus-within .nav-drop-panel { display: flex; }
 .nav-drop-item {
   display: flex; align-items: center; gap: .7rem; padding: .5rem .65rem;
   border-radius: 10px; transition: .12s;
@@ -320,14 +322,16 @@ li a:hover .sec-dot { border-color: var(--accent, var(--primary)); }
   font-weight: 650;
 }
 .sidebar a .n { font-family: var(--mono); font-size: .72rem; color: var(--text-faint); margin-right: .4rem; }
-/* the resident capybara, with this page's words of wisdom — every page
-   tells a different one, so it's worth reading. Deliberately visible. */
+/* the resident capybara, with this page's words of wisdom — sits directly
+   under the highlighted lesson in the sidebar so it's always in view.
+   Every page tells a different one; deliberately visible. */
 .sb-capy {
-  display: flex; align-items: center; gap: .65rem; margin: 1.1rem .1rem 0; padding: .8rem .85rem;
-  border: 1.5px dashed color-mix(in srgb, var(--course-accent, var(--primary)) 45%, var(--border));
+  display: flex; align-items: center; gap: .6rem; margin: .45rem .15rem .6rem; padding: .7rem .75rem;
+  border: 1.5px dashed color-mix(in srgb, var(--sb-accent, var(--primary)) 45%, var(--border));
   border-radius: 12px;
-  background: color-mix(in srgb, var(--course-accent, var(--primary)) 6%, transparent);
-  font-size: .84rem; font-weight: 500; font-style: italic; line-height: 1.5; color: var(--text);
+  background: color-mix(in srgb, var(--sb-accent, var(--primary)) 7%, transparent);
+  font-size: .82rem; font-weight: 500; font-style: italic; line-height: 1.5; color: var(--text);
+  animation: up .5s ease both;
 }
 
 .lesson { flex: 1; min-width: 0; max-width: 48rem; }
@@ -416,19 +420,6 @@ body[data-course="stats-4"] { --course-accent: #ec4899; }
 .nav-actions { display: inline-flex; align-items: center; gap: .35rem; }
 .nav-toggle { display: none; }               /* hamburger — shown only on mobile */
 
-/* "Buy me a coffee" pill in the nav (Ko-fi) — same warm yellow as the
-   official Ko-fi button in the footer (#ffda6e, dark text) */
-.nav-kofi {
-  display: inline-flex; align-items: center; gap: .35rem; white-space: nowrap;
-  padding: .42rem .75rem; border-radius: 999px; font-weight: 700; font-size: .82rem;
-  color: #202020; background: #ffda6e; transition: .15s;
-}
-.nav-kofi:hover { filter: brightness(1.04); transform: translateY(-1px); color: #202020; }
-@media (max-width: 1080px) {
-  .nav-kofi span { display: none; }            /* just the ☕ when space is tight */
-  .nav-kofi { padding: .42rem .55rem; }
-}
-
 .animate-up { animation: up .6s ease both; }
 @keyframes up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 
@@ -453,13 +444,12 @@ body[data-course="stats-4"] { --course-accent: #ec4899; }
   .nav-actions { margin-left: auto; }
   .nav-toggle { display: inline-flex; }
 
-  /* in the mobile menu the Toolbox flattens into an always-visible group */
-  .nav-drop-btn { display: none; }
-  .nav-drop-panel {
-    display: flex; position: static; min-width: 0; padding: .2rem 0 .3rem;
-    border: none; border-radius: 0; box-shadow: none; background: transparent;
-    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin: .25rem 0;
-  }
+  /* in the mobile menu the Toolbox is a single link to the hub page —
+     the page itself lists every tool, so no need to flatten them here */
+  .nav-drop-btn { padding: .7rem .75rem; font-size: 1rem; border-radius: 10px; width: 100%; justify-content: space-between; }
+  .nav-drop-btn svg { transform: rotate(-90deg) !important; }  /* "go there" chevron */
+  .nav-drop-panel { display: none !important; }
+  .nav-drop::after { display: none !important; }
 }
 
 /* ============================================================
@@ -622,15 +612,35 @@ body[data-course="stats-4"] { --course-accent: #ec4899; }
 
 /* ============================================================
    "ON THIS PAGE" MINI-TOC (auto-injected on longer lessons)
+   Numbered chips, so it reads as navigation — not run-on prose.
    ============================================================ */
 .lesson-toc {
-  display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .9rem;
-  border: 1px solid var(--border); border-radius: 12px; background: var(--bg-soft);
-  padding: .6rem 1rem; margin: 1.25rem 0 0; font-size: .84rem;
+  display: flex; flex-wrap: wrap; align-items: center; gap: .45rem;
+  margin: 1.25rem 0 0; counter-reset: toc;
 }
-.lesson-toc .toc-label { font-size: .68rem; text-transform: uppercase; letter-spacing: .07em; color: var(--text-faint); font-weight: 700; margin-right: .2rem; }
-.lesson-toc a { color: var(--primary); font-weight: 600; }
-.lesson-toc a:hover { text-decoration: underline; }
+.lesson-toc .toc-label {
+  flex-basis: 100%; font-size: .68rem; text-transform: uppercase; letter-spacing: .07em;
+  color: var(--text-faint); font-weight: 700; margin-bottom: .1rem;
+}
+.lesson-toc a {
+  counter-increment: toc;
+  display: inline-flex; align-items: center; gap: .45rem;
+  padding: .32rem .8rem .32rem .4rem; border: 1px solid var(--border); border-radius: 999px;
+  background: var(--surface); box-shadow: var(--shadow);
+  font-size: .82rem; font-weight: 600; color: var(--text-muted); transition: .13s;
+}
+.lesson-toc a::before {
+  content: counter(toc);
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.25rem; height: 1.25rem; border-radius: 50%; flex-shrink: 0;
+  font-family: var(--mono); font-size: .68rem; font-weight: 700;
+  color: color-mix(in srgb, var(--course-accent, var(--primary)) 80%, var(--text));
+  background: color-mix(in srgb, var(--course-accent, var(--primary)) 12%, transparent);
+}
+.lesson-toc a:hover {
+  color: var(--text); border-color: var(--course-accent, var(--primary));
+  transform: translateY(-1px); box-shadow: var(--shadow-lg);
+}
 
 /* ============================================================
    "WHICH TEST?" DECISION TREE
