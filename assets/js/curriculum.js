@@ -86,7 +86,7 @@ window.CURRICULUM = [
     slug: "stats-4",
     title: "Stats 4",
     subtitle: "Modern & Advanced",
-    accent: "#ec4899",
+    accent: "#3b82f6",
     track: "core",
     sections: [
       { n: "4.1", slug: "bootstrap-and-resampling",        title: "Bootstrap & Resampling", ready: true },

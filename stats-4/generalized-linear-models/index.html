@@ -170,11 +170,13 @@
       xs = []; us = []; zs = [];
       for (var i = 0; i < N; i++) { xs.push(Math.random() * XMAX); us.push(Math.random()); zs.push(VIZ.randn()); }
     }
-    function rebuild() {
-      var F = FAM[fam], b0 = +b0in.value, b1 = +b1in.value;
+    /* The sample is generated ONCE from each family's "true" parameters, so
+       the b₀/b₁ sliders slide only the fitted mean curve over a fixed cloud
+       — they never reroll the data. "New data" reseeds the frozen noise. */
+    function regen() {
+      var F = FAM[fam];
       data = [];
-      for (var i = 0; i < N; i++) data.push({ x: xs[i], y: F.gen(xs[i], b0, b1, us[i], zs[i]) });
-      update();
+      for (var i = 0; i < N; i++) data.push({ x: xs[i], y: F.gen(xs[i], F.b0.val, F.b1.val, us[i], zs[i]) });
     }
 
     function cfgSlider(input, c) { input.min = c.min; input.max = c.max; input.step = c.step; input.value = c.val; }
@@ -182,7 +184,7 @@
       fam = f; var F = FAM[f];
       Array.prototype.forEach.call(document.querySelectorAll("#fam-seg button"), function (b) { b.classList.toggle("active", b.dataset.fam === f); });
       cfgSlider(b0in, F.b0); cfgSlider(b1in, F.b1);
-      rebuild();
+      regen(); update();
     }
 
     function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
@@ -209,7 +211,7 @@
       ctx.globalAlpha = 1;
       // mean curve
       ctx.save(); ctx.beginPath(); ctx.rect(pad, pad, W - 2 * pad, H - 2 * pad); ctx.clip();
-      ctx.strokeStyle = "#ec4899"; ctx.lineWidth = 3; ctx.beginPath();
+      ctx.strokeStyle = VIZ.css("--primary"); ctx.lineWidth = 3; ctx.beginPath();
       for (var px = 0; px <= W; px += 2) { var x = (px - pad) / (W - 2 * pad) * XMAX; var mu = F.inv(b0 + b1 * x); var y = vy(mu, F); if (px === 0) ctx.moveTo(px, y); else ctx.lineTo(px, y); }
       ctx.stroke(); ctx.restore();
 
@@ -220,8 +222,8 @@
     }
 
     document.getElementById("fam-seg").addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) setFamily(b.dataset.fam); });
-    document.getElementById("resample").addEventListener("click", function () { seed(); rebuild(); });
-    b0in.addEventListener("input", rebuild); b1in.addEventListener("input", rebuild);
+    document.getElementById("resample").addEventListener("click", function () { seed(); regen(); update(); });
+    b0in.addEventListener("input", update); b1in.addEventListener("input", update);
     window.addEventListener("resize", function () { fit(); update(); });
     VIZ.onTheme(update);
     fit(); seed(); setFamily("logistic");

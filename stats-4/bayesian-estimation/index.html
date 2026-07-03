@@ -150,7 +150,7 @@
       var scale = (baseY - top) / (peak || 1);
       ctx.clearRect(0, 0, W, H);
       // shaded credible band
-      ctx.fillStyle = "#ec4899"; ctx.globalAlpha = 0.22;
+      ctx.fillStyle = VIZ.css("--primary"); ctx.globalAlpha = 0.22;
       if (hi > lo) {
         ctx.beginPath(); ctx.moveTo(vx(lo), baseY);
         for (var s = 0; s <= 120; s++) { var p = lo + ((hi - lo) * s) / 120; ctx.lineTo(vx(p), baseY - betaPdf(p, a, b) * scale); }
@@ -158,7 +158,7 @@
       }
       ctx.globalAlpha = 1;
       // posterior curve
-      ctx.strokeStyle = "#ec4899"; ctx.lineWidth = 3; ctx.beginPath();
+      ctx.strokeStyle = VIZ.css("--primary"); ctx.lineWidth = 3; ctx.beginPath();
       for (var q = 0; q <= 200; q++) { var pp = q / 200, x = vx(pp), y = baseY - betaPdf(pp, a, b) * scale; if (q === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
       ctx.stroke();
       // axis + bounds + mean
@@ -166,7 +166,7 @@
       ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center";
       for (var t = 0; t <= 1; t += 0.25) ctx.fillText(t.toFixed(2), vx(t), baseY + 14);
       ctx.fillText("possible value of p →", W / 2, H - 3);
-      ctx.strokeStyle = "#ec4899"; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]);
+      ctx.strokeStyle = VIZ.css("--primary"); ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]);
       [lo, hi].forEach(function (v) { ctx.beginPath(); ctx.moveTo(vx(v), top); ctx.lineTo(vx(v), baseY); ctx.stroke(); }); ctx.setLineDash([]);
       ctx.strokeStyle = "#f97316"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(vx(mean), top); ctx.lineTo(vx(mean), baseY); ctx.stroke();
       ctx.fillStyle = "#f97316"; ctx.textAlign = "center"; ctx.font = "600 11px Inter,sans-serif"; ctx.fillText("mean", vx(mean), top - 2);

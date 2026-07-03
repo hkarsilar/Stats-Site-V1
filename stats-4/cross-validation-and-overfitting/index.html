@@ -221,12 +221,12 @@
       ctx.strokeStyle = "#f97316"; ctx.lineWidth = 2.5; ctx.beginPath();
       for (var p2 = 0; p2 <= 1.0001; p2 += 0.004) { var yf = pv(c, 2 * p2 - 1); if (p2 === 0) ctx.moveTo(tx(p2), ty(yf)); else ctx.lineTo(tx(p2), ty(yf)); }
       ctx.stroke();
-      // sample points (violet)
-      ctx.fillStyle = "#ec4899";
+      // sample points (indigo)
+      ctx.fillStyle = VIZ.css("--primary");
       for (var i = 0; i < N; i++) { ctx.globalAlpha = 0.85; ctx.beginPath(); ctx.arc(tx(xs[i]), ty(ys[i]), 3.2, 0, 6.2832); ctx.fill(); }
       ctx.globalAlpha = 1;
       ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px " + VIZ.css("--font");
-      ctx.textAlign = "left"; ctx.fillText("truth (dashed)  ·  fit (orange)  ·  data (violet)", padL, t1 + 16);
+      ctx.textAlign = "left"; ctx.fillText("truth (dashed)  ·  fit (orange)  ·  data (blue)", padL, t1 + 16);
 
       /* bottom panel: error vs degree, log10 scale */
       var b0 = 262, b1 = H - 26;

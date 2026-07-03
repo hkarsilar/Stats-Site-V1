@@ -76,7 +76,7 @@
           <canvas id="km-canvas"></canvas>
 
           <div class="stat-row">
-            <div class="stat"><span class="k" style="color:#ec4899">Median survival A</span><span class="v" id="stat-medA">—</span></div>
+            <div class="stat"><span class="k" style="color:var(--primary)">Median survival A</span><span class="v" id="stat-medA">—</span></div>
             <div class="stat"><span class="k" style="color:#f97316">Median survival B</span><span class="v" id="stat-medB">—</span></div>
             <div class="stat"><span class="k">Log-rank χ² (1 df)</span><span class="v" id="stat-chi">—</span></div>
             <div class="stat"><span class="k">p-value</span><span class="v" id="stat-p">—</span></div>
@@ -245,10 +245,10 @@
         });
       }
       var kA = km(gA), kB = km(gB);
-      curve(kA, "#ec4899");
+      curve(kA, VIZ.css("--primary"));
       curve(kB, "#f97316");
       ctx.font = "600 12px " + VIZ.css("--font"); ctx.textAlign = "left";
-      ctx.fillStyle = "#ec4899"; ctx.fillText("Group A", W - padR - 70, top + 14);
+      ctx.fillStyle = VIZ.css("--primary"); ctx.fillText("Group A", W - padR - 70, top + 14);
       ctx.fillStyle = "#f97316"; ctx.fillText("Group B", W - padR - 70, top + 30);
       return { kA: kA, kB: kB };
     }

@@ -98,6 +98,37 @@
           <p><strong>3. A single outlier can fake — or hide — a correlation.</strong> Drag one point far away in the playground and watch <em>r</em> lurch. Real analyses always check whether one stray point is doing all the work.</p>
         </div>
 
+        <p>All three warnings collapse into one habit: <strong>plot your data.</strong> The classic proof is Anscombe's quartet — four datasets that share almost every summary number yet look nothing alike.</p>
+
+        <!-- ============ INTERACTIVE 2 ============ -->
+        <div class="viz" id="ansviz">
+          <p class="viz-title">🎮 Same r, Four Different Stories</p>
+          <p class="viz-sub">Four datasets with <em>identical</em> means, correlation (r = 0.82), and best-fit line. The statistics can't tell them apart — but your eyes can. Flip between them.</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>Dataset</label>
+              <div class="seg" id="ans-seg">
+                <button data-set="0" class="active">I</button>
+                <button data-set="1">II</button>
+                <button data-set="2">III</button>
+                <button data-set="3">IV</button>
+              </div>
+            </div>
+          </div>
+
+          <canvas id="ans-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Correlation r</span><span class="v">0.82</span></div>
+            <div class="stat"><span class="k">Best-fit line</span><span class="v" style="font-size:1rem">ŷ = 3.00 + 0.50x</span></div>
+            <div class="stat"><span class="k">What your eyes see</span><span class="v" id="ans-cap" style="font-size:1rem">a genuine straight-line trend</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE 2 ============ -->
+
+        <p>Every dataset above reports r = 0.82 and the exact same line — yet only the first is the tidy linear relationship that number implies. The second is a smooth curve, the third is a perfect line derailed by one outlier, and the fourth has no trend at all until a single far-flung point invents one. Summary statistics are a compression; the scatter is the truth.</p>
+
         <div class="callout">
           <p><strong>Why it matters:</strong> correlation is the first measure of "do these two move together?" — and it's the direct stepping stone to <a href="../../stats-2/simple-linear-regression/">regression</a>, which turns that relationship into a predictive line.</p>
         </div>
@@ -258,6 +289,65 @@
     VIZ.onTheme(draw);
 
     fit(); seed(); gen(); update();
+  })();
+  </script>
+
+  <!-- ============ Anscombe's quartet visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    /* Anscombe's quartet — fixed data. All four share mean x = 9, mean y = 7.5,
+       r ≈ 0.82 and the line ŷ = 3.00 + 0.50x, yet look completely different. */
+    var X = [
+      [10, 8, 13, 9, 11, 14, 6, 4, 12, 7, 5],
+      [10, 8, 13, 9, 11, 14, 6, 4, 12, 7, 5],
+      [10, 8, 13, 9, 11, 14, 6, 4, 12, 7, 5],
+      [8, 8, 8, 8, 8, 8, 8, 19, 8, 8, 8]
+    ];
+    var Y = [
+      [8.04, 6.95, 7.58, 8.81, 8.33, 9.96, 7.24, 4.26, 10.84, 4.82, 5.68],
+      [9.14, 8.14, 8.74, 8.77, 9.26, 8.10, 6.13, 3.10, 9.13, 7.26, 4.74],
+      [7.46, 6.77, 12.74, 7.11, 7.81, 8.84, 6.08, 5.39, 8.15, 6.42, 5.73],
+      [6.58, 5.76, 7.71, 8.84, 8.47, 7.04, 5.25, 12.50, 5.56, 7.91, 6.89]
+    ];
+    var CAP = ["a genuine straight-line trend", "a smooth curve — not linear at all",
+      "a perfect line + one lone outlier", "no trend — one point makes the line"];
+    var set = 0;
+    var canvas = document.getElementById("ans-canvas"), ctx, W = 0, H = 280;
+    var padL = 34, padR = 16, padT = 16, padB = 30, XMIN = 3, XMAX = 20, YMIN = 2, YMAX = 13.5;
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function sx(v) { return padL + (v - XMIN) / (XMAX - XMIN) * (W - padL - padR); }
+    function sy(v) { return (H - padB) - (v - YMIN) / (YMAX - YMIN) * (H - padT - padB); }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, sy(YMIN)); ctx.lineTo(W - padR, sy(YMIN)); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, sy(YMIN)); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace, monospace"; ctx.textAlign = "center";
+      for (var gx = 5; gx <= 20; gx += 5) ctx.fillText(gx, sx(gx), H - padB + 14);
+      ctx.textAlign = "right";
+      for (var gy = 4; gy <= 12; gy += 4) ctx.fillText(gy, padL - 5, sy(gy) + 3);
+      // the shared best-fit line ŷ = 3 + 0.5x
+      ctx.strokeStyle = VIZ.css("--primary"); ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(sx(XMIN), sy(3 + 0.5 * XMIN)); ctx.lineTo(sx(XMAX), sy(3 + 0.5 * XMAX)); ctx.stroke();
+      // data points
+      ctx.fillStyle = VIZ.css("--secondary"); ctx.globalAlpha = 0.85;
+      for (var i = 0; i < X[set].length; i++) { ctx.beginPath(); ctx.arc(sx(X[set][i]), sy(Y[set][i]), 4.5, 0, 6.2832); ctx.fill(); }
+      ctx.globalAlpha = 1;
+      document.getElementById("ans-cap").textContent = CAP[set];
+    }
+
+    document.getElementById("ans-seg").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      set = +b.dataset.set;
+      Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", +x.dataset.set === set); });
+      draw();
+    });
+    window.addEventListener("resize", function () { fit(); draw(); });
+    VIZ.onTheme(draw);
+    fit(); draw();
   })();
   </script>
 </body>

@@ -58,7 +58,7 @@
   var QUIPS = {
     /* Stats 1 */
     "what-is-statistics": "Capybaras don't fear data. They simply vibe with uncertainty. Be like capybara.",
-    "types-of-data": "A capybara is nominal, its chill level is ordinal, its bath temperature? Interval, bestie.",
+    "types-of-data": "The capybara is nominal, its chill level is ordinal, its bath temperature is interval. Data types, sorted.",
     "describing-data": "The average capybara is unbothered. The median capybara? Also unbothered. Skew who?",
     "visualizing-data": "A capybara never lies with charts. It barely even moves with charts.",
     "z-scores-and-the-normal-distribution": "A capybara 3 SDs above the mean chill is basically a warm rock with a heartbeat.",
@@ -67,8 +67,8 @@
     "central-limit-theorem": "Stack enough random capybara moods and you get a bell curve. Nature loves a bell.",
     "confidence-intervals": "We're 95% confident the capybara is in the hot spring. The other 5%? Snack run.",
     "hypothesis-testing-logic": "Null hypothesis: the capybara is unbothered. Honestly? Hard to reject.",
-    "one-sample-and-paired-t-tests": "Same capybara, before and after the spa — that's a paired design, bestie.",
-    "independent-samples-t-test": "Two unrelated capybara squads, one pool. It's giving independent samples.",
+    "one-sample-and-paired-t-tests": "Same capybara, before and after the spa. Measure the difference — that's a paired design.",
+    "independent-samples-t-test": "Two unrelated capybara squads, one pool, no shared history. That's independent samples.",
     "effect-size-and-power": "The capybara's chill isn't just significant. The effect size is massive.",
     /* Stats 2 */
     "one-way-anova": "Three capybara herds walk into a pool. ANOVA asks: same vibe, or nah?",
@@ -79,26 +79,26 @@
     "non-parametric-alternatives": "Weird data? Rank it. Capybaras don't judge distributions either.",
     "chi-square-tests": "Counting capybaras by category since 1900. Pearson would have loved a hot spring.",
     "correlation": "Snacks up, chill up. Correlated? Sure. Causal? The capybara declines to comment.",
-    "simple-linear-regression": "Drawing one straight line through pure chaos and calling it a model. Iconic.",
+    "simple-linear-regression": "Drawing one straight line through a cloud of chaos and calling it a model — and being right.",
     "regression-diagnostics": "Even capybaras check the mirror. Residual plots are your model's mirror.",
     /* Stats 3 */
-    "multiple-regression": "One predictor is a snack. Five predictors is a buffet. Pace yourself, bestie.",
-    "multicollinearity-and-variable-selection": "Two predictors in the same trench coat? That's multicollinearity, babes.",
+    "multiple-regression": "One predictor is a snack. Five predictors is a buffet. Pace yourself.",
+    "multicollinearity-and-variable-selection": "Two predictors sharing one trench coat and pretending to be different variables. That's multicollinearity.",
     "categorical-predictors-and-dummy-coding": "Dummy coding is not an insult. It's just capybara = 1, not-capybara = 0.",
     "ancova": "ANCOVA is just ANOVA that remembered to control for the vibes.",
     "interactions-in-regression": "Sometimes the effect of snacks depends on the pool. That's an interaction. Keep up.",
     "mediation-and-indirect-effects": "Snacks → serenity → chill. The capybara understood mediation all along.",
     "logistic-regression": "Will the capybara enter the pool? Yes / no. Logistic regression was born for this.",
-    "assumptions-of-regression": "A capybara never assumes. It checks the residual plots first.",
+    "assumptions-of-regression": "Linear, independent, equal-variance, roughly normal. The capybara checks all four before it relaxes.",
     "model-comparison": "Two models enter, one AIC leaves. The capybara bets on the simpler one.",
     "factor-analysis-pca": "43 personality questions, one latent trait: chill. PCA knew it all along.",
-    "manova": "Why vibe-check one outcome when you can vibe-check four at once? MANOVA energy.",
+    "manova": "Why test one outcome when you can test four at once and still control your error rate? That's MANOVA.",
     "power-analysis-for-complex-designs": "The capybara saw the effect clearly. Your n = 12 did not.",
     /* Stats 4 */
     "bootstrap-and-resampling": "Resample your own data 10,000 times. Capybaras call this self-care.",
     "bayesian-thinking": "The capybara had priors about you. It updated them. That's growth.",
     "bayesian-estimation": "The 95% credible interval: where the capybara actually believes the truth naps.",
-    "generalized-linear-models": "Not every relationship is a straight line. The capybara respects that.",
+    "generalized-linear-models": "One straight line, three disguises — the link function just changes its outfit. Underneath, same capybara.",
     "mixed-and-multilevel-models": "Capybaras nested in herds nested in hot springs. Multilevel living.",
     "cross-validation-and-overfitting": "Memorizing the training data is not learning. Even capybaras generalize.",
     "causal-dags-and-confounding": "The pool didn't cause the chill. The capybara confounds us all.",
@@ -825,21 +825,6 @@
     if (first) first.innerHTML = '<span class="footer-capy" aria-hidden="true">' + capy(22) + '</span>' + first.innerHTML;
   }
 
-  /* the page's capybara quip, in the footer of every page (the sidebar
-     box shows it too on desktop lessons; the footer covers mobile and
-     the root pages) */
-  function renderFooterQuip() {
-    var c = document.querySelector(".footer .container");
-    if (!c || c.querySelector(".footer-quip")) return;
-    var spans = c.querySelectorAll(":scope > span");
-    var tag = spans[spans.length - 1];
-    var q = document.createElement("span");
-    q.className = "footer-quip";
-    q.textContent = "“" + quipFor() + "”";
-    if (tag && /visual learners/i.test(tag.textContent)) c.replaceChild(q, tag);
-    else c.appendChild(q);
-  }
-
   /* ============================================================
      ACCESSIBILITY + HEAD extras (injected once, so all 40 pages
      get them without editing every file)
@@ -899,7 +884,6 @@
     renderSoftware();
     renderKofi();
     renderFooterCapy();
-    renderFooterQuip();
     wireSearchShortcuts();
     wireLessonKeys();
     // ?q=… deep link (also the target of the sitewide SearchAction schema)

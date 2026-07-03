@@ -107,6 +107,34 @@
           <li><strong>It's the gateway to inference.</strong> The same standardizing move — distance from the expected value, measured in standard-error units — is exactly what test statistics and p-values are built on later.</li>
         </ul>
 
+        <!-- ============ INTERACTIVE 2 ============ -->
+        <div class="viz" id="erviz">
+          <p class="viz-title">🎮 The 68–95–99.7 Rule</p>
+          <p class="viz-sub">Widen the band around the mean and watch the captured percentage climb. Three landmarks — ±1σ, ±2σ, ±3σ — are where the famous numbers live.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:240px">
+              <label>Band width <span class="val" id="k-val">±1.0σ</span></label>
+              <input type="range" id="k-range" min="5" max="35" step="1" value="10" style="width:100%" />
+            </div>
+            <div class="control">
+              <label>Jump to</label>
+              <div class="seg" id="er-preset">
+                <button data-k="1">1σ</button><button data-k="2">2σ</button><button data-k="3">3σ</button>
+              </div>
+            </div>
+          </div>
+
+          <canvas id="er-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k" style="color:var(--primary)">Within the band</span><span class="v" id="stat-within">68.3%</span></div>
+            <div class="stat"><span class="k">In each tail</span><span class="v" id="stat-ertail">15.87%</span></div>
+            <div class="stat"><span class="k">Landmark</span><span class="v" id="stat-note" style="font-size:1rem">the 68% rule</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE 2 ============ -->
+
         <div class="callout key">
           <p><strong>Why it matters:</strong> z-scores turn "a score" into "a position." Once you can place any value on the normal curve and read its percentile, you've got the core skill behind confidence intervals, t-tests, and nearly everything that follows.</p>
         </div>
@@ -234,6 +262,79 @@
     new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
     fit(); update();
+  })();
+  </script>
+
+  <!-- ============ 68–95–99.7 empirical-rule visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    /* self-contained helpers — this lesson does not load viz.js */
+    function erf(z) {
+      var t = 1 / (1 + 0.3275911 * Math.abs(z));
+      var y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-z * z);
+      return z >= 0 ? y : -y;
+    }
+    function Phi(z) { return 0.5 * (1 + erf(z / Math.SQRT2)); }
+    function phi(z) { return Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI); }
+    function css(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+
+    var k = 1, canvas = document.getElementById("er-canvas"), ctx, W = 0, H = 250;
+    var padL = 16, padR = 16, padT = 30, padB = 26, ZLO = -4, ZHI = 4, PK = phi(0);
+
+    function fit() {
+      var r = window.devicePixelRatio || 1, w = canvas.clientWidth || canvas.parentElement.clientWidth;
+      canvas.width = w * r; canvas.height = H * r; canvas.style.height = H + "px";
+      ctx = canvas.getContext("2d"); ctx.setTransform(r, 0, 0, r, 0, 0); W = w;
+    }
+    function zx(z) { return padL + (z - ZLO) / (ZHI - ZLO) * (W - padL - padR); }
+    function py(d) { return (H - padB) - (d / PK) * (H - padT - padB); }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      var base = H - padB;
+      // shaded central band [−k, k]
+      ctx.fillStyle = css("--primary"); ctx.globalAlpha = 0.22;
+      ctx.beginPath(); ctx.moveTo(zx(-k), base);
+      for (var z = -k; z <= k; z += 0.02) ctx.lineTo(zx(z), py(phi(z)));
+      ctx.lineTo(zx(k), base); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
+      // the curve
+      ctx.strokeStyle = css("--primary"); ctx.lineWidth = 2.5; ctx.beginPath();
+      for (var z2 = ZLO; z2 <= ZHI; z2 += 0.02) { var x = zx(z2), y = py(phi(z2)); if (z2 === ZLO) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
+      ctx.stroke();
+      // baseline
+      ctx.strokeStyle = css("--border"); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(padL, base); ctx.lineTo(W - padR, base); ctx.stroke();
+      // ±k boundaries
+      ctx.strokeStyle = "#f97316"; ctx.lineWidth = 2; ctx.setLineDash([4, 3]);
+      [-k, k].forEach(function (b) { ctx.beginPath(); ctx.moveTo(zx(b), py(phi(b))); ctx.lineTo(zx(b), base); ctx.stroke(); });
+      ctx.setLineDash([]);
+      // σ ticks
+      ctx.fillStyle = css("--text-faint"); ctx.font = "10px ui-monospace, monospace"; ctx.textAlign = "center";
+      for (var t = -3; t <= 3; t++) ctx.fillText((t > 0 ? "+" : "") + t + "σ", zx(t), base + 14);
+      // captured-area caption
+      var area = 2 * Phi(k) - 1;
+      ctx.fillStyle = css("--primary"); ctx.font = "700 14px Inter, sans-serif"; ctx.textAlign = "center";
+      ctx.fillText((area * 100).toFixed(1) + "% within ±" + k.toFixed(1) + "σ", zx(0), 16);
+
+      document.getElementById("k-val").textContent = "±" + k.toFixed(1) + "σ";
+      document.getElementById("stat-within").textContent = (area * 100).toFixed(1) + "%";
+      document.getElementById("stat-ertail").textContent = ((1 - area) / 2 * 100).toFixed(2) + "%";
+      var note = document.getElementById("stat-note");
+      if (Math.abs(k - 1) < 0.06) { note.textContent = "the 68% rule"; note.style.color = "#22c55e"; }
+      else if (Math.abs(k - 2) < 0.06) { note.textContent = "the 95% rule"; note.style.color = "#22c55e"; }
+      else if (Math.abs(k - 3) < 0.06) { note.textContent = "the 99.7% rule"; note.style.color = "#22c55e"; }
+      else { note.textContent = "—"; note.style.color = css("--text"); }
+    }
+
+    var kr = document.getElementById("k-range");
+    kr.addEventListener("input", function () { k = +this.value / 10; draw(); });
+    document.getElementById("er-preset").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      k = +b.dataset.k; kr.value = k * 10; draw();
+    });
+    window.addEventListener("resize", function () { fit(); draw(); });
+    new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    fit(); draw();
   })();
   </script>
 </body>

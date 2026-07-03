@@ -76,7 +76,7 @@
           <canvas id="meta-canvas"></canvas>
 
           <div class="stat-row">
-            <div class="stat"><span class="k" style="color:#ec4899">Random-effects d [95% CI]</span><span class="v" id="stat-re">—</span></div>
+            <div class="stat"><span class="k" style="color:#f97316">Random-effects d [95% CI]</span><span class="v" id="stat-re">—</span></div>
             <div class="stat"><span class="k" style="color:var(--secondary)">Fixed-effect d [95% CI]</span><span class="v" id="stat-fe">—</span></div>
             <div class="stat"><span class="k">I² (heterogeneity)</span><span class="v" id="stat-i2">—</span></div>
             <div class="stat"><span class="k">τ̂ (est. between-study SD)</span><span class="v" id="stat-tau">—</span></div>
@@ -208,7 +208,7 @@
         ctx.strokeStyle = VIZ.css("--text-muted"); ctx.lineWidth = 1.6;
         ctx.beginPath(); ctx.moveTo(sx(s.d - 1.96 * s.se), y); ctx.lineTo(sx(s.d + 1.96 * s.se), y); ctx.stroke();
         var half = 3 + 5 * Math.sqrt(m.wR[i] / wMax);
-        ctx.fillStyle = "#ec4899";
+        ctx.fillStyle = VIZ.css("--primary");
         ctx.fillRect(sx(s.d) - half, y - half, 2 * half, 2 * half);
         ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10.5px ui-monospace, monospace";
         ctx.fillText("S" + (i + 1) + "  n=" + s.n, 8, y + 4);
@@ -224,7 +224,7 @@
       }
       var yF = TOPPAD + k * ROW + 8, yR = yF + 22;
       diamond(m.dF, m.seF, yF, VIZ.css("--secondary"), "Fixed");
-      diamond(m.dR, m.seR, yR, "#ec4899", "Random");
+      diamond(m.dR, m.seR, yR, "#f97316", "Random");
     }
 
     function update() {
