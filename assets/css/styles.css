@@ -222,6 +222,15 @@ main { padding-top: var(--nav-h); }
 
 /* curriculum */
 .courses { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; align-items: start; }
+/* track heading inside the curriculum grid — spans the whole row, and
+   only appears when more than one track has courses (see site.js) */
+.courses .track-head {
+  grid-column: 1 / -1; margin: .5rem 0 -.4rem; font-size: 1.05rem; font-weight: 700;
+  letter-spacing: .01em; color: var(--text-muted);
+  display: flex; align-items: center; gap: .7rem;
+}
+.courses .track-head:not(:first-child) { margin-top: 1.6rem; }
+.courses .track-head::after { content: ""; flex: 1; height: 1px; background: var(--border); }
 .course-card {
   border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
   background: var(--surface); box-shadow: var(--shadow); border-left: 4px solid var(--accent, var(--primary));

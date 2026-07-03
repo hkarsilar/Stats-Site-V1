@@ -177,7 +177,7 @@
     { url: "descriptives.html",  key: "descriptives",  group: "calc",     emoji: "🧮", title: "Descriptives calculator",  desc: "Paste data, get stats, a histogram & APA text" },
     { url: "formulas.html",      key: "formulas",      group: "guide",    emoji: "🖨️", title: "Formula sheet",            desc: "Every formula from the course, printable" },
     { url: "glossary.html",      key: "glossary",      group: "guide",    emoji: "📖", title: "Glossary",                 desc: "Every stats term, defined without the jargon" },
-    { url: "quiz.html",          key: "quiz",          group: "practice", emoji: "✅", title: "Quiz",                     desc: "Test yourself across all four courses" }
+    { url: "quiz.html",          key: "quiz",          group: "practice", emoji: "✅", title: "Quiz",                     desc: "Test yourself across every course" }
   ];
   window.TOOLBOX = TOOLBOX;   // toolbox.html renders its grouped grid from this
   function renderNav() {
@@ -239,34 +239,80 @@
   }
 
   /* ---------- homepage curriculum grid ---------- */
+  function courseCard(c) {
+    var ready = c.sections.filter(function (s) { return s.ready; });
+    var visited = ready.filter(function (s) { return isVisited(s.slug); }).length;
+    var frac = ready.length ? visited / ready.length : 0;
+    var items = c.sections.map(function (s) {
+      var state = isDone(s.slug) ? " done" : (isVisited(s.slug) ? " visited" : "");
+      var inner =
+        '<span class="sec-dot"></span>' +
+        '<span><span class="sec-num">' + s.n + '</span>' + s.title + '</span>' +
+        '<span class="sec-check" aria-hidden="true">✓</span>';
+      return s.ready
+        ? '<li><a class="' + state.trim() + '" href="' + BASE + c.slug + '/' + s.slug + '/">' + inner + '</a></li>'
+        : '<li><a style="cursor:default;opacity:.65" title="Coming soon">' +
+            '<span class="sec-dot"></span><span><span class="sec-num">' + s.n + '</span>' + s.title + '</span>' +
+            '<span style="margin-left:auto;font-size:.68rem;color:var(--text-faint)">soon</span></a></li>';
+    }).join("");
+    return (
+      '<div class="course-card" style="--accent:' + c.accent + '">' +
+        '<div class="ch">' + ring(frac, c.accent) +
+          '<span class="ch-text"><h3>' + c.title + '</h3><span>' + c.subtitle + '</span></span>' +
+        '</div>' +
+        '<ul>' + items + '</ul>' +
+      '</div>'
+    );
+  }
   function renderCurriculum() {
     var host = document.getElementById("curriculum-grid");
     if (!host) return;
-    host.innerHTML = window.CURRICULUM.map(function (c) {
-      var ready = c.sections.filter(function (s) { return s.ready; });
-      var visited = ready.filter(function (s) { return isVisited(s.slug); }).length;
-      var frac = ready.length ? visited / ready.length : 0;
-      var items = c.sections.map(function (s) {
-        var state = isDone(s.slug) ? " done" : (isVisited(s.slug) ? " visited" : "");
-        var inner =
-          '<span class="sec-dot"></span>' +
-          '<span><span class="sec-num">' + s.n + '</span>' + s.title + '</span>' +
-          '<span class="sec-check" aria-hidden="true">✓</span>';
-        return s.ready
-          ? '<li><a class="' + state.trim() + '" href="' + BASE + c.slug + '/' + s.slug + '/">' + inner + '</a></li>'
-          : '<li><a style="cursor:default;opacity:.65" title="Coming soon">' +
-              '<span class="sec-dot"></span><span><span class="sec-num">' + s.n + '</span>' + s.title + '</span>' +
-              '<span style="margin-left:auto;font-size:.68rem;color:var(--text-faint)">soon</span></a></li>';
+    /* Group the course cards by track, in TRACKS order, keeping only the
+       tracks that actually have courses. A heading is drawn above each
+       group ONLY when more than one track is populated — so today's
+       single ("core") track renders as one flat grid, byte-for-byte as
+       before. Track headings span the whole grid row (.track-head CSS). */
+    var tracks = (window.TRACKS && window.TRACKS.length) ? window.TRACKS : [{ id: "core", title: "" }];
+    var known = {};
+    tracks.forEach(function (t) { known[t.id] = 1; });
+    var groups = tracks.map(function (t) {
+      return { title: t.title, courses: window.CURRICULUM.filter(function (c) { return (c.track || "core") === t.id; }) };
+    }).filter(function (g) { return g.courses.length; });
+    // any course on an unlisted track still shows, in a trailing untitled group
+    var orphans = window.CURRICULUM.filter(function (c) { return !known[c.track || "core"]; });
+    if (orphans.length) groups.push({ title: "", courses: orphans });
+
+    if (groups.length > 1) {
+      host.innerHTML = groups.map(function (g) {
+        return (g.title ? '<h3 class="track-head">' + g.title + '</h3>' : '') +
+          g.courses.map(courseCard).join("");
       }).join("");
-      return (
-        '<div class="course-card" style="--accent:' + c.accent + '">' +
-          '<div class="ch">' + ring(frac, c.accent) +
-            '<span class="ch-text"><h3>' + c.title + '</h3><span>' + c.subtitle + '</span></span>' +
-          '</div>' +
-          '<ul>' + items + '</ul>' +
-        '</div>'
-      );
-    }).join("");
+    } else {
+      host.innerHTML = window.CURRICULUM.map(courseCard).join("");
+    }
+  }
+
+  /* ---------- live lesson / course counts ----------
+     Any element with data-count="courses" | "lessons" | "courses-word"
+     is filled from the curriculum at runtime, so the homepage's visible
+     totals can never fall out of step with curriculum.js. (The static
+     numbers baked into <meta>/OG/JSON-LD stay put and are guarded by
+     audit.js instead.) */
+  var NUM_WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight",
+    "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen",
+    "seventeen", "eighteen", "nineteen", "twenty"];
+  function numWord(n) {
+    var w = NUM_WORDS[n] || String(n);
+    return w.charAt(0).toUpperCase() + w.slice(1);
+  }
+  function renderCounts() {
+    var courses = window.CURRICULUM.length;
+    var lessons = window.CURRICULUM_FLAT.filter(function (s) { return s.ready; }).length;
+    var vals = { courses: String(courses), lessons: String(lessons), "courses-word": numWord(courses) };
+    Array.prototype.forEach.call(document.querySelectorAll("[data-count]"), function (el) {
+      var v = vals[el.getAttribute("data-count")];
+      if (v != null) el.textContent = v;
+    });
   }
 
   /* ---------- homepage toolbox grid (reads TOOLBOX, same as the nav) ---------- */
@@ -841,6 +887,7 @@
     injectA11y();
     renderNav();
     renderCurriculum();
+    renderCounts();
     renderToolbox();
     renderResume();
     renderSidebar();

@@ -47,9 +47,18 @@ def glossary_text(path: Path) -> str:
     return textify(joined)[:MAX_CHARS * 2]
 
 
+def course_slugs() -> list:
+    """Every course slug from curriculum.js, in curriculum order. A course's
+    own slug is the one followed by `title:` on the next line; section slugs
+    sit inline with n:/title:, so they don't match."""
+    cur = (ROOT / "assets/js/curriculum.js").read_text(encoding="utf-8")
+    return re.findall(r'slug: "([\w-]+)",\s*\n\s*title:', cur)
+
+
 lessons = {}
-for f in sorted(ROOT.glob("stats-*/*/index.html")):
-    lessons[f.parent.name] = lesson_text(f)
+for slug in course_slugs():
+    for f in sorted(ROOT.glob(f"{slug}/*/index.html")):
+        lessons[f.parent.name] = lesson_text(f)
 
 pages = []
 for fname, title in [

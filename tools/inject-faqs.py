@@ -21,10 +21,12 @@ from faq_data import FAQS
 
 ROOT = Path(__file__).resolve().parent.parent
 
-# curriculum: slug -> course
+# curriculum: section-slug -> course-slug, for any course (not just stats-N).
+# A course object's own slug is the one followed by `title:` on the next line;
+# section slugs sit inline (n:/slug:/title:), so the anchor won't match them.
 cur = (ROOT / "assets/js/curriculum.js").read_text(encoding="utf-8")
 courses = {}
-for block in re.finditer(r'slug: "(stats-\d)".*?sections: \[(.*?)\]\s*\}', cur, re.S):
+for block in re.finditer(r'slug: "([\w-]+)",\s*\n\s*title:.*?sections: \[(.*?)\]\s*\}', cur, re.S):
     for m in re.finditer(r'slug: "([\w-]+)"', block.group(2)):
         courses[m.group(1)] = block.group(1)
 

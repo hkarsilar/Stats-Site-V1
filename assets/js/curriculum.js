@@ -4,13 +4,28 @@
    sidebar, and the prev/next links all read from this file.
    `ready: true` means the lesson has real content (gets a link);
    anything else shows as "coming soon" and is non-clickable.
+
+   Each course carries a `track` (see TRACKS below). With a single
+   populated track the homepage renders one flat grid exactly as
+   before; add courses in a second track and the grid grows track
+   headings automatically. Default track is the first one ("core").
    ============================================================ */
+
+/* Ordered list of curriculum tracks. The homepage groups the course
+   cards by track (in this order) and shows a heading above each group
+   only when more than one track actually has courses. */
+window.TRACKS = [
+  { id: "core",    title: "The Statistics Core" },
+  { id: "toolkit", title: "The Research Toolkit" }
+];
+
 window.CURRICULUM = [
   {
     slug: "stats-1",
     title: "Stats 1",
     subtitle: "Foundations",
     accent: "var(--primary)",
+    track: "core",
     sections: [
       { n: "1.1",  slug: "what-is-statistics",                 title: "What Is Statistics?", ready: true },
       { n: "1.2",  slug: "types-of-data",                       title: "Types of Data", ready: true },
@@ -32,6 +47,7 @@ window.CURRICULUM = [
     title: "Stats 2",
     subtitle: "Comparing Groups & Relationships",
     accent: "var(--secondary)",
+    track: "core",
     sections: [
       { n: "2.1",  slug: "one-way-anova",                  title: "One-Way ANOVA", ready: true },
       { n: "2.2",  slug: "post-hoc-tests",                 title: "Post-Hoc Tests", ready: true },
@@ -50,6 +66,7 @@ window.CURRICULUM = [
     title: "Stats 3",
     subtitle: "Advanced Modeling",
     accent: "var(--success)",
+    track: "core",
     sections: [
       { n: "3.1",  slug: "multiple-regression",                     title: "Multiple Regression", ready: true },
       { n: "3.2",  slug: "multicollinearity-and-variable-selection",title: "Multicollinearity & Variable Selection", ready: true },
@@ -70,6 +87,7 @@ window.CURRICULUM = [
     title: "Stats 4",
     subtitle: "Modern & Advanced",
     accent: "#ec4899",
+    track: "core",
     sections: [
       { n: "4.1", slug: "bootstrap-and-resampling",        title: "Bootstrap & Resampling", ready: true },
       { n: "4.2", slug: "bayesian-thinking",               title: "Bayesian Thinking", ready: true },
@@ -85,9 +103,10 @@ window.CURRICULUM = [
   }
 ];
 
-/* Flat ordered list — used for prev/next across course boundaries. */
+/* Flat ordered list — used for prev/next across course boundaries.
+   `track` is appended (additive — existing consumers ignore it). */
 window.CURRICULUM_FLAT = window.CURRICULUM.flatMap(function (c) {
   return c.sections.map(function (s) {
-    return { course: c.slug, courseTitle: c.title, n: s.n, slug: s.slug, title: s.title, ready: !!s.ready };
+    return { course: c.slug, courseTitle: c.title, track: c.track || "core", n: s.n, slug: s.slug, title: s.title, ready: !!s.ready };
   });
 });

@@ -197,6 +197,7 @@ const readySlugs = new Set(READY.map((s) => s.slug));
 const allSlugs = new Set(FLAT.map((s) => s.slug));
 const slugCourse = {}, slugN = {};
 FLAT.forEach((s) => { slugCourse[s.slug] = s.course; slugN[s.slug] = s.n; });
+const courseSlugs = new Set(CURRICULUM.map((c) => c.slug));   // any track, not just stats-N
 
 /* root / tool pages (excluding the self-contained 404.html) */
 const ROOT_PAGES = ['index.html', 'quiz.html', 'glossary.html', 'toolbox.html', 'which-test.html',
@@ -351,10 +352,10 @@ for (const s of READY) {
   if (!SEARCH_INDEX.lessons || !(s.slug in SEARCH_INDEX.lessons))
     err(`search-index.js has no entry for "${s.slug}"`);
 }
-// stale sitemap lesson entries
+// stale sitemap lesson entries (any course track, not just stats-N)
 sitemapLocs.forEach((loc) => {
-  const m = loc.match(/^https:\/\/statscapybara\.com\/(stats-\d)\/([\w-]+)\/$/);
-  if (m && !readySlugs.has(m[2])) warn(`sitemap.xml lists ${m[1]}/${m[2]}/ which is not a ready lesson`);
+  const m = loc.match(/^https:\/\/statscapybara\.com\/([\w-]+)\/([\w-]+)\/$/);
+  if (m && courseSlugs.has(m[1]) && !readySlugs.has(m[2])) warn(`sitemap.xml lists ${m[1]}/${m[2]}/ which is not a ready lesson`);
 });
 
 /* ============================================================
