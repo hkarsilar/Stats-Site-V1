@@ -110,7 +110,10 @@ window.CURRICULUM = [
     sections: [
       { n: "1.1",  slug: "from-question-to-hypothesis",      title: "From Question to Hypothesis", ready: true },
       { n: "1.2",  slug: "variables-and-operationalization", title: "Variables & Operationalization", ready: true },
-      { n: "1.3",  slug: "reliability-and-validity",         title: "Reliability & Validity", ready: true }
+      { n: "1.3",  slug: "reliability-and-validity",         title: "Reliability & Validity", ready: true },
+      { n: "1.4",  slug: "experimental-design-and-randomization", title: "Experiments & Random Assignment", ready: true },
+      { n: "1.5",  slug: "between-vs-within-designs",        title: "Between vs Within Designs", ready: true },
+      { n: "1.6",  slug: "quasi-experiments",               title: "Quasi-Experiments & Natural Experiments", ready: true }
     ]
   }
 ];

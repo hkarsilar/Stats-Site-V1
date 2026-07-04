@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Between vs Within Designs — StatsCapybara</title>
+  <meta name="description" content="Within-subjects designs can slash the sample you need — until carryover bites back. Compare the same study run both ways and watch the trade-off flip." />
+  <link rel="canonical" href="https://statscapybara.com/methods/between-vs-within-designs/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Between vs Within Designs — StatsCapybara" />
+  <meta property="og:description" content="Within-subjects designs can slash the sample you need — until carryover bites back. Compare the same study run both ways and watch the trade-off flip." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/methods/between-vs-within-designs/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Between vs Within Designs — StatsCapybara" />
+  <meta name="twitter:description" content="Within-subjects designs can slash the sample you need — until carryover bites back. Compare the same study run both ways and watch the trade-off flip." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Between vs Within Designs", "description": "Within-subjects designs can slash the sample you need — until carryover bites back. Compare the same study run both ways and watch the trade-off flip.", "url": "https://statscapybara.com/methods/between-vs-within-designs/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Methods: Research Design", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Between vs Within Designs", "item": "https://statscapybara.com/methods/between-vs-within-designs/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the difference between within-subjects and between-subjects designs?", "acceptedAnswer": {"@type": "Answer", "text": "In a between-subjects design each participant experiences only one condition, so you compare different groups of people. In a within-subjects (repeated-measures) design each participant experiences every condition, so you compare each person to themselves. Within-subjects removes stable individual differences from the comparison, which usually makes it far more efficient — but it introduces order and carryover effects that a between-subjects design never faces."}}, {"@type": "Question", "name": "Are within-subjects designs always more powerful?", "acceptedAnswer": {"@type": "Answer", "text": "No. They win only when a person's scores across conditions correlate strongly — roughly above 0.5. That correlation is what lets individual differences cancel out; below it, you'd have been better off with independent groups. And heavy carryover (practice, fatigue, a lingering manipulation) adds noise that only the within design pays, which can erase the advantage entirely. When conditions correlate strongly and carry over little, though, a within design can need less than half the participants for the same power."}}, {"@type": "Question", "name": "Does counterbalancing remove carryover effects?", "acceptedAnswer": {"@type": "Answer", "text": "Only partly. Counterbalancing — running the conditions in different orders across participants, e.g. via a Latin square — averages out symmetric order effects so they don't bias the mean. But if the transfer is asymmetric (condition A changes B more than B changes A), balancing the orders leaves residual variability in the difference scores rather than removing it. Counterbalancing is a defence, not a cure; when carryover is severe, a between-subjects design is safer."}}]}
+  </script>
+</head>
+<body data-course="methods" data-section="between-vs-within-designs">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 1.5</span>
+        <h1>Between vs Within Designs</h1>
+
+        <p class="lede">Once you've decided <em>what</em> to compare, you still have to decide <em>who</em> experiences each condition. In a <strong>between-subjects</strong> design, different people get different conditions. In a <strong>within-subjects</strong> (repeated-measures) design, the same people get all of them. That one choice can multiply or divide the number of participants you need — and it comes with a catch.</p>
+
+        <h2>Why within-subjects can be so efficient</h2>
+        <p>The enemy of a between-subjects comparison is <strong>individual differences</strong>. If two groups differ, is it the treatment, or just that these people were always faster, smarter, calmer? All that person-to-person noise sits in the denominator of your test statistic, drowning the signal. A within-subjects design lets each person serve as their <strong>own control</strong>: you look at how <em>each</em> individual changed, so their stable quirks subtract out. When people are consistent (their scores in the two conditions correlate strongly), that cancellation is enormous — which is exactly why <a href="../../stats-2/repeated-measures-anova/">repeated-measures ANOVA</a> is so powerful.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="bw">
+          <p class="viz-title">⚖️ The Same Study, Two Designs</p>
+          <p class="viz-sub">One true effect, run as a between-subjects and a within-subjects study. The curves show statistical power against the number of <em>participants</em>; the readouts give the sample each design needs for 80% power. Turn up individual differences to reward the within design — then turn up carryover and watch its edge collapse.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:180px">
+              <label>True effect (Cohen's <em>d</em>) <span class="val" id="bw-d-val">0.50</span></label>
+              <input type="range" id="bw-d" min="20" max="90" step="1" value="50" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:180px">
+              <label>Individual differences <span class="val" id="bw-r-val">0.70</span></label>
+              <input type="range" id="bw-r" min="0" max="95" step="1" value="70" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:180px">
+              <label>Carryover / order effects <span class="val" id="bw-c-val">0%</span></label>
+              <input type="range" id="bw-c" min="0" max="100" step="1" value="0" style="width:100%" />
+            </div>
+          </div>
+
+          <canvas id="bw-canvas"></canvas>
+
+          <div class="stat-row" style="margin-top:.5rem">
+            <div class="stat"><span class="k">Between — people needed</span><span class="v" id="bw-nb">—</span></div>
+            <div class="stat"><span class="k">Within — people needed</span><span class="v" id="bw-nw">—</span></div>
+            <div class="stat"><span class="k">Within effect size (<em>d<sub>z</sub></em>)</span><span class="v" id="bw-dz">—</span></div>
+          </div>
+          <p class="bw-verdict" id="bw-verdict"></p>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>Notice the crossover: the within design only wins when people's two scores correlate above about <strong>0.5</strong>. Below that, splitting the difference between two noisy measurements actually costs you, and a plain between-subjects design is the safer bet.</p>
+
+        <h2>The catch: order and carryover effects</h2>
+        <p>Measuring the same person twice creates problems a between design never has:</p>
+        <ul>
+          <li><strong>Practice / fatigue:</strong> people get better (or more tired) simply from doing the task again, regardless of condition.</li>
+          <li><strong>Carryover:</strong> the first condition lingers into the second — a drug still in the bloodstream, a strategy just learned, a mood just induced.</li>
+          <li><strong>Demand characteristics:</strong> seeing both conditions, participants may guess the hypothesis and play along.</li>
+        </ul>
+
+        <h2>Counterbalancing (and its limits)</h2>
+        <p>The standard defence is <strong>counterbalancing</strong>: give half the participants condition A first and half condition B first, so any pure order effect cancels out on average. With more than two conditions you can't run every possible order, so researchers use a <strong>Latin square</strong> — a schedule in which each condition appears once in every position — to spread order effects evenly without needing all <em>k</em>! sequences.</p>
+        <p>But counterbalancing only tames <em>symmetric</em> order effects. If A changes B more than B changes A (asymmetric transfer), balancing the orders leaves residual noise in the difference scores — which is what the carryover slider above is doing to the within design's power. Sometimes within-subjects is simply <strong>impossible</strong>: you can't un-teach a lesson, un-reveal a deception, or randomly reassign someone's gender. Then between-subjects is your only option.</p>
+
+        <div class="callout key">
+          <p><strong>The trade-off in one line:</strong> within-subjects buys power by removing individual differences, and pays for it with order and carryover effects. Reach for it when conditions are reversible and people are consistent; fall back to between-subjects when they aren't — and counterbalance whenever you do go within.</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> the design decision happens before you collect a single data point, and it's largely irreversible. Choosing within-subjects for a strongly-correlated, reversible manipulation can cut your required sample by half or more; choosing it for a task with heavy carryover can quietly wreck the study. Match the design to the manipulation, not to convenience.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What is the difference between within-subjects and between-subjects designs?</summary>
+            <div class="faq-a"><p>In a <strong>between-subjects</strong> design each participant experiences only one condition, so you compare different groups of people. In a <strong>within-subjects</strong> (repeated-measures) design each participant experiences <em>every</em> condition, so you compare each person to themselves. Within-subjects removes stable individual differences from the comparison, which usually makes it far more efficient — but it introduces order and carryover effects that a between-subjects design never faces.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Are within-subjects designs always more powerful?</summary>
+            <div class="faq-a"><p>No. They win only when a person's scores across conditions correlate strongly — roughly above 0.5. That correlation is what lets individual differences cancel out; below it, you'd have been better off with independent groups. And heavy <em>carryover</em> (practice, fatigue, a lingering manipulation) adds noise that only the within design pays, which can erase the advantage entirely. When conditions correlate strongly and carry over little, though, a within design can need less than half the participants for the same <a href="../../stats-1/effect-size-and-power/">power</a>.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Does counterbalancing remove carryover effects?</summary>
+            <div class="faq-a"><p>Only partly. Counterbalancing — running the conditions in different orders across participants, e.g. via a <em>Latin square</em> — averages out <em>symmetric</em> order effects so they don't bias the mean. But if the transfer is <em>asymmetric</em> (condition A changes B more than B changes A), balancing the orders leaves residual variability in the difference scores rather than removing it. Counterbalancing is a defence, not a cure; when carryover is severe, a between-subjects design is safer.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <style>
+    /* between-vs-within widget (scoped) */
+    #bw .bw-verdict { font-size: .9rem; font-weight: 600; margin: .8rem 0 0; }
+  </style>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ between vs within power comparison (exact noncentral-t) ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var canvas = document.getElementById("bw-canvas"), ctx, W = 0, H = 300;
+    var ALPHA = 0.05, TARGET = 0.80;
+    var d = 0.50, rho = 0.70, carry = 0.0;
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+
+    // Exact power via the noncentral t distribution (two-tailed).
+    function powerBetween(dd, ng) {            // ng = n per group
+      if (ng < 2) return 0;
+      var df = 2 * ng - 2, del = dd * Math.sqrt(ng / 2), tc = VIZ.tInv(ALPHA / 2, df);
+      return 1 - VIZ.nctCdf(tc, df, del) + VIZ.nctCdf(-tc, df, del);
+    }
+    function powerWithin(dz, np) {             // np = number of people (each in both conditions)
+      if (np < 2) return 0;
+      var df = np - 1, del = dz * Math.sqrt(np), tc = VIZ.tInv(ALPHA / 2, df);
+      return 1 - VIZ.nctCdf(tc, df, del) + VIZ.nctCdf(-tc, df, del);
+    }
+    // smallest sample reaching TARGET power (binary search — power is monotone in n)
+    function solve(power, lo, hi) {
+      if (power(hi) < TARGET) return Infinity;
+      while (lo < hi) { var m = (lo + hi) >> 1; if (power(m) >= TARGET) hi = m; else lo = m + 1; }
+      return lo;
+    }
+    // within-subjects effect size: SD of difference scores = σ·√(2(1−ρ));
+    // carryover inflates that SD (residual order noise), shrinking d_z.
+    function dzOf() { return d / Math.sqrt(2 * (1 - rho)) / (1 + 1.6 * carry); }
+
+    function fmt(n) {
+      if (!isFinite(n) || n > 100000) return "10,000+";
+      return n.toLocaleString("en-US");
+    }
+
+    function draw(peopleB, peopleW, dz) {
+      ctx.clearRect(0, 0, W, H);
+      var padL = 42, padR = 12, padT = 14, padB = 34;
+      var plotW = W - padL - padR, plotH = H - padT - padB;
+      var finB = isFinite(peopleB) ? peopleB : 400, finW = isFinite(peopleW) ? peopleW : 400;
+      var Pmax = Math.max(40, Math.min(600, Math.ceil(1.25 * Math.max(finB, finW))));
+      function X(p) { return padL + (p / Pmax) * plotW; }
+      function Y(pw) { return padT + (1 - pw) * plotH; }
+
+      // axes
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + plotH); ctx.lineTo(padL + plotW, padT + plotH); ctx.stroke();
+      // 80% target line
+      ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([4, 4]);
+      ctx.beginPath(); ctx.moveTo(padL, Y(TARGET)); ctx.lineTo(padL + plotW, Y(TARGET)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = VIZ.css("--text-muted"); ctx.font = "11px system-ui,sans-serif"; ctx.textAlign = "left";
+      ctx.fillText("80% power", padL + 4, Y(TARGET) - 4);
+      ctx.textAlign = "right";
+      ctx.fillText("0", padL - 6, padT + plotH + 4);
+      ctx.fillText("1", padL - 6, padT + 4);
+      ctx.textAlign = "center";
+      ctx.fillText("participants", padL + plotW / 2, H - 6);
+      ctx.fillText(String(Pmax), padL + plotW, padT + plotH + 16);
+
+      function curve(power, color) {
+        ctx.strokeStyle = color; ctx.lineWidth = 2.4; ctx.beginPath();
+        for (var px = 0; px <= plotW; px += 2) {
+          var P = (px / plotW) * Pmax;
+          var pw = power(Math.max(2, P));
+          var yy = Y(pw);
+          if (px === 0) ctx.moveTo(padL + px, yy); else ctx.lineTo(padL + px, yy);
+        }
+        ctx.stroke();
+      }
+      curve(function (P) { return powerBetween(d, P / 2); }, VIZ.css("--primary"));   // between (total P)
+      curve(function (P) { return powerWithin(dz, P); }, "#f97316");                   // within
+
+      // markers where each first reaches 80%
+      function marker(p, color) {
+        if (!isFinite(p) || p > Pmax) return;
+        ctx.fillStyle = color;
+        ctx.beginPath(); ctx.arc(X(p), Y(TARGET), 4.5, 0, 6.2832); ctx.fill();
+      }
+      marker(peopleB, VIZ.css("--primary"));
+      marker(peopleW, "#f97316");
+
+      // legend
+      ctx.textAlign = "left"; ctx.font = "600 12px system-ui,sans-serif";
+      ctx.fillStyle = VIZ.css("--primary"); ctx.fillText("■ Between-subjects", padL + plotW - 150, padT + 12);
+      ctx.fillStyle = "#f97316"; ctx.fillText("■ Within-subjects", padL + plotW - 150, padT + 28);
+    }
+
+    function update() {
+      document.getElementById("bw-d-val").textContent = d.toFixed(2);
+      document.getElementById("bw-r-val").textContent = rho.toFixed(2);
+      document.getElementById("bw-c-val").textContent = Math.round(carry * 100) + "%";
+
+      var dz = dzOf();
+      var peopleB = 2 * solve(function (ng) { return powerBetween(d, ng); }, 2, 100000);
+      var peopleW = solve(function (np) { return powerWithin(dz, np); }, 2, 100000);
+
+      document.getElementById("bw-nb").textContent = fmt(peopleB);
+      document.getElementById("bw-nw").textContent = fmt(peopleW);
+      document.getElementById("bw-dz").textContent = dz.toFixed(2);
+
+      var vd = document.getElementById("bw-verdict"), txt, col;
+      if (!isFinite(peopleW) || peopleW > peopleB) {
+        txt = "Between-subjects wins here — weak individual differences or heavy carryover erase the repeated-measures advantage.";
+        col = "#3b82f6";
+      } else {
+        var saved = Math.round(100 * (1 - peopleW / peopleB));
+        txt = "Within-subjects needs " + saved + "% fewer people (" + fmt(peopleW) + " vs " + fmt(peopleB) + ") — each person acts as their own control.";
+        col = "#22c55e";
+      }
+      vd.textContent = txt; vd.style.color = col;
+
+      draw(peopleB, peopleW, dz);
+    }
+
+    document.getElementById("bw-d").addEventListener("input", function () { d = +this.value / 100; update(); });
+    document.getElementById("bw-r").addEventListener("input", function () { rho = Math.min(0.95, +this.value / 100); update(); });
+    document.getElementById("bw-c").addEventListener("input", function () { carry = +this.value / 100; update(); });
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(function () { update(); });
+
+    fit(); update();
+  })();
+  </script>
+</body>
+</html>

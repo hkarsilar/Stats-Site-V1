@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quasi-Experiments &amp; Natural Experiments — StatsCapybara</title>
+  <meta name="description" content="When you can't randomize: pre/post, nonequivalent groups, and difference-in-differences. See what the parallel-trends assumption actually buys you." />
+  <link rel="canonical" href="https://statscapybara.com/methods/quasi-experiments/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Quasi-Experiments &amp; Natural Experiments — StatsCapybara" />
+  <meta property="og:description" content="When you can't randomize: pre/post, nonequivalent groups, and difference-in-differences. See what the parallel-trends assumption actually buys you." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/methods/quasi-experiments/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Quasi-Experiments &amp; Natural Experiments — StatsCapybara" />
+  <meta name="twitter:description" content="When you can't randomize: pre/post, nonequivalent groups, and difference-in-differences. See what the parallel-trends assumption actually buys you." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Quasi-Experiments & Natural Experiments", "description": "When you can't randomize: pre/post, nonequivalent groups, and difference-in-differences. See what the parallel-trends assumption actually buys you.", "url": "https://statscapybara.com/methods/quasi-experiments/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Methods: Research Design", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Quasi-Experiments & Natural Experiments", "item": "https://statscapybara.com/methods/quasi-experiments/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the difference between a quasi-experiment and a true experiment?", "acceptedAnswer": {"@type": "Answer", "text": "The dividing line is random assignment. A true experiment randomly assigns participants to conditions, so the groups are equivalent in expectation and differences can be pinned on the treatment. A quasi-experiment keeps a treatment, a comparison, and an outcome but the groups formed by choice or circumstance — a policy that hit one region, students who chose a program — so hidden differences between them remain a rival explanation you must argue away rather than having randomized it away."}}, {"@type": "Question", "name": "What is the parallel-trends assumption in difference-in-differences?", "acceptedAnswer": {"@type": "Answer", "text": "Difference-in-differences estimates a treatment effect by subtracting the comparison group's before-to-after change from the treated group's change. That subtraction is valid only if, absent the treatment, both groups would have moved by the same amount — the parallel-trends assumption. It allows the groups to start at different levels (a baseline gap is fine) but requires their trends to match. If the treated group was already on a steeper trajectory, that differential trend gets counted as 'effect,' biasing the estimate."}}, {"@type": "Question", "name": "What is a natural experiment?", "acceptedAnswer": {"@type": "Answer", "text": "A natural experiment is a quasi-experiment where some outside force — a lottery, a law change, an arbitrary cutoff or border — assigns the 'treatment' in a way that is as-good-as-random with respect to the outcome. The researcher doesn't manipulate anything; they exploit the accident. When the assigning event really is unrelated to who would have done well anyway, a natural experiment can approach the causal credibility of a randomized trial on questions you could never ethically or practically assign yourself."}}]}
+  </script>
+</head>
+<body data-course="methods" data-section="quasi-experiments">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 1.6</span>
+        <h1>Quasi-Experiments &amp; Natural Experiments</h1>
+
+        <p class="lede">Often you simply can't randomize. You can't randomly assign people to smoke, to live through a policy change, or to attend one school over another. A <strong>quasi-experiment</strong> keeps the spirit of an experiment — a treatment, a comparison, an outcome — but drops the one piece that made it airtight: <strong>random assignment</strong>. The whole craft is squeezing a credible causal claim out of groups that were never equivalent to begin with.</p>
+
+        <h2>The quasi-experimental toolkit</h2>
+        <ul>
+          <li><strong>Nonequivalent groups:</strong> a treated group and a comparison group that formed by choice or circumstance, not a coin flip — so they may differ in hidden ways.</li>
+          <li><strong>Pre/post (one group):</strong> measure before and after a treatment. Cheap, but anything else changing over time (maturation, the season, the economy) is confounded with the effect.</li>
+          <li><strong>Interrupted time series:</strong> many measurements before and after an intervention, so you can see whether the <em>trend</em> genuinely bent at the intervention.</li>
+          <li><strong>Matching:</strong> pair each treated unit with a comparison unit that looks similar on measured variables — which helps, but can only balance what you measured, never the unknown confounds randomization would have caught.</li>
+        </ul>
+
+        <h2>Difference-in-differences: the workhorse</h2>
+        <p>The cleverest common design combines a nonequivalent comparison group <em>and</em> a before/after measurement. Two naïve estimates each fail on their own — and subtracting them fixes both. Play with it:</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="did">
+          <p class="viz-title">📈 Difference-in-Differences Explorer</p>
+          <p class="viz-sub">A treated group and a comparison group, each measured before and after. See why "compare the groups afterwards" and "compare the treated group's change" both mislead — and how the difference-in-differences estimate cancels their biases, as long as the trends would have stayed parallel.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:160px">
+              <label>Baseline gap <span class="val" id="did-g-val">8</span></label>
+              <input type="range" id="did-g" min="-20" max="20" step="1" value="8" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:160px">
+              <label>Shared trend <span class="val" id="did-s-val">10</span></label>
+              <input type="range" id="did-s" min="-20" max="20" step="1" value="10" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:160px">
+              <label>True treatment effect <span class="val" id="did-t-val">10</span></label>
+              <input type="range" id="did-t" min="0" max="25" step="1" value="10" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:160px">
+              <label>Differential trend <span class="val" id="did-x-val">0</span></label>
+              <input type="range" id="did-x" min="-15" max="15" step="1" value="0" style="width:100%" />
+            </div>
+          </div>
+
+          <canvas id="did-canvas"></canvas>
+
+          <div class="stat-row" style="margin-top:.5rem">
+            <div class="stat"><span class="k">True effect</span><span class="v" id="did-true">—</span></div>
+            <div class="stat"><span class="k">Post-only</span><span class="v" id="did-post">—</span></div>
+            <div class="stat"><span class="k">Treated change only</span><span class="v" id="did-prepost">—</span></div>
+            <div class="stat"><span class="k">Difference-in-differences</span><span class="v" id="did-did">—</span></div>
+          </div>
+          <p class="did-verdict" id="did-verdict"></p>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>Two biases, cancelled: comparing the groups <em>after only</em> is fooled by the <strong>baseline gap</strong> (the groups differed to begin with); comparing the treated group's <em>change only</em> is fooled by the <strong>shared trend</strong> (things were moving anyway). Difference-in-differences subtracts the comparison group's change from the treated group's change, wiping out both — <em>provided</em> the two groups would have moved in parallel without the treatment. That last clause is the <strong>parallel-trends assumption</strong>, and the differential-trend slider shows exactly how much a violation of it leaks straight into your estimate.</p>
+
+        <h2>Regression discontinuity, in one picture</h2>
+        <p>When a treatment is handed out by a strict cutoff — a scholarship for scores ≥ 90, a program for incomes below a line — you can compare people <em>just above</em> and <em>just below</em> the threshold. They're nearly identical by luck of landing on either side, so a sudden <strong>jump</strong> in the outcome right at the cutoff is hard to explain as anything but the treatment. It's the closest a quasi-experiment gets to a local randomized trial.</p>
+
+        <div class="callout key">
+          <p><strong>Natural experiments</strong> take this further: nature or policy does the "assigning" for you — a lottery, an arbitrary border, a law that changed in one region but not the neighbouring one. When the assigning event is genuinely as-good-as-random with respect to the outcome, a natural experiment can rival a true experiment for causal credibility, on data you could never have assigned yourself.</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> most of the questions that matter most — about policies, diseases, life events — can't be randomized for practical or ethical reasons. Quasi-experiments are how research still makes progress on them. But every one leans on an assumption that randomization would have made unnecessary, so name that assumption out loud, and design your comparison to make it as believable as you can.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What is the difference between a quasi-experiment and a true experiment?</summary>
+            <div class="faq-a"><p>The dividing line is <strong>random assignment</strong>. A true experiment randomly assigns participants to conditions, so the groups are equivalent in expectation and differences can be pinned on the treatment. A quasi-experiment keeps a treatment, a comparison, and an outcome but the groups formed by choice or circumstance — a policy that hit one region, students who chose a program — so hidden differences between them remain a rival explanation you must argue away rather than having <a href="../../methods/experimental-design-and-randomization/">randomized</a> it away.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is the parallel-trends assumption in difference-in-differences?</summary>
+            <div class="faq-a"><p>Difference-in-differences estimates a treatment effect by subtracting the comparison group's before-to-after change from the treated group's change. That subtraction is valid only if, <em>absent the treatment</em>, both groups would have moved by the same amount — the <strong>parallel-trends assumption</strong>. It allows the groups to start at different levels (a baseline gap is fine) but requires their trends to match. If the treated group was already on a steeper trajectory, that differential trend gets counted as 'effect,' biasing the estimate.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is a natural experiment?</summary>
+            <div class="faq-a"><p>A natural experiment is a quasi-experiment where some outside force — a lottery, a law change, an arbitrary cutoff or border — assigns the 'treatment' in a way that is as-good-as-random with respect to the outcome. The researcher doesn't manipulate anything; they exploit the accident. When the assigning event really is unrelated to who would have done well anyway, a natural experiment can approach the causal credibility of a randomized trial on questions you could never ethically or practically assign yourself.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <style>
+    /* difference-in-differences widget (scoped) */
+    #did .did-verdict { font-size: .9rem; font-weight: 600; margin: .8rem 0 0; }
+  </style>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ difference-in-differences (deterministic) ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var canvas = document.getElementById("did-canvas"), ctx, W = 0, H = 300;
+    var gap = 8, shared = 10, effect = 10, diff = 0;
+    var CB = 50;                       // control before (fixed anchor)
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+
+    function model() {
+      var cB = CB, cA = CB + shared;
+      var tB = CB + gap;
+      var tCounter = tB + shared;                 // parallel-trends counterfactual (no effect, no diff trend)
+      var tA = tB + shared + diff + effect;       // actual treated after
+      return {
+        cB: cB, cA: cA, tB: tB, tA: tA, tCounter: tCounter,
+        postOnly: tA - cA,
+        prepost: tA - tB,
+        did: (tA - tB) - (cA - cB)
+      };
+    }
+
+    function draw(m) {
+      ctx.clearRect(0, 0, W, H);
+      var padL = 40, padR = 14, padT = 26, padB = 30;
+      var plotW = W - padL - padR, plotH = H - padT - padB;
+      var vals = [m.cB, m.cA, m.tB, m.tA, m.tCounter];
+      var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+      var span = Math.max(10, hi - lo), yLo = lo - span * 0.18, yHi = hi + span * 0.18;
+      var xB = padL + plotW * 0.26, xA = padL + plotW * 0.74;
+      function Y(v) { return padT + (1 - (v - yLo) / (yHi - yLo)) * plotH; }
+
+      // frame + time labels
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + plotH); ctx.lineTo(padL + plotW, padT + plotH); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-muted"); ctx.font = "12px system-ui,sans-serif"; ctx.textAlign = "center";
+      ctx.fillText("Before", xB, padT + plotH + 18);
+      ctx.fillText("After", xA, padT + plotH + 18);
+
+      function line(x1, y1, x2, y2, color, w, dash) {
+        ctx.strokeStyle = color; ctx.lineWidth = w; ctx.setLineDash(dash || []);
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.setLineDash([]);
+      }
+      function dot(x, y, color) { ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, 5, 0, 6.2832); ctx.fill(); }
+
+      var COL_C = VIZ.css("--secondary"), COL_T = VIZ.css("--primary"), COL_CF = "#f97316";
+
+      // counterfactual (what treated would do under parallel trends)
+      line(xB, Y(m.tB), xA, Y(m.tCounter), COL_CF, 2, [5, 4]);
+      // control + treatment
+      line(xB, Y(m.cB), xA, Y(m.cA), COL_C, 2.6);
+      line(xB, Y(m.tB), xA, Y(m.tA), COL_T, 2.6);
+
+      // DiD gap bracket at After (between actual treated and its counterfactual)
+      ctx.strokeStyle = "#22c55e"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(xA + 12, Y(m.tA)); ctx.lineTo(xA + 12, Y(m.tCounter)); ctx.stroke();
+      ctx.fillStyle = "#22c55e"; ctx.font = "600 11px system-ui,sans-serif"; ctx.textAlign = "left";
+      ctx.fillText("DiD", xA + 16, (Y(m.tA) + Y(m.tCounter)) / 2 + 4);
+
+      dot(xB, Y(m.cB), COL_C); dot(xA, Y(m.cA), COL_C);
+      dot(xB, Y(m.tB), COL_T); dot(xA, Y(m.tA), COL_T);
+      dot(xA, Y(m.tCounter), COL_CF);
+
+      // legend
+      ctx.textAlign = "left"; ctx.font = "600 12px system-ui,sans-serif";
+      ctx.fillStyle = COL_T; ctx.fillText("■ Treated", padL + 6, padT + 2);
+      ctx.fillStyle = COL_C; ctx.fillText("■ Comparison", padL + 74, padT + 2);
+      ctx.fillStyle = COL_CF; ctx.fillText("▪ counterfactual", padL + 172, padT + 2);
+    }
+
+    function sign(x) { return (x >= 0 ? "+" : "−") + Math.abs(x).toFixed(0); }
+
+    function update() {
+      document.getElementById("did-g-val").textContent = gap;
+      document.getElementById("did-s-val").textContent = shared;
+      document.getElementById("did-t-val").textContent = effect;
+      document.getElementById("did-x-val").textContent = diff;
+
+      var m = model();
+      document.getElementById("did-true").textContent = effect.toFixed(0);
+      document.getElementById("did-post").textContent = m.postOnly.toFixed(0);
+      document.getElementById("did-prepost").textContent = m.prepost.toFixed(0);
+      document.getElementById("did-did").textContent = m.did.toFixed(0);
+
+      var vd = document.getElementById("did-verdict"), txt, col;
+      if (diff === 0) {
+        txt = "Parallel trends hold: difference-in-differences nails the true effect (" + effect + "), while post-only is off by the baseline gap and treated-change is off by the shared trend.";
+        col = "#22c55e";
+      } else {
+        txt = "Parallel trends broken: even difference-in-differences is off by the differential trend (" + sign(diff) + ") — the assumption is doing real work here.";
+        col = "#ef4444";
+      }
+      vd.textContent = txt; vd.style.color = col;
+      draw(m);
+    }
+
+    document.getElementById("did-g").addEventListener("input", function () { gap = +this.value; update(); });
+    document.getElementById("did-s").addEventListener("input", function () { shared = +this.value; update(); });
+    document.getElementById("did-t").addEventListener("input", function () { effect = +this.value; update(); });
+    document.getElementById("did-x").addEventListener("input", function () { diff = +this.value; update(); });
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(function () { update(); });
+
+    fit(); update();
+  })();
+  </script>
+</body>
+</html>

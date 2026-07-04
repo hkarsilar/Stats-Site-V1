@@ -458,6 +458,33 @@ FAQS_METHODS = {
   "<strong>Reliability</strong> is consistency: the same answer under the same conditions, whether across time (test–retest), across raters (inter-rater), or across a scale's items (internal consistency). <strong>Validity</strong> is accuracy: whether the measure actually captures the construct you intend. On the dartboard picture, reliability is how tightly the darts cluster together; validity is whether that cluster sits on the bullseye."),
 ],
 
+"experimental-design-and-randomization": [
+ ("Does random assignment guarantee balanced groups?",
+  "No — it balances groups <em>in expectation</em>, not in every single study. With a small sample you can still draw an unlucky split where one group happens to be older or more motivated; randomization just makes such imbalances random rather than systematic, and they shrink as the sample grows. That's still a huge win: unlike self-selection, the imbalance isn't tied to who chose the treatment, and any leftover difference is exactly the kind of chance variation your <a href=\"../../stats-1/hypothesis-testing-logic/\">significance test</a> already accounts for."),
+ ("What's the difference between random sampling and random assignment?",
+  "They solve different problems. <strong>Random sampling</strong> is how participants are drawn from the population — it protects <em>external</em> validity (how far your results generalize). <strong>Random assignment</strong> is how those participants are split into conditions — it protects <em>internal</em> validity (whether the treatment, not a <a href=\"../../stats-4/causal-dags-and-confounding/\">confound</a>, caused the difference). You can have one without the other: a lab study on 40 randomly-assigned volunteers has strong internal but weak external validity."),
+ ("What is a wait-list control group?",
+  "A wait-list control is a comparison group that receives the treatment <em>later</em>, after the study's measurements are done. It's common when withholding a promising intervention entirely would be unfair — everyone eventually gets it, but the delay creates an untreated comparison window. It keeps random assignment intact while sidestepping the ethical problem of a pure no-treatment group, though it can't control for the placebo effect the way an active or placebo control does."),
+],
+
+"between-vs-within-designs": [
+ ("What is the difference between within-subjects and between-subjects designs?",
+  "In a <strong>between-subjects</strong> design each participant experiences only one condition, so you compare different groups of people. In a <strong>within-subjects</strong> (repeated-measures) design each participant experiences <em>every</em> condition, so you compare each person to themselves. Within-subjects removes stable individual differences from the comparison, which usually makes it far more efficient — but it introduces order and carryover effects that a between-subjects design never faces."),
+ ("Are within-subjects designs always more powerful?",
+  "No. They win only when a person's scores across conditions correlate strongly — roughly above 0.5. That correlation is what lets individual differences cancel out; below it, you'd have been better off with independent groups. And heavy <em>carryover</em> (practice, fatigue, a lingering manipulation) adds noise that only the within design pays, which can erase the advantage entirely. When conditions correlate strongly and carry over little, though, a within design can need less than half the participants for the same <a href=\"../../stats-1/effect-size-and-power/\">power</a>."),
+ ("Does counterbalancing remove carryover effects?",
+  "Only partly. Counterbalancing — running the conditions in different orders across participants, e.g. via a <em>Latin square</em> — averages out <em>symmetric</em> order effects so they don't bias the mean. But if the transfer is <em>asymmetric</em> (condition A changes B more than B changes A), balancing the orders leaves residual variability in the difference scores rather than removing it. Counterbalancing is a defence, not a cure; when carryover is severe, a between-subjects design is safer."),
+],
+
+"quasi-experiments": [
+ ("What is the difference between a quasi-experiment and a true experiment?",
+  "The dividing line is <strong>random assignment</strong>. A true experiment randomly assigns participants to conditions, so the groups are equivalent in expectation and differences can be pinned on the treatment. A quasi-experiment keeps a treatment, a comparison, and an outcome but the groups formed by choice or circumstance — a policy that hit one region, students who chose a program — so hidden differences between them remain a rival explanation you must argue away rather than having <a href=\"../../methods/experimental-design-and-randomization/\">randomized</a> it away."),
+ ("What is the parallel-trends assumption in difference-in-differences?",
+  "Difference-in-differences estimates a treatment effect by subtracting the comparison group's before-to-after change from the treated group's change. That subtraction is valid only if, <em>absent the treatment</em>, both groups would have moved by the same amount — the <strong>parallel-trends assumption</strong>. It allows the groups to start at different levels (a baseline gap is fine) but requires their trends to match. If the treated group was already on a steeper trajectory, that differential trend gets counted as 'effect,' biasing the estimate."),
+ ("What is a natural experiment?",
+  "A natural experiment is a quasi-experiment where some outside force — a lottery, a law change, an arbitrary cutoff or border — assigns the 'treatment' in a way that is as-good-as-random with respect to the outcome. The researcher doesn't manipulate anything; they exploit the accident. When the assigning event really is unrelated to who would have done well anyway, a natural experiment can approach the causal credibility of a randomized trial on questions you could never ethically or practically assign yourself."),
+],
+
 }
 
 FAQS = {**FAQS_12, **FAQS_34, **FAQS_METHODS}

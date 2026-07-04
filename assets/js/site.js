@@ -109,6 +109,9 @@
     "from-question-to-hypothesis": "The capybara's hypothesis: warm water is nice. Falsifiable only if it ever climbs out — it won't.",
     "variables-and-operationalization": "You can't measure 'chill.' You can measure naps per hour. That's operationalization.",
     "reliability-and-validity": "A capybara is reliably calm and validly a capybara. Nailing both at once is the rare part.",
+    "experimental-design-and-randomization": "The capybara assigns hot-spring seats by coin flip. Even the grumpy ones end up evenly spread.",
+    "between-vs-within-designs": "One capybara soaking twice, or two capybaras once each? Fewer capybaras the first way — unless the first bath lingers.",
+    "quasi-experiments": "Couldn't randomize the weather, so the capybara compared its pond to the one next door — and hoped they'd have drifted alike.",
     /* Root pages */
     "home": "No rush — capybaras never cram.",
     "toolbox": "A capybara's toolbox: warm water, good snacks, zero deadlines. Yours has calculators too.",

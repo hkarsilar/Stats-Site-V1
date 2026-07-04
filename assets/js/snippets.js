@@ -202,5 +202,17 @@ window.SNIPPETS = {
   "reliability-and-validity": {
     r: 'library(psych)\n# items: rows = people, cols = the scale items\nalpha(items)$total$std.alpha   # standardized Cronbach alpha\ncor(time1_total, time2_total)  # test-retest reliability',
     py: 'import pingouin as pg\n# items: one column per scale item\npg.cronbach_alpha(data=items)   # -> (alpha, 95% CI)'
+  },
+  "experimental-design-and-randomization": {
+    r: 'set.seed(1)\nn <- nrow(df)\ndf$group <- sample(rep(c("control", "treat"), length.out = n))  # randomize -> ~balanced\naggregate(cbind(age, motivation) ~ group, df, mean)              # check covariate balance',
+    py: 'import numpy as np\nrng = np.random.default_rng(1)\ng = np.array(["control", "treat"] * ((len(df) + 1) // 2))[:len(df)]\ndf["group"] = rng.permutation(g)                    # randomize -> ~balanced\ndf.groupby("group")[["age", "motivation"]].mean()   # check covariate balance'
+  },
+  "between-vs-within-designs": {
+    r: '# same effect, two designs\nt.test(score ~ condition, data = long)         # between-subjects: independent groups\nt.test(df$cond_a, df$cond_b, paired = TRUE)    # within-subjects: each person is their own control',
+    py: 'from scipy import stats\nstats.ttest_ind(a_group, b_group)              # between-subjects (independent)\nstats.ttest_rel(df["cond_a"], df["cond_b"])    # within-subjects (paired)'
+  },
+  "quasi-experiments": {
+    r: '# difference-in-differences: the treated:post interaction IS the DiD estimate\nm <- lm(y ~ treated * post, data = panel)   # treated (0/1), post (0/1)\nsummary(m)$coef["treated:post", ]           # estimate, SE, t, p',
+    py: 'import statsmodels.formula.api as smf\nm = smf.ols("y ~ treated * post", data=panel).fit()   # treated, post are 0/1\nm.params["treated:post"]      # the difference-in-differences estimate'
   }
 };

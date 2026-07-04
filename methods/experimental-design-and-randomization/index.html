@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Experiments &amp; Random Assignment — StatsCapybara</title>
+  <meta name="description" content="Random assignment is the one move that balances confounds you never even measured. Watch self-selection skew groups while randomization evens them out." />
+  <link rel="canonical" href="https://statscapybara.com/methods/experimental-design-and-randomization/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Experiments &amp; Random Assignment — StatsCapybara" />
+  <meta property="og:description" content="Random assignment is the one move that balances confounds you never even measured. Watch self-selection skew groups while randomization evens them out." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/methods/experimental-design-and-randomization/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Experiments &amp; Random Assignment — StatsCapybara" />
+  <meta name="twitter:description" content="Random assignment is the one move that balances confounds you never even measured. Watch self-selection skew groups while randomization evens them out." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Experiments & Random Assignment", "description": "Random assignment is the one move that balances confounds you never even measured. Watch self-selection skew groups while randomization evens them out.", "url": "https://statscapybara.com/methods/experimental-design-and-randomization/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Methods: Research Design", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Experiments & Random Assignment", "item": "https://statscapybara.com/methods/experimental-design-and-randomization/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does random assignment guarantee balanced groups?", "acceptedAnswer": {"@type": "Answer", "text": "No — it balances groups in expectation, not in every single study. With a small sample you can still draw an unlucky split where one group happens to be older or more motivated; randomization just makes such imbalances random rather than systematic, and they shrink as the sample grows. That's still a huge win: unlike self-selection, the imbalance isn't tied to who chose the treatment, and any leftover difference is exactly the kind of chance variation your significance test already accounts for."}}, {"@type": "Question", "name": "What's the difference between random sampling and random assignment?", "acceptedAnswer": {"@type": "Answer", "text": "They solve different problems. Random sampling is how participants are drawn from the population — it protects external validity (how far your results generalize). Random assignment is how those participants are split into conditions — it protects internal validity (whether the treatment, not a confound, caused the difference). You can have one without the other: a lab study on 40 randomly-assigned volunteers has strong internal but weak external validity."}}, {"@type": "Question", "name": "What is a wait-list control group?", "acceptedAnswer": {"@type": "Answer", "text": "A wait-list control is a comparison group that receives the treatment later, after the study's measurements are done. It's common when withholding a promising intervention entirely would be unfair — everyone eventually gets it, but the delay creates an untreated comparison window. It keeps random assignment intact while sidestepping the ethical problem of a pure no-treatment group, though it can't control for the placebo effect the way an active or placebo control does."}}]}
+  </script>
+</head>
+<body data-course="methods" data-section="experimental-design-and-randomization">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 1.4</span>
+        <h1>Experiments &amp; Random Assignment</h1>
+
+        <p class="lede">An <strong>experiment</strong> earns the right to say <em>caused</em> because of one deceptively simple move: <strong>random assignment</strong>. Deciding who goes in which group by chance — not by choice, convenience, or the researcher's hunch — is the single most powerful idea in research design. Here's why it works, and why nothing else quite matches it.</p>
+
+        <h2>The problem: confounds</h2>
+        <p>Suppose a new study-skills workshop looks like it boosts grades. The trouble is, the students who <em>signed up</em> were probably more motivated to begin with. Motivation is a <strong>confound</strong>: it's tangled up with both the "treatment" (attending) and the outcome (grades), so you can't tell whether the workshop did anything at all. Every self-selected comparison hides confounds like this — and the truly dangerous ones are the confounds you never thought to measure.</p>
+
+        <div class="callout key">
+          <p><strong>Randomization's superpower:</strong> flipping a coin to assign each person balances <em>every</em> confound at once — the ones you measured, the ones you forgot, and the ones nobody has ever named — because chance can't know which trait is which. No amount of statistical adjustment can promise that, because you can only adjust for variables you actually recorded.</p>
+        </div>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="ra">
+          <p class="viz-title">🎲 Assign the Same People Two Ways</p>
+          <p class="viz-sub">One fixed population of people, each with a visible age (colour) and motivation (size) — plus a <em>hidden</em> confound you never measured. Let people self-select, or assign them by coin flip, and watch the balance bars. Grow the sample to see what shrinks and what doesn't.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:200px">
+              <label>Assignment method</label>
+              <div class="seg" id="ra-method">
+                <button type="button" data-m="self" class="active">Self-select</button>
+                <button type="button" data-m="random">Randomize</button>
+              </div>
+            </div>
+            <div class="control" style="flex:1;min-width:180px">
+              <label>Sample size (n) <span class="val" id="ra-n-val">120</span></label>
+              <input type="range" id="ra-n" min="20" max="400" step="10" value="120" style="width:100%" />
+            </div>
+            <div class="control">
+              <label>&nbsp;</label>
+              <button class="btn btn-ghost btn-sm" id="ra-new" type="button">New population</button>
+            </div>
+          </div>
+
+          <canvas id="ra-canvas"></canvas>
+
+          <p class="ra-bars-label">Group imbalance — standardized mean difference between the two groups (smaller = better balanced)</p>
+          <div class="ra-bars" id="ra-bars"></div>
+          <p class="ra-verdict" id="ra-verdict"></p>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>Two lessons jump out of that picture. Under self-selection, every trait tied to <em>who volunteers</em> — motivation, age, and the hidden confound riding along with them — stays stubbornly imbalanced <strong>no matter how big the sample gets</strong>. Bias doesn't wash out with more data; it just becomes a more precise wrong answer. Under randomization, every bar drifts toward zero as <em>n</em> grows, including the confound you never measured.</p>
+
+        <h2>Random assignment ≠ random sampling</h2>
+        <p>These two "randoms" do completely different jobs, and mixing them up is one of the most common exam mistakes:</p>
+        <ul>
+          <li><strong>Random <em>assignment</em></strong> decides which group each participant lands in. It protects <strong>internal validity</strong> — your confidence that the treatment, not some confound, caused the difference.</li>
+          <li><strong>Random <em>sampling</em></strong> decides who gets into the study in the first place, from the wider population. It protects <strong>external validity</strong> — how far your result generalizes.</li>
+        </ul>
+        <p>A tightly controlled lab experiment on 40 randomly-assigned undergraduates has strong internal validity but shaky external validity. A big representative survey has the reverse. You want both, but they come from different design choices — and only random <em>assignment</em> licenses causal language.</p>
+
+        <h2>Control groups and placebos</h2>
+        <p>Randomization needs something to compare against: a <strong>control group</strong> that experiences everything except the active ingredient. In drug trials that means a <strong>placebo</strong> — an inert pill — because merely <em>believing</em> you're being treated can move outcomes (the placebo effect). Without a comparison group, you can't separate the treatment's effect from time passing, repeated testing, or hope. The gold-standard phrase — a <em>randomized controlled trial</em> — is just these two ideas bolted together.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> observational data can be mined forever and still can't settle causation, because the groups differ in ways you can't fully see. Random assignment is the rare tool that handles the unknown unknowns for free. When you can randomize, do — and when you can't (the subject of the next two lessons), know exactly what you're giving up.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>Does random assignment guarantee balanced groups?</summary>
+            <div class="faq-a"><p>No — it balances groups <em>in expectation</em>, not in every single study. With a small sample you can still draw an unlucky split where one group happens to be older or more motivated; randomization just makes such imbalances random rather than systematic, and they shrink as the sample grows. That's still a huge win: unlike self-selection, the imbalance isn't tied to who chose the treatment, and any leftover difference is exactly the kind of chance variation your <a href="../../stats-1/hypothesis-testing-logic/">significance test</a> already accounts for.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What's the difference between random sampling and random assignment?</summary>
+            <div class="faq-a"><p>They solve different problems. <strong>Random sampling</strong> is how participants are drawn from the population — it protects <em>external</em> validity (how far your results generalize). <strong>Random assignment</strong> is how those participants are split into conditions — it protects <em>internal</em> validity (whether the treatment, not a <a href="../../stats-4/causal-dags-and-confounding/">confound</a>, caused the difference). You can have one without the other: a lab study on 40 randomly-assigned volunteers has strong internal but weak external validity.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is a wait-list control group?</summary>
+            <div class="faq-a"><p>A wait-list control is a comparison group that receives the treatment <em>later</em>, after the study's measurements are done. It's common when withholding a promising intervention entirely would be unfair — everyone eventually gets it, but the delay creates an untreated comparison window. It keeps random assignment intact while sidestepping the ethical problem of a pure no-treatment group, though it can't control for the placebo effect the way an active or placebo control does.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <style>
+    /* random-assignment widget (scoped) */
+    #ra .ra-bars-label { font-size: .8rem; font-weight: 600; color: var(--text-muted); margin: 1rem 0 .5rem; }
+    #ra .ra-bars { display: flex; flex-direction: column; gap: .5rem; }
+    #ra .ra-bar-row { display: grid; grid-template-columns: 8.5rem 1fr 3rem; align-items: center; gap: .6rem; }
+    #ra .ra-bar-name { font-size: .84rem; font-weight: 600; }
+    #ra .ra-bar-name small { display: block; font-weight: 400; color: var(--text-faint); font-size: .72rem; }
+    #ra .ra-bar-track { position: relative; height: 14px; border-radius: 7px; background: var(--surface-2); overflow: hidden; }
+    #ra .ra-bar-fill { height: 100%; border-radius: 7px; transition: width .3s ease, background .3s ease; }
+    #ra .ra-bar-val { font-family: var(--mono); font-size: .82rem; text-align: right; color: var(--text); }
+    #ra .ra-verdict { font-size: .9rem; font-weight: 600; margin: .8rem 0 0; }
+  </style>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ random assignment vs self-selection (frozen population) ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var canvas = document.getElementById("ra-canvas"), ctx, W = 0, H = 300;
+    var N = 400;          // frozen population pool
+    var n = 120;          // participants actually in the study
+    var method = "self";  // "self" | "random"
+    var pool = [], SD = {};
+
+    function seed() {
+      pool = [];
+      for (var i = 0; i < N; i++) {
+        var e = Math.random();                                   // latent eagerness (drives opting in)
+        var mot = e;                                             // motivation = eagerness
+        var hidden = 0.65 * e + 0.35 * Math.random();            // unmeasured confound, tied to eagerness
+        var age = 20 + Math.round(45 * (0.65 * (1 - e) + 0.35 * Math.random())); // eager → younger
+        pool.push({
+          age: age, mot: mot, hid: hidden,
+          uSel: Math.random(),   // frozen draw used by self-selection
+          uRnd: Math.random()    // frozen draw used by randomization
+        });
+      }
+      ["age", "mot", "hid"].forEach(function (k) {
+        SD[k] = VIZ.sd(pool.map(function (p) { return p[k]; })) || 1;
+      });
+    }
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+
+    // treatment (1) or control (0) for one person under the current method
+    function assign(p) {
+      if (method === "random") return p.uRnd < 0.5 ? 1 : 0;
+      return p.uSel < (0.15 + 0.7 * p.mot) ? 1 : 0;      // motivated people opt in
+    }
+
+    function ageColor(age) {
+      var t = (age - 20) / 45;                            // 0 young … 1 old
+      var hue = 205 - 175 * t;                            // blue → orange
+      return "hsl(" + hue + ",70%,55%)";
+    }
+
+    function split() {
+      var T = [], C = [];
+      for (var i = 0; i < n; i++) (assign(pool[i]) ? T : C).push(pool[i]);
+      return { T: T, C: C };
+    }
+    function smd(A, B, key) {
+      if (!A.length || !B.length) return 0;
+      var a = VIZ.mean(A.map(function (p){ return p[key]; }));
+      var b = VIZ.mean(B.map(function (p){ return p[key]; }));
+      return Math.abs(a - b) / SD[key];
+    }
+
+    function drawGroup(list, x0, x1, label) {
+      var pad = 10, cols = Math.max(1, Math.floor((x1 - x0 - 2 * pad) / 16));
+      ctx.fillStyle = VIZ.css("--text-muted");
+      ctx.font = "600 12px system-ui,sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(label + " (n=" + list.length + ")", (x0 + x1) / 2, 18);
+      for (var i = 0; i < list.length; i++) {
+        var p = list[i];
+        var cx = x0 + pad + 8 + (i % cols) * 16;
+        var cy = 34 + Math.floor(i / cols) * 15;
+        if (cy > H - 8) break;
+        ctx.beginPath();
+        ctx.arc(cx, cy, 2.6 + 4 * p.mot, 0, 6.2832);
+        ctx.fillStyle = ageColor(p.age);
+        ctx.globalAlpha = 0.9; ctx.fill(); ctx.globalAlpha = 1;
+      }
+    }
+
+    function draw(s) {
+      ctx.clearRect(0, 0, W, H);
+      var mid = W / 2;
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(mid, 26); ctx.lineTo(mid, H - 6); ctx.stroke();
+      drawGroup(s.C, 0, mid, "Control");
+      drawGroup(s.T, mid, W, "Treatment");
+    }
+
+    var TRAITS = [
+      { key: "mot", name: "Motivation", sub: "drives who opts in" },
+      { key: "age", name: "Age", sub: "rides along with it" },
+      { key: "hid", name: "Hidden confound", sub: "never measured" }
+    ];
+    function bar(v) {
+      var w = Math.min(1, v / 0.8) * 100;                 // 0.8 SMD → full bar
+      var col = v < 0.1 ? "#22c55e" : v < 0.25 ? "#f59e0b" : "#ef4444";
+      return { w: w, col: col };
+    }
+
+    function update() {
+      document.getElementById("ra-n-val").textContent = n;
+      var s = split();
+      draw(s);
+      var host = document.getElementById("ra-bars");
+      host.innerHTML = "";
+      var worst = 0;
+      TRAITS.forEach(function (t) {
+        var v = smd(s.T, s.C, t.key); if (v > worst) worst = v;
+        var b = bar(v);
+        var row = document.createElement("div");
+        row.className = "ra-bar-row";
+        row.innerHTML =
+          '<div class="ra-bar-name">' + t.name + '<small>' + t.sub + '</small></div>' +
+          '<div class="ra-bar-track"><div class="ra-bar-fill" style="width:' + b.w + '%;background:' + b.col + '"></div></div>' +
+          '<div class="ra-bar-val">' + v.toFixed(2) + '</div>';
+        host.appendChild(row);
+      });
+      var vd = document.getElementById("ra-verdict");
+      if (method === "random") {
+        vd.textContent = worst < 0.15
+          ? "✔ Randomized: groups balanced on every trait — including the one you never measured."
+          : "Randomized, but n is small — chance imbalance is still visible. Grow n and watch every bar shrink.";
+        vd.style.color = worst < 0.15 ? "#22c55e" : "#f59e0b";
+      } else {
+        vd.textContent = "✘ Self-selected: motivation and its hidden partner stay imbalanced — and more data won't fix a biased comparison.";
+        vd.style.color = "#ef4444";
+      }
+    }
+
+    document.getElementById("ra-method").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      method = b.getAttribute("data-m");
+      [].forEach.call(this.children, function (c) { c.classList.toggle("active", c === b); });
+      update();
+    });
+    document.getElementById("ra-n").addEventListener("input", function () { n = +this.value; update(); });
+    document.getElementById("ra-new").addEventListener("click", function () { seed(); update(); });
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(function () { update(); });
+
+    seed(); fit(); update();
+  })();
+  </script>
+</body>
+</html>
