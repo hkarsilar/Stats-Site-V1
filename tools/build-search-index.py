@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Regenerate assets/js/search-index.js — the full-text search index.
 
-Run from the site/ root after adding or editing lessons:
+Run from the repo root after adding or editing lessons:
     python tools/build-search-index.py
 
 The index holds the visible prose of every lesson (keyed by slug) plus the

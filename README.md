@@ -1,9 +1,10 @@
 # StatsCapybara
 
 A free, interactive statistics course for people with no stats background —
-built for visual learners. 43 lessons across 4 courses, each pairing a written
-explanation with a hands-on canvas visualization. Plain static HTML/CSS/JS,
-no build step, hosted on GitHub Pages at **[statscapybara.com](https://statscapybara.com/)**.
+built for visual learners. 51 lessons across 5 courses (Stats 1–4 plus Methods,
+the first of a planned Research Toolkit), each pairing a written explanation with
+a hands-on canvas visualization. Plain static HTML/CSS/JS, no build step, hosted
+on GitHub Pages at **[statscapybara.com](https://statscapybara.com/)**.
 
 ## How it's structured
 
@@ -22,8 +23,17 @@ assets/js/site.js           Shared chrome: nav, sidebar, search, progress, prev/
 assets/js/viz.js            Shared math/canvas helpers (exact special functions)
 assets/js/snippets.js       "Try it in R / Python" snippets, keyed by lesson slug
 assets/js/checks.js         "Check your understanding" questions, keyed by lesson slug
+assets/js/software.js       SPSS/JASP steps + APA write-up, keyed by lesson slug
 stats-1/<topic>/index.html  One folder per lesson → clean URL + refresh-proof
+methods/<topic>/index.html  Research Toolkit course (Methods; more courses planned)
+tools/                      Build/QA scripts: audit.js, inject-faqs.py, build-search-index.py
+CLAUDE.md ROADMAP.md PROMPTS.md   Dev guide, roadmap & session prompts (in-repo, synced across machines)
+.claude/launch.json         Local preview-server config (repo-relative paths)
 ```
+
+> Dev docs (`CLAUDE.md`, `ROADMAP.md`, `PROMPTS.md`) and `.claude/` live in the repo
+> so they sync across machines via GitHub Desktop. Because `.nojekyll` is set, they're
+> served verbatim by GitHub Pages but are unlinked and excluded from `sitemap.xml`.
 
 To **add or rename a lesson**, edit `assets/js/curriculum.js` (set `ready: true`
 once the page exists). The homepage grid, every sidebar, the search overlay,

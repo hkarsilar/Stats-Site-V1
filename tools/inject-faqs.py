@@ -3,7 +3,7 @@
 """Inject the static 'Common questions' section + FAQPage JSON-LD into every
 lesson page, from the content in tools/faq_data.py.
 
-Run from the site/ root (idempotent — re-running replaces the injected blocks):
+Run from the repo root (idempotent — re-running replaces the injected blocks):
     python tools/inject-faqs.py
 Then rebuild the search index so the new text is searchable:
     python tools/build-search-index.py

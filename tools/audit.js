@@ -3,7 +3,7 @@
    audit.js — StatsCapybara's permanent health check.
 
    Zero-dependency Node script (Node ≥ 14, built-ins only: fs, path, vm).
-   Run from the site/ root BEFORE every commit:
+   Run from the repo root BEFORE every commit:
 
        node tools/audit.js
 

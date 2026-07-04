@@ -4,7 +4,7 @@ sections. Three Q&As per lesson slug; answers are HTML (links relative to a
 lesson page at depth 2, i.e. ../../ reaches the site root).
 
 After editing, re-inject into the lesson pages (idempotent) and refresh search:
-    python tools/inject-faqs.py     # run from site/
+    python tools/inject-faqs.py     # run from the repo root
     python tools/build-search-index.py
 """
 
