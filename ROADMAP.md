@@ -84,7 +84,7 @@ Tick these as sessions complete them (each prompt ends by updating this list).
 - [x] P3 · power calculator
 - [x] P4 · Methods 1–3 (+ scaffold)
 - [x] P5 · Methods 4–6
-- [ ] P6 · Methods 7–9
+- [x] P6 · Methods 7–9
 - [ ] P7 · Methods 10–12
 - [ ] P8 · Data 1–3 (+ scaffold)
 - [ ] P9 · Data 4–6

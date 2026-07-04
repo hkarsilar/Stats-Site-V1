@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Observational Designs — StatsCapybara</title>
+  <meta name="description" content="Cross-sectional, cohort, and case-control studies: what each can claim, why case-control speaks in odds ratios, and how survivorship bias fools you." />
+  <link rel="canonical" href="https://statscapybara.com/methods/observational-designs/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Observational Designs — StatsCapybara" />
+  <meta property="og:description" content="Cross-sectional, cohort, and case-control studies: what each can claim, why case-control speaks in odds ratios, and how survivorship bias fools you." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/methods/observational-designs/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Observational Designs — StatsCapybara" />
+  <meta name="twitter:description" content="Cross-sectional, cohort, and case-control studies: what each can claim, why case-control speaks in odds ratios, and how survivorship bias fools you." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Observational Designs", "description": "Cross-sectional, cohort, and case-control studies: what each can claim, why case-control speaks in odds ratios, and how survivorship bias fools you.", "url": "https://statscapybara.com/methods/observational-designs/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Methods: Research Design", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Observational Designs", "item": "https://statscapybara.com/methods/observational-designs/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the difference between a cohort study and a case-control study?", "acceptedAnswer": {"@type": "Answer", "text": "They run in opposite directions. A cohort study starts from the exposure — it enrols exposed and unexposed people who don't yet have the outcome and follows them forward to see who develops it, which measures incidence and yields a risk ratio directly. A case-control study starts from the outcome — it rounds up people who already have the disease (cases) plus a comparison group (controls) and looks backward at who was exposed. Cohorts are stronger for establishing time-order but slow and poor for rare outcomes; case-control studies are fast and efficient for rare outcomes but can only estimate an odds ratio."}}, {"@type": "Question", "name": "Can a cross-sectional study show cause and effect?", "acceptedAnswer": {"@type": "Answer", "text": "No. A cross-sectional study measures exposure and outcome at the same moment, so it can't establish which came first — the temporal order that causation requires. It's excellent for estimating prevalence (how common something is right now) and for generating hypotheses, but a correlation in a snapshot could run either way, or be driven by a confound. Claims of cause need a design that pins down time-order (a cohort) or, better, random assignment."}}, {"@type": "Question", "name": "Why does a case-control study report odds ratios instead of risk ratios?", "acceptedAnswer": {"@type": "Answer", "text": "Because the researcher chose how many cases and controls to enrol (often 1:1 or 1:4), the fraction of cases among everyone enrolled is an artefact of that choice, not a real risk — so risk ratios can't be computed. The odds ratio, however, is unaffected by how you sampled cases versus controls, and it estimates the same odds ratio you'd find in the whole population. The odds ratio only approximates the risk ratio when the outcome is rare (the rare-disease assumption); for common outcomes it overstates it."}}]}
+  </script>
+</head>
+<body data-course="methods" data-section="observational-designs">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 1.7</span>
+        <h1>Observational Designs</h1>
+
+        <p class="lede">When you can't assign the exposure — you can't randomly make people smoke, be poor, or catch a virus — you're left <strong>watching</strong> instead of intervening. That's an <strong>observational study</strong>. You give up the clean causal claim of an experiment, but you gain the ability to study questions that matter most. The craft is knowing which slice of reality each design lets you see, and exactly what it lets you say.</p>
+
+        <h2>Three ways to watch</h2>
+        <p>All three follow an <strong>exposure</strong> (a risk factor, a treatment, a habit) and an <strong>outcome</strong> (a disease, a pass/fail, an event). They differ in <em>when</em> you look and <em>who</em> you start from.</p>
+        <ul>
+          <li><strong>Cross-sectional:</strong> one snapshot in time. You measure exposure and outcome together in a sample, right now. Fast and cheap, great for estimating <em>prevalence</em> — but because both are measured at once, you usually can't tell which came first.</li>
+          <li><strong>Cohort (prospective):</strong> start with exposed and unexposed people who don't yet have the outcome, then follow them forward and count who develops it. This is the strongest observational design: it measures <em>incidence</em> (new cases over time), so it hands you a <strong>risk ratio</strong> directly and pins down the time order. The cost: slow, expensive, and hopeless for rare outcomes (you'd follow thousands to see a handful of cases). This is the design behind <a href="../../stats-4/survival-analysis/">survival analysis</a>.</li>
+          <li><strong>Case-control:</strong> flip it around. Start from the <em>outcome</em> — round up people who already have the disease (cases) plus a comparison group who don't (controls) — then look <em>backward</em> at who was exposed. Brilliant for rare outcomes and quick to run, but because you chose how many cases and controls to enrol, you can only speak in <strong>odds ratios</strong>, never risk.</li>
+        </ul>
+
+        <h2>See which slice each design gets</h2>
+        <p>Below, a population of 240 people is followed for 20 years; some develop the outcome, and exposed people are at higher risk. Pick a design and watch <em>which</em> people you actually get to observe — and the estimate each design produces versus the truth.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="od">
+          <p class="viz-title">🔭 Which Slice Does Your Design See?</p>
+          <p class="viz-sub">One fixed population develops an outcome over 20 years. The cohort follows everyone forward; the case-control starts from the cases and samples controls; the cross-sectional sees only a single snapshot. Watch the odds ratio drift away from the risk ratio as the outcome gets more common.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:220px">
+              <label>Study design</label>
+              <div class="seg" id="od-design">
+                <button type="button" data-d="cohort" class="active">Cohort</button>
+                <button type="button" data-d="casecontrol">Case-control</button>
+                <button type="button" data-d="crosssec">Cross-sectional</button>
+              </div>
+            </div>
+            <div class="control" style="flex:1;min-width:170px">
+              <label>Baseline 20-yr risk <span class="val" id="od-p0-val">15%</span></label>
+              <input type="range" id="od-p0" min="2" max="60" step="1" value="15" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:170px">
+              <label>True risk ratio <span class="val" id="od-rr-val">2.0</span></label>
+              <input type="range" id="od-rr" min="1" max="4" step="0.1" value="2" style="width:100%" />
+            </div>
+            <div class="control">
+              <label>&nbsp;</label>
+              <button class="btn btn-ghost btn-sm" id="od-new" type="button">New population</button>
+            </div>
+          </div>
+
+          <canvas id="od-canvas"></canvas>
+          <p class="od-note" id="od-note"></p>
+
+          <p class="od-truth-label">The truth (from the whole population)</p>
+          <div class="stat-row">
+            <div class="stat"><span class="k">True risk ratio</span><span class="v" id="od-trr">—</span></div>
+            <div class="stat"><span class="k">True odds ratio</span><span class="v" id="od-tor">—</span></div>
+          </div>
+          <p class="od-truth-label">What each design estimates (selected design highlighted)</p>
+          <div class="stat-row">
+            <div class="stat" id="od-s-cohort"><span class="k">Cohort → risk ratio</span><span class="v" id="od-cohort">—</span></div>
+            <div class="stat" id="od-s-casecontrol"><span class="k">Case-control → odds ratio</span><span class="v" id="od-cc">—</span></div>
+            <div class="stat" id="od-s-crosssec"><span class="k">Cross-sectional → odds ratio</span><span class="v" id="od-cross">—</span></div>
+          </div>
+          <p class="od-verdict" id="od-verdict"></p>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Why case-control speaks in odds ratios</h2>
+        <p>In a cohort you know the denominators — how many exposed and unexposed people you started with — so you can compute a <strong>risk</strong> (cases ÷ people at risk) and divide them into a risk ratio. In a case-control study you <em>chose</em> the number of cases and controls (often 1:1 or 1:4), so "cases ÷ everyone" is a number you invented, not a real risk. What survives that arbitrary choice is the <strong>odds ratio</strong> — and, happily, the odds ratio from a case-control study estimates the same odds ratio you'd get from the whole population. It's the natural currency of case-control work and of <a href="../../stats-3/logistic-regression/">logistic regression</a>.</p>
+        <p>The odds ratio only <em>approximates</em> the risk ratio when the outcome is <strong>rare</strong> (the rare-disease assumption). Push the baseline-risk slider up and watch the odds ratio pull away from the risk ratio: when a fifth or a third of people have the outcome, an odds ratio of 2 can mean a risk ratio well under 2. Reporting "twice the odds" as "twice the risk" is one of the most common ways headlines mislead.</p>
+
+        <div class="callout key">
+          <p><strong>Survivorship bias:</strong> observational data only contains whoever survived long enough to be in it. Study successful companies and you'll "discover" the traits of the ones that didn't fold; measure patients still in the clinic and you miss the ones who already died or recovered and left. The dangerous part is that the people who dropped out are <em>invisible</em> — the sample looks complete. Always ask: who is <em>missing</em> from this data, and were they missing for a reason tied to the outcome?</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> observational designs carry most of what we know about diet, disease, education, and policy, because randomising those exposures is impossible or unethical. But every one estimates a specific quantity — prevalence, incidence, or odds — under specific assumptions, and confounding always lurks (see <a href="../../stats-4/causal-dags-and-confounding/">causal DAGs &amp; confounding</a>). Name your design, name what it can estimate, and name who might be missing from it.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What is the difference between a cohort study and a case-control study?</summary>
+            <div class="faq-a"><p>They run in opposite directions. A <strong>cohort</strong> study starts from the <em>exposure</em> — it enrols exposed and unexposed people who don't yet have the outcome and follows them forward to see who develops it, which measures incidence and yields a risk ratio directly. A <strong>case-control</strong> study starts from the <em>outcome</em> — it rounds up people who already have the disease (cases) plus a comparison group (controls) and looks backward at who was exposed. Cohorts are stronger for establishing time-order but slow and poor for rare outcomes; case-control studies are fast and efficient for rare outcomes but can only estimate an <a href="../../stats-3/logistic-regression/">odds ratio</a>.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Can a cross-sectional study show cause and effect?</summary>
+            <div class="faq-a"><p>No. A cross-sectional study measures exposure and outcome at the <em>same</em> moment, so it can't establish which came first — the temporal order that causation requires. It's excellent for estimating <strong>prevalence</strong> (how common something is right now) and for generating hypotheses, but a correlation in a snapshot could run either way, or be driven by a confound. Claims of cause need a design that pins down time-order (a cohort) or, better, random assignment.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Why does a case-control study report odds ratios instead of risk ratios?</summary>
+            <div class="faq-a"><p>Because the researcher <em>chose</em> how many cases and controls to enrol (often 1:1 or 1:4), the fraction of cases among everyone enrolled is an artefact of that choice, not a real risk — so risk ratios can't be computed. The <strong>odds ratio</strong>, however, is unaffected by how you sampled cases versus controls, and it estimates the same odds ratio you'd find in the whole population. The odds ratio only approximates the risk ratio when the outcome is <em>rare</em> (the rare-disease assumption); for common outcomes it overstates it.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <style>
+    /* observational-designs widget (scoped) */
+    #od .od-note { font-size: .86rem; color: var(--text-muted); margin: .6rem 0 0; min-height: 2.4em; }
+    #od .od-truth-label { font-size: .78rem; font-weight: 600; color: var(--text-muted); margin: 1rem 0 .4rem; }
+    #od .stat.sel { outline: 2px solid #f97316; outline-offset: -2px; }
+    #od .od-verdict { font-size: .9rem; font-weight: 600; margin: .8rem 0 0; }
+  </style>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ observational designs (frozen population) ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var canvas = document.getElementById("od-canvas"), ctx, W = 0, H = 360;
+    var N = 240, YEARS = 20;
+    var P0 = 15, RR = 2.0, design = "cohort";     // P0 is a percentage (matches the slider)
+    var expo = [], uOut = [], tOn = [], rCtl = [];   // frozen draws
+
+    function seed() {
+      expo = []; uOut = []; tOn = []; rCtl = [];
+      for (var i = 0; i < N; i++) {
+        expo.push(Math.random() < 0.45);   // exposure status
+        uOut.push(Math.random());          // drives whether the outcome occurs
+        tOn.push(Math.random());           // onset timing among those who develop it
+        rCtl.push(Math.random());          // control-sampling priority (case-control)
+      }
+    }
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+
+    function p0f() { return P0 / 100; }                 // slider is a percentage; math needs a proportion
+    function p1() { return Math.min(0.97, p0f() * RR); }
+    function isCase(i) { return uOut[i] < (expo[i] ? p1() : p0f()); }
+    function onsetYear(i) { return 1 + Math.floor(tOn[i] * YEARS); }
+
+    function counts() {
+      var a = 0, b = 0, c = 0, d = 0;   // a exp+case, b exp+noncase, c unexp+case, d unexp+noncase
+      for (var i = 0; i < N; i++) {
+        var cs = isCase(i);
+        if (expo[i]) { cs ? a++ : b++; } else { cs ? c++ : d++; }
+      }
+      return { a: a, b: b, c: c, d: d };
+    }
+
+    // seen[] — which people the selected design actually observes
+    function seenMask() {
+      var seen = new Array(N), i;
+      if (design === "cohort" || design === "crosssec") {
+        for (i = 0; i < N; i++) seen[i] = true;            // whole population observed
+        return seen;
+      }
+      // case-control: all cases + an equal number of sampled controls
+      for (i = 0; i < N; i++) seen[i] = false;
+      var cases = [], nonCases = [];
+      for (i = 0; i < N; i++) (isCase(i) ? cases : nonCases).push(i);
+      cases.forEach(function (i) { seen[i] = true; });
+      nonCases.sort(function (x, y) { return rCtl[x] - rCtl[y]; });
+      var k = Math.min(cases.length, nonCases.length);
+      for (i = 0; i < k; i++) seen[nonCases[i]] = true;
+      return seen;
+    }
+
+    function estimates() {
+      var q = counts(), a = q.a, b = q.b, c = q.c, d = q.d;
+      var pe = p1(), p0 = p0f();
+      var trueRR = RR;
+      var trueOR = (pe / (1 - pe)) / (p0 / (1 - p0));
+      var cohort = (a + b > 0 && c > 0 && c + d > 0) ? (a / (a + b)) / (c / (c + d)) : NaN;
+      var cross = (b > 0 && c > 0) ? (a * d) / (b * c) : NaN;
+      // case-control: sample equal controls, compute OR
+      var seen = seenMask(), e = 0, f = 0;
+      for (var i = 0; i < N; i++) {
+        if (seen[i] && !isCase(i)) { expo[i] ? e++ : f++; }
+      }
+      var cc = (c > 0 && e > 0) ? (a * f) / (c * e) : NaN;
+      return { a: a, b: b, c: c, d: d, trueRR: trueRR, trueOR: trueOR, cohort: cohort, cross: cross, cc: cc };
+    }
+
+    var COL_CASE = "#f97316", COL_EXP = VIZ.css("--secondary"), COL_UN = VIZ.css("--text-faint");
+
+    function cumInc(exposed) {
+      // cumulative incidence proportion by year 0..YEARS for the exposure group
+      var groupN = 0, out = [], y, i;
+      for (i = 0; i < N; i++) if (expo[i] === exposed) groupN++;
+      groupN = groupN || 1;
+      for (y = 0; y <= YEARS; y++) {
+        var c = 0;
+        for (i = 0; i < N; i++) if (expo[i] === exposed && isCase(i) && onsetYear(i) <= y) c++;
+        out.push(c / groupN);
+      }
+      return out;
+    }
+
+    function draw(est) {
+      COL_EXP = VIZ.css("--secondary"); COL_UN = VIZ.css("--text-faint");
+      ctx.clearRect(0, 0, W, H);
+      var padL = 40, padR = 14;
+
+      // ---------- top: cumulative-incidence timeline ----------
+      var tTop = 16, tBot = 118, plotW = W - padL - padR;
+      var ceE = cumInc(true), ceU = cumInc(false);
+      var maxY = Math.max(0.05, ceE[YEARS], ceU[YEARS]) * 1.15;
+      function X(yr) { return padL + (yr / YEARS) * plotW; }
+      function Y(v) { return tBot - (v / maxY) * (tBot - tTop); }
+
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, tTop); ctx.lineTo(padL, tBot); ctx.lineTo(padL + plotW, tBot); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-muted"); ctx.font = "11px system-ui,sans-serif";
+      ctx.textAlign = "center"; ctx.fillText("Year 0", X(0), tBot + 14);
+      ctx.fillText("Year 20", X(YEARS), tBot + 14);
+      ctx.save(); ctx.translate(12, (tTop + tBot) / 2); ctx.rotate(-Math.PI / 2);
+      ctx.fillText("cumulative incidence", 0, 0); ctx.restore();
+
+      var dim = (design === "crosssec") ? 0.28 : 1;
+      function curve(ce, color) {
+        ctx.globalAlpha = dim; ctx.strokeStyle = color; ctx.lineWidth = 2.4;
+        ctx.beginPath();
+        for (var y = 0; y <= YEARS; y++) { var px = X(y), py = Y(ce[y]); y === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py); }
+        ctx.stroke(); ctx.globalAlpha = 1;
+      }
+      curve(ceU, COL_UN); curve(ceE, COL_CASE);
+
+      // year-20 observation marker
+      ctx.strokeStyle = VIZ.css("--text-muted"); ctx.lineWidth = 1; ctx.setLineDash([4, 3]);
+      ctx.beginPath(); ctx.moveTo(X(YEARS), tTop); ctx.lineTo(X(YEARS), tBot); ctx.stroke(); ctx.setLineDash([]);
+
+      if (design === "crosssec") {
+        ctx.fillStyle = COL_CASE; ctx.beginPath(); ctx.arc(X(YEARS), Y(ceE[YEARS]), 5, 0, 6.2832); ctx.fill();
+        ctx.fillStyle = COL_UN; ctx.beginPath(); ctx.arc(X(YEARS), Y(ceU[YEARS]), 5, 0, 6.2832); ctx.fill();
+        ctx.fillStyle = VIZ.css("--text-muted"); ctx.textAlign = "right"; ctx.font = "600 11px system-ui,sans-serif";
+        ctx.fillText("snapshot only", X(YEARS) - 8, tTop + 12);
+      } else if (design === "casecontrol") {
+        ctx.strokeStyle = COL_CASE; ctx.fillStyle = COL_CASE; ctx.lineWidth = 2;
+        var ay = tTop + 10, ax0 = X(YEARS) - 6, ax1 = X(YEARS) - 70;
+        ctx.beginPath(); ctx.moveTo(ax0, ay); ctx.lineTo(ax1, ay); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(ax1, ay); ctx.lineTo(ax1 + 8, ay - 4); ctx.lineTo(ax1 + 8, ay + 4); ctx.fill();
+        ctx.textAlign = "right"; ctx.font = "600 11px system-ui,sans-serif";
+        ctx.fillText("look back from cases", ax0, ay - 6);
+      } else {
+        ctx.fillStyle = VIZ.css("--text-muted"); ctx.textAlign = "center"; ctx.font = "600 11px system-ui,sans-serif";
+        ctx.fillText("follow everyone forward →", (X(0) + X(YEARS)) / 2, tTop + 12);
+      }
+
+      // legend
+      ctx.textAlign = "left"; ctx.font = "600 11px system-ui,sans-serif";
+      ctx.fillStyle = COL_CASE; ctx.fillText("■ exposed", padL + 46, tTop + 12);
+      ctx.fillStyle = COL_UN; ctx.fillText("■ unexposed", padL + 118, tTop + 12);
+
+      // ---------- bottom: the observed slice (dot grid) ----------
+      var gTop = 150, gBot = H - 8;
+      ctx.fillStyle = VIZ.css("--text"); ctx.font = "600 12px system-ui,sans-serif"; ctx.textAlign = "left";
+      ctx.fillText("The people you observe", padL, gTop - 6);
+
+      var seen = seenMask();
+      var cols = Math.max(12, Math.floor((W - padL - padR) / 15));
+      var cell = (W - padL - padR) / cols;
+      var rows = Math.ceil(N / cols);
+      var rowH = Math.min(13, (gBot - gTop) / rows);
+      for (var i = 0; i < N; i++) {
+        var cx = padL + (i % cols) * cell + cell / 2;
+        var cy = gTop + Math.floor(i / cols) * rowH + rowH / 2;
+        if (cy > gBot) break;
+        var vis = seen[i];
+        ctx.globalAlpha = vis ? 0.95 : 0.1;
+        ctx.beginPath(); ctx.arc(cx, cy, 3.2, 0, 6.2832);
+        ctx.fillStyle = expo[i] ? COL_EXP : COL_UN; ctx.fill();
+        if (isCase(i)) {   // outcome developed → orange ring
+          ctx.lineWidth = 1.8; ctx.strokeStyle = COL_CASE; ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    function fmt(x) { return isFinite(x) ? x.toFixed(2) : "—"; }
+
+    function update() {
+      document.getElementById("od-p0-val").textContent = P0.toFixed(0) + "%";
+      document.getElementById("od-rr-val").textContent = RR.toFixed(1);
+      var est = estimates();
+      document.getElementById("od-trr").textContent = est.trueRR.toFixed(2);
+      document.getElementById("od-tor").textContent = est.trueOR.toFixed(2);
+      document.getElementById("od-cohort").textContent = fmt(est.cohort);
+      document.getElementById("od-cc").textContent = fmt(est.cc);
+      document.getElementById("od-cross").textContent = fmt(est.cross);
+
+      ["cohort", "casecontrol", "crosssec"].forEach(function (d) {
+        document.getElementById("od-s-" + d).classList.toggle("sel", d === design);
+      });
+
+      var note = document.getElementById("od-note"), nt;
+      if (design === "cohort") {
+        nt = "Cohort: you enrolled everyone by exposure at year 0 and followed them forward, so you see every case as it appears. Because you know the denominators, you get the risk ratio directly — the gold standard among observational designs, but slow and impractical for rare outcomes.";
+      } else if (design === "casecontrol") {
+        nt = "Case-control: you start from the cases (every outcome, faded people never enter the study) and sample an equal set of controls to look back at their exposure. Efficient and fast for rare outcomes — but because you fixed the case:control ratio, only an odds ratio is estimable.";
+      } else {
+        nt = "Cross-sectional: a single snapshot at year 20. You see who currently has the outcome and who is exposed, but not the onset timing — exposure and outcome are measured together, so you usually can't tell which came first.";
+      }
+      document.getElementById("od-note").textContent = nt;
+
+      var vd = document.getElementById("od-verdict"), txt, col;
+      if (P0 <= 8) {
+        txt = "The outcome is rare (≈" + P0.toFixed(0) + "% baseline risk), so the odds ratio ≈ the risk ratio — the case-control estimate barely distorts it.";
+        col = "#22c55e";
+      } else {
+        txt = "The outcome is common (≈" + P0.toFixed(0) + "% baseline risk), so the odds ratio (" + est.trueOR.toFixed(2) + ") overstates the risk ratio (" + est.trueRR.toFixed(2) + "). Only the cohort recovers risk directly.";
+        col = "#f59e0b";
+      }
+      vd.textContent = txt; vd.style.color = col;
+
+      draw(est);
+    }
+
+    // controls
+    document.getElementById("od-design").addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-d]"); if (!b) return;
+      design = b.getAttribute("data-d");
+      Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x === b); });
+      update();
+    });
+    document.getElementById("od-p0").addEventListener("input", function () {
+      P0 = +this.value;
+      document.getElementById("od-p0-val").textContent = P0.toFixed(0) + "%";
+      update();
+    });
+    document.getElementById("od-rr").addEventListener("input", function () { RR = +this.value; update(); });
+    document.getElementById("od-new").addEventListener("click", function () { seed(); update(); });
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(function () { update(); });
+
+    seed(); fit(); update();
+  })();
+  </script>
+</body>
+</html>

@@ -485,6 +485,33 @@ FAQS_METHODS = {
   "A natural experiment is a quasi-experiment where some outside force — a lottery, a law change, an arbitrary cutoff or border — assigns the 'treatment' in a way that is as-good-as-random with respect to the outcome. The researcher doesn't manipulate anything; they exploit the accident. When the assigning event really is unrelated to who would have done well anyway, a natural experiment can approach the causal credibility of a randomized trial on questions you could never ethically or practically assign yourself."),
 ],
 
+"observational-designs": [
+ ("What is the difference between a cohort study and a case-control study?",
+  "They run in opposite directions. A <strong>cohort</strong> study starts from the <em>exposure</em> — it enrols exposed and unexposed people who don't yet have the outcome and follows them forward to see who develops it, which measures incidence and yields a risk ratio directly. A <strong>case-control</strong> study starts from the <em>outcome</em> — it rounds up people who already have the disease (cases) plus a comparison group (controls) and looks backward at who was exposed. Cohorts are stronger for establishing time-order but slow and poor for rare outcomes; case-control studies are fast and efficient for rare outcomes but can only estimate an <a href=\"../../stats-3/logistic-regression/\">odds ratio</a>."),
+ ("Can a cross-sectional study show cause and effect?",
+  "No. A cross-sectional study measures exposure and outcome at the <em>same</em> moment, so it can't establish which came first — the temporal order that causation requires. It's excellent for estimating <strong>prevalence</strong> (how common something is right now) and for generating hypotheses, but a correlation in a snapshot could run either way, or be driven by a confound. Claims of cause need a design that pins down time-order (a cohort) or, better, random assignment."),
+ ("Why does a case-control study report odds ratios instead of risk ratios?",
+  "Because the researcher <em>chose</em> how many cases and controls to enrol (often 1:1 or 1:4), the fraction of cases among everyone enrolled is an artefact of that choice, not a real risk — so risk ratios can't be computed. The <strong>odds ratio</strong>, however, is unaffected by how you sampled cases versus controls, and it estimates the same odds ratio you'd find in the whole population. The odds ratio only approximates the risk ratio when the outcome is <em>rare</em> (the rare-disease assumption); for common outcomes it overstates it."),
+],
+
+"sampling-methods": [
+ ("What is a representative sample?",
+  "A representative sample mirrors the population on the characteristics that matter for your question, so estimates from it generalise back to that population. You don't get one by hand-picking a 'balanced-looking' group — you get it (in expectation) by using a <strong>probability sampling</strong> method, where everyone has a known, non-zero chance of selection. Representativeness is a property of the <em>method</em>, not of any single sample: any one random sample may be a bit off, but the procedure is unbiased and its error shrinks with size."),
+ ("Why are convenience samples a problem?",
+  "Because the people who are easy to reach — your own class, passers-by, an online panel — differ systematically from those who aren't, so the sample is <strong>biased</strong>, not merely noisy. The crucial consequence: that bias does <em>not</em> shrink as you collect more data. A bigger convenience sample just gives a more precise wrong answer. Convenience samples are sometimes unavoidable (hard-to-reach groups, exploratory pilots), but you must be honest that your results describe whoever you could reach, not the wider population."),
+ ("What is the difference between stratified and cluster sampling?",
+  "Both divide the population into groups, but they use those groups oppositely. <strong>Stratified</strong> sampling splits people into strata (age bands, regions) and samples <em>within every one</em>, usually proportionally — guaranteeing coverage and giving a <em>more precise</em> estimate than simple random sampling. <strong>Cluster</strong> sampling splits people into many natural clusters (schools, city blocks), randomly picks a <em>few whole clusters</em>, and measures everyone in them — cheaper to run over a spread-out population, but far <em>noisier</em>, because people in the same cluster resemble one another."),
+],
+
+"survey-and-questionnaire-design": [
+ ("How many points should a Likert scale have?",
+  "The evidence points to <strong>5 to 7 points</strong>. Fewer than five throws away real distinctions between respondents; more than seven offers a precision people can't reliably use, so the extra points just add noise. More important than the exact number is that the scale is <strong>balanced</strong> (as many positive as negative options) and that the points are <strong>labelled with words</strong>, not just numbers — everyone reads 'Agree' the same way, but interprets a bare '4' differently. Whether to include a neutral midpoint (an odd number of points) is a real design choice, not an error either way."),
+ ("What is a double-barreled question?",
+  "A double-barreled question asks about two things in a single item, so one answer can't honestly cover both — for example, 'How satisfied are you with the pay and the working hours?' Someone happy with the hours but not the pay has no valid response, and you can't tell which half their answer refers to. The fix is simple: split it into two separate questions, one per idea. The same rule applies whenever an item smuggles in an 'and' or an 'or' that respondents might answer differently."),
+ ("What is social desirability bias, and how do you reduce it?",
+  "Social desirability bias is the tendency to answer sensitive questions in a way that makes one look good rather than truthfully — under-reporting cheating or drinking, over-reporting voting or exercise. It contaminates exactly the topics researchers most want honest data on. You reduce it by guaranteeing and clearly <em>stating</em> anonymity, never attaching identifiers to sensitive items, softening the framing so the undesirable answer feels acceptable, and using indirect techniques (like list experiments) for the most delicate questions."),
+],
+
 }
 
 FAQS = {**FAQS_12, **FAQS_34, **FAQS_METHODS}

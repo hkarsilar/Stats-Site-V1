@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Designing Surveys &amp; Questionnaires — StatsCapybara</title>
+  <meta name="description" content="Write survey questions that don't bias the answer: fix leading, double-barreled, and loaded items, pick good Likert scales, and beat social desirability." />
+  <link rel="canonical" href="https://statscapybara.com/methods/survey-and-questionnaire-design/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Designing Surveys &amp; Questionnaires — StatsCapybara" />
+  <meta property="og:description" content="Write survey questions that don't bias the answer: fix leading, double-barreled, and loaded items, pick good Likert scales, and beat social desirability." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/methods/survey-and-questionnaire-design/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Designing Surveys &amp; Questionnaires — StatsCapybara" />
+  <meta name="twitter:description" content="Write survey questions that don't bias the answer: fix leading, double-barreled, and loaded items, pick good Likert scales, and beat social desirability." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Designing Surveys & Questionnaires", "description": "Write survey questions that don't bias the answer: fix leading, double-barreled, and loaded items, pick good Likert scales, and beat social desirability.", "url": "https://statscapybara.com/methods/survey-and-questionnaire-design/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Methods: Research Design", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Designing Surveys & Questionnaires", "item": "https://statscapybara.com/methods/survey-and-questionnaire-design/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How many points should a Likert scale have?", "acceptedAnswer": {"@type": "Answer", "text": "The evidence points to 5 to 7 points. Fewer than five throws away real distinctions between respondents; more than seven offers a precision people can't reliably use, so the extra points just add noise. More important than the exact number is that the scale is balanced (as many positive as negative options) and that the points are labelled with words, not just numbers — everyone reads 'Agree' the same way, but interprets a bare '4' differently. Whether to include a neutral midpoint (an odd number of points) is a real design choice, not an error either way."}}, {"@type": "Question", "name": "What is a double-barreled question?", "acceptedAnswer": {"@type": "Answer", "text": "A double-barreled question asks about two things in a single item, so one answer can't honestly cover both — for example, 'How satisfied are you with the pay and the working hours?' Someone happy with the hours but not the pay has no valid response, and you can't tell which half their answer refers to. The fix is simple: split it into two separate questions, one per idea. The same rule applies whenever an item smuggles in an 'and' or an 'or' that respondents might answer differently."}}, {"@type": "Question", "name": "What is social desirability bias, and how do you reduce it?", "acceptedAnswer": {"@type": "Answer", "text": "Social desirability bias is the tendency to answer sensitive questions in a way that makes one look good rather than truthfully — under-reporting cheating or drinking, over-reporting voting or exercise. It contaminates exactly the topics researchers most want honest data on. You reduce it by guaranteeing and clearly stating anonymity, never attaching identifiers to sensitive items, softening the framing so the undesirable answer feels acceptable, and using indirect techniques (like list experiments) for the most delicate questions."}}]}
+  </script>
+</head>
+<body data-course="methods" data-section="survey-and-questionnaire-design">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 1.9</span>
+        <h1>Designing Surveys &amp; Questionnaires</h1>
+
+        <p class="lede">A survey question is a measuring instrument, and like any instrument it can be miscalibrated. The wording, the answer options, even the order of items can quietly push respondents toward an answer they wouldn't otherwise give. The result looks like clean data — numbers, means, percentages — but it's measuring your phrasing, not their views. Good questionnaire design is the unglamorous work of getting out of the respondent's way.</p>
+
+        <h2>Wording that tilts the answer</h2>
+        <p>Each item should ask exactly one clear thing, in neutral language, that any respondent can answer honestly. The classic wording sins:</p>
+        <ul>
+          <li><strong>Leading questions</strong> signal the "right" answer: <em>"Don't you agree that…?"</em> nudges people to agree.</li>
+          <li><strong>Loaded / emotive wording</strong> smuggles in a judgement: asking whether money is being <em>"wasted"</em> presumes it is.</li>
+          <li><strong>Double-barreled questions</strong> ask two things at once — <em>"the food and the prices"</em> — so anyone who feels differently about the two halves can't answer.</li>
+          <li><strong>Double negatives</strong> and jargon make people guess what you meant, adding noise: <em>"don't you think it shouldn't…"</em>.</li>
+        </ul>
+
+        <h2>Response options matter as much as wording</h2>
+        <p>How you let people answer shapes the answer. For rating scales (<strong>Likert</strong> items), the evidence favours <strong>5 to 7 points</strong>: fewer throws away real distinctions, more offers precision people can't actually use. The scale should be <strong>balanced</strong> — as many positive as negative options around a neutral middle — because an all-positive scale (Good / Very good / Excellent) forces even a critic to compliment you. Whether to include a <strong>midpoint</strong> is a genuine choice: an <em>odd</em> number of points offers a neutral option (honest, but a refuge for the lazy); an <em>even</em> number forces a lean. And label the points with words, not just numbers — people interpret "4" very differently, but everyone reads "Agree" the same way.</p>
+
+        <h2>Fix this survey</h2>
+        <p>Below is a genuinely terrible six-item questionnaire. Each item has <em>one</em> dominant flaw. Diagnose each one — pick the problem and see the repaired version — and get all six.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="sv">
+          <p class="viz-title">🔧 Diagnose &amp; Repair the Questionnaire</p>
+          <p class="viz-sub">A student union survey, riddled with problems. For each item, click the flaw that dominates. Get it right and the fixed version appears; get all six and the clean survey assembles itself.</p>
+
+          <p class="sv-score" id="sv-score">Flaws found: 0 / 6</p>
+          <div id="sv-host"></div>
+
+          <div class="sv-repaired" id="sv-repaired" hidden>
+            <h3>✔ The repaired survey</h3>
+            <ol id="sv-repaired-list"></ol>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>The subtler biases</h2>
+        <p>Even clean items can be undermined by the survey as a whole:</p>
+        <ul>
+          <li><strong>Order effects:</strong> an earlier question can prime a later one. Ask about a specific worry, then overall happiness, and happiness drops — the worry is now top of mind. Put general questions before specific ones, and randomise order where you can.</li>
+          <li><strong>Acquiescence bias:</strong> some people just agree with whatever you say. The defence is <strong>reverse-coded</strong> items — a few worded in the opposite direction — so straight-line "agree" responding contradicts itself and can be caught. (You then flip those items back before scoring; this ties directly to a scale's <a href="../../methods/reliability-and-validity/">internal consistency</a>.)</li>
+          <li><strong>Social desirability bias:</strong> on sensitive topics — cheating, drinking, prejudice — people answer to look good rather than truthfully. Guaranteeing (and clearly stating) <strong>anonymity</strong>, softening the framing, and never attaching identifiers to sensitive items all reduce it.</li>
+        </ul>
+
+        <div class="callout key">
+          <p><strong>Always pilot.</strong> Before a questionnaire goes live, have a handful of people from the target group fill it in and <em>talk you through their thinking</em> (a "cognitive interview"). You'll discover that a question you thought was crystal clear is read three different ways — cheap to fix now, impossible to fix after the data is collected. Every item is really an <a href="../../methods/variables-and-operationalization/">operationalization</a> of a construct, and piloting is how you check it measures what you meant.</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> a biased question produces biased data no statistic can un-bias afterward — garbage in, garbage out. The most sophisticated analysis in the world can't rescue a number that was measuring the researcher's phrasing all along. Time spent sharpening your questions is the highest-leverage hour in the whole study.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>How many points should a Likert scale have?</summary>
+            <div class="faq-a"><p>The evidence points to <strong>5 to 7 points</strong>. Fewer than five throws away real distinctions between respondents; more than seven offers a precision people can't reliably use, so the extra points just add noise. More important than the exact number is that the scale is <strong>balanced</strong> (as many positive as negative options) and that the points are <strong>labelled with words</strong>, not just numbers — everyone reads 'Agree' the same way, but interprets a bare '4' differently. Whether to include a neutral midpoint (an odd number of points) is a real design choice, not an error either way.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is a double-barreled question?</summary>
+            <div class="faq-a"><p>A double-barreled question asks about two things in a single item, so one answer can't honestly cover both — for example, 'How satisfied are you with the pay and the working hours?' Someone happy with the hours but not the pay has no valid response, and you can't tell which half their answer refers to. The fix is simple: split it into two separate questions, one per idea. The same rule applies whenever an item smuggles in an 'and' or an 'or' that respondents might answer differently.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is social desirability bias, and how do you reduce it?</summary>
+            <div class="faq-a"><p>Social desirability bias is the tendency to answer sensitive questions in a way that makes one look good rather than truthfully — under-reporting cheating or drinking, over-reporting voting or exercise. It contaminates exactly the topics researchers most want honest data on. You reduce it by guaranteeing and clearly <em>stating</em> anonymity, never attaching identifiers to sensitive items, softening the framing so the undesirable answer feels acceptable, and using indirect techniques (like list experiments) for the most delicate questions.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <style>
+    /* survey-design widget (scoped) */
+    #sv .sv-score { font-weight: 700; font-size: .95rem; margin: 0 0 1rem; color: var(--text); }
+    #sv .sv-item { border: 1px solid var(--border); border-radius: 12px; padding: .9rem 1rem; margin-bottom: .8rem; background: var(--surface); }
+    #sv .sv-item.solved { border-color: #22c55e; }
+    #sv .sv-q { font-style: italic; margin: 0 0 .7rem; color: var(--text); }
+    #sv .sv-q .sv-num { font-style: normal; font-weight: 700; color: var(--text-muted); margin-right: .4rem; }
+    #sv .sv-opts { display: flex; flex-wrap: wrap; gap: .45rem; }
+    #sv .sv-opt {
+      cursor: pointer; border: 1px solid var(--border); background: var(--surface-2);
+      color: var(--text); border-radius: 8px; padding: .4rem .7rem; font-size: .84rem; font-weight: 600;
+      transition: .15s; font-family: inherit;
+    }
+    #sv .sv-opt:hover:not(:disabled) { border-color: var(--primary); }
+    #sv .sv-opt:disabled { cursor: default; }
+    #sv .sv-opt.correct { background: #22c55e; border-color: #22c55e; color: #fff; }
+    #sv .sv-opt.wrong { background: #ef4444; border-color: #ef4444; color: #fff; opacity: .7; }
+    #sv .sv-fix { margin: .8rem 0 0; padding: .7rem .9rem; border-radius: 10px; background: var(--surface-2);
+      border-left: 3px solid #22c55e; font-size: .88rem; }
+    #sv .sv-fix .sv-fix-good { display: block; margin-top: .4rem; color: var(--text); }
+    #sv .sv-fix .sv-fix-good b { color: #16a34a; }
+    #sv .sv-repaired { margin-top: 1.2rem; padding: 1rem; border: 1px solid #22c55e; border-radius: 12px; background: var(--surface); }
+    #sv .sv-repaired h3 { margin: 0 0 .6rem; font-size: 1rem; color: #16a34a; }
+    #sv .sv-repaired ol { margin: 0; padding-left: 1.2rem; }
+    #sv .sv-repaired li { margin: .35rem 0; font-size: .9rem; }
+  </style>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ fix-this-survey (deterministic click game) ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var ITEMS = [
+      {
+        q: "Don't you agree that our wonderful new 24-hour library hours have improved student life?",
+        opts: ["Leading question", "Double-barreled", "Unbalanced scale", "Double negative"],
+        correct: 0,
+        why: "\"Don't you agree\" and \"wonderful\" tell the respondent which answer is expected — a textbook leading question.",
+        fix: "How would you rate the new 24-hour library hours? (Very poor → Very good)"
+      },
+      {
+        q: "How satisfied are you with the price and the quality of the cafeteria food?",
+        opts: ["Double-barreled", "Leading question", "Loaded wording", "Social desirability"],
+        correct: 0,
+        why: "Price and quality are two separate questions; someone who loves the food but hates the price can't give one honest answer.",
+        fix: "Split into two items: \"…satisfied with the cafeteria's food quality?\" and \"…with its prices?\""
+      },
+      {
+        q: "Should the university stop wasting money on its bloated, useless administration?",
+        opts: ["Loaded / emotive wording", "Double-barreled", "Systematic bias", "It's fine"],
+        correct: 0,
+        why: "\"Wasting\", \"bloated\" and \"useless\" pre-judge the answer — loaded words push everyone toward one side.",
+        fix: "Do you think the university should increase, keep, or decrease its administrative spending?"
+      },
+      {
+        q: "Rate the campus gym:   ☐ Good   ☐ Very good   ☐ Excellent",
+        opts: ["Unbalanced response scale", "Double negative", "Loaded wording", "Double-barreled"],
+        correct: 0,
+        why: "Every option is positive, so even someone who dislikes the gym is forced to pick a compliment — the scale has no negative half.",
+        fix: "Rate the campus gym: Very poor · Poor · Fair · Good · Very good"
+      },
+      {
+        q: "I don't think first-year students shouldn't be required to attend orientation week.",
+        opts: ["Double negative / confusing", "Leading question", "Social desirability", "Unbalanced scale"],
+        correct: 0,
+        why: "Two negatives (\"don't\" + \"shouldn't\") force respondents to untangle a puzzle — they'll guess, adding pure noise.",
+        fix: "First-year students should be required to attend orientation week. (Strongly disagree → Strongly agree)"
+      },
+      {
+        q: "How many times have you cheated on an exam? Please write your student ID below.",
+        opts: ["Social desirability + no anonymity", "Double-barreled", "Leading question", "Missing units"],
+        correct: 0,
+        why: "A sensitive admission tied to an identifier invites people to under-report to look good. Sensitive items need genuine anonymity.",
+        fix: "This survey is anonymous. In the past year, how often (if ever) did pressure lead you to bend exam rules? (Never · Once · A few times · Often)"
+      }
+    ];
+
+    var host = document.getElementById("sv-host");
+    var scoreEl = document.getElementById("sv-score");
+    var solved = 0;
+    var repaired = document.getElementById("sv-repaired");
+    var repairedList = document.getElementById("sv-repaired-list");
+
+    ITEMS.forEach(function (it, idx) {
+      var card = document.createElement("div");
+      card.className = "sv-item";
+
+      var q = document.createElement("p");
+      q.className = "sv-q";
+      q.innerHTML = '<span class="sv-num">Q' + (idx + 1) + '.</span>' + escapeHtml(it.q);
+      card.appendChild(q);
+
+      var opts = document.createElement("div");
+      opts.className = "sv-opts";
+      it.opts.forEach(function (label, oi) {
+        var b = document.createElement("button");
+        b.type = "button"; b.className = "sv-opt"; b.textContent = label;
+        b.addEventListener("click", function () { choose(card, opts, it, oi, b); });
+        opts.appendChild(b);
+      });
+      card.appendChild(opts);
+      host.appendChild(card);
+    });
+
+    function choose(card, opts, it, oi, btn) {
+      if (card.classList.contains("solved")) return;
+      if (oi === it.correct) {
+        btn.classList.add("correct");
+        Array.prototype.forEach.call(opts.querySelectorAll("button"), function (x) { x.disabled = true; });
+        card.classList.add("solved");
+        var fix = document.createElement("div");
+        fix.className = "sv-fix";
+        fix.innerHTML = escapeHtml(it.why) +
+          '<span class="sv-fix-good"><b>Fixed:</b> ' + escapeHtml(it.fix) + '</span>';
+        card.appendChild(fix);
+        solved++;
+        scoreEl.textContent = "Flaws found: " + solved + " / " + ITEMS.length;
+        if (solved === ITEMS.length) reveal();
+      } else {
+        btn.classList.add("wrong"); btn.disabled = true;
+      }
+    }
+
+    function reveal() {
+      repairedList.innerHTML = "";
+      ITEMS.forEach(function (it) {
+        var li = document.createElement("li");
+        li.textContent = it.fix;
+        repairedList.appendChild(li);
+      });
+      repaired.hidden = false;
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+      });
+    }
+  })();
+  </script>
+</body>
+</html>

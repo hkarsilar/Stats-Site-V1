@@ -214,5 +214,17 @@ window.SNIPPETS = {
   "quasi-experiments": {
     r: '# difference-in-differences: the treated:post interaction IS the DiD estimate\nm <- lm(y ~ treated * post, data = panel)   # treated (0/1), post (0/1)\nsummary(m)$coef["treated:post", ]           # estimate, SE, t, p',
     py: 'import statsmodels.formula.api as smf\nm = smf.ols("y ~ treated * post", data=panel).fit()   # treated, post are 0/1\nm.params["treated:post"]      # the difference-in-differences estimate'
+  },
+  "sampling-methods": {
+    r: 'set.seed(1)\n# simple random sample of 80 rows\nsrs <- df[sample(nrow(df), 80), ]\n\n# stratified: ~20 per stratum, sampled within each group\nlibrary(dplyr)\nstrat <- df %>% group_by(stratum) %>% slice_sample(n = 20) %>% ungroup()',
+    py: 'import pandas as pd\n# simple random sample of 80 rows\nsrs = df.sample(n=80, random_state=1)\n\n# stratified: ~20 per stratum, sampled within each group\nstrat = df.groupby("stratum", group_keys=False).apply(\n    lambda g: g.sample(n=20, random_state=1))'
+  },
+  "observational-designs": {
+    r: '# 2x2 counts: rows = exposed/unexposed, cols = case/control\na <- 30; b <- 78; c <- 20; d <- 112\nOR <- (a * d) / (b * c)              # odds ratio (any design)\nRR <- (a / (a + b)) / (c / (c + d))  # risk ratio (cohort data only)\nc(OR = OR, RR = RR)',
+    py: '# 2x2 counts: exposed-case, exposed-control, unexposed-case, unexposed-control\na, b, c, d = 30, 78, 20, 112\nodds_ratio = (a * d) / (b * c)              # odds ratio (any design)\nrisk_ratio = (a / (a + b)) / (c / (c + d))  # risk ratio (cohort data only)\nprint(odds_ratio, risk_ratio)'
+  },
+  "survey-and-questionnaire-design": {
+    r: '# reverse-code items q3 & q5 on a 1-5 scale, then average into a composite\nlibrary(dplyr)\nrev5 <- function(x) 6 - x            # 1<->5, 2<->4, 3 unchanged\ndf <- df %>% mutate(q3 = rev5(q3), q5 = rev5(q5),\n                    composite = rowMeans(across(q1:q6)))',
+    py: 'items = ["q1", "q2", "q3", "q4", "q5", "q6"]\nfor r in ["q3", "q5"]:\n    df[r] = 6 - df[r]                # reverse-code on a 1-5 scale\ndf["composite"] = df[items].mean(axis=1)'
   }
 };

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sampling Methods — StatsCapybara</title>
+  <meta name="description" content="Simple random, stratified, cluster, systematic, and convenience sampling: which give a representative sample, and why convenience samples stay biased." />
+  <link rel="canonical" href="https://statscapybara.com/methods/sampling-methods/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Sampling Methods — StatsCapybara" />
+  <meta property="og:description" content="Simple random, stratified, cluster, systematic, and convenience sampling: which give a representative sample, and why convenience samples stay biased." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/methods/sampling-methods/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Sampling Methods — StatsCapybara" />
+  <meta name="twitter:description" content="Simple random, stratified, cluster, systematic, and convenience sampling: which give a representative sample, and why convenience samples stay biased." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Sampling Methods", "description": "Simple random, stratified, cluster, systematic, and convenience sampling: which give a representative sample, and why convenience samples stay biased.", "url": "https://statscapybara.com/methods/sampling-methods/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Methods: Research Design", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Sampling Methods", "item": "https://statscapybara.com/methods/sampling-methods/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is a representative sample?", "acceptedAnswer": {"@type": "Answer", "text": "A representative sample mirrors the population on the characteristics that matter for your question, so estimates from it generalise back to that population. You don't get one by hand-picking a 'balanced-looking' group — you get it (in expectation) by using a probability sampling method, where everyone has a known, non-zero chance of selection. Representativeness is a property of the method, not of any single sample: any one random sample may be a bit off, but the procedure is unbiased and its error shrinks with size."}}, {"@type": "Question", "name": "Why are convenience samples a problem?", "acceptedAnswer": {"@type": "Answer", "text": "Because the people who are easy to reach — your own class, passers-by, an online panel — differ systematically from those who aren't, so the sample is biased, not merely noisy. The crucial consequence: that bias does not shrink as you collect more data. A bigger convenience sample just gives a more precise wrong answer. Convenience samples are sometimes unavoidable (hard-to-reach groups, exploratory pilots), but you must be honest that your results describe whoever you could reach, not the wider population."}}, {"@type": "Question", "name": "What is the difference between stratified and cluster sampling?", "acceptedAnswer": {"@type": "Answer", "text": "Both divide the population into groups, but they use those groups oppositely. Stratified sampling splits people into strata (age bands, regions) and samples within every one, usually proportionally — guaranteeing coverage and giving a more precise estimate than simple random sampling. Cluster sampling splits people into many natural clusters (schools, city blocks), randomly picks a few whole clusters, and measures everyone in them — cheaper to run over a spread-out population, but far noisier, because people in the same cluster resemble one another."}}]}
+  </script>
+</head>
+<body data-course="methods" data-section="sampling-methods">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 1.8</span>
+        <h1>Sampling Methods</h1>
+
+        <p class="lede">You almost never measure the whole <strong>population</strong> — you measure a <strong>sample</strong> and hope it stands in for the rest. Whether it can depends entirely on <em>how</em> you picked it. A good sampling method makes the sample representative <em>on average</em>; a bad one bakes in a bias that no amount of extra data will ever wash out. This is the difference between an estimate that homes in on the truth and one that confidently misses.</p>
+
+        <h2>Probability samples: everyone has a known chance</h2>
+        <p>These use chance to choose who's in, so the sample is representative in expectation and you can quantify its uncertainty (this is what <a href="../../stats-1/sampling-distributions/">sampling distributions</a> describe).</p>
+        <ul>
+          <li><strong>Simple random sampling (SRS):</strong> every person has an equal chance; draw names from a hat. Unbiased, the benchmark — but needs a complete list and can, by luck, miss small subgroups.</li>
+          <li><strong>Stratified sampling:</strong> split the population into meaningful groups (<em>strata</em> — age bands, regions, faculties) and sample within each, usually in proportion. Guarantees every group is represented and, by removing the between-group variation, gives a <em>more precise</em> estimate than SRS for the same sample size.</li>
+          <li><strong>Cluster sampling:</strong> split into many natural groups (clusters — schools, city blocks), randomly pick a few whole clusters, and measure everyone in them. Cheap when the population is spread out, but people within a cluster resemble each other, so the estimate is far noisier — picking the wrong clusters swings you badly.</li>
+          <li><strong>Systematic sampling:</strong> order the list and take every <em>k</em>th person from a random start. As good as SRS <em>if</em> the ordering is unrelated to what you're measuring — but dangerous if the list has a hidden periodicity that lines up with your step.</li>
+        </ul>
+
+        <h2>Non-probability samples: convenient, and treacherous</h2>
+        <p><strong>Convenience sampling</strong> (whoever's easy to reach — your class, passers-by, an online panel) and <strong>snowball sampling</strong> (participants recruit their friends) don't give everyone a chance of selection, so there's no guarantee — and usually no hope — of representativeness. They're sometimes unavoidable for hard-to-reach groups, but the people who are <em>easy</em> to reach differ systematically from those who aren't.</p>
+
+        <h2>Sample it five ways and watch</h2>
+        <p>Here's a stylized city. Opinion on some issue varies by neighbourhood — the campus district (top-left) is overwhelmingly in favour, the south is against. The <strong>true</strong> city-wide support is marked. Sample the city each way, draw many times, and compare where each method's estimates land.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="sm">
+          <p class="viz-title">🗺️ Sample the Same City Five Ways</p>
+          <p class="viz-sub">A fixed population whose opinion varies by neighbourhood. Draw a sample, then draw many, and watch the cloud of estimates: stratified hugs the truth, simple random is centred but wider, cluster is centred but wild, and convenience sampling sits stubbornly off-target — and stays there no matter how large <em>n</em> gets.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:2;min-width:260px">
+              <label>Sampling method</label>
+              <div class="seg" id="sm-method">
+                <button type="button" data-m="srs" class="active">Simple random</button>
+                <button type="button" data-m="strat">Stratified</button>
+                <button type="button" data-m="cluster">Cluster</button>
+                <button type="button" data-m="sys">Systematic</button>
+                <button type="button" data-m="conv">Convenience</button>
+              </div>
+            </div>
+            <div class="control" style="flex:1;min-width:180px">
+              <label>Sample size (n) <span class="val" id="sm-n-val">80</span></label>
+              <input type="range" id="sm-n" min="20" max="200" step="10" value="80" style="width:100%" />
+            </div>
+          </div>
+          <div class="controls">
+            <div class="control">
+              <button class="btn btn-primary btn-sm" id="sm-draw" type="button">Draw a sample</button>
+            </div>
+            <div class="control">
+              <button class="btn btn-ghost btn-sm" id="sm-draw40" type="button">Draw ×40</button>
+            </div>
+            <div class="control">
+              <button class="btn btn-ghost btn-sm" id="sm-clear" type="button">Clear draws</button>
+            </div>
+          </div>
+
+          <canvas id="sm-canvas"></canvas>
+
+          <div class="stat-row" style="margin-top:.5rem">
+            <div class="stat"><span class="k">True support</span><span class="v" id="sm-truth">—</span></div>
+            <div class="stat"><span class="k">This sample</span><span class="v" id="sm-this">—</span></div>
+            <div class="stat"><span class="k">Avg of draws</span><span class="v" id="sm-avg">—</span></div>
+            <div class="stat"><span class="k">Bias</span><span class="v" id="sm-bias">—</span></div>
+            <div class="stat"><span class="k">Spread (SD)</span><span class="v" id="sm-sd">—</span></div>
+          </div>
+          <p class="sm-verdict" id="sm-verdict"></p>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>The pattern is the whole lesson. <strong>Bias</strong> is where the cloud is <em>centred</em>; <strong>variance</strong> is how <em>wide</em> it is. Convenience sampling is <em>biased</em> — its cloud sits far from the truth and merely gets tighter (a more precise wrong answer) as <em>n</em> grows. The probability methods are all roughly <em>unbiased</em> — centred on the truth — but differ in variance: stratified is tightest (and, on this neighbourhood-ordered list, systematic behaves like it), simple random is wider, and cluster is widest of all. More data fixes variance; only a better <em>method</em> fixes bias.</p>
+
+        <h2>Frame, population, and the people who don't answer</h2>
+        <p>Even a perfect random method samples from your <strong>sampling frame</strong> — the actual list you draw from — not the true population. If your frame is "students with a campus email," everyone without one is invisible before you begin (<strong>coverage error</strong>). Then <strong>nonresponse bias</strong> strikes: if the people who ignore your survey differ from those who answer — and they usually do — your realised sample drifts from your intended one. A famously overlooked flavour is the <strong>WEIRD</strong> problem: a huge share of published psychology rests on Western, Educated, Industrialised, Rich, Democratic undergraduates, who are a strange sample of humanity to generalise from.</p>
+
+        <div class="callout key">
+          <p><strong>The bias that doesn't shrink:</strong> the 1936 <em>Literary Digest</em> poll mailed 10 million ballots and predicted a landslide for the wrong candidate. Its enormous sample came from car and telephone owners — wealthier, and unrepresentative in the Depression. A tiny scientific sample beat it. Sample size cannot rescue a biased sampling method; it just makes the miss more confident.</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> the sampling method decides what your results are actually <em>about</em>. Random assignment (from the <a href="../../methods/experimental-design-and-randomization/">experiments lesson</a>) buys internal validity; random <em>sampling</em> buys external validity — the right to generalise. Report how you recruited, who your frame left out, and who didn't respond, so readers know exactly which population your number describes.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What is a representative sample?</summary>
+            <div class="faq-a"><p>A representative sample mirrors the population on the characteristics that matter for your question, so estimates from it generalise back to that population. You don't get one by hand-picking a 'balanced-looking' group — you get it (in expectation) by using a <strong>probability sampling</strong> method, where everyone has a known, non-zero chance of selection. Representativeness is a property of the <em>method</em>, not of any single sample: any one random sample may be a bit off, but the procedure is unbiased and its error shrinks with size.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Why are convenience samples a problem?</summary>
+            <div class="faq-a"><p>Because the people who are easy to reach — your own class, passers-by, an online panel — differ systematically from those who aren't, so the sample is <strong>biased</strong>, not merely noisy. The crucial consequence: that bias does <em>not</em> shrink as you collect more data. A bigger convenience sample just gives a more precise wrong answer. Convenience samples are sometimes unavoidable (hard-to-reach groups, exploratory pilots), but you must be honest that your results describe whoever you could reach, not the wider population.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is the difference between stratified and cluster sampling?</summary>
+            <div class="faq-a"><p>Both divide the population into groups, but they use those groups oppositely. <strong>Stratified</strong> sampling splits people into strata (age bands, regions) and samples <em>within every one</em>, usually proportionally — guaranteeing coverage and giving a <em>more precise</em> estimate than simple random sampling. <strong>Cluster</strong> sampling splits people into many natural clusters (schools, city blocks), randomly picks a <em>few whole clusters</em>, and measures everyone in them — cheaper to run over a spread-out population, but far <em>noisier</em>, because people in the same cluster resemble one another.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <style>
+    /* sampling-methods widget (scoped) */
+    #sm .sm-verdict { font-size: .9rem; font-weight: 600; margin: .8rem 0 0; }
+  </style>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ sampling methods (frozen city; explicit re-sampling) ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var canvas = document.getElementById("sm-canvas"), ctx, W = 0, H = 400;
+    var N = 400, method = "srs", n = 80;
+    var people = [];            // frozen population: {x,y,q,op}
+    var truth = 0;
+    var draws = [];             // accumulated estimates (explicit re-sampling)
+    var current = null;         // {idx:[...], est:number}
+
+    // quadrant support: NW campus high, SE low
+    var SUP = { NW: 0.85, NE: 0.55, SW: 0.35, SE: 0.20 };
+    function quadOf(x, y) { return (y >= 0.5 ? "N" : "S") + (x < 0.5 ? "W" : "E"); }
+
+    function mulberry32(a) {
+      return function () {
+        a |= 0; a = a + 0x6D2B79F5 | 0;
+        var t = Math.imul(a ^ a >>> 15, 1 | a);
+        t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      };
+    }
+
+    function seed() {
+      people = [];
+      // 100 per quadrant, blocked in index order (NW, NE, SW, SE)
+      var quads = [["NW", 0, 0.5, 0.5, 1], ["NE", 0.5, 1, 0.5, 1], ["SW", 0, 0.5, 0, 0.5], ["SE", 0.5, 1, 0, 0.5]];
+      quads.forEach(function (Q) {
+        var name = Q[0], x0 = Q[1], x1 = Q[2], y0 = Q[3], y1 = Q[4];
+        for (var i = 0; i < 100; i++) {
+          var x = x0 + 0.06 + Math.random() * (x1 - x0 - 0.12);
+          var y = y0 + 0.06 + Math.random() * (y1 - y0 - 0.12);
+          var op = Math.random() < SUP[name] ? 1 : 0;
+          people.push({ x: x, y: y, q: name, op: op });
+        }
+      });
+      truth = VIZ.mean(people.map(function (p) { return p.op; }));
+    }
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+
+    var CAMPUS = { x: 0.25, y: 0.75 };
+    function dist2(p) { var dx = p.x - CAMPUS.x, dy = p.y - CAMPUS.y; return dx * dx + dy * dy; }
+
+    // pick `k` distinct indices from candidate list `cand` using rng
+    function pickDistinct(cand, k, rng) {
+      var arr = cand.slice(), out = [];
+      k = Math.min(k, arr.length);
+      for (var i = 0; i < k; i++) {
+        var j = i + Math.floor(rng() * (arr.length - i));
+        var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+        out.push(arr[i]);
+      }
+      return out;
+    }
+
+    function allIdx() { var a = []; for (var i = 0; i < N; i++) a.push(i); return a; }
+    function quadIdx(name) { var a = []; for (var i = 0; i < N; i++) if (people[i].q === name) a.push(i); return a; }
+
+    function sample(rng) {
+      var i;
+      if (method === "srs") return pickDistinct(allIdx(), n, rng);
+      if (method === "strat") {
+        var out = [], names = ["NW", "NE", "SW", "SE"];
+        names.forEach(function (nm) { out = out.concat(pickDistinct(quadIdx(nm), Math.round(n / 4), rng)); });
+        return out;
+      }
+      if (method === "cluster") {
+        var names2 = ["NW", "NE", "SW", "SE"];
+        var pick = names2[Math.floor(rng() * 4)];
+        return pickDistinct(quadIdx(pick), n, rng);
+      }
+      if (method === "sys") {
+        var step = Math.max(1, Math.floor(N / n)), start = Math.floor(rng() * step), out2 = [];
+        for (i = start; i < N && out2.length < n; i += step) out2.push(i);
+        return out2;
+      }
+      // convenience: weighted toward the campus, sampled without replacement
+      var cand = allIdx(), w = cand.map(function (i) { return Math.exp(-dist2(people[i]) / 0.10); });
+      var out3 = [], take = Math.min(n, N);
+      for (var s = 0; s < take; s++) {
+        var tot = 0, j2; for (j2 = 0; j2 < cand.length; j2++) tot += w[j2];
+        var r = rng() * tot, acc = 0, chosen = cand.length - 1;
+        for (j2 = 0; j2 < cand.length; j2++) { acc += w[j2]; if (r <= acc) { chosen = j2; break; } }
+        out3.push(cand[chosen]);
+        cand.splice(chosen, 1); w.splice(chosen, 1);
+      }
+      return out3;
+    }
+
+    function estOf(idx) { return VIZ.mean(idx.map(function (i) { return people[i].op; })); }
+
+    // deterministic sample shown for the current (method, n) — round-trip safe
+    function methodCode() { return { srs: 1, strat: 2, cluster: 3, sys: 4, conv: 5 }[method]; }
+    function deterministic() {
+      var rng = mulberry32(methodCode() * 100003 + n);
+      var idx = sample(rng);
+      current = { idx: idx, est: estOf(idx) };
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      var COL_YES = VIZ.css("--primary"), COL_NO = VIZ.css("--text-faint");
+      var padL = 10, padR = 10, mapTop = 8, mapH = 250, mapW = W - padL - padR;
+      function MX(x) { return padL + x * mapW; }
+      function MY(y) { return mapTop + (1 - y) * mapH; }
+
+      // quadrant tints + boundaries
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.strokeRect(padL, mapTop, mapW, mapH);
+      ctx.beginPath(); ctx.moveTo(MX(0.5), mapTop); ctx.lineTo(MX(0.5), mapTop + mapH);
+      ctx.moveTo(padL, MY(0.5)); ctx.lineTo(padL + mapW, MY(0.5)); ctx.stroke();
+
+      var seen = {}; if (current) current.idx.forEach(function (i) { seen[i] = (seen[i] || 0) + 1; });
+
+      for (var i = 0; i < N; i++) {
+        var p = people[i], cx = MX(p.x), cy = MY(p.y), inS = seen[i];
+        ctx.beginPath(); ctx.arc(cx, cy, inS ? 4 : 2.5, 0, 6.2832);
+        ctx.globalAlpha = inS ? 1 : 0.5;
+        ctx.fillStyle = p.op ? COL_YES : COL_NO; ctx.fill();
+        if (inS) { ctx.globalAlpha = 1; ctx.lineWidth = 1.6; ctx.strokeStyle = VIZ.css("--text"); ctx.stroke(); }
+        ctx.globalAlpha = 1;
+      }
+      // campus marker
+      var kx = MX(CAMPUS.x), ky = MY(CAMPUS.y);
+      ctx.fillStyle = "#f97316"; ctx.beginPath();
+      ctx.moveTo(kx, ky - 7); ctx.lineTo(kx + 7, ky); ctx.lineTo(kx, ky + 7); ctx.lineTo(kx - 7, ky); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = VIZ.css("--text"); ctx.font = "600 11px system-ui,sans-serif"; ctx.textAlign = "left";
+      ctx.fillText("campus", kx + 10, ky + 4);
+      // map legend
+      ctx.textAlign = "right";
+      ctx.fillStyle = COL_YES; ctx.fillText("● in favour", padL + mapW - 74, mapTop + 14);
+      ctx.fillStyle = COL_NO; ctx.fillText("● against", padL + mapW - 4, mapTop + 14);
+
+      // ---------- sampling-distribution strip ----------
+      var sTop = mapTop + mapH + 26, sBot = H - 22, sL = padL + 30, sR = W - padR - 10;
+      var dLo = 0.05, dHi = 0.95;
+      function SX(v) { return sL + (v - dLo) / (dHi - dLo) * (sR - sL); }
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(sL, sBot); ctx.lineTo(sR, sBot); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-muted"); ctx.font = "10px system-ui,sans-serif"; ctx.textAlign = "center";
+      [0.2, 0.4, 0.6, 0.8].forEach(function (t) {
+        ctx.fillText((t * 100).toFixed(0) + "%", SX(t), sBot + 12);
+        ctx.strokeStyle = VIZ.css("--border"); ctx.beginPath(); ctx.moveTo(SX(t), sBot); ctx.lineTo(SX(t), sBot + 3); ctx.stroke();
+      });
+      ctx.textAlign = "left"; ctx.fillStyle = VIZ.css("--text"); ctx.font = "600 11px system-ui,sans-serif";
+      ctx.fillText("Estimates from repeated draws", sL, sTop - 8);
+
+      // truth line
+      ctx.strokeStyle = "#22c55e"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(SX(truth), sTop - 2); ctx.lineTo(SX(truth), sBot); ctx.stroke();
+      ctx.fillStyle = "#22c55e"; ctx.font = "600 10px system-ui,sans-serif"; ctx.textAlign = "center";
+      ctx.fillText("truth", SX(truth), sTop - 12 < 0 ? sTop + 10 : sTop - 12);
+
+      // accumulated draws as translucent ticks
+      ctx.strokeStyle = VIZ.css("--secondary"); ctx.globalAlpha = 0.35; ctx.lineWidth = 1.5;
+      draws.forEach(function (e) {
+        var x = SX(Math.max(dLo, Math.min(dHi, e)));
+        ctx.beginPath(); ctx.moveTo(x, sTop + 4); ctx.lineTo(x, sBot - 1); ctx.stroke();
+      });
+      ctx.globalAlpha = 1;
+
+      // current sample marker (triangle)
+      if (current) {
+        var cxp = SX(Math.max(dLo, Math.min(dHi, current.est)));
+        ctx.fillStyle = "#f97316";
+        ctx.beginPath(); ctx.moveTo(cxp, sTop + 2); ctx.lineTo(cxp - 6, sTop - 8); ctx.lineTo(cxp + 6, sTop - 8); ctx.closePath(); ctx.fill();
+      }
+    }
+
+    function pct(x) { return isFinite(x) ? (x * 100).toFixed(1) + "%" : "—"; }
+
+    function verdictText() {
+      var v = document.getElementById("sm-verdict"), t, c;
+      if (method === "conv") {
+        t = "Convenience sampling over-draws the campus, so its cloud sits well above the truth — and growing n only tightens the miss. This bias never shrinks.";
+        c = "#ef4444";
+      } else if (method === "strat") {
+        t = "Stratified sampling fixes the share from each neighbourhood, removing between-neighbourhood variation — the tightest cloud, dead-centred on the truth.";
+        c = "#22c55e";
+      } else if (method === "cluster") {
+        t = "Cluster sampling takes one whole neighbourhood, so each draw reflects that neighbourhood — centred on the truth on average, but a very wide, lumpy cloud.";
+        c = "#f59e0b";
+      } else if (method === "sys") {
+        t = "Systematic sampling walks the list in even steps; because the ordering isn't tied to opinion here, it spans all neighbourhoods and behaves much like a random sample.";
+        c = "#22c55e";
+      } else {
+        t = "Simple random sampling is unbiased — centred on the truth — with a spread that shrinks as n grows. The honest benchmark every other method is judged against.";
+        c = "#22c55e";
+      }
+      v.textContent = t; v.style.color = c;
+    }
+
+    function refreshStats() {
+      document.getElementById("sm-truth").textContent = pct(truth);
+      document.getElementById("sm-this").textContent = current ? pct(current.est) : "—";
+      if (draws.length) {
+        var avg = VIZ.mean(draws);
+        document.getElementById("sm-avg").textContent = pct(avg) + " (" + draws.length + ")";
+        document.getElementById("sm-bias").textContent = (avg - truth >= 0 ? "+" : "−") + (Math.abs(avg - truth) * 100).toFixed(1) + " pts";
+        document.getElementById("sm-sd").textContent = draws.length > 1 ? (VIZ.sd(draws) * 100).toFixed(1) + " pts" : "—";
+      } else {
+        document.getElementById("sm-avg").textContent = "—";
+        document.getElementById("sm-bias").textContent = "—";
+        document.getElementById("sm-sd").textContent = "—";
+      }
+    }
+
+    function update() {
+      document.getElementById("sm-n-val").textContent = n;
+      refreshStats(); verdictText(); draw();
+    }
+
+    var live = mulberry32((Date.now() & 0xffff) + 7);   // genuine repeated-sampling RNG
+    function drawOnce() {
+      var idx = sample(live);
+      current = { idx: idx, est: estOf(idx) };
+      draws.push(current.est);
+    }
+
+    // controls
+    document.getElementById("sm-method").addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-m]"); if (!b) return;
+      method = b.getAttribute("data-m");
+      Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x === b); });
+      draws = []; deterministic(); update();
+    });
+    document.getElementById("sm-n").addEventListener("input", function () {
+      n = +this.value; draws = []; deterministic(); update();
+    });
+    document.getElementById("sm-draw").addEventListener("click", function () { drawOnce(); update(); });
+    document.getElementById("sm-draw40").addEventListener("click", function () { for (var i = 0; i < 40; i++) drawOnce(); update(); });
+    document.getElementById("sm-clear").addEventListener("click", function () { draws = []; deterministic(); update(); });
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(function () { update(); });
+
+    seed(); fit(); deterministic(); update();
+  })();
+  </script>
+</body>
+</html>

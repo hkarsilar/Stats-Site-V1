@@ -112,6 +112,9 @@
     "experimental-design-and-randomization": "The capybara assigns hot-spring seats by coin flip. Even the grumpy ones end up evenly spread.",
     "between-vs-within-designs": "One capybara soaking twice, or two capybaras once each? Fewer capybaras the first way — unless the first bath lingers.",
     "quasi-experiments": "Couldn't randomize the weather, so the capybara compared its pond to the one next door — and hoped they'd have drifted alike.",
+    "observational-designs": "The capybara didn't assign anyone to the warm spring. It just watched who wandered in — and noted who was never seen leaving.",
+    "sampling-methods": "Poll only the capybaras already in the spa and 100% love warm water. Shocking. Also: sample the whole pond next time.",
+    "survey-and-questionnaire-design": "\"Don't you agree this lovely water is wonderful?\" The capybara agrees. The capybara would agree with anything phrased like that.",
     /* Root pages */
     "home": "No rush — capybaras never cram.",
     "toolbox": "A capybara's toolbox: warm water, good snacks, zero deadlines. Yours has calculators too.",

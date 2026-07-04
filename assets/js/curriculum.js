@@ -113,7 +113,10 @@ window.CURRICULUM = [
       { n: "1.3",  slug: "reliability-and-validity",         title: "Reliability & Validity", ready: true },
       { n: "1.4",  slug: "experimental-design-and-randomization", title: "Experiments & Random Assignment", ready: true },
       { n: "1.5",  slug: "between-vs-within-designs",        title: "Between vs Within Designs", ready: true },
-      { n: "1.6",  slug: "quasi-experiments",               title: "Quasi-Experiments & Natural Experiments", ready: true }
+      { n: "1.6",  slug: "quasi-experiments",               title: "Quasi-Experiments & Natural Experiments", ready: true },
+      { n: "1.7",  slug: "observational-designs",           title: "Observational Designs", ready: true },
+      { n: "1.8",  slug: "sampling-methods",                title: "Sampling Methods", ready: true },
+      { n: "1.9",  slug: "survey-and-questionnaire-design", title: "Designing Surveys & Questionnaires", ready: true }
     ]
   }
 ];
