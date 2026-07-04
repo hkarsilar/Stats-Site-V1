@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Power &amp; Sample-Size Calculator — t, ANOVA, Correlation, Chi-Square — StatsCapybara</title>
+  <meta name="description" content="Free power and sample-size calculator for t-tests, ANOVA, correlation, chi-square and proportions — solve for sample size, power, or the minimum detectable effect. Exact math." />
+  <link rel="canonical" href="https://statscapybara.com/power.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Power &amp; Sample-Size Calculator — StatsCapybara" />
+  <meta property="og:description" content="How many participants do you need? Solve for sample size, power, or the minimum detectable effect — for t-tests, ANOVA, correlation, chi-square and proportions, with the power curve drawn live." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/power.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Power &amp; Sample-Size Calculator — StatsCapybara" />
+  <meta name="twitter:description" content="How many participants do you need? Solve for n, power, or the minimum detectable effect — with the power curve drawn live." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <style>
+    /* scoped tweaks for the power tool only */
+    #seg-sc { flex-wrap: wrap; overflow: visible; border: none; gap: .4rem; }
+    #seg-sc button { border: 1px solid var(--border); border-radius: 8px; }
+    #seg-sc button + button { border-left: 1px solid var(--border); }
+    .pw-big { text-align: center; margin: .3rem 0 .9rem; }
+    .pw-big .num-out { font-size: 2.4rem; font-weight: 800; color: var(--primary); line-height: 1.06; font-family: var(--mono); }
+    .pw-big .num-out .unit { font-size: 1rem; font-weight: 600; color: var(--text-muted); font-family: inherit; }
+    .pw-big .sub { color: var(--text-faint); font-size: .92rem; margin-top: .25rem; }
+  </style>
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body>
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="container narrow">
+      <article class="lesson" style="margin:0 auto">
+        <span class="lesson-eyebrow">Tools</span>
+        <h1>Power &amp; Sample-Size Calculator</h1>
+        <p class="lede">The single most valuable calculation in statistics happens <em>before</em> you collect a single data point: how many participants do you actually need? Pick your test, choose what you want to solve for, and read the answer off the power curve — with <strong>exact</strong> noncentral math, not normal-approximation shortcuts.</p>
+
+        <div class="viz" id="pw">
+          <p class="viz-title">⚡ Power &amp; sample-size calculator</p>
+          <p class="viz-sub">Fix any two of {effect size, sample size, power} and solve for the third. The curve is power vs. sample size; the marker sits at the operative point.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:280px">
+              <label>Test / design</label>
+              <span class="seg" id="seg-sc">
+                <button data-s="t1" class="active">Paired / one-sample t</button><button data-s="t2">Two-sample t</button><button data-s="r">Correlation r</button><button data-s="anova">One-way ANOVA</button><button data-s="chisq">Chi-square</button><button data-s="prop">Two proportions</button>
+              </span>
+            </div>
+          </div>
+
+          <div class="controls">
+            <div class="control"><label>Solve for</label>
+              <span class="seg" id="seg-solve">
+                <button data-q="n" class="active">Sample size</button><button data-q="power">Power</button><button data-q="es">Effect size</button>
+              </span>
+            </div>
+            <div class="control" id="ctl-tails"><label>Tails</label>
+              <span class="seg" id="seg-tails">
+                <button data-t="2" class="active">Two</button><button data-t="1">One</button>
+              </span>
+            </div>
+            <div class="control"><label>α (significance)</label><input type="number" id="in-alpha" class="num" value="0.05" step="0.01" min="0.0001" max="0.5" /></div>
+          </div>
+
+          <div class="controls">
+            <div class="control" id="ctl-es"><label id="lbl-es">Effect size — Cohen's dz</label><input type="number" id="in-es" class="num" value="0.5" step="0.05" /></div>
+            <div class="control" id="ctl-p1" style="display:none"><label>Proportion 1 (p₁)</label><input type="number" id="in-p1" class="num" value="0.5" step="0.05" min="0" max="1" /></div>
+            <div class="control" id="ctl-p2" style="display:none"><label>Proportion 2 (p₂)</label><input type="number" id="in-p2" class="num" value="0.7" step="0.05" min="0" max="1" /></div>
+            <div class="control" id="ctl-k" style="display:none"><label>Number of groups (k)</label><input type="number" id="in-k" class="num" value="4" step="1" min="2" /></div>
+            <div class="control" id="ctl-df" style="display:none"><label>Degrees of freedom (df)</label><input type="number" id="in-df" class="num" value="1" step="1" min="1" /></div>
+            <div class="control" id="ctl-n" style="display:none"><label id="lbl-n">Sample size</label><input type="number" id="in-n" class="num" value="34" step="1" min="2" /></div>
+            <div class="control" id="ctl-power"><label>Target power</label><input type="number" id="in-power" class="num" value="0.8" step="0.05" min="0.05" max="0.999" /></div>
+          </div>
+
+          <div id="pw-readout"></div>
+          <canvas id="pw-canvas" role="img" aria-label="Power versus sample-size curve"></canvas>
+          <p class="viz-sub" id="pw-sentence" style="margin:.7rem 0 0;font-size:.98rem"></p>
+          <div class="stat-row" id="pw-stats"></div>
+        </div>
+
+        <h2>How to use it</h2>
+        <ul>
+          <li><strong>Planning a study?</strong> Keep "Solve for → Sample size", enter the effect size you'd hate to miss and the power you want (0.80 is the convention), and read off the <em>n</em>. That's an <em>a priori</em> power analysis — the calculation you should run before collecting data.</li>
+          <li><strong>Already have a fixed n?</strong> Switch to "Power" to see your chance of detecting an effect of a given size — or to "Effect size" for the <strong>minimum detectable effect</strong>: the smallest effect this design can reliably catch.</li>
+          <li><strong>Watch the punishing curve.</strong> Halving the effect you're chasing roughly <em>quadruples</em> the sample you need. A large effect needs a couple dozen per group; a small one can demand hundreds.</li>
+        </ul>
+
+        <div class="callout key">
+          <p><strong>These are exact power values, not normal-curve approximations.</strong> The t, ANOVA, and chi-square scenarios use the true <em>noncentral</em> t, F, and χ² distributions; correlation uses the exact bivariate-normal distribution of <em>r</em>. Results match G*Power to within rounding. The <strong>two-proportions</strong> test is the one deliberate exception — it uses the standard arcsine (Cohen's <em>h</em>) normal approximation, which is why it's labelled <em>approximate</em>. ANOVA and chi-square are naturally one-tailed (the F/χ² rejection region is the upper tail), so no tail choice is offered.</p>
+        </div>
+
+        <h2>Effect-size benchmarks (Cohen, 1988)</h2>
+        <table class="ref-table">
+          <thead><tr><th>Test</th><th>Metric</th><th>Small</th><th>Medium</th><th>Large</th></tr></thead>
+          <tbody>
+            <tr><td>t-test</td><td>d</td><td>0.20</td><td>0.50</td><td>0.80</td></tr>
+            <tr><td>Correlation</td><td>r</td><td>.10</td><td>.30</td><td>.50</td></tr>
+            <tr><td>ANOVA</td><td>f</td><td>0.10</td><td>0.25</td><td>0.40</td></tr>
+            <tr><td>Chi-square</td><td>w</td><td>0.10</td><td>0.30</td><td>0.50</td></tr>
+            <tr><td>Proportions</td><td>h</td><td>0.20</td><td>0.50</td><td>0.80</td></tr>
+          </tbody>
+        </table>
+        <p>Benchmarks are a last resort — Cohen said so himself. Whenever you can, power for the <strong>smallest effect that would still matter</strong>, or an effect from prior literature discounted for publication bias. Translate between d, r, η² and the rest with the <a href="effect-sizes.html">effect-size converter</a>.</p>
+
+        <h2>Where this comes from</h2>
+        <ul>
+          <li><strong>Effect size &amp; power</strong> — the core intuition, one interactive at a time. <a href="stats-1/effect-size-and-power/">See the Stats 1 lesson →</a></li>
+          <li><strong>Power analysis for complex designs</strong> — using power as a planning tool, and what to do when formulas run out. <a href="stats-3/power-analysis-for-complex-designs/">See the Stats 3 lesson →</a></li>
+          <li>Need the critical values behind these curves? The <a href="tables.html">tables &amp; calculators</a> page has exact z, t, χ² and F. The <a href="formulas.html">formula sheet</a> lists every formula these tests are built from.</li>
+        </ul>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="assets/js/curriculum.js"></script>
+  <script src="assets/js/site.js"></script>
+  <script src="assets/js/viz.js"></script>
+
+  <!-- ============ power & sample-size calculator ============
+       Verification gates (α = .05 two-tailed, power = .80) — checked with
+       node against viz.js; all match G*Power within ±1:
+         two-sample d=0.5 → n = 64/group ;  d=0.2 → 394 ;  d=0.8 → 26
+         one-sample/paired d=0.5 → n = 34
+         correlation r=.3 → n = 84   (exact bivariate-normal)
+         one-way ANOVA f=0.25, k=4 → N = 180 (45/group; equal groups)
+         chi-square w=0.3, df=1 → N = 88
+       ANOVA rounds N up to a multiple of k (equal group sizes), which is
+       why f=0.25,k=4 gives 180 (45×4) rather than 179. -->
+  <script>
+  (function () {
+    "use strict";
+    var V = window.VIZ;
+    var el = function (id) { return document.getElementById(id); };
+    function numv(id, fb) { var v = parseFloat(el(id).value); return isFinite(v) ? v : fb; }
+    function clamp01(p) { return p < 0 ? 0 : p > 1 ? 1 : p; }
+    function fmtR(v) { return (v < 0 ? "−" : "") + Math.abs(v).toFixed(2).replace(/^0/, ""); }
+    function fmtAlpha(a) { return a.toFixed(a < 0.01 ? 3 : 2).replace(/^0/, ""); }
+
+    var sc = "t1", solve = "n", tails = 2, lastRes = null;
+
+    var META = {
+      t1:   { name: "paired / one-sample t", esLabel: "Cohen's dz", tails: true,  nLabel: "Sample size (pairs / observations)" },
+      t2:   { name: "two-sample t",          esLabel: "Cohen's d",  tails: true,  nLabel: "Sample size per group" },
+      r:    { name: "Pearson correlation",   esLabel: "correlation r", tails: true, nLabel: "Sample size (N)" },
+      anova:{ name: "one-way ANOVA",         esLabel: "Cohen's f",  tails: false, nLabel: "Total sample size (N)" },
+      chisq:{ name: "chi-square",            esLabel: "Cohen's w",  tails: false, nLabel: "Total sample size (N)" },
+      prop: { name: "two proportions",       esLabel: "Cohen's h",  tails: true,  nLabel: "Sample size per group", approx: true }
+    };
+    var DEF = { t1: { es: 0.5, n: 34 }, t2: { es: 0.5, n: 64 }, r: { es: 0.3, n: 84 },
+                anova: { es: 0.25, n: 180 }, chisq: { es: 0.3, n: 88 }, prop: { n: 90 } };
+
+    /* ---- exact correlation power (bivariate-normal distribution of r) ---- */
+    function hyp2f1(c, y) {             // 2F1(1/2, 1/2; c; y)
+      var t = 1, s = 1;
+      for (var k = 0; k < 4000; k++) { t *= ((0.5 + k) * (0.5 + k)) / ((c + k) * (k + 1)) * y; s += t; if (Math.abs(t) < 1e-14 * Math.abs(s)) break; }
+      return s;
+    }
+    function corrPdf(r, rho, n) {       // exact density of the sample correlation
+      if (r <= -1 || r >= 1) return 0;
+      var lc = Math.log(n - 2) + V.gammaln(n - 1) + ((n - 1) / 2) * Math.log(1 - rho * rho) - 0.5 * Math.log(2 * Math.PI) - V.gammaln(n - 0.5);
+      var lk = ((n - 4) / 2) * Math.log(1 - r * r) - (n - 1.5) * Math.log(1 - rho * r);
+      return Math.exp(lc + lk) * hyp2f1(n - 0.5, (1 + rho * r) / 2);
+    }
+    function simpson(f, a, b, m) { m = m % 2 ? m + 1 : m; var h = (b - a) / m, s = f(a) + f(b), i; for (i = 1; i < m; i++) s += (i % 2 ? 4 : 2) * f(a + i * h); return s * h / 3; }
+    function corrPower(n, rho, alpha, tl, steps) {
+      if (n < 4) return alpha;
+      rho = Math.abs(rho); steps = steps || 400;
+      var df = n - 2, tc = V.tInv(tl === 2 ? alpha / 2 : alpha, df), rc = tc / Math.sqrt(tc * tc + df);
+      var p = simpson(function (r) { return corrPdf(r, rho, n); }, rc, 1 - 1e-6, steps);
+      if (tl === 2) p += simpson(function (r) { return corrPdf(r, rho, n); }, -(1 - 1e-6), -rc, steps);
+      return clamp01(p);
+    }
+
+    /* ---- power for a given PRIMARY n (per-group for t2/prop, total for anova/chisq, n for t1/r) ---- */
+    function tPow(df, ncp, alpha, tl) {
+      if (tl === 2) { var tc = V.tInv(alpha / 2, df); return clamp01(1 - V.nctCdf(tc, df, ncp) + V.nctCdf(-tc, df, ncp)); }
+      var tc1 = V.tInv(alpha, df); return clamp01(1 - V.nctCdf(tc1, df, ncp));
+    }
+    function powerOf(n, es, alpha, tl, ex, steps) {
+      if (sc === "t1") { if (n < 2) return alpha; return tPow(n - 1, Math.abs(es) * Math.sqrt(n), alpha, tl); }
+      if (sc === "t2") { if (n < 2) return alpha; return tPow(2 * n - 2, Math.abs(es) * Math.sqrt(n / 2), alpha, tl); }
+      if (sc === "r")  return corrPower(n, es, alpha, tl, steps);
+      if (sc === "anova") { var k = ex.k; if (n <= k) return alpha; var d1 = k - 1, d2 = n - k, lam = es * es * n; return clamp01(1 - V.ncfCdf(V.fInv(alpha, d1, d2), d1, d2, lam)); }
+      if (sc === "chisq") { if (n < 1) return alpha; var lam2 = es * es * n; return clamp01(1 - V.ncx2Cdf(V.chiSqInv(alpha, ex.df), ex.df, lam2)); }
+      if (sc === "prop") { if (n < 2) return alpha; var za = V.normInv(1 - alpha / tl), t = Math.abs(es) * Math.sqrt(n / 2); return clamp01(V.normCdf(t - za) + (tl === 2 ? V.normCdf(-t - za) : 0)); }
+      return alpha;
+    }
+
+    /* ---- unit space (per-group for t2/prop/anova, total for chisq, n for t1/r) ---- */
+    function unitMin() { return sc === "r" ? 5 : sc === "chisq" ? 1 : 2; }
+    function primaryOf(unit, ex) { return sc === "anova" ? ex.k * unit : unit; }   // anova: equal groups → N = k·n
+
+    function solveUnit(es, alpha, tl, ex, target) {
+      var f = function (u) { return powerOf(primaryOf(u, ex), es, alpha, tl, ex, 300); };
+      var lo = unitMin(), hi = lo, p = f(hi), guard = 0;
+      while (p < target && hi < 2e6 && guard++ < 40) { hi *= 2; p = f(hi); }
+      if (p < target) return Infinity;
+      lo = unitMin();
+      while (lo < hi) { var mid = Math.floor((lo + hi) / 2); if (f(mid) >= target) hi = mid; else lo = mid + 1; }
+      return lo;
+    }
+    function solveEs(primary, alpha, tl, ex, target) {
+      var hiE = sc === "r" ? 0.999 : sc === "prop" ? 3.14159 : 5;
+      var lo = 1e-4, hi = hiE, f = function (e) { return powerOf(primary, e, alpha, tl, ex, 300); };
+      if (f(hi) < target) return Infinity;
+      for (var i = 0; i < 80; i++) { var mid = (lo + hi) / 2; if (f(mid) >= target) hi = mid; else lo = mid; }
+      return (lo + hi) / 2;
+    }
+
+    /* ---- input readers ---- */
+    function esVal() {
+      if (sc === "prop") { var p1 = clamp01(numv("in-p1", 0.5)), p2 = clamp01(numv("in-p2", 0.7)); return 2 * Math.asin(Math.sqrt(p1)) - 2 * Math.asin(Math.sqrt(p2)); }
+      return numv("in-es", 0.5);
+    }
+    function extra() { return { k: Math.max(2, Math.round(numv("in-k", 4))), df: Math.max(1, Math.round(numv("in-df", 1))) }; }
+    function defN() { return DEF[sc].n; }
+
+    /* ---- supporting readouts (df, noncentrality, critical value) ---- */
+    function detail(primary, es, alpha, tl, ex) {
+      if (sc === "t1") { var df = primary - 1, ncp = Math.abs(es) * Math.sqrt(primary); return { ncp: "δ = " + ncp.toFixed(3), crit: "t* = " + V.tInv(tl === 2 ? alpha / 2 : alpha, df).toFixed(3) }; }
+      if (sc === "t2") { var df2 = 2 * primary - 2, ncp2 = Math.abs(es) * Math.sqrt(primary / 2); return { ncp: "δ = " + ncp2.toFixed(3), crit: "t* = " + V.tInv(tl === 2 ? alpha / 2 : alpha, df2).toFixed(3) }; }
+      if (sc === "r") { var df3 = primary - 2, tc = V.tInv(tl === 2 ? alpha / 2 : alpha, df3); return { ncp: "r = " + fmtR(Math.abs(es)), crit: "r* = " + fmtR(tc / Math.sqrt(tc * tc + df3)) }; }
+      if (sc === "anova") { var d1 = ex.k - 1, d2 = primary - ex.k, lam = es * es * primary; return { ncp: "λ = " + lam.toFixed(2), crit: "F* = " + V.fInv(alpha, d1, d2).toFixed(3) }; }
+      if (sc === "chisq") { var lam2 = es * es * primary; return { ncp: "λ = " + lam2.toFixed(2), crit: "χ²* = " + V.chiSqInv(alpha, ex.df).toFixed(3) }; }
+      return { ncp: "h = " + Math.abs(es).toFixed(3), crit: "z* = " + V.normInv(1 - alpha / tl).toFixed(3) };
+    }
+    function statBlocks(pairs) {
+      return pairs.map(function (p) { return '<div class="stat"><span class="k">' + p[0] + '</span><span class="v" style="font-size:1.05rem">' + p[1] + '</span></div>'; }).join("");
+    }
+
+    /* ---- phrases ---- */
+    function tailPhrase(res) { return META[res.sc].tails ? (res.tl === 2 ? ", two-tailed" : ", one-tailed") : ""; }
+    function esPhrase(res) {
+      if (res.sc === "prop") { var p1 = clamp01(numv("in-p1", 0.5)), p2 = clamp01(numv("in-p2", 0.7)); return "p₁ = " + fmtR(p1) + " vs p₂ = " + fmtR(p2) + " (h = " + Math.abs(res.es).toFixed(2) + ")"; }
+      if (res.sc === "r") return "r = " + fmtR(res.es);
+      var sym = { t1: "d", t2: "d", anova: "f", chisq: "w" }[res.sc];
+      return sym + " = " + Math.abs(res.es).toFixed(2) + (res.sc === "chisq" ? " (df = " + res.ex.df + ")" : res.sc === "anova" ? " across " + res.ex.k + " groups" : "");
+    }
+    function nDesc(res, nP) { if (res.sc === "t2" || res.sc === "prop") return "n = " + nP + " per group"; if (res.sc === "anova") return "N = " + nP + " (" + res.ex.k + " groups)"; return (res.sc === "chisq" ? "N = " : "n = ") + nP; }
+
+    /* ---- renderers ---- */
+    function renderN(res) {
+      var big = el("pw-readout");
+      if (!isFinite(res.unit)) {
+        big.innerHTML = '<div class="pw-big"><div class="num-out">n → very large</div><div class="sub">This effect is too small to reach that power at a practical sample size — try a larger effect or a lower target power.</div></div>';
+        el("pw-sentence").textContent = ""; el("pw-stats").innerHTML = ""; return;
+      }
+      var unit = res.unit, primary = primaryOf(unit, res.ex), head, sub, need;
+      if (res.sc === "t2" || res.sc === "prop") { head = "n = " + unit + ' <span class="unit">/ group</span>'; sub = (2 * unit) + " participants in total"; need = unit + " per group (" + (2 * unit) + " total)"; }
+      else if (res.sc === "anova") { head = "N = " + primary; sub = unit + " per group × " + res.ex.k + " groups"; need = primary + " in total (" + unit + " per group)"; }
+      else if (res.sc === "chisq") { head = "N = " + primary; sub = res.ex.df + " degrees of freedom"; need = primary + " observations"; }
+      else { head = "n = " + primary; sub = (res.sc === "t1" ? "paired observations / single sample" : "participants"); need = primary + (res.sc === "t1" ? " paired observations" : " participants"); }
+      big.innerHTML = '<div class="pw-big"><div class="num-out">' + head + '</div><div class="sub">' + sub + "</div></div>";
+      el("pw-sentence").innerHTML = "To detect " + esPhrase(res) + " with " + (res.target * 100).toFixed(0) + "% power at α = " + fmtAlpha(res.alpha) + tailPhrase(res) + (META[res.sc].approx ? ", approximate" : "") + ", you need <strong>" + need + "</strong>.";
+      var d = detail(primary, res.es, res.alpha, res.tl, res.ex);
+      el("pw-stats").innerHTML = statBlocks([["Achieved power", (res.power * 100).toFixed(1) + "%"], ["Target", (res.target * 100).toFixed(0) + "%"], ["Noncentrality", d.ncp], ["Critical value", d.crit]]);
+    }
+    function renderPower(res, primary, nP) {
+      var miss = (100 - res.power * 100).toFixed(1);
+      el("pw-readout").innerHTML = '<div class="pw-big"><div class="num-out">' + (res.power * 100).toFixed(1) + '%</div><div class="sub">power to detect ' + esPhrase(res) + "</div></div>";
+      el("pw-sentence").innerHTML = "With " + nDesc(res, nP) + ", " + esPhrase(res) + ", α = " + fmtAlpha(res.alpha) + tailPhrase(res) + (META[res.sc].approx ? ", approximate" : "") + ", your power is <strong>" + (res.power * 100).toFixed(1) + "%</strong> — a " + miss + "% chance of missing a real effect this size.";
+      var d = detail(primary, res.es, res.alpha, res.tl, res.ex);
+      el("pw-stats").innerHTML = statBlocks([["Power", (res.power * 100).toFixed(1) + "%"], ["β (miss rate)", miss + "%"], ["Noncentrality", d.ncp], ["Critical value", d.crit]]);
+    }
+    function esOut(v) {
+      if (sc === "r") return { big: "r = " + fmtR(v), inline: "r = " + fmtR(v), plain: fmtR(v) };
+      if (sc === "prop") return { big: "h = " + v.toFixed(2), inline: "Cohen's h = " + v.toFixed(2), plain: v.toFixed(2) };
+      var sym = { t1: "d", t2: "d", anova: "f", chisq: "w" }[sc];
+      return { big: sym + " = " + v.toFixed(2), inline: "Cohen's " + sym + " = " + v.toFixed(2), plain: v.toFixed(2) };
+    }
+    function renderEs(res, esSolved, nP, primary) {
+      if (!isFinite(esSolved)) {
+        el("pw-readout").innerHTML = '<div class="pw-big"><div class="num-out">—</div><div class="sub">Even a very large effect can\'t reach ' + (res.target * 100).toFixed(0) + "% power at this sample size. Increase n.</div></div>";
+        el("pw-sentence").textContent = ""; el("pw-stats").innerHTML = ""; return;
+      }
+      var lbl = esOut(esSolved);
+      el("pw-readout").innerHTML = '<div class="pw-big"><div class="num-out">' + lbl.big + '</div><div class="sub">minimum detectable effect</div></div>';
+      el("pw-sentence").innerHTML = "With " + nDesc(res, nP) + " and " + (res.target * 100).toFixed(0) + "% power at α = " + fmtAlpha(res.alpha) + tailPhrase(res) + (META[res.sc].approx ? ", approximate" : "") + ", the smallest effect you can reliably detect is <strong>" + lbl.inline + "</strong>.";
+      var d = detail(primary, esSolved, res.alpha, res.tl, res.ex);
+      el("pw-stats").innerHTML = statBlocks([["Min. detectable", lbl.plain], ["Power", (res.target * 100).toFixed(0) + "%"], ["Noncentrality", d.ncp], ["Critical value", d.crit]]);
+    }
+
+    /* ---- drawing: power vs sample size ---- */
+    var canvas = el("pw-canvas"), H = 264;
+    function xlabelOf() { return (sc === "t2" || sc === "prop" || sc === "anova") ? "sample size per group →" : sc === "chisq" ? "total sample size N →" : "sample size →"; }
+    function draw(res) {
+      var f = V.fit(canvas, H), ctx = f.ctx, W = f.w, pad = 44, top = 16, baseY = H - 30, i;
+      ctx.clearRect(0, 0, W, H);
+      var xMin = unitMin();
+      var anchor = isFinite(res.unit) ? res.unit : (isFinite(res.unitTarget) ? res.unitTarget : xMin + 20);
+      var xMax = Math.max(anchor * 1.7, xMin + 12);
+      if (isFinite(res.unitTarget)) xMax = Math.max(xMax, res.unitTarget * 1.25);
+      xMax = Math.min(xMax, 5e5);
+      function px(u) { return pad + (u - xMin) / (xMax - xMin) * (W - pad - 14); }
+      function py(p) { return baseY - p * (baseY - top); }
+      // y gridlines
+      ctx.font = "11px " + V.css("--mono"); ctx.lineWidth = 1;
+      [0, 0.2, 0.4, 0.6, 0.8, 1].forEach(function (g) {
+        var y = py(g); ctx.strokeStyle = V.css("--border"); ctx.globalAlpha = g === 0 ? 1 : 0.45;
+        ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(W - 14, y); ctx.stroke(); ctx.globalAlpha = 1;
+        ctx.fillStyle = V.css("--text-faint"); ctx.textAlign = "right"; ctx.fillText((g * 100).toFixed(0) + "%", pad - 6, y + 3);
+      });
+      // target-power reference line
+      if (res.target) { var yt = py(res.target); ctx.strokeStyle = "#f97316"; ctx.setLineDash([5, 4]); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(pad, yt); ctx.lineTo(W - 14, yt); ctx.stroke(); ctx.setLineDash([]); }
+      // curve
+      ctx.strokeStyle = V.css("--primary"); ctx.lineWidth = 2.5; ctx.lineJoin = "round"; ctx.beginPath();
+      var Npts = 90;
+      for (i = 0; i <= Npts; i++) { var u = xMin + (xMax - xMin) * i / Npts; var p = powerOf(primaryOf(u, res.ex), res.es, res.alpha, res.tl, res.ex, 120); var X = px(u), Y = py(p); if (i === 0) ctx.moveTo(X, Y); else ctx.lineTo(X, Y); }
+      ctx.stroke();
+      // marker at the operative point
+      if (isFinite(res.unit) && res.unit <= xMax) {
+        var xm = px(res.unit), ym = py(res.power);
+        ctx.strokeStyle = "#f97316"; ctx.setLineDash([4, 4]); ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(xm, baseY); ctx.lineTo(xm, ym); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = "#f97316"; ctx.beginPath(); ctx.arc(xm, ym, 4.5, 0, 2 * Math.PI); ctx.fill();
+      }
+      // x axis + ticks
+      ctx.strokeStyle = V.css("--border"); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(pad, baseY + 0.5); ctx.lineTo(W - 14, baseY + 0.5); ctx.stroke();
+      ctx.fillStyle = V.css("--text-faint"); ctx.textAlign = "center";
+      for (i = 0; i <= 5; i++) { var uu = xMin + (xMax - xMin) * i / 5; ctx.fillText(Math.round(uu), Math.min(Math.max(px(uu), pad), W - 14), baseY + 15); }
+      ctx.fillStyle = V.css("--text-muted"); ctx.font = "600 11.5px Inter,sans-serif";
+      ctx.fillText(xlabelOf(), pad + (W - pad - 14) / 2, H - 4);
+    }
+
+    /* ---- orchestration ---- */
+    function refreshVis() {
+      var m = META[sc], esMode = solve === "es";
+      el("ctl-tails").style.display = m.tails ? "" : "none";
+      el("ctl-k").style.display = sc === "anova" ? "" : "none";
+      el("ctl-df").style.display = sc === "chisq" ? "" : "none";
+      el("ctl-es").style.display = (sc !== "prop" && !esMode) ? "" : "none";
+      el("ctl-p1").style.display = (sc === "prop" && !esMode) ? "" : "none";
+      el("ctl-p2").style.display = (sc === "prop" && !esMode) ? "" : "none";
+      el("ctl-n").style.display = solve !== "n" ? "" : "none";
+      el("ctl-power").style.display = solve !== "power" ? "" : "none";
+      el("lbl-es").textContent = "Effect size — " + m.esLabel;
+      el("lbl-n").textContent = m.nLabel;
+    }
+    function compute() {
+      refreshVis();
+      var alpha = Math.min(0.5, Math.max(1e-4, numv("in-alpha", 0.05)));
+      var tl = META[sc].tails ? tails : 1;
+      var ex = extra(), es = esVal();
+      var res = { sc: sc, alpha: alpha, tl: tl, ex: ex, es: es, target: null, unit: Infinity, unitTarget: Infinity, power: 0 };
+      if (solve === "n") {
+        var target = Math.min(0.999, Math.max(0.05, numv("in-power", 0.8)));
+        res.target = target;
+        var unit = solveUnit(es, alpha, tl, ex, target);
+        res.unit = unit; res.unitTarget = unit;
+        res.power = isFinite(unit) ? powerOf(primaryOf(unit, ex), es, alpha, tl, ex, 500) : 0;
+        renderN(res);
+      } else if (solve === "power") {
+        var nP = Math.max(unitMin(), Math.round(numv("in-n", defN())));
+        res.unit = sc === "anova" ? Math.max(2, Math.round(nP / ex.k)) : nP;
+        res.unitTarget = res.unit;
+        res.power = powerOf(nP, es, alpha, tl, ex, 500);
+        res.target = null;
+        renderPower(res, nP, nP);
+      } else {
+        var nP2 = Math.max(unitMin(), Math.round(numv("in-n", defN())));
+        var target2 = Math.min(0.999, Math.max(0.05, numv("in-power", 0.8)));
+        res.target = target2;
+        var esSolved = solveEs(nP2, alpha, tl, ex, target2);
+        res.es = isFinite(esSolved) ? esSolved : es;
+        res.unit = sc === "anova" ? Math.max(2, Math.round(nP2 / ex.k)) : nP2;
+        res.unitTarget = res.unit;
+        res.power = isFinite(esSolved) ? target2 : 0;
+        renderEs(res, esSolved, nP2, nP2);
+      }
+      lastRes = res;
+      draw(res);
+    }
+
+    function applyDefaults() { var d = DEF[sc]; if (d.es !== undefined) el("in-es").value = d.es; el("in-n").value = d.n; }
+
+    function segWire(id, attr, fn) {
+      var s = el(id);
+      s.addEventListener("click", function (e) {
+        var b = e.target.closest("button"); if (!b) return;
+        Array.prototype.forEach.call(s.querySelectorAll("button"), function (x) { x.classList.toggle("active", x === b); });
+        fn(b.getAttribute(attr));
+      });
+    }
+    segWire("seg-sc", "data-s", function (v) { sc = v; applyDefaults(); compute(); });
+    segWire("seg-solve", "data-q", function (v) { solve = v; compute(); });
+    segWire("seg-tails", "data-t", function (v) { tails = +v; compute(); });
+    ["in-alpha", "in-es", "in-p1", "in-p2", "in-k", "in-df", "in-n", "in-power"].forEach(function (id) { el(id).addEventListener("input", compute); });
+
+    window.addEventListener("resize", function () { if (lastRes) draw(lastRes); });
+    if (window.ResizeObserver) new ResizeObserver(function () { if (lastRes) draw(lastRes); }).observe(canvas);
+    V.onTheme(function () { if (lastRes) draw(lastRes); });
+
+    applyDefaults();
+    compute();
+  })();
+  </script>
+</body>
+</html>

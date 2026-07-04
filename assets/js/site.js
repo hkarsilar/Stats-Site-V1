@@ -113,6 +113,7 @@
     "formulas": "Print it, laminate it, take it into the bath. The capybara approves.",
     "distributions": "Distributions are just personality types for data. Come meet the whole squad.",
     "effect-sizes": "Statistically significant ≠ big. The capybara is significant AND big.",
+    "power": "How many capybaras do you need to prove capybaras are chill? Fewer than you'd think, if the effect is big.",
     "descriptives": "Paste your data. The capybara will not judge it. The capybara judges nothing.",
     "quiz": "Test anxiety? Unknown to capybaras. Breathe in, breathe out, click an answer.",
     "glossary": "Big words, small stress. The capybara defines, you vibe."
@@ -174,6 +175,7 @@
     { url: "tables.html",        key: "tables",        group: "calc",     emoji: "🎛️", title: "Tables & calculators",     desc: "Exact z, t, χ² and F — no appendix flipping" },
     { url: "distributions.html", key: "distributions", group: "practice", emoji: "🎢", title: "Distribution playground",  desc: "Poke 9 distributions and watch them wiggle" },
     { url: "effect-sizes.html",  key: "effect-sizes",  group: "calc",     emoji: "📏", title: "Effect-size converter",    desc: "d ↔ r ↔ η² — plus what they actually mean" },
+    { url: "power.html",         key: "power",         group: "calc",     emoji: "⚡", title: "Power & sample size",       desc: "How many participants? Solve n, power, or effect" },
     { url: "descriptives.html",  key: "descriptives",  group: "calc",     emoji: "🧮", title: "Descriptives calculator",  desc: "Paste data, get stats, a histogram & APA text" },
     { url: "formulas.html",      key: "formulas",      group: "guide",    emoji: "🖨️", title: "Formula sheet",            desc: "Every formula from the course, printable" },
     { url: "glossary.html",      key: "glossary",      group: "guide",    emoji: "📖", title: "Glossary",                 desc: "Every stats term, defined without the jargon" },
@@ -717,6 +719,7 @@
     { title: "Statistics Formula Sheet", url: "formulas.html", tag: "Reference", kw: "formula cheat sheet equations print reference" },
     { title: "Distribution Playground", url: "distributions.html", tag: "Tool", kw: "normal binomial poisson beta exponential uniform pdf explore distribution" },
     { title: "Effect-Size Converter", url: "effect-sizes.html", tag: "Tool", kw: "cohen d r eta squared odds ratio convert effect size overlap benchmark" },
+    { title: "Power & Sample-Size Calculator", url: "power.html", tag: "Tool", kw: "power sample size calculator n gpower a priori effect noncentral t anova correlation chi-square proportions minimum detectable how many participants" },
     { title: "Descriptives Calculator", url: "descriptives.html", tag: "Tool", kw: "mean sd median iqr descriptive statistics calculator paste data histogram boxplot outliers apa" },
     { title: "Course Quiz", url: "quiz.html", tag: "Practice", kw: "test yourself questions practice" },
     { title: "Statistics Glossary", url: "glossary.html", tag: "Reference", kw: "terms definitions dictionary" }

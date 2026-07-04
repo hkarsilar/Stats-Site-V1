@@ -141,5 +141,82 @@ window.VIZ = (function () {
   function chiSqInv(alpha, k) { return invUpper(function (x) { return chiSqUpper(x, k); }, alpha); }
   function fInv(alpha, d1, d2) { return invUpper(function (x) { return fUpper(x, d1, d2); }, alpha); }
 
-  return { css: css, fit: fit, randn: randn, gauss: gauss, erf: erf, normCdf: normCdf, normPdf: normPdf, normInv: normInv, mean: mean, sd: sd, onTheme: onTheme, gammaln: gammaln, gammp: gammp, betai: betai, fUpper: fUpper, chiSqUpper: chiSqUpper, tUpper: tUpper, tPdf: tPdf, chiSqPdf: chiSqPdf, fPdf: fPdf, tInv: tInv, chiSqInv: chiSqInv, fInv: fInv };
+  /* ---- noncentral distributions (power & sample-size analysis) ----
+     Exact CDFs of the noncentral t, chi-square, and F, so power.html (and
+     any lesson) can compute power without normal-approximation shortcuts.
+       nctCdf(t, df, ncp)      P(T ≤ t),   T ~ noncentral t(df, ncp)
+       ncx2Cdf(x, df, ncp)     P(X ≤ x),   X ~ noncentral χ²(df, ncp)
+       ncfCdf(f, d1, d2, ncp)  P(F ≤ f),   F ~ noncentral F(d1, d2, ncp)
+     ncp is the noncentrality parameter (λ for χ²/F, δ for t). */
+
+  // Σ_j  Poisson(j; lam) · term(j), summed OUTWARD from the Poisson mode so it
+  // stays accurate for large lam. Every term(j) here is a probability in [0,1],
+  // so truncating tiny-weight tails bounds the error by the omitted mass.
+  function poissonMix(lam, term) {
+    if (!(lam > 0)) return term(0);
+    var mode = Math.floor(lam), sum = 0, TINY = 1e-15, j, w;
+    w = Math.exp(-lam + mode * Math.log(lam) - gammaln(mode + 1));   // Pois(mode)
+    for (j = mode; j < mode + 1e6; j++) {                 // upward from the mode
+      sum += w * term(j);
+      if (j > mode && w < TINY) break;
+      w *= lam / (j + 1);                                 // Pois(j) → Pois(j+1)
+    }
+    if (mode > 0) {                                       // downward from mode-1
+      w = Math.exp(-lam + (mode - 1) * Math.log(lam) - gammaln(mode));
+      for (j = mode - 1; j >= 0; j--) {
+        sum += w * term(j);
+        if (w < TINY) break;
+        w *= j / lam;                                     // Pois(j) → Pois(j-1)
+      }
+    }
+    return sum;
+  }
+  // noncentral χ² CDF = Poisson-weighted mixture of central χ² CDFs (df + 2j).
+  function ncx2Cdf(x, k, ncp) {
+    if (x <= 0) return 0;
+    if (!(ncp > 0)) return gammp(k / 2, x / 2);
+    return poissonMix(ncp / 2, function (j) { return gammp((k + 2 * j) / 2, x / 2); });
+  }
+  // noncentral F CDF = Poisson-weighted mixture of central-F (incomplete-beta) CDFs.
+  function ncfCdf(f, d1, d2, ncp) {
+    if (f <= 0) return 0;
+    var x = d1 * f / (d1 * f + d2);
+    if (!(ncp > 0)) return betai(d1 / 2, d2 / 2, x);
+    return poissonMix(ncp / 2, function (j) { return betai(d1 / 2 + j, d2 / 2, x); });
+  }
+  // noncentral t CDF — Lenth (1989) Algorithm AS 243: a twin incomplete-beta
+  // series in the odd/even powers, plus a Φ(-δ) point mass. Accurate to ~1e-12.
+  function nctCdf(t, df, del) {
+    if (!isFinite(t)) return t > 0 ? 1 : 0;
+    var negdel = false, tt = t, d = del;
+    if (t < 0) { negdel = true; tt = -t; d = -del; }      // work with t ≥ 0, flip at end
+    var x = tt * tt / (tt * tt + df), tnc = 0;
+    if (x > 0) {
+      var lambda = d * d;
+      var p = 0.5 * Math.exp(-0.5 * lambda);
+      var q = Math.sqrt(2 / Math.PI) * p * d;
+      var s = 0.5 - p;
+      var a = 0.5, b = 0.5 * df;
+      var rxb = Math.pow(1 - x, b);
+      var albeta = gammaln(a) + gammaln(b) - gammaln(a + b);
+      var xodd = betai(a, b, x);
+      var godd = 2 * rxb * Math.exp(a * Math.log(x) - albeta);
+      var xeven = 1 - rxb, geven = b * x * rxb;
+      tnc = p * xodd + q * xeven;
+      for (var it = 1; it <= 1000; it++) {
+        a += 1;
+        xodd -= godd; xeven -= geven;
+        godd *= x * (a + b - 1) / a;
+        geven *= x * (a + b - 0.5) / (a + 0.5);
+        p *= lambda / (2 * it); q *= lambda / (2 * it + 1);
+        s -= p;
+        tnc += p * xodd + q * xeven;
+        if (Math.abs(2 * s * (xodd - godd)) < 1e-12) break;
+      }
+    }
+    tnc = Math.min(Math.max(tnc + normCdf(-d), 0), 1);    // + P(Z ≤ -δ)
+    return negdel ? 1 - tnc : tnc;
+  }
+
+  return { css: css, fit: fit, randn: randn, gauss: gauss, erf: erf, normCdf: normCdf, normPdf: normPdf, normInv: normInv, mean: mean, sd: sd, onTheme: onTheme, gammaln: gammaln, gammp: gammp, betai: betai, fUpper: fUpper, chiSqUpper: chiSqUpper, tUpper: tUpper, tPdf: tPdf, chiSqPdf: chiSqPdf, fPdf: fPdf, tInv: tInv, chiSqInv: chiSqInv, fInv: fInv, nctCdf: nctCdf, ncx2Cdf: ncx2Cdf, ncfCdf: ncfCdf };
 })();
