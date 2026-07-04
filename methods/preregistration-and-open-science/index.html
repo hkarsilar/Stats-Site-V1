@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Preregistration &amp; Open Science — StatsCapybara</title>
+  <meta name="description" content="Preregistration, registered reports, and confirmatory vs exploratory analysis — build a watertight preregistration and see why labeling your analyses matters." />
+  <link rel="canonical" href="https://statscapybara.com/methods/preregistration-and-open-science/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Preregistration &amp; Open Science — StatsCapybara" />
+  <meta property="og:description" content="Preregistration, registered reports, and confirmatory vs exploratory analysis — build a watertight preregistration and see why labeling your analyses matters." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/methods/preregistration-and-open-science/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Preregistration &amp; Open Science — StatsCapybara" />
+  <meta name="twitter:description" content="Preregistration, registered reports, and confirmatory vs exploratory analysis — build a watertight preregistration and see why labeling your analyses matters." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Preregistration & Open Science", "description": "Preregistration, registered reports, and confirmatory vs exploratory analysis — build a watertight preregistration and see why labeling your analyses matters.", "url": "https://statscapybara.com/methods/preregistration-and-open-science/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Methods: Research Design", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Preregistration & Open Science", "item": "https://statscapybara.com/methods/preregistration-and-open-science/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the difference between preregistration and a registered report?", "acceptedAnswer": {"@type": "Answer", "text": "Both commit you to a plan before the data exist, but they differ in when that plan is reviewed. A preregistration is a timestamped analysis plan you deposit yourself (e.g. on the OSF or AsPredicted) before collecting data; you still submit the finished paper for peer review as normal. A registered report goes further: a journal peer-reviews your plan first and, if it's sound, grants in-principle acceptance to publish the results whatever they turn out to be. That last step is what directly defuses publication bias, since acceptance no longer hinges on a significant result."}}, {"@type": "Question", "name": "Are exploratory analyses bad science?", "acceptedAnswer": {"@type": "Answer", "text": "Not at all — exploration is how most discoveries begin. What's harmful is disguising exploration as confirmation: presenting a pattern you found by rummaging through the data as though you'd predicted it (HARKing). The honest solution is simply to label each analysis for what it is. Confirmatory analyses test predictions fixed in advance and carry valid p-values; exploratory analyses generate hypotheses and should be reported as such, to be confirmed in a future study. Preregistration draws that line for you."}}, {"@type": "Question", "name": "Does preregistration mean I can never change my analysis?", "acceptedAnswer": {"@type": "Answer", "text": "No — a preregistration is a plan, not a prison. When reality intervenes (a measure fails, an assumption is violated, a lab closes) you're allowed to deviate; you just have to disclose the change, explain why, and flag the affected analysis as no longer strictly confirmatory. The point isn't blind obedience to a document — it's an honest, checkable record of what you predicted versus what you decided after seeing the data, so readers can weight each appropriately."}}]}
+  </script>
+</head>
+<body data-course="methods" data-section="preregistration-and-open-science">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 1.12</span>
+        <h1>Preregistration &amp; Open Science</h1>
+
+        <p class="lede">The <a href="../../methods/the-replication-crisis/">replication crisis</a> handed researchers a diagnosis; open-science practices are the treatment. The core move is disarmingly simple: write down exactly what you will do — your hypothesis, your sample size, your analysis, your decision rule — and timestamp it <em>before</em> you see the data. That single act converts a study from a flexible hunt into a genuine test, because you can no longer (even unconsciously) let the data pick the analysis that flatters it.</p>
+
+        <h2>Confirmatory vs exploratory — both are legitimate</h2>
+        <p>The crisis wasn't caused by exploring data; it was caused by <em>disguising exploration as confirmation</em>. The two modes are both valuable, and the whole game is labelling them honestly:</p>
+        <ul>
+          <li><strong>Confirmatory</strong> analysis tests a prediction fixed in advance. It's the only mode in which a <em>p</em>-value means what the textbook says, because the analysis wasn't chosen after seeing the result.</li>
+          <li><strong>Exploratory</strong> analysis roams the data looking for patterns worth a future study. It's how discoveries begin — but its <em>p</em>-values are descriptive, not decisive, and every finding is a hypothesis awaiting a confirmatory test.</li>
+        </ul>
+        <p>Preregistration doesn't ban exploration. It just draws a bright line between "here's what I predicted and tested" and "here's an intriguing pattern I stumbled on," so readers can weight each appropriately.</p>
+
+        <h2>Preregistration vs registered reports</h2>
+        <p>Two related tools, differing in when the commitment is reviewed:</p>
+        <ul>
+          <li><strong>Preregistration</strong> — you deposit a timestamped analysis plan (e.g. on the OSF or AsPredicted) before collecting or looking at data. You still submit the finished paper for review afterward as usual.</li>
+          <li><strong>Registered report</strong> — a journal peer-reviews your <em>plan</em> before the data exist and grants <em>in-principle acceptance</em>: if you carry out the approved design competently, it's published <em>regardless of how the results turn out</em>. This directly neutralises <a href="../../stats-4/meta-analysis/">publication bias</a>, because acceptance no longer depends on getting <em>p</em> &lt; .05.</li>
+        </ul>
+        <p>Around these sit the rest of the open-science toolkit: <strong>open data</strong> and <strong>open materials</strong> so others can rerun and reuse your work, open-access sharing of preprints, and the "badges" some journals award to signal each practice.</p>
+
+        <h2>Build a preregistration</h2>
+        <p>Here's a sleep-and-memory study. For each of the eight decisions a good preregistration must pin down, pick the wording — from vague, to partial, to airtight. Watch the specificity meter: a preregistration only does its job when a stranger (or a suspicious future you) couldn't wriggle out of it.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="pr">
+          <p class="viz-title">📝 Build-a-Preregistration</p>
+          <p class="viz-sub">Eight decisions, three levels of precision each. Aim for a plan with no room left to improvise after the data arrive. (Nothing leaves your browser.)</p>
+
+          <div class="pr-meter">
+            <div class="pr-meter-bar"><span id="pr-fill"></span></div>
+            <div class="pr-meter-label" id="pr-label">Specificity: 0 / 16 — start choosing below</div>
+          </div>
+
+          <div id="pr-host"></div>
+
+          <div class="pr-verdict" id="pr-verdict" hidden></div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <div class="callout key">
+          <p><strong>Preregistration is a plan, not a prison.</strong> Reality intervenes — a lab closes, a measure misbehaves, an assumption fails. You're allowed to deviate; you just have to <em>say so</em>, explaining what changed and why, and flag the affected analysis as no longer strictly confirmatory. The commitment buys honesty about which results were predicted, not blind obedience to a plan that no longer fits the world.</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> preregistration is the cheapest credibility upgrade in all of research — a document you write anyway, timestamped a few weeks earlier. It protects your reader, your field, and mostly <em>you</em>: it turns "I'm sure I would've predicted that" into a checkable record, and lets an honest null result stand as a real contribution instead of a failure to be buried. Design the study, <a href="../../methods/from-question-to-hypothesis/">state the hypothesis</a>, lock the plan — then go collect.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What is the difference between preregistration and a registered report?</summary>
+            <div class="faq-a"><p>Both commit you to a plan before the data exist, but they differ in <em>when</em> that plan is reviewed. A <strong>preregistration</strong> is a timestamped analysis plan you deposit yourself (e.g. on the OSF or AsPredicted) before collecting data; you still submit the finished paper for peer review as normal. A <strong>registered report</strong> goes further: a journal peer-reviews your plan <em>first</em> and, if it's sound, grants in-principle acceptance to publish the results whatever they turn out to be. That last step is what directly defuses publication bias, since acceptance no longer hinges on a significant result.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Are exploratory analyses bad science?</summary>
+            <div class="faq-a"><p>Not at all — exploration is how most discoveries begin. What's harmful is <em>disguising</em> exploration as confirmation: presenting a pattern you found by rummaging through the data as though you'd predicted it (HARKing). The honest solution is simply to label each analysis for what it is. Confirmatory analyses test predictions fixed in advance and carry valid <em>p</em>-values; exploratory analyses generate hypotheses and should be reported as such, to be confirmed in a future study. Preregistration draws that line for you.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Does preregistration mean I can never change my analysis?</summary>
+            <div class="faq-a"><p>No — a preregistration is a plan, not a prison. When reality intervenes (a measure fails, an assumption is violated, a lab closes) you're allowed to deviate; you just have to <em>disclose</em> the change, explain why, and flag the affected analysis as no longer strictly confirmatory. The point isn't blind obedience to a document — it's an honest, checkable record of what you predicted versus what you decided after seeing the data, so readers can weight each appropriately.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <style>
+    /* build-a-prereg widget (scoped) */
+    #pr .pr-meter { margin: 0 0 1.2rem; }
+    #pr .pr-meter-bar { height: 12px; border-radius: 7px; background: var(--surface-2); overflow: hidden; border: 1px solid var(--border); }
+    #pr .pr-meter-bar span { display: block; height: 100%; width: 0; border-radius: 7px; background: linear-gradient(90deg, #ef4444, #f59e0b 55%, #22c55e); transition: width .25s ease; }
+    #pr .pr-meter-label { font-size: .88rem; font-weight: 700; margin-top: .5rem; color: var(--text); }
+    #pr .pr-field { border: 1px solid var(--border); border-radius: 12px; padding: .9rem 1rem; margin-bottom: .8rem; background: var(--surface); }
+    #pr .pr-field.done { border-color: #22c55e; }
+    #pr .pr-fname { font-weight: 700; font-size: .9rem; margin: 0 0 .6rem; color: var(--text); }
+    #pr .pr-fname .pr-fnum { color: var(--text-muted); margin-right: .4rem; }
+    #pr .pr-opts { display: grid; gap: .45rem; }
+    #pr .pr-opt {
+      cursor: pointer; text-align: left; border: 1px solid var(--border); background: var(--surface-2);
+      color: var(--text); border-radius: 8px; padding: .5rem .7rem; font-size: .85rem; font-family: inherit;
+      transition: .12s; line-height: 1.4;
+    }
+    #pr .pr-opt:hover { border-color: var(--primary); }
+    #pr .pr-opt.sel { border-width: 2px; padding: calc(.5rem - 1px) calc(.7rem - 1px); }
+    #pr .pr-opt.sel.lvl0 { border-color: #ef4444; }
+    #pr .pr-opt.sel.lvl1 { border-color: #f59e0b; }
+    #pr .pr-opt.sel.lvl2 { border-color: #22c55e; }
+    #pr .pr-opt .pr-tag { font-weight: 700; font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; margin-right: .4rem; }
+    #pr .pr-opt.lvl0 .pr-tag { color: #ef4444; }
+    #pr .pr-opt.lvl1 .pr-tag { color: #d97706; }
+    #pr .pr-opt.lvl2 .pr-tag { color: #16a34a; }
+    #pr .pr-note { margin: .55rem 0 0; font-size: .82rem; color: var(--text-muted); min-height: 1em; }
+    #pr .pr-verdict { margin-top: 1.2rem; padding: 1rem; border: 1px solid #22c55e; border-radius: 12px; background: var(--surface); font-size: .92rem; color: var(--text); }
+    #pr .pr-verdict b { color: #16a34a; }
+  </style>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ build-a-prereg (deterministic scoring game) ============ -->
+  <script>
+  (function () {
+    "use strict";
+    // Each field: three options ordered vague(0) -> partial(1) -> airtight(2),
+    // each with a short "why this level" note.
+    var FIELDS = [
+      { name: "Hypothesis", opts: [
+        { t: "“Sleep affects memory.”", n: "No direction, no population, no measure — almost any result could be claimed as a match." },
+        { t: "“More sleep improves memory.”", n: "Directional, but still not pinned to a measurable, testable prediction." },
+        { t: "“Participants given 8 h time-in-bed will recall more words next day than those given 5 h.”", n: "Directional, specific population, concrete outcome — a genuine prediction." }
+      ]},
+      { name: "Sample size & stopping rule", opts: [
+        { t: "“We'll collect as much data as we can.”", n: "Open-ended n invites optional stopping — peeking and quitting at p < .05." },
+        { t: "“Around 60 participants.”", n: "A number, but no justification and no rule against adding more if results disappoint." },
+        { t: "“N = 128 (64/group), fixed by an a-priori power analysis for d = 0.5, 80% power, α = .05; no interim peeking.”", n: "Fixed, justified, and immune to optional stopping." }
+      ]},
+      { name: "Manipulation / groups (IV)", opts: [
+        { t: "“A sleep manipulation.”", n: "Unspecified — leaves the actual conditions open to redefine later." },
+        { t: "“A short-sleep vs long-sleep group.”", n: "Names the groups but not how people land in them or how it's enforced." },
+        { t: "“Random assignment to 8 h vs 5 h time-in-bed, verified by actigraphy.”", n: "Assignment method and manipulation check both specified." }
+      ]},
+      { name: "Primary outcome (DV)", opts: [
+        { t: "“Memory.”", n: "A construct, not a measure — many outcomes could be cherry-picked to fit." },
+        { t: "“A memory test score.”", n: "Closer, but which test, which score, scored how, and when?" },
+        { t: "“Words correctly recalled (0–40) on a free-recall test 24 h after encoding — the single primary outcome.”", n: "One pre-named primary measure kills outcome-switching." }
+      ]},
+      { name: "Exclusion criteria", opts: [
+        { t: "“We'll remove bad data.”", n: "Fully discretionary — the classic route to dropping inconvenient participants." },
+        { t: "“Exclude obvious outliers.”", n: "“Obvious” is decided after seeing the data — still a researcher degree of freedom." },
+        { t: "“Exclude anyone failing >1 of 3 attention checks, or recall RT z > 3.29; rule set before collection.”", n: "A mechanical rule fixed in advance, applied blind to the result." }
+      ]},
+      { name: "Confirmatory analysis", opts: [
+        { t: "“We'll run appropriate statistics.”", n: "Leaves the entire garden of forking paths wide open." },
+        { t: "“A t-test.”", n: "Which t-test? One- or two-tailed? On what, with what α? Still under-specified." },
+        { t: "“Two-tailed Welch independent-samples t-test on recall, α = .05, reporting Cohen's d with 95% CI.”", n: "Exactly one analysis is now the confirmatory test." }
+      ]},
+      { name: "Decision rule (what counts as support)", opts: [
+        { t: "“See whether it works.”", n: "No stated criterion means any outcome can be narrated as success." },
+        { t: "“If p < .05.”", n: "A threshold, but no direction — a significant effect the wrong way would falsely 'support' it." },
+        { t: "“Supported iff the 8 h mean exceeds the 5 h mean AND p < .05 two-tailed on the primary outcome.”", n: "Direction + threshold + named outcome: a rule you can't wriggle out of." }
+      ]},
+      { name: "Exploratory analyses (labelled)", opts: [
+        { t: "“We might look at other stuff too.”", n: "Vague, and worse, undifferentiated from the confirmatory test." },
+        { t: "“Explore other variables.”", n: "Acknowledges exploration but doesn't commit to flagging it as such in the write-up." },
+        { t: "“Any analyses beyond the above (sex differences, a recognition measure) are exploratory and reported explicitly as such.”", n: "Exploration is welcomed — and clearly fenced off from the confirmatory claim." }
+      ]}
+    ];
+
+    var host = document.getElementById("pr-host");
+    var fill = document.getElementById("pr-fill");
+    var label = document.getElementById("pr-label");
+    var verdict = document.getElementById("pr-verdict");
+    var chosen = new Array(FIELDS.length).fill(null);   // selected level per field
+    var MAX = FIELDS.length * 2;
+
+    FIELDS.forEach(function (f, fi) {
+      var card = document.createElement("div"); card.className = "pr-field";
+      var h = document.createElement("p"); h.className = "pr-fname";
+      h.innerHTML = '<span class="pr-fnum">' + (fi + 1) + '.</span>' + escapeHtml(f.name);
+      card.appendChild(h);
+
+      var opts = document.createElement("div"); opts.className = "pr-opts";
+      var tags = ["Vague", "Partial", "Airtight"];
+      f.opts.forEach(function (o, oi) {
+        var b = document.createElement("button");
+        b.type = "button"; b.className = "pr-opt lvl" + oi;
+        b.innerHTML = '<span class="pr-tag">' + tags[oi] + '</span>' + escapeHtml(o.t);
+        b.addEventListener("click", function () { pick(fi, oi, card, opts, note); });
+        opts.appendChild(b);
+      });
+      card.appendChild(opts);
+
+      var note = document.createElement("p"); note.className = "pr-note";
+      card.appendChild(note);
+      host.appendChild(card);
+    });
+
+    function pick(fi, oi, card, opts, note) {
+      chosen[fi] = oi;
+      Array.prototype.forEach.call(opts.querySelectorAll("button"), function (b, i) {
+        b.classList.toggle("sel", i === oi);
+      });
+      note.textContent = FIELDS[fi].opts[oi].n;
+      card.classList.toggle("done", oi === 2);
+      update();
+    }
+
+    function update() {
+      var score = chosen.reduce(function (s, v) { return s + (v == null ? 0 : v); }, 0);
+      var answered = chosen.filter(function (v) { return v != null; }).length;
+      fill.style.width = (100 * score / MAX) + "%";
+      label.textContent = "Specificity: " + score + " / " + MAX +
+        (answered < FIELDS.length ? "  ·  " + (FIELDS.length - answered) + " decision(s) left" : "");
+
+      if (answered < FIELDS.length) { verdict.hidden = true; return; }
+      verdict.hidden = false;
+      if (score === MAX) {
+        verdict.innerHTML = "<b>🔒 Locked and unambiguous.</b> Every decision is airtight — a stranger could run your exact analysis and reach your exact numbers, and there's nowhere left to improvise after the data land. <em>That</em> is a preregistration.";
+      } else if (score >= 11) {
+        verdict.innerHTML = "Solid, but a few decisions still leave you wiggle room. Tighten the amber and red choices — each soft spot is a fork a motivated analyst (including future you) could exploit.";
+      } else {
+        verdict.innerHTML = "This plan is too loose to constrain anything: after seeing the data you could still justify several different analyses and outcomes. Push every decision toward the airtight version.";
+      }
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+      });
+    }
+  })();
+  </script>
+</body>
+</html>

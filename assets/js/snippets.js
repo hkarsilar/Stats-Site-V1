@@ -226,5 +226,9 @@ window.SNIPPETS = {
   "survey-and-questionnaire-design": {
     r: '# reverse-code items q3 & q5 on a 1-5 scale, then average into a composite\nlibrary(dplyr)\nrev5 <- function(x) 6 - x            # 1<->5, 2<->4, 3 unchanged\ndf <- df %>% mutate(q3 = rev5(q3), q5 = rev5(q5),\n                    composite = rowMeans(across(q1:q6)))',
     py: 'items = ["q1", "q2", "q3", "q4", "q5", "q6"]\nfor r in ["q3", "q5"]:\n    df[r] = 6 - df[r]                # reverse-code on a 1-5 scale\ndf["composite"] = df[items].mean(axis=1)'
+  },
+  "the-replication-crisis": {
+    r: '# how forking paths inflate the false-positive rate on data with NO real effect\nset.seed(1)\nany_sig <- function() {\n  x <- rnorm(50); g <- rep(0:1, 25)                 # two groups, same population\n  keep <- abs(scale(x)) < 2                          # a defensible "outlier" rule\n  p1 <- t.test(x ~ g)$p.value                        # path 1: analyse everyone\n  p2 <- t.test(x[keep] ~ g[keep])$p.value            # path 2: drop outliers\n  min(p1, p2) < .05                                   # "significant" if EITHER works\n}\nmean(replicate(4000, any_sig()))   # ~.07 already -- above .05, and that is just two forks',
+    py: 'import numpy as np\nfrom scipy import stats\nrng = np.random.default_rng(1)\ndef any_sig():\n    x = rng.normal(size=50); g = np.arange(50) % 2         # two groups, same population\n    keep = np.abs((x - x.mean()) / x.std()) < 2            # a defensible "outlier" rule\n    p1 = stats.ttest_ind(x[g == 0], x[g == 1]).pvalue      # path 1: everyone\n    p2 = stats.ttest_ind(x[(g == 0) & keep], x[(g == 1) & keep]).pvalue  # path 2: trimmed\n    return min(p1, p2) < .05                               # "significant" if EITHER works\nprint(np.mean([any_sig() for _ in range(4000)]))   # already above .05 with two forks'
   }
 };

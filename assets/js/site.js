@@ -115,6 +115,9 @@
     "observational-designs": "The capybara didn't assign anyone to the warm spring. It just watched who wandered in — and noted who was never seen leaving.",
     "sampling-methods": "Poll only the capybaras already in the spa and 100% love warm water. Shocking. Also: sample the whole pond next time.",
     "survey-and-questionnaire-design": "\"Don't you agree this lovely water is wonderful?\" The capybara agrees. The capybara would agree with anything phrased like that.",
+    "bias-and-blinding": "The capybara double-blinds its taste tests — even it doesn't know which pond the water came from. No expectations, no bias, just vibes.",
+    "the-replication-crisis": "The capybara found a 'significant' result on its fourth analysis. Then remembered the first three. Next time: preregister, then snack.",
+    "preregistration-and-open-science": "The capybara wrote its whole plan down before the snack arrived — so it couldn't pretend afterwards that it always wanted the small one.",
     /* Root pages */
     "home": "No rush — capybaras never cram.",
     "toolbox": "A capybara's toolbox: warm water, good snacks, zero deadlines. Yours has calculators too.",

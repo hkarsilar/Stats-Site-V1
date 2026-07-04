@@ -512,6 +512,33 @@ FAQS_METHODS = {
   "Social desirability bias is the tendency to answer sensitive questions in a way that makes one look good rather than truthfully — under-reporting cheating or drinking, over-reporting voting or exercise. It contaminates exactly the topics researchers most want honest data on. You reduce it by guaranteeing and clearly <em>stating</em> anonymity, never attaching identifiers to sensitive items, softening the framing so the undesirable answer feels acceptable, and using indirect techniques (like list experiments) for the most delicate questions."),
 ],
 
+"bias-and-blinding": [
+ ("What is the difference between single-blind and double-blind?",
+  "In a <strong>single-blind</strong> study the <em>participants</em> don't know which condition they're in, which blocks demand characteristics and the placebo effect. In a <strong>double-blind</strong> study neither the participants <em>nor</em> the researchers who interact with and measure them know the assignment, which additionally blocks experimenter-expectancy (observer) bias. Double-blinding is stronger because a researcher who knows the groups can unconsciously nudge behaviour or rate outcomes more favourably — the reason a 'double-blind randomised controlled trial' is treated as the gold standard."),
+ ("What are demand characteristics?",
+  "Demand characteristics are cues in a study that let participants guess its purpose, so they respond to their <em>guess</em> about what's wanted rather than behaving naturally — trying extra hard in the condition they think should win, or deliberately doing the opposite. They're a threat to validity because they can manufacture (or erase) an effect that has nothing to do with your manipulation. The defences are keeping participants blind to the condition and the true aim, using a plausible cover story, and unobtrusive or objective measures."),
+ ("Does blinding fix every kind of bias?",
+  "No. Blinding is specifically a defence against the biases driven by <em>knowing the assignment</em> — the placebo effect, demand characteristics, and experimenter-expectancy. It does nothing about <strong>selection bias</strong> (who got into the sample), <strong>attrition bias</strong> (who dropped out non-randomly), or <strong>response biases</strong> like social desirability. Those are design problems that need better sampling, retention and intention-to-treat analysis, genuine anonymity, and so on. Match each bias to its own safeguard rather than hoping blinding covers them all."),
+],
+
+"the-replication-crisis": [
+ ("Is p-hacking always intentional fraud?",
+  "Usually not. Most p-hacking is <em>motivated flexibility</em> rather than deliberate deceit: an honest researcher who wants a project to work makes a string of individually defensible choices — dropping an 'outlier', adding a covariate, checking a subgroup — that happen to nudge the result across <em>p</em> &lt; .05. This is the 'garden of forking paths': the analysis you'd have run depended on the data, so the true false-positive rate is far above 5%. It's a systemic problem to design against with preregistration, not a character flaw to accuse people of."),
+ ("What is the garden of forking paths?",
+  "Coined by Gelman and Loken, it's the idea that a single dataset offers many defensible analyses, and if the one you choose depends on what you see in the data, your <em>p</em>-values are invalid even if you only ran <em>one</em> test. You never consciously fished — but had the data looked different, you'd have made different, equally reasonable choices, so the effective number of tests is large. Only fixing the analysis in advance (or explicitly treating results as exploratory) closes the garden."),
+ ("How many psychology studies actually replicate?",
+  "In the landmark 2015 Reproducibility Project, the Open Science Collaboration repeated 100 published psychology studies and found that only about 36–39% produced a significant result in the same direction, with replication effect sizes roughly half the originals'. Rates vary by field and by how 'replication' is scored, and later large-scale projects found similar or somewhat better figures. The precise number matters less than the lesson: a sizeable fraction of published findings don't hold up, and better methods — not more accusations — are the fix."),
+],
+
+"preregistration-and-open-science": [
+ ("What is the difference between preregistration and a registered report?",
+  "Both commit you to a plan before the data exist, but they differ in <em>when</em> that plan is reviewed. A <strong>preregistration</strong> is a timestamped analysis plan you deposit yourself (e.g. on the OSF or AsPredicted) before collecting data; you still submit the finished paper for peer review as normal. A <strong>registered report</strong> goes further: a journal peer-reviews your plan <em>first</em> and, if it's sound, grants in-principle acceptance to publish the results whatever they turn out to be. That last step is what directly defuses publication bias, since acceptance no longer hinges on a significant result."),
+ ("Are exploratory analyses bad science?",
+  "Not at all — exploration is how most discoveries begin. What's harmful is <em>disguising</em> exploration as confirmation: presenting a pattern you found by rummaging through the data as though you'd predicted it (HARKing). The honest solution is simply to label each analysis for what it is. Confirmatory analyses test predictions fixed in advance and carry valid <em>p</em>-values; exploratory analyses generate hypotheses and should be reported as such, to be confirmed in a future study. Preregistration draws that line for you."),
+ ("Does preregistration mean I can never change my analysis?",
+  "No — a preregistration is a plan, not a prison. When reality intervenes (a measure fails, an assumption is violated, a lab closes) you're allowed to deviate; you just have to <em>disclose</em> the change, explain why, and flag the affected analysis as no longer strictly confirmatory. The point isn't blind obedience to a document — it's an honest, checkable record of what you predicted versus what you decided after seeing the data, so readers can weight each appropriately."),
+],
+
 }
 
 FAQS = {**FAQS_12, **FAQS_34, **FAQS_METHODS}

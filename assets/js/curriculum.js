@@ -116,7 +116,10 @@ window.CURRICULUM = [
       { n: "1.6",  slug: "quasi-experiments",               title: "Quasi-Experiments & Natural Experiments", ready: true },
       { n: "1.7",  slug: "observational-designs",           title: "Observational Designs", ready: true },
       { n: "1.8",  slug: "sampling-methods",                title: "Sampling Methods", ready: true },
-      { n: "1.9",  slug: "survey-and-questionnaire-design", title: "Designing Surveys & Questionnaires", ready: true }
+      { n: "1.9",  slug: "survey-and-questionnaire-design", title: "Designing Surveys & Questionnaires", ready: true },
+      { n: "1.10", slug: "bias-and-blinding",                title: "Bias, Blinding & Demand Characteristics", ready: true },
+      { n: "1.11", slug: "the-replication-crisis",           title: "The Replication Crisis", ready: true },
+      { n: "1.12", slug: "preregistration-and-open-science", title: "Preregistration & Open Science", ready: true }
     ]
   }
 ];

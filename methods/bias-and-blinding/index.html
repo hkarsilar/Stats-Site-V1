@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bias, Blinding &amp; Demand Characteristics — StatsCapybara</title>
+  <meta name="description" content="A field guide to research bias — selection, attrition, experimenter-expectancy, demand characteristics, placebo — and which ones blinding actually stops." />
+  <link rel="canonical" href="https://statscapybara.com/methods/bias-and-blinding/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Bias, Blinding &amp; Demand Characteristics — StatsCapybara" />
+  <meta property="og:description" content="A field guide to research bias — selection, attrition, experimenter-expectancy, demand characteristics, placebo — and which ones blinding actually stops." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/methods/bias-and-blinding/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Bias, Blinding &amp; Demand Characteristics — StatsCapybara" />
+  <meta name="twitter:description" content="A field guide to research bias — selection, attrition, experimenter-expectancy, demand characteristics, placebo — and which ones blinding actually stops." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Bias, Blinding & Demand Characteristics", "description": "A field guide to research bias — selection, attrition, experimenter-expectancy, demand characteristics, placebo — and which ones blinding actually stops.", "url": "https://statscapybara.com/methods/bias-and-blinding/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Methods: Research Design", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Bias, Blinding & Demand Characteristics", "item": "https://statscapybara.com/methods/bias-and-blinding/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the difference between single-blind and double-blind?", "acceptedAnswer": {"@type": "Answer", "text": "In a single-blind study the participants don't know which condition they're in, which blocks demand characteristics and the placebo effect. In a double-blind study neither the participants nor the researchers who interact with and measure them know the assignment, which additionally blocks experimenter-expectancy (observer) bias. Double-blinding is stronger because a researcher who knows the groups can unconsciously nudge behaviour or rate outcomes more favourably — the reason a 'double-blind randomised controlled trial' is treated as the gold standard."}}, {"@type": "Question", "name": "What are demand characteristics?", "acceptedAnswer": {"@type": "Answer", "text": "Demand characteristics are cues in a study that let participants guess its purpose, so they respond to their guess about what's wanted rather than behaving naturally — trying extra hard in the condition they think should win, or deliberately doing the opposite. They're a threat to validity because they can manufacture (or erase) an effect that has nothing to do with your manipulation. The defences are keeping participants blind to the condition and the true aim, using a plausible cover story, and unobtrusive or objective measures."}}, {"@type": "Question", "name": "Does blinding fix every kind of bias?", "acceptedAnswer": {"@type": "Answer", "text": "No. Blinding is specifically a defence against the biases driven by knowing the assignment — the placebo effect, demand characteristics, and experimenter-expectancy. It does nothing about selection bias (who got into the sample), attrition bias (who dropped out non-randomly), or response biases like social desirability. Those are design problems that need better sampling, retention and intention-to-treat analysis, genuine anonymity, and so on. Match each bias to its own safeguard rather than hoping blinding covers them all."}}]}
+  </script>
+</head>
+<body data-course="methods" data-section="bias-and-blinding">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 1.10</span>
+        <h1>Bias, Blinding &amp; Demand Characteristics</h1>
+
+        <p class="lede">A study can be beautifully designed and still lie to you, because bias sneaks in through the people involved — who ends up in the sample, who drops out, what participants guess you want, and what the researcher hopes to see. Bias is not random noise that averages away with a bigger sample; it's a systematic tilt that a thousand extra participants only make more precise. This lesson is a field guide to the usual suspects, and to blinding — the single most powerful defence against a whole family of them.</p>
+
+        <h2>The bias catalogue</h2>
+        <p>Six recurring characters cause most of the trouble. Learn to name them and you're halfway to designing them out:</p>
+        <ul>
+          <li><strong>Selection bias</strong> — the people who end up in your study differ systematically from the population you meant to study. Recruiting gym-goers to study exercise gives you an already-fit sample.</li>
+          <li><strong>Attrition bias</strong> — people leave the study non-randomly, so the survivors are a skewed remnant. If discouraged participants quit one arm, the two groups are no longer comparable.</li>
+          <li><strong>Response bias</strong> — participants answer in a distorted way, most famously <strong>social desirability</strong> (answering to look good) on sensitive topics.</li>
+          <li><strong>Experimenter-expectancy (observer) bias</strong> — the researcher's hopes leak into measurement and behaviour. The horse <em>Clever Hans</em> "did arithmetic" only because his questioner unconsciously tensed as the correct tap approached.</li>
+          <li><strong>Demand characteristics</strong> — participants guess the hypothesis and (helpfully or defiantly) act on their guess rather than naturally.</li>
+          <li><strong>Placebo &amp; nocebo effects</strong> — merely <em>believing</em> one is treated changes the outcome, for better (placebo) or worse (nocebo), independent of any active ingredient.</li>
+        </ul>
+
+        <h2>Blinding: keeping people in the dark, on purpose</h2>
+        <p><strong>Blinding</strong> (also called masking) hides who is in which condition:</p>
+        <ul>
+          <li><strong>Single-blind</strong> — the <em>participants</em> don't know their condition, which shuts down demand characteristics and the placebo effect.</li>
+          <li><strong>Double-blind</strong> — neither participants <em>nor</em> the researchers who interact with and assess them know the assignment, which additionally shuts down experimenter-expectancy. This is why <em>"double-blind randomised controlled trial"</em> is spoken like a magic phrase: <a href="../../methods/experimental-design-and-randomization/">randomisation</a> balances confounds, and double-blinding stops belief and expectation from contaminating what happens next.</li>
+        </ul>
+        <p>But blinding is not a cure-all. It does nothing about who got into the sample or who dropped out — <strong>selection and attrition bias are design problems, not knowledge problems</strong>, and they need better sampling, retention, and intention-to-treat analysis instead. Knowing which biases blinding kills, and which it can't touch, is the point of the exercise below.</p>
+
+        <h2>Triage the study</h2>
+        <p>Six short study vignettes, each dominated by one bias. Diagnose each — pick the culprit, see the fix — and watch the scoreboard sort them into the ones blinding stops and the ones that need a different safeguard entirely.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="bt">
+          <p class="viz-title">🩺 Bias Triage &amp; Blinding Scoreboard</p>
+          <p class="viz-sub">For each study, click the dominant bias. Get it right to reveal the fix — and to log whether blinding could have stopped it.</p>
+
+          <p class="bt-score" id="bt-score">Cases solved: 0 / 6</p>
+          <div id="bt-host"></div>
+
+          <div class="bt-board" id="bt-board" hidden>
+            <h3>🕶️ Which biases does blinding kill?</h3>
+            <table class="bt-table">
+              <thead><tr><th>Bias</th><th>Blinding stops it?</th><th>The real fix</th></tr></thead>
+              <tbody id="bt-board-body"></tbody>
+            </table>
+            <p class="bt-tally" id="bt-tally"></p>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <div class="callout key">
+          <p><strong>The gold standard, decoded.</strong> A <em>double-blind, placebo-controlled, randomised trial</em> stacks three defences: randomisation neutralises confounds, the placebo control isolates the belief effect, and double-blinding stops participants' and researchers' expectations from bending the result. Each word earns its place — and each guards a different bias.</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> bias is the failure mode that statistics cannot rescue. A confidence interval quantifies random error, but it is computed <em>as if</em> your measurements were unbiased — so a biased design produces a beautifully precise interval around the wrong number. The defences here are cheap and structural, and they must be built in before data collection, never bolted on after. Once the tilt is baked into the numbers, no analysis can straighten it.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What is the difference between single-blind and double-blind?</summary>
+            <div class="faq-a"><p>In a <strong>single-blind</strong> study the <em>participants</em> don't know which condition they're in, which blocks demand characteristics and the placebo effect. In a <strong>double-blind</strong> study neither the participants <em>nor</em> the researchers who interact with and measure them know the assignment, which additionally blocks experimenter-expectancy (observer) bias. Double-blinding is stronger because a researcher who knows the groups can unconsciously nudge behaviour or rate outcomes more favourably — the reason a 'double-blind randomised controlled trial' is treated as the gold standard.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What are demand characteristics?</summary>
+            <div class="faq-a"><p>Demand characteristics are cues in a study that let participants guess its purpose, so they respond to their <em>guess</em> about what's wanted rather than behaving naturally — trying extra hard in the condition they think should win, or deliberately doing the opposite. They're a threat to validity because they can manufacture (or erase) an effect that has nothing to do with your manipulation. The defences are keeping participants blind to the condition and the true aim, using a plausible cover story, and unobtrusive or objective measures.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Does blinding fix every kind of bias?</summary>
+            <div class="faq-a"><p>No. Blinding is specifically a defence against the biases driven by <em>knowing the assignment</em> — the placebo effect, demand characteristics, and experimenter-expectancy. It does nothing about <strong>selection bias</strong> (who got into the sample), <strong>attrition bias</strong> (who dropped out non-randomly), or <strong>response biases</strong> like social desirability. Those are design problems that need better sampling, retention and intention-to-treat analysis, genuine anonymity, and so on. Match each bias to its own safeguard rather than hoping blinding covers them all.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <style>
+    /* bias-triage widget (scoped) */
+    #bt .bt-score { font-weight: 700; font-size: .95rem; margin: 0 0 1rem; color: var(--text); }
+    #bt .bt-item { border: 1px solid var(--border); border-radius: 12px; padding: .9rem 1rem; margin-bottom: .8rem; background: var(--surface); }
+    #bt .bt-item.solved { border-color: #22c55e; }
+    #bt .bt-q { margin: 0 0 .7rem; color: var(--text); }
+    #bt .bt-q .bt-num { font-weight: 700; color: var(--text-muted); margin-right: .4rem; }
+    #bt .bt-opts { display: flex; flex-wrap: wrap; gap: .45rem; }
+    #bt .bt-opt {
+      cursor: pointer; border: 1px solid var(--border); background: var(--surface-2);
+      color: var(--text); border-radius: 8px; padding: .4rem .7rem; font-size: .84rem; font-weight: 600;
+      transition: .15s; font-family: inherit;
+    }
+    #bt .bt-opt:hover:not(:disabled) { border-color: var(--primary); }
+    #bt .bt-opt:disabled { cursor: default; }
+    #bt .bt-opt.correct { background: #22c55e; border-color: #22c55e; color: #fff; }
+    #bt .bt-opt.wrong { background: #ef4444; border-color: #ef4444; color: #fff; opacity: .7; }
+    #bt .bt-fix { margin: .8rem 0 0; padding: .7rem .9rem; border-radius: 10px; background: var(--surface-2);
+      border-left: 3px solid #22c55e; font-size: .88rem; }
+    #bt .bt-fix .bt-fix-good { display: block; margin-top: .4rem; color: var(--text); }
+    #bt .bt-fix .bt-fix-good b { color: #16a34a; }
+    #bt .bt-board { margin-top: 1.2rem; padding: 1rem; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+    #bt .bt-board h3 { margin: 0 0 .7rem; font-size: 1rem; color: var(--text); }
+    #bt .bt-table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+    #bt .bt-table th, #bt .bt-table td { text-align: left; padding: .45rem .5rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    #bt .bt-table th { color: var(--text-muted); font-size: .78rem; text-transform: uppercase; letter-spacing: .03em; }
+    #bt .bt-yes { color: #16a34a; font-weight: 700; }
+    #bt .bt-no { color: #ef4444; font-weight: 700; }
+    #bt .bt-tally { margin: .8rem 0 0; font-weight: 600; font-size: .9rem; color: var(--text); }
+  </style>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ bias-triage (deterministic click game) ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var ITEMS = [
+      {
+        q: "A physiotherapist rates each patient's recovery on a 10-point scale. She knows who received the new therapy and who got standard care — and her ratings run higher for the new-therapy patients.",
+        opts: ["Experimenter-expectancy bias", "Selection bias", "Attrition bias", "Placebo effect"],
+        correct: 0,
+        why: "The assessor's hope for the new therapy leaks into a subjective rating — classic observer / expectancy bias (the Clever Hans mechanism).",
+        bias: "Experimenter-expectancy",
+        blinding: true, fix: "Blind the assessor: have someone who doesn't know each patient's group score the outcomes."
+      },
+      {
+        q: "Volunteers in a memory study overhear that it's \"about whether background music helps.\" In the music condition they suddenly try noticeably harder to remember.",
+        opts: ["Demand characteristics", "Response bias", "Selection bias", "Nocebo effect"],
+        correct: 0,
+        why: "Participants guessed the hypothesis and changed their behaviour to fit it, rather than responding naturally.",
+        bias: "Demand characteristics",
+        blinding: true, fix: "Keep participants blind to the condition and the true aim (a cover story), so they can't act on a guess."
+      },
+      {
+        q: "A 12-week weight-loss trial: in the control arm, discouraged participants quit at three times the rate of the treatment arm, so only the most motivated controls remain at the final weigh-in.",
+        opts: ["Attrition bias", "Demand characteristics", "Experimenter-expectancy bias", "Placebo effect"],
+        correct: 0,
+        why: "Non-random dropout leaves a skewed remnant — the surviving controls are unusually motivated, so the groups are no longer comparable.",
+        bias: "Attrition",
+        blinding: false, fix: "Blinding can't help. Use intention-to-treat analysis, retention incentives, and report the dropout rates by arm."
+      },
+      {
+        q: "In a headache study, patients given an inert sugar pill they believe is a painkiller report real, measurable relief.",
+        opts: ["Placebo effect", "Response bias", "Selection bias", "Attrition bias"],
+        correct: 0,
+        why: "The relief comes from the belief in treatment, not any active ingredient — the placebo effect.",
+        bias: "Placebo effect",
+        blinding: true, fix: "Use a placebo control and double-blinding so the belief effect hits both arms equally and cancels out."
+      },
+      {
+        q: "A study on \"exercise and wellbeing\" recruits its sample by handing out flyers at a fitness centre. The participants are far fitter and healthier than the general public before anything is measured.",
+        opts: ["Selection bias", "Attrition bias", "Demand characteristics", "Experimenter-expectancy bias"],
+        correct: 0,
+        why: "Who got into the sample is systematically unrepresentative — a selection problem baked in at recruitment, before any measurement.",
+        bias: "Selection",
+        blinding: false, fix: "Blinding can't help. Fix the sampling frame — recruit from the target population, ideally with random sampling."
+      },
+      {
+        q: "An anonymous-in-name-only survey asks students how often they cheat, then requests their student ID. Reported cheating rates come back implausibly low.",
+        opts: ["Response (social desirability) bias", "Demand characteristics", "Selection bias", "Placebo effect"],
+        correct: 0,
+        why: "A sensitive admission tied to an identifier pushes people to answer in a flattering way — social desirability, a form of response bias.",
+        bias: "Response (social desirability)",
+        blinding: false, fix: "Blinding is irrelevant here. Guarantee genuine anonymity, drop identifiers, and soften the framing of sensitive items."
+      }
+    ];
+
+    var host = document.getElementById("bt-host");
+    var scoreEl = document.getElementById("bt-score");
+    var board = document.getElementById("bt-board");
+    var boardBody = document.getElementById("bt-board-body");
+    var tallyEl = document.getElementById("bt-tally");
+    var solved = 0, blindKills = 0;
+
+    ITEMS.forEach(function (it, idx) {
+      var card = document.createElement("div");
+      card.className = "bt-item";
+
+      var q = document.createElement("p");
+      q.className = "bt-q";
+      q.innerHTML = '<span class="bt-num">Case ' + (idx + 1) + '.</span>' + escapeHtml(it.q);
+      card.appendChild(q);
+
+      var opts = document.createElement("div");
+      opts.className = "bt-opts";
+      it.opts.forEach(function (label, oi) {
+        var b = document.createElement("button");
+        b.type = "button"; b.className = "bt-opt"; b.textContent = label;
+        b.addEventListener("click", function () { choose(card, opts, it, oi, b); });
+        opts.appendChild(b);
+      });
+      card.appendChild(opts);
+      host.appendChild(card);
+    });
+
+    function choose(card, opts, it, oi, btn) {
+      if (card.classList.contains("solved")) return;
+      if (oi === it.correct) {
+        btn.classList.add("correct");
+        Array.prototype.forEach.call(opts.querySelectorAll("button"), function (x) { x.disabled = true; });
+        card.classList.add("solved");
+        var fix = document.createElement("div");
+        fix.className = "bt-fix";
+        fix.innerHTML = escapeHtml(it.why) +
+          '<span class="bt-fix-good"><b>Fix:</b> ' + escapeHtml(it.fix) + '</span>';
+        card.appendChild(fix);
+        solved++;
+        if (it.blinding) blindKills++;
+        scoreEl.textContent = "Cases solved: " + solved + " / " + ITEMS.length;
+        addRow(it);
+        if (solved === ITEMS.length) finish();
+      } else {
+        btn.classList.add("wrong"); btn.disabled = true;
+      }
+    }
+
+    function addRow(it) {
+      board.hidden = false;
+      var tr = document.createElement("tr");
+      var stops = it.blinding
+        ? '<span class="bt-yes">✔ Yes</span>'
+        : '<span class="bt-no">✘ No</span>';
+      tr.innerHTML =
+        "<td>" + escapeHtml(it.bias) + "</td>" +
+        "<td>" + stops + "</td>" +
+        "<td>" + escapeHtml(it.blinding ? "Blinding (single or double)" : it.fix.replace(/^Blinding[^.]*\.\s*/, "")) + "</td>";
+      boardBody.appendChild(tr);
+    }
+
+    function finish() {
+      tallyEl.textContent = "Blinding stops " + blindKills + " of these " + ITEMS.length +
+        " biases — the belief-and-expectation family. The other " + (ITEMS.length - blindKills) +
+        " are baked into who's in the sample and how they answer, and need design fixes instead.";
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+      });
+    }
+  })();
+  </script>
+</body>
+</html>
