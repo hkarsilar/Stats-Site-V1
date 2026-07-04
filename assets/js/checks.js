@@ -237,5 +237,22 @@ window.CHECKS = {
     { q: "In a meta-analysis, each study's weight mainly reflects…", o: ["its publication year", "its precision (larger, less variable studies count more)", "its authors' reputation", "its p-value"], a: 1, why: "Pooling weights by inverse variance: precise studies pull the summary estimate hardest." },
     { q: "In a forest plot, the diamond at the bottom shows…", o: ["the largest study", "the pooled effect and its confidence interval", "the range of all studies", "publication bias"], a: 1, why: "The diamond's center is the combined estimate; its width is the CI. If it doesn't cross the no-effect line, the pooled effect is significant." },
     { q: "A funnel plot with a missing bottom-left corner (small studies with small effects absent) suggests…", o: ["high heterogeneity", "publication bias", "a calculation error", "low power in the meta-analysis"], a: 1, why: "Small null studies are the ones that tend to go unpublished — their absence makes the funnel asymmetric and the pooled effect optimistic." }
+  ],
+
+  /* ---------------- Methods — Research Design ---------------- */
+  "from-question-to-hypothesis": [
+    { q: "A hypothesis is scientific only if…", o: ["it is proven true before you test it", "there is some possible result that would show it false", "it is about human behaviour", "it uses technical language"], a: 1, why: "Falsifiability is the test: a hypothesis must make a risky prediction that some outcome could refute. A claim nothing could disprove isn't scientific." },
+    { q: "\"Music changes recall\" versus \"music lowers recall\" — the second one is…", o: ["non-directional", "directional (one-tailed)", "the null hypothesis", "not falsifiable"], a: 1, why: "Predicting which way the effect goes makes it a directional (one-tailed) alternative hypothesis." },
+    { q: "The null hypothesis (H₀) typically states that…", o: ["exactly what you hope to find is true", "there is no effect or no difference", "the sample is biased", "the effect is large"], a: 1, why: "H₀ is the boring 'nothing is going on' claim you assume in order to test your prediction against it." }
+  ],
+  "variables-and-operationalization": [
+    { q: "Defining stress as \"salivary cortisol in µg/dL\" is a…", o: ["conceptual definition", "operational definition", "confound", "hypothesis"], a: 1, why: "An operational definition states exactly how a construct will be measured — the concrete, number-producing recipe." },
+    { q: "In \"coffee vs. decaf → reaction time,\" reaction time is the…", o: ["independent variable", "dependent variable", "confound", "control"], a: 1, why: "The dependent variable is the measured outcome you check to see whether the IV mattered." },
+    { q: "The coffee group also happened to be tested earlier in the day. Time of day is a…", o: ["dependent variable", "confound", "control variable", "operational definition"], a: 1, why: "It differs along with the groups and also affects the outcome — a rival explanation, i.e. a confound." }
+  ],
+  "reliability-and-validity": [
+    { q: "A bathroom scale that always reads 3 kg too heavy is…", o: ["reliable but not valid", "valid but not reliable", "both reliable and valid", "neither"], a: 0, why: "It's perfectly consistent (reliable) yet systematically off the true value (invalid) — the dangerous combination." },
+    { q: "Cronbach's α measures which kind of reliability?", o: ["test–retest", "inter-rater", "internal consistency", "predictive"], a: 2, why: "α quantifies how well the items within a single scale hang together — internal consistency." },
+    { q: "Two raters independently code the same videos and agree strongly. That is good…", o: ["internal consistency", "inter-rater reliability", "external validity", "face validity"], a: 1, why: "Agreement between independent observers of the same thing is inter-rater reliability." }
   ]
 };

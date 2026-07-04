@@ -100,6 +100,18 @@ window.CURRICULUM = [
       { n: "4.9", slug: "missing-data",                    title: "Missing Data & Imputation", ready: true },
       { n: "4.10",slug: "meta-analysis",                   title: "Meta-Analysis & Forest Plots", ready: true }
     ]
+  },
+  {
+    slug: "methods",
+    title: "Methods",
+    subtitle: "Research Design",
+    accent: "#f59e0b",
+    track: "toolkit",
+    sections: [
+      { n: "1.1",  slug: "from-question-to-hypothesis",      title: "From Question to Hypothesis", ready: true },
+      { n: "1.2",  slug: "variables-and-operationalization", title: "Variables & Operationalization", ready: true },
+      { n: "1.3",  slug: "reliability-and-validity",         title: "Reliability & Validity", ready: true }
+    ]
   }
 ];
 

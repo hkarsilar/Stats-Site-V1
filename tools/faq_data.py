@@ -427,4 +427,37 @@ FAQS_34 = {
 ],
 }
 
-FAQS = {**FAQS_12, **FAQS_34}
+FAQS_METHODS = {
+
+# ---------------- METHODS — Research Design ----------------
+
+"from-question-to-hypothesis": [
+ ("What's the difference between a hypothesis and a prediction?",
+  "A <strong>hypothesis</strong> is a general proposed relationship between constructs — \"background music affects learning.\" A <strong>prediction</strong> is the specific, observable consequence you'd expect in a particular study if the hypothesis were true — \"first-year students will recall fewer words with lyrical music than in silence.\" The hypothesis is the idea; the prediction is what you commit to <em>before</em> running the study, pinned to a population, concrete measures, and a direction."),
+ ("What makes a hypothesis falsifiable?",
+  "There has to be some possible result that would count as evidence <em>against</em> it. \"Music changes recall\" is falsifiable — a clear no-difference result contradicts it. \"Music affects people somehow\" is not, because any outcome at all can be squeezed to fit, so it can never be wrong and therefore never informative. Falsifiability, following Popper, is the line between a scientific claim and an empty one."),
+ ("Should I use a one-tailed or a two-tailed hypothesis?",
+  "Default to two-tailed (non-directional) unless strong theory or prior evidence really justifies predicting the direction. A one-tailed test is <a href=\"../../stats-1/effect-size-and-power/\">more powerful</a> <em>if</em> you guessed the direction correctly, but it's blind to a real effect in the opposite direction — and switching to one-tailed after peeking at the data is a form of p-hacking. Whichever you choose, choose it before you collect data."),
+],
+
+"variables-and-operationalization": [
+ ("What is the difference between a conceptual and an operational definition?",
+  "A <strong>conceptual definition</strong> says what a construct means in the abstract — \"anxiety is apprehension about a future threat.\" An <strong>operational definition</strong> says exactly how you'll measure it here — \"anxiety = the total score on the 20-item State-Trait Anxiety Inventory.\" Every study needs both: the concept tells readers what you're studying, and the operation tells them precisely what you did, so they could repeat it."),
+ ("Is a confounding variable the same as a control variable?",
+  "No — they're nearly opposites. A <strong>confound</strong> is an uncontrolled third variable that rides along with your independent variable and offers a rival explanation for the result. A <strong>control</strong> is a variable you deliberately hold constant, or measure and adjust for, so it <em>can't</em> become a confound. A confound is a threat you failed to close off; a control is one you did. Untangling them is the heart of <a href=\"../../stats-4/causal-dags-and-confounding/\">causal reasoning</a>."),
+ ("Can one construct have more than one operationalization?",
+  "Yes — and usually it should. Stress can be operationalized as salivary cortisol, a self-report scale, or heart-rate variability, and each captures a slightly different facet of the idea. Using several measures and checking that they agree (convergent validity) is far stronger than trusting any single one, because no operationalization ever perfectly equals the construct it stands in for."),
+],
+
+"reliability-and-validity": [
+ ("What is a good Cronbach's alpha?",
+  "The folk rule is α ≥ .70 for research use and ≥ .80 for higher-stakes decisions — but it's a convention, not a law. Counter-intuitively, a very high α (≥ .90) can signal <em>redundant</em>, near-duplicate items rather than a better scale. α also grows with the number of items and depends on your sample, so report it for your own data, and remember it measures internal consistency, not <a href=\"../../methods/variables-and-operationalization/\">whether you measured the right thing</a>."),
+ ("Can a measure be reliable but not valid?",
+  "Absolutely — and it's the most dangerous case. A bathroom scale that always reads 3 kg heavy is perfectly reliable (it's consistent) yet completely invalid (it's systematically wrong). Reliability is <em>necessary</em> for validity — a measure that can't even agree with itself can't be accurate — but it never <em>guarantees</em> it. A precise, repeatable number can still be measuring the wrong thing."),
+ ("What's the difference between reliability and validity?",
+  "<strong>Reliability</strong> is consistency: the same answer under the same conditions, whether across time (test–retest), across raters (inter-rater), or across a scale's items (internal consistency). <strong>Validity</strong> is accuracy: whether the measure actually captures the construct you intend. On the dartboard picture, reliability is how tightly the darts cluster together; validity is whether that cluster sits on the bullseye."),
+],
+
+}
+
+FAQS = {**FAQS_12, **FAQS_34, **FAQS_METHODS}

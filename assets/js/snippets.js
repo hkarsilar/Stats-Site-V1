@@ -188,5 +188,19 @@ window.SNIPPETS = {
   "meta-analysis": {
     r: 'library(metafor)\nres <- rma(yi = d, sei = se, data = studies)  # DerSimonian-Laird family\nsummary(res)      # pooled effect, tau^2, I^2, Q\nforest(res)       # the forest plot\nfunnel(res)       # eyeball publication bias',
     py: 'from statsmodels.stats.meta_analysis import combine_effects\nres = combine_effects(studies["d"], studies["se"]**2)\nprint(res.summary_frame())   # fixed + random effects, I^2'
+  },
+
+  /* ---------------- Methods — Research Design ---------------- */
+  "from-question-to-hypothesis": {
+    r: '# directional vs non-directional is ONE argument apart\nt.test(recall_music, recall_silence, alternative = "less")       # H1: music LOWERS recall\nt.test(recall_music, recall_silence, alternative = "two.sided")  # H1: music CHANGES recall',
+    py: 'from scipy import stats\nstats.ttest_ind(recall_music, recall_silence, alternative="less")       # directional H1\nstats.ttest_ind(recall_music, recall_silence, alternative="two-sided")  # non-directional H1'
+  },
+  "variables-and-operationalization": {
+    r: '# one construct, several operationalizations -> a composite index\nstress <- data.frame(cortisol, hrv, self_report)\nstress$index <- rowMeans(scale(stress))   # standardize each item, then average\ndf$group <- factor(df$group, levels = c("decaf", "coffee"))  # IV as a factor',
+    py: 'import pandas as pd\nfrom scipy.stats import zscore\nstress = df[["cortisol", "hrv", "self_report"]].apply(zscore)  # standardize each\ndf["stress_index"] = stress.mean(axis=1)                      # composite measure'
+  },
+  "reliability-and-validity": {
+    r: 'library(psych)\n# items: rows = people, cols = the scale items\nalpha(items)$total$std.alpha   # standardized Cronbach alpha\ncor(time1_total, time2_total)  # test-retest reliability',
+    py: 'import pingouin as pg\n# items: one column per scale item\npg.cronbach_alpha(data=items)   # -> (alpha, 95% CI)'
   }
 };

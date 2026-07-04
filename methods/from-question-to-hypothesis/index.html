@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>From Question to Hypothesis — StatsCapybara</title>
+  <meta name="description" content="Turn a vague hunch into a testable, falsifiable prediction. Build a hypothesis step by step — population, variables, direction — and watch it sharpen." />
+  <link rel="canonical" href="https://statscapybara.com/methods/from-question-to-hypothesis/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="From Question to Hypothesis — StatsCapybara" />
+  <meta property="og:description" content="Turn a vague hunch into a testable, falsifiable prediction. Build a hypothesis step by step — population, variables, direction — and watch it sharpen." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/methods/from-question-to-hypothesis/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="From Question to Hypothesis — StatsCapybara" />
+  <meta name="twitter:description" content="Turn a vague hunch into a testable, falsifiable prediction. Build a hypothesis step by step — population, variables, direction — and watch it sharpen." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "From Question to Hypothesis", "description": "Turn a vague hunch into a testable, falsifiable prediction. Build a hypothesis step by step — population, variables, direction — and watch it sharpen.", "url": "https://statscapybara.com/methods/from-question-to-hypothesis/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Methods: Research Design", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "From Question to Hypothesis", "item": "https://statscapybara.com/methods/from-question-to-hypothesis/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What's the difference between a hypothesis and a prediction?", "acceptedAnswer": {"@type": "Answer", "text": "A hypothesis is a general proposed relationship between constructs — \"background music affects learning.\" A prediction is the specific, observable consequence you'd expect in a particular study if the hypothesis were true — \"first-year students will recall fewer words with lyrical music than in silence.\" The hypothesis is the idea; the prediction is what you commit to before running the study, pinned to a population, concrete measures, and a direction."}}, {"@type": "Question", "name": "What makes a hypothesis falsifiable?", "acceptedAnswer": {"@type": "Answer", "text": "There has to be some possible result that would count as evidence against it. \"Music changes recall\" is falsifiable — a clear no-difference result contradicts it. \"Music affects people somehow\" is not, because any outcome at all can be squeezed to fit, so it can never be wrong and therefore never informative. Falsifiability, following Popper, is the line between a scientific claim and an empty one."}}, {"@type": "Question", "name": "Should I use a one-tailed or a two-tailed hypothesis?", "acceptedAnswer": {"@type": "Answer", "text": "Default to two-tailed (non-directional) unless strong theory or prior evidence really justifies predicting the direction. A one-tailed test is more powerful if you guessed the direction correctly, but it's blind to a real effect in the opposite direction — and switching to one-tailed after peeking at the data is a form of p-hacking. Whichever you choose, choose it before you collect data."}}]}
+  </script>
+</head>
+<body data-course="methods" data-section="from-question-to-hypothesis">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 1.1</span>
+        <h1>From Question to Hypothesis</h1>
+
+        <p class="lede">Every study starts as a hunch: "I bet music helps people study." That's a fine <em>question</em> — but it isn't yet something you can test. The whole craft of research design begins with sharpening a fuzzy idea into a prediction so specific that reality could prove it wrong.</p>
+
+        <h2>The ladder from idea to prediction</h2>
+        <p>A good hypothesis is built in stages. Each rung makes the claim more concrete — and more <strong>falsifiable</strong>.</p>
+        <ol>
+          <li><strong>Research question.</strong> The broad curiosity: "Does music affect studying?"</li>
+          <li><strong>Conceptual hypothesis.</strong> A proposed relationship between ideas (constructs): "Background music influences learning."</li>
+          <li><strong>Testable prediction.</strong> The same claim pinned to a specific population, a manipulable cause, a measurable outcome, and a direction: "Among first-year students, studying with lyrical pop (vs. silence) lowers recall on a 20-item word test."</li>
+        </ol>
+
+        <div class="callout key">
+          <p><strong>Falsifiability is the whole game.</strong> A hypothesis is scientific only if there's some result that would show it's <em>wrong</em>. "Music affects people somehow" can never be refuted — every outcome fits it — so it's useless. "Music lowers recall" sticks its neck out, and that's exactly what makes it testable.</p>
+        </div>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="hm">
+          <p class="viz-title">🛠️ The Hypothesis Machine</p>
+          <p class="viz-sub">Pick a vague claim, then sharpen each part. The falsifiability meter climbs as your prediction gets specific enough for reality to push back on.</p>
+
+          <div class="controls" style="margin-bottom:1.1rem">
+            <div class="control" style="flex:1;min-width:220px">
+              <label>Start from a vague claim</label>
+              <div class="seg" id="hm-claim"></div>
+            </div>
+          </div>
+
+          <div id="hm-dims"></div>
+
+          <div class="hm-meter-wrap">
+            <div class="hm-meter-top"><span>Falsifiability</span><span id="hm-pct" class="hm-pct">0%</span></div>
+            <div class="hm-meter"><div class="hm-fill" id="hm-fill"></div></div>
+            <p class="hm-verdict" id="hm-verdict"></p>
+          </div>
+
+          <div class="hm-out">
+            <p class="hm-out-label">Your prediction so far</p>
+            <p class="hm-pred" id="hm-pred"></p>
+            <div class="hm-hyps">
+              <p><span class="hm-tag">H₀</span> <span id="hm-h0"></span></p>
+              <p><span class="hm-tag hm-tag-1">H₁</span> <span id="hm-h1"></span></p>
+            </div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Directional or not?</h2>
+        <p>Once you pick a direction, you're choosing between two flavours of alternative hypothesis:</p>
+        <ul>
+          <li><strong>Non-directional (two-tailed):</strong> "music <em>changes</em> recall" — you predict a difference but not which way. Safer when you genuinely don't know.</li>
+          <li><strong>Directional (one-tailed):</strong> "music <em>lowers</em> recall" — a bolder, riskier bet that puts all your statistical power on one side. Justified only when theory or prior evidence points clearly one way.</li>
+        </ul>
+
+        <h2>Where H₀ and H₁ come from</h2>
+        <p>Your prediction becomes the <strong>alternative hypothesis</strong> (H₁). Its mirror image — "nothing is going on, no effect, no difference" — is the <strong>null hypothesis</strong> (H₀). You never test H₁ directly; instead you assume H₀ and ask how surprising your data would be under it. That machinery is the subject of <a href="../../stats-1/hypothesis-testing-logic/">hypothesis testing logic</a>; here the point is simply that a sharp, falsifiable prediction is what makes that test <em>possible</em> in the first place.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> a study is only as good as the prediction it started from. Fuzzy questions produce fuzzy results that can be spun to fit any story. Nail down the population, the variables, and the direction <em>before</em> you collect data, and you've already done the hardest — and most honest — part of the work.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What's the difference between a hypothesis and a prediction?</summary>
+            <div class="faq-a"><p>A <strong>hypothesis</strong> is a general proposed relationship between constructs — "background music affects learning." A <strong>prediction</strong> is the specific, observable consequence you'd expect in a particular study if the hypothesis were true — "first-year students will recall fewer words with lyrical music than in silence." The hypothesis is the idea; the prediction is what you commit to <em>before</em> running the study, pinned to a population, concrete measures, and a direction.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What makes a hypothesis falsifiable?</summary>
+            <div class="faq-a"><p>There has to be some possible result that would count as evidence <em>against</em> it. "Music changes recall" is falsifiable — a clear no-difference result contradicts it. "Music affects people somehow" is not, because any outcome at all can be squeezed to fit, so it can never be wrong and therefore never informative. Falsifiability, following Popper, is the line between a scientific claim and an empty one.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Should I use a one-tailed or a two-tailed hypothesis?</summary>
+            <div class="faq-a"><p>Default to two-tailed (non-directional) unless strong theory or prior evidence really justifies predicting the direction. A one-tailed test is <a href="../../stats-1/effect-size-and-power/">more powerful</a> <em>if</em> you guessed the direction correctly, but it's blind to a real effect in the opposite direction — and switching to one-tailed after peeking at the data is a form of p-hacking. Whichever you choose, choose it before you collect data.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <style>
+    /* hypothesis-machine widget (scoped to this lesson) */
+    #hm .hm-dim { margin: 0 0 .85rem; }
+    #hm .hm-dim-q { font-size: .82rem; font-weight: 600; color: var(--text-muted); margin: 0 0 .35rem; }
+    #hm .hm-dim .seg { flex-wrap: wrap; max-width: 100%; }
+    #hm .hm-dim .seg button { white-space: normal; text-align: left; }
+    #hm .hm-meter-wrap { margin: 1.25rem 0 .5rem; }
+    #hm .hm-meter-top { display: flex; justify-content: space-between; font-size: .8rem; font-weight: 600; color: var(--text-muted); margin-bottom: .3rem; }
+    #hm .hm-pct { font-family: var(--mono); color: var(--text); }
+    #hm .hm-meter { height: 12px; border-radius: 8px; background: var(--surface-2); overflow: hidden; }
+    #hm .hm-fill { height: 100%; width: 0; border-radius: 8px; transition: width .3s ease, background .3s ease; }
+    #hm .hm-verdict { font-size: .88rem; font-weight: 600; margin: .5rem 0 0; }
+    #hm .hm-out { margin-top: 1.25rem; padding: 1rem 1.1rem; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 12px; }
+    #hm .hm-out-label { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: var(--text-faint); margin: 0 0 .4rem; }
+    #hm .hm-pred { font-size: 1.05rem; line-height: 1.5; margin: 0 0 .9rem; }
+    #hm .hm-pred .fuzzy { color: var(--text-faint); font-style: italic; }
+    #hm .hm-pred .sharp { color: var(--text); font-weight: 600; }
+    #hm .hm-hyps p { margin: .2rem 0; font-size: .92rem; }
+    #hm .hm-tag { display: inline-block; min-width: 1.9rem; font-family: var(--mono); font-weight: 700; color: var(--text-muted); }
+    #hm .hm-tag-1 { color: var(--primary); }
+  </style>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ hypothesis-machine ============ -->
+  <script>
+  (function () {
+    "use strict";
+    /* Each claim: 4 dimensions, each with 3 options ordered vague → specific.
+       w = specificity weight (0/1/2); s = the phrase used in the assembled
+       sentence; the last dimension is direction and drives H₁'s verb. */
+    var CLAIMS = {
+      music: {
+        label: "Music helps studying",
+        noun: "Background music",
+        dims: [
+          { q: "Who exactly are you studying?", s0: "everyone", opts: [
+            { t: "everyone", w: 0, s: "everyone" },
+            { t: "students", w: 1, s: "students" },
+            { t: "first-year students at our university", w: 2, s: "first-year students at our university" } ] },
+          { q: "What will you change? (independent variable)", opts: [
+            { t: "music", w: 0, s: "music" },
+            { t: "some background sound", w: 1, s: "background sound" },
+            { t: "lyrical pop at 70 dB vs. silence", w: 2, s: "lyrical pop at 70 dB (vs. silence)" } ] },
+          { q: "What will you measure? (dependent variable)", opts: [
+            { t: "learning", w: 0, s: "learning" },
+            { t: "how well they do", w: 1, s: "test performance" },
+            { t: "recall on a 20-item word test", w: 2, s: "recall on a 20-item word test" } ] },
+          { q: "Which direction do you predict?", dir: true, opts: [
+            { t: "(unstated)", w: 0, s: "affect", verb: null },
+            { t: "changes it — non-directional", w: 1, s: "change", verb: "changes" },
+            { t: "lowers it — directional", w: 2, s: "lower", verb: "lowers" } ] }
+        ]
+      },
+      sleep: {
+        label: "Sleep affects memory",
+        noun: "Sleep",
+        dims: [
+          { q: "Who exactly are you studying?", opts: [
+            { t: "everyone", w: 0, s: "everyone" },
+            { t: "people", w: 1, s: "people" },
+            { t: "healthy adults aged 18–30", w: 2, s: "healthy adults aged 18–30" } ] },
+          { q: "What will you change? (independent variable)", opts: [
+            { t: "sleep", w: 0, s: "sleep" },
+            { t: "less sleep", w: 1, s: "reduced sleep" },
+            { t: "4 h vs. 8 h in bed", w: 2, s: "4 h vs. 8 h in bed the night before" } ] },
+          { q: "What will you measure? (dependent variable)", opts: [
+            { t: "memory", w: 0, s: "memory" },
+            { t: "how much they remember", w: 1, s: "how much they remember" },
+            { t: "word-pairs recalled next morning", w: 2, s: "word-pairs recalled next morning" } ] },
+          { q: "Which direction do you predict?", dir: true, opts: [
+            { t: "(unstated)", w: 0, s: "affect", verb: null },
+            { t: "changes it — non-directional", w: 1, s: "change", verb: "changes" },
+            { t: "worsens it — directional", w: 2, s: "worsen", verb: "worsens" } ] }
+        ]
+      },
+      money: {
+        label: "Money makes you happy",
+        noun: "Higher income",
+        dims: [
+          { q: "Who exactly are you studying?", opts: [
+            { t: "everyone", w: 0, s: "everyone" },
+            { t: "people", w: 1, s: "people" },
+            { t: "working adults in the Netherlands", w: 2, s: "working adults in the Netherlands" } ] },
+          { q: "What is the predictor? (independent variable)", opts: [
+            { t: "money", w: 0, s: "money" },
+            { t: "income", w: 1, s: "income" },
+            { t: "monthly household income (€)", w: 2, s: "monthly household income (€)" } ] },
+          { q: "What will you measure? (dependent variable)", opts: [
+            { t: "happiness", w: 0, s: "happiness" },
+            { t: "well-being", w: 1, s: "well-being" },
+            { t: "a 0–10 life-satisfaction score", w: 2, s: "a 0–10 life-satisfaction score" } ] },
+          { q: "Which direction do you predict?", dir: true, opts: [
+            { t: "(unstated)", w: 0, s: "relate to", verb: null },
+            { t: "is associated with — non-directional", w: 1, s: "relate to", verb: "is associated with" },
+            { t: "increases it — directional", w: 2, s: "raise", verb: "increases" } ] }
+        ]
+      }
+    };
+
+    var order = ["music", "sleep", "money"];
+    var current = "music";
+    var pick = [0, 0, 0, 0];   // chosen option index per dimension
+
+    var claimSeg = document.getElementById("hm-claim");
+    var dimsHost = document.getElementById("hm-dims");
+
+    function renderClaims() {
+      claimSeg.innerHTML = order.map(function (k) {
+        return '<button data-claim="' + k + '"' + (k === current ? ' class="active"' : '') + '>' + CLAIMS[k].label + '</button>';
+      }).join("");
+    }
+    function renderDims() {
+      var c = CLAIMS[current];
+      dimsHost.innerHTML = c.dims.map(function (d, di) {
+        var btns = d.opts.map(function (o, oi) {
+          return '<button data-dim="' + di + '" data-opt="' + oi + '"' + (oi === pick[di] ? ' class="active"' : '') + '>' + o.t + '</button>';
+        }).join("");
+        return '<div class="hm-dim"><p class="hm-dim-q">' + (di + 1) + '. ' + d.q + '</p><div class="seg">' + btns + '</div></div>';
+      }).join("");
+    }
+
+    function update() {
+      var c = CLAIMS[current];
+      var pts = 0;
+      for (var i = 0; i < 4; i++) pts += c.dims[i].opts[pick[i]].w;
+      var pct = Math.round((pts / 8) * 100);
+
+      var fill = document.getElementById("hm-fill");
+      fill.style.width = pct + "%";
+      var col = pct >= 85 ? "#22c55e" : pct >= 50 ? "#f59e0b" : "#ef4444";
+      fill.style.background = col;
+      document.getElementById("hm-pct").textContent = pct + "%";
+
+      var v = document.getElementById("hm-verdict");
+      if (pts <= 3) { v.textContent = "Too vague to test — every result would fit, so nothing could prove it wrong."; v.style.color = "#ef4444"; }
+      else if (pts <= 6) { v.textContent = "Getting there — pin down the fuzzy parts so reality can push back."; v.style.color = "#f59e0b"; }
+      else { v.textContent = "Testable prediction ✓ — specific, falsifiable, and ready for data."; v.style.color = "#22c55e"; }
+
+      // assembled sentence, fuzzy pieces greyed, sharp pieces bold
+      function piece(di) {
+        var o = c.dims[di].opts[pick[di]];
+        var cls = o.w === 2 ? "sharp" : (o.w === 0 ? "fuzzy" : "");
+        return '<span class="' + cls + '">' + o.s + '</span>';
+      }
+      var dirOpt = c.dims[3].opts[pick[3]];
+      document.getElementById("hm-pred").innerHTML =
+        'Among ' + piece(0) + ', ' + piece(1) + ' will ' + piece(3) + ' ' + piece(2) + '.';
+
+      // H0 / H1
+      var ivS = c.dims[1].opts[pick[1]].s, dvS = c.dims[2].opts[pick[2]].s;
+      document.getElementById("hm-h0").textContent = c.noun + " has no effect on " + dvS + ".";
+      var h1 = document.getElementById("hm-h1");
+      if (!dirOpt.verb) h1.innerHTML = '<span class="hm-pred fuzzy" style="font-size:.92rem">pick a direction to state H₁…</span>';
+      else h1.textContent = capitalize(c.noun) + " " + dirOpt.verb + " " + dvS + ".";
+    }
+    function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+    claimSeg.addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      current = b.getAttribute("data-claim"); pick = [0, 0, 0, 0];
+      renderClaims(); renderDims(); update();
+    });
+    dimsHost.addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      var di = +b.getAttribute("data-dim"), oi = +b.getAttribute("data-opt");
+      pick[di] = oi;
+      Array.prototype.forEach.call(dimsHost.querySelectorAll('button[data-dim="' + di + '"]'), function (x) {
+        x.classList.toggle("active", +x.getAttribute("data-opt") === oi);
+      });
+      update();
+    });
+
+    renderClaims(); renderDims(); update();
+  })();
+  </script>
+</body>
+</html>

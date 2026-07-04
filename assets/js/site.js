@@ -105,6 +105,10 @@
     "survival-analysis": "How long until the capybara leaves the spa? Right-censored. It never left.",
     "missing-data": "The missing capybaras were not missing at random. They found a better pond.",
     "meta-analysis": "One study is an anecdote. Twenty studies is a forest plot full of capybaras.",
+    /* Methods */
+    "from-question-to-hypothesis": "The capybara's hypothesis: warm water is nice. Falsifiable only if it ever climbs out — it won't.",
+    "variables-and-operationalization": "You can't measure 'chill.' You can measure naps per hour. That's operationalization.",
+    "reliability-and-validity": "A capybara is reliably calm and validly a capybara. Nailing both at once is the rare part.",
     /* Root pages */
     "home": "No rush — capybaras never cram.",
     "toolbox": "A capybara's toolbox: warm water, good snacks, zero deadlines. Yours has calculators too.",

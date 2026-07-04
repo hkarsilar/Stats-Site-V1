@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reliability &amp; Validity — StatsCapybara</title>
+  <meta name="description" content="Reliability is consistency; validity is hitting the target. See both on an interactive dartboard, then watch Cronbach's alpha rise as you add items." />
+  <link rel="canonical" href="https://statscapybara.com/methods/reliability-and-validity/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Reliability &amp; Validity — StatsCapybara" />
+  <meta property="og:description" content="Reliability is consistency; validity is hitting the target. See both on an interactive dartboard, then watch Cronbach's alpha rise as you add items." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/methods/reliability-and-validity/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Reliability &amp; Validity — StatsCapybara" />
+  <meta name="twitter:description" content="Reliability is consistency; validity is hitting the target. See both on an interactive dartboard, then watch Cronbach's alpha rise as you add items." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Reliability & Validity", "description": "Reliability is consistency; validity is hitting the target. See both on an interactive dartboard, then watch Cronbach's alpha rise as you add items.", "url": "https://statscapybara.com/methods/reliability-and-validity/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Methods: Research Design", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Reliability & Validity", "item": "https://statscapybara.com/methods/reliability-and-validity/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is a good Cronbach's alpha?", "acceptedAnswer": {"@type": "Answer", "text": "The folk rule is α ≥ .70 for research use and ≥ .80 for higher-stakes decisions — but it's a convention, not a law. Counter-intuitively, a very high α (≥ .90) can signal redundant, near-duplicate items rather than a better scale. α also grows with the number of items and depends on your sample, so report it for your own data, and remember it measures internal consistency, not whether you measured the right thing."}}, {"@type": "Question", "name": "Can a measure be reliable but not valid?", "acceptedAnswer": {"@type": "Answer", "text": "Absolutely — and it's the most dangerous case. A bathroom scale that always reads 3 kg heavy is perfectly reliable (it's consistent) yet completely invalid (it's systematically wrong). Reliability is necessary for validity — a measure that can't even agree with itself can't be accurate — but it never guarantees it. A precise, repeatable number can still be measuring the wrong thing."}}, {"@type": "Question", "name": "What's the difference between reliability and validity?", "acceptedAnswer": {"@type": "Answer", "text": "Reliability is consistency: the same answer under the same conditions, whether across time (test–retest), across raters (inter-rater), or across a scale's items (internal consistency). Validity is accuracy: whether the measure actually captures the construct you intend. On the dartboard picture, reliability is how tightly the darts cluster together; validity is whether that cluster sits on the bullseye."}}]}
+  </script>
+</head>
+<body data-course="methods" data-section="reliability-and-validity">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 1.3</span>
+        <h1>Reliability &amp; Validity</h1>
+
+        <p class="lede">A good measure has to do two different jobs. <strong>Reliability</strong> is consistency — does it give the same answer when nothing has changed? <strong>Validity</strong> is accuracy — does it measure what you actually intend? A bathroom scale that always reads 3 kg heavy is perfectly reliable and completely invalid. You need both.</p>
+
+        <h2>The dartboard picture</h2>
+        <p>The classic metaphor: your <em>true value</em> is the bullseye, and each measurement is a dart. Reliability is how <strong>tightly grouped</strong> the darts are; validity is whether that group sits <strong>on the target</strong>. Play with both dials below.</p>
+
+        <!-- ============ INTERACTIVE 1 ============ -->
+        <div class="viz" id="db">
+          <p class="viz-title">🎯 Reliability &amp; Validity Dartboard</p>
+          <p class="viz-sub">Reliability tightens the grouping; validity pulls the group onto the bullseye. The four corners are the four classic combinations — including the sneaky one: consistently wrong.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:180px">
+              <label>Reliability (consistency) <span class="val" id="rel-val">50</span></label>
+              <input type="range" id="rel" min="0" max="100" step="1" value="50" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:180px">
+              <label>Validity (on target) <span class="val" id="val-val">50</span></label>
+              <input type="range" id="val" min="0" max="100" step="1" value="50" style="width:100%" />
+            </div>
+            <div class="control">
+              <label>&nbsp;</label>
+              <button class="btn btn-ghost btn-sm" id="db-new" type="button">New throws</button>
+            </div>
+          </div>
+
+          <canvas id="db-canvas"></canvas>
+          <div class="stat-row">
+            <div class="stat"><span class="k">Diagnosis</span><span class="v" id="db-diag" style="font-size:1rem">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE 1 ============ -->
+
+        <h2>Flavours of each</h2>
+        <p><strong>Reliability</strong> comes in a few forms, depending on <em>what</em> you check for consistency across:</p>
+        <ul>
+          <li><strong>Test–retest:</strong> same people, same test, two occasions — do the scores agree?</li>
+          <li><strong>Inter-rater:</strong> two observers scoring the same behaviour — do they match?</li>
+          <li><strong>Internal consistency:</strong> do the items <em>within</em> a scale hang together, as if measuring one thing? This is what <strong>Cronbach's α</strong> quantifies.</li>
+        </ul>
+        <p><strong>Validity</strong> also has types: <strong>face</strong> (does it look right?), <strong>construct</strong> (does it really tap the intended idea?), <strong>internal</strong> (can we trust the causal claim? — the target of <a href="../../methods/variables-and-operationalization/">confound control</a>), and <strong>external</strong> (does it generalize beyond the study?).</p>
+
+        <h2>Cronbach's α, built item by item</h2>
+        <p>Internal consistency rises with two things: how strongly the items correlate with each other (r̄), and how <em>many</em> items you have. The standardized formula makes this exact:</p>
+        <p style="text-align:center;font-family:var(--mono);font-size:1rem">α = (k · r̄) ⁄ (1 + (k − 1) · r̄)</p>
+
+        <!-- ============ INTERACTIVE 2 ============ -->
+        <div class="viz" id="ca">
+          <p class="viz-title">🧪 Cronbach's α Simulator</p>
+          <p class="viz-sub">Add items and dial up their average inter-item correlation. Even middling items build a reliable scale once there are enough of them — that's the Spearman–Brown insight.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:180px">
+              <label>Number of items (k) <span class="val" id="k-val">10</span></label>
+              <input type="range" id="k" min="2" max="20" step="1" value="10" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:180px">
+              <label>Mean inter-item correlation (r̄) <span class="val" id="rbar-val">0.30</span></label>
+              <input type="range" id="rbar" min="0" max="90" step="1" value="30" style="width:100%" />
+            </div>
+          </div>
+
+          <div class="ca-meter-top"><span>Cronbach's α</span><span id="ca-alpha" class="ca-alpha">0.81</span></div>
+          <div class="ca-meter"><div class="ca-fill" id="ca-fill"></div><div class="ca-thresh" title=".70 threshold"></div></div>
+          <p class="ca-verdict" id="ca-verdict"></p>
+        </div>
+        <!-- ============ /INTERACTIVE 2 ============ -->
+
+        <div class="callout key">
+          <p><strong>More items is not a free lunch.</strong> The formula rewards length, so you can always crank α up by padding the scale — but α ≥ .90 often means your items are near-duplicates, asking the same question in slightly different words. High internal consistency is not the same as good measurement; a reliable scale can still be measuring the wrong construct.</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> reliability caps validity — a measure can't be accurate if it isn't even consistent — but it never guarantees it. Report both, and remember the dartboard: the most dangerous instrument is the reliable, invalid one, because its tidy, repeatable numbers look trustworthy while pointing steadily at the wrong answer.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What is a good Cronbach's alpha?</summary>
+            <div class="faq-a"><p>The folk rule is α ≥ .70 for research use and ≥ .80 for higher-stakes decisions — but it's a convention, not a law. Counter-intuitively, a very high α (≥ .90) can signal <em>redundant</em>, near-duplicate items rather than a better scale. α also grows with the number of items and depends on your sample, so report it for your own data, and remember it measures internal consistency, not <a href="../../methods/variables-and-operationalization/">whether you measured the right thing</a>.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Can a measure be reliable but not valid?</summary>
+            <div class="faq-a"><p>Absolutely — and it's the most dangerous case. A bathroom scale that always reads 3 kg heavy is perfectly reliable (it's consistent) yet completely invalid (it's systematically wrong). Reliability is <em>necessary</em> for validity — a measure that can't even agree with itself can't be accurate — but it never <em>guarantees</em> it. A precise, repeatable number can still be measuring the wrong thing.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What's the difference between reliability and validity?</summary>
+            <div class="faq-a"><p><strong>Reliability</strong> is consistency: the same answer under the same conditions, whether across time (test–retest), across raters (inter-rater), or across a scale's items (internal consistency). <strong>Validity</strong> is accuracy: whether the measure actually captures the construct you intend. On the dartboard picture, reliability is how tightly the darts cluster together; validity is whether that cluster sits on the bullseye.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <style>
+    /* Cronbach's α meter (scoped) */
+    #ca .ca-meter-top { display: flex; justify-content: space-between; align-items: baseline; font-size: .82rem; font-weight: 600; color: var(--text-muted); margin: .35rem 0 .3rem; }
+    #ca .ca-alpha { font-family: var(--mono); font-size: 1.5rem; font-weight: 700; color: var(--text); }
+    #ca .ca-meter { position: relative; height: 16px; border-radius: 8px; background: var(--surface-2); overflow: hidden; }
+    #ca .ca-fill { height: 100%; width: 81%; border-radius: 8px; transition: width .25s ease, background .25s ease; }
+    #ca .ca-thresh { position: absolute; top: -3px; bottom: -3px; left: 70%; width: 2px; background: var(--text-faint); }
+    #ca .ca-verdict { font-size: .88rem; font-weight: 600; margin: .55rem 0 0; }
+  </style>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ dartboard (frozen noise) ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var canvas = document.getElementById("db-canvas"), ctx, W = 0, H = 300;
+    var rel = 50, val = 50, N = 12, pool = [];
+
+    function seed() {
+      pool = [];
+      for (var i = 0; i < N; i++) pool.push({ x: VIZ.randn(), y: VIZ.randn() });
+    }
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+
+    function draw() {
+      var cx = W / 2, cy = H / 2, R = Math.min(W, H) / 2 - 16;
+      ctx.clearRect(0, 0, W, H);
+
+      // rings
+      var rings = [1, 0.72, 0.46, 0.22];
+      for (var r = 0; r < rings.length; r++) {
+        ctx.beginPath(); ctx.arc(cx, cy, R * rings[r], 0, 6.2832);
+        ctx.fillStyle = r % 2 === 0 ? VIZ.css("--surface-2") : VIZ.css("--bg-soft");
+        ctx.fill();
+        ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.stroke();
+      }
+      // bullseye (the true value / target)
+      ctx.beginPath(); ctx.arc(cx, cy, R * 0.05, 0, 6.2832);
+      ctx.fillStyle = VIZ.css("--secondary"); ctx.fill();
+
+      // map sliders → scatter + bias
+      var scatter = R * (0.015 + 0.5 * (1 - rel / 100));      // high reliability → tight
+      var bias = R * 0.62 * (1 - val / 100);                  // high validity → centred
+      var bx = bias * 0.72, by = bias * 0.69;                 // fixed diagonal offset
+
+      // darts (frozen: same pool, only transformed)
+      var sumx = 0, sumy = 0;
+      var pts = pool.map(function (p) {
+        var x = cx + bx + scatter * p.x, y = cy + by + scatter * p.y;
+        sumx += x; sumy += y; return { x: x, y: y };
+      });
+      ctx.fillStyle = VIZ.css("--primary");
+      pts.forEach(function (p) {
+        ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, 6.2832); ctx.fill();
+      });
+      // group centre (where the darts cluster) as a hollow ring
+      var mx = sumx / N, my = sumy / N;
+      ctx.strokeStyle = "#f97316"; ctx.lineWidth = 2; ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.arc(mx, my, 8, 0, 6.2832); ctx.stroke(); ctx.setLineDash([]);
+    }
+
+    function update() {
+      document.getElementById("rel-val").textContent = rel;
+      document.getElementById("val-val").textContent = val;
+      var d = document.getElementById("db-diag");
+      var hiR = rel >= 50, hiV = val >= 50, txt, col;
+      if (hiR && hiV) { txt = "Reliable AND valid — consistent and on target"; col = "#22c55e"; }
+      else if (hiR && !hiV) { txt = "Reliable but NOT valid — consistently wrong"; col = "#ef4444"; }
+      else if (!hiR && hiV) { txt = "Valid on average but NOT reliable — centred yet scattered"; col = "#f59e0b"; }
+      else { txt = "Neither — scattered and off target"; col = "#ef4444"; }
+      d.textContent = txt; d.style.color = col;
+      draw();
+    }
+
+    document.getElementById("rel").addEventListener("input", function () { rel = +this.value; update(); });
+    document.getElementById("val").addEventListener("input", function () { val = +this.value; update(); });
+    document.getElementById("db-new").addEventListener("click", function () { seed(); draw(); });
+    window.addEventListener("resize", function () { fit(); draw(); });
+    VIZ.onTheme(draw);
+
+    seed(); fit(); update();
+  })();
+  </script>
+
+  <!-- ============ Cronbach's α (deterministic formula) ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var k = 10, rbar = 0.30;
+    function alpha() { return (k * rbar) / (1 + (k - 1) * rbar); }
+    function update() {
+      var a = alpha();
+      document.getElementById("k-val").textContent = k;
+      document.getElementById("rbar-val").textContent = rbar.toFixed(2);
+      document.getElementById("ca-alpha").textContent = a.toFixed(2);
+      var fill = document.getElementById("ca-fill");
+      fill.style.width = Math.max(0, Math.min(1, a)) * 100 + "%";
+      var col = a >= 0.80 ? "#22c55e" : a >= 0.70 ? "#f59e0b" : "#ef4444";
+      fill.style.background = col;
+      var v = document.getElementById("ca-verdict");
+      var txt, tc = col;
+      if (a >= 0.90) { txt = "Excellent — but very high α can also mean the items are near-duplicates."; tc = "#22c55e"; }
+      else if (a >= 0.80) { txt = "Good internal consistency."; }
+      else if (a >= 0.70) { txt = "Acceptable — the common .70 minimum for research scales."; }
+      else if (a >= 0.60) { txt = "Questionable — below the usual .70 threshold."; }
+      else { txt = "Poor — the items aren't yet measuring one coherent thing."; }
+      v.textContent = txt; v.style.color = tc;
+    }
+    document.getElementById("k").addEventListener("input", function () { k = +this.value; update(); });
+    document.getElementById("rbar").addEventListener("input", function () { rbar = +this.value / 100; update(); });
+    update();
+  })();
+  </script>
+</body>
+</html>

@@ -561,5 +561,27 @@ window.SOFTWARE = {
     tips: [
       'The trio to report: pooled effect with CI, heterogeneity (<em>Q</em>, <em>I</em>², τ), and a publication-bias check.'
     ]
+  },
+
+  /* ---------------- Methods — Research Design ---------------- */
+  "reliability-and-validity": {
+    spss: [
+      '<strong>Analyze → Scale → Reliability Analysis…</strong>',
+      'Move all items of ONE scale into <em>Items</em>. Reverse-code any negatively worded items first (<strong>Transform → Recode into Different Variables</strong>), or α will be badly deflated.',
+      'Set <em>Model</em> to <em>Alpha</em>.',
+      'Click <em>Statistics…</em> and tick <em>Scale if item deleted</em> and <em>Inter-Item Correlations</em>.',
+      'Read <em>Cronbach’s Alpha</em> in the Reliability Statistics table; scan the <em>Cronbach’s Alpha if Item Deleted</em> column for items dragging the scale down.'
+    ],
+    jasp: [
+      '<strong>Reliability → Unidimensional Reliability</strong> (the classical option).',
+      'Drag the scale’s items into <em>Variables</em>; under <em>Reverse-Scaled Items</em>, move any negatively worded ones across.',
+      'Tick <em>Cronbach’s α</em>, and under <em>Individual Items</em> tick <em>α (if item dropped)</em> and the <em>item-rest correlation</em>.',
+      'JASP also reports <em>McDonald’s ω</em> — a modern alternative many methodologists now prefer over α.'
+    ],
+    apa: '<p>Internal consistency was acceptable: the 10-item Perceived Stress Scale had a Cronbach’s α of .82 in this sample, 95% CI [.78, .86]. One reverse-worded item was recoded before scoring, and all item–rest correlations exceeded .30.</p>',
+    tips: [
+      'α is a Greek letter, so it is <strong>not</strong> italicized (unlike Latin symbols such as <em>M</em>, <em>SD</em>, <em>r</em>). Report it with no leading zero: α = .82, not 0.82.',
+      'Reliability is a property of scores in <em>your</em> sample, not a fixed trait of the questionnaire — report it for your own data rather than citing the manual.'
+    ]
   }
 };
