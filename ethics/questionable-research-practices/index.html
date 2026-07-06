@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Questionable Research Practices — StatsCapybara</title>
+  <meta name="description" content="Run 1,000 studies with no real effect: peek at the data and stop when p < .05, and watch the false-positive rate climb from 5% past 20%." />
+  <link rel="canonical" href="https://statscapybara.com/ethics/questionable-research-practices/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Questionable Research Practices — StatsCapybara" />
+  <meta property="og:description" content="Run 1,000 studies with no real effect: peek at the data and stop when p < .05, and watch the false-positive rate climb from 5% past 20%." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/ethics/questionable-research-practices/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Questionable Research Practices — StatsCapybara" />
+  <meta name="twitter:description" content="Run 1,000 studies with no real effect: peek at the data and stop when p < .05, and watch the false-positive rate climb from 5% past 20%." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Questionable Research Practices", "description": "Run 1,000 studies with no real effect: peek at the data and stop when p < .05, and watch the false-positive rate climb from 5% past 20%.", "url": "https://statscapybara.com/ethics/questionable-research-practices/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Ethics: Responsible Research", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Questionable Research Practices", "item": "https://statscapybara.com/ethics/questionable-research-practices/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is stopping data collection early always wrong?", "acceptedAnswer": {"@type": "Answer", "text": "No — what matters is when you decided to stop. A planned interim analysis, specified in advance with a corrected significance threshold so the repeated looks are accounted for, is a legitimate and sometimes required design, especially in clinical trials. What inflates false positives is ad-hoc optional stopping: peeking at the results as data arrive and stopping the moment p dips below .05, or running 'just a few more' participants when it hasn't. That turns a nominal 5% test into something closer to 20% or more, because every extra look is another chance to cross the line. The rule of thumb: fix your stopping rule before you see the data, and if you must monitor, use a pre-planned procedure with adjusted thresholds rather than gut feel."}}, {"@type": "Question", "name": "What is the difference between p-hacking and outright fraud?", "acceptedAnswer": {"@type": "Answer", "text": "They sit at different points on a continuum. Fraud — fabricating or falsifying data — means reporting numbers that never came from the study; it is rare (under about 1% admit it) and unambiguous misconduct. p-hacking and other questionable research practices use real data but exploit researcher degrees of freedom — dropping 'outliers', adding covariates, testing subgroups, optional stopping — until something crosses p &lt; .05, then report only that. QRPs usually feel like reasonable judgement calls rather than cheating, which is exactly why they are so common and so damaging: they fill the literature with effects that evaporate on replication. Fraud is the rarer crime; QRPs are the widespread erosion, and they are the main engine of the replication crisis."}}, {"@type": "Question", "name": "How do I avoid questionable research practices in my own study?", "acceptedAnswer": {"@type": "Answer", "text": "Because QRPs exploit choices made after seeing the data, the fix is to lock the choices down before. Preregister your hypotheses, sample size, stopping rule, and primary analysis. Then keep a clean line between confirmatory tests (planned in advance) and exploratory ones (fine to run, but reported honestly as exploration, not dressed up as predictions). Report all the outcomes and conditions you measured, not just the ones that 'worked', and share your data and materials so others can see the forking paths you didn't take. None of this forbids flexibility — it just makes it transparent, so a reader can tell a predicted result from a lucky one."}}]}
+  </script>
+</head>
+<body data-course="ethics" data-section="questionable-research-practices">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 3.5</span>
+        <h1>Questionable Research Practices</h1>
+
+        <p class="lede">Most bad science isn't fraud. It's a series of small, reasonable-feeling decisions — run a few more participants, drop the analysis that didn't work, report the outcome that did — each defensible on its own, that together turn noise into a "finding." These are <strong>questionable research practices</strong> (QRPs): the grey zone between honest flexibility and outright fabrication. They're common, they feel innocent in the moment, and they quietly wreck the one number everyone trusts — the <em>p</em>-value. This lesson names them, shows why they're so tempting, and lets you watch one of them manufacture a false positive in real time.</p>
+
+        <h2>The continuum from flexibility to fraud</h2>
+        <p>Think of a line. At one end, honest, preregistered analysis; at the far end, making up data. QRPs live in the vast middle, where researcher <em>degrees of freedom</em> — all the small choices a dataset lets you make — get used, consciously or not, to chase significance:</p>
+        <ul>
+          <li><strong>Optional stopping.</strong> Peeking at the results as data come in and stopping the moment <em>p</em> &lt; .05 (or running "just a few more" when it isn't). This is the star of the simulation below.</li>
+          <li><strong>Selective outcome reporting.</strong> Measuring five outcomes, then reporting only the one that reached significance — and quietly dropping the other four from the write-up.</li>
+          <li><strong>HARKing</strong> — <em>Hypothesising After the Results are Known.</em> Finding an unexpected pattern by exploration, then presenting it as though you'd predicted it all along. A chance blip gets relabelled a confirmed theory.</li>
+          <li><strong>p-hacking.</strong> Trying analyses until one crosses the line — dropping "outliers," adding covariates, testing subgroups, transforming variables — and reporting only the version that worked. This is the <a href="../../methods/the-replication-crisis/">garden of forking paths</a>: with enough untracked choices, a false positive is almost guaranteed.</li>
+        </ul>
+
+        <h2>Why they feel innocent</h2>
+        <p>The dangerous thing about QRPs is that each step has a plausible story. "The result was <em>trending</em>, so I collected a bit more data" sounds like diligence. "That participant clearly wasn't paying attention, so I excluded them" sounds like rigour. "This subgroup effect is fascinating" sounds like insight. None of these feels like cheating, and researchers who do them are usually not being cynical — they're following incentives (publish, get significance) with a dataset flexible enough to reward motivated reasoning. That's exactly why willpower isn't the fix; <strong>deciding the rules before you see the data</strong> is.</p>
+
+        <h2>How common are they?</h2>
+        <p>Common enough to be normal. In a survey of over 2,000 psychologists (John, Loewenstein &amp; Prelec, 2012), self-admitted rates were striking: around <strong>63%</strong> had failed to report all of a study's dependent measures, about <strong>56%</strong> had decided whether to collect more data <em>after</em> checking if results were significant, roughly <strong>46%</strong> had selectively reported studies that "worked," and about <strong>27%</strong> admitted HARKing. Outright data <em>falsification</em>, by contrast, was admitted by under 1%. The gap is the whole point: fraud is rare, but the grey-zone practices that inflate false positives are widespread — which is why they, not fraud, are the main engine of the replication crisis.</p>
+
+        <h2>Watch optional stopping in action</h2>
+        <p>Here's the simulation that made the danger famous (Simmons, Nelson &amp; Simonsohn, 2011). Every "study" below has <strong>no real effect at all</strong> — the true difference is exactly zero. An honest researcher fixes the sample size in advance and tests once: they get a false positive about 5% of the time, exactly as a <em>p</em> &lt; .05 threshold promises. A peeker tests repeatedly as data arrive and stops the instant <em>p</em> dips below .05. Run a thousand of each and compare the false-positive rates.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="os">
+          <p class="viz-title">🎣 The optional-stopping trap</p>
+          <p class="viz-sub">Every study here has a true effect of exactly zero. Peeking still finds "significance."</p>
+
+          <div class="os-controls">
+            <label class="os-slab">Maximum sample size: <output id="os-maxout">100</output>
+              <input type="range" id="os-max" min="30" max="150" step="10" value="100" />
+            </label>
+            <div class="os-peek">Peek every
+              <span class="os-peekbtns" id="os-peekbtns">
+                <button type="button" data-k="5">5</button><button type="button" data-k="10" class="active">10</button><button type="button" data-k="20">20</button>
+              </span>
+              participants
+            </div>
+          </div>
+
+          <p class="os-caption">One example study — running <em>p</em>-value as participants accumulate (true effect = 0):</p>
+          <div class="viz-canvas-wrap"><canvas id="os-canvas" role="img" aria-label="Running p-value of one null study across increasing sample size, with the 0.05 threshold marked"></canvas></div>
+          <p class="os-note" id="os-note"></p>
+          <div class="os-actions"><button type="button" class="os-btn" id="os-new">↻ New example study</button></div>
+
+          <p class="os-caption os-caption-2">False-positive rate over <b>1,000</b> studies (there is no true effect, so <em>every</em> "hit" is false):</p>
+          <div class="os-bar">
+            <span class="os-lab">Honest — one test at n = <span id="os-nf">100</span></span>
+            <span class="os-track"><span class="os-fill" id="os-fill-h"></span></span>
+            <span class="os-pct" id="os-pct-h">—</span>
+          </div>
+          <div class="os-bar">
+            <span class="os-lab">Peeking — stop when <em>p</em> &lt; .05</span>
+            <span class="os-track"><span class="os-fill" id="os-fill-p"></span></span>
+            <span class="os-pct" id="os-pct-p">—</span>
+          </div>
+          <div class="os-actions"><button type="button" class="os-btn os-btn-primary" id="os-run">Run 1,000 studies again</button></div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <div class="callout key">
+          <p><strong>The peek is the problem, not the peeker.</strong> Nobody in the simulation is dishonest — they just gave themselves extra chances to cross an arbitrary line. Each extra look is another roll of the dice at a false positive, so a "5% test" applied five or ten times stops being a 5% test. The safeguard isn't trying harder to be objective; it's committing to a stopping rule (or correcting for the looks) <em>before</em> the data arrive.</p>
+        </div>
+
+        <h2>The fix</h2>
+        <p>Because QRPs exploit choices made <em>after</em> seeing data, the cure is to lock the choices down <em>before</em>: <a href="../../methods/preregistration-and-open-science/">preregister</a> your hypotheses, sample size, stopping rule, and primary analysis; distinguish confirmatory tests (planned) from exploratory ones (fine to run, but reported honestly as exploration); if you must monitor data as it comes in, use planned interim analyses with corrected thresholds rather than ad-hoc peeking; and share materials and data so others can check the forking paths you didn't take. None of this bans flexibility — it just makes it transparent, so a reader can tell a predicted result from a lucky one.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> a single QRP rarely feels like misconduct, and usually isn't — but the same move that gets one paper published, repeated across a field, fills the literature with effects that evaporate on replication. Knowing the names is step one; the real habit is deciding your analysis in advance and reporting what you actually did, including the analyses that didn't work.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>Is stopping data collection early always wrong?</summary>
+            <div class="faq-a"><p>No — what matters is <em>when</em> you decided to stop. A <strong>planned interim analysis</strong>, specified in advance with a corrected significance threshold so the repeated looks are accounted for, is a legitimate and sometimes required design, especially in clinical trials. What inflates false positives is <strong>ad-hoc optional stopping</strong>: peeking at the results as data arrive and stopping the moment <em>p</em> dips below .05, or running 'just a few more' participants when it hasn't. That turns a nominal 5% test into something closer to 20% or more, because every extra look is another chance to cross the line. The rule of thumb: fix your stopping rule <em>before</em> you see the data, and if you must monitor, use a pre-planned procedure with adjusted thresholds rather than gut feel.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is the difference between p-hacking and outright fraud?</summary>
+            <div class="faq-a"><p>They sit at different points on a continuum. <strong>Fraud</strong> — fabricating or falsifying data — means reporting numbers that never came from the study; it is rare (under about 1% admit it) and unambiguous misconduct. <strong>p-hacking</strong> and other questionable research practices use <em>real</em> data but exploit researcher degrees of freedom — dropping 'outliers', adding covariates, testing subgroups, optional stopping — until something crosses <em>p</em> &lt; .05, then report only that. QRPs usually feel like reasonable judgement calls rather than cheating, which is exactly why they are so common and so damaging: they fill the literature with effects that evaporate on replication. Fraud is the rarer crime; QRPs are the widespread erosion, and they are the main engine of the <a href="../../methods/the-replication-crisis/">replication crisis</a>.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>How do I avoid questionable research practices in my own study?</summary>
+            <div class="faq-a"><p>Because QRPs exploit choices made <em>after</em> seeing the data, the fix is to lock the choices down before. <a href="../../methods/preregistration-and-open-science/">Preregister</a> your hypotheses, sample size, stopping rule, and primary analysis. Then keep a clean line between <strong>confirmatory</strong> tests (planned in advance) and <strong>exploratory</strong> ones (fine to run, but reported honestly as exploration, not dressed up as predictions). Report <em>all</em> the outcomes and conditions you measured, not just the ones that 'worked', and share your data and materials so others can see the forking paths you didn't take. None of this forbids flexibility — it just makes it transparent, so a reader can tell a predicted result from a lucky one.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <style>
+    /* optional-stopping simulator (scoped) */
+    #os .os-controls { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; align-items: center; margin-bottom: 1rem; }
+    #os .os-slab { font-size: .86rem; font-weight: 600; color: var(--text); display: flex; flex-direction: column; gap: .35rem; min-width: 220px; flex: 1; }
+    #os .os-slab output { font-weight: 800; color: var(--course-accent, #64748b); }
+    #os input[type="range"] { width: 100%; accent-color: var(--course-accent, #64748b); }
+    #os .os-peek { font-size: .86rem; font-weight: 600; color: var(--text); }
+    #os .os-peekbtns { display: inline-flex; gap: .3rem; margin: 0 .35rem; }
+    #os .os-peekbtns button {
+      cursor: pointer; border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
+      border-radius: 7px; padding: .28rem .6rem; font-size: .82rem; font-weight: 700; font-family: inherit; transition: .15s;
+    }
+    #os .os-peekbtns button:hover { border-color: var(--course-accent, #64748b); }
+    #os .os-peekbtns button.active { background: color-mix(in srgb, var(--course-accent, #64748b) 16%, transparent); border-color: var(--course-accent, #64748b); }
+    #os .os-caption { font-size: .84rem; font-weight: 600; color: var(--text-muted); margin: .3rem 0 .55rem; }
+    #os .os-caption-2 { margin-top: 1.5rem; }
+    #os .viz-canvas-wrap { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); padding: .3rem; }
+    #os canvas { width: 100%; display: block; }
+    #os .os-note { font-size: .84rem; line-height: 1.55; color: var(--text); margin: .7rem 0 0; min-height: 1.2rem; }
+    #os .os-note b.hit { color: #ef4444; }
+    #os .os-note b.null { color: #22c55e; }
+    #os .os-actions { margin-top: .8rem; }
+    #os .os-btn {
+      cursor: pointer; border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
+      border-radius: 8px; padding: .45rem 1rem; font-size: .85rem; font-weight: 700; font-family: inherit; transition: .15s;
+    }
+    #os .os-btn:hover { border-color: var(--course-accent, #64748b); }
+    #os .os-btn-primary { border-color: var(--course-accent, #64748b); color: color-mix(in srgb, var(--course-accent, #64748b) 80%, var(--text)); }
+    #os .os-bar { display: flex; align-items: center; gap: .7rem; margin: .55rem 0; }
+    #os .os-lab { flex: 0 0 220px; font-size: .84rem; font-weight: 600; color: var(--text); }
+    #os .os-track { flex: 1; height: 22px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+    #os .os-fill { display: block; height: 100%; width: 0; border-radius: 5px 0 0 5px; transition: width .5s ease, background .3s; }
+    #os .os-pct { flex: 0 0 3.4rem; text-align: right; font-size: .95rem; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--text); }
+    @media (max-width: 560px) {
+      #os .os-lab { flex-basis: 130px; }
+    }
+  </style>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ optional-stopping simulator (Monte Carlo, exact t-tests via VIZ) ============ -->
+  <script>
+  (function () {
+    "use strict";
+
+    var POOLMAX = 150;          // largest sample the slider allows
+    var TRIALS = 1000;          // studies per Monte-Carlo run
+    var ALPHA = 0.05;
+
+    var maxN = 100, peekEvery = 10;
+    var pool = [];              // one frozen null dataset for the example trajectory
+
+    function seedExample() { pool = []; for (var i = 0; i < POOLMAX; i++) pool.push(VIZ.randn()); }
+    seedExample();
+
+    // one-sample two-tailed t-test of `arr` against a true mean of 0
+    function twoTailP(arr) {
+      var n = arr.length;
+      if (n < 2) return 1;
+      var m = VIZ.mean(arr), s = VIZ.sd(arr);
+      if (s === 0) return 1;
+      var t = m / (s / Math.sqrt(n));
+      return 2 * VIZ.tUpper(Math.abs(t), n - 1);
+    }
+
+    // the sample sizes a peeker checks: every k up to maxn, always including maxn
+    function peekPoints(maxn, k) {
+      var pts = [];
+      for (var n = k; n <= maxn; n += k) pts.push(n);
+      if (pts.length === 0 || pts[pts.length - 1] !== maxn) pts.push(maxn);
+      return pts;
+    }
+
+    // ---- Monte Carlo: false-positive rate for honest vs peeking, same data ----
+    function monte(maxn, k, trials) {
+      var pts = peekPoints(maxn, k);
+      var fixedFP = 0, peekFP = 0, xs = new Array(maxn), i, sub;
+      for (var t = 0; t < trials; t++) {
+        for (i = 0; i < maxn; i++) xs[i] = VIZ.randn();
+        if (twoTailP(xs) < ALPHA) fixedFP++;              // honest: one test at maxn
+        for (var pi = 0; pi < pts.length; pi++) {          // peeking: first crossing wins
+          sub = xs.slice(0, pts[pi]);
+          if (twoTailP(sub) < ALPHA) { peekFP++; break; }
+        }
+      }
+      return { fixed: fixedFP / trials, peek: peekFP / trials };
+    }
+
+    // ---- example trajectory for the current frozen pool ----
+    function exampleTraj() {
+      var pts = peekPoints(maxN, peekEvery), out = [], firstHit = -1;
+      for (var i = 0; i < pts.length; i++) {
+        var p = twoTailP(pool.slice(0, pts[i]));
+        out.push({ n: pts[i], p: p });
+        if (firstHit < 0 && p < ALPHA) firstHit = i;
+      }
+      return { pts: out, firstHit: firstHit };
+    }
+
+    // ---------- DOM ----------
+    var maxSlider = document.getElementById("os-max");
+    var maxOut = document.getElementById("os-maxout");
+    var nfOut = document.getElementById("os-nf");
+    var peekBtns = document.getElementById("os-peekbtns");
+    var noteEl = document.getElementById("os-note");
+    var fillH = document.getElementById("os-fill-h");
+    var fillP = document.getElementById("os-fill-p");
+    var pctH = document.getElementById("os-pct-h");
+    var pctP = document.getElementById("os-pct-p");
+
+    var cv;
+    function fit() { cv = VIZ.fit(document.getElementById("os-canvas"), 210); }
+
+    function fillColor(rate) {
+      if (rate <= 0.08) return "#22c55e";
+      if (rate <= 0.15) return "#f97316";
+      return "#ef4444";
+    }
+
+    // p -> y with a sqrt stretch so the region near .05 is readable
+    function yFor(p, top, plotH) {
+      var v = Math.sqrt(Math.max(0, Math.min(1, p)));
+      return top + (1 - v) * plotH;      // p=1 at top, p=0 at bottom
+    }
+
+    function drawExample() {
+      if (!cv) fit();
+      var ctx = cv.ctx, W = cv.w, H = cv.h;
+      var padL = 40, padR = 12, padT = 14, padB = 26;
+      var plotW = W - padL - padR, plotH = H - padT - padB, top = padT;
+      ctx.clearRect(0, 0, W, H);
+
+      var traj = exampleTraj();
+      var xMin = traj.pts[0].n, xMax = traj.pts[traj.pts.length - 1].n;
+      function xFor(n) { return padL + (xMax === xMin ? 0.5 : (n - xMin) / (xMax - xMin)) * plotW; }
+
+      // shaded significance zone (p < .05) at the bottom
+      var y05 = yFor(ALPHA, top, plotH);
+      ctx.fillStyle = "rgba(239,68,68,0.10)";
+      ctx.fillRect(padL, y05, plotW, top + plotH - y05);
+
+      // gridlines + labels at p = 1, .5, .05
+      ctx.font = "10px ui-monospace, monospace";
+      ctx.textBaseline = "middle";
+      [{ p: 1, l: "1.0" }, { p: 0.5, l: "0.5" }, { p: ALPHA, l: "0.05" }].forEach(function (g) {
+        var y = yFor(g.p, top, plotH);
+        ctx.strokeStyle = g.p === ALPHA ? "rgba(239,68,68,0.75)" : VIZ.css("--border");
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        if (g.p === ALPHA) ctx.setLineDash([5, 4]); else ctx.setLineDash([]);
+        ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = g.p === ALPHA ? "#ef4444" : VIZ.css("--text-faint");
+        ctx.textAlign = "right";
+        ctx.fillText(g.l, padL - 6, y);
+      });
+      ctx.fillStyle = VIZ.css("--text-faint");
+      ctx.save();
+      ctx.translate(11, top + plotH / 2); ctx.rotate(-Math.PI / 2);
+      ctx.textAlign = "center"; ctx.fillText("p-value", 0, 0);
+      ctx.restore();
+
+      // x-axis labels (edge-aligned so the endpoints don't clip)
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.textBaseline = "top";
+      ctx.textAlign = "left";  ctx.fillText("n = " + xMin, xFor(xMin), top + plotH + 7);
+      ctx.textAlign = "right"; ctx.fillText("n = " + xMax, xFor(xMax), top + plotH + 7);
+
+      // trajectory line
+      ctx.strokeStyle = VIZ.css("--primary"); ctx.lineWidth = 2; ctx.beginPath();
+      traj.pts.forEach(function (d, i) {
+        var x = xFor(d.n), y = yFor(d.p, top, plotH);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      // points; highlight the first crossing
+      traj.pts.forEach(function (d, i) {
+        var x = xFor(d.n), y = yFor(d.p, top, plotH);
+        var hit = traj.firstHit >= 0 && i === traj.firstHit;
+        ctx.fillStyle = hit ? "#ef4444" : VIZ.css("--primary");
+        ctx.beginPath(); ctx.arc(x, y, hit ? 5 : 3, 0, Math.PI * 2); ctx.fill();
+        if (hit) {
+          ctx.strokeStyle = "rgba(239,68,68,0.55)"; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+          ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, top + plotH); ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      });
+
+      // note under the canvas
+      if (traj.firstHit >= 0) {
+        noteEl.innerHTML = 'A peeker stops at <b class="hit">n = ' + traj.pts[traj.firstHit].n +
+          '</b> and declares a significant result — a <b class="hit">false positive</b> from pure noise.';
+      } else {
+        var finalP = traj.pts[traj.pts.length - 1].p;
+        noteEl.innerHTML = 'This one never crossed .05 (final <em>p</em> = ' + finalP.toFixed(2) +
+          ') — the honest verdict is <b class="null">no effect</b>, which is correct. Draw a few more; about a fifth of peekers get fooled.';
+      }
+    }
+
+    function runMonte() {
+      var r = monte(maxN, peekEvery, TRIALS);
+      fillH.style.width = Math.min(100, r.fixed * 100 * 2.4) + "%";  // scale so ~40% fills the bar
+      fillP.style.width = Math.min(100, r.peek * 100 * 2.4) + "%";
+      fillH.style.background = fillColor(r.fixed);
+      fillP.style.background = fillColor(r.peek);
+      pctH.textContent = (r.fixed * 100).toFixed(1) + "%";
+      pctP.textContent = (r.peek * 100).toFixed(1) + "%";
+    }
+
+    function syncLabels() {
+      maxOut.textContent = maxN;
+      nfOut.textContent = maxN;
+    }
+
+    // ---------- events ----------
+    maxSlider.addEventListener("input", function () {
+      maxN = +maxSlider.value;
+      syncLabels(); drawExample(); runMonte();
+    });
+    peekBtns.addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      peekEvery = +b.dataset.k;
+      Array.prototype.forEach.call(peekBtns.children, function (c) { c.classList.toggle("active", c === b); });
+      drawExample(); runMonte();
+    });
+    document.getElementById("os-new").addEventListener("click", function () { seedExample(); drawExample(); });
+    document.getElementById("os-run").addEventListener("click", runMonte);
+
+    window.addEventListener("resize", function () { fit(); drawExample(); });
+    if (window.ResizeObserver) new ResizeObserver(function () { fit(); drawExample(); }).observe(document.getElementById("os-canvas"));
+    VIZ.onTheme(drawExample);
+
+    // ---------- init ----------
+    fit();
+    syncLabels();
+    drawExample();
+    runMonte();
+  })();
+  </script>
+</body>
+</html>

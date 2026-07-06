@@ -133,6 +133,9 @@
     "why-research-ethics": "Every rule in this course was written after someone was harmed. The capybara reads this one slowly, and remembers why consent comes first.",
     "informed-consent-and-irb": "Before anything begins, the capybara makes sure everyone knows what they're agreeing to — in plain words, and free to say no.",
     "deception-and-debriefing": "If a study must keep a secret, the capybara tells the whole truth the moment it ends — and lets anyone take their data back.",
+    "privacy-and-confidentiality": "The capybara keeps every secret it's trusted with — off email, under lock, and named with the true word: confidential, not “anonymous.”",
+    "questionable-research-practices": "Nobody meant to cheat. The capybara just kept peeking until the noise looked like a finding — so now it fixes the rules before the data arrive.",
+    "plagiarism-authorship-and-citation": "The capybara credits every paw that did the work, quotes what isn't its own, and only cites the ponds it actually swam in.",
     /* Root pages */
     "home": "No rush — capybaras never cram.",
     "toolbox": "A capybara's toolbox: warm water, good snacks, zero deadlines. Yours has calculators too.",

@@ -150,7 +150,10 @@ window.CURRICULUM = [
     sections: [
       { n: "3.1", slug: "why-research-ethics",          title: "Why Research Ethics Exists", ready: true },
       { n: "3.2", slug: "informed-consent-and-irb",     title: "Informed Consent & Ethics Committees", ready: true },
-      { n: "3.3", slug: "deception-and-debriefing",     title: "Deception & Debriefing", ready: true }
+      { n: "3.3", slug: "deception-and-debriefing",     title: "Deception & Debriefing", ready: true },
+      { n: "3.4", slug: "privacy-and-confidentiality",  title: "Privacy & Confidentiality", ready: true },
+      { n: "3.5", slug: "questionable-research-practices", title: "Questionable Research Practices", ready: true },
+      { n: "3.6", slug: "plagiarism-authorship-and-citation", title: "Plagiarism, Authorship & Citation", ready: true }
     ]
   }
 ];

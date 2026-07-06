@@ -90,7 +90,7 @@ Tick these as sessions complete them (each prompt ends by updating this list).
 - [x] P9 · Data 4–6
 - [x] P10 · Data 7–10
 - [x] P11 · Ethics 1–3 (+ scaffold)
-- [ ] P12 · Ethics 4–6
+- [x] P12 · Ethics 4–6
 - [ ] P13 · Ethics 7–8
 - [ ] P14 · ML 1–3 (+ scaffold)
 - [ ] P15 · ML 4–6
