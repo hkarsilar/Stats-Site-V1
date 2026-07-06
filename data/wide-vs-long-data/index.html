@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wide vs Long Data — StatsCapybara</title>
+  <meta name="description" content="Wide and long — the two shapes of a dataset, why repeated-measures software wants one or the other, and an animated pivot that reshapes it live." />
+  <link rel="canonical" href="https://statscapybara.com/data/wide-vs-long-data/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Wide vs Long Data — StatsCapybara" />
+  <meta property="og:description" content="Wide and long — the two shapes of a dataset, why repeated-measures software wants one or the other, and an animated pivot that reshapes it live." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/data/wide-vs-long-data/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Wide vs Long Data — StatsCapybara" />
+  <meta name="twitter:description" content="Wide and long — the two shapes of a dataset, why repeated-measures software wants one or the other, and an animated pivot that reshapes it live." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Wide vs Long Data", "description": "Wide and long — the two shapes of a dataset, why repeated-measures software wants one or the other, and an animated pivot that reshapes it live.", "url": "https://statscapybara.com/data/wide-vs-long-data/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Data: From Raw to Ready", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Wide vs Long Data", "item": "https://statscapybara.com/data/wide-vs-long-data/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Should repeated-measures data be in long or wide format?", "acceptedAnswer": {"@type": "Answer", "text": "It depends entirely on the tool. Classic point-and-click repeated-measures ANOVA in SPSS wants wide — each timepoint in its own column, which it reads as the levels of your within-subject factor. Almost everything else — the tidyverse, pandas, JASP's mixed-model tools, and every multilevel model — wants long, with one row per measurement and a column naming the occasion. The practical answer: keep your clean data in long (tidy) form as the master copy, and pivot to wide only when a specific procedure demands it."}}, {"@type": "Question", "name": "What's the difference between pivot_longer and pivot_wider?", "acceptedAnswer": {"@type": "Answer", "text": "They're inverse operations. pivot_longer() (or pandas melt()) takes several columns and stacks them into two: a key column holding the old column names and a value column holding the numbers — wide becomes long. pivot_wider() (or pandas pivot()) does the reverse, spreading one key column back out into a column per level — long becomes wide. Run one then the other and you return to where you started, as long as each row is uniquely identified by its keys."}}, {"@type": "Question", "name": "Is tidy data the same as long data?", "acceptedAnswer": {"@type": "Answer", "text": "Nearly, but not exactly. Tidy data means each variable is a column, each observation a row, and each cell one value — and for repeated measures that usually produces a long layout, because \"time\" is a variable and so belongs in its own column rather than being smeared across headers. So tidy data is typically long, but \"long\" is really a description of shape while \"tidy\" is a description of meaning. A table can be long and still untidy if, say, two different variables are crammed into one value column."}}]}
+  </script>
+</head>
+<body data-course="data" data-section="wide-vs-long-data">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 2.7</span>
+        <h1>Wide vs Long Data</h1>
+
+        <p class="lede">The <em>same</em> numbers can be laid out two ways. In <strong>wide</strong> format each person gets one row and their repeated measurements fan out across several columns. In <strong>long</strong> format each measurement gets its own row, tagged by who it belongs to and when it was taken. Neither is more correct — but your software has a strong opinion, and moving between the two is a single command once you can picture it.</p>
+
+        <h2>The same data, two shapes</h2>
+        <p>Picture four students measured three times. In <strong>wide</strong> form the table is short and fat — one row per student, a column for each timepoint:</p>
+        <div class="tbl-demo" aria-hidden="true">
+          <table class="mini-tbl">
+            <thead><tr><th>name</th><th>T1</th><th>T2</th><th>T3</th></tr></thead>
+            <tbody>
+              <tr><td>Ann</td><td>10</td><td>13</td><td>15</td></tr>
+              <tr><td>Ben</td><td>8</td><td>11</td><td>10</td></tr>
+              <tr><td>…</td><td>…</td><td>…</td><td>…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The <strong>long</strong> form of the very same data is tall and thin — one row per <em>measurement</em>, with a <code>time</code> column naming the occasion and a <code>score</code> column holding the value:</p>
+        <div class="tbl-demo" aria-hidden="true">
+          <table class="mini-tbl">
+            <thead><tr><th>name</th><th>time</th><th>score</th></tr></thead>
+            <tbody>
+              <tr><td>Ann</td><td>T1</td><td>10</td></tr>
+              <tr><td>Ann</td><td>T2</td><td>13</td></tr>
+              <tr><td>Ann</td><td>T3</td><td>15</td></tr>
+              <tr><td>Ben</td><td>T1</td><td>8</td></tr>
+              <tr><td>…</td><td>…</td><td>…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Notice what happens to the column <em>headers</em> when you go long: <strong>T1, T2, T3 stop being column names and become values</strong> in the <code>time</code> column, and the name repeats down the rows. That's the whole trick — the reshape below lets you watch every cell make the trip.</p>
+
+        <!-- ============ INTERACTIVE 1 ============ -->
+        <div class="viz" id="pv">
+          <p class="viz-title">🔄 Animated Pivot</p>
+          <p class="viz-sub">The same four-person, three-timepoint dataset. Press the buttons to reshape it and watch each cell fly to its new home — the column headers becoming a <span style="color:#f97316;font-weight:600">time</span> column, the <span style="color:var(--secondary);font-weight:600">names</span> replicating, the <span style="color:var(--primary);font-weight:600">scores</span> rearranging.</p>
+          <div class="controls">
+            <div class="control seg" role="group" aria-label="Reshape direction">
+              <button class="btn btn-sm seg-btn is-on" data-dir="wide" type="button">◧ Wide</button>
+              <button class="btn btn-sm seg-btn" data-dir="long" type="button">Long ▤</button>
+            </div>
+          </div>
+          <canvas id="pv-canvas" height="330" aria-label="Animation reshaping a dataset between wide format (one row per person, timepoints as columns) and long format (one row per measurement, with a time column)."></canvas>
+          <div class="pv-legend">
+            <span><i style="background:var(--secondary)"></i> name</span>
+            <span><i style="background:#f97316"></i> time (was a header)</span>
+            <span><i style="background:var(--primary)"></i> score</span>
+          </div>
+          <p class="pv-note" id="pv-note"></p>
+        </div>
+        <!-- ============ /INTERACTIVE 1 ============ -->
+
+        <h2>Which shape does my software want?</h2>
+        <p>This is the practical reason the distinction matters — the two ecosystems disagree:</p>
+        <ul>
+          <li><strong>Wide</strong> — classic point-and-click <a href="../../stats-2/repeated-measures-anova/">repeated-measures ANOVA</a> in SPSS expects each timepoint in its own column (it reads "T1, T2, T3" as the levels of your within-subject factor). Correlation matrices and many spreadsheets are happiest wide too.</li>
+          <li><strong>Long</strong> — the tidyverse (R), pandas, JASP's mixed-model tools, and every <a href="../../stats-4/mixed-and-multilevel-models/">mixed / multilevel model</a> want one row per observation, with columns for the person ID, the occasion, and the value. This is exactly <a href="../tidy-data/">tidy data</a>: T1/T2/T3 are values of the variable <em>time</em>, so they belong in a column, not in the header.</li>
+        </ul>
+        <p>So "which is right?" has no answer in the abstract — it depends on the next tool in your pipeline. What matters is that you can <em>get from one to the other on demand</em>.</p>
+
+        <h2>Pivoting is one operation, not a rebuild</h2>
+        <p>You never reshape a table by hand. Every data package has a matched pair of verbs:</p>
+        <ul>
+          <li><strong>wide → long</strong>: <code>pivot_longer()</code> (tidyr) or <code>melt()</code> (pandas) — collapse a set of columns into a key column (which header?) and a value column (what number?).</li>
+          <li><strong>long → wide</strong>: <code>pivot_wider()</code> (tidyr) or <code>pivot()</code> (pandas) — spread a key column back out into one column per level.</li>
+        </ul>
+        <p>Both are lossless and reversible: pivot longer then wider and you're back where you started, provided each row is uniquely identified by its keys (here, <code>name</code> + <code>time</code>). If a pivot silently drops or duplicates rows, that's usually a sign your keys aren't unique — the same alarm bell you'll meet again when <a href="../merging-datasets/">merging datasets</a>.</p>
+
+        <div class="callout key">
+          <p><strong>Wide is short and fat (one row per subject); long is tall and thin (one row per measurement).</strong> Long format is tidy and is what R, pandas, JASP, and mixed models want; wide is what SPSS repeated-measures and correlation matrices want. Learn the two reshape verbs and the shape becomes a setting you flip, not a table you rebuild.</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> half of "my analysis won't run" is really "my data is in the wrong shape for this tool." Keep your <a href="../tidy-data/">clean data</a> in long (tidy) form as the reference copy, and pivot to wide only when a specific procedure demands it — as a step <em>in your script</em>, so the reshape is documented and reversible like every other <a href="../data-cleaning-workflow/">cleaning step</a>.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>Should repeated-measures data be in long or wide format?</summary>
+            <div class="faq-a"><p>It depends entirely on the tool. Classic point-and-click <a href="../../stats-2/repeated-measures-anova/">repeated-measures ANOVA</a> in SPSS wants <strong>wide</strong> — each timepoint in its own column, which it reads as the levels of your within-subject factor. Almost everything else — the tidyverse, pandas, JASP's mixed-model tools, and every <a href="../../stats-4/mixed-and-multilevel-models/">multilevel model</a> — wants <strong>long</strong>, with one row per measurement and a column naming the occasion. The practical answer: keep your clean data in long (tidy) form as the master copy, and pivot to wide only when a specific procedure demands it.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What's the difference between pivot_longer and pivot_wider?</summary>
+            <div class="faq-a"><p>They're inverse operations. <code>pivot_longer()</code> (or pandas <code>melt()</code>) takes several columns and stacks them into two: a <em>key</em> column holding the old column names and a <em>value</em> column holding the numbers — wide becomes long. <code>pivot_wider()</code> (or pandas <code>pivot()</code>) does the reverse, spreading one key column back out into a column per level — long becomes wide. Run one then the other and you return to where you started, as long as each row is uniquely identified by its keys.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Is tidy data the same as long data?</summary>
+            <div class="faq-a"><p>Nearly, but not exactly. <a href="../../data/tidy-data/">Tidy data</a> means each variable is a column, each observation a row, and each cell one value — and for repeated measures that usually produces a long layout, because "time" is a variable and so belongs in its own column rather than being smeared across headers. So tidy data is typically long, but "long" is really a description of shape while "tidy" is a description of meaning. A table can be long and still untidy if, say, two different variables are crammed into one value column.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <style>
+    /* wide-vs-long-data widgets (scoped) */
+    .mini-tbl { border-collapse:collapse; font-size:.9rem; margin:.2rem 0; }
+    .mini-tbl th, .mini-tbl td { border:1px solid var(--border); padding:.28rem .7rem; text-align:center; }
+    .mini-tbl th { background:var(--surface-2); color:var(--text-muted); font-weight:600; }
+    .tbl-demo { overflow-x:auto; }
+    #pv .seg { display:inline-flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+    #pv .seg-btn { border:none; border-radius:0; background:var(--surface-2); color:var(--text-muted); border-right:1px solid var(--border); }
+    #pv .seg-btn:last-child { border-right:none; }
+    #pv .seg-btn.is-on { background:var(--primary); color:#fff; }
+    #pv canvas { width:100%; display:block; margin:.7rem 0 .3rem; }
+    #pv .pv-legend { display:flex; flex-wrap:wrap; gap:.4rem 1.1rem; font-size:.82rem; color:var(--text-muted); }
+    #pv .pv-legend span { display:inline-flex; align-items:center; gap:.4rem; }
+    #pv .pv-legend i { width:12px; height:12px; border-radius:3px; display:inline-block; }
+    #pv .pv-note { font-size:.85rem; color:var(--text-muted); margin:.6rem 0 0; line-height:1.5; min-height:2.4em; }
+  </style>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ animated pivot (deterministic; fixed dataset) ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var V = window.VIZ;
+    var canvas = document.getElementById("pv-canvas");
+    var ctx = canvas.getContext("2d");
+
+    var names = ["Ann", "Ben", "Cara", "Dan"];
+    var times = ["T1", "T2", "T3"];
+    var scores = [[10, 13, 15], [8, 11, 10], [12, 12, 16], [9, 7, 11]];
+
+    // one token per (person p, time t) for each of the three roles
+    var tokens = [];
+    for (var p = 0; p < 4; p++) for (var t = 0; t < 3; t++) {
+      tokens.push({ p: p, t: t, role: "name",  text: names[p] });
+      tokens.push({ p: p, t: t, role: "time",  text: times[t] });
+      tokens.push({ p: p, t: t, role: "score", text: String(scores[p][t]) });
+    }
+
+    var s = 0;               // 0 = wide, 1 = long (animated)
+    var target = 0, raf = null;
+
+    function ease(x){ return x < 0.5 ? 2*x*x : 1 - Math.pow(-2*x + 2, 2) / 2; }
+    function lerp(a, b, k){ return a + (b - a) * k; }
+
+    function geo() {
+      var W = canvas.clientWidth, H = canvas.clientHeight;
+      var headerCy = 26, top = 44, bot = H - 8, band = bot - top;
+      var wx0 = 6, wx1 = W * 0.44, lx0 = W * 0.56, lx1 = W - 6;
+      return {
+        W: W, H: H, headerCy: headerCy, top: top, bot: bot, band: band,
+        wx0: wx0, wx1: wx1, lx0: lx0, lx1: lx1,
+        wcw: (wx1 - wx0) / 4, lcw: (lx1 - lx0) / 3,
+        wRowH: band / 4, lRowH: band / 12
+      };
+    }
+    function wCol(g, c){ return g.wx0 + (c + 0.5) * g.wcw; }
+    function lCol(g, c){ return g.lx0 + (c + 0.5) * g.lcw; }
+    function wRow(g, p){ return g.top + (p + 0.5) * g.wRowH; }
+    function lRow(g, r){ return g.top + (r + 0.5) * g.lRowH; }
+
+    function widePos(g, tk) {
+      if (tk.role === "name")  return { x: wCol(g, 0),         y: wRow(g, tk.p) };
+      if (tk.role === "time")  return { x: wCol(g, 1 + tk.t),  y: g.headerCy };   // sits in the header
+      return { x: wCol(g, 1 + tk.t), y: wRow(g, tk.p) };                          // score in body cell
+    }
+    function longPos(g, tk) {
+      var r = tk.p * 3 + tk.t;
+      if (tk.role === "name")  return { x: lCol(g, 0), y: lRow(g, r) };
+      if (tk.role === "time")  return { x: lCol(g, 1), y: lRow(g, r) };
+      return { x: lCol(g, 2), y: lRow(g, r) };
+    }
+
+    function roleColor(role) {
+      if (role === "name")  return V.css("--secondary") || "#14b8a6";
+      if (role === "time")  return "#f97316";
+      return V.css("--primary") || "#6366f1";
+    }
+
+    function skeleton(g, alpha, x0, x1, cols, rows, rowH, labels) {
+      var border = V.css("--border") || "#ccc", muted = V.css("--text-muted") || "#667";
+      ctx.save(); ctx.globalAlpha = alpha;
+      ctx.strokeStyle = border; ctx.lineWidth = 1;
+      ctx.strokeRect(x0, g.top - 2, x1 - x0, rows * rowH + 2);
+      for (var r = 1; r < rows; r++){ var yy = g.top + r * rowH; ctx.beginPath(); ctx.moveTo(x0, yy); ctx.lineTo(x1, yy); ctx.stroke(); }
+      var cw = (x1 - x0) / cols;
+      for (var c = 1; c < cols; c++){ var xx = x0 + c * cw; ctx.beginPath(); ctx.moveTo(xx, g.top - 2); ctx.lineTo(xx, g.top + rows * rowH); ctx.stroke(); }
+      ctx.fillStyle = muted; ctx.font = "600 11px system-ui, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      for (var i = 0; i < labels.length; i++) ctx.fillText(labels[i], x0 + (i + 0.5) * cw, g.headerCy);
+      ctx.restore();
+    }
+
+    function pill(x, y, text, color) {
+      ctx.font = "600 11px system-ui, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      var w = Math.max(26, ctx.measureText(text).width + 14), h = 17, r = 5;
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(x - w/2 + r, y - h/2);
+      ctx.arcTo(x + w/2, y - h/2, x + w/2, y + h/2, r);
+      ctx.arcTo(x + w/2, y + h/2, x - w/2, y + h/2, r);
+      ctx.arcTo(x - w/2, y + h/2, x - w/2, y - h/2, r);
+      ctx.arcTo(x - w/2, y - h/2, x + w/2, y - h/2, r);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "#fff"; ctx.fillText(text, x, y + 0.5);
+    }
+
+    function draw() {
+      V.fit(canvas, 330);
+      var g = geo();
+      ctx.clearRect(0, 0, g.W, g.H);
+      // captions
+      ctx.fillStyle = V.css("--text-faint") || "#9aa"; ctx.font = "600 11px system-ui, sans-serif";
+      ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+      ctx.fillText("WIDE", g.wx0, 14);
+      ctx.textAlign = "right"; ctx.fillText("LONG", g.lx1, 14);
+      // both skeletons, each fading as its side empties
+      skeleton(g, 0.35 + 0.5 * (1 - s), g.wx0, g.wx1, 4, 4, g.wRowH, ["name", "T1", "T2", "T3"]);
+      skeleton(g, 0.35 + 0.5 * s,       g.lx0, g.lx1, 3, 12, g.lRowH, ["name", "time", "score"]);
+      // tokens fly between wide and long positions
+      var k = ease(s);
+      for (var i = 0; i < tokens.length; i++) {
+        var tk = tokens[i], a = widePos(g, tk), b = longPos(g, tk);
+        pill(lerp(a.x, b.x, k), lerp(a.y, b.y, k), tk.text, roleColor(tk.role));
+      }
+    }
+
+    function note() {
+      document.getElementById("pv-note").innerHTML = (target === 0)
+        ? "<strong>Wide:</strong> 4 rows × 4 columns — one row per person, timepoints spread across columns. This is what SPSS repeated-measures ANOVA reads."
+        : "<strong>Long:</strong> 12 rows × 3 columns — one row per measurement. <em>time</em> is now a column of values, names repeat, and the table is tidy — what R, pandas, JASP, and mixed models want.";
+    }
+
+    function animate() {
+      var step = (target - s) * 0.14;
+      if (Math.abs(target - s) < 0.003) { s = target; draw(); raf = null; return; }
+      s += step; draw(); raf = requestAnimationFrame(animate);
+    }
+    function go(dir) {
+      target = (dir === "long") ? 1 : 0;
+      note();
+      if (!raf) raf = requestAnimationFrame(animate);
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll("#pv .seg-btn"), function (b) {
+      b.addEventListener("click", function () {
+        Array.prototype.forEach.call(document.querySelectorAll("#pv .seg-btn"), function (x) { x.classList.toggle("is-on", x === b); });
+        go(b.getAttribute("data-dir"));
+      });
+    });
+    window.addEventListener("resize", draw);
+    if (V.onTheme) V.onTheme(draw);
+    note(); draw();
+  })();
+  </script>
+</body>
+</html>

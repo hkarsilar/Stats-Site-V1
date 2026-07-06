@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Merging Datasets — StatsCapybara</title>
+  <meta name="description" content="Keys, and the four table joins (inner, left, right, full) in plain language — with a visual explorer that links matching rows and audits the row count." />
+  <link rel="canonical" href="https://statscapybara.com/data/merging-datasets/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Merging Datasets — StatsCapybara" />
+  <meta property="og:description" content="Keys, and the four table joins (inner, left, right, full) in plain language — with a visual explorer that links matching rows and audits the row count." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/data/merging-datasets/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Merging Datasets — StatsCapybara" />
+  <meta name="twitter:description" content="Keys, and the four table joins (inner, left, right, full) in plain language — with a visual explorer that links matching rows and audits the row count." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Merging Datasets", "description": "Keys, and the four table joins (inner, left, right, full) in plain language — with a visual explorer that links matching rows and audits the row count.", "url": "https://statscapybara.com/data/merging-datasets/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Data: From Raw to Ready", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Merging Datasets", "item": "https://statscapybara.com/data/merging-datasets/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why did my merge create duplicate rows?", "acceptedAnswer": {"@type": "Answer", "text": "Because the key isn't unique in one of the tables. A join matches every copy of a key on one side to every copy on the other, so if an ID appears twice in the table you're joining to, each matching row on the other side is duplicated — a many-to-many join. It's the classic silent bug: nothing errors, you just quietly end up with more rows (and inflated statistics) than you have participants. Before joining, check each key is unique where you expect it to be (duplicated() in R, .is_unique in pandas), and compare the row count before and after."}}, {"@type": "Question", "name": "What's the difference between an inner join and a left join?", "acceptedAnswer": {"@type": "Answer", "text": "An inner join keeps only rows whose key appears in both tables — anyone missing from either side is dropped, giving you complete cases. A left join keeps every row of the left (\"main\") table and attaches matches from the right where they exist, filling NA where they don't. Use a left join as your default when one table is your participant list and you don't want to lose anyone; use an inner join when you deliberately want only the people present in both sources."}}, {"@type": "Question", "name": "My merge dropped half my rows — what went wrong?", "acceptedAnswer": {"@type": "Answer", "text": "Almost always a key mismatch. The join is comparing keys that look the same to you but not to the computer: a trailing space (\"P01 \" vs \"P01\"), a number stored as text on one side (1 vs \"01\"), or different capitalisation. Because those keys never match, an inner join silently discards them. Clean and standardise the key column on both sides first — trim whitespace, fix the type, unify the case — then rejoin and confirm the row count is what you expected."}}]}
+  </script>
+</head>
+<body data-course="data" data-section="merging-datasets">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 2.8</span>
+        <h1>Merging Datasets</h1>
+
+        <p class="lede">Real projects rarely live in one file. Demographics sit in one table, survey responses in another, lab results in a third — and at some point you need them side by side, one row per person. That stitching-together is a <strong>join</strong> (a "merge"). It looks trivial and usually is, right up until a mismatched key silently drops half your sample or a repeated key quietly doubles it.</p>
+
+        <h2>Keys line the rows up</h2>
+        <p>A join matches rows across two tables using a shared <strong>key</strong> — a column both tables carry that says which row belongs with which, most often a participant ID. Get the key right and everything follows; get it wrong and the merge is nonsense.</p>
+        <p>The one property that decides how a join behaves is <strong>uniqueness</strong>. If the key is unique in a table (each ID appears once), that table contributes at most one row per match. If it repeats, every copy matches — which is sometimes what you want (long-format repeated measures) and sometimes an accident that inflates your data. Below, the <code>sessions</code> table has ID&nbsp;3 twice; watch what that does.</p>
+
+        <!-- ============ INTERACTIVE 1 ============ -->
+        <div class="viz" id="jn">
+          <p class="viz-title">🔗 Visual Join Explorer</p>
+          <p class="viz-sub">Two little tables sharing the key <code>id</code>. Pick a join type and watch which rows match up, which fall away, and what the row count does. Rows kept but unmatched fill the missing side with <span class="na-inline">NA</span>.</p>
+          <div class="controls">
+            <div class="control seg" role="group" aria-label="Join type">
+              <button class="btn btn-sm seg-btn is-on" data-j="inner" type="button">inner</button>
+              <button class="btn btn-sm seg-btn" data-j="left" type="button">left</button>
+              <button class="btn btn-sm seg-btn" data-j="right" type="button">right</button>
+              <button class="btn btn-sm seg-btn" data-j="full" type="button">full</button>
+            </div>
+          </div>
+          <div class="jn-sources">
+            <div class="jn-tbl-wrap">
+              <p class="jn-cap">participants</p>
+              <table class="jn-tbl" id="jn-left"></table>
+            </div>
+            <div class="jn-arrow">⋈</div>
+            <div class="jn-tbl-wrap">
+              <p class="jn-cap">sessions</p>
+              <table class="jn-tbl" id="jn-right"></table>
+            </div>
+          </div>
+          <p class="jn-desc" id="jn-desc"></p>
+          <p class="jn-cap jn-result-cap">result</p>
+          <table class="jn-tbl jn-result" id="jn-out"></table>
+          <div class="jn-audit" id="jn-audit"></div>
+        </div>
+        <!-- ============ /INTERACTIVE 1 ============ -->
+
+        <h2>Four joins in plain language</h2>
+        <p>Every join answers one question: <em>when a key exists in only one table, do we keep that row?</em></p>
+        <ul>
+          <li><strong>inner</strong> — keep only rows whose key appears in <em>both</em> tables. The strictest, cleanest join; anyone missing from either side vanishes. Reach for it when you want complete cases only.</li>
+          <li><strong>left</strong> — keep <em>every</em> row of the left table; fill in from the right where a match exists, leave <span class="na-inline">NA</span> where it doesn't. The everyday workhorse: "attach lab results to my participant list, and don't lose participants who never came in."</li>
+          <li><strong>right</strong> — the mirror image: keep every row of the right table. Rarely needed — you can always swap the tables and use a left join instead.</li>
+          <li><strong>full</strong> — keep <em>everyone</em> from both sides, matching where possible and padding with <span class="na-inline">NA</span> elsewhere. Nothing is lost; use it when you need to see exactly who is missing from where.</li>
+        </ul>
+
+        <h2>Two habits that save you</h2>
+        <p>Almost every merge disaster is caught by two cheap checks:</p>
+        <ul>
+          <li><strong>Check your keys are unique first.</strong> If the same ID appears more than once in a table you meant to be one-row-per-person, a join becomes <strong>many-to-many</strong> and the output multiplies: two matching rows on each side of one key produce four rows. That's how a clean 200-person dataset becomes 380 rows nobody ordered.</li>
+          <li><strong>Count rows before and after.</strong> Know your expected row count going in (usually the size of your "spine" table) and compare it to what you got. A left join should return exactly as many rows as the left table <em>unless</em> the right key repeats. A drop means a key mismatch (trailing spaces, <code>"01"</code> vs <code>1</code>, upper vs lower case — clean the key like any other field first, see <a href="../data-cleaning-workflow/">the cleaning workflow</a>). A jump up means a duplicate key.</li>
+        </ul>
+
+        <div class="callout key">
+          <p><strong>A join is only as good as its key.</strong> Match on a shared, cleaned, ideally-unique key; pick <em>inner</em> for complete cases and <em>left</em> to protect your main table; and always compare the row count before and after. If it changed when you didn't expect it to, stop — a mismatch dropped rows or a duplicate key multiplied them.</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> a silent join error doesn't crash — it hands you a plausible-looking table with the wrong people in it, and every statistic downstream is quietly wrong. The same uniqueness question governs <a href="../wide-vs-long-data/">reshaping</a>: keys that don't uniquely identify a row break pivots and joins alike. Do the merge in a <a href="../reproducible-workflows/">script</a>, assert the row count you expect, and let the assertion fail loudly rather than the analysis fail silently.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>Why did my merge create duplicate rows?</summary>
+            <div class="faq-a"><p>Because the key isn't unique in one of the tables. A join matches every copy of a key on one side to every copy on the other, so if an ID appears twice in the table you're joining <em>to</em>, each matching row on the other side is duplicated — a <strong>many-to-many</strong> join. It's the classic silent bug: nothing errors, you just quietly end up with more rows (and inflated statistics) than you have participants. Before joining, check each key is unique where you expect it to be (<code>duplicated()</code> in R, <code>.is_unique</code> in pandas), and compare the row count before and after.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What's the difference between an inner join and a left join?</summary>
+            <div class="faq-a"><p>An <strong>inner join</strong> keeps only rows whose key appears in <em>both</em> tables — anyone missing from either side is dropped, giving you complete cases. A <strong>left join</strong> keeps <em>every</em> row of the left ("main") table and attaches matches from the right where they exist, filling <code>NA</code> where they don't. Use a left join as your default when one table is your participant list and you don't want to lose anyone; use an inner join when you deliberately want only the people present in both sources.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>My merge dropped half my rows — what went wrong?</summary>
+            <div class="faq-a"><p>Almost always a key mismatch. The join is comparing keys that <em>look</em> the same to you but not to the computer: a trailing space (<code>"P01 "</code> vs <code>"P01"</code>), a number stored as text on one side (<code>1</code> vs <code>"01"</code>), or different capitalisation. Because those keys never match, an inner join silently discards them. <a href="../../data/data-cleaning-workflow/">Clean and standardise the key column</a> on both sides first — trim whitespace, fix the type, unify the case — then rejoin and confirm the row count is what you expected.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <style>
+    /* merging-datasets widgets (scoped) */
+    #jn .seg { display:inline-flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+    #jn .seg-btn { border:none; border-radius:0; background:var(--surface-2); color:var(--text-muted); border-right:1px solid var(--border); font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+    #jn .seg-btn:last-child { border-right:none; }
+    #jn .seg-btn.is-on { background:var(--primary); color:#fff; }
+    #jn .jn-sources { display:flex; align-items:center; justify-content:center; gap:.7rem; flex-wrap:wrap; margin:.8rem 0 .2rem; }
+    #jn .jn-arrow { font-size:1.4rem; color:var(--text-faint); }
+    #jn .jn-cap { font-size:.78rem; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin:0 0 .25rem; font-weight:600; }
+    #jn .jn-result-cap { margin-top:.9rem; }
+    #jn table.jn-tbl { border-collapse:collapse; font-size:.88rem; }
+    #jn .jn-tbl th, #jn .jn-tbl td { border:1px solid var(--border); padding:.26rem .7rem; text-align:center; }
+    #jn .jn-tbl th { background:var(--surface-2); color:var(--text-muted); font-weight:600; }
+    #jn .jn-tbl td.key { font-weight:700; }
+    #jn .jn-tbl tr.matched td { background:color-mix(in srgb, var(--secondary) 16%, transparent); }
+    #jn .jn-tbl tr.nomatch td { background:color-mix(in srgb, #f97316 14%, transparent); }
+    #jn .jn-tbl tr.dropped td { opacity:.32; text-decoration:line-through; }
+    #jn .na-inline, #jn td.na { color:#f97316; font-style:italic; }
+    #jn td.na { font-weight:600; }
+    #jn .jn-result { margin:0 auto; }
+    #jn .jn-desc { font-size:.85rem; color:var(--text-muted); margin:.5rem 0; line-height:1.5; }
+    #jn .jn-audit { font-size:.85rem; margin:.6rem 0 0; line-height:1.55; text-align:center; }
+    #jn .jn-audit .cnt { font-weight:700; color:var(--text); }
+    #jn .jn-audit .warn { display:block; margin-top:.35rem; color:#f97316; }
+  </style>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ visual join explorer (deterministic; fixed tables) ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var left  = [{ id: 1, name: "Ann" }, { id: 2, name: "Ben" }, { id: 3, name: "Cara" }, { id: 4, name: "Dan" }];
+    var right = [{ id: 2, minutes: 30 }, { id: 3, minutes: 45 }, { id: 3, minutes: 20 }, { id: 5, minutes: 15 }];
+    var join = "inner";
+    var NA = '<span class="na">NA</span>';
+
+    function rightMatches(id){ return right.filter(function (r) { return r.id === id; }); }
+    function leftMatches(id){ return left.filter(function (l) { return l.id === id; }); }
+
+    function renderSource(el, rows, cols, keptFn) {
+      var head = "<thead><tr>" + cols.map(function (c) { return "<th>" + c + "</th>"; }).join("") + "</tr></thead>";
+      var body = rows.map(function (row) {
+        var st = keptFn(row);   // "matched" | "nomatch" | "dropped"
+        var tds = cols.map(function (c) {
+          return "<td class='" + (c === "id" ? "key" : "") + "'>" + row[c] + "</td>";
+        }).join("");
+        return "<tr class='" + st + "'>" + tds + "</tr>";
+      }).join("");
+      el.innerHTML = head + "<tbody>" + body + "</tbody>";
+    }
+
+    function buildResult() {
+      var rows = [];
+      // left-driven rows (inner/left/full)
+      if (join !== "right") {
+        left.forEach(function (l) {
+          var ms = rightMatches(l.id);
+          if (ms.length) ms.forEach(function (r) { rows.push({ id: l.id, name: l.name, minutes: r.minutes }); });
+          else if (join === "left" || join === "full") rows.push({ id: l.id, name: l.name, minutes: null });
+        });
+      }
+      // right-only rows (right/full) — keys with no left partner
+      if (join === "right" || join === "full") {
+        right.forEach(function (r) {
+          if (!leftMatches(r.id).length) rows.push({ id: r.id, name: null, minutes: r.minutes });
+        });
+      }
+      // pure right join: every right row, matched to its (unique here) left partner
+      if (join === "right") {
+        rows = right.map(function (r) {
+          var l = leftMatches(r.id)[0];
+          return { id: r.id, name: l ? l.name : null, minutes: r.minutes };
+        });
+      }
+      return rows;
+    }
+
+    function render() {
+      // source highlighting
+      renderSource(document.getElementById("jn-left"), left, ["id", "name"], function (l) {
+        var has = rightMatches(l.id).length > 0;
+        if (has) return "matched";
+        return (join === "left" || join === "full") ? "nomatch" : "dropped";
+      });
+      renderSource(document.getElementById("jn-right"), right, ["id", "minutes"], function (r) {
+        var has = leftMatches(r.id).length > 0;
+        if (has) return "matched";
+        return (join === "right" || join === "full") ? "nomatch" : "dropped";
+      });
+
+      // result table
+      var rows = buildResult();
+      var out = document.getElementById("jn-out");
+      var head = "<thead><tr><th>id</th><th>name</th><th>minutes</th></tr></thead>";
+      var body = rows.map(function (r) {
+        return "<tr><td class='key'>" + r.id + "</td><td" + (r.name === null ? " class='na'>NA" : ">" + r.name) +
+               "</td><td" + (r.minutes === null ? " class='na'>NA" : ">" + r.minutes) + "</td></tr>";
+      }).join("");
+      out.innerHTML = head + "<tbody>" + body + "</tbody>";
+
+      // descriptions + audit
+      var desc = {
+        inner: "<strong>inner:</strong> keep only ids in <em>both</em> tables. Ann (1) and Dan (4) have no session and vanish; session id 5 has no participant and vanishes.",
+        left:  "<strong>left:</strong> keep all four participants; Ann and Dan get <span class='na-inline'>NA</span> minutes. Session id 5 is dropped — it isn't in the left table.",
+        right: "<strong>right:</strong> keep all four sessions; id 5 gets an <span class='na-inline'>NA</span> name. Participants Ann and Dan are dropped.",
+        full:  "<strong>full:</strong> keep everyone. Ann and Dan get NA minutes, session id 5 gets an NA name — nothing is lost."
+      }[join];
+      document.getElementById("jn-desc").innerHTML = desc;
+
+      var many = rows.filter(function (r) { return r.id === 3; }).length;
+      var audit = "<span class='cnt'>4</span> participant rows &nbsp;⋈&nbsp; <span class='cnt'>4</span> session rows &nbsp;→&nbsp; <span class='cnt'>" + rows.length + "</span> result rows";
+      if (many > 1) audit += "<span class='warn'>⚠ id 3 appears twice in <code>sessions</code>, so Cara is duplicated — the result has more rows than the participant table. That's a many-to-many join: always check the count.</span>";
+      document.getElementById("jn-audit").innerHTML = audit;
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll("#jn .seg-btn"), function (b) {
+      b.addEventListener("click", function () {
+        join = b.getAttribute("data-j");
+        Array.prototype.forEach.call(document.querySelectorAll("#jn .seg-btn"), function (x) { x.classList.toggle("is-on", x === b); });
+        render();
+      });
+    });
+    render();
+  })();
+  </script>
+</body>
+</html>

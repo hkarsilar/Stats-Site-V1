@@ -599,6 +599,75 @@ FAQS_DATA = {
   "Yes — reverse-code first, always. If a questionnaire mixes positively and negatively worded items (\"I feel calm\" alongside \"I feel tense\"), the negative ones run in the opposite direction; average them in raw and they partly cancel the others, deflating both the scale's <a href=\"../../methods/reliability-and-validity/\">reliability</a> and its validity. Flip each reverse item with <code>6 − x</code> on a 1–5 scale (or <code>max + min − x</code> in general) so every item points the same way, then compute the composite. Recompute Cronbach's α afterwards to confirm the items now hang together."),
 ],
 
+"wide-vs-long-data": [
+ ("Should repeated-measures data be in long or wide format?",
+  "It depends entirely on the tool. Classic point-and-click <a href=\"../../stats-2/repeated-measures-anova/\">repeated-measures ANOVA</a> in SPSS wants <strong>wide</strong> — each timepoint in its own column, which it reads as the levels of your within-subject factor. Almost everything else — the tidyverse, pandas, JASP's mixed-model tools, and every <a href=\"../../stats-4/mixed-and-multilevel-models/\">multilevel model</a> — wants <strong>long</strong>, with one row per measurement and a column naming the occasion. The practical answer: keep your clean data in long (tidy) form as the master copy, and pivot to wide only when a specific procedure demands it."),
+ ("What's the difference between pivot_longer and pivot_wider?",
+  "They're inverse operations. <code>pivot_longer()</code> (or pandas <code>melt()</code>) takes several columns and stacks them into two: a <em>key</em> column holding the old column names and a <em>value</em> column holding the numbers — wide becomes long. <code>pivot_wider()</code> (or pandas <code>pivot()</code>) does the reverse, spreading one key column back out into a column per level — long becomes wide. Run one then the other and you return to where you started, as long as each row is uniquely identified by its keys."),
+ ("Is tidy data the same as long data?",
+  "Nearly, but not exactly. <a href=\"../../data/tidy-data/\">Tidy data</a> means each variable is a column, each observation a row, and each cell one value — and for repeated measures that usually produces a long layout, because \"time\" is a variable and so belongs in its own column rather than being smeared across headers. So tidy data is typically long, but \"long\" is really a description of shape while \"tidy\" is a description of meaning. A table can be long and still untidy if, say, two different variables are crammed into one value column."),
+],
+
+"merging-datasets": [
+ ("Why did my merge create duplicate rows?",
+  "Because the key isn't unique in one of the tables. A join matches every copy of a key on one side to every copy on the other, so if an ID appears twice in the table you're joining <em>to</em>, each matching row on the other side is duplicated — a <strong>many-to-many</strong> join. It's the classic silent bug: nothing errors, you just quietly end up with more rows (and inflated statistics) than you have participants. Before joining, check each key is unique where you expect it to be (<code>duplicated()</code> in R, <code>.is_unique</code> in pandas), and compare the row count before and after."),
+ ("What's the difference between an inner join and a left join?",
+  "An <strong>inner join</strong> keeps only rows whose key appears in <em>both</em> tables — anyone missing from either side is dropped, giving you complete cases. A <strong>left join</strong> keeps <em>every</em> row of the left (\"main\") table and attaches matches from the right where they exist, filling <code>NA</code> where they don't. Use a left join as your default when one table is your participant list and you don't want to lose anyone; use an inner join when you deliberately want only the people present in both sources."),
+ ("My merge dropped half my rows — what went wrong?",
+  "Almost always a key mismatch. The join is comparing keys that <em>look</em> the same to you but not to the computer: a trailing space (<code>\"P01 \"</code> vs <code>\"P01\"</code>), a number stored as text on one side (<code>1</code> vs <code>\"01\"</code>), or different capitalisation. Because those keys never match, an inner join silently discards them. <a href=\"../../data/data-cleaning-workflow/\">Clean and standardise the key column</a> on both sides first — trim whitespace, fix the type, unify the case — then rejoin and confirm the row count is what you expected."),
+],
+
+"reproducible-workflows": [
+ ("Do I have to use code — can't I just use SPSS menus?",
+  "Menus are fine for <em>exploring</em> data, but the analysis itself should be scripted, and SPSS supports this: every dialog can paste its <strong>syntax</strong>, and running that syntax file reproduces the result exactly. The problem with clicking isn't SPSS — it's that a click leaves no record, so six months later you can't say what you did or repeat it. A saved syntax (or R/Python) script is a re-runnable, shareable, correctable recipe. You don't have to abandon your software; you have to keep the record of what it did."),
+ ("What does setting a seed actually do?",
+  "Computers generate \"random\" numbers from a deterministic sequence started by a <em>seed</em>. Set the seed to a fixed value (<code>set.seed(1)</code>, <code>np.random.default_rng(1)</code>) and that sequence — and every bootstrap, simulation, shuffle, or random split that draws from it — comes out identical on every run and every machine. Without a seed, anything random gives different numbers each time, so your results can't be reproduced. Set it once, near the top of the script, before any random step."),
+ ("What makes an analysis reproducible?",
+  "That someone else — or future-you — can take your files and regenerate every reported number with nothing else. In practice that means: the raw data is included and never edited by hand; all cleaning and analysis live in scripts that read the raw data and write the output; anything random is <a href=\"../../data/reproducible-workflows/\">seeded</a>; and the software and package versions are recorded. The test is concrete: hand your project folder to a stranger and ask whether they could rebuild your results without emailing you. If they'd need a verbal explanation, something isn't documented yet."),
+],
+
+"data-privacy-basics": [
+ ("Is removing names enough to anonymize data?",
+  "No. Stripping names and other direct identifiers gives you <em>de-identified</em> data, not anonymous data, because the ordinary details left behind can still single people out. In a well-known result, Latanya Sweeney showed that about <strong>87% of Americans are uniquely identified by ZIP code, date of birth, and sex alone</strong> — three fields on almost every \"anonymized\" record. Cross-referenced with a public list, those quasi-identifiers put the names back. Real anonymization needs you to generalize or suppress those fields too, not just delete the obvious ones."),
+ ("What's the difference between anonymized and pseudonymized data?",
+  "<strong>Anonymized</strong> data cannot be traced back to a person by anyone, even in principle — there's no key and the remaining fields don't re-identify. <strong>Pseudonymized</strong> data replaces direct identifiers with a code (participant P037) while a separate, secured <em>key</em> still links codes to people; it's reversible by design, which is handy for follow-ups but means the data are <em>not</em> anonymous as long as that key exists. Keep the key stored apart from the data, with access tightly limited, and treat the dataset as identifiable until the key is destroyed."),
+ ("What is k-anonymity?",
+  "It's a simple yardstick for how re-identifiable a dataset is: it is <em>k</em>-anonymous if every person shares their combination of quasi-identifiers (age, sex, ZIP, and so on) with at least <em>k − 1</em> others, so no record can be narrowed to a group smaller than <em>k</em>. Bigger <em>k</em> is safer. You raise it by making values coarser — banding exact age into decades, a full ZIP into its region — until the loneliest record has enough company. A record with k = 1 is unique and should be generalized further or suppressed before you share."),
+],
+
 }
 
-FAQS = {**FAQS_12, **FAQS_34, **FAQS_METHODS, **FAQS_DATA}
+FAQS_ETHICS = {
+
+# ---------------- ETHICS ----------------
+
+"why-research-ethics": [
+ ("Was Milgram's obedience study ethical by today's standards?",
+  "By modern standards, no — it would not pass an ethics committee as it was run. It used deception participants could not consent to, exposed them to real and visible distress, and made stopping difficult because an experimenter actively urged them to continue, straining the right to withdraw. Milgram did debrief his participants and later reported that most were not lastingly harmed, and the study's insight into obedience is genuinely important — but the value of the findings does not retroactively justify the methods. Today the same question would have to be pursued with far stronger safeguards, much milder methods, or not at all. It is a useful teaching case precisely because it sits on the line and forces the risk–benefit conversation into the open."),
+ ("What are the three principles of the Belmont Report?",
+  "Respect for persons, beneficence, and justice. <strong>Respect for persons</strong> means treating people as autonomous decision-makers and giving extra protection to those with limited autonomy — in practice, <a href=\"../../ethics/informed-consent-and-irb/\">informed consent</a>. <strong>Beneficence</strong> means maximising the likely benefits and minimising the possible harms — the risk–benefit assessment. <strong>Justice</strong> means distributing the burdens and benefits of research fairly, so the people who take the risks aren't a different, more vulnerable group than the people who stand to gain. Nearly every requirement an ethics committee imposes can be traced back to one of these three."),
+ ("What happened in the Tuskegee study, and why did it change research?",
+  "From 1932 to 1972 the U.S. Public Health Service followed about 600 poor Black men in Alabama — roughly 400 of them already infected with syphilis — to observe the untreated course of the disease. The men were told they were being treated for 'bad blood' and were never told their true diagnosis; when penicillin became the standard cure in the 1940s, it was deliberately withheld so the observation could continue. After a whistle-blower brought it to the press, public outrage led to the 1974 National Research Act, which created Institutional Review Boards and the commission that wrote the Belmont Report. In short, today's requirement for informed consent and independent ethics review exists in large part because of Tuskegee."),
+],
+
+"informed-consent-and-irb": [
+ ("Do online surveys need ethics approval?",
+  "Usually yes — being 'online' and 'just a survey' does not exempt a study from review. If you are collecting data from people to answer a research question, most institutions require you to submit it, and only the committee can decide it is exempt. A genuinely anonymous, minimal-risk survey of adults often qualifies for <em>exempt</em> or <em>expedited</em> review, which is lighter and faster — but surveys touching sensitive topics (health, illegal behaviour, trauma), involving minors, or collecting identifiable responses can need full review. The safe rule for a student is simple: assume you need approval, apply <em>before</em> collecting anything, and let the committee tell you the level."),
+ ("What is the difference between assent and consent?",
+  "<strong>Consent</strong> is the binding agreement given by someone with the capacity to make the decision — an adult participant, or the parent or guardian of a child. <strong>Assent</strong> is a child's own age-appropriate agreement to take part, given <em>alongside</em> a guardian's consent. The point is that a minor cannot give legal consent but still has a say: they must be told what will happen in words they understand and be free to decline, and their refusal stands even if a parent has agreed. The same logic extends to adults with diminished capacity, where a legal representative consents and the person's own assent is still sought."),
+ ("What's the difference between exempt, expedited, and full-board review?",
+  "They are three intensities of ethics review, scaled to how risky the study is. <strong>Exempt</strong> is for minimal-risk work in specific low-stakes categories (anonymous adult surveys, ordinary classroom activities) — you still submit, but it skips full review. <strong>Expedited</strong> is also for no-more-than-minimal-risk studies but is checked by one or two committee members rather than the whole board (non-invasive measurements, voice recordings, moderate surveys). <strong>Full-board</strong> review, at a convened meeting of the whole committee, is required for anything above minimal risk, or involving vulnerable groups, deception, or sensitive identifiable data. Crucially, <em>which</em> category applies is the committee's determination, not yours."),
+],
+
+"deception-and-debriefing": [
+ ("When is deception allowed in a research study?",
+  "Only when three conditions hold at the same time: there is no reasonable non-deceptive way to answer the question, the deception exposes participants to no more than minimal risk and to nothing they would reasonably resent, and everyone is fully debriefed afterwards with the option to withdraw their data. Miss any one — an honest design would have worked, the deception causes real distress, or there is no proper debrief — and it is not justified. Deception is also meant to be a last resort, cleared in advance by an ethics committee, not a default way to dodge <a href=\"../../methods/bias-and-blinding/\">demand characteristics</a>."),
+ ("What should a debriefing include?",
+  "A genuine debrief does four things: it reveals and explains any deception (what was misrepresented, and why it was scientifically necessary); it corrects any false beliefs the study may have created, so nobody leaves thinking, say, that rigged 'failure' feedback was real; it offers the right to withdraw their data now that they know the truth; and it checks on wellbeing and provides a contact for later concerns. The aim is that participants leave no worse off — and ideally better informed — than when they arrived. 'The study's over, thanks for coming' is not a debrief."),
+ ("Can I use deception in my student project?",
+  "You can, but you almost certainly shouldn't need to, and you cannot do it on your own say-so. Any deception must be justified in your ethics application and approved before you start — and reviewers will first ask whether an honest design, an indirect measure, or simply not disclosing the specific hypothesis would answer your question just as well. If deception really is necessary, it has to be minimal-risk and paired with a written debriefing plan and a data-withdrawal option. For most student studies the honest route is available, faster to get approved, and avoids the trust cost entirely — so reach for deception last."),
+],
+
+}
+
+FAQS = {**FAQS_12, **FAQS_34, **FAQS_METHODS, **FAQS_DATA, **FAQS_ETHICS}

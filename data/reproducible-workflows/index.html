@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reproducible Workflows — StatsCapybara</title>
+  <meta name="description" content="Why the analysis IS the script — scripts over clicks, seeds, project structure, and the stranger test — with a reproduce-this-result pipeline puzzle." />
+  <link rel="canonical" href="https://statscapybara.com/data/reproducible-workflows/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Reproducible Workflows — StatsCapybara" />
+  <meta property="og:description" content="Why the analysis IS the script — scripts over clicks, seeds, project structure, and the stranger test — with a reproduce-this-result pipeline puzzle." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/data/reproducible-workflows/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Reproducible Workflows — StatsCapybara" />
+  <meta name="twitter:description" content="Why the analysis IS the script — scripts over clicks, seeds, project structure, and the stranger test — with a reproduce-this-result pipeline puzzle." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Reproducible Workflows", "description": "Why the analysis IS the script — scripts over clicks, seeds, project structure, and the stranger test — with a reproduce-this-result pipeline puzzle.", "url": "https://statscapybara.com/data/reproducible-workflows/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Data: From Raw to Ready", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Reproducible Workflows", "item": "https://statscapybara.com/data/reproducible-workflows/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Do I have to use code — can't I just use SPSS menus?", "acceptedAnswer": {"@type": "Answer", "text": "Menus are fine for exploring data, but the analysis itself should be scripted, and SPSS supports this: every dialog can paste its syntax, and running that syntax file reproduces the result exactly. The problem with clicking isn't SPSS — it's that a click leaves no record, so six months later you can't say what you did or repeat it. A saved syntax (or R/Python) script is a re-runnable, shareable, correctable recipe. You don't have to abandon your software; you have to keep the record of what it did."}}, {"@type": "Question", "name": "What does setting a seed actually do?", "acceptedAnswer": {"@type": "Answer", "text": "Computers generate \"random\" numbers from a deterministic sequence started by a seed. Set the seed to a fixed value (set.seed(1), np.random.default_rng(1)) and that sequence — and every bootstrap, simulation, shuffle, or random split that draws from it — comes out identical on every run and every machine. Without a seed, anything random gives different numbers each time, so your results can't be reproduced. Set it once, near the top of the script, before any random step."}}, {"@type": "Question", "name": "What makes an analysis reproducible?", "acceptedAnswer": {"@type": "Answer", "text": "That someone else — or future-you — can take your files and regenerate every reported number with nothing else. In practice that means: the raw data is included and never edited by hand; all cleaning and analysis live in scripts that read the raw data and write the output; anything random is seeded; and the software and package versions are recorded. The test is concrete: hand your project folder to a stranger and ask whether they could rebuild your results without emailing you. If they'd need a verbal explanation, something isn't documented yet."}}]}
+  </script>
+</head>
+<body data-course="data" data-section="reproducible-workflows">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 2.9</span>
+        <h1>Reproducible Workflows</h1>
+
+        <p class="lede">A result you can't reproduce is a result you can't defend. Six months on, a reviewer asks how you got that mean, and "I clicked some menus in SPSS" is not an answer. The fix is a mindset shift: <strong>the analysis <em>is</em> the script</strong> — a plain-text recipe that turns your raw data into every number in your report, the same way, every time, on anyone's computer.</p>
+
+        <h2>The analysis is the script</h2>
+        <p>Point-and-click is fine for <em>looking</em> at data; it is a disaster for <em>doing</em> the analysis, because it leaves no record. A click is invisible the moment you make it. A line of code is a permanent instruction you can read, re-run, share, and correct. When your whole pipeline lives in a script:</p>
+        <ul>
+          <li>it's <strong>reproducible</strong> — run it again, get the identical result;</li>
+          <li>it's <strong>correctable</strong> — find a bad value, fix the <a href="../data-cleaning-workflow/">raw file</a> or the code, and re-run to flow the fix through everything downstream in seconds;</li>
+          <li>it's <strong>auditable</strong> — the script is itself the complete log of every decision you made.</li>
+        </ul>
+        <p>None of that survives a session of clicking. The goal isn't to be a programmer; it's to make your analysis a thing that can be re-run rather than re-remembered.</p>
+
+        <h2>Order is part of the recipe</h2>
+        <p>Here's the subtle danger a script exposes and clicking hides: the <em>same</em> steps in a different order can give a different answer. Filtering commutes — remove impossible rows then keep group A, or keep group A then remove impossible rows, either way you land in the same place. But <a href="../../stats-4/missing-data/">filling in missing values</a> does <strong>not</strong> commute with filtering, because <em>what</em> you fill with depends on which rows are present when you fill. Try to reproduce the target below by fixing the pipeline:</p>
+
+        <!-- ============ INTERACTIVE 1 ============ -->
+        <div class="viz" id="rp">
+          <p class="viz-title">🧩 Reproduce This Result</p>
+          <p class="viz-sub">The claim: <em>the mean <code>value</code> for group A, after removing impossible readings and imputing the blanks, is <strong>12.0</strong>.</em> The three cleaning steps below are scrambled and one has the wrong setting. Reorder them and fix the setting until your result matches.</p>
+          <div class="rp-cols">
+            <div class="rp-raw">
+              <p class="rp-cap">raw.csv</p>
+              <table class="rp-tbl" id="rp-data"></table>
+            </div>
+            <div class="rp-pipe">
+              <p class="rp-cap">your pipeline</p>
+              <div id="rp-steps"></div>
+              <div class="rp-final">▸ Compute <code>mean(value)</code></div>
+            </div>
+          </div>
+          <div class="rp-out" id="rp-out"></div>
+          <details class="rp-script"><summary>See the script your pipeline generates</summary>
+            <pre id="rp-code"></pre>
+          </details>
+        </div>
+        <!-- ============ /INTERACTIVE 1 ============ -->
+
+        <h2>Seeds, structure, and versions</h2>
+        <p>Three cheap habits carry most of the reproducibility load:</p>
+        <ul>
+          <li><strong>Seed anything random.</strong> Bootstrapping, simulation, random train/test splits, shuffling — all use a random-number generator. Set its seed (<code>set.seed(1)</code>, <code>np.random.default_rng(1)</code>) at the top of the script and the "random" results become identical on every run. Unseeded randomness is the classic silent irreproducibility.</li>
+          <li><strong>Give the project a skeleton.</strong> A predictable folder layout — <code>raw/</code> (read-only originals), <code>clean/</code> (script output), <code>scripts/</code> (the code), <code>output/</code> (figures, tables) — means anyone can find the pieces and see which direction the data flows. Nothing in <code>output/</code> is ever hand-made; it's all regenerated by a script.</li>
+          <li><strong>Version lightly.</strong> You don't need to be a Git wizard, but you do need to stop naming files <code>final_v2_REALfinal.csv</code>. At minimum, keep dated snapshots and never overwrite raw data; better, put the <code>scripts/</code> folder under version control so every change has a timestamp and a message.</li>
+        </ul>
+
+        <h2>The stranger test</h2>
+        <p>The single question that captures all of this: <strong>could a stranger — or you, two years from now — take your files and reproduce every number, with no email to you and nothing in your head?</strong> If the answer is "only if I explain a few things first," those few things aren't documented yet. Everything a result depends on — the raw data, the code, the seed, the package versions, the order — has to live in the project, not in your memory.</p>
+
+        <div class="callout key">
+          <p><strong>Script it, seed it, structure it, and pass the stranger test.</strong> Treat point-and-click as read-only; do every fix and analysis in code that reads immutable raw data and regenerates all output. Set a seed for anything random, keep a predictable folder layout, and never trust a result you couldn't reproduce from the files alone.</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> reproducibility isn't bureaucracy — it's the difference between science and an anecdote, and it's your own safety net when a supervisor spots something odd at 11pm the night before submission. A scripted pipeline lets you fix the <a href="../data-cleaning-workflow/">cleaning</a>, redo the <a href="../merging-datasets/">merge</a>, and re-run everything with one command, confident that every downstream number updated too. It's also the foundation the wider open-science movement is built on.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>Do I have to use code — can't I just use SPSS menus?</summary>
+            <div class="faq-a"><p>Menus are fine for <em>exploring</em> data, but the analysis itself should be scripted, and SPSS supports this: every dialog can paste its <strong>syntax</strong>, and running that syntax file reproduces the result exactly. The problem with clicking isn't SPSS — it's that a click leaves no record, so six months later you can't say what you did or repeat it. A saved syntax (or R/Python) script is a re-runnable, shareable, correctable recipe. You don't have to abandon your software; you have to keep the record of what it did.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What does setting a seed actually do?</summary>
+            <div class="faq-a"><p>Computers generate "random" numbers from a deterministic sequence started by a <em>seed</em>. Set the seed to a fixed value (<code>set.seed(1)</code>, <code>np.random.default_rng(1)</code>) and that sequence — and every bootstrap, simulation, shuffle, or random split that draws from it — comes out identical on every run and every machine. Without a seed, anything random gives different numbers each time, so your results can't be reproduced. Set it once, near the top of the script, before any random step.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What makes an analysis reproducible?</summary>
+            <div class="faq-a"><p>That someone else — or future-you — can take your files and regenerate every reported number with nothing else. In practice that means: the raw data is included and never edited by hand; all cleaning and analysis live in scripts that read the raw data and write the output; anything random is <a href="../../data/reproducible-workflows/">seeded</a>; and the software and package versions are recorded. The test is concrete: hand your project folder to a stranger and ask whether they could rebuild your results without emailing you. If they'd need a verbal explanation, something isn't documented yet.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <style>
+    /* reproducible-workflows widgets (scoped) */
+    #rp .rp-cols { display:flex; gap:1.1rem; flex-wrap:wrap; align-items:flex-start; margin:.6rem 0 .2rem; }
+    #rp .rp-raw { flex:0 0 auto; }
+    #rp .rp-pipe { flex:1 1 260px; min-width:240px; }
+    #rp .rp-cap { font-size:.78rem; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin:0 0 .3rem; font-weight:600; }
+    #rp table.rp-tbl { border-collapse:collapse; font-size:.82rem; }
+    #rp .rp-tbl th, #rp .rp-tbl td { border:1px solid var(--border); padding:.2rem .55rem; text-align:center; }
+    #rp .rp-tbl th { background:var(--surface-2); color:var(--text-muted); font-weight:600; }
+    #rp .rp-tbl td.miss { color:#f97316; font-style:italic; }
+    #rp .rp-tbl td.bad { color:#ef4444; font-weight:600; }
+    #rp .rp-step { display:flex; align-items:center; gap:.5rem; border:1px solid var(--border); border-radius:8px; background:var(--surface-2); padding:.45rem .6rem; margin-bottom:.45rem; }
+    #rp .rp-step .rp-move { display:flex; flex-direction:column; gap:2px; }
+    #rp .rp-step .rp-move button { border:1px solid var(--border); background:var(--surface); color:var(--text-muted); border-radius:4px; width:22px; height:16px; line-height:1; font-size:.7rem; cursor:pointer; padding:0; }
+    #rp .rp-step .rp-move button:disabled { opacity:.3; cursor:default; }
+    #rp .rp-step .rp-body { flex:1; font-size:.85rem; }
+    #rp .rp-step .rp-body small { display:block; color:var(--text-muted); font-size:.76rem; margin-top:.1rem; }
+    #rp .rp-step select { font-size:.8rem; padding:.1rem .3rem; border:1px solid var(--border); border-radius:5px; background:var(--surface); color:var(--text); }
+    #rp .rp-num { font-weight:700; color:var(--text-faint); font-size:.85rem; min-width:1.1em; }
+    #rp .rp-final { border:1px dashed var(--border); border-radius:8px; padding:.45rem .6rem; font-size:.85rem; color:var(--text-muted); }
+    #rp .rp-out { margin:.9rem 0 .3rem; padding:.6rem .8rem; border-radius:8px; font-size:.9rem; text-align:center; border:1px solid var(--border); }
+    #rp .rp-out.ok { border-color:#22c55e; background:color-mix(in srgb, #22c55e 12%, transparent); }
+    #rp .rp-out.no { border-color:#f97316; background:color-mix(in srgb, #f97316 10%, transparent); }
+    #rp .rp-out b { font-size:1.05rem; }
+    #rp .rp-script { margin-top:.4rem; }
+    #rp .rp-script summary { cursor:pointer; font-size:.83rem; color:var(--text-muted); }
+    #rp .rp-script pre { background:var(--surface-2); border:1px solid var(--border); border-radius:8px; padding:.7rem .9rem; font-size:.8rem; overflow-x:auto; margin:.5rem 0 0; line-height:1.6; }
+  </style>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ reproduce-this-result puzzle (deterministic) ============ -->
+  <script>
+  (function () {
+    "use strict";
+    // raw data: two impossible readings (flagged in validation), two blanks
+    var RAW = [
+      { id: 1, group: "A", value: 10 },
+      { id: 2, group: "A", value: 12 },
+      { id: 3, group: "A", value: null },
+      { id: 4, group: "A", value: 14 },
+      { id: 5, group: "A", value: 999, bad: true },
+      { id: 6, group: "B", value: 40 },
+      { id: 7, group: "B", value: null },
+      { id: 8, group: "B", value: 44 },
+      { id: 9, group: "B", value: 46 },
+      { id: 10, group: "B", value: 9999, bad: true }
+    ];
+    var TARGET = 12.0;
+    var group = "B";                                  // wrong setting to start
+    var order = ["impute", "remove", "subset"];       // scrambled to start
+
+    function present(data){ return data.map(function (r) { return r.value; }).filter(function (v) { return v !== null; }); }
+    function meanOf(a){ return a.reduce(function (x, y) { return x + y; }, 0) / a.length; }
+
+    var STEP = {
+      remove: {
+        label: "Remove impossible values",
+        detail: "drop the rows flagged in validation (values 999, 9999)",
+        code: "data <- filter(data, !impossible)",
+        apply: function (data) { return data.filter(function (r) { return !r.bad; }); }
+      },
+      subset: {
+        label: "Keep only group",
+        detail: "restrict to one group before summarising",
+        code: function () { return 'data <- filter(data, group == "' + group + '")'; },
+        apply: function (data) { return data.filter(function (r) { return r.group === group; }); }
+      },
+      impute: {
+        label: "Impute missing → mean of value",
+        detail: "replace each blank with the mean of the values present now",
+        code: "data$value <- replace_na(data$value, mean(data$value, na.rm = TRUE))",
+        apply: function (data) {
+          var p = present(data); var m = p.length ? meanOf(p) : 0;
+          return data.map(function (r) { return r.value === null ? { id: r.id, group: r.group, value: m, bad: r.bad } : r; });
+        }
+      }
+    };
+
+    function run() {
+      var data = RAW.map(function (r) { return { id: r.id, group: r.group, value: r.value, bad: r.bad }; });
+      order.forEach(function (k) { data = STEP[k].apply(data); });
+      var p = present(data);
+      return p.length ? meanOf(p) : NaN;
+    }
+
+    function renderData() {
+      var head = "<thead><tr><th>id</th><th>group</th><th>value</th></tr></thead>";
+      var body = RAW.map(function (r) {
+        var cls = r.value === null ? "miss" : (r.bad ? "bad" : "");
+        var txt = r.value === null ? "—" : r.value;
+        return "<tr><td>" + r.id + "</td><td>" + r.group + "</td><td class='" + cls + "'>" + txt + "</td></tr>";
+      }).join("");
+      document.getElementById("rp-data").innerHTML = head + "<tbody>" + body + "</tbody>";
+    }
+
+    function renderSteps() {
+      var host = document.getElementById("rp-steps");
+      host.innerHTML = "";
+      order.forEach(function (k, i) {
+        var st = STEP[k];
+        var div = document.createElement("div");
+        div.className = "rp-step";
+        var sel = k === "subset"
+          ? " &nbsp;<select id='rp-group'><option value='A'>A</option><option value='B'>B</option></select>"
+          : "";
+        div.innerHTML =
+          "<span class='rp-num'>" + (i + 1) + "</span>" +
+          "<span class='rp-move'>" +
+            "<button data-mv='up' " + (i === 0 ? "disabled" : "") + " aria-label='Move up'>▲</button>" +
+            "<button data-mv='down' " + (i === order.length - 1 ? "disabled" : "") + " aria-label='Move down'>▼</button>" +
+          "</span>" +
+          "<span class='rp-body'>" + st.label + sel + "<small>" + st.detail + "</small></span>";
+        div.querySelector("[data-mv='up']").addEventListener("click", function () { moveStep(i, -1); });
+        div.querySelector("[data-mv='down']").addEventListener("click", function () { moveStep(i, 1); });
+        host.appendChild(div);
+      });
+      var gsel = document.getElementById("rp-group");
+      if (gsel) { gsel.value = group; gsel.addEventListener("change", function () { group = this.value; update(); }); }
+    }
+
+    function moveStep(i, dir) {
+      var j = i + dir;
+      if (j < 0 || j >= order.length) return;
+      var tmp = order[i]; order[i] = order[j]; order[j] = tmp;
+      renderSteps(); update();
+    }
+
+    function update() {
+      var m = run();
+      var ok = Math.abs(m - TARGET) < 0.05;
+      var out = document.getElementById("rp-out");
+      out.className = "rp-out " + (ok ? "ok" : "no");
+      out.innerHTML = ok
+        ? "✓ <b>Your result: " + m.toFixed(1) + "</b> — matches the target of 12.0. Notice imputation had to come <em>after</em> both filters, so the fill value was group A's own mean."
+        : "Your result: <b>" + (isFinite(m) ? m.toFixed(1) : "—") + "</b> &nbsp;·&nbsp; target: <b>12.0</b> &nbsp;— not yet. (Impute uses the mean of whatever rows are present <em>when it runs</em>.)";
+      // generated script
+      var lines = ['data <- read_csv("raw/raw.csv")'];
+      order.forEach(function (k) { lines.push(typeof STEP[k].code === "function" ? STEP[k].code() : STEP[k].code); });
+      lines.push("result <- mean(data$value)   # → " + (isFinite(m) ? m.toFixed(1) : "NA"));
+      document.getElementById("rp-code").textContent = lines.join("\n");
+    }
+
+    renderData(); renderSteps(); update();
+  })();
+  </script>
+</body>
+</html>

@@ -134,7 +134,23 @@ window.CURRICULUM = [
       { n: "2.3",  slug: "data-entry-and-validation",    title: "Data Entry & Validation", ready: true },
       { n: "2.4",  slug: "data-cleaning-workflow",       title: "The Cleaning Workflow", ready: true },
       { n: "2.5",  slug: "outliers-in-practice",         title: "Outliers: Detect, Investigate, Decide", ready: true },
-      { n: "2.6",  slug: "transformations-and-recoding", title: "Transformations & Recoding", ready: true }
+      { n: "2.6",  slug: "transformations-and-recoding", title: "Transformations & Recoding", ready: true },
+      { n: "2.7",  slug: "wide-vs-long-data",            title: "Wide vs Long Data", ready: true },
+      { n: "2.8",  slug: "merging-datasets",             title: "Merging Datasets", ready: true },
+      { n: "2.9",  slug: "reproducible-workflows",       title: "Reproducible Workflows", ready: true },
+      { n: "2.10", slug: "data-privacy-basics",          title: "Data Privacy Basics", ready: true }
+    ]
+  },
+  {
+    slug: "ethics",
+    title: "Ethics",
+    subtitle: "Responsible Research",
+    accent: "#64748b",
+    track: "toolkit",
+    sections: [
+      { n: "3.1", slug: "why-research-ethics",          title: "Why Research Ethics Exists", ready: true },
+      { n: "3.2", slug: "informed-consent-and-irb",     title: "Informed Consent & Ethics Committees", ready: true },
+      { n: "3.3", slug: "deception-and-debriefing",     title: "Deception & Debriefing", ready: true }
     ]
   }
 ];
