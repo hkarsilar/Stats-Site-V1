@@ -122,6 +122,9 @@
     "tidy-data": "One capybara per row, one trait per column, one nap per cell. The capybara keeps a very tidy pond.",
     "codebooks-and-documentation": "Six months later the capybara found a column named 'grp'. No codebook. It is still guessing.",
     "data-entry-and-validation": "A capybara weighing 512 kg? The validation rule says no. The capybara says please.",
+    "data-cleaning-workflow": "The capybara never edits the raw pond. It writes a script, keeps the mud, and hands you a spotless lake.",
+    "outliers-in-practice": "One capybara is four times the size of the rest. Before evicting it, the capybara asks: typo, different pond, or just a very large capybara?",
+    "transformations-and-recoding": "The capybara took the log of its income and finally slept soundly. A median split it refused — why throw away half the pond?",
     /* Root pages */
     "home": "No rush — capybaras never cram.",
     "toolbox": "A capybara's toolbox: warm water, good snacks, zero deadlines. Yours has calculators too.",

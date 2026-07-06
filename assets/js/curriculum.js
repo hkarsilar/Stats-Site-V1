@@ -131,7 +131,10 @@ window.CURRICULUM = [
     sections: [
       { n: "2.1",  slug: "tidy-data",                    title: "Tidy Data", ready: true },
       { n: "2.2",  slug: "codebooks-and-documentation",  title: "Codebooks & Documentation", ready: true },
-      { n: "2.3",  slug: "data-entry-and-validation",    title: "Data Entry & Validation", ready: true }
+      { n: "2.3",  slug: "data-entry-and-validation",    title: "Data Entry & Validation", ready: true },
+      { n: "2.4",  slug: "data-cleaning-workflow",       title: "The Cleaning Workflow", ready: true },
+      { n: "2.5",  slug: "outliers-in-practice",         title: "Outliers: Detect, Investigate, Decide", ready: true },
+      { n: "2.6",  slug: "transformations-and-recoding", title: "Transformations & Recoding", ready: true }
     ]
   }
 ];

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Transformations &amp; Recoding — StatsCapybara</title>
+  <meta name="description" content="Log and square-root transforms for skew, z-standardizing, reverse-coding, composites, and why median splits waste information — with histograms and Q–Q plots." />
+  <link rel="canonical" href="https://statscapybara.com/data/transformations-and-recoding/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Transformations &amp; Recoding — StatsCapybara" />
+  <meta property="og:description" content="Log and square-root transforms for skew, z-standardizing, reverse-coding, composites, and why median splits waste information — with histograms and Q–Q plots." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/data/transformations-and-recoding/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Transformations &amp; Recoding — StatsCapybara" />
+  <meta name="twitter:description" content="Log and square-root transforms for skew, z-standardizing, reverse-coding, composites, and why median splits waste information — with histograms and Q–Q plots." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Transformations & Recoding", "description": "Log and square-root transforms for skew, z-standardizing, reverse-coding, composites, and why median splits waste information — with histograms and Q–Q plots.", "url": "https://statscapybara.com/data/transformations-and-recoding/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Data: From Raw to Ready", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Transformations & Recoding", "item": "https://statscapybara.com/data/transformations-and-recoding/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "When should I log-transform my data?", "acceptedAnswer": {"@type": "Answer", "text": "Reach for a log when a variable is strongly right-skewed and strictly positive — income, reaction times, counts, concentrations — especially when its structure is multiplicative (a 10% change matters more than a fixed amount). A log often restores the normality and constant variance that tests assume, and pulls in a long tail so a few large values stop dominating. If the variable contains zeros, use log(x + 1). The trade-off is interpretation: results now live on the log scale, so report that and back-transform your summary to the geometric mean."}}, {"@type": "Question", "name": "Is it okay to median-split a continuous variable?", "acceptedAnswer": {"@type": "Answer", "text": "Avoid it. Chopping a continuous predictor into \"high\" and \"low\" at the median feels tidy and lets you run a t-test, but it throws away all the variation within each half — everyone above the median is treated as identical. Statistically it shrinks a correlation to about 0.80 of its value, which is roughly the same power loss as discarding a third of your participants, and it can even manufacture spurious effects. Keep the variable continuous and use correlation or regression; if you truly need categories for a plot, make them there, not in the analysis."}}, {"@type": "Question", "name": "Do I have to reverse-code items before averaging them into a scale?", "acceptedAnswer": {"@type": "Answer", "text": "Yes — reverse-code first, always. If a questionnaire mixes positively and negatively worded items (\"I feel calm\" alongside \"I feel tense\"), the negative ones run in the opposite direction; average them in raw and they partly cancel the others, deflating both the scale's reliability and its validity. Flip each reverse item with 6 − x on a 1–5 scale (or max + min − x in general) so every item points the same way, then compute the composite. Recompute Cronbach's α afterwards to confirm the items now hang together."}}]}
+  </script>
+</head>
+<body data-course="data" data-section="transformations-and-recoding">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 2.6</span>
+        <h1>Transformations &amp; Recoding</h1>
+
+        <p class="lede">Before analysis, raw numbers often need reshaping — not the table's layout, but the values themselves. A right-skewed variable can be pulled toward symmetry; scores on different scales can be put on common footing; reverse-worded survey items must be flipped before they're combined. Done well, these steps make an analysis <em>fairer</em>. Done carelessly — like slicing a continuous variable in half — they quietly throw information away.</p>
+
+        <h2>Taming skew: log and square root</h2>
+        <p>Many measurements — income, reaction times, counts, concentrations — pile up near a floor of zero and trail off into a long right tail. That skew can violate the normality that <a href="../../stats-2/assumptions-and-when-they-break/">t-tests and regression lean on</a> and let a few large values dominate. A <strong>monotonic transform</strong> compresses the big values more than the small ones:</p>
+        <ul>
+          <li><strong>log(x)</strong> — the strongest common squeeze; turns multiplicative structure into additive. Needs strictly positive values (use <code>log(x + 1)</code> if zeros appear).</li>
+          <li><strong>√x</strong> — gentler; a classic choice for counts.</li>
+        </ul>
+        <p>The cost is interpretation: results now live on the log or root scale. The mean of the logs back-transforms to the <em>geometric</em> mean, which sits below the arithmetic mean — so report both, and say which you used.</p>
+
+        <p>Below is a right-skewed income variable. Flip between the raw values and each transform, and watch the histogram and the <a href="../../stats-2/assumptions-and-when-they-break/">Q–Q plot</a> (points on the diagonal = normal) respond. Notice the skewness number — and notice that <em>z-scoring does nothing to the shape</em>.</p>
+
+        <!-- ============ INTERACTIVE 1 ============ -->
+        <div class="viz" id="tg">
+          <p class="viz-title">🔧 Transformation Gallery</p>
+          <p class="viz-sub">One skewed dataset, four views. The histogram shows the shape; the Q–Q plot shows how close it is to normal (a straight diagonal is perfect). Skewness near 0 is symmetric.</p>
+          <div class="controls">
+            <div class="control seg" role="group" aria-label="Transformation">
+              <button class="btn btn-sm seg-btn is-on" data-t="raw" type="button">Raw</button>
+              <button class="btn btn-sm seg-btn" data-t="sqrt" type="button">√x</button>
+              <button class="btn btn-sm seg-btn" data-t="log" type="button">log(x)</button>
+              <button class="btn btn-sm seg-btn" data-t="z" type="button">z-score</button>
+            </div>
+            <div class="control" style="margin-left:auto"><button class="btn btn-primary btn-sm" id="tg-new" type="button">New sample</button></div>
+          </div>
+          <canvas id="tg-canvas" height="230" aria-label="Left: histogram of the chosen transformation of a skewed income variable. Right: its normal Q-Q plot against the 45-degree reference line."></canvas>
+          <div class="tg-grid">
+            <div class="stat"><span class="k">Skewness</span><span class="v" id="tg-skew">—</span></div>
+            <div class="stat"><span class="k">Center</span><span class="v" id="tg-mean">—</span></div>
+          </div>
+          <p class="tg-note" id="tg-note"></p>
+        </div>
+        <!-- ============ /INTERACTIVE 1 ============ -->
+
+        <h2>Standardizing, reverse-coding, composites</h2>
+        <ul>
+          <li><strong>z-standardizing</strong> — <code>(x − mean) / SD</code> puts a variable in SD units (<a href="../../stats-1/z-scores-and-the-normal-distribution/">z-scores</a>), so variables on different scales become comparable and regression coefficients read as "per SD". It's a <em>linear</em> shift-and-stretch: it changes the units, never the shape or the skew.</li>
+          <li><strong>reverse-coding</strong> — on a 1–5 scale, a negatively worded item is flipped with <code>6 − x</code> so that "high" means the same thing for every item. Skip it and the reversed items silently cancel the others, deflating a scale's reliability (see <a href="../../methods/reliability-and-validity/">Cronbach's α</a>).</li>
+          <li><strong>composite scores</strong> — once every item points the same way, average (or sum) them into one score per person. A mean handles missing items more gracefully than a sum.</li>
+        </ul>
+
+        <h2>The tempting mistake: median splits</h2>
+        <p>It's common to take a continuous predictor and chop it at the median into "high" vs "low" — it feels tidy and lets you run a t-test. But collapsing a rich variable to a single bit <strong>discards the differences within each half</strong>: everyone above the median is treated as identical. The result is a weaker correlation and a real loss of power. Theory says dichotomizing at the median shrinks a correlation to about <strong>0.80</strong> of its value — throwing away roughly a third of your effect. Watch it happen:</p>
+
+        <!-- ============ INTERACTIVE 2 ============ -->
+        <div class="viz" id="ms">
+          <p class="viz-title">✂️ The Cost of a Median Split</p>
+          <p class="viz-sub">A continuous predictor X and an outcome Y. Toggle the median split to replace X with a crude high/low flag, and watch the correlation — the information you can actually use — drop.</p>
+          <div class="controls" style="align-items:center">
+            <label class="ms-toggle"><input type="checkbox" id="ms-split"> <span>Median-split X into low / high</span></label>
+            <div class="control" style="margin-left:auto"><button class="btn btn-primary btn-sm" id="ms-new" type="button">New sample</button></div>
+          </div>
+          <canvas id="ms-canvas" height="250" aria-label="Scatterplot of a continuous predictor X against outcome Y, with the least-squares line; a toggle recodes X into a low/high median split and shows the correlation shrinking."></canvas>
+          <div class="ms-grid">
+            <div class="stat"><span class="k">r (continuous X)</span><span class="v" id="ms-rc">—</span></div>
+            <div class="stat"><span class="k">r (median-split X)</span><span class="v" id="ms-rb">—</span></div>
+            <div class="stat"><span class="k">Variance explained lost</span><span class="v" id="ms-loss">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE 2 ============ -->
+
+        <div class="callout key">
+          <p><strong>Transform to fix a shape; recode to fix a meaning — but keep continuous variables continuous.</strong> A log or root can rescue a skewed variable without losing a single data point; a median split saves you nothing and costs you power and precision. If you need groups for a plot, make them; for the analysis, keep the numbers.</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> the right transform can turn a violated assumption into a satisfied one and stop a handful of <a href="../outliers-in-practice/">extreme values</a> from steering the result — all while keeping every observation. Do it <em>in a script</em>, on the <a href="../data-cleaning-workflow/">clean data</a>, so the step is documented and reversible; always report the scale you analysed on and back-transform your summaries for the reader. And resist the median split: it's the one "transformation" that only ever loses.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>When should I log-transform my data?</summary>
+            <div class="faq-a"><p>Reach for a log when a variable is strongly right-skewed and strictly positive — income, reaction times, counts, concentrations — especially when its structure is multiplicative (a 10% change matters more than a fixed amount). A log often restores the normality and constant variance that <a href="../../stats-2/assumptions-and-when-they-break/">tests assume</a>, and pulls in a long tail so a few large values stop dominating. If the variable contains zeros, use <code>log(x + 1)</code>. The trade-off is interpretation: results now live on the log scale, so report that and back-transform your summary to the geometric mean.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Is it okay to median-split a continuous variable?</summary>
+            <div class="faq-a"><p>Avoid it. Chopping a continuous predictor into "high" and "low" at the median feels tidy and lets you run a t-test, but it throws away all the variation within each half — everyone above the median is treated as identical. Statistically it shrinks a correlation to about 0.80 of its value, which is roughly the same power loss as discarding a third of your participants, and it can even manufacture spurious effects. Keep the variable continuous and use correlation or regression; if you truly need categories for a <em>plot</em>, make them there, not in the analysis.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Do I have to reverse-code items before averaging them into a scale?</summary>
+            <div class="faq-a"><p>Yes — reverse-code first, always. If a questionnaire mixes positively and negatively worded items ("I feel calm" alongside "I feel tense"), the negative ones run in the opposite direction; average them in raw and they partly cancel the others, deflating both the scale's <a href="../../methods/reliability-and-validity/">reliability</a> and its validity. Flip each reverse item with <code>6 − x</code> on a 1–5 scale (or <code>max + min − x</code> in general) so every item points the same way, then compute the composite. Recompute Cronbach's α afterwards to confirm the items now hang together.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <style>
+    /* transformations-and-recoding widgets (scoped) */
+    #tg .seg, #ms .seg { display:inline-flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+    #tg .seg-btn { border:none; border-radius:0; background:var(--surface-2); color:var(--text-muted); border-right:1px solid var(--border); }
+    #tg .seg-btn:last-child { border-right:none; }
+    #tg .seg-btn.is-on { background:var(--primary); color:#fff; }
+    #tg canvas, #ms canvas { width:100%; display:block; margin:.7rem 0 .2rem; }
+    #tg .tg-grid, #ms .ms-grid { display:flex; flex-wrap:wrap; gap:.6rem 1.4rem; margin-top:.3rem; }
+    #tg .tg-note { font-size:.85rem; color:var(--text-muted); margin:.6rem 0 0; line-height:1.5; min-height:2.4em; }
+    #ms .ms-toggle { display:flex; align-items:center; gap:.5rem; font-size:.85rem; color:var(--text); cursor:pointer; }
+    #ms .ms-toggle input { width:16px; height:16px; accent-color:#06b6d4; cursor:pointer; }
+  </style>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ 1) transformation gallery (seeded; New sample reseeds) ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var V = window.VIZ;
+    var canvas = document.getElementById("tg-canvas");
+    var ctx = canvas.getContext("2d");
+    var N = 80, raw = [], mode = "raw";
+
+    function mulberry32(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; var t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+    function mean(a){ return a.reduce(function(x,y){ return x+y; },0)/a.length; }
+    function sd(a){ var m=mean(a); return Math.sqrt(a.reduce(function(s,x){ return s+(x-m)*(x-m); },0)/(a.length-1)); }
+    function skew(a){ var m=mean(a), s=sd(a), n=a.length; return a.reduce(function(q,x){ return q+Math.pow((x-m)/s,3); },0)*n/((n-1)*(n-2)); }
+
+    function build(seed){
+      var rng = mulberry32(seed);
+      function rn(){ var u=0,v=0; while(u===0)u=rng(); while(v===0)v=rng(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+      raw = [];
+      for (var i=0;i<N;i++) raw.push(Math.round(Math.exp(3.4 + 0.7*rn())));  // right-skewed income ($k)
+      update();
+    }
+
+    function transformed(){
+      if (mode === "sqrt") return raw.map(Math.sqrt);
+      if (mode === "log")  return raw.map(function(x){ return Math.log(x); });
+      if (mode === "z"){ var m=mean(raw), s=sd(raw); return raw.map(function(x){ return (x-m)/s; }); }
+      return raw.slice();
+    }
+
+    function draw(vals){
+      V.fit(canvas);
+      var W = canvas.clientWidth, H = canvas.clientHeight;
+      ctx.clearRect(0,0,W,H);
+      var gap = 26, half = (W - gap) / 2;
+      drawHist(vals, 4, half, H);
+      drawQQ(vals, half + gap, W - 4, H);
+    }
+
+    function drawHist(vals, x0, x1, H){
+      var pad = 24, top = 26, bot = H - 20;
+      var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+      var span = hi - lo || 1;
+      var bins = 14, counts = new Array(bins).fill(0);
+      vals.forEach(function(v){ var b = Math.min(bins-1, Math.floor((v-lo)/span*bins)); counts[b]++; });
+      var maxc = Math.max.apply(null, counts);
+      var plotW = x1 - x0 - pad, bw = plotW / bins;
+      var border = V.css("--border") || "#ccc", muted = V.css("--text-faint") || "#9aa";
+      ctx.fillStyle = V.css("--text-muted") || "#667"; ctx.font = "12px system-ui, sans-serif"; ctx.textAlign = "left";
+      ctx.fillText("Histogram", x0 + pad, 16);
+      ctx.strokeStyle = border; ctx.beginPath(); ctx.moveTo(x0+pad, bot); ctx.lineTo(x1, bot); ctx.stroke();
+      ctx.fillStyle = V.css("--primary") || "#6366f1";
+      for (var i=0;i<bins;i++){
+        var h = maxc ? (counts[i]/maxc)*(bot-top) : 0;
+        ctx.fillRect(x0+pad + i*bw + 1, bot - h, Math.max(1, bw-2), h);
+      }
+    }
+
+    function drawQQ(vals, x0, x1, H){
+      var pad = 24, top = 26, bot = H - 20;
+      var m = mean(vals), s = sd(vals);
+      var std = vals.map(function(v){ return (v-m)/s; }).sort(function(a,b){ return a-b; });
+      var theo = std.map(function(_, i){ return V.normInv((i+0.5)/std.length); });
+      var lo = Math.min(theo[0], std[0]), hi = Math.max(theo[theo.length-1], std[std.length-1]);
+      var sp = hi - lo || 1; lo -= sp*0.08; hi += sp*0.08;
+      var plotW = x1 - x0 - pad, plotH = bot - top;
+      function px(v){ return x0 + pad + (v-lo)/(hi-lo)*plotW; }
+      function py(v){ return bot - (v-lo)/(hi-lo)*plotH; }
+      var border = V.css("--border") || "#ccc";
+      ctx.fillStyle = V.css("--text-muted") || "#667"; ctx.font = "12px system-ui, sans-serif"; ctx.textAlign = "left";
+      ctx.fillText("Normal Q–Q", x0 + pad, 16);
+      // reference diagonal
+      ctx.strokeStyle = "#f97316"; ctx.lineWidth = 1.5; ctx.setLineDash([4,3]);
+      ctx.beginPath(); ctx.moveTo(px(lo), py(lo)); ctx.lineTo(px(hi), py(hi)); ctx.stroke(); ctx.setLineDash([]);
+      // points
+      ctx.fillStyle = V.css("--secondary") || "#14b8a6";
+      for (var i=0;i<std.length;i++){ ctx.beginPath(); ctx.arc(px(theo[i]), py(std[i]), 2.6, 0, Math.PI*2); ctx.fill(); }
+    }
+
+    function update(){
+      var vals = transformed();
+      var sk = skew(vals);
+      document.getElementById("tg-skew").textContent = sk.toFixed(2) + (Math.abs(sk) < 0.5 ? "  (≈ symmetric)" : (sk > 0 ? "  (right-skewed)" : "  (left-skewed)"));
+      var am = mean(raw), gm = Math.exp(mean(raw.map(function(x){ return Math.log(x); })));
+      var note = {
+        raw:  "Strong right skew: a long tail of high incomes pulls the arithmetic mean ($" + am.toFixed(0) + "k) well above the typical value. Assumptions of normality are in trouble here.",
+        sqrt: "The square root pulls the tail in part-way — skew drops but often isn't fully gone. A reasonable choice for counts; milder than the log.",
+        log:  "The log nearly symmetrises it. The mean of the logs back-transforms to the <em>geometric</em> mean, $" + gm.toFixed(0) + "k — below the arithmetic mean $" + am.toFixed(0) + "k. Report both and state the scale you tested on.",
+        z:    "Identical shape to Raw — same skew, same Q–Q curve. z-scoring only re-centres to 0 and re-scales to SD = 1; it makes variables <em>comparable</em>, it does not make them normal."
+      }[mode];
+      document.getElementById("tg-note").innerHTML = note;
+      var ctr = {
+        raw:  "arithmetic mean = $" + am.toFixed(0) + "k",
+        sqrt: "mean of √x = " + mean(vals).toFixed(2),
+        log:  "geometric mean = $" + gm.toFixed(0) + "k",
+        z:    "mean = 0, SD = 1"
+      }[mode];
+      document.getElementById("tg-mean").textContent = ctr;
+      draw(vals);
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll("#tg .seg-btn"), function(b){
+      b.addEventListener("click", function(){
+        mode = b.getAttribute("data-t");
+        Array.prototype.forEach.call(document.querySelectorAll("#tg .seg-btn"), function(x){ x.classList.toggle("is-on", x===b); });
+        update();
+      });
+    });
+    document.getElementById("tg-new").addEventListener("click", function(){ build((Date.now() & 0x7fffffff) || 1); });
+    window.addEventListener("resize", function(){ draw(transformed()); });
+    if (V.onTheme) V.onTheme(function(){ draw(transformed()); });
+    build(42);   // fixed seed -> raw skew ≈ 2.0, log ≈ 0
+  })();
+  </script>
+
+  <!-- ============ 2) median-split demo (seeded; New sample reseeds) ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var V = window.VIZ;
+    var canvas = document.getElementById("ms-canvas");
+    var ctx = canvas.getContext("2d");
+    var N = 60, X = [], Y = [], split = false;
+
+    function mulberry32(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; var t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+    function mean(a){ return a.reduce(function(x,y){ return x+y; },0)/a.length; }
+    function corr(a,b){ var ma=mean(a), mb=mean(b), n=0,da=0,db=0; for (var i=0;i<a.length;i++){ n+=(a[i]-ma)*(b[i]-mb); da+=(a[i]-ma)*(a[i]-ma); db+=(b[i]-mb)*(b[i]-mb); } return n/Math.sqrt(da*db); }
+    function median(a){ var s=a.slice().sort(function(p,q){ return p-q; }); return s[Math.floor(s.length/2)]; }
+
+    function build(seed){
+      var rng = mulberry32(seed);
+      function rn(){ var u=0,v=0; while(u===0)u=rng(); while(v===0)v=rng(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+      var rho = 0.55; X = []; Y = [];
+      for (var i=0;i<N;i++){ var a=rn(), b=rn(); X.push(a); Y.push(rho*a + Math.sqrt(1-rho*rho)*b); }
+      update();
+    }
+
+    function draw(){
+      V.fit(canvas);
+      var W = canvas.clientWidth, H = canvas.clientHeight, pad = 34;
+      ctx.clearRect(0,0,W,H);
+      var xlo=Math.min.apply(null,X), xhi=Math.max.apply(null,X), ylo=Math.min.apply(null,Y), yhi=Math.max.apply(null,Y);
+      var xs=(xhi-xlo)||1, ys=(yhi-ylo)||1; xlo-=xs*0.08; xhi+=xs*0.08; ylo-=ys*0.08; yhi+=ys*0.08;
+      function px(v){ return pad + (v-xlo)/(xhi-xlo)*(W-pad-12); }
+      function py(v){ return (H-pad) - (v-ylo)/(yhi-ylo)*(H-pad-14); }
+      var border = V.css("--border") || "#ccc", muted = V.css("--text-muted") || "#667";
+      ctx.strokeStyle = border; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(pad, H-pad); ctx.lineTo(W-12, H-pad); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(pad, 14); ctx.lineTo(pad, H-pad); ctx.stroke();
+      ctx.fillStyle = muted; ctx.font = "12px system-ui, sans-serif"; ctx.textAlign = "left";
+      ctx.fillText("Y", pad+4, 16); ctx.textAlign = "right"; ctx.fillText("X", W-14, H-pad+16);
+
+      var med = median(X);
+      if (split){
+        // vertical median line
+        ctx.strokeStyle = "#f97316"; ctx.setLineDash([4,3]); ctx.beginPath(); ctx.moveTo(px(med), 14); ctx.lineTo(px(med), H-pad); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = "#f97316"; ctx.textAlign = "center"; ctx.font = "10px system-ui, sans-serif"; ctx.fillText("median", px(med), 12);
+      }
+      // least-squares line for the CONTINUOUS relationship
+      var mx=mean(X), my=mean(Y), sxy=0, sxx=0;
+      for (var i=0;i<N;i++){ sxy+=(X[i]-mx)*(Y[i]-my); sxx+=(X[i]-mx)*(X[i]-mx); }
+      var b1=sxy/sxx, b0=my-b1*mx;
+      if (!split){
+        ctx.strokeStyle = V.css("--primary") || "#6366f1"; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(px(xlo), py(b0+b1*xlo)); ctx.lineTo(px(xhi), py(b0+b1*xhi)); ctx.stroke();
+      } else {
+        // draw the two group means of Y as horizontal markers
+        var loY=[], hiY=[];
+        for (var j=0;j<N;j++){ (X[j] > med ? hiY : loY).push(Y[j]); }
+        var loM=mean(loY), hiM=mean(hiY);
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = V.css("--primary") || "#6366f1";
+        ctx.beginPath(); ctx.moveTo(px(xlo), py(loM)); ctx.lineTo(px(med), py(loM)); ctx.stroke();
+        ctx.strokeStyle = "#f97316";
+        ctx.beginPath(); ctx.moveTo(px(med), py(hiM)); ctx.lineTo(px(xhi), py(hiM)); ctx.stroke();
+      }
+      // points
+      for (var k=0;k<N;k++){
+        ctx.beginPath(); ctx.arc(px(X[k]), py(Y[k]), 3.2, 0, Math.PI*2);
+        if (split){ ctx.fillStyle = X[k] > med ? "#f97316" : (V.css("--primary") || "#6366f1"); }
+        else { ctx.fillStyle = V.css("--secondary") || "#14b8a6"; }
+        ctx.globalAlpha = 0.82; ctx.fill(); ctx.globalAlpha = 1;
+      }
+    }
+
+    function update(){
+      var rc = corr(X, Y);
+      var med = median(X);
+      var Xb = X.map(function(x){ return x > med ? 1 : 0; });
+      var rb = corr(Xb, Y);
+      document.getElementById("ms-rc").textContent = rc.toFixed(3).replace(/^(-?)0/, "$1");
+      document.getElementById("ms-rb").textContent = rb.toFixed(3).replace(/^(-?)0/, "$1");
+      var loss = rc ? (1 - (rb*rb)/(rc*rc)) * 100 : 0;
+      document.getElementById("ms-loss").textContent = Math.max(0, loss).toFixed(0) + "%";
+      draw();
+    }
+
+    document.getElementById("ms-split").addEventListener("change", function(){ split = this.checked; draw(); });
+    document.getElementById("ms-new").addEventListener("click", function(){ split = document.getElementById("ms-split").checked; build((Date.now() & 0x7fffffff) || 1); });
+    window.addEventListener("resize", draw);
+    if (V.onTheme) V.onTheme(draw);
+    build(42);   // fixed seed -> r ≈ .59 continuous, ≈ .46 split (ratio ≈ .78)
+  })();
+  </script>
+</body>
+</html>

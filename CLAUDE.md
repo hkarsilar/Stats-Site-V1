@@ -17,15 +17,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 There are no tests, linters, or build tools. The workflow is: edit a file → syntax-check JS → preview in a browser → commit.
 
-All commands run **from the repo root** (the `Stats-Site-V1` folder). They assume `python` (Python 3) and `node` are on your PATH — this repo is developed on both Windows and macOS, so if `python` isn't found on macOS use `python3`.
+All commands run **from the repo root** (the `Stats-Site-V1` folder) and assume only **`node`** on your PATH — Node is the one runtime with the same command name on macOS, Windows and Linux, so preview and the health check need nothing else. **The two content generators are Python 3**; the command name differs by OS, so use whichever your machine has: **`python` on Windows, `python3` on macOS** (this Mac has no bare `python`). Both `tools/*.py` scripts also carry a `python3` shebang and the executable bit, so on macOS/Linux you can run them directly as `./tools/inject-faqs.py` with no interpreter prefix at all.
 
 ```bash
-# Local preview (paths are root-relative; serve the repo root):
-python -m http.server 8097
-# then open http://localhost:8097/
+# Local preview (zero-dependency Node static server; serve the repo root):
+node tools/serve.js 8097
+# then open http://localhost:8097/   (Ctrl-C to stop)
 
 # Simulate GitHub-Pages subpath hosting (catches absolute-path regressions):
-python -m http.server 8088 --directory ..
+node tools/serve.js 8088 ..
 # then open http://localhost:8088/Stats-Site-V1/   (site behaves as if served from a subpath)
 
 # Site health check — REQUIRED before every commit (exits 1 on any error)
@@ -34,15 +34,16 @@ node tools/audit.js
 # Syntax-check a shared script
 node --check assets/js/site.js
 
-# Syntax-check a lesson's inline interactive (it's the largest <script> block):
-python - <<'PY'
-import re; html=open("stats-1/central-limit-theorem/index.html",encoding="utf-8").read()
-open("_c.js","w").write(max(re.findall(r"<script>(.*?)</script>",html,re.S),key=len))
-PY
-node --check _c.js    # then delete _c.js
+# Regenerate FAQ blocks / search index (Python 3 — use ./tools/… on macOS, python on Windows):
+./tools/inject-faqs.py           # or: python3 tools/inject-faqs.py  /  python tools/inject-faqs.py
+./tools/build-search-index.py    #     (same three invocations work)
+
+# Syntax-check a lesson's inline interactive (it's the largest <script> block) — pure Node:
+node -e 'const fs=require("fs");const h=fs.readFileSync("stats-1/central-limit-theorem/index.html","utf8");const b=[...h.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]).sort((a,z)=>z.length-a.length)[0];fs.writeFileSync("_c.js",b);'
+node --check _c.js && rm _c.js
 ```
 
-`.claude/launch.json` (committed in the repo, with repo-relative paths) defines the servers above (`site` and `subpath`, plus `site-alt` on 8098 as a fallback when another session holds 8097) for the preview tooling, so preview works on any clone.
+`.claude/launch.json` (committed in the repo, with repo-relative paths) defines the servers above (`site` and `subpath`, plus `site-alt` on 8098 as a fallback when another session holds 8097) via **`node tools/serve.js <port> [root]`**, so the preview tooling spawns identically on any clone — Mac, Windows or Linux — with no Python needed. `tools/serve.js` is a zero-dependency static server (Node built-ins only) that mirrors `python -m http.server`: it serves a directory's `index.html` and 301-redirects a slash-less directory request so lessons' `../../` links resolve exactly as on GitHub Pages.
 
 **`node tools/audit.js` is the permanent health check and a required pre-commit gate** (zero-dependency, Node built-ins only; run from the repo root). It exits non-zero on any **error** and cross-checks the whole site against its single sources of truth: coverage per ready lesson (`CHECKS` 3×4, `faq_data.py` 3 Q&As, `QUIPS`, `SNIPPETS` warn-only, `SOFTWARE` info-only, `sitemap.xml`) with no stale/orphan keys; per-lesson HTML (one GA tag, canonical + `og:url` = true URL, `og:type` article, LearningResource + BreadcrumbList + FAQPage JSON-LD all parse, `data-course`/`data-section`, the `Section N.n` eyebrow vs `curriculum.js`, meta description present + 50–160 chars as a warning); root/tool pages (GA, canonical, description, OG; `404.html` GA only); all internal `href`/`src` links resolve on disk with no leading-slash paths; search-index freshness + slug coverage; and the homepage course/lesson counts vs `curriculum.js`. **Warnings/info never fail the build** — only errors do. Run it (and fix any errors) after every content change and before handing a diff back for review.
 

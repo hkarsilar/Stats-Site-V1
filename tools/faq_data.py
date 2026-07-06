@@ -572,6 +572,33 @@ FAQS_DATA = {
   "It's entering the same data <em>twice</em> — by two people, or by one person on two separate passes — and then comparing the two versions cell by cell. Wherever they disagree, at least one entry is wrong, so the mismatches point you straight to the typos to check against the source. It sharply cuts the undetected-error rate and is standard in clinical trials and other high-stakes data collection. For smaller projects, validation rules plus a careful proofreading pass are a lighter-weight substitute."),
 ],
 
+"data-cleaning-workflow": [
+ ("Should I clean my data in the spreadsheet or in a script?",
+  "In a script, always. Hand-editing cells in the spreadsheet destroys the record of what you changed and can't be repeated if the raw file is ever corrected. Instead, keep the <a href=\"../../data/tidy-data/\">raw file</a> read-only and write every fix as code that reads it and produces a <em>separate</em> clean file. That makes cleaning reproducible (rerun and get the same result), reversible (delete the clean file, the raw survives), and auditable (the script <em>is</em> the log of every decision). Point-and-click is fine for <em>inspecting</em> the data; it's the fixing that must be scripted."),
+ ("How do I decide whether two rows are really duplicates?",
+  "First define what makes a row unique — usually a participant ID plus, for repeated measures, a timepoint. <strong>Exact duplicates</strong> (every field identical, often a double-clicked submit) are safe to drop. <strong>Fuzzy duplicates</strong> — the same person as \"Ann Lee\" and \"Ann&nbsp;Lee&nbsp;\", or two near-identical rows differing by a whitespace ghost — need investigation, not automatic deletion. And beware the false alarm: in long-format data one person legitimately owns several rows, so identical values in a few columns don't make them duplicates. Check your row count before and after, and log how many you removed."),
+ ("In what order should cleaning steps run?",
+  "Inspect before you touch anything, then apply fixes in an order where each step sets up the next. A reliable default is: trim whitespace, then standardise categories, then remove duplicates, then range-check numeric fields — re-inspecting after each. Order genuinely matters: you can't merge <code>\"Control&nbsp;\"</code> with <code>\"Control\"</code> until the trailing space is trimmed, and de-duplicating before you've standardised labels can miss copies that only look different because of formatting. Writing the steps as an explicit pipeline makes that order visible and repeatable."),
+],
+
+"outliers-in-practice": [
+ ("Should I remove outliers before or after checking assumptions?",
+  "Neither in isolation — investigate the <em>cause</em> first, because the two questions are entangled. Never delete points simply to make an assumption check pass; that's how honest analysis slides into <a href=\"../../methods/the-replication-crisis/\">p-hacking</a>. Often a single fix resolves both at once: a genuine data-entry error corrected removes an assumption violation too, and a <a href=\"../../data/transformations-and-recoding/\">log transform</a> can tame a skewed distribution without discarding any data. If an extreme point is real and you're unsure, run the analysis with and without it (a sensitivity analysis) and report both."),
+ ("Is it ever okay to just delete an outlier?",
+  "Only when you can point to a documented reason the observation is invalid — an equipment failure, a participant who didn't follow instructions, an impossible value with no recoverable source — and you <em>report</em> that you removed it and why. What's never acceptable is silently dropping points because they weaken your result. A genuine extreme (a real, rare value from a heavy-tailed distribution) is information, not contamination: keep it and lean on robust methods such as medians, trimmed means, or rank tests so it doesn't dominate."),
+ ("Should I flag outliers with z &gt; 3 or the 1.5 × IQR rule?",
+  "Both are rules of thumb, not laws, and they answer slightly different questions. The <strong>z-score</strong> rule (|z| &gt; 3) assumes roughly normal data and uses the mean and SD — which the outlier itself inflates, so a lone giant can mask itself. The <strong>1.5 × IQR</strong> rule is built from quartiles, so it's far more robust and better for skewed data. Look at a boxplot or histogram first, decide the rule in advance so the result can't steer it, and remember that either way you've only <em>flagged</em> a point for investigation, not sentenced it."),
+],
+
+"transformations-and-recoding": [
+ ("When should I log-transform my data?",
+  "Reach for a log when a variable is strongly right-skewed and strictly positive — income, reaction times, counts, concentrations — especially when its structure is multiplicative (a 10% change matters more than a fixed amount). A log often restores the normality and constant variance that <a href=\"../../stats-2/assumptions-and-when-they-break/\">tests assume</a>, and pulls in a long tail so a few large values stop dominating. If the variable contains zeros, use <code>log(x + 1)</code>. The trade-off is interpretation: results now live on the log scale, so report that and back-transform your summary to the geometric mean."),
+ ("Is it okay to median-split a continuous variable?",
+  "Avoid it. Chopping a continuous predictor into \"high\" and \"low\" at the median feels tidy and lets you run a t-test, but it throws away all the variation within each half — everyone above the median is treated as identical. Statistically it shrinks a correlation to about 0.80 of its value, which is roughly the same power loss as discarding a third of your participants, and it can even manufacture spurious effects. Keep the variable continuous and use correlation or regression; if you truly need categories for a <em>plot</em>, make them there, not in the analysis."),
+ ("Do I have to reverse-code items before averaging them into a scale?",
+  "Yes — reverse-code first, always. If a questionnaire mixes positively and negatively worded items (\"I feel calm\" alongside \"I feel tense\"), the negative ones run in the opposite direction; average them in raw and they partly cancel the others, deflating both the scale's <a href=\"../../methods/reliability-and-validity/\">reliability</a> and its validity. Flip each reverse item with <code>6 − x</code> on a 1–5 scale (or <code>max + min − x</code> in general) so every item points the same way, then compute the composite. Recompute Cronbach's α afterwards to confirm the items now hang together."),
+],
+
 }
 
 FAQS = {**FAQS_12, **FAQS_34, **FAQS_METHODS, **FAQS_DATA}

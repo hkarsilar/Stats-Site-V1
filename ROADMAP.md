@@ -87,7 +87,7 @@ Tick these as sessions complete them (each prompt ends by updating this list).
 - [x] P6 · Methods 7–9
 - [x] P7 · Methods 10–12
 - [x] P8 · Data 1–3 (+ scaffold)
-- [ ] P9 · Data 4–6
+- [x] P9 · Data 4–6
 - [ ] P10 · Data 7–10
 - [ ] P11 · Ethics 1–3 (+ scaffold)
 - [ ] P12 · Ethics 4–6

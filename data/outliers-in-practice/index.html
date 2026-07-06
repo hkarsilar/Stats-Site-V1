@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Outliers: Detect, Investigate, Decide — StatsCapybara</title>
+  <meta name="description" content="Outliers in practice: detect with z and 1.5×IQR, investigate the cause, then decide — correct, exclude and report, or keep and use robust methods." />
+  <link rel="canonical" href="https://statscapybara.com/data/outliers-in-practice/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Outliers: Detect, Investigate, Decide — StatsCapybara" />
+  <meta property="og:description" content="Outliers in practice: detect with z and 1.5×IQR, investigate the cause, then decide — correct, exclude and report, or keep and use robust methods." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/data/outliers-in-practice/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Outliers: Detect, Investigate, Decide — StatsCapybara" />
+  <meta name="twitter:description" content="Outliers in practice: detect with z and 1.5×IQR, investigate the cause, then decide — correct, exclude and report, or keep and use robust methods." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Outliers: Detect, Investigate, Decide", "description": "Outliers in practice: detect with z and 1.5×IQR, investigate the cause, then decide — correct, exclude and report, or keep and use robust methods.", "url": "https://statscapybara.com/data/outliers-in-practice/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Data: From Raw to Ready", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Outliers: Detect, Investigate, Decide", "item": "https://statscapybara.com/data/outliers-in-practice/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Should I remove outliers before or after checking assumptions?", "acceptedAnswer": {"@type": "Answer", "text": "Neither in isolation — investigate the cause first, because the two questions are entangled. Never delete points simply to make an assumption check pass; that's how honest analysis slides into p-hacking. Often a single fix resolves both at once: a genuine data-entry error corrected removes an assumption violation too, and a log transform can tame a skewed distribution without discarding any data. If an extreme point is real and you're unsure, run the analysis with and without it (a sensitivity analysis) and report both."}}, {"@type": "Question", "name": "Is it ever okay to just delete an outlier?", "acceptedAnswer": {"@type": "Answer", "text": "Only when you can point to a documented reason the observation is invalid — an equipment failure, a participant who didn't follow instructions, an impossible value with no recoverable source — and you report that you removed it and why. What's never acceptable is silently dropping points because they weaken your result. A genuine extreme (a real, rare value from a heavy-tailed distribution) is information, not contamination: keep it and lean on robust methods such as medians, trimmed means, or rank tests so it doesn't dominate."}}, {"@type": "Question", "name": "Should I flag outliers with z &gt; 3 or the 1.5 × IQR rule?", "acceptedAnswer": {"@type": "Answer", "text": "Both are rules of thumb, not laws, and they answer slightly different questions. The z-score rule (|z| &gt; 3) assumes roughly normal data and uses the mean and SD — which the outlier itself inflates, so a lone giant can mask itself. The 1.5 × IQR rule is built from quartiles, so it's far more robust and better for skewed data. Look at a boxplot or histogram first, decide the rule in advance so the result can't steer it, and remember that either way you've only flagged a point for investigation, not sentenced it."}}]}
+  </script>
+</head>
+<body data-course="data" data-section="outliers-in-practice">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 2.5</span>
+        <h1>Outliers: Detect, Investigate, Decide</h1>
+
+        <p class="lede">An outlier is a value far from the rest. What it is <em>not</em> is automatically a mistake to delete. The single most damaging habit in data analysis is quietly dropping the points that spoil the pattern. The professional move is a three-step loop: <strong>detect</strong> the extreme value, <strong>investigate</strong> why it's there, and only then <strong>decide</strong> — with the reason on record.</p>
+
+        <h2>Detect — look before you calculate</h2>
+        <p>Your eyes are the best first detector. A histogram, a boxplot, or a scatterplot shows an extreme point instantly, in context. Two rules of thumb then put numbers on it:</p>
+        <ul>
+          <li><strong>z-score:</strong> how many SDs from the mean. <code>|z| &gt; 3</code> is a common flag — but the mean and SD are themselves dragged by the outlier, so a lone giant can hide by inflating the SD.</li>
+          <li><strong>1.5 × IQR:</strong> anything below <code>Q1 − 1.5·IQR</code> or above <code>Q3 + 1.5·IQR</code> — the rule that draws a boxplot's whiskers. It uses quartiles, so it resists the very extremes it's hunting.</li>
+        </ul>
+        <p>Both are <em>flags, not verdicts</em>: they nominate points for investigation, they don't sentence them. (Our <a href="../../descriptives.html">descriptives calculator</a> reports both automatically for pasted data.)</p>
+
+        <h2>Investigate — the three explanations</h2>
+        <p>Every flagged point has one of three stories, and each has its own correct action:</p>
+        <ol>
+          <li><strong>An error</strong> — a typo, a unit mix-up, an equipment glitch. If the source is recoverable, <strong>correct it</strong> (age 511 → 51). If not, mark it <em>missing</em>.</li>
+          <li><strong>A different population / invalid observation</strong> — the participant fell asleep, the assay batch failed, the trial doesn't measure what you meant. <strong>Exclude and report</strong> it, with the pre-decided reason.</li>
+          <li><strong>A genuine extreme</strong> — a real, rare member of a heavy-tailed distribution (a millionaire in an income survey). <strong>Keep it</strong>, and lean on <em>robust</em> methods (medians, trimmed means, rank tests) so one true point doesn't dominate.</li>
+        </ol>
+
+        <p>Time to be the methodologist. Here are six flagged cases, each with the context you'd actually have. Pick the action you'd defend, then see the verdict.</p>
+
+        <!-- ============ INTERACTIVE 1 ============ -->
+        <div class="viz" id="oc">
+          <p class="viz-title">🩺 Outlier Triage Clinic</p>
+          <p class="viz-sub">Six real-feeling cases. Read the context — the story matters more than the number — and choose an action. The verdict explains the reasoning and the general rule behind it.</p>
+          <div class="controls" style="align-items:center">
+            <div class="stat"><span class="k">Diagnosed</span><span class="v" id="oc-done">0 / 6</span></div>
+            <div class="stat"><span class="k">Matched the methodologist</span><span class="v" id="oc-score">0</span></div>
+            <div class="control" style="margin-left:auto"><button class="btn btn-ghost btn-sm" id="oc-reset" type="button">Reset</button></div>
+          </div>
+          <div id="oc-cards" class="oc-cards"></div>
+        </div>
+        <!-- ============ /INTERACTIVE 1 ============ -->
+
+        <h2>Decide — and notice the leverage</h2>
+        <p>Why does the decision matter so much? Because a single extreme point can swing a whole result. Below is a real two-group reaction-time study: the treatment truly worked — but one participant's timer kept running after they left the room, logging <strong>24,000 ms</strong>. Watch what that one value does to the <em>t</em>-test, and what three defensible responses do to it.</p>
+
+        <!-- ============ INTERACTIVE 2 ============ -->
+        <div class="viz" id="ol">
+          <p class="viz-title">⚖️ One Point, Enormous Leverage</p>
+          <p class="viz-sub">Same study, three handling choices for the 24,000 ms value. Keep it and the real effect vanishes into the noise; deal with it honestly and the effect reappears. Reporting the result <em>both</em> ways is a sensitivity analysis.</p>
+          <div class="controls">
+            <div class="control seg" role="group" aria-label="Outlier handling">
+              <button class="btn btn-sm seg-btn is-on" data-mode="keep" type="button">Keep it</button>
+              <button class="btn btn-sm seg-btn" data-mode="wins" type="button">Winsorise</button>
+              <button class="btn btn-sm seg-btn" data-mode="excl" type="button">Exclude &amp; report</button>
+            </div>
+          </div>
+          <canvas id="ol-canvas" height="150" aria-label="Dot strip of reaction times for control and treatment groups; the 24,000 ms outlier dominates the scale until it is handled."></canvas>
+          <div class="ol-grid">
+            <div class="stat"><span class="k">Control</span><span class="v" id="ol-a">—</span></div>
+            <div class="stat"><span class="k">Treatment</span><span class="v" id="ol-b">—</span></div>
+            <div class="stat"><span class="k">t-test</span><span class="v" id="ol-t">—</span></div>
+            <div class="stat"><span class="k">Verdict</span><span class="v" id="ol-p">—</span></div>
+          </div>
+          <p class="ol-note" id="ol-note"></p>
+        </div>
+        <!-- ============ /INTERACTIVE 2 ============ -->
+
+        <div class="callout key">
+          <p><strong>An outlier is a question, not a verdict.</strong> "This point is extreme" is the start of an investigation, never the end. Decide the rule you'll use <em>before</em> you see how it changes your p-value, apply it to every point equally, and report what you did — ideally with and without the point, so the reader can judge for themselves.</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> silently deleting inconvenient points is how honest researchers drift into <a href="../../methods/the-replication-crisis/">p-hacking</a> without noticing — each deletion feels justified, and the false-positive rate climbs. The disciplined alternative is cheap: flag with z or IQR, investigate the cause, act on the cause, and log it. In models, an extreme point can also be a high-<em>leverage</em> case that bends the whole fit — see <a href="../../stats-2/regression-diagnostics/">regression diagnostics</a>. And when a variable is genuinely heavy-tailed, a <a href="../transformations-and-recoding/">transformation</a> often tames the extremes without throwing any data away.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>Should I remove outliers before or after checking assumptions?</summary>
+            <div class="faq-a"><p>Neither in isolation — investigate the <em>cause</em> first, because the two questions are entangled. Never delete points simply to make an assumption check pass; that's how honest analysis slides into <a href="../../methods/the-replication-crisis/">p-hacking</a>. Often a single fix resolves both at once: a genuine data-entry error corrected removes an assumption violation too, and a <a href="../../data/transformations-and-recoding/">log transform</a> can tame a skewed distribution without discarding any data. If an extreme point is real and you're unsure, run the analysis with and without it (a sensitivity analysis) and report both.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Is it ever okay to just delete an outlier?</summary>
+            <div class="faq-a"><p>Only when you can point to a documented reason the observation is invalid — an equipment failure, a participant who didn't follow instructions, an impossible value with no recoverable source — and you <em>report</em> that you removed it and why. What's never acceptable is silently dropping points because they weaken your result. A genuine extreme (a real, rare value from a heavy-tailed distribution) is information, not contamination: keep it and lean on robust methods such as medians, trimmed means, or rank tests so it doesn't dominate.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Should I flag outliers with z &gt; 3 or the 1.5 × IQR rule?</summary>
+            <div class="faq-a"><p>Both are rules of thumb, not laws, and they answer slightly different questions. The <strong>z-score</strong> rule (|z| &gt; 3) assumes roughly normal data and uses the mean and SD — which the outlier itself inflates, so a lone giant can mask itself. The <strong>1.5 × IQR</strong> rule is built from quartiles, so it's far more robust and better for skewed data. Look at a boxplot or histogram first, decide the rule in advance so the result can't steer it, and remember that either way you've only <em>flagged</em> a point for investigation, not sentenced it.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <style>
+    /* outliers-in-practice widgets (scoped) */
+    #oc .oc-cards { display:flex; flex-direction:column; gap:.7rem; margin-top:.7rem; }
+    #oc .oc-card { border:1px solid var(--border); border-radius:10px; padding:.7rem .8rem; background:var(--surface-2); }
+    #oc .oc-ctx { font-size:.9rem; color:var(--text); margin:0 0 .1rem; }
+    #oc .oc-val { font-family:var(--mono); font-size:.8rem; color:#f97316; font-weight:700; margin:0 0 .55rem; }
+    #oc .oc-acts { display:flex; flex-wrap:wrap; gap:.4rem; }
+    #oc .oc-act { font-size:.8rem; padding:.32rem .6rem; border:1px solid var(--border); border-radius:6px; background:var(--surface); color:var(--text-muted); cursor:pointer; }
+    #oc .oc-act:hover:not(:disabled){ border-color:var(--primary); color:var(--text); }
+    #oc .oc-act:disabled { cursor:default; opacity:.9; }
+    #oc .oc-act.picked-right { background:color-mix(in srgb,#22c55e 22%,transparent); border-color:#22c55e; color:#16a34a; font-weight:700; }
+    #oc .oc-act.picked-wrong { background:color-mix(in srgb,#ef4444 20%,transparent); border-color:#ef4444; color:#dc2626; }
+    #oc .oc-act.is-answer { border-color:#22c55e; color:#16a34a; font-weight:700; }
+    #oc .oc-verdict { font-size:.85rem; color:var(--text-muted); margin:.55rem 0 0; line-height:1.5; border-top:1px dashed var(--border); padding-top:.5rem; }
+    #oc .oc-verdict:empty { display:none; }
+    #oc .oc-verdict b { color:var(--text); }
+
+    #ol .seg { display:inline-flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+    #ol .seg-btn { border:none; border-radius:0; background:var(--surface-2); color:var(--text-muted); border-right:1px solid var(--border); }
+    #ol .seg-btn:last-child { border-right:none; }
+    #ol .seg-btn.is-on { background:var(--primary); color:#fff; }
+    #ol canvas { width:100%; display:block; margin:.7rem 0 .2rem; }
+    #ol .ol-grid { display:flex; flex-wrap:wrap; gap:.6rem 1.4rem; margin-top:.3rem; }
+    #ol .ol-note { font-size:.85rem; color:var(--text-muted); margin:.6rem 0 0; line-height:1.5; min-height:2.2em; }
+  </style>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ 1) triage clinic ============ -->
+  <script>
+  (function () {
+    "use strict";
+    // action ids: fix | exclude | keep
+    var CASES = [
+      { ctx: "Reaction time = 24,000 ms. The session log notes the participant left the room to take a phone call mid-task.",
+        val: "24,000 ms (mean ≈ 540 ms)", ans: "exclude",
+        why: "<b>Exclude &amp; report.</b> The trial didn't measure reaction time — it measured a phone call. There's no true RT to recover, so correcting is impossible; the honest move is to drop that trial for a stated, pre-decidable reason (attention lapse) and note how many trials went this way." },
+      { ctx: "Age = 511 in a survey. The original paper questionnaire for that ID clearly reads 51.",
+        val: "511 (range 18–79)", ans: "fix",
+        why: "<b>Correct it.</b> This is a plain data-entry error with a recoverable source — an extra digit. Fix it to 51 from the source document and log the correction. No need to exclude a whole valid participant over a typo." },
+      { ctx: "Annual income = $980,000 in a student sample. A follow-up confirms the student co-owns a family business — the figure is real.",
+        val: "$980,000 (median ≈ $9,000)", ans: "keep",
+        why: "<b>Keep it (use robust methods).</b> Income is genuinely heavy-tailed; this is a real member of that tail, not an error. Deleting it would bias your sample. Keep it and report medians / a rank test, or a log transform, so one true point doesn't dominate the mean." },
+      { ctx: "Systolic blood pressure = 400 mmHg. It's physiologically impossible, and there's no source record to check against.",
+        val: "400 mmHg (range 95–160)", ans: "exclude",
+        why: "<b>Exclude &amp; report</b> (set to missing). The value can't be real and can't be recovered, so it's not correctable. Mark it missing, don't drop the participant's other valid data, and report how many such values you removed and why." },
+      { ctx: "Height = 71 in a centimetres column. The participant self-reported 5 ft 11 in — which is 180 cm, and 71 is the height in inches.",
+        val: "71 (others 150–195 cm)", ans: "fix",
+        why: "<b>Correct it.</b> This is a recoverable unit mix-up: 71 inches = 180 cm. Convert it to the column's units and log the fix. A range check would have flagged it; the source lets you repair rather than discard it." },
+      { ctx: "A word-recall score of 18/20 when the group mean is 9. The tester confirms the session ran normally — this participant is simply excellent.",
+        val: "18 (mean ≈ 9, max 20)", ans: "keep",
+        why: "<b>Keep it.</b> A valid, in-range, verified observation — just a strong performer. Extremes that are real are <em>information</em>, not contamination. If you're worried about its pull on a mean-based test, report a sensitivity analysis or use a robust test, but never delete it." }
+    ];
+    var ACTS = [ { id:"fix", t:"Correct it" }, { id:"exclude", t:"Exclude &amp; report" }, { id:"keep", t:"Keep it (robust)" } ];
+
+    var host = document.getElementById("oc-cards");
+    var doneEl = document.getElementById("oc-done");
+    var scoreEl = document.getElementById("oc-score");
+    var picked = {};
+
+    function render(){
+      host.innerHTML = "";
+      CASES.forEach(function(c, i){
+        var card = document.createElement("div");
+        card.className = "oc-card";
+        var done = (i in picked);
+        var acts = ACTS.map(function(a){
+          var cls = "oc-act";
+          if (done){
+            if (a.id === c.ans) cls += " is-answer";
+            if (picked[i] === a.id) cls += (a.id === c.ans ? " picked-right" : " picked-wrong");
+          }
+          return "<button class='" + cls + "' data-i='" + i + "' data-a='" + a.id + "'" + (done ? " disabled" : "") + ">" + a.t + "</button>";
+        }).join("");
+        card.innerHTML =
+          "<p class='oc-ctx'><b>Case " + (i+1) + ".</b> " + c.ctx + "</p>" +
+          "<p class='oc-val'>flagged value: " + c.val + "</p>" +
+          "<div class='oc-acts'>" + acts + "</div>" +
+          "<p class='oc-verdict'>" + (done ? c.why : "") + "</p>";
+        host.appendChild(card);
+      });
+      var n = Object.keys(picked).length;
+      var correct = CASES.reduce(function(s, c, i){ return s + (picked[i] === c.ans ? 1 : 0); }, 0);
+      doneEl.textContent = n + " / 6";
+      scoreEl.textContent = n ? correct + " / " + n : "0";
+    }
+
+    host.addEventListener("click", function(e){
+      var b = e.target.closest("button.oc-act"); if (!b) return;
+      var i = +b.getAttribute("data-i");
+      if (i in picked) return;
+      picked[i] = b.getAttribute("data-a");
+      render();
+    });
+    document.getElementById("oc-reset").addEventListener("click", function(){ picked = {}; render(); });
+    render();
+  })();
+  </script>
+
+  <!-- ============ 2) leverage / sensitivity panel ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var V = window.VIZ;
+    var A = [620, 660, 590, 640, 610, 680, 600, 650];               // control
+    var B_KEEP = [540, 500, 560, 520, 580, 510, 550, 24000];        // treatment w/ outlier
+    var B_WINS = [540, 500, 560, 520, 580, 510, 550, 580];          // 24000 capped to next-highest
+    var B_EXCL = [540, 500, 560, 520, 580, 510, 550];               // outlier dropped
+
+    var canvas = document.getElementById("ol-canvas");
+    var ctx = canvas.getContext("2d");
+    var mode = "keep";
+
+    function mean(a){ return a.reduce(function(x,y){ return x+y; },0)/a.length; }
+    function sd(a){ var m=mean(a); return Math.sqrt(a.reduce(function(s,x){ return s+(x-m)*(x-m); },0)/(a.length-1)); }
+    function welch(a, b){
+      var ma=mean(a), mb=mean(b), va=sd(a)*sd(a), vb=sd(b)*sd(b), na=a.length, nb=b.length;
+      var se=Math.sqrt(va/na+vb/nb);
+      var t=(ma-mb)/se;
+      var df=Math.pow(va/na+vb/nb,2)/(Math.pow(va/na,2)/(na-1)+Math.pow(vb/nb,2)/(nb-1));
+      var p=Math.min(1, 2*V.tUpper(Math.abs(t), df));
+      return { t:t, df:df, p:p, ma:ma, mb:mb, sa:sd(a), sb:sd(b) };
+    }
+
+    function fmtP(p){ return p < .001 ? "&lt; .001" : "= " + p.toFixed(3).replace(/^0/, ""); }
+
+    function draw(B){
+      V.fit(canvas);
+      var W = canvas.clientWidth, H = canvas.clientHeight;
+      ctx.clearRect(0,0,W,H);
+      var pad = 34;
+      var all = A.concat(B);
+      var lo = Math.min.apply(null, all), hi = Math.max.apply(null, all);
+      var span = hi - lo || 1; lo -= span*0.06; hi += span*0.06;
+      var x = function(v){ return pad + (v-lo)/(hi-lo) * (W - pad - 12); };
+      var muted = V.css("--text-faint") || "#9aa";
+      var border = V.css("--border") || "#ccc";
+      // axis
+      ctx.strokeStyle = border; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(pad, H-22); ctx.lineTo(W-12, H-22); ctx.stroke();
+      ctx.fillStyle = muted; ctx.font = "11px system-ui, sans-serif"; ctx.textAlign = "center";
+      for (var g=0; g<=4; g++){
+        var vv = lo + (hi-lo)*g/4;
+        var px = x(vv);
+        ctx.fillText(Math.round(vv), px, H-8);
+        ctx.strokeStyle = border; ctx.beginPath(); ctx.moveTo(px, H-25); ctx.lineTo(px, H-22); ctx.stroke();
+      }
+      ctx.textAlign = "left"; ctx.fillText("reaction time (ms)", pad, 14);
+      function row(vals, y, color, label){
+        ctx.fillStyle = V.css("--text-muted") || "#667"; ctx.textAlign = "right"; ctx.font = "11px system-ui, sans-serif";
+        ctx.fillText(label, pad-6, y+4);
+        vals.forEach(function(v){
+          var isOut = v >= 24000;
+          ctx.beginPath();
+          ctx.arc(x(v), y, isOut ? 6 : 5, 0, Math.PI*2);
+          ctx.fillStyle = isOut ? "#f97316" : color;
+          ctx.globalAlpha = isOut ? 1 : 0.8;
+          ctx.fill(); ctx.globalAlpha = 1;
+        });
+      }
+      row(A, 40, V.css("--primary") || "#6366f1", "Control");
+      row(B, 74, V.css("--secondary") || "#14b8a6", "Treat.");
+    }
+
+    function update(){
+      var B = mode === "keep" ? B_KEEP : (mode === "wins" ? B_WINS : B_EXCL);
+      var r = welch(A, B);
+      document.getElementById("ol-a").innerHTML = "M = " + r.ma.toFixed(0) + ", SD = " + r.sa.toFixed(0);
+      document.getElementById("ol-b").innerHTML = "M = " + r.mb.toFixed(0) + ", SD = " + r.sb.toFixed(0);
+      document.getElementById("ol-t").innerHTML = "<em>t</em>(" + r.df.toFixed(1) + ") = " + r.t.toFixed(2);
+      var sig = r.p < .05;
+      var pEl = document.getElementById("ol-p");
+      pEl.innerHTML = "<em>p</em> " + fmtP(r.p) + " — " + (sig ? "significant" : "n.s.");
+      pEl.style.color = sig ? "#22c55e" : "#ef4444";
+      var note = {
+        keep: "With the 24,000 ms value kept, the treatment mean is dragged to " + r.mb.toFixed(0) + " ms and the SD explodes. The real effect is buried — the test says <em>nothing happened</em>.",
+        wins: "Winsorising caps the extreme at the next-highest value (580 ms). Less aggressive than deletion, it keeps the row while removing its leverage — the effect returns.",
+        excl: "Dropping the invalid trial (documented: participant left the room) reveals the true, large effect the study was designed to find. Report that this one value was excluded."
+      }[mode];
+      document.getElementById("ol-note").innerHTML = note;
+      draw(B);
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll("#ol .seg-btn"), function(b){
+      b.addEventListener("click", function(){
+        mode = b.getAttribute("data-mode");
+        Array.prototype.forEach.call(document.querySelectorAll("#ol .seg-btn"), function(x){ x.classList.toggle("is-on", x===b); });
+        update();
+      });
+    });
+    window.addEventListener("resize", function(){ draw(mode === "keep" ? B_KEEP : (mode === "wins" ? B_WINS : B_EXCL)); });
+    if (V.onTheme) V.onTheme(function(){ draw(mode === "keep" ? B_KEEP : (mode === "wins" ? B_WINS : B_EXCL)); });
+    update();
+  })();
+  </script>
+</body>
+</html>
