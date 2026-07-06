@@ -136,6 +136,8 @@
     "privacy-and-confidentiality": "The capybara keeps every secret it's trusted with — off email, under lock, and named with the true word: confidential, not “anonymous.”",
     "questionable-research-practices": "Nobody meant to cheat. The capybara just kept peeking until the noise looked like a finding — so now it fixes the rules before the data arrive.",
     "plagiarism-authorship-and-citation": "The capybara credits every paw that did the work, quotes what isn't its own, and only cites the ponds it actually swam in.",
+    "ai-in-research-ethics": "The capybara lets the clever tool help — then reads every word and reruns every number itself, because its name is the one on the work.",
+    "fraud-and-self-correction": "Real ponds are murky; the capybara distrusts water that's suspiciously clear. It reports the numbers it truly measured, and lets others check them.",
     /* Root pages */
     "home": "No rush — capybaras never cram.",
     "toolbox": "A capybara's toolbox: warm water, good snacks, zero deadlines. Yours has calculators too.",

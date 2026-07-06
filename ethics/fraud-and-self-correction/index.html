@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fraud &amp; How Science Self-Corrects — StatsCapybara</title>
+  <meta name="description" content="Fabrication, the Stapel fraud case, retractions, and the GRIM test — check whether a reported mean is even arithmetically possible for its sample size." />
+  <link rel="canonical" href="https://statscapybara.com/ethics/fraud-and-self-correction/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Fraud &amp; How Science Self-Corrects — StatsCapybara" />
+  <meta property="og:description" content="Fabrication, the Stapel fraud case, retractions, and the GRIM test — check whether a reported mean is even arithmetically possible for its sample size." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/ethics/fraud-and-self-correction/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Fraud &amp; How Science Self-Corrects — StatsCapybara" />
+  <meta name="twitter:description" content="Fabrication, the Stapel fraud case, retractions, and the GRIM test — check whether a reported mean is even arithmetically possible for its sample size." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Fraud & How Science Self-Corrects", "description": "Fabrication, the Stapel fraud case, retractions, and the GRIM test — check whether a reported mean is even arithmetically possible for its sample size.", "url": "https://statscapybara.com/ethics/fraud-and-self-correction/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Ethics: Responsible Research", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Fraud & How Science Self-Corrects", "item": "https://statscapybara.com/ethics/fraud-and-self-correction/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the GRIM test?", "acceptedAnswer": {"@type": "Answer", "text": "GRIM stands for Granularity-Related Inconsistency of Means. It's a simple arithmetic check for means built from whole-number responses — a count, or a single Likert-style item. Because a mean is the total divided by the number of people, and the total of N integers is itself an integer, the only means that can actually occur are fractions with denominator N: 0/N, 1/N, 2/N and so on. So a reported mean is only possible if some whole-number total, divided by N and rounded to the stated decimals, reproduces it. When it doesn't — say a mean of 5.19 from 28 people, where the nearest reachable values are 5.18 and 5.21 — the number cannot have come from that many integer responses, signalling a typo, a miscalculation, or fabricated data. GRIM only bites when N is smaller than 10 to the power of the decimals reported (e.g. under 100 for two decimals); with larger samples the steps are finer than the rounding and every mean becomes reachable."}}, {"@type": "Question", "name": "What happens when a paper is retracted?", "acceptedAnswer": {"@type": "Answer", "text": "A retraction is the formal withdrawal of a published paper from the scientific record because it can no longer be trusted — whether through fraud, a serious honest error, or unreliable data. The article usually stays online so the record is transparent, but it's stamped 'RETRACTED', linked to a notice explaining why, and should no longer be cited as valid evidence. Retraction is not the same as an accusation of fraud: many retractions are for honest mistakes, and the notice ideally says which. Databases like Retraction Watch track them, and the number has grown as detection tools and post-publication review have improved — which reflects a system catching more problems, not necessarily more misconduct happening. If you find a key source has been retracted, don't build on it."}}, {"@type": "Question", "name": "How common is research fraud?", "acceptedAnswer": {"@type": "Answer", "text": "Outright fabrication or falsification is rare. In anonymous surveys pooled by Fanelli (2009), about 2% of scientists admitted to having fabricated, falsified, or modified data at least once, and higher fractions said they had seen colleagues do it. The far more common problem is the grey zone of questionable research practices — selective reporting, optional stopping, HARKing — which many more researchers admit to and which do more cumulative damage to the literature than the rare fraud case. The reassuring framing is that fraud is uncommon, that most researchers are honest, and that the fixes are structural: better incentives, transparency, open data, and detection tools mean fabricated results are increasingly likely to be caught."}}]}
+  </script>
+</head>
+<body data-course="ethics" data-section="fraud-and-self-correction">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 3.8</span>
+        <h1>Fraud &amp; How Science Self-Corrects</h1>
+
+        <p class="lede">At the far end of the line that began with honest flexibility and ran through <a href="../../ethics/questionable-research-practices/">questionable research practices</a> sits the thing everyone fears and few commit: outright fraud — making the data up. It's rare, but it does real damage, and the reassuring part of the story is what happens next: science has built a growing toolkit for catching it. This lesson covers what fraud is, how one of its most famous cases unravelled, how the record gets corrected, and — hands-on — one of the arithmetic checks that can flag a fabricated result from the published numbers alone.</p>
+
+        <h2>The two Fs: fabrication and falsification</h2>
+        <p>Research misconduct has a narrow, serious definition, usually three items: <strong>fabrication</strong> (inventing data or results that were never collected), <strong>falsification</strong> (altering real data — changing values, deleting inconvenient cases, doctoring an image), and plagiarism (covered in <a href="../../ethics/plagiarism-authorship-and-citation/">its own lesson</a>). The first two are about the numbers themselves: reporting findings that don't correspond to what actually happened. This is categorically different from the <a href="../../ethics/questionable-research-practices/">QRPs</a> of the last lessons — those bend the analysis of <em>real</em> data; fraud reports data that never existed. It's the difference between arguing your case dishonestly and forging the evidence.</p>
+
+        <h2>Anatomy of a fraud: the Stapel case</h2>
+        <p>Diederik Stapel was a celebrated Dutch social psychologist with dozens of clean, elegant, widely cited papers. Too clean, it turned out: for years he simply <em>invented</em> his datasets, handing collaborators and students spreadsheets of data that no participant had ever produced. The tells were there — effects that were suspiciously large and tidy, studies whose "data" arrived without the messiness of real collection — and it was ultimately <strong>junior colleagues and students who raised the alarm</strong>, not an automated system. Investigations led to more than fifty retractions. Two lessons stand out: fabricated data often looks <em>better</em> than real data, because a fabricator produces the result they expect rather than the noise reality delivers; and the people best placed to notice are insiders, which is exactly why a culture where students can safely speak up matters so much.</p>
+
+        <h2>Correcting the record: retractions</h2>
+        <p>When a published result can't be trusted — through fraud, a serious honest error, or unreliable data — the formal fix is a <strong>retraction</strong>: the paper is withdrawn from the scientific record. It usually stays visible online (stamped "RETRACTED", linked to a notice explaining why) so the correction is transparent, but it should no longer be cited as evidence. Crucially, retraction isn't a synonym for fraud — plenty of retractions are honest mistakes, and a good notice says which. Services like <strong>Retraction Watch</strong> catalogue them, and the annual count has climbed steadily — a sign that detection and post-publication scrutiny are improving, not necessarily that misconduct is rising.</p>
+
+        <h2>Whistleblowing and its costs</h2>
+        <p>Because insiders catch most fraud, self-correction depends on people willing to raise concerns — and doing so is rarely cost-free. Whistleblowers, often junior, risk their relationships, their references, and sometimes their careers to report someone more powerful, frequently over months of uncertainty before anything is confirmed. That the Stapel case broke at all is a credit to students who took that risk. It's why institutions increasingly build <em>protected</em> channels for raising integrity concerns: the health of the whole system rests on making honesty the safe choice, not the brave one.</p>
+
+        <h2>The detection toolkit — where the hope is</h2>
+        <p>The uplifting turn in this story is that fabricated numbers increasingly leave fingerprints, and anyone can learn to look. A family of consistency checks reads the published statistics against the laws of arithmetic:</p>
+        <ul>
+          <li><strong>GRIM</strong> — checks whether a reported mean of whole-number data is even <em>possible</em> for its sample size (you'll try it below).</li>
+          <li><strong>statcheck</strong> — recomputes <em>p</em>-values from the reported test statistic and degrees of freedom, flagging results that don't add up (roughly the idea already built into our <a href="../../tables.html">tables calculator</a>).</li>
+          <li><strong>Data forensics</strong> — looks for too-even digit patterns, duplicated rows, or variances that are implausibly small for real measurement.</li>
+        </ul>
+        <p>None of these <em>proves</em> fraud on its own — an inconsistency can be a typo or a rounding slip — but they narrow the search and, more importantly, they mean fabricated data is a riskier bet than it used to be.</p>
+
+        <h2>Try the GRIM test</h2>
+        <p>Here's the intuition. A mean is a total divided by a head-count. If every response is a whole number — a count, or a single Likert item — then the total is a whole number too, so the only means that can <em>physically occur</em> are fractions with denominator <em>n</em>. Report a mean that falls in the gap between two of those reachable values, and it cannot have come from that many integer responses. Enter a reported mean and its sample size and watch which values are actually reachable.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="grim">
+          <p class="viz-title">🔢 The GRIM test</p>
+          <p class="viz-sub">For a mean of whole-number responses (a count, or one Likert item): is that mean even arithmetically reachable?</p>
+
+          <div class="grim-controls">
+            <label class="grim-field">Reported mean
+              <input type="text" id="grim-mean" inputmode="decimal" value="5.19" autocomplete="off" spellcheck="false" />
+            </label>
+            <label class="grim-field">Sample size <em>n</em>
+              <input type="number" id="grim-n" min="1" max="999" step="1" value="28" />
+            </label>
+          </div>
+          <div class="grim-presets">
+            <span class="grim-plab">Try:</span>
+            <span id="grim-presets">
+              <button type="button" data-m="4.15" data-n="40">course ratings · M = 4.15, n = 40</button>
+              <button type="button" data-m="5.19" data-n="28">wellbeing · M = 5.19, n = 28</button>
+              <button type="button" data-m="4.29" data-n="17">symptom count · M = 4.29, n = 17</button>
+            </span>
+          </div>
+
+          <div class="viz-canvas-wrap"><canvas id="grim-canvas" role="img" aria-label="Number line of the means reachable from whole-number responses near the reported value, with the rounding window shaded"></canvas></div>
+          <p class="grim-verdict" id="grim-verdict"></p>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <div class="callout key">
+          <p><strong>Arithmetic doesn't lie.</strong> GRIM can't tell you <em>why</em> a mean is impossible — a typo and a fabrication look identical from the outside — but it can tell you a reported number could not have come from the sample it claims. That's the spirit of the whole detection toolkit: not to accuse, but to check, cheaply and publicly, whether the numbers are internally consistent. A field where anyone can run that check is a field that's harder to fool.</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> the headline is not "science is full of frauds" — it's the opposite. Fabrication is rare, most researchers are honest, and the system increasingly catches what fraud there is. What keeps it that way isn't suspicion but structure: transparency, open data, protected whistleblowing, and consistency checks that make dishonest numbers a losing gamble. The most useful takeaway for your own work is simpler still — report real numbers, share your data, and you never have to worry what a GRIM test would say about your results.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What is the GRIM test?</summary>
+            <div class="faq-a"><p>GRIM stands for <strong>Granularity-Related Inconsistency of Means</strong>. It's a simple arithmetic check for means built from whole-number responses — a count, or a single Likert-style item. Because a mean is the total divided by the number of people, and the total of <em>N</em> integers is itself an integer, the only means that can actually occur are fractions with denominator <em>N</em>: 0/<em>N</em>, 1/<em>N</em>, 2/<em>N</em> and so on. So a reported mean is only possible if some whole-number total, divided by <em>N</em> and rounded to the stated decimals, reproduces it. When it doesn't — say a mean of 5.19 from 28 people, where the nearest reachable values are 5.18 and 5.21 — the number cannot have come from that many integer responses, signalling a typo, a miscalculation, or fabricated data. GRIM only bites when <em>N</em> is smaller than 10 to the power of the decimals reported (e.g. under 100 for two decimals); with larger samples the steps are finer than the rounding and every mean becomes reachable.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What happens when a paper is retracted?</summary>
+            <div class="faq-a"><p>A retraction is the formal withdrawal of a published paper from the scientific record because it can no longer be trusted — whether through fraud, a serious honest error, or unreliable data. The article usually stays online so the record is transparent, but it's stamped 'RETRACTED', linked to a notice explaining why, and should no longer be cited as valid evidence. Retraction is <em>not</em> the same as an accusation of fraud: many retractions are for honest mistakes, and the notice ideally says which. Databases like Retraction Watch track them, and the number has grown as detection tools and post-publication review have improved — which reflects a system catching more problems, not necessarily more misconduct happening. If you find a key source has been retracted, don't build on it.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>How common is research fraud?</summary>
+            <div class="faq-a"><p>Outright fabrication or falsification is rare. In anonymous surveys pooled by Fanelli (2009), about <strong>2%</strong> of scientists admitted to having fabricated, falsified, or modified data at least once, and higher fractions said they had seen colleagues do it. The far more common problem is the grey zone of <a href="../../ethics/questionable-research-practices/">questionable research practices</a> — selective reporting, optional stopping, HARKing — which many more researchers admit to and which do more cumulative damage to the literature than the rare fraud case. The reassuring framing is that fraud is uncommon, that most researchers are honest, and that the fixes are structural: better incentives, transparency, open data, and detection tools mean fabricated results are increasingly likely to be caught.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <style>
+    /* GRIM test (scoped) */
+    #grim .grim-controls { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; margin-bottom: .9rem; }
+    #grim .grim-field { font-size: .86rem; font-weight: 600; color: var(--text); display: flex; flex-direction: column; gap: .35rem; }
+    #grim .grim-field input {
+      font-family: inherit; font-size: 1rem; font-weight: 700; color: var(--text);
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: .4rem .6rem; width: 8rem;
+    }
+    #grim .grim-field input:focus { outline: none; border-color: var(--course-accent, #64748b); }
+    #grim .grim-presets { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin-bottom: 1rem; }
+    #grim .grim-plab { font-size: .84rem; font-weight: 600; color: var(--text-muted); }
+    #grim .grim-presets button {
+      cursor: pointer; border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
+      border-radius: 7px; padding: .28rem .6rem; font-size: .8rem; font-weight: 600; font-family: inherit; transition: .15s;
+    }
+    #grim .grim-presets button:hover { border-color: var(--course-accent, #64748b); }
+    #grim .viz-canvas-wrap { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); padding: .3rem; }
+    #grim canvas { width: 100%; display: block; }
+    #grim .grim-verdict { font-size: .9rem; line-height: 1.6; color: var(--text); margin: .9rem 0 0; min-height: 1.2rem; }
+    #grim .grim-verdict b.ok { color: #22c55e; }
+    #grim .grim-verdict b.no { color: #ef4444; }
+    #grim .grim-verdict .grim-mono { font-family: ui-monospace, monospace; font-weight: 700; }
+  </style>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ GRIM test (exact granularity arithmetic) ============ -->
+  <script>
+  (function () {
+    "use strict";
+
+    var meanEl = document.getElementById("grim-mean");
+    var nEl = document.getElementById("grim-n");
+    var verdictEl = document.getElementById("grim-verdict");
+    var presetsEl = document.getElementById("grim-presets");
+
+    // round-half-up to d decimals, nudged past binary-float boundaries
+    function roundTo(x, d) { var f = Math.pow(10, d); return Math.round(x * f + (x >= 0 ? 1e-9 : -1e-9)) / f; }
+    function decimals(str) { var dot = str.indexOf("."); return dot < 0 ? 0 : (str.length - dot - 1); }
+
+    // is the reported mean reachable from n whole-number responses? returns hit sums + neighbours
+    function grim(M, n, D) {
+      var center = Math.round(M * n), hits = [], k;
+      for (k = center - 4; k <= center + 4; k++) {
+        if (k < 0) continue;
+        if (roundTo(k / n, D) === roundTo(M, D)) hits.push(k);
+      }
+      var below = Math.floor(M * n), above = Math.ceil(M * n);
+      if (above === below) { above = below + 1; }        // M landed exactly on an integer sum
+      return { possible: hits.length > 0, hits: hits, below: below, above: above };
+    }
+
+    var cv;
+    function fit() { cv = VIZ.fit(document.getElementById("grim-canvas"), 170); }
+
+    function draw() {
+      if (!cv) fit();
+      var ctx = cv.ctx, W = cv.w, H = cv.h;
+      ctx.clearRect(0, 0, W, H);
+
+      var raw = meanEl.value.trim().replace(",", ".");
+      var M = parseFloat(raw);
+      var n = Math.round(+nEl.value);
+      var D = decimals(raw);
+
+      if (!isFinite(M) || !(n >= 1) || raw === "") {
+        verdictEl.innerHTML = 'Enter a reported mean (with at least one decimal) and a sample size to run the check.';
+        ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "13px system-ui, sans-serif";
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText("waiting for a mean and n…", W / 2, H / 2);
+        return;
+      }
+
+      var res = grim(M, n, D);
+      var ulp = Math.pow(10, -D);
+      var half = ulp / 2;
+
+      // value-axis range: show a handful of reachable ticks each side, but keep the window visible
+      var center = Math.round(M * n);
+      var span = Math.max(4.5 / n, ulp * 3);
+      var vLo = M - span, vHi = M + span;
+      var padL = 16, padR = 16, padT = 34, padB = 30;
+      var plotW = W - padL - padR, axisY = H - padB;
+      function xFor(v) { return padL + (v - vLo) / (vHi - vLo) * plotW; }
+
+      var accent = res.possible ? "#22c55e" : "#ef4444";
+
+      // rounding window: every true mean in [M-half, M+half) is reported as M
+      var wx0 = xFor(M - half), wx1 = xFor(M + half);
+      ctx.fillStyle = res.possible ? "rgba(34,197,94,0.14)" : "rgba(239,68,68,0.13)";
+      ctx.fillRect(wx0, padT, Math.max(2, wx1 - wx0), axisY - padT);
+      ctx.strokeStyle = res.possible ? "rgba(34,197,94,0.6)" : "rgba(239,68,68,0.6)";
+      ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+      ctx.strokeRect(wx0, padT, Math.max(2, wx1 - wx0), axisY - padT);
+      ctx.setLineDash([]);
+      ctx.fillStyle = accent; ctx.font = "10px system-ui, sans-serif";
+      ctx.textAlign = "center"; ctx.textBaseline = "top";
+      ctx.fillText("rounds to " + raw, (wx0 + wx1) / 2, padT - 13 < 4 ? padT + 2 : 6);
+
+      // baseline
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(padL, axisY); ctx.lineTo(W - padR, axisY); ctx.stroke();
+
+      // reachable means k/n as ticks
+      ctx.textBaseline = "top";
+      for (var k = center - 8; k <= center + 8; k++) {
+        if (k < 0) continue;
+        var v = k / n;
+        if (v < vLo || v > vHi) continue;
+        var x = xFor(v);
+        var inWin = roundTo(v, D) === roundTo(M, D);
+        ctx.strokeStyle = inWin ? accent : VIZ.css("--text-faint");
+        ctx.lineWidth = inWin ? 2.5 : 1.5;
+        ctx.beginPath(); ctx.moveTo(x, axisY - (inWin ? 15 : 10)); ctx.lineTo(x, axisY + (inWin ? 15 : 10)); ctx.stroke();
+        // label the two neighbours bracketing the report + any in-window tick
+        if (inWin || k === res.below || k === res.above) {
+          ctx.fillStyle = inWin ? accent : VIZ.css("--text-muted");
+          ctx.font = (inWin ? "700 " : "") + "10px ui-monospace, monospace";
+          ctx.textAlign = "center";
+          ctx.fillText(roundTo(v, D).toFixed(D), x, axisY + 16);
+        }
+      }
+
+      // reported-mean pin (drawn above the axis, pointing down)
+      var mx = xFor(M);
+      ctx.fillStyle = res.possible ? VIZ.css("--text") : "#ef4444";
+      ctx.beginPath();
+      ctx.moveTo(mx, padT + 12); ctx.lineTo(mx - 5, padT + 3); ctx.lineTo(mx + 5, padT + 3); ctx.closePath(); ctx.fill();
+
+      // verdict text
+      var mono = function (s) { return '<span class="grim-mono">' + s + '</span>'; };
+      if (res.possible) {
+        var kHit = res.hits[Math.floor(res.hits.length / 2)];
+        var note = (n >= Math.pow(10, D))
+          ? " With <span class=\"grim-mono\">n = " + n + "</span> the reachable steps are finer than " + D + "-decimal rounding, so GRIM can't rule anything out here — every mean is reachable."
+          : "";
+        verdictEl.innerHTML = '<b class="ok">✓ Possible.</b> A total of ' + mono(kHit) + ' across ' + mono("n = " + n) +
+          ' gives ' + mono(kHit + " / " + n + " = " + roundTo(kHit / n, D).toFixed(D)) + ', which rounds to the reported ' + mono(raw) + '.' + note;
+      } else {
+        verdictEl.innerHTML = '<b class="no">✗ Impossible.</b> No whole-number total across ' + mono("n = " + n) +
+          ' rounds to ' + mono(raw) + '. The nearest reachable means are ' + mono(roundTo(res.below / n, D).toFixed(D)) +
+          ' and ' + mono(roundTo(res.above / n, D).toFixed(D)) + ' — the reported figure sits in the gap between them, so it can\'t come from ' +
+          n + ' integer responses. That\'s a red flag: a typo, a miscalculation, or fabricated data.';
+      }
+    }
+
+    meanEl.addEventListener("input", draw);
+    nEl.addEventListener("input", draw);
+    presetsEl.addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      meanEl.value = b.dataset.m; nEl.value = b.dataset.n; draw();
+    });
+
+    window.addEventListener("resize", function () { fit(); draw(); });
+    if (window.ResizeObserver) new ResizeObserver(function () { fit(); draw(); }).observe(document.getElementById("grim-canvas"));
+    VIZ.onTheme(draw);
+
+    fit();
+    draw();
+  })();
+  </script>
+</body>
+</html>
