@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tidy Data — StatsCapybara</title>
+  <meta name="description" content="Tidy data means rows are observations, columns are variables, one value per cell. Spot the spreadsheet sins and reshape a messy grade sheet into tidy form." />
+  <link rel="canonical" href="https://statscapybara.com/data/tidy-data/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Tidy Data — StatsCapybara" />
+  <meta property="og:description" content="Tidy data means rows are observations, columns are variables, one value per cell. Spot the spreadsheet sins and reshape a messy grade sheet into tidy form." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/data/tidy-data/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Tidy Data — StatsCapybara" />
+  <meta name="twitter:description" content="Tidy data means rows are observations, columns are variables, one value per cell. Spot the spreadsheet sins and reshape a messy grade sheet into tidy form." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Tidy Data", "description": "Tidy data means rows are observations, columns are variables, one value per cell. Spot the spreadsheet sins and reshape a messy grade sheet into tidy form.", "url": "https://statscapybara.com/data/tidy-data/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Data: From Raw to Ready", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Tidy Data", "item": "https://statscapybara.com/data/tidy-data/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What does tidy data mean?", "acceptedAnswer": {"@type": "Answer", "text": "Tidy data is a simple, standard shape for a table: each variable is a column, each observation is a row, and each cell holds a single value. The term comes from Hadley Wickham. A tidy table is usually long and a little dull to read, but that consistency is exactly what lets you filter, group, plot, and model it without reshaping first — messy data is messy in endless ways, whereas tidy data is all tidy in the same way."}}, {"@type": "Question", "name": "Should data cleaning ever change my raw data file?", "acceptedAnswer": {"@type": "Answer", "text": "No — treat the raw file as read-only. Save exactly what you collected, never overwrite it, and do every fix in a script that reads the raw file and writes a separate clean one. That way the messy original stays intact as the ground truth, every change is documented and reversible, and anyone (including future-you) can rerun the whole pipeline from scratch. Hand-editing cells in the raw sheet destroys the record of what actually happened."}}, {"@type": "Question", "name": "Do I have to reshape everything into long format?", "acceptedAnswer": {"@type": "Answer", "text": "Tidy (long) format is the analysis-ready default, and most modern tools expect it. But some procedures genuinely want a wide layout: repeated-measures ANOVA in SPSS, or a correlation matrix, put each measure in its own column. The point isn't that long is always right; it's that you can move between shapes on demand once tidy is your reference point. Reshaping (pivoting) is a one-line operation, not a manual rebuild."}}]}
+  </script>
+</head>
+<body data-course="data" data-section="tidy-data">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 2.1</span>
+        <h1>Tidy Data</h1>
+
+        <p class="lede">Most of the pain in data analysis isn't the statistics — it's the shape of the spreadsheet you start from. <strong>Tidy data</strong> is one simple, boring convention that makes every tool downstream just <em>work</em>: rows are observations, columns are variables, one value per cell. Learn to see the shape, and half of "cleaning" disappears before it begins.</p>
+
+        <h2>The one rule (that is really three)</h2>
+        <p>Coined by Hadley Wickham, a <strong>tidy</strong> dataset satisfies three conditions at once:</p>
+        <ul>
+          <li><strong>Each variable is a column.</strong> Height, group, score — one variable, one column, nothing else in it.</li>
+          <li><strong>Each observation is a row.</strong> One row per unit of analysis (per person, per trial, per person-per-timepoint), consistently.</li>
+          <li><strong>Each cell holds one value.</strong> No "88/100", no "Ann (Year 2)", no notes crammed in beside the number.</li>
+        </ul>
+        <p>That's it. Tidy data is <em>long</em> and a little dull to look at — and that dullness is exactly what lets you filter, group, plot, and model it without wrestling the layout first. Messy data is messy in a thousand creative ways; tidy data is all tidy in the same way.</p>
+
+        <h2>The classic spreadsheet sins</h2>
+        <p>Human-friendly spreadsheets are usually machine-hostile. The same handful of sins show up everywhere:</p>
+        <ul>
+          <li><strong>Metadata living in the data</strong> — a title banner, a blank spacer row, a "totals" row mixed in with real observations.</li>
+          <li><strong>Two variables in one column</strong> — <code>Ann (Year 2)</code> packs identity <em>and</em> year of study into a single cell.</li>
+          <li><strong>Colour as data</strong> — a red-shaded cell that secretly means "resit". No program can compute on a fill colour, and neither can future-you.</li>
+          <li><strong>One variable spread across many columns</strong> — <code>Quiz 1</code>, <code>Quiz 2</code>, <code>Final</code> are three columns of the <em>same</em> variable (a score). This "wide" layout is friendly to read and painful to analyse.</li>
+        </ul>
+
+        <p>Here's a gloriously messy grade sheet with all four. Fix them one at a time and watch it morph into tidy form.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="td">
+          <p class="viz-title">🧹 Fix This Spreadsheet</p>
+          <p class="viz-sub">A messy class grade sheet with four tidy-data sins. Click each sin, newest one first, to repair it — the sheet reshapes one step at a time until every column is a variable, every row an observation, and every cell a single value.</p>
+
+          <div id="td-banner" class="td-banner"></div>
+          <div id="td-grid" class="td-grid-wrap"></div>
+          <p class="td-legend" id="td-legend"></p>
+
+          <p style="margin:.9rem 0 .35rem;font-weight:600;font-size:.9rem">Sins to fix — click the highlighted one:</p>
+          <div id="td-sins" class="td-sins"></div>
+
+          <p class="td-verdict" id="td-verdict"></p>
+
+          <div class="controls" style="margin-top:.6rem">
+            <div class="control">
+              <button class="btn btn-ghost btn-sm" id="td-reset" type="button">Start over</button>
+            </div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>Notice the end state: it's <em>taller</em> and less pretty, but every column now answers "what variable is this?" with a single word, and you could compute the mean score, the resit rate, or a per-year average with one line of code. That's the whole payoff.</p>
+
+        <h2>Why tidy unlocks everything downstream</h2>
+        <p>Tidy data is the shared language your tools already speak. A tidy frame drops straight into a <a href="../../stats-1/describing-data/">descriptives</a> routine, a <code>group_by</code>, a boxplot, or a regression with no reshaping. The moment your data is tidy, "how do I get the software to accept this?" stops being a question — and the questions become statistical again. Reshaping <em>between</em> tidy-long and human-wide is itself a routine operation (you'll meet <code>pivot_longer</code>/<code>pivot_wider</code> later in this course), but it's only painless because tidy is the well-defined destination.</p>
+
+        <div class="callout key">
+          <p><strong>The tidy test:</strong> point at any column and ask "is this <em>one</em> variable?" and point at any row and ask "is this <em>one</em> observation?". If a column name is actually a <em>value</em> (like <code>2019</code>, <code>Male</code>, or <code>Quiz 1</code>), your data is wide, not tidy — that variable is hiding in your headers.</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> tidy data isn't fussiness for its own sake — it's the difference between an analysis you can rerun in a second and one you rebuild by hand every time. Keep the raw file exactly as collected, then reshape to tidy <em>in a script</em>, so the messy original stays intact and the tidy version is reproducible. A good <a href="../codebooks-and-documentation/">codebook</a> and disciplined <a href="../data-entry-and-validation/">data entry</a> are what keep a sheet tidy in the first place.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What does tidy data mean?</summary>
+            <div class="faq-a"><p>Tidy data is a simple, standard shape for a table: <strong>each variable is a column, each observation is a row, and each cell holds a single value</strong>. The term comes from Hadley Wickham. A tidy table is usually long and a little dull to read, but that consistency is exactly what lets you filter, group, plot, and model it without reshaping first — messy data is messy in endless ways, whereas tidy data is all tidy in the same way.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Should data cleaning ever change my raw data file?</summary>
+            <div class="faq-a"><p>No — treat the raw file as read-only. Save exactly what you collected, never overwrite it, and do every fix in a <em>script</em> that reads the raw file and writes a separate clean one. That way the messy original stays intact as the ground truth, every change is documented and reversible, and anyone (including future-you) can rerun the whole pipeline from scratch. Hand-editing cells in the raw sheet destroys the record of what actually happened.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Do I have to reshape everything into long format?</summary>
+            <div class="faq-a"><p>Tidy (long) format is the analysis-ready default, and most modern tools expect it. But some procedures genuinely want a <em>wide</em> layout: repeated-measures ANOVA in SPSS, or a correlation matrix, put each measure in its own column. The point isn't that long is always right; it's that you can move between shapes on demand once tidy is your reference point. Reshaping (pivoting) is a one-line operation, not a manual rebuild.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <style>
+    /* tidy-data widget (scoped) */
+    #td .td-grid-wrap { overflow-x: auto; }
+    #td table.td-grid { border-collapse: collapse; font-size: .85rem; width: 100%; min-width: 340px; }
+    #td table.td-grid th, #td table.td-grid td { border: 1px solid var(--border); padding: .3rem .55rem; text-align: left; white-space: nowrap; }
+    #td table.td-grid th { background: var(--surface-2); font-weight: 700; color: var(--text); }
+    #td table.td-grid td { color: var(--text-muted); }
+    #td table.td-grid td.bad { background: color-mix(in srgb, #ef4444 20%, transparent); color: #ef4444; font-weight: 700; }
+    #td .td-banner { font-weight: 700; color: var(--text); background: color-mix(in srgb, #f97316 18%, transparent); border: 1px dashed #f97316; border-radius: 6px 6px 0 0; padding: .4rem .6rem; font-size: .85rem; }
+    #td .td-banner:empty { display: none; }
+    #td .td-legend { font-size: .78rem; color: var(--text-muted); margin: .4rem 0 0; }
+    #td .td-legend:empty { display: none; }
+    #td .td-sins { display: flex; flex-wrap: wrap; gap: .45rem; }
+    #td .td-sin { border: 1px solid var(--border); border-radius: 999px; padding: .3rem .7rem; font-size: .82rem; font-weight: 600; background: var(--surface); color: var(--text-muted); }
+    #td .td-sin.done { border-color: #22c55e; color: #22c55e; background: color-mix(in srgb, #22c55e 10%, transparent); }
+    #td .td-sin.active { border-color: var(--course-accent); color: var(--text); cursor: pointer; box-shadow: 0 0 0 3px color-mix(in srgb, var(--course-accent) 22%, transparent); }
+    #td .td-sin.locked { opacity: .45; }
+    #td .td-verdict { font-size: .9rem; font-weight: 600; margin: .8rem 0 0; min-height: 1.2em; }
+  </style>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ tidy-data: fix-this-spreadsheet (deterministic, no RNG) ============ -->
+  <script>
+  (function () {
+    "use strict";
+    // Fixed messy grade sheet. Each student: scores per assessment + which were resits.
+    var STUD = [
+      { name: "Ann",  year: 2, sc: [78, 85, 88], resit: [false, false, true]  },
+      { name: "Ben",  year: 1, sc: [62, 55, 71], resit: [false, true,  false] },
+      { name: "Cara", year: 2, sc: [90, 92, 95], resit: [false, false, false] }
+    ];
+    var ASSMT = ["Quiz 1", "Quiz 2", "Final"];
+
+    // The four sins, in the order they become fixable (newest/topmost first).
+    var SINS = [
+      { chip: "Metadata in a data row",
+        note: "Deleted the title banner — a course name is not an observation. Descriptive metadata belongs in a codebook, never in a data row." },
+      { chip: "Two variables in one column",
+        note: "Split “Ann (Year 2)” into a Student column and a Year column. One column = one variable." },
+      { chip: "One variable across many columns",
+        note: "Stacked Quiz 1 / Quiz 2 / Final into an Assessment column and a Score column — wide became long. Each row is now one student × one assessment." },
+      { chip: "Colour used as data",
+        note: "Turned the red “resit” shading into an explicit Resit column. A fill colour can't be computed on; a Yes/No value can." }
+    ];
+
+    var step = 0; // 0..4 = number of sins fixed
+    var bannerEl = document.getElementById("td-banner");
+    var gridEl   = document.getElementById("td-grid");
+    var legendEl = document.getElementById("td-legend");
+    var sinsEl   = document.getElementById("td-sins");
+    var verdictEl = document.getElementById("td-verdict");
+
+    function esc(s) { return String(s); }
+
+    function render() {
+      var split = step >= 2;    // student/year split
+      var long  = step >= 3;    // wide -> long
+      var resitCol = step >= 4; // colour -> explicit column
+      var showRed = !resitCol;  // red shading still present until fixed
+
+      // banner (only before it's removed)
+      bannerEl.textContent = step === 0 ? "Biology 101 — Spring 2024   (class grade export)" : "";
+
+      var html = '<table class="td-grid"><thead><tr>';
+      if (long) {
+        html += "<th>Student</th><th>Year</th><th>Assessment</th><th>Score</th>";
+        if (resitCol) html += "<th>Resit</th>";
+        html += "</tr></thead><tbody>";
+        STUD.forEach(function (s) {
+          ASSMT.forEach(function (a, j) {
+            var red = showRed && s.resit[j];
+            html += "<tr><td>" + esc(s.name) + "</td><td>" + s.year + "</td><td>" + a + "</td>" +
+                    '<td class="' + (red ? "bad" : "") + '">' + s.sc[j] + "</td>" +
+                    (resitCol ? "<td>" + (s.resit[j] ? "Yes" : "No") + "</td>" : "") + "</tr>";
+          });
+        });
+      } else {
+        // wide layout
+        html += split ? "<th>Student</th><th>Year</th>" : "<th>Student (class)</th>";
+        ASSMT.forEach(function (a) { html += "<th>" + a + "</th>"; });
+        html += "</tr></thead><tbody>";
+        STUD.forEach(function (s) {
+          html += "<tr>";
+          html += split
+            ? "<td>" + esc(s.name) + "</td><td>" + s.year + "</td>"
+            : "<td>" + esc(s.name) + " (Year " + s.year + ")</td>";
+          s.sc.forEach(function (v, j) {
+            var red = showRed && s.resit[j];
+            html += '<td class="' + (red ? "bad" : "") + '">' + v + "</td>";
+          });
+          html += "</tr>";
+        });
+      }
+      html += "</tbody></table>";
+      gridEl.innerHTML = html;
+
+      legendEl.textContent = showRed ? "🔴 red cell = resit (colour used as data — a hidden variable)" :
+        (step >= 4 ? "✔ tidy: every column is a variable, every row is one observation, every cell one value." : "");
+
+      // sins
+      sinsEl.innerHTML = "";
+      SINS.forEach(function (sin, i) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "td-sin " + (step > i ? "done" : (step === i ? "active" : "locked"));
+        b.textContent = (step > i ? "✓ " : "") + sin.chip;
+        if (step === i) b.addEventListener("click", function () {
+          step++;
+          verdictEl.textContent = sin.note;
+          verdictEl.style.color = "#22c55e";
+          render();
+        });
+        sinsEl.appendChild(b);
+      });
+
+      if (step >= SINS.length) {
+        verdictEl.textContent = "🎉 Tidy! Point at any column — it's one variable. Point at any row — it's one observation. Now every downstream tool just works.";
+        verdictEl.style.color = "#22c55e";
+      }
+    }
+
+    document.getElementById("td-reset").addEventListener("click", function () {
+      step = 0; verdictEl.textContent = ""; render();
+    });
+
+    render();
+  })();
+  </script>
+</body>
+</html>

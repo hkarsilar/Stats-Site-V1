@@ -541,4 +541,37 @@ FAQS_METHODS = {
 
 }
 
-FAQS = {**FAQS_12, **FAQS_34, **FAQS_METHODS}
+FAQS_DATA = {
+
+# ---------------- DATA — From Raw to Ready ----------------
+
+"tidy-data": [
+ ("What does tidy data mean?",
+  "Tidy data is a simple, standard shape for a table: <strong>each variable is a column, each observation is a row, and each cell holds a single value</strong>. The term comes from Hadley Wickham. A tidy table is usually long and a little dull to read, but that consistency is exactly what lets you filter, group, plot, and model it without reshaping first — messy data is messy in endless ways, whereas tidy data is all tidy in the same way."),
+ ("Should data cleaning ever change my raw data file?",
+  "No — treat the raw file as read-only. Save exactly what you collected, never overwrite it, and do every fix in a <em>script</em> that reads the raw file and writes a separate clean one. That way the messy original stays intact as the ground truth, every change is documented and reversible, and anyone (including future-you) can rerun the whole pipeline from scratch. Hand-editing cells in the raw sheet destroys the record of what actually happened."),
+ ("Do I have to reshape everything into long format?",
+  "Tidy (long) format is the analysis-ready default, and most modern tools expect it. But some procedures genuinely want a <em>wide</em> layout: repeated-measures ANOVA in SPSS, or a correlation matrix, put each measure in its own column. The point isn't that long is always right; it's that you can move between shapes on demand once tidy is your reference point. Reshaping (pivoting) is a one-line operation, not a manual rebuild."),
+],
+
+"codebooks-and-documentation": [
+ ("How should I code missing values?",
+  "Leave the cell genuinely empty, or use a dedicated marker like <code>NA</code> — not a number. Numeric codes such as <code>-99</code>, <code>0</code>, or <code>999</code> are dangerous because the software treats them as real data: forget to declare them and they get averaged straight into your means and SDs. Never use <code>0</code> in particular, since 0 is a legitimate value for many variables. If your software forces a numeric code, record it prominently in the codebook and convert it to missing as the very first cleaning step."),
+ ("What should a codebook include?",
+  "One entry per variable, listing at minimum: the exact <strong>column name</strong>, a human-readable <strong>label</strong>, the <strong>type</strong> (continuous, ordinal, nominal, date, identifier), the <strong>units or allowed values</strong> (kilograms; 1–5; the category set), and how <strong>missing data</strong> is marked. Add anything a stranger couldn't infer from the numbers — which items are reverse-scored, how a composite was computed, the date format. If you'd have to explain it out loud, write it down."),
+ ("What makes a good variable name?",
+  "Short, lowercase, no spaces or special characters, and stable over time — <code>age</code>, <code>income_usd</code>, <code>item3_rev</code>. Good names hint at the content and can encode useful flags (a <code>_rev</code> suffix for a reverse-scored item) without trying to <em>be</em> the codebook. Avoid names that are really values (a column called <code>2019</code>), names that collide when truncated, and cryptic abbreviations only today-you understands. The codebook carries the full meaning; the name just has to be unambiguous and machine-friendly."),
+],
+
+"data-entry-and-validation": [
+ ("What are data validation rules?",
+  "They're explicit statements of what a <em>legal</em> value looks like, checked automatically so errors surface without re-reading every cell. Three common kinds: <strong>range checks</strong> (a number must fall inside plausible bounds, e.g. <code>0 ≤ age ≤ 120</code>), <strong>allowed-value sets</strong> (a category must be one of a fixed list, e.g. sex is M, F, or Other), and <strong>cross-field logic</strong> (two columns must agree, e.g. birth year equals the current year minus age). Write them from your <a href=\"../../data/codebooks-and-documentation/\">codebook</a> and rerun them every time the data changes."),
+ ("Should I just delete impossible values I find?",
+  "No — a validation flag is the <em>start</em> of an investigation, not a licence to delete. First find out what happened: an impossible value is usually a fixable data-entry error, so check the source and correct it (an age of 511 was almost certainly 51). If it truly can't be recovered, mark it as <em>missing</em> and say so — don't silently drop the whole row. Deleting values quietly hides problems and can bias your results; every change should be documented and reversible."),
+ ("What is double data entry?",
+  "It's entering the same data <em>twice</em> — by two people, or by one person on two separate passes — and then comparing the two versions cell by cell. Wherever they disagree, at least one entry is wrong, so the mismatches point you straight to the typos to check against the source. It sharply cuts the undetected-error rate and is standard in clinical trials and other high-stakes data collection. For smaller projects, validation rules plus a careful proofreading pass are a lighter-weight substitute."),
+],
+
+}
+
+FAQS = {**FAQS_12, **FAQS_34, **FAQS_METHODS, **FAQS_DATA}

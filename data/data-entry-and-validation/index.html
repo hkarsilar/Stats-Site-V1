@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Data Entry &amp; Validation — StatsCapybara</title>
+  <meta name="description" content="Where data errors come from and how to catch them: range checks, allowed-value sets, and cross-field logic. Play a spot-the-error round on a messy dataset." />
+  <link rel="canonical" href="https://statscapybara.com/data/data-entry-and-validation/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Data Entry &amp; Validation — StatsCapybara" />
+  <meta property="og:description" content="Where data errors come from and how to catch them: range checks, allowed-value sets, and cross-field logic. Play a spot-the-error round on a messy dataset." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/data/data-entry-and-validation/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Data Entry &amp; Validation — StatsCapybara" />
+  <meta name="twitter:description" content="Where data errors come from and how to catch them: range checks, allowed-value sets, and cross-field logic. Play a spot-the-error round on a messy dataset." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Data Entry & Validation", "description": "Where data errors come from and how to catch them: range checks, allowed-value sets, and cross-field logic. Play a spot-the-error round on a messy dataset.", "url": "https://statscapybara.com/data/data-entry-and-validation/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Data: From Raw to Ready", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Data Entry & Validation", "item": "https://statscapybara.com/data/data-entry-and-validation/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What are data validation rules?", "acceptedAnswer": {"@type": "Answer", "text": "They're explicit statements of what a legal value looks like, checked automatically so errors surface without re-reading every cell. Three common kinds: range checks (a number must fall inside plausible bounds, e.g. 0 ≤ age ≤ 120), allowed-value sets (a category must be one of a fixed list, e.g. sex is M, F, or Other), and cross-field logic (two columns must agree, e.g. birth year equals the current year minus age). Write them from your codebook and rerun them every time the data changes."}}, {"@type": "Question", "name": "Should I just delete impossible values I find?", "acceptedAnswer": {"@type": "Answer", "text": "No — a validation flag is the start of an investigation, not a licence to delete. First find out what happened: an impossible value is usually a fixable data-entry error, so check the source and correct it (an age of 511 was almost certainly 51). If it truly can't be recovered, mark it as missing and say so — don't silently drop the whole row. Deleting values quietly hides problems and can bias your results; every change should be documented and reversible."}}, {"@type": "Question", "name": "What is double data entry?", "acceptedAnswer": {"@type": "Answer", "text": "It's entering the same data twice — by two people, or by one person on two separate passes — and then comparing the two versions cell by cell. Wherever they disagree, at least one entry is wrong, so the mismatches point you straight to the typos to check against the source. It sharply cuts the undetected-error rate and is standard in clinical trials and other high-stakes data collection. For smaller projects, validation rules plus a careful proofreading pass are a lighter-weight substitute."}}]}
+  </script>
+</head>
+<body data-course="data" data-section="data-entry-and-validation">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 2.3</span>
+        <h1>Data Entry &amp; Validation</h1>
+
+        <p class="lede">Every dataset starts with somebody typing numbers into cells, and humans typing numbers make mistakes — an extra digit, a wrong unit, a value pasted one row too low. A single impossible value can flip a mean or sink a whole analysis. <strong>Validation</strong> is the habit of catching those errors the moment they enter, with rules that never get tired or distracted.</p>
+
+        <h2>Where errors come from</h2>
+        <ul>
+          <li><strong>Typos</strong> — a slipped finger turns an age of 41 into 411, or a decimal wanders (74.2 → 742).</li>
+          <li><strong>Unit mix-ups</strong> — height entered in inches into a centimetres column; weight in pounds among kilograms. The number looks fine; it's just measuring the wrong thing.</li>
+          <li><strong>Copy-paste drift</strong> — a column pasted one cell high or low, so every value after a point belongs to the wrong person.</li>
+          <li><strong>Inconsistent categories</strong> — <code>F</code>, <code>Female</code>, <code>Femal</code>, <code>f&nbsp;</code> (with a trailing space) all meant the same thing, and now count as four groups.</li>
+        </ul>
+
+        <h2>Validation rules: three kinds</h2>
+        <p>You don't hunt for errors by re-reading every cell — you write down what a <em>legal</em> value looks like and let the rule find the illegal ones:</p>
+        <ul>
+          <li><strong>Range checks</strong> — a numeric field must fall inside plausible bounds: <code>0 ≤ age ≤ 120</code>, <code>150 ≤ reaction_ms ≤ 3000</code>.</li>
+          <li><strong>Allowed-value sets</strong> — a categorical field must be one of a fixed list: <code>sex ∈ {M, F, Other}</code>. Anything else is a typo.</li>
+          <li><strong>Cross-field logic</strong> — two columns must agree: <code>birth_year = current_year − age</code>; a "pregnant" flag can't be <code>Yes</code> for a male record.</li>
+        </ul>
+        <p>Two more habits catch what rules miss: <strong>double entry</strong> (type the data twice, from two people or two passes, then compare — mismatches are errors) and the <strong>plausibility mindset</strong> behind checks like <a href="../../methods/the-replication-crisis/">GRIM</a> — always asking "could this number even happen?" A mean of 3.14 from 7 integer ratings can't; an adult who weighs 7 kg can't either.</p>
+
+        <p>Time to hunt. This 40-row dataset has <strong>8 planted impossible values</strong>. Click every cell you think is wrong — against the clock — then reveal the validation rules that would have caught each one automatically.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="dv">
+          <p class="viz-title">🔍 Spot-the-Error Speed Round</p>
+          <p class="viz-sub">Eight cells hold values that can't be real. Click each one you find — a green tick confirms a real error, a red flash means that value is fine. The clock starts on your first click.</p>
+
+          <div class="controls" style="align-items:center">
+            <div class="stat"><span class="k">Found</span><span class="v" id="dv-found">0 / 8</span></div>
+            <div class="stat"><span class="k">Time</span><span class="v" id="dv-time">0:00</span></div>
+            <div class="control" style="margin-left:auto">
+              <button class="btn btn-ghost btn-sm" id="dv-reveal" type="button">Reveal &amp; show rules</button>
+            </div>
+            <div class="control">
+              <button class="btn btn-primary btn-sm" id="dv-new" type="button">New round</button>
+            </div>
+          </div>
+
+          <div id="dv-grid" class="dv-grid-wrap"></div>
+          <p class="dv-msg" id="dv-msg"></p>
+          <div id="dv-rules" class="dv-rules"></div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>The lesson of the reveal: every error you found (and every one you missed) maps to a rule you could have written <em>before</em> collecting a single row. That's the shift — from proofreading data by eye, which never scales past a few dozen rows, to declaring the rules once and letting them police thousands.</p>
+
+        <div class="callout key">
+          <p><strong>Validate at the door, not at the deadline.</strong> An impossible value is cheapest to fix the instant it's typed, when you can still check the source. Found six months later in the middle of analysis, the same value is a mystery — was it 41 or 14? — that often can't be recovered at all.</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> validation protects everything downstream — one <code>511</code> hiding in an age column drags the mean, inflates the SD, and can masquerade as an <a href="../../stats-2/regression-diagnostics/">influential outlier</a> in a model. Point-of-entry tools help (a spreadsheet's <em>Data&nbsp;→&nbsp;Data&nbsp;Validation</em>, or <em>SPSS: Data&nbsp;→&nbsp;Validate&nbsp;Data</em>), but the durable version is a short script of range, set, and cross-field checks you rerun every time the data changes — like the R/Python one below. Pair it with a clear <a href="../codebooks-and-documentation/">codebook</a>, which is where the legal values are defined in the first place.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What are data validation rules?</summary>
+            <div class="faq-a"><p>They're explicit statements of what a <em>legal</em> value looks like, checked automatically so errors surface without re-reading every cell. Three common kinds: <strong>range checks</strong> (a number must fall inside plausible bounds, e.g. <code>0 ≤ age ≤ 120</code>), <strong>allowed-value sets</strong> (a category must be one of a fixed list, e.g. sex is M, F, or Other), and <strong>cross-field logic</strong> (two columns must agree, e.g. birth year equals the current year minus age). Write them from your <a href="../../data/codebooks-and-documentation/">codebook</a> and rerun them every time the data changes.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Should I just delete impossible values I find?</summary>
+            <div class="faq-a"><p>No — a validation flag is the <em>start</em> of an investigation, not a licence to delete. First find out what happened: an impossible value is usually a fixable data-entry error, so check the source and correct it (an age of 511 was almost certainly 51). If it truly can't be recovered, mark it as <em>missing</em> and say so — don't silently drop the whole row. Deleting values quietly hides problems and can bias your results; every change should be documented and reversible.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is double data entry?</summary>
+            <div class="faq-a"><p>It's entering the same data <em>twice</em> — by two people, or by one person on two separate passes — and then comparing the two versions cell by cell. Wherever they disagree, at least one entry is wrong, so the mismatches point you straight to the typos to check against the source. It sharply cuts the undetected-error rate and is standard in clinical trials and other high-stakes data collection. For smaller projects, validation rules plus a careful proofreading pass are a lighter-weight substitute.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <style>
+    /* data-entry-and-validation widget (scoped) */
+    #dv .dv-grid-wrap { overflow: auto; max-height: 420px; margin-top: .6rem; border: 1px solid var(--border); border-radius: 8px; }
+    #dv table.dv-grid { border-collapse: collapse; font-size: .8rem; width: 100%; min-width: 480px; }
+    #dv table.dv-grid th, #dv table.dv-grid td { border: 1px solid var(--border); padding: .22rem .5rem; text-align: right; white-space: nowrap; }
+    #dv table.dv-grid th { position: sticky; top: 0; background: var(--surface-2); color: var(--text); font-weight: 700; z-index: 1; }
+    #dv table.dv-grid td { color: var(--text-muted); cursor: pointer; user-select: none; }
+    #dv table.dv-grid td.id { cursor: default; font-family: var(--mono); text-align: left; color: var(--text-faint); }
+    #dv table.dv-grid td.sex { text-align: center; }
+    #dv table.dv-grid td:hover:not(.id) { background: var(--surface-2); }
+    #dv table.dv-grid td.hit { background: color-mix(in srgb, #22c55e 26%, transparent); color: #16a34a; font-weight: 700; cursor: default; }
+    #dv table.dv-grid td.reveal { background: color-mix(in srgb, #f59e0b 30%, transparent); color: #b45309; font-weight: 700; }
+    #dv table.dv-grid td.miss-flash { animation: dv-flash .5s; }
+    @keyframes dv-flash { 0%, 100% { background: transparent; } 40% { background: color-mix(in srgb, #ef4444 35%, transparent); } }
+    #dv .dv-msg { font-size: .88rem; font-weight: 600; margin: .6rem 0 0; min-height: 1.2em; }
+    #dv .dv-rules { margin-top: .5rem; }
+    #dv .dv-rules:empty { display: none; }
+    #dv .dv-rules ul { margin: .3rem 0 0; padding-left: 1.1rem; }
+    #dv .dv-rules li { font-size: .84rem; color: var(--text-muted); margin: .28rem 0; }
+    #dv .dv-rules code { font-family: var(--mono); font-size: .8rem; background: var(--surface-2); padding: .05rem .3rem; border-radius: 4px; }
+  </style>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ spot-the-error validation game (seeded; New round reseeds) ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var COLLECT_YEAR = 2024;
+    var COLS = [
+      { k: "id",   h: "ID" },
+      { k: "age",  h: "Age" },
+      { k: "sex",  h: "Sex" },
+      { k: "ht",   h: "Height (cm)" },
+      { k: "wt",   h: "Weight (kg)" },
+      { k: "rt",   h: "RT (ms)" },
+      { k: "by",   h: "Birth year" }
+    ];
+    // The 8 planted errors: which column, the impossible value, and the rule that catches it.
+    var ERRORS = [
+      { k: "age", val: 142,     rule: '<code>0 ≤ age ≤ 120</code> — range check. 142 is older than any human.' },
+      { k: "age", val: -4,      rule: '<code>age ≥ 0</code> — range check. Ages can’t be negative.' },
+      { k: "ht",  val: 31,      rule: '<code>140 ≤ height_cm ≤ 210</code> — range/unit check. 31 looks like inches typed into a cm column.' },
+      { k: "ht",  val: 402,     rule: '<code>height_cm ≤ 210</code> — range check. 402 cm is a decimal-point typo.' },
+      { k: "wt",  val: 7,       rule: '<code>35 ≤ weight_kg ≤ 250</code> — range check. An adult can’t weigh 7 kg.' },
+      { k: "sex", val: "Femal", rule: '<code>sex ∈ {M, F, Other}</code> — allowed-value set. "Femal" is an unlisted typo.' },
+      { k: "rt",  val: 4,       rule: '<code>150 ≤ reaction_ms ≤ 3000</code> — range check. 4 ms is faster than a nerve can fire.' },
+      { k: "by",  val: 1699,    rule: '<code>birth_year = ' + COLLECT_YEAR + ' − age (±1)</code> — cross-field check. 1699 fails the range and the age cross-check.' }
+    ];
+
+    function mulberry32(a) {
+      return function () {
+        a |= 0; a = a + 0x6D2B79F5 | 0;
+        var t = Math.imul(a ^ a >>> 15, 1 | a);
+        t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      };
+    }
+
+    var N = 40, rows = [], planted = {}, found = {}, revealed = false;
+    var timer = null, secs = 0, started = false;
+
+    var gridEl = document.getElementById("dv-grid");
+    var foundEl = document.getElementById("dv-found");
+    var timeEl = document.getElementById("dv-time");
+    var msgEl = document.getElementById("dv-msg");
+    var rulesEl = document.getElementById("dv-rules");
+
+    function build(seed) {
+      var rng = mulberry32(seed);
+      rows = [];
+      for (var i = 0; i < N; i++) {
+        var age = 18 + Math.floor(rng() * 53);          // 18..70
+        var sx = rng() < 0.48 ? "M" : (rng() < 0.94 ? "F" : "Other");
+        rows.push({
+          id: "P" + String(i + 1).padStart(2, "0"),
+          age: age,
+          sex: sx,
+          ht: 150 + Math.floor(rng() * 46),             // 150..195
+          wt: 50 + Math.floor(rng() * 51),              // 50..100
+          rt: 300 + Math.floor(rng() * 600),            // 300..899
+          by: COLLECT_YEAR - age                        // internally consistent
+        });
+      }
+      // choose 8 distinct rows and plant one error each
+      var idxs = [];
+      for (var r = 0; r < N; r++) idxs.push(r);
+      for (var s = idxs.length - 1; s > 0; s--) { var j = Math.floor(rng() * (s + 1)); var t = idxs[s]; idxs[s] = idxs[j]; idxs[j] = t; }
+      planted = {};
+      ERRORS.forEach(function (e, m) {
+        var row = idxs[m];
+        rows[row][e.k] = e.val;
+        planted[row + "," + e.k] = m;   // maps cell -> error index
+      });
+      found = {}; revealed = false; started = false; secs = 0;
+      if (timer) { clearInterval(timer); timer = null; }
+      msgEl.textContent = ""; msgEl.style.color = "";
+      rulesEl.innerHTML = "";
+      timeEl.textContent = "0:00";
+      updateFound();
+      render();
+    }
+
+    function fmt(s) { return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+    function tick() { secs++; timeEl.textContent = fmt(secs); }
+    function startClock() { if (!started) { started = true; timer = setInterval(tick, 1000); } }
+    function stopClock() { if (timer) { clearInterval(timer); timer = null; } }
+
+    function updateFound() {
+      var n = Object.keys(found).length;
+      foundEl.textContent = n + " / 8";
+    }
+
+    function render() {
+      var h = "<table class='dv-grid'><thead><tr>";
+      COLS.forEach(function (c) { h += "<th>" + c.h + "</th>"; });
+      h += "</tr></thead><tbody>";
+      rows.forEach(function (row, r) {
+        h += "<tr>";
+        COLS.forEach(function (c) {
+          var key = r + "," + c.k;
+          var cls = c.k === "id" ? "id" : (c.k === "sex" ? "sex" : "");
+          if (found[key]) cls += " hit";
+          else if (revealed && (key in planted)) cls += " reveal";
+          var clickable = c.k !== "id";
+          h += "<td class='" + cls.trim() + "'" + (clickable ? " data-key='" + key + "'" : "") + ">" + row[c.k] + "</td>";
+        });
+        h += "</tr>";
+      });
+      h += "</tbody></table>";
+      gridEl.innerHTML = h;
+    }
+
+    gridEl.addEventListener("click", function (e) {
+      var td = e.target.closest("td[data-key]");
+      if (!td || revealed) return;
+      var key = td.getAttribute("data-key");
+      if (found[key]) return;
+      startClock();
+      if (key in planted) {
+        found[key] = true;
+        td.classList.add("hit");
+        updateFound();
+        if (Object.keys(found).length === ERRORS.length) {
+          stopClock();
+          msgEl.textContent = "🎉 All 8 impossible values found in " + fmt(secs) + "! Now see the rules that would have caught them.";
+          msgEl.style.color = "#22c55e";
+          showRules();
+        } else {
+          msgEl.textContent = "✓ Impossible value — good catch.";
+          msgEl.style.color = "#22c55e";
+        }
+      } else {
+        msgEl.textContent = "That value is plausible — keep looking.";
+        msgEl.style.color = "#ef4444";
+        td.classList.remove("miss-flash"); void td.offsetWidth; td.classList.add("miss-flash");
+      }
+    });
+
+    function showRules() {
+      var h = "<p style='font-weight:700;font-size:.88rem;margin:.2rem 0 0'>The 8 validation rules:</p><ul>";
+      ERRORS.forEach(function (e) { h += "<li>" + e.rule + "</li>"; });
+      h += "</ul>";
+      rulesEl.innerHTML = h;
+    }
+
+    document.getElementById("dv-reveal").addEventListener("click", function () {
+      revealed = true; stopClock();
+      var missing = ERRORS.length - Object.keys(found).length;
+      msgEl.textContent = missing > 0
+        ? "Revealed. You missed " + missing + " — each amber cell is impossible. Here's the rule for every one:"
+        : "You'd already found them all. Here are the rules behind each:";
+      msgEl.style.color = "var(--text)";
+      render(); showRules();
+    });
+    document.getElementById("dv-new").addEventListener("click", function () { build((Date.now() & 0x7fffffff) || 1); });
+
+    build(20240823);   // fixed seed on load -> stable first round
+  })();
+  </script>
+</body>
+</html>

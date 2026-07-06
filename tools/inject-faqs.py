@@ -90,7 +90,7 @@ for slug, qas in FAQS.items():
     # normalize whitespace runs before the injected section to one blank line
     src = re.sub(r"\n{3,}(?=[ \t]*<!-- faq:start)", "\n\n", src)
 
-    p.write_text(src, encoding="utf-8", newline="")
+    p.write_bytes(src.encode("utf-8"))   # write_bytes keeps LF exactly on every platform/Python
     changed += 1
 
 print(f"injected FAQ into {changed}/{len(FAQS)} lessons")

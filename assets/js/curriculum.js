@@ -121,6 +121,18 @@ window.CURRICULUM = [
       { n: "1.11", slug: "the-replication-crisis",           title: "The Replication Crisis", ready: true },
       { n: "1.12", slug: "preregistration-and-open-science", title: "Preregistration & Open Science", ready: true }
     ]
+  },
+  {
+    slug: "data",
+    title: "Data",
+    subtitle: "From Raw to Ready",
+    accent: "#06b6d4",
+    track: "toolkit",
+    sections: [
+      { n: "2.1",  slug: "tidy-data",                    title: "Tidy Data", ready: true },
+      { n: "2.2",  slug: "codebooks-and-documentation",  title: "Codebooks & Documentation", ready: true },
+      { n: "2.3",  slug: "data-entry-and-validation",    title: "Data Entry & Validation", ready: true }
+    ]
   }
 ];
 

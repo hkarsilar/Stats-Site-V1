@@ -118,6 +118,10 @@
     "bias-and-blinding": "The capybara double-blinds its taste tests — even it doesn't know which pond the water came from. No expectations, no bias, just vibes.",
     "the-replication-crisis": "The capybara found a 'significant' result on its fourth analysis. Then remembered the first three. Next time: preregister, then snack.",
     "preregistration-and-open-science": "The capybara wrote its whole plan down before the snack arrived — so it couldn't pretend afterwards that it always wanted the small one.",
+    /* Data */
+    "tidy-data": "One capybara per row, one trait per column, one nap per cell. The capybara keeps a very tidy pond.",
+    "codebooks-and-documentation": "Six months later the capybara found a column named 'grp'. No codebook. It is still guessing.",
+    "data-entry-and-validation": "A capybara weighing 512 kg? The validation rule says no. The capybara says please.",
     /* Root pages */
     "home": "No rush — capybaras never cram.",
     "toolbox": "A capybara's toolbox: warm water, good snacks, zero deadlines. Yours has calculators too.",

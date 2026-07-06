@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Codebooks &amp; Documentation — StatsCapybara</title>
+  <meta name="description" content="A codebook records each variable's label, type, units, and missing codes. Build one for six cryptic columns and catch the ambiguities future-you would regret." />
+  <link rel="canonical" href="https://statscapybara.com/data/codebooks-and-documentation/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Codebooks &amp; Documentation — StatsCapybara" />
+  <meta property="og:description" content="A codebook records each variable's label, type, units, and missing codes. Build one for six cryptic columns and catch the ambiguities future-you would regret." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/data/codebooks-and-documentation/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Codebooks &amp; Documentation — StatsCapybara" />
+  <meta name="twitter:description" content="A codebook records each variable's label, type, units, and missing codes. Build one for six cryptic columns and catch the ambiguities future-you would regret." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Codebooks & Documentation", "description": "A codebook records each variable's label, type, units, and missing codes. Build one for six cryptic columns and catch the ambiguities future-you would regret.", "url": "https://statscapybara.com/data/codebooks-and-documentation/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Data: From Raw to Ready", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Codebooks & Documentation", "item": "https://statscapybara.com/data/codebooks-and-documentation/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How should I code missing values?", "acceptedAnswer": {"@type": "Answer", "text": "Leave the cell genuinely empty, or use a dedicated marker like NA — not a number. Numeric codes such as -99, 0, or 999 are dangerous because the software treats them as real data: forget to declare them and they get averaged straight into your means and SDs. Never use 0 in particular, since 0 is a legitimate value for many variables. If your software forces a numeric code, record it prominently in the codebook and convert it to missing as the very first cleaning step."}}, {"@type": "Question", "name": "What should a codebook include?", "acceptedAnswer": {"@type": "Answer", "text": "One entry per variable, listing at minimum: the exact column name, a human-readable label, the type (continuous, ordinal, nominal, date, identifier), the units or allowed values (kilograms; 1–5; the category set), and how missing data is marked. Add anything a stranger couldn't infer from the numbers — which items are reverse-scored, how a composite was computed, the date format. If you'd have to explain it out loud, write it down."}}, {"@type": "Question", "name": "What makes a good variable name?", "acceptedAnswer": {"@type": "Answer", "text": "Short, lowercase, no spaces or special characters, and stable over time — age, income_usd, item3_rev. Good names hint at the content and can encode useful flags (a _rev suffix for a reverse-scored item) without trying to be the codebook. Avoid names that are really values (a column called 2019), names that collide when truncated, and cryptic abbreviations only today-you understands. The codebook carries the full meaning; the name just has to be unambiguous and machine-friendly."}}]}
+  </script>
+</head>
+<body data-course="data" data-section="codebooks-and-documentation">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 2.2</span>
+        <h1>Codebooks &amp; Documentation</h1>
+
+        <p class="lede">A dataset without a codebook is a puzzle with the picture thrown away. Six months from now, <code>grp</code>, <code>q3_rev</code>, and a lone <code>-99</code> will mean nothing to you — and the person most likely to reopen this file is <strong>future-you</strong>, who has forgotten everything. A codebook is the short document that keeps your data legible to that stranger.</p>
+
+        <h2>What a codebook records</h2>
+        <p>A codebook is a variable-by-variable dictionary. For every column it names:</p>
+        <ul>
+          <li><strong>Name</strong> — the exact column header as it appears in the file.</li>
+          <li><strong>Label</strong> — a human-readable description ("Annual household income, USD").</li>
+          <li><strong>Type</strong> — continuous, ordinal, nominal, date, or identifier (this is the same idea as <a href="../../stats-1/types-of-data/">types of data</a>, written down where the software can't guess wrong).</li>
+          <li><strong>Units / allowed values</strong> — kilograms; 1–5; the category set <code>{1 = control, 2 = drug A}</code>.</li>
+          <li><strong>Missing codes</strong> — how "no answer" is stored, ideally a blank rather than a number.</li>
+        </ul>
+
+        <h2>Naming conventions and the landmines</h2>
+        <p>Good column names are short, lowercase, without spaces, and stable: <code>age</code>, <code>income_usd</code>, <code>item3_rev</code>. Cryptic names age badly, but the truly dangerous documentation gap is the <strong>numeric missing code</strong>. Storing "declined to answer" as <code>-99</code> or <code>999</code> is a landmine: the day you forget to tell the software those aren't real numbers, they get <em>averaged in</em>, and a mean income quietly drops by thousands. Prefer a genuinely blank cell (or <code>NA</code>); if you must use a code, the codebook is the one place that keeps it from detonating.</p>
+
+        <p>Below are six cryptic columns from a real-feeling export. For each, decide what it <em>actually</em> is — then read the codebook entry future-you needs, landmine and all.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="cb">
+          <p class="viz-title">📓 Build the Codebook</p>
+          <p class="viz-sub">Six mystery columns, sample values shown. Classify each one correctly and its full codebook entry — with the ambiguity you'd regret in six months — gets written into the dictionary below.</p>
+
+          <p class="cb-progress" id="cb-progress">Documented 0 / 6</p>
+          <div id="cb-cards" class="cb-cards"></div>
+
+          <p style="margin:1rem 0 .35rem;font-weight:700;font-size:.92rem">📖 Your codebook</p>
+          <div id="cb-book" class="cb-book-wrap"><p class="cb-empty">Classify a column above to start filling this in…</p></div>
+
+          <div class="controls" style="margin-top:.6rem">
+            <div class="control">
+              <button class="btn btn-ghost btn-sm" id="cb-reset" type="button">Start over</button>
+            </div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>The pattern under the game: the <em>values</em> tell you the type, and the type tells you what could go wrong. A numeric-looking column can be a category (<code>grp</code>) or an identifier (<code>pid</code>) that must never be averaged; a Likert item may be reverse-worded; a bare date is ambiguous until you fix its format; and a stray <code>-99</code> is missingness in disguise. None of that is recoverable from the numbers alone — it lives in the codebook or it's lost.</p>
+
+        <div class="callout key">
+          <p><strong>The six-months test:</strong> could a competent stranger — or you, next year — open this file and know exactly what every column means, which values are allowed, and how missing data is marked, <em>without asking you</em>? If not, the gap belongs in the codebook. Write it as you collect, not after.</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> the codebook is what makes a dataset reusable, shareable, and reproducible instead of a private riddle. It travels with the data, it's the reference your <a href="../data-entry-and-validation/">validation rules</a> are built from, and it's the first thing a collaborator or reviewer will ask for. A <a href="../tidy-data/">tidy</a> table plus a clear codebook is a dataset anyone can pick up and trust.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>How should I code missing values?</summary>
+            <div class="faq-a"><p>Leave the cell genuinely empty, or use a dedicated marker like <code>NA</code> — not a number. Numeric codes such as <code>-99</code>, <code>0</code>, or <code>999</code> are dangerous because the software treats them as real data: forget to declare them and they get averaged straight into your means and SDs. Never use <code>0</code> in particular, since 0 is a legitimate value for many variables. If your software forces a numeric code, record it prominently in the codebook and convert it to missing as the very first cleaning step.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What should a codebook include?</summary>
+            <div class="faq-a"><p>One entry per variable, listing at minimum: the exact <strong>column name</strong>, a human-readable <strong>label</strong>, the <strong>type</strong> (continuous, ordinal, nominal, date, identifier), the <strong>units or allowed values</strong> (kilograms; 1–5; the category set), and how <strong>missing data</strong> is marked. Add anything a stranger couldn't infer from the numbers — which items are reverse-scored, how a composite was computed, the date format. If you'd have to explain it out loud, write it down.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What makes a good variable name?</summary>
+            <div class="faq-a"><p>Short, lowercase, no spaces or special characters, and stable over time — <code>age</code>, <code>income_usd</code>, <code>item3_rev</code>. Good names hint at the content and can encode useful flags (a <code>_rev</code> suffix for a reverse-scored item) without trying to <em>be</em> the codebook. Avoid names that are really values (a column called <code>2019</code>), names that collide when truncated, and cryptic abbreviations only today-you understands. The codebook carries the full meaning; the name just has to be unambiguous and machine-friendly.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <style>
+    /* codebook widget (scoped) */
+    #cb .cb-progress { font-weight: 700; font-size: .9rem; margin: 0 0 .6rem; color: var(--course-accent); }
+    #cb .cb-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: .7rem; }
+    #cb .cb-card { border: 1px solid var(--border); border-radius: 10px; padding: .7rem .75rem; background: var(--surface); }
+    #cb .cb-card.solved { border-color: #22c55e; }
+    #cb .cb-name { font-family: var(--mono); font-weight: 700; color: var(--text); font-size: .95rem; }
+    #cb .cb-vals { font-family: var(--mono); font-size: .78rem; color: var(--text-muted); margin: .25rem 0 .5rem; }
+    #cb select { width: 100%; padding: .35rem .4rem; border: 1px solid var(--border); border-radius: 6px; background: var(--surface-2); color: var(--text); font-size: .85rem; }
+    #cb .cb-card.solved select { display: none; }
+    #cb .cb-hint { font-size: .78rem; margin: .4rem 0 0; min-height: 1em; }
+    #cb .cb-flag { font-size: .8rem; margin: .45rem 0 0; color: var(--text-muted); border-left: 3px solid #f97316; padding-left: .5rem; }
+    #cb .cb-book-wrap { overflow-x: auto; }
+    #cb .cb-empty { font-size: .84rem; color: var(--text-muted); font-style: italic; margin: 0; }
+    #cb table.cb-book { border-collapse: collapse; font-size: .8rem; width: 100%; min-width: 460px; }
+    #cb table.cb-book th, #cb table.cb-book td { border: 1px solid var(--border); padding: .3rem .5rem; text-align: left; vertical-align: top; }
+    #cb table.cb-book th { background: var(--surface-2); color: var(--text); font-weight: 700; }
+    #cb table.cb-book td { color: var(--text-muted); }
+    #cb table.cb-book td.mono { font-family: var(--mono); color: var(--text); white-space: nowrap; }
+    #cb .cb-shake { animation: cb-shake .3s; }
+    @keyframes cb-shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+  </style>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ codebook builder (deterministic, no RNG) ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var TYPES = ["Continuous measure", "Ordinal (Likert)", "Nominal category", "Identifier", "Date"];
+
+    var COLS = [
+      { name: "grp", vals: "1, 2, 1, 3, 2", type: "Nominal category",
+        label: "Study group", tv: "1 = control, 2 = drug A, 3 = drug B", miss: "(none)",
+        flag: "Stored as numbers, but they're labels — never take a mean of a group code." },
+      { name: "q3_rev", vals: "5, 2, 4, 1, 3", type: "Ordinal (Likert)",
+        label: "Item 3 (reverse-scored)", tv: "1 = strongly disagree … 5 = strongly agree", miss: "blank",
+        flag: "Reverse-worded: recode (6 − x) before adding it to a scale, or the composite is wrong." },
+      { name: "dtcol", vals: "03/04/24, 11/02/24", type: "Date",
+        label: "Test date", tv: "format DD/MM/YYYY", miss: "blank",
+        flag: "“03/04/24” is ambiguous — 3 April or 4 March? Store ISO 8601 (YYYY-MM-DD) or record the format." },
+      { name: "inc", vals: "45000, 52000, −99, 61000", type: "Continuous measure",
+        label: "Annual income (USD)", tv: "≥ 0", miss: "−99 = declined to answer",
+        flag: "−99 is a MISSING code, not a salary. Undeclared, it poisons every mean and SD — prefer a blank cell." },
+      { name: "pid", vals: "1001, 1002, 1003", type: "Identifier",
+        label: "Participant ID", tv: "unique per person", miss: "(none)",
+        flag: "An ID is a name, not a quantity — exclude it from every calculation, even though it looks numeric." },
+      { name: "wt", vals: "68.5, 512, 74.2", type: "Continuous measure",
+        label: "Body weight", tv: "kilograms; plausibly 40–180", miss: "blank",
+        flag: "Record the units (kg vs lb). Note the range too: 512 is impossible and flags a data-entry error to fix." }
+    ];
+
+    var solved = {};
+    var cardsEl = document.getElementById("cb-cards");
+    var bookEl  = document.getElementById("cb-book");
+    var progEl  = document.getElementById("cb-progress");
+
+    function opts() {
+      var h = '<option value="" selected disabled>What is this, really?</option>';
+      TYPES.forEach(function (t) { h += '<option value="' + t + '">' + t + "</option>"; });
+      return h;
+    }
+
+    function renderBook() {
+      var done = COLS.filter(function (c) { return solved[c.name]; });
+      if (!done.length) { bookEl.innerHTML = '<p class="cb-empty">Classify a column above to start filling this in…</p>'; return; }
+      var h = '<table class="cb-book"><thead><tr><th>Name</th><th>Label</th><th>Type</th><th>Units / values</th><th>Missing</th></tr></thead><tbody>';
+      COLS.forEach(function (c) {
+        if (!solved[c.name]) return;
+        h += "<tr><td class='mono'>" + c.name + "</td><td>" + c.label + "</td><td>" + c.type +
+             "</td><td>" + c.tv + "</td><td>" + c.miss + "</td></tr>";
+      });
+      h += "</tbody></table>";
+      bookEl.innerHTML = h;
+    }
+
+    function render() {
+      cardsEl.innerHTML = "";
+      var n = 0;
+      COLS.forEach(function (c) {
+        if (solved[c.name]) n++;
+        var card = document.createElement("div");
+        card.className = "cb-card" + (solved[c.name] ? " solved" : "");
+        card.innerHTML =
+          '<div class="cb-name">' + c.name + "</div>" +
+          '<div class="cb-vals">' + c.vals + "</div>" +
+          (solved[c.name]
+            ? '<div class="cb-hint" style="color:#22c55e">✓ ' + c.type + '</div><div class="cb-flag">⚠ ' + c.flag + "</div>"
+            : '<select>' + opts() + '</select><div class="cb-hint"></div>');
+        cardsEl.appendChild(card);
+        if (!solved[c.name]) {
+          var sel = card.querySelector("select"), hint = card.querySelector(".cb-hint");
+          sel.addEventListener("change", function () {
+            if (sel.value === c.type) { solved[c.name] = true; render(); renderBook(); }
+            else {
+              hint.textContent = "Not quite — look again at the sample values.";
+              hint.style.color = "#ef4444";
+              sel.value = "";
+              card.classList.remove("cb-shake"); void card.offsetWidth; card.classList.add("cb-shake");
+            }
+          });
+        }
+      });
+      progEl.textContent = "Documented " + n + " / " + COLS.length +
+        (n === COLS.length ? "  — 🎉 a stranger could now read this dataset." : "");
+    }
+
+    document.getElementById("cb-reset").addEventListener("click", function () {
+      solved = {}; render(); renderBook();
+    });
+
+    render(); renderBook();
+  })();
+  </script>
+</body>
+</html>

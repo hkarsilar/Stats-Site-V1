@@ -89,5 +89,5 @@ out = (
     + ";\n"
 )
 dest = ROOT / "assets" / "js" / "search-index.js"
-dest.write_text(out, encoding="utf-8", newline="\n")
+dest.write_bytes(out.encode("utf-8"))   # write_bytes keeps LF exactly on every platform/Python
 print(f"wrote {dest} ({dest.stat().st_size / 1024:.0f} KB, {len(lessons)} lessons, {len(pages)} pages)")
