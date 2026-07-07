@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dimensionality Reduction — StatsCapybara</title>
+  <meta name="description" content="PCA squeezes many variables into a plottable few and keeps distances honest; t-SNE and UMAP reveal structure but distort it. See both on the same 3-D cloud." />
+  <link rel="canonical" href="https://statscapybara.com/ml/dimensionality-reduction/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Dimensionality Reduction — StatsCapybara" />
+  <meta property="og:description" content="PCA vs t-SNE/UMAP made visual: rotate a 3D cloud of two interlocked rings, watch PCA fail to separate them, and see why nonlinear embeddings are for seeing, not measuring." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/ml/dimensionality-reduction/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Dimensionality Reduction — StatsCapybara" />
+  <meta name="twitter:description" content="Dimensionality reduction explained visually: PCA as the trustworthy linear map, t-SNE/UMAP as gorgeous but treacherous — cluster sizes and gaps in an embedding aren't real." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Dimensionality Reduction", "description": "Dimensionality reduction compresses many variables into two or three you can plot: PCA is the linear workhorse that rotates the data onto its directions of maximum variance and preserves global structure, while nonlinear methods like t-SNE and UMAP reveal local structure vividly but distort distances, cluster sizes, and gaps, and change with the perplexity setting.", "url": "https://statscapybara.com/ml/dimensionality-reduction/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — ML & AI: Machine Learning for Researchers", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Dimensionality Reduction", "item": "https://statscapybara.com/ml/dimensionality-reduction/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is PCA the same as factor analysis?", "acceptedAnswer": {"@type": "Answer", "text": "They are close cousins and often give similar-looking results, but they answer different questions. PCA is a purely mathematical rotation: it repackages your variables into uncorrelated components ordered by how much total variance each captures, with no model of why the variables move together — it is best thought of as data compression. Exploratory factor analysis, by contrast, assumes there are unobserved latent factors that cause the observed correlations, and it tries to estimate those factors while setting aside each variable's unique noise. Rule of thumb: reach for PCA when you want to reduce dimensions or de-correlate predictors, and for factor analysis when you are hypothesizing underlying constructs (like 'verbal ability') behind a battery of measures."}}, {"@type": "Question", "name": "Can I run statistics on t-SNE or UMAP coordinates?", "acceptedAnswer": {"@type": "Answer", "text": "No. A t-SNE or UMAP embedding is built to preserve local neighbourhoods for the purpose of visualization, and in doing so it deliberately distorts global geometry: distances between clusters, the sizes of clusters, and even the number of apparent clumps all change with the perplexity or n_neighbors setting and with the random seed. So the axes have no units, the gaps mean nothing, and running a t-test, a correlation, or a clustering on the 2-D coordinates produces numbers that describe the algorithm, not your data. Use the embedding only to spot structure worth investigating, then go back to the original feature space (or a PCA) to measure anything."}}, {"@type": "Question", "name": "How many principal components should I keep?", "acceptedAnswer": {"@type": "Answer", "text": "There is no universal answer — it depends on your goal — but a few standard aids help. Plot a scree graph (variance explained per component) and look for the 'elbow' where the curve levels off; keep components above the bend. Or keep enough components to reach a target cumulative variance, often 80–90%. The old Kaiser rule (keep every component with an eigenvalue above 1, i.e. above the average) is popular but tends to over-retain, so treat it as a loose upper bound rather than a law. If PCA is a preprocessing step for a predictive model, the cleanest approach is to let cross-validation choose the number of components by held-out performance."}}]}
+  </script>
+</head>
+<body data-course="ml" data-section="dimensionality-reduction">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 4.10</span>
+        <h1>Dimensionality Reduction</h1>
+
+        <p class="lede">Real datasets rarely have two variables — they have twenty, or two hundred. You can't plot that, models choke on it (the <a href="../../ml/knn-and-distance/">curse of dimensionality</a>), and much of it is redundant. Dimensionality reduction squeezes many columns down to a plottable two or three while keeping as much of the structure as it can. Two families dominate, and they demand opposite kinds of trust: <strong>PCA</strong>, the linear workhorse you can measure, and <strong>t-SNE / UMAP</strong>, the nonlinear maps you should only look at.</p>
+
+        <h2>PCA: the linear workhorse</h2>
+        <p>You met principal component analysis in <a href="../../stats-3/factor-analysis-pca/">Factor Analysis &amp; PCA</a>; here it earns its keep as a reduction tool. PCA finds new axes — <strong>principal components</strong> — that are straight-line combinations of your original variables, chosen so the <em>first</em> captures the most variance in the data, the <em>second</em> the most of what's left (at right angles to the first), and so on. Keep the top two or three and you have a faithful, low-dimensional shadow of the data.</p>
+        <p>Because every component is just a weighted sum of the originals, PCA is <strong>linear, reversible, and honest about distances</strong>: points far apart in the plot were far apart in the full space, and the axes mean something you can interpret (loadings). The price of that honesty is rigidity — PCA can only <em>rotate and flatten</em> the cloud. It cannot <em>unfold</em> curved structure. Hand it two rings looped through each other and no flat shadow will ever pull them apart, because the separation lives in a bend that a linear map can't undo.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="drviz">
+          <p class="viz-title">🔻 Squash 3-D down to 2-D three ways</p>
+          <p class="viz-sub">The same cloud — <span style="color:var(--primary)">ring A</span>, <span style="color:#f97316">ring B</span> (looped through it), and a stray <span style="color:var(--secondary)">blob</span>. <strong>Drag the 3-D view</strong> to rotate and see the interlock. <strong>PCA</strong> is the best flat shadow — yet the rings still overlap, because linear maps can't unfold a loop. A <strong>nonlinear embedding</strong> untangles them. The trio below shows the same nonlinear method at three <em>perplexity</em> settings — the picture changes every time (illustrative).</p>
+
+          <div class="controls">
+            <div class="control"><button class="btn btn-primary btn-sm" id="v3d-btn">🧊 3-D (drag)</button></div>
+            <div class="control"><button class="btn btn-sm" id="pca-btn">PCA (linear)</button></div>
+            <div class="control"><button class="btn btn-sm" id="nl-btn">Nonlinear</button></div>
+            <div class="control" style="margin-left:auto"><button class="btn btn-sm" id="new-btn">↺ New sample</button></div>
+          </div>
+
+          <canvas id="dr-canvas" style="touch-action:none"></canvas>
+          <p id="dr-verdict" style="font-size:.85rem;color:var(--text-faint);margin-top:.5rem;text-align:center;min-height:1.2em"></p>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>t-SNE and UMAP: seeing versus measuring</h2>
+        <p>When the interesting structure <em>is</em> a bend, you need a nonlinear method. <strong>t-SNE</strong> and <strong>UMAP</strong> don't rotate the data — they build a fresh 2-D layout that tries to keep each point near the neighbours it had in the full space, and they are dazzlingly good at making clusters pop out. That's their job and their gift: <strong>seeing structure</strong> you'd never spot in a table.</p>
+        <p>But the same freedom that reveals clusters makes the map a liar about geometry. In a t-SNE or UMAP plot:</p>
+        <ul>
+          <li><strong>Cluster sizes are meaningless.</strong> A tight blob and a sprawling one may hold the same variance — the method inflates dense regions and shrinks sparse ones.</li>
+          <li><strong>Distances between clusters are meaningless.</strong> Two clumps sitting far apart aren't "more different" than two clumps that are close; only the <em>within</em>-neighbourhood grouping is trustworthy.</li>
+          <li><strong>The settings change the story.</strong> t-SNE's <em>perplexity</em> (and UMAP's <code>n_neighbors</code>) can split one real cluster into several or merge several into one — as the trio in the widget shows. The layout is also random from run to run.</li>
+        </ul>
+        <p>So the rule is blunt: <strong>never run a statistic on embedding coordinates</strong>, never report a gap or a cluster size as a finding, and treat any cluster the map suggests as a <a href="../../ml/clustering-kmeans/">hypothesis</a> to confirm back in the real feature space. Use PCA when you need to <em>measure</em>; use t-SNE/UMAP when you need to <em>look</em>.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> Reducing dimensions is how you visualize, denoise, and de-clutter high-dimensional data — but the two toolkits earn different kinds of trust. PCA is linear and measurable: its axes mean something and its distances are real, so it's your default for compression and honest plotting, at the cost of never unfolding curves. t-SNE and UMAP unfold beautifully and reveal clusters no linear method can, but their sizes, gaps, and shapes are artefacts of the algorithm and its perplexity, not the data. See with the nonlinear maps; measure with PCA; verify every cluster before you believe it.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>Is PCA the same as factor analysis?</summary>
+            <div class="faq-a"><p>They are close cousins and often give similar-looking results, but they answer different questions. <a href="../../stats-3/factor-analysis-pca/">PCA</a> is a purely mathematical rotation: it repackages your variables into uncorrelated components ordered by how much total variance each captures, with no model of <em>why</em> the variables move together — it is best thought of as data compression. Exploratory factor analysis, by contrast, assumes there are unobserved latent factors that <em>cause</em> the observed correlations, and it tries to estimate those factors while setting aside each variable's unique noise. Rule of thumb: reach for PCA when you want to reduce dimensions or de-correlate predictors, and for factor analysis when you are hypothesizing underlying constructs (like 'verbal ability') behind a battery of measures.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Can I run statistics on t-SNE or UMAP coordinates?</summary>
+            <div class="faq-a"><p>No. A t-SNE or UMAP embedding is built to preserve <em>local</em> neighbourhoods for the purpose of visualization, and in doing so it deliberately distorts global geometry: distances between clusters, the sizes of clusters, and even the number of apparent clumps all change with the perplexity or <code>n_neighbors</code> setting and with the random seed. So the axes have no units, the gaps mean nothing, and running a t-test, a correlation, or a clustering on the 2-D coordinates produces numbers that describe the algorithm, not your data. Use the embedding only to spot structure worth investigating, then go back to the original feature space (or a <a href="../../stats-3/factor-analysis-pca/">PCA</a>) to measure anything.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>How many principal components should I keep?</summary>
+            <div class="faq-a"><p>There is no universal answer — it depends on your goal — but a few standard aids help. Plot a scree graph (variance explained per component) and look for the 'elbow' where the curve levels off; keep components above the bend. Or keep enough components to reach a target cumulative variance, often 80–90%. The old Kaiser rule (keep every component with an eigenvalue above 1, i.e. above the average) is popular but tends to over-retain, so treat it as a loose upper bound rather than a law. If PCA is a preprocessing step for a predictive model, the cleanest approach is to let cross-validation choose the number of components by held-out performance.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ 3D rings + blob: rotate, PCA projection, nonlinear embedding, perplexity trio ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var canvas = document.getElementById("dr-canvas"), ctx, W = 0, H = 528;
+    var GC = ["--primary", "#f97316", "--secondary"];    // ring A, ring B, blob
+    var view = "3d", sp = 0, yaw = 0.7, pitch = -0.35;
+    var P = [], pca = null, c3 = [0, 0, 0], maxR = 1, pcaMax = 1;
+    var NLC = { 0: [0.27, 0.64], 1: [0.71, 0.33], 2: [0.73, 0.72] };   // group centres in the embedding
+
+    function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+    function randn(rng) { var u = 0, v = 0; while (!u) u = rng(); while (!v) v = rng(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+    function gcol(g) { var s = GC[g]; return s.charAt(0) === "-" ? VIZ.css(s) : s; }
+
+    /* ---- Jacobi eigen-decomposition of a symmetric 3x3 (for PCA) ---- */
+    function jacobi3(A) {
+      var a = [[A[0][0], A[0][1], A[0][2]], [A[1][0], A[1][1], A[1][2]], [A[2][0], A[2][1], A[2][2]]];
+      var V = [[1, 0, 0], [0, 1, 0], [0, 0, 1]], sweep, i;
+      for (sweep = 0; sweep < 50; sweep++) {
+        var p = 0, q = 1, mx = Math.abs(a[0][1]);
+        if (Math.abs(a[0][2]) > mx) { mx = Math.abs(a[0][2]); p = 0; q = 2; }
+        if (Math.abs(a[1][2]) > mx) { mx = Math.abs(a[1][2]); p = 1; q = 2; }
+        if (mx < 1e-12) break;
+        var phi = 0.5 * Math.atan2(2 * a[p][q], a[q][q] - a[p][p]), c = Math.cos(phi), s = Math.sin(phi);
+        for (i = 0; i < 3; i++) { var aip = a[i][p], aiq = a[i][q]; a[i][p] = c * aip - s * aiq; a[i][q] = s * aip + c * aiq; }
+        for (i = 0; i < 3; i++) { var api = a[p][i], aqi = a[q][i]; a[p][i] = c * api - s * aqi; a[q][i] = s * api + c * aqi; }
+        for (i = 0; i < 3; i++) { var vip = V[i][p], viq = V[i][q]; V[i][p] = c * vip - s * viq; V[i][q] = s * vip + c * viq; }
+      }
+      var val = [a[0][0], a[1][1], a[2][2]], idx = [0, 1, 2].sort(function (x, y) { return val[y] - val[x]; });
+      return { vec: [0, 1, 2].map(function (r) { return idx.map(function (k) { return V[r][k]; }); }) };
+    }
+
+    /* ---- data: two interlocked rings + a stray blob ---- */
+    function buildData(seed) {
+      var rng = mulberry32(11 + seed), pts = [], N = 40, i, t;
+      for (i = 0; i < N; i++) { t = 2 * Math.PI * i / N; pts.push({ p: [Math.cos(t), Math.sin(t), randn(rng) * 0.05], g: 0, a: t, jx: randn(rng), jy: randn(rng) }); }
+      for (i = 0; i < N; i++) { t = 2 * Math.PI * i / N; pts.push({ p: [1 + Math.cos(t), randn(rng) * 0.05, Math.sin(t)], g: 1, a: t, jx: randn(rng), jy: randn(rng) }); }
+      for (i = 0; i < 28; i++) { pts.push({ p: [3.2 + randn(rng) * 0.28, 2.6 + randn(rng) * 0.28, 0.5 + randn(rng) * 0.28], g: 2, a: rng() * 6.2832, jx: randn(rng), jy: randn(rng) }); }
+      return pts;
+    }
+    function computePCA() {
+      var n = P.length, m = [0, 0, 0], i, d;
+      for (i = 0; i < n; i++) for (d = 0; d < 3; d++) m[d] += P[i].p[d];
+      for (d = 0; d < 3; d++) m[d] /= n;
+      c3 = m;
+      maxR = 0; for (i = 0; i < n; i++) { var rr = Math.sqrt((P[i].p[0] - m[0]) * (P[i].p[0] - m[0]) + (P[i].p[1] - m[1]) * (P[i].p[1] - m[1]) + (P[i].p[2] - m[2]) * (P[i].p[2] - m[2])); if (rr > maxR) maxR = rr; }
+      var C = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+      for (i = 0; i < n; i++) { var x = [P[i].p[0] - m[0], P[i].p[1] - m[1], P[i].p[2] - m[2]], r, cc; for (r = 0; r < 3; r++) for (cc = 0; cc < 3; cc++) C[r][cc] += x[r] * x[cc]; }
+      var e = jacobi3(C), pc1 = [e.vec[0][0], e.vec[1][0], e.vec[2][0]], pc2 = [e.vec[0][1], e.vec[1][1], e.vec[2][1]];
+      pcaMax = 0;
+      pca = P.map(function (pt) {
+        var x = [pt.p[0] - m[0], pt.p[1] - m[1], pt.p[2] - m[2]];
+        var u = x[0] * pc1[0] + x[1] * pc1[1] + x[2] * pc1[2], v = x[0] * pc2[0] + x[1] * pc2[1] + x[2] * pc2[2];
+        pcaMax = Math.max(pcaMax, Math.abs(u), Math.abs(v));
+        return { u: u, v: v, g: pt.g };
+      });
+    }
+
+    /* ---- embeddings (illustrative; deterministic from group + ring angle) ---- */
+    function embMed(pt) { var c = NLC[pt.g]; if (pt.g < 2) return [c[0] + 0.145 * Math.cos(pt.a) + pt.jx * 0.018, c[1] + 0.145 * Math.sin(pt.a) + pt.jy * 0.018]; return [c[0] + pt.jx * 0.085, c[1] + pt.jy * 0.085]; }
+    function embLow(pt) {   // perplexity too small: one cluster shatters into several
+      var c = NLC[pt.g];
+      if (pt.g < 2) { var sub = Math.floor((pt.a / 6.2832) * 3) % 3, off = [[-0.10, -0.06], [0.10, -0.05], [0.0, 0.11]][sub]; return [c[0] + off[0] + 0.048 * Math.cos(pt.a * 3) + pt.jx * 0.016, c[1] + off[1] + 0.048 * Math.sin(pt.a * 3) + pt.jy * 0.016]; }
+      var s2 = pt.jx > 0 ? 0 : 1, o2 = [[-0.07, 0.05], [0.07, -0.05]][s2]; return [c[0] + o2[0] + pt.jx * 0.045, c[1] + o2[1] + pt.jy * 0.045];
+    }
+    function embHigh(pt) {  // perplexity too large: groups collapse together
+      var c = NLC[pt.g], pull = 0.62, cx = 0.5 + (c[0] - 0.5) * (1 - pull), cy = 0.5 + (c[1] - 0.5) * (1 - pull);
+      if (pt.g < 2) return [cx + 0.06 * Math.cos(pt.a) + pt.jx * 0.03, cy + 0.06 * Math.sin(pt.a) + pt.jy * 0.03];
+      return [cx + pt.jx * 0.055, cy + pt.jy * 0.055];
+    }
+
+    /* ---- geometry ---- */
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function mainGeom() { var S = Math.min(300, W - 32); return { S: S, x0: (W - S) / 2, y0: 6 }; }
+    function rot(p) {
+      var x = p[0] - c3[0], y = p[1] - c3[1], z = p[2] - c3[2];
+      var cx = Math.cos(yaw), sx = Math.sin(yaw), x1 = x * cx + z * sx, z1 = -x * sx + z * cx;
+      var cp = Math.cos(pitch), sp2 = Math.sin(pitch), y2 = y * cp - z1 * sp2, z2 = y * sp2 + z1 * cp;
+      return [x1, y2, z2];
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      var g = mainGeom();
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.strokeRect(g.x0, g.y0, g.S, g.S);
+      if (view === "3d") drawMain3D(g);
+      else if (view === "pca") drawMainPCA(g);
+      else drawMainNL(g);
+      // caption on the main view
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px " + VIZ.css("--font"); ctx.textAlign = "center";
+      var cap = view === "3d" ? "the true 3-D data — drag to rotate" : view === "pca" ? "PCA: best linear shadow (rings still overlap)" : "nonlinear embedding: rings untangled";
+      ctx.fillText(cap, g.x0 + g.S / 2, g.y0 + g.S + 15);
+      drawTrio(g);
+    }
+    function pt3(g, r) {
+      var s = g.S * 0.46 / maxR, cx = g.x0 + g.S / 2, cy = g.y0 + g.S / 2;
+      return [cx + r[0] * s, cy - r[1] * s, r[2]];
+    }
+    function drawMain3D(g) {
+      var arr = P.map(function (p, i) { var r = rot(p.p), q = pt3(g, r); return { x: q[0], y: q[1], depth: q[2], g: p.g }; });
+      arr.sort(function (a, b) { return a.depth - b.depth; });
+      arr.forEach(function (d) {
+        var t = (d.depth / maxR + 1) / 2;                // 0 far .. 1 near
+        ctx.globalAlpha = 0.5 + 0.5 * t;
+        ctx.beginPath(); ctx.arc(d.x, d.y, 2.6 + 1.8 * t, 0, 6.2832); ctx.fillStyle = gcol(d.g); ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+    }
+    function drawMainPCA(g) {
+      var s = g.S * 0.46 / pcaMax, cx = g.x0 + g.S / 2, cy = g.y0 + g.S / 2;
+      pca.forEach(function (d) { ctx.beginPath(); ctx.arc(cx + d.u * s, cy - d.v * s, 3.2, 0, 6.2832); ctx.fillStyle = gcol(d.g); ctx.fill(); });
+    }
+    function drawMainNL(g) { drawEmbed(embMed, g.x0, g.y0, g.S, 3.2); }
+    function drawEmbed(fn, x0, y0, S, rad) {
+      P.forEach(function (p) { var e = fn(p), ex = x0 + (0.06 + 0.88 * e[0]) * S, ey = y0 + (0.06 + 0.88 * (1 - e[1])) * S; ctx.beginPath(); ctx.arc(ex, ey, rad, 0, 6.2832); ctx.fillStyle = gcol(p.g); ctx.fill(); });
+    }
+    function drawTrio(g) {
+      var top = g.y0 + g.S + 30, gap = 10, tS = Math.min((W - 2 * gap) / 3 - 6, 150);
+      var totalW = tS * 3 + gap * 2, x0 = (W - totalW) / 2;
+      var fns = [embLow, embMed, embHigh], labs = ["perplexity 5", "perplexity 30", "perplexity 80"], subs = ["over-split", "just right", "collapsed"];
+      ctx.fillStyle = VIZ.css("--text"); ctx.font = "600 11px " + VIZ.css("--font"); ctx.textAlign = "center";
+      ctx.fillText("Same data, one nonlinear method, three perplexity settings — the shape lies:", W / 2, top - 8);
+      for (var i = 0; i < 3; i++) {
+        var xx = x0 + i * (tS + gap);
+        ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.strokeRect(xx, top, tS, tS);
+        drawEmbed(fns[i], xx, top, tS, 2.1);
+        ctx.fillStyle = VIZ.css("--text-muted"); ctx.font = "10px " + VIZ.css("--font"); ctx.textAlign = "center";
+        ctx.fillText(labs[i] + " · " + subs[i], xx + tS / 2, top + tS + 13);
+      }
+    }
+
+    function verdict() {
+      var v = view === "3d" ? "Rotate until the two rings link — that interlock is real structure living in all three dimensions."
+        : view === "pca" ? "PCA found the flattest, most faithful shadow — and the rings still bleed into each other. A linear map can rotate, never unfold. The blob does separate: it really is far away."
+        : "A nonlinear method pulls the rings apart into clean loops. Gorgeous — but look below before you trust the gaps.";
+      document.getElementById("dr-verdict").textContent = v;
+    }
+    function setView(v) {
+      view = v;
+      document.getElementById("v3d-btn").className = "btn btn-sm" + (v === "3d" ? " btn-primary" : "");
+      document.getElementById("pca-btn").className = "btn btn-sm" + (v === "pca" ? " btn-primary" : "");
+      document.getElementById("nl-btn").className = "btn btn-sm" + (v === "nl" ? " btn-primary" : "");
+      verdict(); draw();
+    }
+
+    /* ---- rotate by dragging (3D view only) ---- */
+    var dragging = false, lastX = 0, lastY = 0;
+    function evtPt(ev) { var r = canvas.getBoundingClientRect(); return [ev.clientX - r.left, ev.clientY - r.top]; }
+    canvas.addEventListener("pointerdown", function (ev) { if (view !== "3d") return; var g = mainGeom(), m = evtPt(ev); if (m[0] < g.x0 || m[0] > g.x0 + g.S || m[1] < g.y0 || m[1] > g.y0 + g.S) return; dragging = true; lastX = m[0]; lastY = m[1]; canvas.setPointerCapture(ev.pointerId); ev.preventDefault(); });
+    canvas.addEventListener("pointermove", function (ev) { if (!dragging) return; var m = evtPt(ev); yaw += (m[0] - lastX) * 0.01; pitch += (m[1] - lastY) * 0.01; pitch = Math.max(-1.4, Math.min(1.4, pitch)); lastX = m[0]; lastY = m[1]; draw(); });
+    function endDrag() { dragging = false; }
+    canvas.addEventListener("pointerup", endDrag);
+    canvas.addEventListener("pointercancel", endDrag);
+
+    /* ---- controls ---- */
+    document.getElementById("v3d-btn").addEventListener("click", function () { setView("3d"); });
+    document.getElementById("pca-btn").addEventListener("click", function () { setView("pca"); });
+    document.getElementById("nl-btn").addEventListener("click", function () { setView("nl"); });
+    document.getElementById("new-btn").addEventListener("click", function () { sp++; P = buildData(sp); computePCA(); draw(); });
+    window.addEventListener("resize", function () { fit(); draw(); });
+    if (window.ResizeObserver) new ResizeObserver(function () { fit(); draw(); }).observe(canvas);
+    VIZ.onTheme(draw);
+
+    P = buildData(0); computePCA();
+    fit(); setView("3d");
+  })();
+  </script>
+</body>
+</html>

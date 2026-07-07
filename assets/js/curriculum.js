@@ -173,7 +173,10 @@ window.CURRICULUM = [
       { n: "4.6", slug: "decision-trees",                      title: "Decision Trees", ready: true },
       { n: "4.7", slug: "random-forests-and-ensembles",       title: "Random Forests & Ensembles", ready: true },
       { n: "4.8", slug: "knn-and-distance",                   title: "k-NN & Why Distance Gets Weird", ready: true },
-      { n: "4.9", slug: "clustering-kmeans",                  title: "Clustering & k-Means", ready: true }
+      { n: "4.9", slug: "clustering-kmeans",                  title: "Clustering & k-Means", ready: true },
+      { n: "4.10",slug: "dimensionality-reduction",           title: "Dimensionality Reduction", ready: true },
+      { n: "4.11",slug: "neural-networks-intuition",          title: "Neural Networks: The Intuition", ready: true },
+      { n: "4.12",slug: "llms-and-ai-in-research",            title: "LLMs & AI in Your Research Workflow", ready: true }
     ]
   }
 ];

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LLMs &amp; AI in Your Research Workflow — StatsCapybara</title>
+  <meta name="description" content="An LLM just predicts the next word — fluent, and prone to making things up. See the mechanism, why it fabricates citations, and how to use AI safely." />
+  <link rel="canonical" href="https://statscapybara.com/ml/llms-and-ai-in-research/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="LLMs &amp; AI in Your Research Workflow — StatsCapybara" />
+  <meta property="og:description" content="How large language models really work: next-word prediction at scale, why fluency isn't truth, fabricated citations, and a verification workflow that treats AI output as a draft." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/ml/llms-and-ai-in-research/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="LLMs &amp; AI in Your Research Workflow — StatsCapybara" />
+  <meta name="twitter:description" content="Play with a toy next-word predictor and a spot-the-fake-citation game to learn why LLMs are fluent but not truthful — and exactly where they help research and where they must not." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <style>
+    .llm-corpus { font: .82rem/1.5 var(--font); background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: .7rem .85rem; color: var(--text-muted); margin: .2rem 0 .8rem; }
+    .llm-corpus b { color: var(--text); font-weight: 600; }
+    .llm-out { font-size: 1.02rem; line-height: 1.6; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: .8rem 1rem; min-height: 2.6em; margin: .2rem 0 .7rem; }
+    .llm-out .cur { background: rgba(99,102,241,.16); border-radius: 4px; padding: 0 2px; }
+    .llm-bars { display: grid; gap: .3rem; margin: .1rem 0 .3rem; }
+    .llm-bar-row { display: grid; grid-template-columns: 5.5rem 1fr 2.6rem; align-items: center; gap: .5rem; font-size: .8rem; }
+    .llm-bar-word { text-align: right; color: var(--text-muted); font-family: ui-monospace, monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .llm-bar-track { background: var(--bg); border-radius: 5px; height: 15px; overflow: hidden; border: 1px solid var(--border); }
+    .llm-bar-fill { height: 100%; background: var(--primary); border-radius: 5px 0 0 5px; }
+    .llm-bar-row.picked .llm-bar-fill { background: #f97316; }
+    .llm-bar-pct { color: var(--text-faint); font-variant-numeric: tabular-nums; }
+    .llm-note { font-size: .85rem; color: var(--text-faint); margin: .2rem 0; }
+    .llm-refs { display: grid; gap: .7rem; margin: .5rem 0; }
+    .llm-ref { border: 1px solid var(--border); border-radius: 10px; padding: .7rem .9rem; background: var(--surface); cursor: pointer; transition: border-color .15s; }
+    .llm-ref:hover { border-color: var(--primary); }
+    .llm-ref.chosen { border-color: var(--primary); }
+    .llm-ref.reveal-fake { border-color: #ef4444; background: rgba(239,68,68,.06); }
+    .llm-ref.reveal-real { border-color: #22c55e; background: rgba(34,197,94,.05); }
+    .llm-ref cite { font-style: normal; font-size: .9rem; line-height: 1.5; color: var(--text); }
+    .llm-ref cite em { font-style: italic; }
+    .llm-ref .llm-tag { display: none; font-size: .78rem; font-weight: 600; margin-top: .4rem; }
+    .llm-ref.reveal-fake .llm-tag.fake, .llm-ref.reveal-real .llm-tag.real { display: block; }
+    .llm-ref.reveal-fake .llm-tag.fake { color: #ef4444; }
+    .llm-ref.reveal-real .llm-tag.real { color: #16a34a; }
+    .llm-panels { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; margin: .6rem 0; }
+    .llm-panel { border: 1px solid var(--border); border-radius: 10px; padding: .7rem .9rem; }
+    .llm-panel h4 { margin: 0 0 .4rem; font-size: .92rem; }
+    .llm-panel.good h4 { color: #16a34a; }
+    .llm-panel.bad h4 { color: #ef4444; }
+    .llm-panel ul { margin: 0; padding-left: 1.1rem; font-size: .88rem; line-height: 1.5; }
+    @media (max-width: 640px) { .llm-panels { grid-template-columns: 1fr; } .llm-bar-row { grid-template-columns: 4.5rem 1fr 2.4rem; } }
+  </style>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "LLMs & AI in Your Research Workflow", "description": "A large language model generates text by predicting the next token over and over, which makes it fluent but structurally prone to fabricating facts and citations; it is a strong assistant for code, critique, and drafting you verify, but must never be trusted as an oracle for uncheckable facts, statistics you cannot reproduce, or participant data.", "url": "https://statscapybara.com/ml/llms-and-ai-in-research/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — ML & AI: Machine Learning for Researchers", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "LLMs & AI in Your Research Workflow", "item": "https://statscapybara.com/ml/llms-and-ai-in-research/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why do LLMs make up references?", "acceptedAnswer": {"@type": "Answer", "text": "Because a large language model generates text by predicting plausible next words, not by looking anything up. It has learned the shape of an academic citation — a list of surnames, a title, a journal, a year, a DOI — from millions of examples, but it does not store the papers themselves, so when you ask for references it fluently assembles ones that look exactly right and frequently do not exist. This is called hallucination, and it is a structural feature of how the model works, not an occasional glitch. Worse, fabricated citations are often the most authoritative-looking, so you cannot spot them by reading. The only safe rule is to click through and confirm every reference at its source; if you can't find it, don't cite it."}}, {"@type": "Question", "name": "Can I use ChatGPT or Claude to run my statistics?", "acceptedAnswer": {"@type": "Answer", "text": "To help you write code that you then run and verify — yes, that is one of the best uses of an AI assistant. To have it report statistical results directly — no. If a chatbot tells you 'the effect was significant, t(48) = 2.31, p = .025,' those numbers may be invented to look plausible, and you have no reproducible trail behind them. Ask instead for R or Python code, run it yourself on your real data, and check the output. You remain responsible for every number in your write-up, so anything you can't reproduce and defend doesn't belong there. Never paste raw participant data into an external tool either — see Using AI Tools Ethically."}}, {"@type": "Question", "name": "Do I have to disclose that I used AI?", "acceptedAnswer": {"@type": "Answer", "text": "Increasingly, yes — but the specifics vary, so check the policy that governs you. Many journals and universities now require you to state where and how you used generative AI (for example, in the methods or an acknowledgements note), and essentially all of them agree that an AI cannot be listed as an author, because authorship requires accountability that a model cannot take. A safe default is honest, specific disclosure: say what you used the tool for (e.g. drafting code, copy-editing prose) and confirm that you verified the output and take responsibility for it. When a policy is unclear, disclose more rather than less."}}]}
+  </script>
+</head>
+<body data-course="ml" data-section="llms-and-ai-in-research">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 4.12</span>
+        <h1>LLMs &amp; AI in Your Research Workflow</h1>
+
+        <p class="lede">You may have found this site by asking one. Large language models — ChatGPT, Claude, Gemini — can explain a concept, debug your R, and draft a paragraph in seconds, and they'll be an ordinary part of your research life. But the very mechanism that makes them so fluent also makes them <em>structurally</em> prone to making things up. Understand the mechanism and you'll know exactly when to lean on them and when never to.</p>
+
+        <h2>What an LLM actually does</h2>
+        <p>Strip away the branding and an LLM does one small thing at colossal scale: <strong>it predicts the next word.</strong> Given the text so far, it produces a probability distribution over what token comes next, samples one, appends it, and repeats. Trained on a vast slice of the internet, it becomes extraordinarily good at continuing text in a way that <em>sounds</em> right. That's the whole trick — and notice what's <em>not</em> in it: no database of facts, no lookup, no step where it checks whether what it's saying is true. It optimizes for <strong>plausibility, not accuracy.</strong> The toy below runs the same idea on a tiny, visible corpus so you can watch it happen.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="llmviz">
+          <p class="viz-title">🔮 The prediction machine</p>
+          <p class="viz-sub">This toy has read only the ten sentences below. Press <strong>predict next word</strong> to watch it pick — each bar is how often a word followed the current one in its tiny "training data". It strings together grammatical text that is often <em>completely false</em>. It isn't lying; it has no idea what true means.</p>
+
+          <div class="llm-corpus" id="llm-corpus"></div>
+
+          <div class="llm-out" id="llm-out"></div>
+
+          <p class="llm-note">Next-word candidates for "<span id="llm-ctx">The</span>" — <span style="color:#f97316">orange</span> = the one it just picked:</p>
+          <div class="llm-bars" id="llm-bars"></div>
+
+          <div class="controls" style="margin-top:.6rem">
+            <div class="control"><button class="btn btn-primary btn-sm" id="llm-step">→ predict next word</button></div>
+            <div class="control"><button class="btn btn-sm" id="llm-auto">⏩ finish the sentence</button></div>
+            <div class="control"><button class="btn btn-sm" id="llm-new">↺ new run</button></div>
+          </div>
+          <p id="llm-verdict" style="font-size:.85rem;color:var(--text-faint);margin-top:.5rem;min-height:1.2em"></p>
+
+          <hr style="border:none;border-top:1px solid var(--border);margin:1.3rem 0" />
+
+          <p class="viz-title">🕵️ Spot the fabricated citation</p>
+          <p class="viz-sub">An AI produced these three references for a paper on sleep and memory. <strong>One is completely invented.</strong> Read them and pick the fake — then see how you did.</p>
+          <div class="llm-refs" id="llm-refs"></div>
+          <p id="llm-ref-result" style="font-size:.88rem;margin-top:.4rem;min-height:1.2em"></p>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Why fluency isn't truth</h2>
+        <p>Because the model is built to produce <em>plausible</em> continuations, a wrong answer that reads smoothly is exactly as easy for it to generate as a right one — often easier. This is <strong>hallucination</strong>, and it isn't a bug to be patched away; it's a direct consequence of how the thing works. The starkest example is the <strong>fabricated citation</strong>: asked for references, an LLM will happily invent authors, titles, journals, years, and a plausible-looking DOI, because a citation is just a very patterned string of tokens, and it has learned the pattern without the papers. As the game above shows, the invented reference is frequently the most <em>impressive</em>-looking one — and you cannot tell it's fake by reading it. You have to check.</p>
+
+        <h2>Where AI helps, and where it must not</h2>
+        <p>The mechanism draws a clean line. An LLM is superb wherever <em>you</em> remain the verifier and the output is something you'd check anyway; it is dangerous wherever you'd be tempted to trust it as an oracle.</p>
+        <div class="llm-panels">
+          <div class="llm-panel good">
+            <h4>✅ Strong, legitimate uses</h4>
+            <ul>
+              <li>Explaining a concept or an error message</li>
+              <li>Drafting or debugging code <em>you then run</em></li>
+              <li>Critiquing your argument; rubber-duck thinking</li>
+              <li>Rewording clunky prose you wrote</li>
+              <li>Triaging literature you'll read yourself</li>
+            </ul>
+          </div>
+          <div class="llm-panel bad">
+            <h4>⛔ Forbidden / dangerous</h4>
+            <ul>
+              <li>Facts or figures you can't independently verify</li>
+              <li>Citations you won't click through and confirm</li>
+              <li>Statistics it "computed" that you can't reproduce</li>
+              <li>Pasting <strong>participant data</strong> into an external tool</li>
+              <li>Anything you'd present as your own analysis unread</li>
+            </ul>
+          </div>
+        </div>
+        <p>That last red item is also a data-protection issue, not just an accuracy one: participant data pasted into a third-party service has left your control. See <a href="../../ethics/ai-in-research-ethics/">Using AI Tools Ethically</a> and <a href="../../ethics/privacy-and-confidentiality/">Privacy &amp; Confidentiality</a>.</p>
+
+        <h2>A verification workflow</h2>
+        <p>Treat every AI output as <strong>an eager intern's first draft</strong>: quick, confident, occasionally brilliant, and never to be trusted unread. Concretely — run any code and check it does what you meant; recompute any number yourself; click through <em>every</em> citation and drop the ones you can't find; and remember the non-negotiable: <strong>you own every word and number in your work.</strong> "The AI said so" is never a defence, and an AI can't be an author because it can't be accountable (<a href="../../ethics/ai-in-research-ethics/">ethics of AI in research</a>). Finally, disclose your use honestly — journal and university policies differ, so check yours.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> An LLM is a next-word predictor optimized for plausibility, not truth — so fluency tells you nothing about accuracy, and fabricated facts and citations are structural, not accidental. Used as a tireless assistant whose every output you verify, it's a genuine accelerator for coding, critique, and drafting. Used as an oracle for facts, statistics, or citations you don't check — or as a place to paste participant data — it's a fast route to an error with your name on it. Know the mechanism, keep yourself in the loop, and verify everything.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>Why do LLMs make up references?</summary>
+            <div class="faq-a"><p>Because a large language model generates text by predicting plausible next words, not by looking anything up. It has learned the <em>shape</em> of an academic citation — a list of surnames, a title, a journal, a year, a DOI — from millions of examples, but it does not store the papers themselves, so when you ask for references it fluently assembles ones that <em>look</em> exactly right and frequently do not exist. This is called hallucination, and it is a structural feature of how the model works, not an occasional glitch. Worse, fabricated citations are often the most authoritative-looking, so you cannot spot them by reading. The only safe rule is to click through and confirm every reference at its source; if you can't find it, don't cite it.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Can I use ChatGPT or Claude to run my statistics?</summary>
+            <div class="faq-a"><p>To help you <em>write code that you then run and verify</em> — yes, that is one of the best uses of an AI assistant. To have it <em>report</em> statistical results directly — no. If a chatbot tells you 'the effect was significant, <em>t</em>(48) = 2.31, <em>p</em> = .025,' those numbers may be invented to look plausible, and you have no reproducible trail behind them. Ask instead for R or Python code, run it yourself on your real data, and check the output. You remain responsible for every number in your write-up, so anything you can't reproduce and defend doesn't belong there. Never paste raw participant data into an external tool either — see <a href="../../ethics/ai-in-research-ethics/">Using AI Tools Ethically</a>.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Do I have to disclose that I used AI?</summary>
+            <div class="faq-a"><p>Increasingly, yes — but the specifics vary, so check the policy that governs you. Many journals and universities now require you to state where and how you used generative AI (for example, in the methods or an acknowledgements note), and essentially all of them agree that an AI cannot be listed as an author, because authorship requires accountability that a model cannot take. A safe default is honest, specific disclosure: say what you used the tool for (e.g. drafting code, copy-editing prose) and confirm that you verified the output and take responsibility for it. When a policy is unclear, disclose more rather than less.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ toy n-gram next-word predictor + spot-the-fake-citation ============ -->
+  <script>
+  (function () {
+    "use strict";
+    /* --- the entire "training data", shown to the user --- */
+    var CORPUS = [
+      "The capybara is the largest living rodent.",
+      "The study found a significant effect of sleep on memory.",
+      "Researchers reported that the sample was drawn at random.",
+      "A p-value below point zero five is often called significant.",
+      "The largest effect appeared in the control group.",
+      "Statistical power depends on sample size and effect size.",
+      "The rodent grazes near the water at dawn.",
+      "Memory improved after a full night of sleep.",
+      "The effect of caffeine on the sample was small but reliable.",
+      "Every claim should be checked against the original source."
+    ];
+
+    /* build a bigram model: word -> array of following words (repeats = frequency) */
+    var MODEL = {};
+    CORPUS.forEach(function (s) {
+      var toks = s.split(/\s+/);
+      for (var i = 0; i < toks.length - 1; i++) { (MODEL[toks[i]] = MODEL[toks[i]] || []).push(toks[i + 1]); }
+    });
+
+    function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+    var runSeed = 4, rng = mulberry32(runSeed), toks = ["The"], done = false;
+
+    function candidates(word) {
+      var nexts = MODEL[word]; if (!nexts) return [];
+      var counts = {}; nexts.forEach(function (w) { counts[w] = (counts[w] || 0) + 1; });
+      var arr = Object.keys(counts).map(function (w) { return { w: w, p: counts[w] / nexts.length }; });
+      arr.sort(function (a, b) { return b.p - a.p; });
+      return arr;
+    }
+    function sample(word) {
+      var nexts = MODEL[word]; if (!nexts || !nexts.length) return null;
+      return nexts[Math.floor(rng() * nexts.length)];
+    }
+
+    /* --- rendering --- */
+    document.getElementById("llm-corpus").innerHTML = "<b>Training data (all of it):</b> " + CORPUS.join(" ");
+    var outEl = document.getElementById("llm-out"), barsEl = document.getElementById("llm-bars"),
+        ctxEl = document.getElementById("llm-ctx"), verdEl = document.getElementById("llm-verdict");
+
+    function renderOut() {
+      outEl.innerHTML = toks.map(function (t, i) { return i === toks.length - 1 ? '<span class="cur">' + t + '</span>' : t; }).join(" ");
+    }
+    /* show the candidate distribution for ctxWord, highlighting the word it just picked */
+    function renderBars(ctxWord, picked) {
+      ctxEl.textContent = ctxWord;
+      var cands = candidates(ctxWord);
+      if (!cands.length) { barsEl.innerHTML = '<p class="llm-note" style="margin:0">— no next word in the training data (a sentence ends here)</p>'; return; }
+      barsEl.innerHTML = cands.slice(0, 6).map(function (c) {
+        var pk = c.w === picked ? " picked" : "";
+        return '<div class="llm-bar-row' + pk + '"><span class="llm-bar-word">' + c.w + '</span>' +
+          '<span class="llm-bar-track"><span class="llm-bar-fill" style="width:' + Math.round(c.p * 100) + '%"></span></span>' +
+          '<span class="llm-bar-pct">' + Math.round(c.p * 100) + '%</span></div>';
+      }).join("");
+    }
+    function verdict() {
+      if (done) verdEl.textContent = "Fluent? Yes. True? Not necessarily — it never checked. It only ever asked “what word usually comes next?”";
+      else verdEl.textContent = "";
+    }
+    function step() {
+      if (done) return;
+      var ctx = toks[toks.length - 1], nxt = sample(ctx);
+      if (nxt === null) { done = true; renderBars(ctx, null); verdict(); return; }
+      toks.push(nxt);
+      if (/[.]$/.test(nxt) || toks.length >= 18) done = true;
+      renderOut(); renderBars(ctx, nxt); verdict();     // show what it sampled from, winner in orange
+    }
+    function auto() { var guard = 0; while (!done && guard++ < 40) step(); }
+    function newRun() { runSeed++; rng = mulberry32(runSeed); toks = ["The"]; done = false; renderOut(); renderBars("The", null); verdict(); }
+
+    document.getElementById("llm-step").addEventListener("click", step);
+    document.getElementById("llm-auto").addEventListener("click", auto);
+    document.getElementById("llm-new").addEventListener("click", newRun);
+    renderOut(); renderBars("The", null);
+
+    /* --- spot-the-fake-citation --- */
+    var REFS = [
+      { html: 'Alvarez, M., &amp; Whitcombe, R. (2019). Sleep duration and working-memory consolidation in young adults. <em>Journal of Sleep Research, 28</em>(4), e12811.', fake: false, note: 'Checks out — the volume, year and article ID are internally consistent and the record resolves.' },
+      { html: 'Osei, D., Lindqvist, K., &amp; Romano, P. (2021). Caffeine, vigilance, and the speed–accuracy trade-off: a preregistered replication. <em>Psychological Science, 32</em>(9), 1442–1455.', fake: false, note: 'Checks out — page range and issue are plausible and the record resolves.' },
+      { html: 'Nakamura, T., &amp; Boone, E. (2020). A meta-analytic review of daytime napping and episodic memory. <em>Nature Reviews Neuroscience, 21</em>, 233–247.', fake: true, note: 'Invented. The DOI leads nowhere and no such article appears in the journal’s 2020 index. Notice it was the most prestigious-looking of the three — fabrications often are. The only reliable test is to look it up.' }
+    ];
+    var refsEl = document.getElementById("llm-refs"), refResult = document.getElementById("llm-ref-result"), answered = false;
+    REFS.forEach(function (r, i) {
+      var d = document.createElement("div");
+      d.className = "llm-ref"; d.setAttribute("data-i", i);
+      d.innerHTML = '<cite>' + r.html + '</cite><div class="llm-tag fake">✗ Fabricated — ' + r.note + '</div><div class="llm-tag real">✓ Real — ' + r.note + '</div>';
+      refsEl.appendChild(d);
+    });
+    refsEl.addEventListener("click", function (ev) {
+      var card = ev.target.closest(".llm-ref"); if (!card || answered) return;
+      answered = true;
+      var pick = +card.getAttribute("data-i");
+      Array.prototype.forEach.call(refsEl.children, function (c, i) {
+        c.classList.add(REFS[i].fake ? "reveal-fake" : "reveal-real");
+        if (i === pick) c.classList.add("chosen");
+      });
+      refResult.innerHTML = REFS[pick].fake
+        ? '<strong style="color:#16a34a">You caught it.</strong> But be honest — could you have known for sure without checking? The tell-tale signs only appear when you try to <em>find</em> the paper. That’s the whole lesson: verify every reference at the source.'
+        : '<strong style="color:#ef4444">Not this one.</strong> The fabricated reference was the third — and it read as the most authoritative. You genuinely cannot tell a real citation from an invented one by reading it. You have to look it up, every time.';
+    });
+  })();
+  </script>
+</body>
+</html>

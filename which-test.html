@@ -70,6 +70,7 @@
             <tr><td>Nested / clustered / repeated data</td><td><a href="stats-4/mixed-and-multilevel-models/">Mixed (multilevel) model</a></td><td><a href="stats-4/mixed-and-multilevel-models/">4.5</a></td></tr>
             <tr><td>Time until an event, with dropouts</td><td><a href="stats-4/survival-analysis/">Kaplan–Meier / survival analysis</a></td><td><a href="stats-4/survival-analysis/">4.8</a></td></tr>
             <tr><td>Combining many studies</td><td><a href="stats-4/meta-analysis/">Meta-analysis</a></td><td><a href="stats-4/meta-analysis/">4.10</a></td></tr>
+            <tr><td>Predict as accurately as possible (not test a hypothesis)</td><td><a href="ml/prediction-vs-explanation/">Machine-learning models</a></td><td><a href="ml/prediction-vs-explanation/">ML&nbsp;4.1</a></td></tr>
           </tbody>
         </table>
       </article>
@@ -151,7 +152,8 @@
         { label: "Yes / no (binary)", leaf: "logistic" },
         { label: "A count (0, 1, 2, …)", leaf: "poisson" },
         { label: "The data are nested or repeated", desc: "students in schools, trials in people…", leaf: "mixed" },
-        { label: "Time until an event", leaf: "survival" }
+        { label: "Time until an event", leaf: "survival" },
+        { label: "I don't need a test — I just want the most accurate predictions", desc: "prediction over explanation: machine-learning territory", leaf: "ml_predict" }
       ]},
       pred_n: { q: "How many predictors?", opts: [
         { label: "Just one", leaf: "simple_reg" },
@@ -186,7 +188,8 @@
       mixed:    { name: "Mixed / multilevel model", why: "Random effects absorb the correlation that comes from nesting (students in schools, trials in people), keeping your standard errors honest.", lesson: "stats-4/mixed-and-multilevel-models", label: "Mixed & Multilevel Models", alts: [] },
       survival: { name: "Survival analysis (Kaplan–Meier)", why: "Time-to-event data with censoring: Kaplan–Meier curves estimate survival over time, the log-rank test compares groups, and Cox regression adds predictors.", lesson: "stats-4/survival-analysis", label: "Survival Analysis & Kaplan–Meier", alts: [] },
       meta:     { name: "Meta-analysis", why: "Pool the effect sizes across studies, weighting by precision, and quantify how much the studies genuinely disagree (I²).", lesson: "stats-4/meta-analysis", label: "Meta-Analysis & Forest Plots", alts: [] },
-      manova:   { name: "MANOVA", why: "One multivariate test across all the outcomes at once — it controls the false-alarm rate and uses the correlations between outcomes, catching patterns no single outcome shows.", lesson: "stats-3/manova", label: "MANOVA & Multivariate Tests", alts: [{ name: "MANCOVA", when: "if you also need to adjust for covariates", lesson: "stats-3/manova" }, { name: "Follow-up ANOVAs with a correction", when: "after a significant MANOVA", lesson: "stats-2/post-hoc-tests" }] }
+      manova:   { name: "MANOVA", why: "One multivariate test across all the outcomes at once — it controls the false-alarm rate and uses the correlations between outcomes, catching patterns no single outcome shows.", lesson: "stats-3/manova", label: "MANOVA & Multivariate Tests", alts: [{ name: "MANCOVA", when: "if you also need to adjust for covariates", lesson: "stats-3/manova" }, { name: "Follow-up ANOVAs with a correction", when: "after a significant MANOVA", lesson: "stats-2/post-hoc-tests" }] },
+      ml_predict: { name: "Predictive modelling (machine learning)", why: "When the goal is the most accurate predictions on new cases — not an interpretable test of a hypothesis — you've crossed from statistics into machine learning. Fit flexible models, and judge them by honest held-out error rather than p-values.", lesson: "ml/prediction-vs-explanation", label: "Prediction vs Explanation", alts: [{ name: "Train/test splits & generalization", when: "to evaluate a predictive model honestly and avoid leakage", lesson: "ml/train-test-split-and-generalization" }, { name: "Random forests & ensembles", when: "a strong, low-tuning default predictor", lesson: "ml/random-forests-and-ensembles" }] }
     };
 
     var stage = document.getElementById("wt-stage");

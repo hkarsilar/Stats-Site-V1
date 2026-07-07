@@ -8,10 +8,10 @@ This file is the master plan. The copy-paste prompts that execute it live in **[
 
 ## End state
 
-| | At kickoff | Now (Jul 2026, post-P16) | Powerhouse |
+| | At kickoff | Now (Jul 2026, post-P17) | Powerhouse |
 |---|---|---|---|
-| Courses | 4 (Stats 1–4) | 8 (+ Methods, Data, Ethics, ML 9/12) | **9** in two tracks |
-| Lessons | 45 | 84 | **~95** |
+| Courses | 4 (Stats 1–4) | 8 (+ Methods, Data, Ethics, ML — all complete) | **9** in two tracks |
+| Lessons | 45 | 87 | **~95** |
 | Tool pages | 8 | 9 (+ power calculator) | **~14** |
 | Long-form guides | 0 | 0 | 4 cornerstone guides |
 | Personas served | "stats course student" | + first-time researcher, data cleaner, ML-curious | + thesis writer |
@@ -79,7 +79,7 @@ Hard dependencies: **P2 before any new course** (P4+). **P32 after at least two 
 
 Tick these as sessions complete them (each prompt ends by updating this list).
 
-> **Where things stand (7 Jul 2026):** 16 of 36 one-shot prompts done. Phase 0 complete; Methods, Data, and Ethics courses complete; ML at 9 of 12 lessons. The site has 8 courses / 84 lessons / 9 tools, audit passing clean. **Next: P17** (ML 10–12, completes the course), then either Writing (P18–P20) or the deferred Phase-6 tools — P21 (APA formatter) pairs naturally with the Writing course, per the recommended order.
+> **Where things stand (7 Jul 2026):** 17 of 36 one-shot prompts done. Phase 0 complete; Methods, Data, Ethics, and **ML & AI courses all complete** (ML finished with 4.10 dimensionality reduction, 4.11 neural-network intuition, 4.12 LLMs). The site has 8 courses / 87 lessons / 9 tools, audit passing clean. **Next: Writing (P18–P20)** — the last planned course — or the deferred Phase-6 tools; P21 (APA formatter) pairs naturally with the Writing course, per the recommended order.
 
 - [x] P1 · audit.js
 - [x] P2 · multi-track platform
@@ -97,7 +97,7 @@ Tick these as sessions complete them (each prompt ends by updating this list).
 - [x] P14 · ML 1–3 (+ scaffold)
 - [x] P15 · ML 4–6
 - [x] P16 · ML 7–9
-- [ ] P17 · ML 10–12
+- [x] P17 · ML 10–12
 - [ ] P18 · Writing 1–3 (+ scaffold)
 - [ ] P19 · Writing 4–6
 - [ ] P20 · Writing 7–8

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Neural Networks: The Intuition — StatsCapybara</title>
+  <meta name="description" content="A neuron is just logistic regression; stack a few and straight lines bend into curves. Train a live 2-3-1 network on XOR and watch gradient descent work." />
+  <link rel="canonical" href="https://statscapybara.com/ml/neural-networks-intuition/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Neural Networks: The Intuition — StatsCapybara" />
+  <meta property="og:description" content="Neural networks demystified: a neuron is a weighted sum plus a squash — logistic regression — and layers compose lines into curves. Train a tiny net on XOR live." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/ml/neural-networks-intuition/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Neural Networks: The Intuition — StatsCapybara" />
+  <meta name="twitter:description" content="Watch a live 2-3-1 neural network learn XOR by gradient descent — weights as edges, decision boundary bending in real time, and a learning rate that can overshoot." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Neural Networks: The Intuition", "description": "An artificial neuron is a weighted sum passed through an activation function — logistic regression — and stacking neurons into hidden layers composes straight boundaries into curved ones; training nudges the weights downhill on the error surface by gradient descent, with the learning rate controlling step size.", "url": "https://statscapybara.com/ml/neural-networks-intuition/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — ML & AI: Machine Learning for Researchers", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Neural Networks: The Intuition", "item": "https://statscapybara.com/ml/neural-networks-intuition/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is a neural network really just stacked logistic regressions?", "acceptedAnswer": {"@type": "Answer", "text": "For the basic building block, essentially yes: a single neuron computes a weighted sum of its inputs plus a bias and passes it through an activation function, and with a sigmoid activation that is exactly logistic regression. What is genuinely new is composition. Stacking neurons into a hidden layer lets the network combine several straight boundaries into curved ones, and adding depth lets later layers reuse the features earlier ones discovered — which is why a network can learn patterns (like XOR, or the shapes in an image) that no single logistic regression can. So the atom is familiar; the power comes from wiring many of them together and fitting them jointly by gradient descent."}}, {"@type": "Question", "name": "What is a learning rate?", "acceptedAnswer": {"@type": "Answer", "text": "The learning rate is the step size in gradient descent — how far the weights move in the downhill direction on each update. It is the single most important dial in training. Set it too small and learning crawls, taking thousands of tiny steps to reach a good solution; set it too large and each step overshoots the valley floor, so the loss oscillates or even diverges instead of settling (you can watch this happen by pushing the slider high in the widget above). In practice people try a few values on a log scale (say 0.001, 0.01, 0.1) and often decay the rate over time — large steps early to move fast, smaller steps later to fine-tune."}}, {"@type": "Question", "name": "Do I need to learn deep learning for my thesis?", "acceptedAnswer": {"@type": "Answer", "text": "Usually not. For the tabular data most research produces — rows of participants with a few dozen variables — a neural network rarely beats well-chosen classical methods, and it costs you interpretability, tuning effort, and far more data to train honestly. Regression, regularized models, and random forests are typically as accurate and much easier to explain to a committee. Deep learning earns its keep when the inputs are images, audio, or raw text and you have tens of thousands of examples. Learn the intuition (it demystifies a lot of modern AI), but don't reach for a neural network just because it sounds impressive."}}]}
+  </script>
+</head>
+<body data-course="ml" data-section="neural-networks-intuition">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 4.11</span>
+        <h1>Neural Networks: The Intuition</h1>
+
+        <p class="lede">"Neural network" sounds like a different universe from the regression you already know. It isn't. The building block is a model you met in Stats 3 — <a href="../../stats-3/logistic-regression/">logistic regression</a> — and the whole trick is to stack a handful of them so that straight decision boundaries can bend into any shape you need. This lesson builds the intuition and stops there: no backpropagation calculus, just the ideas that make the rest make sense.</p>
+
+        <h2>A neuron is just logistic regression</h2>
+        <p>An artificial <strong>neuron</strong> takes some inputs, multiplies each by a <strong>weight</strong>, adds them up with a <strong>bias</strong>, and pushes the total through a <strong>squashing function</strong> (an <em>activation</em>) that maps it to a bounded output. With a sigmoid activation that is <em>exactly</em> logistic regression: <code>output = σ(w₁x₁ + w₂x₂ + b)</code>. The weights are the slopes, the bias is the intercept, and the neuron draws a single <strong>straight boundary</strong> through the feature space — one line, nothing fancier.</p>
+        <p>One neuron, one line. So how do networks draw curves? By combining several lines.</p>
+
+        <h2>Layers compose simple boundaries into complex ones</h2>
+        <p>Put a <strong>hidden layer</strong> of a few neurons between the inputs and the output. Each hidden neuron draws its own straight boundary; the output neuron then takes a weighted vote of those hidden signals. A vote across several lines can carve out regions no single line could — a corner, a stripe, an island. The classic proof is <strong>XOR</strong>: label a point 1 when exactly one of its two inputs is on. No straight line separates the two classes, so plain logistic regression is helpless. Give the network three hidden neurons and it stitches two lines together into the diagonal "pockets" XOR needs. <strong>Depth</strong> — more layers — just repeats the idea, letting later neurons reuse the features earlier ones discovered.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="nnviz">
+          <p class="viz-title">🧠 Train a 2-3-1 network on XOR</p>
+          <p class="viz-sub">Two inputs → three hidden neurons → one output. <strong>Edges</strong> are weights: <span style="color:var(--primary)">blue</span> positive, <span style="color:#f97316">orange</span> negative, thicker = stronger. Press <strong>Train</strong> and watch the boundary bend from a useless line into the XOR pockets. Crank the <strong>learning rate</strong> too high and it overshoots; <strong>New network</strong> reseeds the weights (some starts get stuck in a poor local minimum — reseed to escape).</p>
+
+          <div class="controls">
+            <div class="control"><button class="btn btn-primary btn-sm" id="run-btn">▶▶ Train</button></div>
+            <div class="control"><button class="btn btn-sm" id="step-btn">▸ +100 steps</button></div>
+            <div class="control"><button class="btn btn-sm" id="reset-btn">↻ New network</button></div>
+          </div>
+          <div class="controls" style="margin-top:.5rem">
+            <div class="control" style="min-width:230px">
+              <label for="lr-slider">Learning rate&nbsp; <span class="val" id="lr-val">1.0</span></label>
+              <input type="range" id="lr-slider" min="0.1" max="10" step="0.1" value="1" />
+            </div>
+            <div class="control" style="margin-left:auto"><span class="val" id="nn-status" style="font-size:.9rem">Epoch 0 · untrained</span></div>
+          </div>
+
+          <canvas id="nn-canvas"></canvas>
+          <p id="nn-verdict" style="font-size:.85rem;color:var(--text-faint);margin-top:.5rem;text-align:center;min-height:1.2em"></p>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Training: rolling downhill</h2>
+        <p>Where do the weights come from? They start random and are <em>learned</em>. Define a <strong>loss</strong> that measures how wrong the network's outputs are, and picture it as a landscape over all the weights: high where the network is bad, low where it's good. <strong>Gradient descent</strong> reads the local slope and takes a small step downhill, over and over, until the loss flattens out. The <strong>learning rate</strong> is the step size: too small and training crawls; too large and it leaps clean over the valley and <em>overshoots</em>, the loss bouncing or blowing up (drag the slider to 8+ above to see it thrash). The algorithm that computes those slopes efficiently through every layer is <strong>backpropagation</strong> — we're naming it, not deriving it. Because the landscape has dips and dead-ends, a run can settle in a <strong>local minimum</strong> and get XOR only half-right; reseeding the weights drops you somewhere new.</p>
+
+        <h2>What this course does <em>not</em> cover</h2>
+        <p>Everything above scales — but the machinery gets heavier. We're skipping the backprop derivation, and the specialised architectures (convolutional nets for images, transformers behind today's language models) that stack these ideas thousands of layers deep. The intuition survives the jump: still weighted sums, still squashes, still gradient descent rolling downhill. For a thesis on tabular research data you rarely need any of it — <a href="../../stats-3/multiple-regression/">regression</a>, <a href="../../ml/random-forests-and-ensembles/">random forests</a>, and honest <a href="../../ml/train-test-split-and-generalization/">validation</a> usually match a neural network and stay interpretable. Reach for deep learning when the data are images, audio, or text and the samples number in the tens of thousands.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> Neural networks aren't magic — they're logistic regressions stacked so their straight boundaries combine into curved ones, with the weights fit by rolling downhill on an error surface. That single picture demystifies the whole field: hidden layers buy flexibility, depth buys reusable features, the learning rate sets the step size, and a bad start can strand you in a local minimum. Know when the flexibility is worth the loss of interpretability — and when a plain regression would have told you the same thing, legibly.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>Is a neural network really just stacked logistic regressions?</summary>
+            <div class="faq-a"><p>For the basic building block, essentially yes: a single neuron computes a weighted sum of its inputs plus a bias and passes it through an activation function, and with a sigmoid activation that is exactly <a href="../../stats-3/logistic-regression/">logistic regression</a>. What is genuinely new is <em>composition</em>. Stacking neurons into a hidden layer lets the network combine several straight boundaries into curved ones, and adding depth lets later layers reuse the features earlier ones discovered — which is why a network can learn patterns (like XOR, or the shapes in an image) that no single logistic regression can. So the atom is familiar; the power comes from wiring many of them together and fitting them jointly by gradient descent.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is a learning rate?</summary>
+            <div class="faq-a"><p>The learning rate is the step size in gradient descent — how far the weights move in the downhill direction on each update. It is the single most important dial in training. Set it too small and learning crawls, taking thousands of tiny steps to reach a good solution; set it too large and each step overshoots the valley floor, so the loss oscillates or even diverges instead of settling (you can watch this happen by pushing the slider high in the widget above). In practice people try a few values on a log scale (say 0.001, 0.01, 0.1) and often decay the rate over time — large steps early to move fast, smaller steps later to fine-tune.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Do I need to learn deep learning for my thesis?</summary>
+            <div class="faq-a"><p>Usually not. For the tabular data most research produces — rows of participants with a few dozen variables — a neural network rarely beats well-chosen classical methods, and it costs you interpretability, tuning effort, and far more data to train honestly. <a href="../../stats-3/multiple-regression/">Regression</a>, regularized models, and <a href="../../ml/random-forests-and-ensembles/">random forests</a> are typically as accurate and much easier to explain to a committee. Deep learning earns its keep when the inputs are images, audio, or raw text and you have tens of thousands of examples. Learn the intuition (it demystifies a lot of modern AI), but don't reach for a neural network just because it sounds impressive.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ live 2-3-1 network learning XOR by gradient descent ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var canvas = document.getElementById("nn-canvas"), ctx, W = 0, H = 452;
+    var C0 = "#6366f1", C1 = "#f97316";                  // class 0 (indigo) / class 1 (orange)
+    var wSeed = 3, lr = 1.0, timer = null, epoch = 0;
+    var D = [], net = null, stuck = false;
+    var corners = [[0, 0, 0], [0, 1, 1], [1, 0, 1], [1, 1, 0]];   // XOR truth table
+
+    function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+    function randn(rng) { var u = 0, v = 0; while (!u) u = rng(); while (!v) v = rng(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+    function sig(z) { return 1 / (1 + Math.exp(-z)); }
+
+    /* fixed XOR data: 4 corners + a frozen jitter cloud around each */
+    function makeData() {
+      var rng = mulberry32(20), d = [], c, i;
+      for (c = 0; c < 4; c++) for (i = 0; i < 14; i++)
+        d.push({ x: [corners[c][0] + randn(rng) * 0.08, corners[c][1] + randn(rng) * 0.08], y: corners[c][2] });
+      return d;
+    }
+
+    /* 2-3-1 net: tanh hidden, sigmoid output, binary cross-entropy loss */
+    function makeNet(seed) {
+      var rng = mulberry32(seed), s = 1.2, r = function () { return randn(rng) * s; };
+      return { W1: [[r(), r()], [r(), r()], [r(), r()]], b1: [r(), r(), r()], W2: [r(), r(), r()], b2: r() };
+    }
+    function forward(n, x) {
+      var h = [0, 0, 0], j;
+      for (j = 0; j < 3; j++) h[j] = Math.tanh(n.b1[j] + n.W1[j][0] * x[0] + n.W1[j][1] * x[1]);
+      var z = n.b2; for (j = 0; j < 3; j++) z += n.W2[j] * h[j];
+      return { h: h, y: sig(z) };
+    }
+    function trainStep() {
+      var n = net, N = D.length, gW1 = [[0, 0], [0, 0], [0, 0]], gb1 = [0, 0, 0], gW2 = [0, 0, 0], gb2 = 0, loss = 0, i, j;
+      for (i = 0; i < N; i++) {
+        var x = D[i].x, t = D[i].y, f = forward(n, x), y = f.y, h = f.h;
+        loss += -(t * Math.log(y + 1e-12) + (1 - t) * Math.log(1 - y + 1e-12));
+        var dz = y - t;                                  // dL/dz(output) for BCE+sigmoid
+        for (j = 0; j < 3; j++) gW2[j] += dz * h[j];
+        gb2 += dz;
+        for (j = 0; j < 3; j++) { var dz1 = dz * n.W2[j] * (1 - h[j] * h[j]); gW1[j][0] += dz1 * x[0]; gW1[j][1] += dz1 * x[1]; gb1[j] += dz1; }
+      }
+      for (j = 0; j < 3; j++) { n.W2[j] -= lr * gW2[j] / N; n.W1[j][0] -= lr * gW1[j][0] / N; n.W1[j][1] -= lr * gW1[j][1] / N; n.b1[j] -= lr * gb1[j] / N; }
+      n.b2 -= lr * gb2 / N;
+      return loss / N;
+    }
+    function metrics() {
+      var loss = 0, ok = 0, i;
+      for (i = 0; i < D.length; i++) { var f = forward(net, D[i].x), y = f.y, t = D[i].y; loss += -(t * Math.log(y + 1e-12) + (1 - t) * Math.log(1 - y + 1e-12)); }
+      for (i = 0; i < 4; i++) if ((forward(net, [corners[i][0], corners[i][1]]).y > 0.5 ? 1 : 0) === corners[i][2]) ok++;
+      return { loss: loss / D.length, correct: ok };
+    }
+
+    function runMany(steps) { for (var i = 0; i < steps; i++) epoch++, trainStep(); report(); draw(); }
+    function stopTimer() { if (timer) { clearInterval(timer); timer = null; document.getElementById("run-btn").textContent = "▶▶ Train"; } }
+    function run() {
+      if (timer) { stopTimer(); return; }
+      document.getElementById("run-btn").textContent = "⏸ Pause";
+      timer = setInterval(function () { for (var i = 0; i < 15; i++) epoch++, trainStep(); report(); draw(); var m = metrics(); if ((m.loss < 0.008 || epoch > 6000)) stopTimer(); }, 60);
+    }
+    function reset() { stopTimer(); net = makeNet(wSeed); epoch = 0; stuck = false; report(); draw(); }
+
+    /* ---------- drawing ---------- */
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function boundGeom() { var S = Math.min(H - 74, W * 0.5 - 24); return { S: S, x0: W - S - 12, y0: 42 }; }
+    function lerpC(a, b, t) { function h2(c) { return [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16)]; } var A = h2(a), B = h2(b); return "rgb(" + Math.round(A[0] + (B[0] - A[0]) * t) + "," + Math.round(A[1] + (B[1] - A[1]) * t) + "," + Math.round(A[2] + (B[2] - A[2]) * t) + ")"; }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      drawNetwork();
+      drawBoundary();
+    }
+
+    function drawNetwork() {
+      var g = boundGeom(), left = 26, right = g.x0 - 30, top = 56, bot = g.y0 + g.S - 6;
+      var nx = [left, (left + right) / 2, right];
+      var iy = [top + (bot - top) * 0.30, top + (bot - top) * 0.70];
+      var hy = [top, (top + bot) / 2, bot];
+      var oy = (top + bot) / 2;
+      var R = 12;
+      // edges input->hidden
+      var i, j;
+      for (j = 0; j < 3; j++) for (i = 0; i < 2; i++) edge(nx[0], iy[i], nx[1], hy[j], net.W1[j][i]);
+      // edges hidden->output
+      for (j = 0; j < 3; j++) edge(nx[1], hy[j], nx[2], oy, net.W2[j]);
+      // nodes
+      ctx.font = "600 11px " + VIZ.css("--font"); ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      node(nx[0], iy[0], R, VIZ.css("--surface"), "x₁");
+      node(nx[0], iy[1], R, VIZ.css("--surface"), "x₂");
+      for (j = 0; j < 3; j++) node(nx[1], hy[j], R, VIZ.css("--surface"), "");
+      node(nx[2], oy, R, VIZ.css("--surface"), "ŷ");
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px " + VIZ.css("--font");
+      ctx.fillText("inputs", nx[0], top - 16); ctx.fillText("hidden (3)", nx[1], top - 16); ctx.fillText("output", nx[2], top - 16);
+      ctx.textBaseline = "alphabetic";
+    }
+    function edge(x0, y0, x1, y1, w) {
+      ctx.strokeStyle = w >= 0 ? C0 : C1; ctx.globalAlpha = 0.85;
+      ctx.lineWidth = Math.max(0.5, Math.min(6, Math.abs(w) * 1.7));
+      ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); ctx.globalAlpha = 1;
+    }
+    function node(x, y, r, fill, label) {
+      ctx.beginPath(); ctx.arc(x, y, r, 0, 6.2832); ctx.fillStyle = fill; ctx.fill();
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1.4; ctx.stroke();
+      if (label) { ctx.fillStyle = VIZ.css("--text"); ctx.fillText(label, x, y); }
+    }
+
+    function drawBoundary() {
+      var g = boundGeom(), S = g.S, x0 = g.x0, y0 = g.y0;
+      var lo = -0.35, hi = 1.35, span = hi - lo, res = 42, cell = S / res;
+      function toU(v) { return (v - lo) / span; }
+      var gx, gy;
+      for (gx = 0; gx < res; gx++) for (gy = 0; gy < res; gy++) {
+        var vx = lo + (gx + 0.5) / res * span, vy = lo + (gy + 0.5) / res * span;
+        var p = forward(net, [vx, vy]).y;
+        ctx.fillStyle = p < 0.5 ? C0 : C1;
+        ctx.globalAlpha = 0.10 + 0.4 * Math.abs(p - 0.5) * 2;
+        ctx.fillRect(x0 + gx * cell, y0 + (res - 1 - gy) * cell, cell + 0.6, cell + 0.6);
+      }
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.strokeRect(x0, y0, S, S);
+      // data points
+      var i;
+      for (i = 0; i < D.length; i++) {
+        var px = x0 + toU(D[i].x[0]) * S, py = y0 + (1 - toU(D[i].x[1])) * S;
+        ctx.beginPath(); ctx.arc(px, py, 3.4, 0, 6.2832);
+        ctx.fillStyle = D[i].y === 1 ? C1 : C0; ctx.fill();
+        ctx.strokeStyle = VIZ.css("--bg"); ctx.lineWidth = 1.2; ctx.stroke();
+      }
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px " + VIZ.css("--font"); ctx.textAlign = "center";
+      ctx.fillText("decision boundary · " + '●' + " class 0   " + '●' + " class 1", x0 + S / 2, y0 + S + 15);
+    }
+
+    function report() {
+      var m = metrics();
+      document.getElementById("nn-status").textContent = "Epoch " + epoch + " · loss " + m.loss.toFixed(3) + " · " + m.correct + "/4 corners";
+    }
+    function verdict(txt) { document.getElementById("nn-verdict").textContent = txt; }
+    function reportVerdict() {
+      var m = metrics(), v = "";
+      if (epoch === 0) v = "";
+      else if (m.correct === 4 && m.loss < 0.05) v = "Solved: the two hidden lines have combined into the XOR pockets — a shape no single logistic regression can draw.";
+      else if (epoch > 2500 && m.correct < 4) v = "Stuck in a local minimum — the loss stopped falling before solving XOR. Press New network to start from a different random spot.";
+      else v = "Training… the boundary is bending. Keep going, or nudge the learning rate up for bigger steps.";
+      verdict(v);
+    }
+    var _report = report;
+    report = function () { _report(); reportVerdict(); };
+
+    /* ---------- controls ---------- */
+    document.getElementById("run-btn").addEventListener("click", run);
+    document.getElementById("step-btn").addEventListener("click", function () { stopTimer(); runMany(100); });
+    document.getElementById("reset-btn").addEventListener("click", function () { wSeed++; reset(); });
+    document.getElementById("lr-slider").addEventListener("input", function () { lr = +this.value; document.getElementById("lr-val").textContent = (+this.value).toFixed(1); });
+    window.addEventListener("resize", function () { fit(); draw(); });
+    if (window.ResizeObserver) new ResizeObserver(function () { fit(); draw(); }).observe(canvas);
+    VIZ.onTheme(draw);
+
+    D = makeData(); net = makeNet(wSeed);
+    fit(); report(); draw();
+  })();
+  </script>
+</body>
+</html>

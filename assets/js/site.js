@@ -148,6 +148,9 @@
     "random-forests-and-ensembles": "One capybara's opinion is jumpy; a whole raft of them, each shown slightly different reeds, votes remarkably wisely. Bag, randomize, average — the noise cancels out.",
     "knn-and-distance": "The capybara asks its nearest neighbours and copies them. Scale your axes first — and in 100 dimensions everyone is equally far away and equally unhelpful.",
     "clustering-kmeans": "No labels? The capybara sorts the pond into k piles by proximity. Lovely on round blobs, hilariously confident on two moons. Clusters are hypotheses, not facts.",
+    "dimensionality-reduction": "Two hundred variables won't fit on a lily pad. PCA squashes them flat and honestly; t-SNE untangles them beautifully but fibs about distances. Squash to measure, unfold to look.",
+    "neural-networks-intuition": "A neuron is just the logistic regression the capybara already knows, wearing a lab coat. Stack a few, roll downhill, and straight lines learn to bend around XOR.",
+    "llms-and-ai-in-research": "The capybara's chatbot writes with total confidence and occasional total fiction. Fluent isn't true — verify every fact, number, and citation, because your name is on it.",
     /* Root pages */
     "home": "No rush — capybaras never cram.",
     "toolbox": "A capybara's toolbox: warm water, good snacks, zero deadlines. Yours has calculators too.",
