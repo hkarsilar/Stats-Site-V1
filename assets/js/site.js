@@ -145,6 +145,9 @@
     "classification-metrics": "\"99% accurate at spotting rare capybaras!\" — says the model that labels everything 'not a capybara'. Ask it about recall and watch it squirm.",
     "roc-curves-and-auc": "The capybara doesn't pick one threshold — it tries them all and plots the whole curve. Top-left corner good, diagonal is a coin flip.",
     "decision-trees": "Split, split, split until every leaf is one happy capybara. Grow too deep and the tree just memorizes the pond — test day is a rude surprise.",
+    "random-forests-and-ensembles": "One capybara's opinion is jumpy; a whole raft of them, each shown slightly different reeds, votes remarkably wisely. Bag, randomize, average — the noise cancels out.",
+    "knn-and-distance": "The capybara asks its nearest neighbours and copies them. Scale your axes first — and in 100 dimensions everyone is equally far away and equally unhelpful.",
+    "clustering-kmeans": "No labels? The capybara sorts the pond into k piles by proximity. Lovely on round blobs, hilariously confident on two moons. Clusters are hypotheses, not facts.",
     /* Root pages */
     "home": "No rush — capybaras never cram.",
     "toolbox": "A capybara's toolbox: warm water, good snacks, zero deadlines. Yours has calculators too.",

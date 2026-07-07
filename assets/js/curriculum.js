@@ -170,7 +170,10 @@ window.CURRICULUM = [
       { n: "4.3", slug: "regularization-ridge-and-lasso",       title: "Regularization: Ridge & Lasso", ready: true },
       { n: "4.4", slug: "classification-metrics",              title: "Classification Metrics & the Accuracy Trap", ready: true },
       { n: "4.5", slug: "roc-curves-and-auc",                  title: "ROC Curves & AUC", ready: true },
-      { n: "4.6", slug: "decision-trees",                      title: "Decision Trees", ready: true }
+      { n: "4.6", slug: "decision-trees",                      title: "Decision Trees", ready: true },
+      { n: "4.7", slug: "random-forests-and-ensembles",       title: "Random Forests & Ensembles", ready: true },
+      { n: "4.8", slug: "knn-and-distance",                   title: "k-NN & Why Distance Gets Weird", ready: true },
+      { n: "4.9", slug: "clustering-kmeans",                  title: "Clustering & k-Means", ready: true }
     ]
   }
 ];

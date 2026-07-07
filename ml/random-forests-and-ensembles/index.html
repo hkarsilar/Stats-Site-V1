@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Random Forests &amp; Ensembles — StatsCapybara</title>
+  <meta name="description" content="Why a crowd of noisy trees beats one: bagging, feature randomness, out-of-bag error, and variable importance — build a forest and watch its variance melt away." />
+  <link rel="canonical" href="https://statscapybara.com/ml/random-forests-and-ensembles/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Random Forests &amp; Ensembles — StatsCapybara" />
+  <meta property="og:description" content="Bagging, feature randomness, and averaging turn many high-variance trees into one stable predictor — build a forest tree by tree and watch variance melt away." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/ml/random-forests-and-ensembles/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Random Forests &amp; Ensembles — StatsCapybara" />
+  <meta name="twitter:description" content="Random forests explained visually: bootstrap samples, feature randomness, out-of-bag error, variable importance, and why averaging trees cancels their noise." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Random Forests & Ensembles", "description": "A random forest averages many decorrelated decision trees — each grown on a bootstrap sample with random feature subsets — so their individual noise cancels, cutting variance and stabilizing predictions, with out-of-bag error as a free validation estimate.", "url": "https://statscapybara.com/ml/random-forests-and-ensembles/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — ML & AI: Machine Learning for Researchers", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Random Forests & Ensembles", "item": "https://statscapybara.com/ml/random-forests-and-ensembles/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why doesn't a random forest overfit as you add more trees?", "acceptedAnswer": {"@type": "Answer", "text": "Because adding trees reduces variance without adding the kind of flexibility that fits noise. Each tree is a full, high-variance model that overfits its own bootstrap sample in its own way; averaging their votes cancels those individual quirks, so the ensemble's prediction settles down. Crucially, more trees only make that average more stable — they do not let the forest carve ever-finer boundaries around single points, so test accuracy rises and then plateaus rather than peaking and falling. The number of trees is a budget knob (more is steadier but slower), not an overfitting dial. The real overfitting controls are each tree's depth or minimum leaf size."}}, {"@type": "Question", "name": "What is out-of-bag (OOB) error?", "acceptedAnswer": {"@type": "Answer", "text": "Out-of-bag error is a validation estimate you get for free from the bootstrap. Each tree is trained on a bootstrap sample that, by chance, leaves out about 37% of the rows; those held-out rows are that tree's out-of-bag cases. To score the forest, predict every row using only the trees that did not see it, then compare to the truth. Because each prediction uses trees for which that row was genuinely unseen, OOB error approximates cross-validated test error without a separate holdout set or an explicit split. It is a convenient default, though a proper held-out set (or nested cross-validation when you also tune settings) is still the gold standard for a final, reported number."}}, {"@type": "Question", "name": "Can I trust a random forest's variable importance?", "acceptedAnswer": {"@type": "Answer", "text": "Treat it as a useful hint, not proof of causation or a clean ranking. Standard impurity-based (Gini) importance is biased toward high-cardinality and continuous predictors, and when two predictors are correlated the forest splits its credit between them, so an important variable can look weak simply because a collaborator absorbed some of its share. Permutation importance — shuffle one column and see how much accuracy drops — is generally more trustworthy, but it too can mislead under strong correlation. Importance tells you what helped the model predict, which is not the same as what causes the outcome; for causal questions you still need design, not a forest."}}]}
+  </script>
+</head>
+<body data-course="ml" data-section="random-forests-and-ensembles">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 4.7</span>
+        <h1>Random Forests &amp; Ensembles</h1>
+
+        <p class="lede">One <a href="../../ml/decision-trees/">decision tree</a> is clever but jumpy — nudge the data and it rebuilds itself into something new. The fix is almost comically simple: don't grow one tree, grow a few hundred, each on a slightly different slice of the data, and let them vote. The individual jitters cancel, and out of a crowd of unreliable trees comes a strikingly stable predictor. That's a random forest, and it's the wisdom of crowds applied to models.</p>
+
+        <h2>Why a crowd beats an expert</h2>
+        <p>A single deep tree is a <strong>high-variance</strong> learner: it fits its training sample almost perfectly, including the noise, so a different sample would give a visibly different tree. Averaging is the antidote. If you have many models whose errors are somewhat independent, their <em>average</em> error is far smaller than any one model's — the over-shoots and under-shoots cancel. The catch is that word "independent": trees trained on the same data all make the <em>same</em> mistakes, so averaging clones buys you nothing. A random forest's whole design is a recipe for making its trees disagree in useful, uncorrelated ways.</p>
+
+        <h2>Two dashes of randomness</h2>
+        <ul>
+          <li><strong>Bagging (bootstrap aggregating).</strong> Each tree is grown on a <a href="../../stats-4/bootstrap-and-resampling/">bootstrap sample</a> — draw <em>n</em> rows with replacement from the training set, so each tree sees a slightly different dataset (some rows twice, others not at all). That alone decorrelates the trees a little.</li>
+          <li><strong>Feature randomness.</strong> At every split, a tree is only allowed to consider a random subset of the predictors, not all of them. This is the secret ingredient: it stops one dominant variable from being the top split in every single tree, forcing the forest to explore, and driving the trees' correlation down further. Lower correlation means the average cancels more noise.</li>
+        </ul>
+        <p>Then prediction is a plain vote: to classify a new case, run it down all the trees and take the majority (for regression, average the numbers). Where individual trees draw jagged, contradictory boundaries, the vote proportion varies smoothly — and a smooth boundary is exactly what a low-variance model looks like.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="rfviz">
+          <p class="viz-title">🌲 Grow a forest, one tree at a time</p>
+          <p class="viz-sub">Two classes (<span style="color:var(--primary);font-weight:700">indigo</span> and <span style="color:#f97316;font-weight:700">orange</span>) with a curved true boundary plus label noise. Each tree is deep and jagged on its own; the shading is the <strong>ensemble's vote proportion</strong>, so it smooths as trees accumulate. Below: ensemble test accuracy vs number of trees — it climbs, then <em>plateaus</em> (not overfits). The dashed line is the average single tree's accuracy — watch the crowd overtake the individual.</p>
+
+          <div class="controls">
+            <div class="control"><button class="btn btn-primary btn-sm" id="add1-btn">＋ Add a tree</button></div>
+            <div class="control"><button class="btn btn-sm" id="add10-btn">＋ Add 10</button></div>
+            <div class="control"><button class="btn btn-sm" id="new-btn">↺ New forest</button></div>
+            <div class="control" style="margin-left:auto"><span class="val" id="nt-val" style="font-size:.95rem">1 tree</span></div>
+          </div>
+
+          <canvas id="rf-canvas"></canvas>
+
+          <div style="display:flex;flex-wrap:wrap;gap:.7rem;justify-content:center;margin-top:.9rem">
+            <div style="border:1px solid var(--border);border-left:4px solid var(--secondary);border-radius:10px;padding:.5rem .85rem;text-align:center;min-width:130px">
+              <div style="font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em">Forest test acc.</div>
+              <div id="ens-acc" style="font-size:1.2rem;font-weight:800;color:var(--secondary)">—</div>
+            </div>
+            <div style="border:1px solid var(--border);border-left:4px solid var(--text-muted);border-radius:10px;padding:.5rem .85rem;text-align:center;min-width:130px">
+              <div style="font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em">Avg. single tree</div>
+              <div id="one-acc" style="font-size:1.2rem;font-weight:800">—</div>
+            </div>
+          </div>
+          <p id="rf-verdict" style="font-size:.85rem;color:var(--text-faint);margin-top:.6rem;text-align:center;min-height:1.2em"></p>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>Two things stand out. First, the ensemble's accuracy sits <em>above</em> the average single tree from very early on — that gap is pure variance reduction, error the crowd cancelled that no individual tree could. Second, adding trees never makes it worse: the curve rises and flattens. The number of trees is a <strong>budget</strong> (more is steadier but slower), not an overfitting dial. The dials that <em>can</em> overfit live inside each tree — its depth and minimum leaf size.</p>
+
+        <h2>Out-of-bag error: validation for free</h2>
+        <p>Bagging hands you a bonus. Because each bootstrap sample leaves out about 37% of the rows by chance, every row is "out-of-bag" for roughly a third of the trees — trees that never saw it. Predict each row using only <em>those</em> trees, compare to the truth, and you have an honest, held-out-style error estimate without ever carving off a separate validation set. <strong>Out-of-bag (OOB) error</strong> is a handy default that usually tracks <a href="../../stats-4/cross-validation-and-overfitting/">cross-validated</a> error closely — though for a final reported number, a clean <a href="../../ml/train-test-split-and-generalization/">held-out test set</a> is still the standard.</p>
+
+        <h2>Variable importance — and its asterisks</h2>
+        <p>A forest can also rank which predictors mattered, by tallying how much each one reduced impurity across all splits, or — better — by <strong>permutation importance</strong>: shuffle one column, and see how much accuracy falls. Useful, but read it with care. Impurity-based importance is biased toward continuous and many-valued predictors, and when two predictors are correlated the forest splits the credit between them, so a genuinely important variable can look modest because a collaborator stole some of its thunder. Importance tells you what <em>helped the model predict</em> — not what <em>causes</em> the outcome. For causation you still need <a href="../../methods/experimental-design-and-randomization/">design</a>, not a forest.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> a random forest is often the strongest model you can fit with almost no tuning — bag many deep trees, add feature randomness so they disagree, average the votes, and read OOB error for free. The price is interpretability: you trade the single tree's readable flowchart for a black box you probe with importance scores and partial-dependence plots. When accuracy and robustness matter more than a printable rulebook, the crowd wins.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>Why doesn't a random forest overfit as you add more trees?</summary>
+            <div class="faq-a"><p>Because adding trees reduces variance without adding the kind of flexibility that fits noise. Each tree is a full, high-variance model that overfits its own bootstrap sample in its own way; averaging their votes cancels those individual quirks, so the ensemble's prediction settles down. Crucially, more trees only make that average more stable — they do not let the forest carve ever-finer boundaries around single points, so test accuracy rises and then plateaus rather than peaking and falling. The number of trees is a budget knob (more is steadier but slower), not an overfitting dial. The real overfitting controls are each tree's depth or minimum leaf size.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is out-of-bag (OOB) error?</summary>
+            <div class="faq-a"><p>Out-of-bag error is a validation estimate you get for free from the bootstrap. Each tree is trained on a <a href="../../stats-4/bootstrap-and-resampling/">bootstrap sample</a> that, by chance, leaves out about 37% of the rows; those held-out rows are that tree's out-of-bag cases. To score the forest, predict every row using only the trees that did <em>not</em> see it, then compare to the truth. Because each prediction uses trees for which that row was genuinely unseen, OOB error approximates cross-validated test error without a separate holdout set or an explicit split. It is a convenient default, though a proper held-out set (or nested cross-validation when you also tune settings) is still the gold standard for a final, reported number.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Can I trust a random forest's variable importance?</summary>
+            <div class="faq-a"><p>Treat it as a useful hint, not proof of causation or a clean ranking. Standard impurity-based (Gini) importance is biased toward high-cardinality and continuous predictors, and when two predictors are correlated the forest splits its credit between them, so an important variable can look weak simply because a collaborator absorbed some of its share. Permutation importance — shuffle one column and see how much accuracy drops — is generally more trustworthy, but it too can mislead under strong correlation. Importance tells you what <em>helped the model predict</em>, which is not the same as what <em>causes</em> the outcome; for causal questions you still need design, not a forest.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ random forest visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var canvas = document.getElementById("rf-canvas"), ctx, W = 0, H = 440;
+    var NT = 60, NTR = 110, NTE = 500, NOISE = 0.18, MAXD = 8;
+    var sp = 1;                       // seed offset — sp=1 is the verified demo (ensemble climbs .74 -> .79 vs .70 single)
+    var tr, te, trees, ensCurve = [], singleAcc = 0, nShown = 1;
+
+    /* ---- deterministic RNG + data (frozen per seed) ---- */
+    function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+    function makeData(seed, n) {
+      var rng = mulberry32(seed), X = [], Y = [];
+      for (var i = 0; i < n; i++) {
+        var x = rng(), y = rng();
+        var boundary = 0.42 + 0.32 * Math.sin(x * Math.PI * 1.1);
+        var cls = y > boundary ? 1 : 0;
+        if (rng() < NOISE) cls = 1 - cls;
+        X.push([x, y]); Y.push(cls);
+      }
+      return { X: X, Y: Y };
+    }
+
+    /* ---- greedy CART with mtry = 1 feature randomness (per split) ---- */
+    function gini(idx, Y) { var n = idx.length; if (!n) return 0; var c1 = 0; for (var i = 0; i < n; i++) c1 += Y[idx[i]]; var p = c1 / n; return 1 - p * p - (1 - p) * (1 - p); }
+    function majority(idx, Y) { var c1 = 0; for (var i = 0; i < idx.length; i++) c1 += Y[idx[i]]; return c1 * 2 >= idx.length ? 1 : 0; }
+    function build(idx, X, Y, depth, rng) {
+      var node = { pred: majority(idx, Y) };
+      if (depth >= MAXD || idx.length < 3) return node;
+      var g0 = gini(idx, Y); if (g0 === 0) return node;
+      var f = rng() < 0.5 ? 0 : 1;              // random single feature considered at this node
+      var vals = idx.map(function (i) { return X[i][f]; }).slice().sort(function (a, b) { return a - b; });
+      var best = null, seen = {};
+      for (var v = 0; v < vals.length - 1; v++) {
+        var thr = (vals[v] + vals[v + 1]) / 2; if (seen[thr]) continue; seen[thr] = 1;
+        var L = [], R = [];
+        for (var i2 = 0; i2 < idx.length; i2++) { (X[idx[i2]][f] < thr ? L : R).push(idx[i2]); }
+        if (!L.length || !R.length) continue;
+        var w = (L.length * gini(L, Y) + R.length * gini(R, Y)) / idx.length;
+        if (!best || w < best.w - 1e-12) best = { w: w, thr: thr, L: L, R: R };
+      }
+      if (!best || best.w >= g0 - 1e-9) return node;
+      node.f = f; node.thr = best.thr;
+      node.L = build(best.L, X, Y, depth + 1, rng);
+      node.R = build(best.R, X, Y, depth + 1, rng);
+      return node;
+    }
+    function predict(node, x) { while (node.L) { node = (x[node.f] < node.thr ? node.L : node.R); } return node.pred; }
+    function accTree(node, X, Y) { var c = 0; for (var i = 0; i < X.length; i++) if (predict(node, X[i]) === Y[i]) c++; return c / X.length; }
+
+    function rebuild() {
+      tr = makeData(2 + sp, NTR);
+      te = makeData(1500 + sp, NTE);
+      var rng = mulberry32(777 + sp * 13);
+      trees = [];
+      singleAcc = 0;
+      for (var t = 0; t < NT; t++) {
+        var idx = []; for (var b = 0; b < tr.X.length; b++) idx.push(Math.floor(rng() * tr.X.length));  // bootstrap sample
+        var root = build(idx, tr.X, tr.Y, 0, rng);
+        trees.push(root);
+        singleAcc += accTree(root, te.X, te.Y);
+      }
+      singleAcc /= NT;
+      // cumulative ensemble test accuracy vs number of trees
+      var votes = te.X.map(function () { return 0; });
+      ensCurve = [];
+      for (var t2 = 0; t2 < NT; t2++) {
+        for (var i = 0; i < te.X.length; i++) votes[i] += predict(trees[t2], te.X[i]);
+        var c = 0; for (var j = 0; j < te.X.length; j++) { if ((votes[j] / (t2 + 1) >= 0.5 ? 1 : 0) === te.Y[j]) c++; }
+        ensCurve.push(c / te.X.length);
+      }
+    }
+
+    /* ---- drawing ---- */
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function plotGeom() { var top = 8, size = Math.min(212, W - 40); return { x0: (W - size) / 2, y0: top, size: size }; }
+    function ensembleP(xx, yy) { var v = 0; for (var t = 0; t < nShown; t++) v += predict(trees[t], [xx, yy]); return v / nShown; }
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      var g = plotGeom();
+      var indigo = VIZ.css("--primary"), orange = "#f97316";
+      var cells = 46, cs = g.size / cells;
+      // faint: the newest single tree's hard regions (jagged); over it, the ensemble vote shading (smooth)
+      for (var ix = 0; ix < cells; ix++) for (var iy = 0; iy < cells; iy++) {
+        var xx = (ix + 0.5) / cells, yy = 1 - (iy + 0.5) / cells, gx = g.x0 + ix * cs, gy = g.y0 + iy * cs;
+        var one = predict(trees[nShown - 1], [xx, yy]);
+        ctx.fillStyle = one === 1 ? orange : indigo; ctx.globalAlpha = 0.06;
+        ctx.fillRect(gx, gy, cs + 0.6, cs + 0.6);
+        var p = ensembleP(xx, yy);
+        ctx.fillStyle = p >= 0.5 ? orange : indigo; ctx.globalAlpha = 0.30 * Math.abs(2 * p - 1);
+        ctx.fillRect(gx, gy, cs + 0.6, cs + 0.6);
+      }
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.strokeRect(g.x0, g.y0, g.size, g.size);
+      for (var i = 0; i < tr.X.length; i++) {
+        var px = g.x0 + tr.X[i][0] * g.size, py = g.y0 + (1 - tr.X[i][1]) * g.size;
+        ctx.fillStyle = tr.Y[i] === 1 ? orange : indigo;
+        ctx.beginPath(); ctx.arc(px, py, 3, 0, 6.2832); ctx.fill();
+        ctx.strokeStyle = VIZ.css("--bg"); ctx.lineWidth = 1; ctx.stroke();
+      }
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px " + VIZ.css("--font"); ctx.textAlign = "center";
+      ctx.fillText("training data · faint = newest single tree · shading = " + nShown + "-tree vote", W / 2, g.y0 + g.size + 15);
+
+      // accuracy vs #trees chart
+      var cTop = g.y0 + g.size + 32, cBot = H - 22, cL = 40, cR = W - 16;
+      var lo = 0.5, hi = 0.9;
+      function bx(t) { return cL + (t - 1) / (NT - 1) * (cR - cL); }
+      function by(a) { return cBot - (a - lo) / (hi - lo) * (cBot - cTop); }
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(cL, cBot); ctx.lineTo(cR, cBot); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cL, cTop); ctx.lineTo(cL, cBot); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace, monospace"; ctx.textAlign = "right";
+      ctx.fillText("90%", cL - 4, by(0.9) + 3); ctx.fillText("50%", cL - 4, by(0.5) + 3);
+      ctx.textAlign = "center";
+      [1, 15, 30, 45, 60].forEach(function (t) { ctx.fillText(t, bx(t), cBot + 13); });
+      ctx.fillText("number of trees →", (cL + cR) / 2, H - 3);
+      // average single-tree reference line
+      ctx.strokeStyle = VIZ.css("--text-muted"); ctx.setLineDash([4, 4]); ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.moveTo(cL, by(singleAcc)); ctx.lineTo(cR, by(singleAcc)); ctx.stroke(); ctx.setLineDash([]);
+      // ensemble curve up to nShown
+      ctx.strokeStyle = VIZ.css("--secondary"); ctx.lineWidth = 2.2; ctx.beginPath();
+      for (var t3 = 1; t3 <= nShown; t3++) { var X0 = bx(t3), Y0 = by(ensCurve[t3 - 1]); if (t3 === 1) ctx.moveTo(X0, Y0); else ctx.lineTo(X0, Y0); }
+      ctx.stroke();
+      ctx.fillStyle = VIZ.css("--secondary"); ctx.beginPath(); ctx.arc(bx(nShown), by(ensCurve[nShown - 1]), 3.2, 0, 6.2832); ctx.fill();
+      ctx.font = "600 11px " + VIZ.css("--font"); ctx.textAlign = "left";
+      ctx.fillStyle = VIZ.css("--secondary"); ctx.fillText("forest (vote)", cL + 4, cTop + 10);
+      ctx.fillStyle = VIZ.css("--text-muted"); ctx.fillText("avg. single tree", cL + 4, cTop + 24);
+    }
+
+    function update() {
+      document.getElementById("nt-val").textContent = nShown + (nShown === 1 ? " tree" : " trees");
+      document.getElementById("ens-acc").textContent = (ensCurve[nShown - 1] * 100).toFixed(1) + "%";
+      document.getElementById("one-acc").textContent = (singleAcc * 100).toFixed(1) + "%";
+      var gain = ensCurve[nShown - 1] - singleAcc, v;
+      if (nShown === 1) v = "One tree is just one noisy opinion — jagged and unreliable. Add more and let them vote.";
+      else if (nShown < 8) v = "Already " + (gain > 0 ? "ahead of" : "near") + " the average single tree — the boundary is smoothing as votes pile up.";
+      else if (nShown < 30) v = "Variance melting away: the forest is +" + (gain * 100).toFixed(1) + " points over one tree, and the curve is flattening.";
+      else v = "Plateaued. More trees just steady the estimate — they never overfit. Depth, not tree count, is the overfitting dial.";
+      document.getElementById("rf-verdict").textContent = v;
+      draw();
+    }
+
+    document.getElementById("add1-btn").addEventListener("click", function () { if (nShown < NT) { nShown++; update(); } });
+    document.getElementById("add10-btn").addEventListener("click", function () { nShown = Math.min(NT, nShown + 10); update(); });
+    document.getElementById("new-btn").addEventListener("click", function () { sp = sp >= 8 ? 1 : sp + 1; rebuild(); nShown = 1; update(); });
+    window.addEventListener("resize", function () { fit(); draw(); });
+    if (window.ResizeObserver) new ResizeObserver(function () { fit(); draw(); }).observe(canvas);
+    VIZ.onTheme(draw);
+
+    fit(); rebuild(); nShown = 1; update();
+  })();
+  </script>
+</body>
+</html>

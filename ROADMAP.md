@@ -94,7 +94,7 @@ Tick these as sessions complete them (each prompt ends by updating this list).
 - [x] P13 · Ethics 7–8
 - [x] P14 · ML 1–3 (+ scaffold)
 - [x] P15 · ML 4–6
-- [ ] P16 · ML 7–9
+- [x] P16 · ML 7–9
 - [ ] P17 · ML 10–12
 - [ ] P18 · Writing 1–3 (+ scaffold)
 - [ ] P19 · Writing 4–6
