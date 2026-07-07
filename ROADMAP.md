@@ -8,13 +8,13 @@ This file is the master plan. The copy-paste prompts that execute it live in **[
 
 ## End state
 
-| | Today | Powerhouse |
-|---|---|---|
-| Courses | 4 (Stats 1–4) | **9** in two tracks |
-| Lessons | 45 | **~95** |
-| Tool pages | 8 | **~14** |
-| Long-form guides | 0 | 4 cornerstone guides |
-| Personas served | "stats course student" | + thesis writer, data cleaner, ML-curious, first-time researcher |
+| | At kickoff | Now (Jul 2026, post-P16) | Powerhouse |
+|---|---|---|---|
+| Courses | 4 (Stats 1–4) | 8 (+ Methods, Data, Ethics, ML 9/12) | **9** in two tracks |
+| Lessons | 45 | 84 | **~95** |
+| Tool pages | 8 | 9 (+ power calculator) | **~14** |
+| Long-form guides | 0 | 0 | 4 cornerstone guides |
+| Personas served | "stats course student" | + first-time researcher, data cleaner, ML-curious | + thesis writer |
 
 **Two tracks on the homepage:**
 
@@ -78,6 +78,8 @@ Hard dependencies: **P2 before any new course** (P4+). **P32 after at least two 
 ## Status tracker
 
 Tick these as sessions complete them (each prompt ends by updating this list).
+
+> **Where things stand (7 Jul 2026):** 16 of 36 one-shot prompts done. Phase 0 complete; Methods, Data, and Ethics courses complete; ML at 9 of 12 lessons. The site has 8 courses / 84 lessons / 9 tools, audit passing clean. **Next: P17** (ML 10–12, completes the course), then either Writing (P18–P20) or the deferred Phase-6 tools — P21 (APA formatter) pairs naturally with the Writing course, per the recommended order.
 
 - [x] P1 · audit.js
 - [x] P2 · multi-track platform
