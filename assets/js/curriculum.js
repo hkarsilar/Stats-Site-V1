@@ -157,6 +157,18 @@ window.CURRICULUM = [
       { n: "3.7", slug: "ai-in-research-ethics",           title: "Using AI Tools Ethically", ready: true },
       { n: "3.8", slug: "fraud-and-self-correction",       title: "Fraud & How Science Self-Corrects", ready: true }
     ]
+  },
+  {
+    slug: "ml",
+    title: "ML & AI",
+    subtitle: "Machine Learning for Researchers",
+    accent: "#a855f7",
+    track: "toolkit",
+    sections: [
+      { n: "4.1", slug: "prediction-vs-explanation",           title: "Prediction vs Explanation", ready: true },
+      { n: "4.2", slug: "train-test-split-and-generalization", title: "Train/Test Splits & Generalization", ready: true },
+      { n: "4.3", slug: "regularization-ridge-and-lasso",       title: "Regularization: Ridge & Lasso", ready: true }
+    ]
   }
 ];
 

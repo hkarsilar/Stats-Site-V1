@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prediction vs Explanation — StatsCapybara</title>
+  <meta name="description" content="Breiman's two cultures: the same data gives one model to explain which variable matters, and another to predict new cases with the lowest error." />
+  <link rel="canonical" href="https://statscapybara.com/ml/prediction-vs-explanation/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Prediction vs Explanation — StatsCapybara" />
+  <meta property="og:description" content="The same data gives one model when you want to explain which variable matters and a different one when you just want the lowest error on new cases." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/ml/prediction-vs-explanation/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Prediction vs Explanation — StatsCapybara" />
+  <meta name="twitter:description" content="Breiman's two cultures: explaining which variable matters vs predicting new cases — and why they pick different models." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Prediction vs Explanation", "description": "Breiman's two cultures made friendly: the same data yields one model when you want to explain which variable matters and a different one when you want the lowest error on new cases.", "url": "https://statscapybara.com/ml/prediction-vs-explanation/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — ML & AI: Machine Learning for Researchers", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Prediction vs Explanation", "item": "https://statscapybara.com/ml/prediction-vs-explanation/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is machine learning just statistics with a fancier name?", "acceptedAnswer": {"@type": "Answer", "text": "Same mathematics, genuinely different emphasis. Much of ML is built directly on statistical models — regression, logistic regression, and their relatives — but the two fields optimize different things. Classical statistics is usually doing inference: which variables matter, how large the effect is, and how certain we are (coefficients, confidence intervals, p-values). ML is usually doing prediction: how accurately it can guess the outcome for cases it has never seen, measured by held-out error. The cultures overlap and borrow constantly, but 'just rebranded' undersells the shift — ML happily uses uninterpretable models if they predict well and rarely reports p-values, while inferential statistics keeps models interpretable and rarely reports test-set error."}}, {"@type": "Question", "name": "What is the difference between prediction and explanation?", "acceptedAnswer": {"@type": "Answer", "text": "Explanation (inference) is about the relationship itself: estimating the size, direction, and uncertainty of an effect so you can understand a system — does X influence Y, and by how much? Prediction is about the outcome: given a new case's features, produce the best guess of its Y, judged only by error on unseen data. You can have either without the other. A model can predict superbly while every internal coefficient is meaningless (a black box), or explain a mechanism cleanly while predicting barely better than chance on a genuinely noisy outcome. Decide which one you actually need before you choose a model."}}, {"@type": "Question", "name": "Can the same model be good for both prediction and explanation?", "acceptedAnswer": {"@type": "Answer", "text": "Sometimes — a simple, well-specified linear model often does a respectable job of both — but don't assume it. The two goals pull in different directions: explanation rewards parsimony (every extra term is another thing to interpret and defend), while prediction rewards whatever lowers held-out error (often more flexibility). When they conflict, pick the model that matches your real goal and say which goal it is. The classic mistake is to build a black-box predictor and then read its internals as if they were causal effects — a model optimized for prediction owes you no honest explanation."}}]}
+  </script>
+</head>
+<body data-course="ml" data-section="prediction-vs-explanation">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 4.1</span>
+        <h1>Prediction vs Explanation</h1>
+
+        <p class="lede">You already know how to fit a regression. Machine learning uses the very same math, but often for a different <em>purpose</em> — and that change of purpose quietly changes what counts as a "good" model. Getting this distinction straight is the single most useful idea for a stats student stepping into ML: it tells you which tools to reach for and which mistakes to fear.</p>
+
+        <h2>Two questions, two cultures</h2>
+        <p>In 2001 the statistician Leo Breiman described "two cultures" of modelling, and the split still organizes the whole field. Everything comes down to which question you're actually asking:</p>
+        <ul>
+          <li><strong>Explanation (inference).</strong> <em>Which variables matter, how much, and how sure are we?</em> You want interpretable coefficients, standard errors, p-values, confidence intervals — a model you can put in a sentence and defend. This is the world of your stats courses: <a href="../../stats-2/simple-linear-regression/">regression</a>, <a href="../../stats-1/hypothesis-testing-logic/">hypothesis tests</a>, effect sizes.</li>
+          <li><strong>Prediction.</strong> <em>Given a new case, what's my best guess — and how wrong will I be?</em> You care about error on data the model hasn't seen. Whatever machinery minimizes that error is fair game, interpretable or not. This is the world of ML: cross-validation, held-out test sets, "whatever works."</li>
+        </ul>
+        <p>Neither culture is superior; they answer different questions. A drug trial needs <em>explanation</em> — the size and certainty of the effect, so a regulator can decide. A spam filter needs <em>prediction</em> — it doesn't matter <em>why</em> an email is spam, only that the label is right on tomorrow's inbox.</p>
+
+        <h2>The same model, two different jobs</h2>
+        <p>Here's the twist that trips people up: the exact same linear model can serve either master. Fit a straight line and you can (a) report its slope with a confidence interval — explanation — or (b) use it to predict new points and measure the error — prediction. The model is identical. What differs is <strong>how you judge it</strong>, and that judgement pushes you toward different models when you're allowed to choose the complexity.</p>
+        <p>Explanation prizes <strong>parsimony</strong>: every extra term is another coefficient you must interpret, defend, and worry about. Prediction prizes <strong>generalization</strong>: an extra term is welcome the moment it lowers error on new data, however murky its meaning. Watch those two pressures pull in different directions on one dataset.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="pveviz">
+          <p class="viz-title">🎯 One dataset, two goals</p>
+          <p class="viz-sub">The dots are a noisy sample from the dashed curve (the truth). Slide the flexibility dial, or let each goal pick for itself. <strong>Explanation</strong> pays an "interpretability tax" for every extra term, so it stops at the simplest faithful model. <strong>Prediction</strong> only watches held-out (cross-validated) error, so it keeps flexibility as long as error keeps falling. Same data — two different winners.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:220px">
+              <label>Your model's flexibility <span class="val" id="d-val">degree = 1</span></label>
+              <input type="range" id="d-range" min="0" max="6" step="1" value="1" style="width:100%" />
+            </div>
+          </div>
+          <div class="controls" style="margin-top:.3rem">
+            <div class="control"><button class="btn btn-sm" id="opt-expl" style="background:var(--secondary);color:#fff">▸ Optimize for explanation</button></div>
+            <div class="control"><button class="btn btn-sm" id="opt-pred" style="background:#f97316;color:#fff">▸ Optimize for prediction</button></div>
+            <div class="control"><button class="btn btn-primary btn-sm" id="resample">New sample</button></div>
+          </div>
+
+          <canvas id="pve-canvas"></canvas>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-top:.9rem">
+            <div style="border:1px solid var(--border);border-left:4px solid var(--secondary);border-radius:10px;padding:.7rem .85rem">
+              <div style="font-weight:700;color:var(--secondary);font-size:.9rem">🔍 Explanation's pick</div>
+              <div id="card-expl" style="font-size:.86rem;color:var(--text-muted);margin-top:.3rem;line-height:1.5"></div>
+            </div>
+            <div style="border:1px solid var(--border);border-left:4px solid #f97316;border-radius:10px;padding:.7rem .85rem">
+              <div style="font-weight:700;color:#f97316;font-size:.9rem">🎲 Prediction's pick</div>
+              <div id="card-pred" style="font-size:.86rem;color:var(--text-muted);margin-top:.3rem;line-height:1.5"></div>
+            </div>
+          </div>
+          <p id="pve-you" style="font-size:.82rem;color:var(--text-faint);margin-top:.6rem;text-align:center"></p>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>Notice the shape of the story. Explanation almost always settles on the plain straight line — one slope you can report and interpret, and it refuses to buy extra terms it can't justify. Prediction is happy to add curvature because it genuinely lowers held-out error. Both are <em>correct answers to different questions</em>. If you tried to force the explanation model to also be the best predictor, or demanded the prediction model hand you a clean interpretable coefficient, you'd be disappointed — not because the model failed, but because you asked it the wrong question.</p>
+
+        <h2>When each mindset wins</h2>
+        <p>A quick field guide for your own projects:</p>
+        <ul>
+          <li><strong>Reach for explanation</strong> when the deliverable is understanding: does this therapy work, which predictors drive burnout, is the effect big enough to matter. You'll report coefficients, CIs, and effect sizes, and you'll keep the model small enough to interpret.</li>
+          <li><strong>Reach for prediction</strong> when the deliverable is a decision on new cases: flag at-risk students, triage scans, forecast demand. You'll split off a <a href="../../ml/train-test-split-and-generalization/">test set</a>, tune with <a href="../../stats-4/cross-validation-and-overfitting/">cross-validation</a>, and judge the model purely by out-of-sample error.</li>
+        </ul>
+        <p>Plenty of real projects want both — a model that predicts well <em>and</em> offers some insight — and that's fine, as long as you know which hat you're wearing at each step. The danger is doing one while silently believing you're doing the other.</p>
+
+        <h2>Why the two cultures report different things</h2>
+        <p>This is why ML papers rarely show p-values and stats papers rarely show test-set error — they're optimizing different quantities. A p-value answers "could this coefficient be zero?"; it says nothing about how well the model predicts tomorrow. A cross-validated error answers "how wrong will I be on new cases?"; it says nothing about whether any single coefficient is real. A model can predict beautifully with every coefficient uninterpretable (a random forest), or explain cleanly while predicting no better than a coin flip on genuinely hard problems. Ask for the number that matches your question.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> before you fit anything, decide whether you're explaining or predicting. That one choice determines your success metric (a p-value / CI vs held-out error), how complex a model you should accept, and which pitfalls you must guard against — and it's the thread running through the rest of this course.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>Is machine learning just statistics with a fancier name?</summary>
+            <div class="faq-a"><p>Same mathematics, genuinely different emphasis. Much of ML is built directly on statistical models — <a href="../../stats-2/simple-linear-regression/">regression</a>, logistic regression, and their relatives — but the two fields optimize different things. Classical statistics is usually doing <em>inference</em>: which variables matter, how large the effect is, and how certain we are (coefficients, confidence intervals, p-values). ML is usually doing <em>prediction</em>: how accurately it can guess the outcome for cases it has never seen, measured by held-out error. The cultures overlap and borrow constantly, but 'just rebranded' undersells the shift — ML happily uses uninterpretable models if they predict well and rarely reports p-values, while inferential statistics keeps models interpretable and rarely reports test-set error.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is the difference between prediction and explanation?</summary>
+            <div class="faq-a"><p>Explanation (inference) is about the relationship itself: estimating the size, direction, and uncertainty of an effect so you can understand a system — does X influence Y, and by how much? Prediction is about the outcome: given a new case's features, produce the best guess of its Y, judged only by error on unseen data. You can have either without the other. A model can predict superbly while every internal coefficient is meaningless (a black box), or explain a mechanism cleanly while predicting barely better than chance on a genuinely noisy outcome. Decide which one you actually need before you choose a model.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Can the same model be good for both prediction and explanation?</summary>
+            <div class="faq-a"><p>Sometimes — a simple, well-specified linear model often does a respectable job of both — but don't assume it. The two goals pull in different directions: explanation rewards <em>parsimony</em> (every extra term is another thing to interpret and defend), while prediction rewards whatever lowers <a href="../../stats-4/cross-validation-and-overfitting/">held-out error</a> (often more flexibility). When they conflict, pick the model that matches your real goal and say which goal it is. The classic mistake is to build a black-box predictor and then read its internals as if they were causal effects — a model optimized for prediction owes you no honest explanation.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ prediction vs explanation visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var N = 60, DMAX = 6, K = 5, GAMMA = 0.10, NOISE = 0.55;
+    var canvas = document.getElementById("pve-canvas"), ctx, W = 0, H = 400;
+    var deg = 1, seed = 8;
+    var us = [], ys = [], foldOf = [], cvR = [], trR = [], coefs = [];
+    var explBest = 1, predBest = 3;
+
+    /* deterministic RNG so the default sample (and every reseed) is reproducible */
+    function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+    function truth(x) { return 1.25 * x + 0.85 * x * x - 0.28; }
+
+    /* ---- exact least-squares polynomial fit (normal equations + Gauss) ---- */
+    function solve(A, b) {
+      var n = b.length, i, j, k2;
+      for (i = 0; i < n; i++) {
+        var p = i;
+        for (j = i + 1; j < n; j++) if (Math.abs(A[j][i]) > Math.abs(A[p][i])) p = j;
+        var t = A[p]; A[p] = A[i]; A[i] = t; var tb = b[p]; b[p] = b[i]; b[i] = tb;
+        for (j = i + 1; j < n; j++) { var f = A[j][i] / A[i][i]; for (k2 = i; k2 < n; k2++) A[j][k2] -= f * A[i][k2]; b[j] -= f * b[i]; }
+      }
+      var x = new Array(n);
+      for (i = n - 1; i >= 0; i--) { var s = b[i]; for (j = i + 1; j < n; j++) s -= A[i][j] * x[j]; x[i] = s / A[i][i]; }
+      return x;
+    }
+    function polyfit(u, y, d) {
+      var m = d + 1, A = [], b = [], i, j, k2;
+      for (i = 0; i < m; i++) { A.push(new Array(m).fill(0)); b.push(0); }
+      for (k2 = 0; k2 < u.length; k2++) {
+        var pw = [1]; for (i = 1; i < m; i++) pw.push(pw[i - 1] * u[k2]);
+        for (i = 0; i < m; i++) { b[i] += pw[i] * y[k2]; for (j = 0; j < m; j++) A[i][j] += pw[i] * pw[j]; }
+      }
+      for (i = 0; i < m; i++) A[i][i] += 1e-9;
+      return solve(A, b);
+    }
+    function pv(c, u) { var s = 0; for (var i = c.length - 1; i >= 0; i--) s = s * u + c[i]; return s; }
+
+    /* ---- generate a sample + all per-degree errors (frozen for the sliders) ---- */
+    function build(sd) {
+      var rng = mulberry32(sd);
+      us = []; ys = []; foldOf = [];
+      for (var i = 0; i < N; i++) { var x = 2 * rng() - 1; us.push(x); ys.push(truth(x) + NOISE * (Math.sqrt(-2 * Math.log(1 - rng())) * Math.cos(2 * Math.PI * rng()))); }
+      var idx = us.map(function (_, i2) { return i2; });
+      for (var s = idx.length - 1; s > 0; s--) { var r = (rng() * (s + 1)) | 0; var t = idx[s]; idx[s] = idx[r]; idx[r] = t; }
+      idx.forEach(function (orig, pos) { foldOf[orig] = pos % K; });
+      cvR = []; trR = []; coefs = [];
+      for (var d = 0; d <= DMAX; d++) {
+        var c = polyfit(us, ys, d); coefs.push(c);
+        var sse = 0; for (var i = 0; i < N; i++) { var e = ys[i] - pv(c, us[i]); sse += e * e; } trR.push(Math.sqrt(sse / N));
+        var cvsse = 0;
+        for (var f = 0; f < K; f++) {
+          var uT = [], yT = [], uH = [], yH = [];
+          for (var j = 0; j < N; j++) { if (foldOf[j] === f) { uH.push(us[j]); yH.push(ys[j]); } else { uT.push(us[j]); yT.push(ys[j]); } }
+          var cf = polyfit(uT, yT, d);
+          for (var h = 0; h < uH.length; h++) { var e2 = yH[h] - pv(cf, uH[h]); cvsse += e2 * e2; }
+        }
+        cvR.push(Math.sqrt(cvsse / N));
+      }
+      // prediction = min CV error; explanation = min (CV error + interpretability tax)
+      predBest = 0; for (var d2 = 1; d2 <= DMAX; d2++) if (cvR[d2] < cvR[predBest]) predBest = d2;
+      explBest = 0; for (var d3 = 1; d3 <= DMAX; d3++) if (cvR[d3] + GAMMA * d3 < cvR[explBest] + GAMMA * explBest) explBest = d3;
+    }
+    /* reseed, but favour samples where the two goals actually disagree (the generic case) */
+    function reseed() {
+      for (var tries = 0; tries < 8; tries++) { build(seed); seed += 1; if (explBest < predBest) break; }
+    }
+
+    /* ---- drawing ---- */
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function curve(c, color, dash, wid) {
+      ctx.strokeStyle = color; ctx.lineWidth = wid; ctx.setLineDash(dash || []);
+      ctx.beginPath();
+      for (var p = 0; p <= 1.0001; p += 0.004) { var yf = pv(c, 2 * p - 1); if (p === 0) ctx.moveTo(tx(p), ty(yf)); else ctx.lineTo(tx(p), ty(yf)); }
+      ctx.stroke(); ctx.setLineDash([]);
+    }
+    var padL = 40, padR = 14, t0 = 8, t1 = 232, YMIN = -2.2, YMAX = 2.6;
+    function tx(x) { return padL + x * (W - padL - padR); }
+    function ty(y) { return t1 - (Math.max(YMIN, Math.min(YMAX, y)) - YMIN) / (YMAX - YMIN) * (t1 - t0); }
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      /* top: the data + curves */
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, ty(0)); ctx.lineTo(W - padR, ty(0)); ctx.stroke();
+      // truth
+      ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([5, 4]); ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      for (var px = 0; px <= 1.0001; px += 0.01) { var y = truth(2 * px - 1); if (px === 0) ctx.moveTo(tx(px), ty(y)); else ctx.lineTo(tx(px), ty(y)); }
+      ctx.stroke(); ctx.setLineDash([]);
+      // data
+      ctx.fillStyle = VIZ.css("--primary"); ctx.globalAlpha = 0.8;
+      for (var i = 0; i < N; i++) { ctx.beginPath(); ctx.arc(tx((us[i] + 1) / 2), ty(ys[i]), 3, 0, 6.2832); ctx.fill(); }
+      ctx.globalAlpha = 1;
+      // your current model (bold) + the two goal models (thin reference)
+      curve(coefs[explBest], VIZ.css("--secondary"), [], deg === explBest ? 1.2 : 1.6);
+      curve(coefs[predBest], "#f97316", [], deg === predBest ? 1.2 : 1.6);
+      curve(coefs[deg], VIZ.css("--text"), [], 2.8);
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px " + VIZ.css("--font"); ctx.textAlign = "left";
+      ctx.fillText("truth (dashed) · your model (bold) · explanation (teal) · prediction (orange)", padL, t1 + 15);
+
+      /* bottom: the two cost curves vs degree */
+      var b0 = 276, b1 = H - 24;
+      var costsE = cvR.map(function (v, d) { return v + GAMMA * d; });
+      var all = cvR.concat(costsE);
+      var lo = Math.min.apply(null, all) - 0.03, hi = Math.max.apply(null, all) + 0.03;
+      function bx(d) { return padL + d / DMAX * (W - padL - padR); }
+      function by(v) { return b1 - (v - lo) / (hi - lo) * (b1 - b0); }
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, b1); ctx.lineTo(W - padR, b1); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px ui-monospace, monospace"; ctx.textAlign = "center";
+      for (var d4 = 0; d4 <= DMAX; d4++) ctx.fillText(d4, bx(d4), b1 + 14);
+      ctx.fillText("model flexibility (polynomial degree) →", (padL + W - padR) / 2, H - 4);
+      // your-degree marker
+      ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.moveTo(bx(deg), b0 - 4); ctx.lineTo(bx(deg), b1); ctx.stroke(); ctx.setLineDash([]);
+      function line(arr, color) {
+        ctx.strokeStyle = color; ctx.lineWidth = 2.2; ctx.beginPath();
+        for (var d = 0; d <= DMAX; d++) { if (d === 0) ctx.moveTo(bx(d), by(arr[d])); else ctx.lineTo(bx(d), by(arr[d])); }
+        ctx.stroke();
+        ctx.fillStyle = color; for (var d2 = 0; d2 <= DMAX; d2++) { ctx.beginPath(); ctx.arc(bx(d2), by(arr[d2]), 2.6, 0, 6.2832); ctx.fill(); }
+      }
+      line(costsE, VIZ.css("--secondary"));
+      line(cvR, "#f97316");
+      // markers at each goal's optimum
+      function star(d, v, color) { ctx.fillStyle = color; ctx.beginPath(); ctx.moveTo(bx(d), by(v) - 8); ctx.lineTo(bx(d) - 5, by(v) - 17); ctx.lineTo(bx(d) + 5, by(v) - 17); ctx.closePath(); ctx.fill(); }
+      star(explBest, costsE[explBest], VIZ.css("--secondary"));
+      star(predBest, cvR[predBest], "#f97316");
+      ctx.font = "600 11px " + VIZ.css("--font"); ctx.textAlign = "left";
+      ctx.fillStyle = VIZ.css("--secondary"); ctx.fillText("explanation cost (error + interpretability tax)", padL + 4, b0 + 6);
+      ctx.fillStyle = "#f97316"; ctx.fillText("prediction cost (held-out error)", padL + 4, b0 + 20);
+    }
+
+    function terms(d) { return (d + 1) + (d + 1 === 1 ? " term" : " terms"); }
+    function update() {
+      document.getElementById("d-val").textContent = "degree = " + deg;
+      var ce = coefs[explBest], slope = explBest >= 1 ? ce[1] : 0;
+      document.getElementById("card-expl").innerHTML =
+        "Degree <strong>" + explBest + "</strong> · " + terms(explBest) + "<br>" +
+        (explBest === 1 ? "One clean slope you can report: <strong>" + (slope >= 0 ? "+" : "") + slope.toFixed(2) + "</strong> per unit of x." : "A parsimonious model — few terms to interpret.") +
+        "<br>held-out error = " + cvR[explBest].toFixed(3) + " · <em>easy to explain</em>";
+      document.getElementById("card-pred").innerHTML =
+        "Degree <strong>" + predBest + "</strong> · " + terms(predBest) + "<br>" +
+        "Lowest error on new data: <strong>" + cvR[predBest].toFixed(3) + "</strong>." +
+        "<br>" + (predBest > explBest ? "Extra curvature earns its keep — but harder to explain." : "Here the simple model also predicts best.");
+      var msg = deg === explBest && deg === predBest ? "Your model matches both goals."
+        : deg === explBest ? "Your model = explanation's pick."
+        : deg === predBest ? "Your model = prediction's pick."
+        : "Your model: degree " + deg + " · held-out error " + cvR[deg].toFixed(3) + " · interpretability tax " + (GAMMA * deg).toFixed(2);
+      document.getElementById("pve-you").textContent = msg;
+      draw();
+    }
+
+    document.getElementById("d-range").addEventListener("input", function () { deg = +this.value; update(); });
+    document.getElementById("opt-expl").addEventListener("click", function () { deg = explBest; document.getElementById("d-range").value = deg; update(); });
+    document.getElementById("opt-pred").addEventListener("click", function () { deg = predBest; document.getElementById("d-range").value = deg; update(); });
+    document.getElementById("resample").addEventListener("click", function () { reseed(); deg = explBest; document.getElementById("d-range").value = deg; update(); });
+    window.addEventListener("resize", function () { fit(); draw(); });
+    VIZ.onTheme(draw);
+
+    fit(); reseed(); deg = 1; document.getElementById("d-range").value = 1; update();
+  })();
+  </script>
+</body>
+</html>

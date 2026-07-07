@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Regularization: Ridge &amp; Lasso — StatsCapybara</title>
+  <meta name="description" content="Why shrinking coefficients improves prediction: ridge pulls them toward zero, lasso sets them exactly to zero. Drag λ and watch noise predictors die first." />
+  <link rel="canonical" href="https://statscapybara.com/ml/regularization-ridge-and-lasso/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Regularization: Ridge &amp; Lasso — StatsCapybara" />
+  <meta property="og:description" content="Why shrinking regression coefficients improves predictions: ridge pulls them toward zero, lasso sets them exactly to zero. Drag lambda and watch noise predictors die first." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/ml/regularization-ridge-and-lasso/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Regularization: Ridge &amp; Lasso — StatsCapybara" />
+  <meta name="twitter:description" content="Ridge shrinks coefficients, lasso zeros them out. Drag lambda and watch noise predictors die before the real ones." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Regularization: Ridge & Lasso", "description": "Why shrinking regression coefficients improves prediction: ridge pulls coefficients toward zero, lasso sets them exactly to zero, and cross-validation picks the penalty strength.", "url": "https://statscapybara.com/ml/regularization-ridge-and-lasso/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — ML & AI: Machine Learning for Researchers", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Regularization: Ridge & Lasso", "item": "https://statscapybara.com/ml/regularization-ridge-and-lasso/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Ridge or lasso — which should I use?", "acceptedAnswer": {"@type": "Answer", "text": "It depends on what you want from the model. Use lasso when you expect many predictors to be irrelevant and you want a sparse, interpretable model — it drives weak coefficients to exactly zero, doing variable selection for you. Use ridge when you think most predictors matter a little, or when predictors are highly correlated — ridge keeps them all and shares the coefficient across a correlated group, whereas lasso tends to keep one of the group somewhat arbitrarily and zero the rest. If you can't decide, elastic net blends both penalties and is the common pragmatic default. Whichever you choose, let cross-validation pick the penalty strength."}}, {"@type": "Question", "name": "What is lambda, and how do I choose it?", "acceptedAnswer": {"@type": "Answer", "text": "Lambda (λ) is the penalty strength — the dial controlling how hard the coefficients are shrunk. At λ = 0 you have ordinary least squares with no shrinkage; as λ grows, coefficients shrink toward zero and the model becomes simpler, more biased, and less variable. You don't set λ by hand: fit the model across a grid of λ values and choose the one with the lowest cross-validated error (cv.glmnet in R, LassoCV/RidgeCV in Python). A common, slightly conservative choice is the largest λ within one standard error of the minimum ('lambda.1se'), which buys a simpler model for almost the same error."}}, {"@type": "Question", "name": "Do I need to standardize my predictors before ridge or lasso?", "acceptedAnswer": {"@type": "Answer", "text": "Almost always, yes. The penalty acts on the size of the coefficients, and a coefficient's size depends on its predictor's units — the same variable measured in grams gets a coefficient a thousand times larger than in kilograms, and would then be penalized a thousand times more heavily. Standardizing every predictor to mean 0 and standard deviation 1 first puts them on equal footing so the penalty is fair. Many packages (such as glmnet) standardize internally by default and report the coefficients back on the original scale, but if yours doesn't, do it yourself. The outcome variable usually doesn't need standardizing — only the predictors."}}]}
+  </script>
+</head>
+<body data-course="ml" data-section="regularization-ridge-and-lasso">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 4.3</span>
+        <h1>Regularization: Ridge &amp; Lasso</h1>
+
+        <p class="lede">Ordinary regression finds the coefficients that fit your sample best. But "best fit to this sample" is a trap when your goal is <a href="../../ml/prediction-vs-explanation/">prediction</a> — it happily assigns big coefficients to noise. <strong>Regularization</strong> fixes this with a deceptively simple move: deliberately shrink the coefficients toward zero. Accepting a little bias buys a large drop in variance, and the model that generalizes better is the one that didn't try quite so hard to fit.</p>
+
+        <h2>Why shrinking helps</h2>
+        <p>Least squares minimizes the training error alone, so with many predictors — especially <a href="../../stats-3/multicollinearity-and-variable-selection/">correlated</a> ones — it produces large, unstable coefficients that swing wildly from sample to sample. That instability is <strong>variance</strong>, and variance is prediction error. Regularization adds a penalty on coefficient size to the thing being minimized:</p>
+        <p style="text-align:center;font-size:1.02rem">minimize &nbsp; (training error) &nbsp;+&nbsp; <em>λ</em> × (size of the coefficients)</p>
+        <p>The penalty pulls every coefficient toward zero. Big, confident coefficients now have to <em>earn</em> their size by reducing error enough to outweigh the penalty. Noise predictors can't, so they get crushed; real predictors survive. This is the <a href="../../stats-4/cross-validation-and-overfitting/">bias–variance trade-off</a> turned into a dial: a bit more bias, a lot less variance, lower error on new data.</p>
+
+        <h2>Ridge shrinks, lasso selects</h2>
+        <p>The two workhorses differ only in how they measure "size of the coefficients":</p>
+        <ul>
+          <li><strong>Ridge</strong> penalizes the sum of <em>squared</em> coefficients (the L2 penalty). It shrinks everything smoothly toward zero but never exactly to zero — every predictor stays in the model, just quieter. Ridge shines when predictors are correlated: it spreads the credit across them instead of letting the estimates explode.</li>
+          <li><strong>Lasso</strong> penalizes the sum of <em>absolute</em> coefficients (the L1 penalty). Its geometry drives weak coefficients to <em>exactly</em> zero, so lasso does automatic <strong>variable selection</strong> — it hands you a shorter model with some predictors switched off entirely.</li>
+        </ul>
+        <p>The penalty strength <em>λ</em> is the flexibility dial: λ = 0 is ordinary least squares; as λ grows, coefficients shrink toward a flat, all-zero model. You don't guess λ — you choose it by <a href="../../stats-4/cross-validation-and-overfitting/">cross-validation</a>, picking the value with the lowest held-out error. One prerequisite: <strong>standardize your predictors first</strong>, so the penalty treats a variable measured in grams the same as one measured in kilograms.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="regviz">
+          <p class="viz-title">📉 The coefficient-path explorer</p>
+          <p class="viz-sub">Eight standardized predictors feed the outcome: <strong style="color:var(--primary)">3 are real</strong> and <span style="color:var(--text-faint)">5 are pure noise</span>. The top panel traces each coefficient as the penalty <em>λ</em> grows (left = none, right = heavy). Below, cross-validated error picks the best λ. Switch between ridge and lasso, and watch the noise coefficients die <em>before</em> the real ones.</p>
+
+          <div class="controls" style="flex-wrap:wrap">
+            <div class="control">
+              <span class="seg"><button type="button" class="active" data-m="lasso">Lasso (L1)</button><button type="button" data-m="ridge">Ridge (L2)</button></span>
+            </div>
+            <div class="control" style="flex:1;min-width:220px">
+              <label>Penalty strength <span class="val" id="lam-val">λ = 0</span></label>
+              <input type="range" id="lam-range" min="0" max="60" step="1" value="20" style="width:100%" />
+            </div>
+            <div class="control"><button class="btn btn-sm" id="best-lam" type="button">Jump to best λ</button></div>
+            <div class="control"><button class="btn btn-primary btn-sm" id="resample" type="button">New sample</button></div>
+          </div>
+
+          <canvas id="reg-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Nonzero coefficients</span><span class="v" id="stat-nz">—</span></div>
+            <div class="stat"><span class="k">Noise still in the model</span><span class="v" id="stat-noise">—</span></div>
+            <div class="stat"><span class="k">Cross-validated MSE</span><span class="v" id="stat-cv">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>Drag λ up from zero and the story is always the same: the five noise coefficients — which only ever fit random wiggles — collapse toward zero first, while the three real coefficients hold on much longer. With <strong>lasso</strong> the noise coefficients snap to <em>exactly</em> zero one by one, literally deleting the junk predictors; with <strong>ridge</strong> they shrink smoothly but linger. And the cross-validated error dips to a minimum in the middle — that best-λ model has quieted the noise without yet crippling the signal. That's regularization doing your variable selection and your overfitting control in one move.</p>
+
+        <h2>Which one should you use?</h2>
+        <ul>
+          <li><strong>Lasso</strong> when you want a sparse, interpretable model or suspect many predictors are irrelevant — it picks a subset for you. Caveat: among a group of correlated predictors it tends to keep one somewhat arbitrarily and zero the rest.</li>
+          <li><strong>Ridge</strong> when you believe most predictors matter a little, or when they're highly correlated and you'd rather share the coefficient than have lasso choose one at random.</li>
+          <li><strong>Elastic net</strong> when you can't decide — it blends the two penalties, getting lasso's selection while handling correlated groups gracefully. It's the pragmatic default in modern predictive modelling.</li>
+        </ul>
+        <p>All three are still linear models: the coefficients remain the familiar "change in <em>y</em> per unit of <em>x</em>," just shrunk. That makes regularization the friendliest possible on-ramp from the regression you know to the predictive modelling of the rest of this course.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> unpenalized regression overfits whenever predictors are many or correlated, inventing large coefficients for noise. Ridge and lasso trade a little bias for much less variance — shrinking, and in lasso's case deleting, the coefficients your data can't actually support — and cross-validation tells you exactly how hard to shrink.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>Ridge or lasso — which should I use?</summary>
+            <div class="faq-a"><p>It depends on what you want from the model. Use <strong>lasso</strong> when you expect many predictors to be irrelevant and you want a sparse, interpretable model — it drives weak coefficients to exactly zero, doing variable selection for you. Use <strong>ridge</strong> when you think most predictors matter a little, or when predictors are highly <a href="../../stats-3/multicollinearity-and-variable-selection/">correlated</a> — ridge keeps them all and shares the coefficient across a correlated group, whereas lasso tends to keep one of the group somewhat arbitrarily and zero the rest. If you can't decide, <strong>elastic net</strong> blends both penalties and is the common pragmatic default. Whichever you choose, let cross-validation pick the penalty strength.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is lambda, and how do I choose it?</summary>
+            <div class="faq-a"><p>Lambda (λ) is the penalty strength — the dial controlling how hard the coefficients are shrunk. At λ = 0 you have ordinary least squares with no shrinkage; as λ grows, coefficients shrink toward zero and the model becomes simpler, more biased, and less variable. You don't set λ by hand: fit the model across a grid of λ values and choose the one with the lowest <a href="../../stats-4/cross-validation-and-overfitting/">cross-validated</a> error (<code>cv.glmnet</code> in R, <code>LassoCV</code>/<code>RidgeCV</code> in Python). A common, slightly conservative choice is the largest λ within one standard error of the minimum ('lambda.1se'), which buys a simpler model for almost the same error.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Do I need to standardize my predictors before ridge or lasso?</summary>
+            <div class="faq-a"><p>Almost always, yes. The penalty acts on the <em>size</em> of the coefficients, and a coefficient's size depends on its predictor's units — the same variable measured in grams gets a coefficient a thousand times larger than in kilograms, and would then be penalized a thousand times more heavily. Standardizing every predictor to mean 0 and standard deviation 1 first puts them on equal footing so the penalty is fair. Many packages (such as glmnet) standardize internally by default and report the coefficients back on the original scale, but if yours doesn't, do it yourself. The outcome variable usually doesn't need standardizing — only the predictors.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ ridge / lasso coefficient-path explorer ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var P = 8, N = 90, NOISE = 1.0, REAL = 3, GN = 60, K = 5;
+    var betaTrue = [2.5, -2.0, 1.5, 0, 0, 0, 0, 0];
+    var canvas = document.getElementById("reg-canvas"), ctx, W = 0, H = 430;
+    var method = "lasso", lamIdx = 20, seed = 1;
+    var grids = {}, paths = {}, trainMSE = {}, cvMSE = {}, cvOpt = {}, CMAX = 3;
+    var foldGrams = [];
+
+    function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+    function randn(rng) { return Math.sqrt(-2 * Math.log(1 - rng())) * Math.cos(2 * Math.PI * rng()); }
+    var X = [], y = [];
+    function buildData(sd) {
+      var rng = mulberry32(sd);
+      var cols = []; for (var j = 0; j < P; j++) cols.push([]);
+      for (var i = 0; i < N; i++) for (var j = 0; j < P; j++) cols[j].push(randn(rng));
+      for (var j = 0; j < P; j++) { var m = 0; for (var i = 0; i < N; i++) m += cols[j][i]; m /= N; var v = 0; for (var i = 0; i < N; i++) v += (cols[j][i] - m) * (cols[j][i] - m); var s = Math.sqrt(v / N); for (var i = 0; i < N; i++) cols[j][i] = (cols[j][i] - m) / s; }
+      X = []; y = [];
+      for (var i = 0; i < N; i++) { var row = [], mu = 0; for (var j = 0; j < P; j++) { row.push(cols[j][i]); mu += betaTrue[j] * cols[j][i]; } X.push(row); y.push(mu + NOISE * randn(rng)); }
+      var my = 0; for (var i = 0; i < N; i++) my += y[i]; my /= N; for (var i = 0; i < N; i++) y[i] -= my;
+    }
+    function gram(Xr, yr) {
+      var XtX = [], Xty = []; for (var j = 0; j < P; j++) { XtX.push(new Array(P).fill(0)); Xty.push(0); }
+      for (var i = 0; i < Xr.length; i++) for (var j = 0; j < P; j++) { Xty[j] += Xr[i][j] * yr[i]; for (var k = 0; k < P; k++) XtX[j][k] += Xr[i][j] * Xr[i][k]; }
+      return { XtX: XtX, Xty: Xty, diag: XtX.map(function (r, j) { return r[j]; }) };
+    }
+    function solve(A, b) {
+      var n = b.length, M = A.map(function (r) { return r.slice(); }), x = b.slice();
+      for (var i = 0; i < n; i++) { var p = i; for (var r = i + 1; r < n; r++) if (Math.abs(M[r][i]) > Math.abs(M[p][i])) p = r; var t = M[p]; M[p] = M[i]; M[i] = t; var tb = x[p]; x[p] = x[i]; x[i] = tb; for (var r2 = i + 1; r2 < n; r2++) { var f = M[r2][i] / M[i][i]; for (var c = i; c < n; c++) M[r2][c] -= f * M[i][c]; x[r2] -= f * x[i]; } }
+      var o = new Array(n); for (var i2 = n - 1; i2 >= 0; i2--) { var s = x[i2]; for (var c2 = i2 + 1; c2 < n; c2++) s -= M[i2][c2] * o[c2]; o[i2] = s / M[i2][i2]; } return o;
+    }
+    function ridge(g, lam) { var A = g.XtX.map(function (r, i) { return r.map(function (v, j) { return v + (i === j ? lam : 0); }); }); return solve(A, g.Xty.slice()); }
+    function soft(z, t) { if (z > t) return z - t; if (z < -t) return z + t; return 0; }
+    function lasso(g, lam, warm) {
+      var b = warm ? warm.slice() : new Array(P).fill(0);
+      for (var it = 0; it < 800; it++) {
+        var md = 0;
+        for (var j = 0; j < P; j++) { var rho = g.Xty[j]; for (var k = 0; k < P; k++) if (k !== j) rho -= g.XtX[j][k] * b[k]; var bj = soft(rho, lam) / g.diag[j]; if (Math.abs(bj - b[j]) > md) md = Math.abs(bj - b[j]); b[j] = bj; }
+        if (md < 1e-9) break;
+      }
+      return b;
+    }
+    function fitAt(g, lam, warm) { return method === "ridge" ? ridge(g, lam) : lasso(g, lam, warm); }
+    function mse(Xr, yr, b) { var sse = 0; for (var i = 0; i < Xr.length; i++) { var pr = 0; for (var j = 0; j < P; j++) pr += Xr[i][j] * b[j]; var e = yr[i] - pr; sse += e * e; } return sse / Xr.length; }
+
+    function computeMethod(mth) {
+      var fullG = gram(X, y);
+      var lamMax = 0; for (var j = 0; j < P; j++) lamMax = Math.max(lamMax, Math.abs(fullG.Xty[j]));
+      var lo = mth === "ridge" ? 0.05 : lamMax * 0.001;
+      var hi = mth === "ridge" ? 1000 : lamMax;
+      var grid = []; for (var gi = 0; gi <= GN; gi++) grid.push(lo * Math.pow(hi / lo, gi / GN));
+      var savedMethod = method; method = mth;
+      var path = [], tr = [], cv = [], warmFull = null, foldWarm = [null, null, null, null, null];
+      for (var gi2 = 0; gi2 <= GN; gi2++) {
+        var lam = grid[gi2];
+        var b = fitAt(fullG, lam, warmFull); warmFull = b; path.push(b);
+        tr.push(mse(X, y, b));
+        var sse = 0, nn = 0;
+        for (var f = 0; f < K; f++) { var bf = fitAt(foldGrams[f].g, lam, foldWarm[f]); foldWarm[f] = bf; for (var i = 0; i < foldGrams[f].Xte.length; i++) { var pr = 0; for (var jj = 0; jj < P; jj++) pr += foldGrams[f].Xte[i][jj] * bf[jj]; var e = foldGrams[f].yte[i] - pr; sse += e * e; nn++; } }
+        cv.push(sse / nn);
+      }
+      method = savedMethod;
+      var opt = 0; for (var gi3 = 1; gi3 <= GN; gi3++) if (cv[gi3] < cv[opt]) opt = gi3;
+      grids[mth] = grid; paths[mth] = path; trainMSE[mth] = tr; cvMSE[mth] = cv; cvOpt[mth] = opt;
+    }
+    function computeAll() {
+      // fixed 5-fold split (by row index) reused for both methods
+      var fold = X.map(function (_, i) { return i % K; });
+      foldGrams = [];
+      for (var f = 0; f < K; f++) {
+        var Xtr = [], ytr = [], Xte = [], yte = [];
+        for (var i = 0; i < N; i++) { if (fold[i] === f) { Xte.push(X[i]); yte.push(y[i]); } else { Xtr.push(X[i]); ytr.push(y[i]); } }
+        foldGrams.push({ g: gram(Xtr, ytr), Xte: Xte, yte: yte });
+      }
+      computeMethod("ridge"); computeMethod("lasso");
+      CMAX = 2;
+      ["ridge", "lasso"].forEach(function (m) { paths[m].forEach(function (b) { b.forEach(function (v) { CMAX = Math.max(CMAX, Math.abs(v)); }); }); });
+      CMAX *= 1.06;
+    }
+
+    /* ---- drawing ---- */
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    var padL = 42, padR = 14;
+    function xAt(gi) { return padL + gi / GN * (W - padL - padR); }
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      var grid = grids[method], path = paths[method], cv = cvMSE[method], tr = trainMSE[method], opt = cvOpt[method];
+      /* top panel: coefficient paths */
+      var t0 = 12, t1 = 250, mid = (t0 + t1) / 2;
+      function yc(v) { return mid - v / CMAX * ((t1 - t0) / 2); }
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, yc(0)); ctx.lineTo(W - padR, yc(0)); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace, monospace"; ctx.textAlign = "right";
+      ctx.fillText(CMAX.toFixed(1), padL - 5, t0 + 8); ctx.fillText("0", padL - 5, yc(0) + 3); ctx.fillText((-CMAX).toFixed(1), padL - 5, t1);
+      // best-lambda marker (both panels)
+      ctx.strokeStyle = VIZ.css("--success"); ctx.setLineDash([4, 4]); ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.moveTo(xAt(opt), t0); ctx.lineTo(xAt(opt), H - 22); ctx.stroke(); ctx.setLineDash([]);
+      // coefficient lines: noise (grey) first, then signal (indigo) on top
+      function coefLine(j, color, wid) {
+        ctx.strokeStyle = color; ctx.lineWidth = wid; ctx.beginPath();
+        for (var gi = 0; gi <= GN; gi++) { var v = path[gi][j]; if (gi === 0) ctx.moveTo(xAt(gi), yc(v)); else ctx.lineTo(xAt(gi), yc(v)); }
+        ctx.stroke();
+      }
+      for (var j = REAL; j < P; j++) coefLine(j, VIZ.css("--text-faint"), 1.3);
+      for (var j2 = 0; j2 < REAL; j2++) coefLine(j2, VIZ.css("--primary"), 2.3);
+      // current-lambda vertical line
+      ctx.strokeStyle = VIZ.css("--text"); ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.moveTo(xAt(lamIdx), t0); ctx.lineTo(xAt(lamIdx), t1); ctx.stroke();
+      // dots for current coefficients
+      for (var j3 = 0; j3 < P; j3++) { ctx.fillStyle = j3 < REAL ? VIZ.css("--primary") : VIZ.css("--text-faint"); ctx.beginPath(); ctx.arc(xAt(lamIdx), yc(path[lamIdx][j3]), j3 < REAL ? 3.4 : 2.4, 0, 6.2832); ctx.fill(); }
+      ctx.font = "600 11px " + VIZ.css("--font"); ctx.textAlign = "left";
+      ctx.fillStyle = VIZ.css("--primary"); ctx.fillText("signal (3 real predictors)", padL + 4, t0 + 10);
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.fillText("noise (5 fake predictors)", padL + 4, t0 + 24);
+      ctx.fillStyle = VIZ.css("--text-muted"); ctx.textAlign = "right"; ctx.fillText("coefficient value", W - padR, t0 + 10);
+
+      /* bottom panel: train + CV error (log scale) vs lambda */
+      var b0 = 288, b1 = H - 22;
+      var all = tr.concat(cv).map(function (v) { return Math.log10(Math.max(v, 1e-3)); });
+      var lo = Math.min.apply(null, all) - 0.06, hi = Math.max.apply(null, all) + 0.06;
+      function by(v) { return b1 - (Math.log10(Math.max(v, 1e-3)) - lo) / (hi - lo) * (b1 - b0); }
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, b1); ctx.lineTo(W - padR, b1); ctx.stroke();
+      function errLine(arr, color) { ctx.strokeStyle = color; ctx.lineWidth = 2.2; ctx.beginPath(); for (var gi = 0; gi <= GN; gi++) { if (gi === 0) ctx.moveTo(xAt(gi), by(arr[gi])); else ctx.lineTo(xAt(gi), by(arr[gi])); } ctx.stroke(); }
+      errLine(tr, VIZ.css("--secondary"));
+      errLine(cv, "#f97316");
+      // current-lambda vertical line
+      ctx.strokeStyle = VIZ.css("--text"); ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.moveTo(xAt(lamIdx), b0); ctx.lineTo(xAt(lamIdx), b1); ctx.stroke();
+      ctx.font = "600 11px " + VIZ.css("--font"); ctx.textAlign = "left";
+      ctx.fillStyle = VIZ.css("--secondary"); ctx.fillText("training error", padL + 4, b0 + 8);
+      ctx.fillStyle = "#f97316"; ctx.fillText("cross-validated error", padL + 4, b0 + 22);
+      ctx.fillStyle = VIZ.css("--success"); ctx.textAlign = "center"; ctx.fillText("best λ", xAt(opt), b1 + 15);
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.textAlign = "left"; ctx.fillText("← weaker penalty", padL, H - 5);
+      ctx.textAlign = "right"; ctx.fillText("stronger penalty →", W - padR, H - 5);
+    }
+
+    function update() {
+      var path = paths[method], grid = grids[method];
+      var b = path[lamIdx];
+      var nz = 0, noiseIn = 0;
+      for (var j = 0; j < P; j++) { if (Math.abs(b[j]) > 1e-4) { nz++; if (j >= REAL) noiseIn++; } }
+      document.getElementById("lam-val").textContent = "λ = " + grid[lamIdx].toFixed(grid[lamIdx] < 10 ? 2 : 1);
+      document.getElementById("stat-nz").textContent = nz + " of " + P;
+      document.getElementById("stat-noise").textContent = noiseIn + " of 5";
+      document.getElementById("stat-cv").textContent = cvMSE[method][lamIdx].toFixed(3);
+      draw();
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll("[data-m]"), function (btn) {
+      btn.addEventListener("click", function () {
+        method = btn.getAttribute("data-m");
+        Array.prototype.forEach.call(document.querySelectorAll("[data-m]"), function (b2) { b2.className = b2 === btn ? "active" : ""; });
+        lamIdx = cvOpt[method]; document.getElementById("lam-range").value = lamIdx; update();
+      });
+    });
+    document.getElementById("lam-range").addEventListener("input", function () { lamIdx = +this.value; update(); });
+    document.getElementById("best-lam").addEventListener("click", function () { lamIdx = cvOpt[method]; document.getElementById("lam-range").value = lamIdx; update(); });
+    document.getElementById("resample").addEventListener("click", function () { seed += 1; buildData(seed); computeAll(); lamIdx = cvOpt[method]; document.getElementById("lam-range").value = lamIdx; update(); });
+    window.addEventListener("resize", function () { fit(); draw(); });
+    VIZ.onTheme(draw);
+
+    buildData(seed); computeAll(); lamIdx = cvOpt[method]; document.getElementById("lam-range").value = lamIdx;
+    fit(); update();
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Train/Test Splits &amp; Generalization — StatsCapybara</title>
+  <meta name="description" content="Never evaluate a model on data it trained on: toggle three classic data leaks and watch reported accuracy pull away from true performance." />
+  <link rel="canonical" href="https://statscapybara.com/ml/train-test-split-and-generalization/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Train/Test Splits &amp; Generalization — StatsCapybara" />
+  <meta property="og:description" content="Why you must never evaluate a model on data it trained on — and how data leakage secretly inflates your accuracy. Toggle three classic leaks and watch performance diverge." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/ml/train-test-split-and-generalization/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Train/Test Splits &amp; Generalization — StatsCapybara" />
+  <meta name="twitter:description" content="Never evaluate a model on data it trained on. Toggle three classic data leaks and watch reported vs true accuracy diverge." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <style>
+    .leak-btn { font: inherit; font-size: .82rem; font-weight: 600; padding: .4rem .7rem; border-radius: 8px;
+      border: 1.5px solid var(--border); background: var(--surface); color: var(--text-muted); cursor: pointer;
+      transition: all .12s ease; }
+    .leak-btn:hover { border-color: #f97316; color: var(--text); }
+    .leak-btn.on { background: #f97316; border-color: #f97316; color: #fff; }
+  </style>
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Train/Test Splits & Generalization", "description": "Why you must never evaluate a model on data it trained on, and how data leakage secretly inflates reported accuracy — with a hands-on leakage laboratory.", "url": "https://statscapybara.com/ml/train-test-split-and-generalization/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — ML & AI: Machine Learning for Researchers", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Train/Test Splits & Generalization", "item": "https://statscapybara.com/ml/train-test-split-and-generalization/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is data leakage?", "acceptedAnswer": {"@type": "Answer", "text": "Data leakage is any way that information from your test set — or from the future — sneaks into training, so the model is secretly graded on things it already saw. The symptom is a beautiful reported score and disappointing real-world performance. The three classic culprits are: scaling or selecting 'the most predictive' features using the whole dataset before splitting; the same subject's rows appearing in both the training and test sets; and trying many models or settings and reporting the one that scored best on the test set. The cure is a single rule: every step that learns anything from the data must happen inside the training split, never before it."}}, {"@type": "Question", "name": "Do I still need a separate test set if I use cross-validation?", "acceptedAnswer": {"@type": "Answer", "text": "Ideally yes, whenever you make choices. Cross-validation on the training data is the right tool for comparing models and tuning settings — but the moment you use a CV score to choose something, that score becomes slightly optimistic, because you have optimized against it. A final test set, opened once after every decision is locked, gives an unbiased estimate of the model you actually settled on. On small datasets people sometimes use nested cross-validation instead of a held-out set, but the principle is unchanged: the number you report should come from data that influenced none of your decisions."}}, {"@type": "Question", "name": "Why can't I just train and test on all of my data?", "acceptedAnswer": {"@type": "Answer", "text": "Because a flexible model can memorize its training data and post a near-perfect score that says nothing about new cases — that is overfitting, and grading a model on data it was trained on hides it completely. The training score measures memory; only performance on data the model never touched during fitting measures learning. That is exactly why you hold back a test set (or use cross-validation): to get a number that reflects how the model will do in the wild, not how well it recited its own study notes."}}]}
+  </script>
+</head>
+<body data-course="ml" data-section="train-test-split-and-generalization">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 4.2</span>
+        <h1>Train/Test Splits &amp; Generalization</h1>
+
+        <p class="lede">A predictive model has exactly one job: to work on data it has never seen. So there is one golden rule, and breaking it is the most common way careful people fool themselves in machine learning — <strong>never judge a model on data it was trained on.</strong> The moment you do, you're measuring memory, not learning.</p>
+
+        <h2>The golden rule and the split</h2>
+        <p>A flexible model can memorize its training data almost perfectly and still be useless on the next case — that's <a href="../../stats-4/cross-validation-and-overfitting/">overfitting</a>. To get an honest estimate of how well a model <em>generalizes</em>, you hold data back:</p>
+        <ul>
+          <li><strong>Training set</strong> — the model learns here (fits coefficients, grows trees, picks neighbours).</li>
+          <li><strong>Test set</strong> — locked in a drawer until the very end, opened <em>once</em> to report honest performance. If you peek and adjust, it's no longer a test set.</li>
+        </ul>
+        <p>A typical split is 70–80% train, the rest test. For classification, <strong>stratify</strong> the split so each side keeps the same class proportions — otherwise a rare class can vanish from one side by chance. And when you need to compare or tune models, carve a <em>validation</em> set (or use <a href="../../stats-4/cross-validation-and-overfitting/">cross-validation</a>) out of the training data, so the test set stays pristine.</p>
+
+        <h2>Data leakage: the #1 silent killer</h2>
+        <p><strong>Data leakage</strong> is when information from the test set sneaks into training. It doesn't crash anything or throw a warning — it just makes your reported score gorgeous and your real-world performance disappointing. Three classic leaks account for most disasters:</p>
+        <ol>
+          <li><strong>Preprocessing before the split.</strong> Scaling, or choosing "the most predictive features", using the <em>whole</em> dataset lets the test rows influence those choices. The test set helped build the model, so it can't fairly grade it.</li>
+          <li><strong>The same subjects on both sides.</strong> Duplicate rows, or multiple measurements from one person landing in both train and test, let the model recognize individuals it "already met" — inflating the score without any real skill.</li>
+          <li><strong>Tuning on the test set.</strong> Trying many models / thresholds / settings and reporting the one that scored best on the test set turns your test set into a training set for your choices. You've optimized against the exam.</li>
+        </ol>
+        <p>Below is a real (if tiny) predictive pipeline: a <a href="../../ml/regularization-ridge-and-lasso/">k-nearest-neighbours</a> classifier on data where only a couple of features carry weak signal and the rest are noise. Flip the leaks on and watch the pipeline's <em>reported</em> accuracy pull away from its <em>true</em> accuracy on fresh cases.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="leakviz">
+          <p class="viz-title">🧪 The leakage laboratory</p>
+          <p class="viz-sub">Each bar is an average over many simulated studies. With an <strong>honest</strong> pipeline the two bars match — the test score is trustworthy. Switch on a leak and the reported bar inflates while the true bar (performance on never-seen data) barely moves. That gap is self-deception, measured.</p>
+
+          <div class="controls" style="flex-wrap:wrap;gap:.5rem">
+            <div class="control"><button class="leak-btn" data-leak="pre" type="button">① Preprocess before splitting</button></div>
+            <div class="control"><button class="leak-btn" data-leak="overlap" type="button">② Same subjects in both sets</button></div>
+            <div class="control"><button class="leak-btn" data-leak="tune" type="button">③ Tune on the test set</button></div>
+            <div class="control"><button class="btn btn-primary btn-sm" id="newsim" type="button">New simulation</button></div>
+          </div>
+
+          <canvas id="leak-canvas"></canvas>
+
+          <p id="leak-verdict" style="font-size:.9rem;color:var(--text-muted);margin-top:.5rem;text-align:center;line-height:1.5"></p>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>With every leak off, the reported and true bars sit on top of each other — that's what an honest evaluation looks like. Each leak you add lifts the <em>reported</em> bar while the <em>true</em> bar stays put, and stacking all three produces a triumphant number that is almost entirely fiction. This is exactly how a model posts 0.95 in the notebook and 0.60 in production.</p>
+
+        <h2>How to split honestly</h2>
+        <p>The leak-proof principle is one sentence: <strong>every step that learns anything from the data must happen inside the training split, never before it.</strong> In practice:</p>
+        <ul>
+          <li><strong>Split first, then preprocess.</strong> Fit your scaler and your feature selection on the training data only, then <em>apply</em> them to the test data. In scikit-learn, wrap the whole thing in a <code>Pipeline</code> so cross-validation re-fits every step inside each fold.</li>
+          <li><strong>Split by subject, not by row.</strong> If one person contributes several rows, keep that whole person on one side (a "grouped" split). The unit you'll predict on in the wild is the unit you should split on.</li>
+          <li><strong>Touch the test set once.</strong> Do all comparing and tuning with cross-validation on the training data; unlock the test set only to report the final, single number.</li>
+        </ul>
+        <p>Do this and the interactive's two bars stay glued together — which is the whole point. An honest, modest number beats an inflated, dishonest one every time, because only the honest one survives contact with reality.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> a leaked evaluation doesn't just overstate a model — it recommends the wrong one, hides overfitting, and collapses the moment it meets real data. Keeping the test set genuinely untouched is the difference between a number you can stake a decision on and a number that only ever described your own dataset.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What is data leakage?</summary>
+            <div class="faq-a"><p>Data leakage is any way that information from your test set — or from the future — sneaks into training, so the model is secretly graded on things it already saw. The symptom is a beautiful reported score and disappointing real-world performance. The three classic culprits are: scaling or selecting 'the most predictive' features using the <em>whole</em> dataset before splitting; the same subject's rows appearing in both the training and test sets; and trying many models or settings and reporting the one that scored best on the test set. The cure is a single rule: every step that learns anything from the data must happen inside the training split, never before it.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Do I still need a separate test set if I use cross-validation?</summary>
+            <div class="faq-a"><p>Ideally yes, whenever you make choices. Cross-validation on the training data is the right tool for comparing models and tuning settings — but the moment you use a CV score to <em>choose</em> something, that score becomes slightly optimistic, because you have optimized against it. A final test set, opened once after every decision is locked, gives an unbiased estimate of the model you actually settled on. On small datasets people sometimes use nested cross-validation instead of a held-out set, but the principle is unchanged: the number you report should come from data that influenced none of your decisions.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Why can't I just train and test on all of my data?</summary>
+            <div class="faq-a"><p>Because a flexible model can memorize its training data and post a near-perfect score that says nothing about new cases — that is <a href="../../stats-4/cross-validation-and-overfitting/">overfitting</a>, and grading a model on data it was trained on hides it completely. The training score measures memory; only performance on data the model never touched during fitting measures learning. That is exactly why you hold back a test set (or use cross-validation): to get a number that reflects how the model will do in the wild, not how well it recited its own study notes.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ data-leakage laboratory (Monte Carlo over a kNN pipeline) ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var F = 80, REAL = 2, DELTA = 1.0, MFEAT = 5, NPER = 22, POPPER = 80, OVFRAC = 0.6, REPS = 90;
+    var KS = [1, 3, 5, 7, 9, 15];
+    var canvas = document.getElementById("leak-canvas"), ctx, W = 0, H = 250;
+    var flags = { pre: false, overlap: false, tune: false };
+    var baseSeed = 1, reported = 0.65, truth = 0.65;
+
+    function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+    function randn(rng) { return Math.sqrt(-2 * Math.log(1 - rng())) * Math.cos(2 * Math.PI * rng()); }
+    function genSet(rng, np) {
+      var x = [], y = [];
+      for (var c = 0; c < 2; c++) for (var i = 0; i < np; i++) {
+        var row = []; for (var j = 0; j < F; j++) { var mu = (j < REAL ? (c === 1 ? DELTA : 0) : 0); row.push(mu + randn(rng)); }
+        x.push(row); y.push(c);
+      }
+      return { x: x, y: y };
+    }
+    function mda(set, j) { var s0 = 0, n0 = 0, s1 = 0, n1 = 0; for (var i = 0; i < set.y.length; i++) { if (set.y[i] === 1) { s1 += set.x[i][j]; n1++; } else { s0 += set.x[i][j]; n0++; } } return Math.abs(s1 / n1 - s0 / n0); }
+    function topFeatures(set, m) { var sc = []; for (var j = 0; j < F; j++) sc.push([j, mda(set, j)]); sc.sort(function (a, b) { return b[1] - a[1]; }); return sc.slice(0, m).map(function (e) { return e[0]; }); }
+    function combine(a, b) { return { x: a.x.concat(b.x), y: a.y.concat(b.y) }; }
+    function knn(p, ref, feats, k) {
+      var d = [];
+      for (var i = 0; i < ref.y.length; i++) { var s = 0; for (var f = 0; f < feats.length; f++) { var e = p[feats[f]] - ref.x[i][feats[f]]; s += e * e; } d.push([s, ref.y[i]]); }
+      d.sort(function (a, b) { return a[0] - b[0]; });
+      var v = 0; for (var i2 = 0; i2 < k; i2++) v += d[i2][1];
+      return v > k / 2 ? 1 : 0;
+    }
+    function acc(ev, ref, feats, k) { var ok = 0; for (var i = 0; i < ev.y.length; i++) if (knn(ev.x[i], ref, feats, k) === ev.y[i]) ok++; return ok / ev.y.length; }
+
+    function sim(seed) {
+      var rng = mulberry32(seed);
+      var train = genSet(rng, NPER), test = genSet(rng, NPER), pop = genSet(rng, POPPER);
+      var selSet = flags.pre ? combine(train, test) : train;
+      var feats = topFeatures(selSet, MFEAT);
+      var ref = train;
+      if (flags.overlap) { var nOv = Math.round(test.y.length * OVFRAC); ref = combine(train, { x: test.x.slice(0, nOv), y: test.y.slice(0, nOv) }); }
+      var rep, tru;
+      if (flags.tune) {
+        var bA = -1, bK = 3;
+        KS.forEach(function (k) { var a = acc(test, ref, feats, k); if (a > bA) { bA = a; bK = k; } });
+        rep = acc(test, ref, feats, bK); tru = acc(pop, ref, feats, bK);
+      } else { rep = acc(test, ref, feats, 3); tru = acc(pop, ref, feats, 3); }
+      return [rep, tru];
+    }
+    function recompute() {
+      var sr = 0, st = 0;
+      for (var s = 0; s < REPS; s++) { var r = sim((baseSeed + s) * 13 + 1); sr += r[0]; st += r[1]; }
+      reported = sr / REPS; truth = st / REPS;
+      draw(); verdict();
+    }
+
+    /* ---- drawing: two horizontal accuracy bars ---- */
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      var padL = 16, padR = 56, x0 = padL, x1 = W - padR;
+      var lo = 0.5, hi = 0.95;
+      function bx(v) { return x0 + (Math.max(lo, Math.min(hi, v)) - lo) / (hi - lo) * (x1 - x0); }
+      // vertical gridlines behind the bars + % scale along the bottom
+      ctx.font = "11px ui-monospace, monospace"; ctx.textAlign = "center";
+      [0.5, 0.6, 0.7, 0.8, 0.9].forEach(function (t) {
+        ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(bx(t), 44); ctx.lineTo(bx(t), 176); ctx.stroke();
+        ctx.fillStyle = VIZ.css("--text-faint"); ctx.fillText((t * 100).toFixed(0) + "%", bx(t), 194);
+      });
+      ctx.textAlign = "left"; ctx.fillStyle = VIZ.css("--text-faint"); ctx.fillText("50% = chance", bx(0.5), 212);
+      // each bar carries its label ABOVE it (so nothing clips at narrow widths)
+      function bar(yl, v, color, label) {
+        ctx.fillStyle = VIZ.css("--text"); ctx.font = "600 13px " + VIZ.css("--font"); ctx.textAlign = "left";
+        ctx.fillText(label, x0, yl);
+        var yb = yl + 9, h = 40, x = bx(v);
+        ctx.fillStyle = color; ctx.beginPath();
+        (ctx.roundRect ? ctx.roundRect(x0, yb, Math.max(2, x - x0), h, 6) : ctx.rect(x0, yb, x - x0, h)); ctx.fill();
+        ctx.font = "700 15px " + VIZ.css("--font"); ctx.fillText((v * 100).toFixed(1) + "%", x + 8, yb + h / 2 + 5);
+      }
+      bar(40, reported, "#f97316", "Reported accuracy");
+      bar(112, truth, "#22c55e", "True accuracy (on new data)");
+    }
+    function verdict() {
+      var gap = (reported - truth) * 100;
+      var el = document.getElementById("leak-verdict");
+      var on = [];
+      if (flags.pre) on.push("preprocessing before the split");
+      if (flags.overlap) on.push("subject overlap");
+      if (flags.tune) on.push("tuning on the test set");
+      if (!on.length) {
+        el.innerHTML = "✅ <strong>Honest pipeline.</strong> Reported and true accuracy agree within noise — this test score is trustworthy.";
+      } else {
+        var leaks = on.length === 1 ? on[0] : on.slice(0, -1).join(", ") + " and " + on[on.length - 1];
+        el.innerHTML = "⚠️ Leaks active: " + leaks + ". Reported accuracy is inflated by <strong>" + gap.toFixed(1) + " points</strong> over true performance — that gap is invisible until the model meets real data.";
+      }
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll(".leak-btn"), function (b) {
+      b.addEventListener("click", function () {
+        var k = b.getAttribute("data-leak");
+        flags[k] = !flags[k];
+        b.classList.toggle("on", flags[k]);
+        recompute();
+      });
+    });
+    document.getElementById("newsim").addEventListener("click", function () { baseSeed += 101; recompute(); });
+    window.addEventListener("resize", function () { fit(); draw(); });
+    VIZ.onTheme(draw);
+
+    fit(); recompute();
+  })();
+  </script>
+</body>
+</html>

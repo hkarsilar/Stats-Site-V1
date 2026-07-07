@@ -715,4 +715,37 @@ FAQS_ETHICS = {
 
 }
 
-FAQS = {**FAQS_12, **FAQS_34, **FAQS_METHODS, **FAQS_DATA, **FAQS_ETHICS}
+FAQS_ML = {
+
+# ---------------- ML & AI ----------------
+
+"prediction-vs-explanation": [
+ ("Is machine learning just statistics with a fancier name?",
+  "Same mathematics, genuinely different emphasis. Much of ML is built directly on statistical models — <a href=\"../../stats-2/simple-linear-regression/\">regression</a>, logistic regression, and their relatives — but the two fields optimize different things. Classical statistics is usually doing <em>inference</em>: which variables matter, how large the effect is, and how certain we are (coefficients, confidence intervals, p-values). ML is usually doing <em>prediction</em>: how accurately it can guess the outcome for cases it has never seen, measured by held-out error. The cultures overlap and borrow constantly, but 'just rebranded' undersells the shift — ML happily uses uninterpretable models if they predict well and rarely reports p-values, while inferential statistics keeps models interpretable and rarely reports test-set error."),
+ ("What is the difference between prediction and explanation?",
+  "Explanation (inference) is about the relationship itself: estimating the size, direction, and uncertainty of an effect so you can understand a system — does X influence Y, and by how much? Prediction is about the outcome: given a new case's features, produce the best guess of its Y, judged only by error on unseen data. You can have either without the other. A model can predict superbly while every internal coefficient is meaningless (a black box), or explain a mechanism cleanly while predicting barely better than chance on a genuinely noisy outcome. Decide which one you actually need before you choose a model."),
+ ("Can the same model be good for both prediction and explanation?",
+  "Sometimes — a simple, well-specified linear model often does a respectable job of both — but don't assume it. The two goals pull in different directions: explanation rewards <em>parsimony</em> (every extra term is another thing to interpret and defend), while prediction rewards whatever lowers <a href=\"../../stats-4/cross-validation-and-overfitting/\">held-out error</a> (often more flexibility). When they conflict, pick the model that matches your real goal and say which goal it is. The classic mistake is to build a black-box predictor and then read its internals as if they were causal effects — a model optimized for prediction owes you no honest explanation."),
+],
+
+"train-test-split-and-generalization": [
+ ("What is data leakage?",
+  "Data leakage is any way that information from your test set — or from the future — sneaks into training, so the model is secretly graded on things it already saw. The symptom is a beautiful reported score and disappointing real-world performance. The three classic culprits are: scaling or selecting 'the most predictive' features using the <em>whole</em> dataset before splitting; the same subject's rows appearing in both the training and test sets; and trying many models or settings and reporting the one that scored best on the test set. The cure is a single rule: every step that learns anything from the data must happen inside the training split, never before it."),
+ ("Do I still need a separate test set if I use cross-validation?",
+  "Ideally yes, whenever you make choices. Cross-validation on the training data is the right tool for comparing models and tuning settings — but the moment you use a CV score to <em>choose</em> something, that score becomes slightly optimistic, because you have optimized against it. A final test set, opened once after every decision is locked, gives an unbiased estimate of the model you actually settled on. On small datasets people sometimes use nested cross-validation instead of a held-out set, but the principle is unchanged: the number you report should come from data that influenced none of your decisions."),
+ ("Why can't I just train and test on all of my data?",
+  "Because a flexible model can memorize its training data and post a near-perfect score that says nothing about new cases — that is <a href=\"../../stats-4/cross-validation-and-overfitting/\">overfitting</a>, and grading a model on data it was trained on hides it completely. The training score measures memory; only performance on data the model never touched during fitting measures learning. That is exactly why you hold back a test set (or use cross-validation): to get a number that reflects how the model will do in the wild, not how well it recited its own study notes."),
+],
+
+"regularization-ridge-and-lasso": [
+ ("Ridge or lasso — which should I use?",
+  "It depends on what you want from the model. Use <strong>lasso</strong> when you expect many predictors to be irrelevant and you want a sparse, interpretable model — it drives weak coefficients to exactly zero, doing variable selection for you. Use <strong>ridge</strong> when you think most predictors matter a little, or when predictors are highly <a href=\"../../stats-3/multicollinearity-and-variable-selection/\">correlated</a> — ridge keeps them all and shares the coefficient across a correlated group, whereas lasso tends to keep one of the group somewhat arbitrarily and zero the rest. If you can't decide, <strong>elastic net</strong> blends both penalties and is the common pragmatic default. Whichever you choose, let cross-validation pick the penalty strength."),
+ ("What is lambda, and how do I choose it?",
+  "Lambda (λ) is the penalty strength — the dial controlling how hard the coefficients are shrunk. At λ = 0 you have ordinary least squares with no shrinkage; as λ grows, coefficients shrink toward zero and the model becomes simpler, more biased, and less variable. You don't set λ by hand: fit the model across a grid of λ values and choose the one with the lowest <a href=\"../../stats-4/cross-validation-and-overfitting/\">cross-validated</a> error (<code>cv.glmnet</code> in R, <code>LassoCV</code>/<code>RidgeCV</code> in Python). A common, slightly conservative choice is the largest λ within one standard error of the minimum ('lambda.1se'), which buys a simpler model for almost the same error."),
+ ("Do I need to standardize my predictors before ridge or lasso?",
+  "Almost always, yes. The penalty acts on the <em>size</em> of the coefficients, and a coefficient's size depends on its predictor's units — the same variable measured in grams gets a coefficient a thousand times larger than in kilograms, and would then be penalized a thousand times more heavily. Standardizing every predictor to mean 0 and standard deviation 1 first puts them on equal footing so the penalty is fair. Many packages (such as glmnet) standardize internally by default and report the coefficients back on the original scale, but if yours doesn't, do it yourself. The outcome variable usually doesn't need standardizing — only the predictors."),
+],
+
+}
+
+FAQS = {**FAQS_12, **FAQS_34, **FAQS_METHODS, **FAQS_DATA, **FAQS_ETHICS, **FAQS_ML}

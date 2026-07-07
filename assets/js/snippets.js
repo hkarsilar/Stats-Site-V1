@@ -254,5 +254,19 @@ window.SNIPPETS = {
   "merging-datasets": {
     r: 'library(dplyr)\n# left join: keep every participant, attach sessions where the key matches\nmerged <- left_join(participants, sessions, by = "id")\ninner  <- inner_join(participants, sessions, by = "id")   # complete cases only\nfull   <- full_join(participants, sessions, by = "id")    # keep everyone\n# habit: confirm the key is unique and check the row count did what you expected\nstopifnot(!any(duplicated(participants$id)))\nnrow(participants); nrow(merged)   # a left join should not lose rows',
     py: 'import pandas as pd\n# left merge: keep every participant, attach sessions where the key matches\nmerged = participants.merge(sessions, on="id", how="left")\ninner  = participants.merge(sessions, on="id", how="inner")   # complete cases\nouter  = participants.merge(sessions, on="id", how="outer")    # keep everyone\n# habit: confirm the key is unique and audit the row count\nassert participants["id"].is_unique, "key is not unique!"\nprint(len(participants), "->", len(merged))   # a left merge should not lose rows'
+  },
+
+  /* ---------------- ML & AI — Machine Learning for Researchers ---------------- */
+  "prediction-vs-explanation": {
+    r: '# SAME data, two goals\nfit <- lm(y ~ x, data = df)\nconfint(fit)                         # EXPLANATION: the slope with its 95% CI\n\nlibrary(boot)\ng <- glm(y ~ poly(x, 3), data = df)\ncv.glm(df, g, K = 5)$delta[1]        # PREDICTION: 5-fold held-out error',
+    py: 'import statsmodels.formula.api as smf\nfrom sklearn.pipeline import make_pipeline\nfrom sklearn.preprocessing import PolynomialFeatures\nfrom sklearn.linear_model import LinearRegression\nfrom sklearn.model_selection import cross_val_score\nprint(smf.ols("y ~ x", df).fit().conf_int())   # EXPLANATION: slope + 95% CI\nmodel = make_pipeline(PolynomialFeatures(3), LinearRegression())\nprint(-cross_val_score(model, X, y, cv=5,\n        scoring="neg_mean_squared_error").mean())   # PREDICTION: held-out error'
+  },
+  "train-test-split-and-generalization": {
+    r: 'library(tidymodels)\nset.seed(1)\nsp    <- initial_split(df, prop = 0.8, strata = y)   # stratified train/test split\ntrain <- training(sp); test <- testing(sp)\n# fit scaling on the TRAINING data only, inside a recipe (no leakage)\nrec <- recipe(y ~ ., data = train) |> step_normalize(all_numeric_predictors())\nwf  <- workflow() |> add_recipe(rec) |> add_model(logistic_reg())\nfit <- fit(wf, train)\naugment(fit, test) |> accuracy(y, .pred_class)       # honest score, test touched once',
+    py: 'from sklearn.model_selection import train_test_split\nfrom sklearn.pipeline import make_pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LogisticRegression\nXtr, Xte, ytr, yte = train_test_split(X, y, test_size=0.2,\n                                      stratify=y, random_state=1)\n# the scaler is fit INSIDE the pipeline, on the training fold only -> no leakage\npipe = make_pipeline(StandardScaler(), LogisticRegression()).fit(Xtr, ytr)\nprint(pipe.score(Xte, yte))   # honest test accuracy; the test set fit nothing'
+  },
+  "regularization-ridge-and-lasso": {
+    r: 'library(glmnet)   # standardizes internally by default\nX  <- model.matrix(y ~ . - 1, df); yv <- df$y\ncv <- cv.glmnet(X, yv, alpha = 1)     # alpha = 1 lasso, alpha = 0 ridge\ncoef(cv, s = "lambda.min")            # coefficients at the CV-best lambda (some are 0)\nplot(cv)                              # cross-validated error vs log(lambda)',
+    py: 'from sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LassoCV, RidgeCV\nXs = StandardScaler().fit_transform(X)          # standardize first!\nlasso = LassoCV(cv=5).fit(Xs, y)                # picks lambda by 5-fold CV\nprint(lasso.alpha_, lasso.coef_)                # optimal lambda; some coefs exactly 0\nridge = RidgeCV(alphas=[0.1, 1, 10, 100]).fit(Xs, y)   # shrinks, never zeros'
   }
 };
