@@ -268,5 +268,17 @@ window.SNIPPETS = {
   "regularization-ridge-and-lasso": {
     r: 'library(glmnet)   # standardizes internally by default\nX  <- model.matrix(y ~ . - 1, df); yv <- df$y\ncv <- cv.glmnet(X, yv, alpha = 1)     # alpha = 1 lasso, alpha = 0 ridge\ncoef(cv, s = "lambda.min")            # coefficients at the CV-best lambda (some are 0)\nplot(cv)                              # cross-validated error vs log(lambda)',
     py: 'from sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LassoCV, RidgeCV\nXs = StandardScaler().fit_transform(X)          # standardize first!\nlasso = LassoCV(cv=5).fit(Xs, y)                # picks lambda by 5-fold CV\nprint(lasso.alpha_, lasso.coef_)                # optimal lambda; some coefs exactly 0\nridge = RidgeCV(alphas=[0.1, 1, 10, 100]).fit(Xs, y)   # shrinks, never zeros'
+  },
+  "classification-metrics": {
+    r: 'library(caret)\n# truth and predicted classes as factors, "yes" is the positive class\ncm <- confusionMatrix(pred, truth, positive = "yes")\ncm$table                              # the confusion matrix\ncm$overall["Accuracy"]\ncm$byClass[c("Sensitivity", "Specificity", "Precision", "Recall", "F1")]',
+    py: 'from sklearn.metrics import (confusion_matrix, classification_report,\n                             precision_score, recall_score, f1_score)\nprint(confusion_matrix(y_true, y_pred))        # rows = actual, cols = predicted\nprint(classification_report(y_true, y_pred))   # precision, recall, F1 per class\nprint(recall_score(y_true, y_pred),            # = sensitivity / TPR\n      precision_score(y_true, y_pred),\n      f1_score(y_true, y_pred))'
+  },
+  "roc-curves-and-auc": {
+    r: 'library(pROC)\n# y_score = the model\'s predicted probability of the positive class\nr <- roc(y_true, y_score)\nplot(r, print.auc = TRUE)             # ROC curve with AUC annotated\nauc(r)                                # area under the curve\nci.auc(r)                             # 95% CI for AUC (DeLong)',
+    py: 'from sklearn.metrics import roc_curve, roc_auc_score, RocCurveDisplay\n# y_score = predicted probability of the positive class (not the hard label)\nfpr, tpr, thresholds = roc_curve(y_true, y_score)\nprint("AUC =", roc_auc_score(y_true, y_score))\nRocCurveDisplay.from_predictions(y_true, y_score)   # draws the curve\n# heavily imbalanced? prefer the precision-recall curve:\n# from sklearn.metrics import average_precision_score, PrecisionRecallDisplay'
+  },
+  "decision-trees": {
+    r: 'library(rpart)\nlibrary(rpart.plot)\nfit <- rpart(y ~ ., data = train, method = "class",\n             control = rpart.control(cp = 0.01))   # cp = complexity penalty\nrpart.plot(fit)                        # the readable flowchart\nprintcp(fit)                           # cross-validated error vs tree size\nfit <- prune(fit, cp = fit$cptable[which.min(fit$cptable[, "xerror"]), "CP"])',
+    py: 'from sklearn.tree import DecisionTreeClassifier, plot_tree\n# max_depth is the overfitting dial — tune it by cross-validation\nclf = DecisionTreeClassifier(max_depth=4, random_state=0).fit(Xtr, ytr)\nprint(clf.score(Xtr, ytr), clf.score(Xte, yte))   # train vs test accuracy\nplot_tree(clf, filled=True, feature_names=cols)    # the readable flowchart'
   }
 };

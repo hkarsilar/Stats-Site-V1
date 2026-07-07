@@ -167,7 +167,10 @@ window.CURRICULUM = [
     sections: [
       { n: "4.1", slug: "prediction-vs-explanation",           title: "Prediction vs Explanation", ready: true },
       { n: "4.2", slug: "train-test-split-and-generalization", title: "Train/Test Splits & Generalization", ready: true },
-      { n: "4.3", slug: "regularization-ridge-and-lasso",       title: "Regularization: Ridge & Lasso", ready: true }
+      { n: "4.3", slug: "regularization-ridge-and-lasso",       title: "Regularization: Ridge & Lasso", ready: true },
+      { n: "4.4", slug: "classification-metrics",              title: "Classification Metrics & the Accuracy Trap", ready: true },
+      { n: "4.5", slug: "roc-curves-and-auc",                  title: "ROC Curves & AUC", ready: true },
+      { n: "4.6", slug: "decision-trees",                      title: "Decision Trees", ready: true }
     ]
   }
 ];

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ROC Curves & AUC — StatsCapybara</title>
+  <meta name="description" content="Sweep every threshold and plot true-positive vs false-positive rate: the ROC curve. AUC is the chance a random positive outranks a random negative." />
+  <link rel="canonical" href="https://statscapybara.com/ml/roc-curves-and-auc/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="ROC Curves & AUC — StatsCapybara" />
+  <meta property="og:description" content="Watch a ROC curve draw itself as the threshold sweeps, and see why AUC = the chance a random positive scores above a random negative." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/ml/roc-curves-and-auc/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ROC Curves & AUC — StatsCapybara" />
+  <meta name="twitter:description" content="ROC curves and AUC, built by sweeping the threshold — top-left is good, the diagonal is a coin flip, and AUC has a clean probability meaning." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "ROC Curves & AUC", "description": "The ROC curve plots true-positive rate against false-positive rate across every threshold; AUC summarizes it as the probability a random positive is ranked above a random negative.", "url": "https://statscapybara.com/ml/roc-curves-and-auc/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — ML & AI: Machine Learning for Researchers", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "ROC Curves & AUC", "item": "https://statscapybara.com/ml/roc-curves-and-auc/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is a good AUC value?", "acceptedAnswer": {"@type": "Answer", "text": "As a rough field guide: 0.5 is a coin flip (useless), around 0.7 is modest, 0.8 is good, and 0.9+ is excellent — but 'good' is entirely context-dependent. AUC is the probability that the model ranks a random positive case above a random negative one, so 0.5 means the model can't tell the classes apart at all. For an easy, well-separated problem 0.85 might be disappointing; for predicting something genuinely noisy like human behaviour, 0.70 can be a real achievement. And a high AUC on a rare-outcome problem can still hide poor precision, so never read AUC in isolation — pair it with the confusion-matrix metrics at the threshold you actually plan to use."}}, {"@type": "Question", "name": "What is the difference between AUC and accuracy?", "acceptedAnswer": {"@type": "Answer", "text": "Accuracy is measured at one chosen threshold and depends on it; AUC is threshold-free, summarizing performance across every possible threshold at once. Accuracy also depends heavily on the base rate — it can be inflated by a common class — whereas AUC does not, because it only asks whether positives tend to score higher than negatives (their ranking), not how many of each there are. So AUC answers 'how well does this model separate the classes in principle?', while accuracy answers 'how many did I get right at this specific cutoff?'. A model can have a strong AUC yet poor accuracy at your operating threshold, or vice versa."}}, {"@type": "Question", "name": "When should I use a precision-recall curve instead of ROC?", "acceptedAnswer": {"@type": "Answer", "text": "Use a precision-recall (PR) curve when the positive class is rare and it's the class you care about. ROC's x-axis is the false-positive rate, which stays reassuringly small when negatives are plentiful, so a ROC curve can look excellent even while most of your positive flags are actually false alarms. Precision, by contrast, is computed only from the cases you flagged as positive, so it reacts sharply to false positives and exposes the problem. For fraud, disease screening, or any heavily imbalanced task, report the PR curve (and its area, average precision) alongside or instead of ROC/AUC; for roughly balanced problems, ROC is fine."}}]}
+  </script>
+</head>
+<body data-course="ml" data-section="roc-curves-and-auc">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 4.5</span>
+        <h1>ROC Curves &amp; AUC</h1>
+
+        <p class="lede">In the <a href="../../ml/classification-metrics/">last lesson</a> we saw that the decision threshold is a dial, and every setting gives different precision and recall. So which setting do you report? The honest answer: don't pick one — show them <em>all</em>. That single move produces the ROC curve, the most-used one-glance summary of a classifier, and the number distilled from it, AUC.</p>
+
+        <h2>Sweep the threshold, trace a curve</h2>
+        <p>Recall the two knobs from the confusion matrix. As you slide the threshold from "flag almost nobody" to "flag almost everybody," two rates move together:</p>
+        <ul>
+          <li><strong>True-positive rate</strong> (TPR = recall = sensitivity): the fraction of real positives you catch.</li>
+          <li><strong>False-positive rate</strong> (FPR = 1 − specificity): the fraction of real negatives you wrongly flag.</li>
+        </ul>
+        <p>Plot TPR (vertical) against FPR (horizontal) at every threshold and you get the <strong>Receiver Operating Characteristic</strong> curve — a name inherited from WWII radar operators deciding which blips were real. Press <em>Sweep</em> and watch it draw itself: as the threshold slides down, the point crawls from the bottom-left corner (flag nobody: 0, 0) up to the top-right (flag everybody: 1, 1).</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="rocviz">
+          <p class="viz-title">📈 Watch the ROC curve build itself</p>
+          <p class="viz-sub">Top: the <span style="color:var(--secondary);font-weight:700">healthy</span> and <span style="color:#f97316;font-weight:700">condition</span> score distributions with a moving threshold. Bottom: the ROC curve. Press <strong>Sweep</strong> to slide the threshold across every value and trace the curve, or drag the threshold slider yourself and follow the <span style="color:#f97316;font-weight:700">orange dot</span> on both plots. Pull the groups apart and watch the curve bow toward the perfect top-left corner.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:220px">
+              <label>Separation between groups <span class="val" id="sep-val">d = 1.0</span></label>
+              <input type="range" id="sep-range" min="0" max="3" step="0.05" value="1" style="width:100%" />
+            </div>
+          </div>
+          <div class="controls" style="margin-top:.3rem">
+            <div class="control" style="flex:1;min-width:220px">
+              <label>Threshold <span class="val" id="thr-val">0.50</span></label>
+              <input type="range" id="thr-range" min="-3.5" max="6" step="0.05" value="0.5" style="width:100%" />
+            </div>
+            <div class="control"><button class="btn btn-primary btn-sm" id="sweep-btn">▶ Sweep threshold</button></div>
+          </div>
+
+          <canvas id="roc-canvas"></canvas>
+
+          <div style="display:flex;flex-wrap:wrap;gap:.7rem;justify-content:center;margin-top:.9rem">
+            <div style="border:1px solid var(--border);border-left:4px solid var(--primary);border-radius:10px;padding:.55rem .9rem;text-align:center">
+              <div style="font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em">AUC</div>
+              <div id="auc-val" style="font-size:1.5rem;font-weight:800;color:var(--primary)">—</div>
+            </div>
+            <div style="border:1px solid var(--border);border-radius:10px;padding:.55rem .9rem;text-align:center;min-width:150px">
+              <div style="font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em">At this threshold</div>
+              <div id="pt-val" style="font-size:.9rem;font-weight:700;margin-top:.15rem">—</div>
+            </div>
+          </div>
+          <p id="auc-verdict" style="font-size:.85rem;color:var(--text-faint);margin-top:.6rem;text-align:center;min-height:1.2em"></p>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Reading the curve</h2>
+        <p>The shape tells you everything at a glance:</p>
+        <ul>
+          <li><strong>Top-left corner</strong> is perfection: catch every positive (TPR = 1) with no false alarms (FPR = 0). The closer the curve hugs that corner, the better.</li>
+          <li><strong>The diagonal</strong> is a coin flip. A curve on the 45° line means TPR = FPR at every threshold — the model gains true positives only by accepting an equal rate of false ones. It has learned nothing.</li>
+          <li><strong>Below the diagonal</strong> means worse than chance — usually a sign you've flipped a label somewhere (a model that's reliably wrong is a correctly-labeled model in disguise).</li>
+        </ul>
+        <p>Because the whole curve is threshold-free, it lets you compare two models without first committing to an operating point — genuinely useful when you don't yet know what threshold you'll deploy.</p>
+
+        <h2>AUC: one number, one clean meaning</h2>
+        <p>The <strong>Area Under the Curve</strong> collapses the ROC into a single number between 0 and 1. Its beauty is a concrete interpretation: <strong>AUC is the probability that the model gives a randomly chosen positive case a higher score than a randomly chosen negative one.</strong> An AUC of 0.5 means the model orders a random positive above a random negative only half the time — pure chance. An AUC of 0.90 means it wins that ranking contest 90% of the time.</p>
+        <p>Our two-normal setup even has a closed form: with the groups separated by <em>d</em> standard deviations, AUC = Φ(<em>d</em>/√2). So <em>d</em> = 1 gives AUC ≈ 0.76, <em>d</em> = 2 gives ≈ 0.92, and <em>d</em> = 0 sits exactly on 0.50 — check the readout against the slider. A rough field guide: 0.7 modest, 0.8 good, 0.9+ excellent — but always judged against how hard the problem is.</p>
+
+        <h2>When ROC flatters — reach for precision–recall</h2>
+        <p>ROC has a blind spot: its x-axis, the false-positive rate, is forgiving when negatives are abundant. On a heavily <a href="../../ml/classification-metrics/">imbalanced</a> problem — say 1 positive per 1,000 — you can rack up thousands of false positives and still show a tiny FPR, so the ROC curve looks gorgeous while your positive flags are mostly wrong. A <strong>precision–recall curve</strong> (precision vs recall, summarized by average precision) reacts sharply to those false positives because precision only counts the cases you flagged. Rule of thumb: roughly balanced classes → ROC is fine; rare positive class you care about → report the PR curve too.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> ROC and AUC let you judge a classifier's ranking ability across all thresholds and compare models fairly, without prematurely fixing a cutoff. But AUC is a summary — it says nothing about which threshold you'll actually use, and it can hide poor precision under class imbalance. Report AUC <em>and</em> the confusion-matrix metrics at your chosen operating point. Next we leave score-based classifiers for a model you can literally read off a page: <a href="../../ml/decision-trees/">decision trees</a>.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What is a good AUC value?</summary>
+            <div class="faq-a"><p>As a rough field guide: 0.5 is a coin flip (useless), around 0.7 is modest, 0.8 is good, and 0.9+ is excellent — but 'good' is entirely context-dependent. AUC is the probability that the model ranks a random positive case above a random negative one, so 0.5 means the model can't tell the classes apart at all. For an easy, well-separated problem 0.85 might be disappointing; for predicting something genuinely noisy like human behaviour, 0.70 can be a real achievement. And a high AUC on a rare-outcome problem can still hide poor precision, so never read AUC in isolation — pair it with the <a href="../../ml/classification-metrics/">confusion-matrix metrics</a> at the threshold you actually plan to use.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is the difference between AUC and accuracy?</summary>
+            <div class="faq-a"><p>Accuracy is measured at one chosen threshold and depends on it; AUC is threshold-free, summarizing performance across every possible threshold at once. Accuracy also depends heavily on the base rate — it can be inflated by a common class — whereas AUC does not, because it only asks whether positives tend to score higher than negatives (their ranking), not how many of each there are. So AUC answers 'how well does this model separate the classes in principle?', while accuracy answers 'how many did I get right at this specific cutoff?'. A model can have a strong AUC yet poor accuracy at your operating threshold, or vice versa.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>When should I use a precision-recall curve instead of ROC?</summary>
+            <div class="faq-a"><p>Use a precision-recall (PR) curve when the positive class is rare and it's the class you care about. ROC's x-axis is the false-positive rate, which stays reassuringly small when negatives are plentiful, so a ROC curve can look excellent even while most of your positive flags are actually false alarms. Precision, by contrast, is computed only from the cases you flagged as positive, so it reacts sharply to false positives and exposes the problem. For fraud, disease screening, or any heavily imbalanced task, report the PR curve (and its area, average precision) alongside or instead of ROC/AUC; for roughly balanced problems, ROC is fine.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ ROC / AUC visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var canvas = document.getElementById("roc-canvas"), ctx, W = 0, H = 430;
+    var d = 1.0, thr = 0.5;
+    var SMIN = -3.5, SMAX = 6.0;
+    var sweeping = false, revealFrac = 1;   // 1 = whole curve visible
+    var raf = null;
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+
+    /* full analytic ROC, threshold high -> low, corner (0,0) to (1,1) */
+    function rocPoints() {
+      var pts = [];
+      for (var t = 6; t >= -6.0001; t -= 0.02) {
+        pts.push([1 - VIZ.normCdf(t), 1 - VIZ.normCdf(t - d)]);   // [FPR, TPR]
+      }
+      return pts;
+    }
+    function aucClosed() { return VIZ.normCdf(d / Math.SQRT2); }   // exact for two unit normals
+
+    /* ---- top band: score distributions ---- */
+    var dpadL = 14, dpadR = 14, dTop = 8, dBase = 150;
+    function dx(s) { return dpadL + (s - SMIN) / (SMAX - SMIN) * (W - dpadL - dpadR); }
+    function dxs(px) { return SMIN + (px - dpadL) / (W - dpadL - dpadR) * (SMAX - SMIN); }
+    function drawDist() {
+      var hmax = 0;
+      for (var s = SMIN; s <= SMAX; s += 0.1) hmax = Math.max(hmax, VIZ.normPdf(s, 0, 1), VIZ.normPdf(s, d, 1));
+      hmax *= 1.1;
+      function curve(mu, color, alpha) {
+        ctx.beginPath(); ctx.moveTo(dpadL, dBase);
+        for (var px = dpadL; px <= W - dpadR; px += 1) {
+          var yv = VIZ.normPdf(dxs(px), mu, 1);
+          ctx.lineTo(px, dBase - yv / hmax * (dBase - dTop));
+        }
+        ctx.lineTo(W - dpadR, dBase); ctx.closePath();
+        ctx.fillStyle = color; ctx.globalAlpha = alpha; ctx.fill(); ctx.globalAlpha = 1;
+        ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.beginPath();
+        for (var p2 = dpadL; p2 <= W - dpadR; p2 += 1) {
+          var yv2 = VIZ.normPdf(dxs(p2), mu, 1);
+          var py = dBase - yv2 / hmax * (dBase - dTop);
+          if (p2 === dpadL) ctx.moveTo(p2, py); else ctx.lineTo(p2, py);
+        }
+        ctx.stroke();
+      }
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(dpadL, dBase); ctx.lineTo(W - dpadR, dBase); ctx.stroke();
+      curve(0, VIZ.css("--secondary"), 0.16);
+      curve(d, "#f97316", 0.18);
+      // threshold
+      var tpx = dx(thr);
+      ctx.strokeStyle = VIZ.css("--text"); ctx.lineWidth = 2; ctx.setLineDash([4, 3]);
+      ctx.beginPath(); ctx.moveTo(tpx, dTop - 2); ctx.lineTo(tpx, dBase); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = "#f97316";
+      ctx.beginPath(); ctx.arc(tpx, dTop + 2, 4, 0, 6.2832); ctx.fill();
+      ctx.font = "600 11px " + VIZ.css("--font"); ctx.textAlign = "center";
+      ctx.fillStyle = VIZ.css("--secondary"); ctx.fillText("healthy", dx(0), dBase - 4);
+      ctx.fillStyle = "#f97316"; ctx.fillText("condition", Math.min(dx(d), W - dpadR - 26), dTop + 12);
+    }
+
+    /* ---- bottom band: ROC square ---- */
+    function rocGeom() {
+      var top = 178, bottom = H - 22;
+      var size = Math.min(bottom - top, W - 60);
+      var x0 = (W - size) / 2, y1 = bottom, y0 = bottom - size;
+      return { x0: x0, y0: y0, y1: y1, size: size };
+    }
+    function drawRoc() {
+      var g = rocGeom();
+      function px(fpr) { return g.x0 + fpr * g.size; }
+      function py(tpr) { return g.y1 - tpr * g.size; }
+      // frame + grid
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.strokeRect(g.x0, g.y0, g.size, g.size);
+      // chance diagonal
+      ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([5, 4]); ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.moveTo(px(0), py(0)); ctx.lineTo(px(1), py(1)); ctx.stroke(); ctx.setLineDash([]);
+      var pts = rocPoints();
+      var shown = Math.max(1, Math.round(pts.length * revealFrac));
+      // fill under revealed curve
+      ctx.beginPath(); ctx.moveTo(px(0), py(0));
+      for (var i = 0; i < shown; i++) ctx.lineTo(px(pts[i][0]), py(pts[i][1]));
+      ctx.lineTo(px(pts[shown - 1][0]), py(0)); ctx.closePath();
+      ctx.fillStyle = VIZ.css("--primary"); ctx.globalAlpha = 0.12; ctx.fill(); ctx.globalAlpha = 1;
+      // curve
+      ctx.strokeStyle = VIZ.css("--primary"); ctx.lineWidth = 2.4; ctx.beginPath();
+      for (var j = 0; j < shown; j++) { if (j === 0) ctx.moveTo(px(pts[j][0]), py(pts[j][1])); else ctx.lineTo(px(pts[j][0]), py(pts[j][1])); }
+      ctx.stroke();
+      // current-threshold point
+      var cf = 1 - VIZ.normCdf(thr), ct = 1 - VIZ.normCdf(thr - d);
+      ctx.fillStyle = "#f97316"; ctx.beginPath(); ctx.arc(px(cf), py(ct), 5, 0, 6.2832); ctx.fill();
+      ctx.strokeStyle = VIZ.css("--bg"); ctx.lineWidth = 1.5; ctx.stroke();
+      // labels
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px " + VIZ.css("--font");
+      ctx.textAlign = "center"; ctx.fillText("false-positive rate →", (g.x0 + g.x0 + g.size) / 2, g.y1 + 16);
+      ctx.save(); ctx.translate(g.x0 - 6, (g.y0 + g.y1) / 2); ctx.rotate(-Math.PI / 2);
+      ctx.fillText("true-positive rate →", 0, 0); ctx.restore();
+      ctx.textAlign = "left"; ctx.fillStyle = VIZ.css("--text-faint");
+      ctx.fillText("↖ perfect", px(0) + 4, py(1) + 12);
+      ctx.save(); ctx.translate(px(0.52), py(0.46)); ctx.rotate(-Math.PI / 4);
+      ctx.textAlign = "center"; ctx.fillText("chance", 0, -3); ctx.restore();
+    }
+
+    function draw() { ctx.clearRect(0, 0, W, H); drawDist(); drawRoc(); }
+
+    function update() {
+      var auc = aucClosed();
+      document.getElementById("auc-val").textContent = auc.toFixed(3);
+      var cf = 1 - VIZ.normCdf(thr), ct = 1 - VIZ.normCdf(thr - d);
+      document.getElementById("pt-val").innerHTML = "TPR " + (ct * 100).toFixed(0) + "% · FPR " + (cf * 100).toFixed(0) + "%";
+      document.getElementById("sep-val").textContent = "d = " + d.toFixed(2);
+      document.getElementById("thr-val").textContent = thr.toFixed(2);
+      var v;
+      if (d < 0.1) v = "The groups overlap completely — the curve lies on the diagonal and AUC ≈ 0.50 (a coin flip).";
+      else if (auc >= 0.9) v = "AUC ≈ " + auc.toFixed(2) + ": excellent separation — the curve hugs the top-left corner.";
+      else if (auc >= 0.8) v = "AUC ≈ " + auc.toFixed(2) + ": good. Closed form Φ(d/√2) = " + auc.toFixed(3) + ".";
+      else v = "AUC ≈ " + auc.toFixed(2) + ": modest separation. Pull the groups apart to bow the curve outward.";
+      document.getElementById("auc-verdict").textContent = v;
+      draw();
+    }
+
+    function runSweep() {
+      if (raf) cancelAnimationFrame(raf);
+      sweeping = true; revealFrac = 0;
+      var THI = 6, TLO = -3.5, dur = 1500, t0 = performance.now();
+      function step(now) {
+        var f = Math.min(1, (now - t0) / dur);
+        revealFrac = f;
+        thr = THI + (TLO - THI) * f;
+        document.getElementById("thr-range").value = thr.toFixed(2);
+        update();
+        if (f < 1) { raf = requestAnimationFrame(step); } else { sweeping = false; revealFrac = 1; update(); }
+      }
+      raf = requestAnimationFrame(step);
+    }
+
+    document.getElementById("sep-range").addEventListener("input", function () { d = +this.value; if (!sweeping) revealFrac = 1; update(); });
+    document.getElementById("thr-range").addEventListener("input", function () {
+      if (sweeping && raf) { cancelAnimationFrame(raf); sweeping = false; revealFrac = 1; }
+      thr = +this.value; update();
+    });
+    document.getElementById("sweep-btn").addEventListener("click", runSweep);
+    window.addEventListener("resize", function () { fit(); draw(); });
+    if (window.ResizeObserver) new ResizeObserver(function () { fit(); draw(); }).observe(canvas);
+    VIZ.onTheme(draw);
+
+    fit(); update();
+  })();
+  </script>
+</body>
+</html>

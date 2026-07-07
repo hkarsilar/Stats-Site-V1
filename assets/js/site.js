@@ -142,6 +142,9 @@
     "prediction-vs-explanation": "The capybara can explain *why* it's chill, or *predict* how chill it'll be tomorrow — but it fits a different model for each. Two questions, two answers.",
     "train-test-split-and-generalization": "The capybara never grades itself on ponds it already memorized. Fresh water, honest score — peeking at the test set just fools the capybara.",
     "regularization-ridge-and-lasso": "Too many predictors, too little data? The capybara shrinks the loud coefficients and quietly evicts the freeloaders. Lasso sets them to exactly zero.",
+    "classification-metrics": "\"99% accurate at spotting rare capybaras!\" — says the model that labels everything 'not a capybara'. Ask it about recall and watch it squirm.",
+    "roc-curves-and-auc": "The capybara doesn't pick one threshold — it tries them all and plots the whole curve. Top-left corner good, diagonal is a coin flip.",
+    "decision-trees": "Split, split, split until every leaf is one happy capybara. Grow too deep and the tree just memorizes the pond — test day is a rude surprise.",
     /* Root pages */
     "home": "No rush — capybaras never cram.",
     "toolbox": "A capybara's toolbox: warm water, good snacks, zero deadlines. Yours has calculators too.",

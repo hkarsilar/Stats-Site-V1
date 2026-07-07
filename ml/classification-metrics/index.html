@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Classification Metrics & the Accuracy Trap — StatsCapybara</title>
+  <meta name="description" content="Confusion matrix, precision, recall, specificity and F1 — and why 95% accuracy is worthless when the positive class is rare. The accuracy trap, made visible." />
+  <link rel="canonical" href="https://statscapybara.com/ml/classification-metrics/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Classification Metrics & the Accuracy Trap — StatsCapybara" />
+  <meta property="og:description" content="A confusion matrix, precision vs recall, and the trap: high accuracy can hide a model that never catches the rare cases you actually care about." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/ml/classification-metrics/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Classification Metrics & the Accuracy Trap — StatsCapybara" />
+  <meta name="twitter:description" content="Precision, recall, specificity, F1 — and why accuracy lies when one class is rare. Drag a threshold and watch the trap appear." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Classification Metrics & the Accuracy Trap", "description": "The confusion matrix and the metrics built from it — precision, recall/sensitivity, specificity, F1 — and why accuracy is misleading when one class is rare.", "url": "https://statscapybara.com/ml/classification-metrics/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — ML & AI: Machine Learning for Researchers", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Classification Metrics & the Accuracy Trap", "item": "https://statscapybara.com/ml/classification-metrics/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why is accuracy misleading for rare outcomes?", "acceptedAnswer": {"@type": "Answer", "text": "Because a lazy model can score high just by ignoring the rare class. If 1 in 100 patients has a disease, a model that labels everyone 'healthy' is 99% accurate while catching zero cases — useless, yet it beats most honest models on accuracy alone. Accuracy weights every case equally, so when 99% of cases are one class, that class dominates the score and the rare class barely registers. For imbalanced problems, report recall (did we catch the positives?) and precision (were our positive calls right?) instead of, or alongside, accuracy."}}, {"@type": "Question", "name": "What is the difference between precision and recall?", "acceptedAnswer": {"@type": "Answer", "text": "They answer different questions about your positive predictions. Recall (also called sensitivity or the true-positive rate) asks: of all the cases that really are positive, what fraction did the model catch? It is TP / (TP + FN). Precision asks: of all the cases the model flagged as positive, what fraction really were? It is TP / (TP + FP). A cancer screen wants high recall (missing a case is disastrous), while a spam filter wants high precision (deleting a real email is worse than seeing one spam). You usually trade one for the other by moving the decision threshold."}}, {"@type": "Question", "name": "When should I use F1 instead of accuracy?", "acceptedAnswer": {"@type": "Answer", "text": "Use F1 when the positive class is rare and both kinds of error matter. F1 is the harmonic mean of precision and recall, so it is high only when both are high — it cannot be rescued by ignoring the rare class the way accuracy can. It also ignores the true negatives entirely, which is exactly what you want when true negatives are abundant and uninformative. If the two error types have clearly different costs, go further and pick the metric that matches the costlier error (recall for screening, precision for spam), or set the threshold to balance them deliberately rather than trusting any single summary number."}}]}
+  </script>
+</head>
+<body data-course="ml" data-section="classification-metrics">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 4.4</span>
+        <h1>Classification Metrics &amp; the Accuracy Trap</h1>
+
+        <p class="lede">When your outcome is a category — sick vs healthy, spam vs not, will-churn vs won't — "how good is the model?" has more than one answer. Reaching for plain accuracy is the single most common beginner mistake, because accuracy can look brilliant while the model quietly fails at the only job you cared about. Let's build the vocabulary that keeps you honest.</p>
+
+        <h2>Every prediction lands in one of four boxes</h2>
+        <p>A classifier takes a case and outputs a label: <em>positive</em> (has the condition, is spam, will churn) or <em>negative</em>. Compare that guess to the truth and there are exactly four outcomes, laid out in a <strong>confusion matrix</strong>:</p>
+        <ul>
+          <li><strong>True positive (TP)</strong> — flagged, and really positive. A hit.</li>
+          <li><strong>False positive (FP)</strong> — flagged, but actually negative. A false alarm (Type&nbsp;I error).</li>
+          <li><strong>False negative (FN)</strong> — missed, but actually positive. A miss (Type&nbsp;II error).</li>
+          <li><strong>True negative (TN)</strong> — correctly left alone.</li>
+        </ul>
+        <p>Every metric you'll ever meet is just some ratio of these four counts. Learn the boxes and the rest is arithmetic.</p>
+
+        <h2>The metrics, and the question each one answers</h2>
+        <ul>
+          <li><strong>Accuracy</strong> = (TP + TN) / everything. "What fraction did I get right?" Intuitive, and the first thing to distrust.</li>
+          <li><strong>Recall</strong> (a.k.a. sensitivity, true-positive rate) = TP / (TP + FN). "Of the real positives, how many did I catch?" The metric a cancer screen lives or dies by.</li>
+          <li><strong>Precision</strong> = TP / (TP + FP). "Of everything I flagged, how much was right?" The metric a spam filter lives or dies by.</li>
+          <li><strong>Specificity</strong> (true-negative rate) = TN / (TN + FP). "Of the real negatives, how many did I correctly clear?"</li>
+          <li><strong>F1</strong> = the harmonic mean of precision and recall — high only when <em>both</em> are high, so it resists the trick accuracy falls for.</li>
+        </ul>
+
+        <h2>Where accuracy lies: base rates</h2>
+        <p>Here's the whole problem in one sentence. If 5% of patients truly have a disease, a model that shouts "healthy!" at every single person is <strong>95% accurate</strong> — and catches exactly zero sick patients. Its recall is 0%. Accuracy rewarded it for parroting the majority class; the metric you actually needed (recall) exposes it instantly. This is the <strong>accuracy trap</strong>, and it's a direct consequence of <a href="../../stats-1/probability-basics/">base rates</a>. Watch it happen.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="cmviz">
+          <p class="viz-title">🎯 Threshold, base rate, and the four boxes</p>
+          <p class="viz-sub">Two score distributions: <span style="color:var(--secondary);font-weight:700">healthy</span> people and people who <span style="color:#f97316;font-weight:700">have the condition</span>. The model calls everything to the <strong>right of the threshold</strong> "positive." Drag the threshold (or use the slider), pull the two groups apart, and — the key move — crank <em>prevalence</em> down to a rare disease and watch accuracy stay smug while recall collapses.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:210px">
+              <label>Decision threshold <span class="val" id="thr-val">0.75</span></label>
+              <input type="range" id="thr-range" min="-3.5" max="6" step="0.05" value="0.75" style="width:100%" />
+            </div>
+          </div>
+          <div class="controls" style="margin-top:.3rem">
+            <div class="control" style="flex:1;min-width:210px">
+              <label>Separation between groups <span class="val" id="sep-val">d = 1.5</span></label>
+              <input type="range" id="sep-range" min="0.4" max="3" step="0.05" value="1.5" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:210px">
+              <label>Prevalence (truly positive) <span class="val" id="prev-val">30%</span></label>
+              <input type="range" id="prev-range" min="2" max="50" step="1" value="30" style="width:100%" />
+            </div>
+          </div>
+
+          <canvas id="cm-canvas"></canvas>
+
+          <!-- confusion matrix -->
+          <div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:.3rem;margin-top:.9rem;font-size:.82rem">
+            <div></div>
+            <div style="text-align:center;font-weight:700;color:#f97316">Actually positive</div>
+            <div style="text-align:center;font-weight:700;color:var(--secondary)">Actually negative</div>
+            <div style="writing-mode:vertical-lr;transform:rotate(180deg);text-align:center;font-weight:700;color:var(--text-muted);padding:.2rem">Predicted +</div>
+            <div style="background:rgba(34,197,94,.14);border:1px solid #22c55e;border-radius:8px;padding:.55rem;text-align:center"><div style="font-weight:700;color:#16a34a">True positive</div><div id="cm-tp" style="font-size:1.25rem;font-weight:800">—</div></div>
+            <div style="background:rgba(239,68,68,.12);border:1px solid #ef4444;border-radius:8px;padding:.55rem;text-align:center"><div style="font-weight:700;color:#ef4444">False positive</div><div id="cm-fp" style="font-size:1.25rem;font-weight:800">—</div></div>
+            <div style="writing-mode:vertical-lr;transform:rotate(180deg);text-align:center;font-weight:700;color:var(--text-muted);padding:.2rem">Predicted −</div>
+            <div style="background:rgba(239,68,68,.12);border:1px solid #ef4444;border-radius:8px;padding:.55rem;text-align:center"><div style="font-weight:700;color:#ef4444">False negative</div><div id="cm-fn" style="font-size:1.25rem;font-weight:800">—</div></div>
+            <div style="background:rgba(34,197,94,.14);border:1px solid #22c55e;border-radius:8px;padding:.55rem;text-align:center"><div style="font-weight:700;color:#16a34a">True negative</div><div id="cm-tn" style="font-size:1.25rem;font-weight:800">—</div></div>
+          </div>
+
+          <!-- metrics -->
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.5rem;margin-top:.9rem">
+            <div class="metric-box" style="border:1px solid var(--border);border-radius:9px;padding:.5rem .6rem;text-align:center"><div style="font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em">Accuracy</div><div id="mt-acc" style="font-size:1.15rem;font-weight:800">—</div></div>
+            <div class="metric-box" style="border:1px solid var(--border);border-radius:9px;padding:.5rem .6rem;text-align:center"><div style="font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em">Recall / Sens.</div><div id="mt-rec" style="font-size:1.15rem;font-weight:800">—</div></div>
+            <div class="metric-box" style="border:1px solid var(--border);border-radius:9px;padding:.5rem .6rem;text-align:center"><div style="font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em">Precision</div><div id="mt-prec" style="font-size:1.15rem;font-weight:800">—</div></div>
+            <div class="metric-box" style="border:1px solid var(--border);border-radius:9px;padding:.5rem .6rem;text-align:center"><div style="font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em">Specificity</div><div id="mt-spec" style="font-size:1.15rem;font-weight:800">—</div></div>
+            <div class="metric-box" style="border:1px solid var(--border);border-radius:9px;padding:.5rem .6rem;text-align:center"><div style="font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em">F1</div><div id="mt-f1" style="font-size:1.15rem;font-weight:800">—</div></div>
+          </div>
+          <p id="cm-verdict" style="font-size:.85rem;color:var(--text-faint);margin-top:.7rem;text-align:center;min-height:1.2em"></p>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>Two lessons fall straight out of the picture. First, <strong>the threshold is a dial, not a law of nature</strong>. Sliding it right buys precision at the cost of recall (fewer flags, but surer ones); sliding it left does the reverse. There is no universally "correct" threshold — only the one that matches which error hurts more. Second, <strong>a single number is never the whole story</strong>. Accuracy, precision, and recall can each be made to look great in isolation; you have to read them together, against the base rate, to know what the model really does.</p>
+
+        <h2>Choosing the metric by which error hurts more</h2>
+        <p>The right metric is a values question disguised as a statistics question. Ask: which mistake is worse here?</p>
+        <ul>
+          <li><strong>A miss is catastrophic → chase recall.</strong> Cancer screening, fraud detection, structural safety checks. Better a few false alarms than one missed case, so you accept lower precision to push recall up.</li>
+          <li><strong>A false alarm is expensive → chase precision.</strong> Spam filtering, flagging accounts for suspension, recommending a costly intervention. A wrongly-deleted email or a wrongly-punished user is the error you most want to avoid.</li>
+          <li><strong>Both matter and the class is rare → F1</strong> (or a cost-weighted score) gives a single figure that can't be gamed by ignoring the minority class.</li>
+        </ul>
+        <p>Notice what accuracy never told you: <em>which kind</em> of mistake the model is making. Two models with identical 90% accuracy can have wildly different precision–recall profiles — one cautious, one trigger-happy. The confusion matrix shows you the difference; accuracy hides it.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> before you report "my classifier is 94% accurate," ask what the base rate is and which error is worse. On a rare outcome, accuracy is almost meaningless — a coin that always says "no" can beat it. Report the confusion matrix and the metric that matches the cost of being wrong, and treat the threshold as a decision you own. Next we sweep that threshold across <em>every</em> value at once to get the <a href="../../ml/roc-curves-and-auc/">ROC curve and AUC</a>.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>Why is accuracy misleading for rare outcomes?</summary>
+            <div class="faq-a"><p>Because a lazy model can score high just by ignoring the rare class. If 1 in 100 patients has a disease, a model that labels everyone 'healthy' is 99% accurate while catching zero cases — useless, yet it beats most honest models on accuracy alone. Accuracy weights every case equally, so when 99% of cases are one class, that class dominates the score and the rare class barely registers. For imbalanced problems, report recall (did we catch the positives?) and precision (were our positive calls right?) instead of, or alongside, accuracy.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is the difference between precision and recall?</summary>
+            <div class="faq-a"><p>They answer different questions about your positive predictions. <strong>Recall</strong> (also called sensitivity or the true-positive rate) asks: of all the cases that really are positive, what fraction did the model catch? It is TP / (TP + FN). <strong>Precision</strong> asks: of all the cases the model flagged as positive, what fraction really were? It is TP / (TP + FP). A cancer screen wants high recall (missing a case is disastrous), while a spam filter wants high precision (deleting a real email is worse than seeing one spam). You usually trade one for the other by moving the decision threshold.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>When should I use F1 instead of accuracy?</summary>
+            <div class="faq-a"><p>Use F1 when the positive class is rare and both kinds of error matter. F1 is the harmonic mean of precision and recall, so it is high only when <em>both</em> are high — it cannot be rescued by ignoring the rare class the way accuracy can. It also ignores the true negatives entirely, which is exactly what you want when true negatives are abundant and uninformative. If the two error types have clearly different costs, go further and pick the metric that matches the costlier error (recall for screening, precision for spam), or set the threshold to balance them deliberately rather than trusting any single summary number.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ classification metrics visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var canvas = document.getElementById("cm-canvas"), ctx, W = 0, H = 260;
+    var N = 1000, SMIN = -3.5, SMAX = 6.0;
+    var thr = 0.75, d = 1.5, prev = 0.30;
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    var padL = 14, padR = 14, top = 10, base = H - 26;
+    function sx(s) { return padL + (s - SMIN) / (SMAX - SMIN) * (W - padL - padR); }
+    function xs(px) { return SMIN + (px - padL) / (W - padL - padR) * (SMAX - SMIN); }
+
+    /* counts are the EXPECTED counts from the normal model — smooth and exact,
+       no random sampling, so nothing to reseed. */
+    function counts() {
+      var TPR = 1 - VIZ.normCdf(thr - d);      // P(score > thr | positive, mean d)
+      var FPR = 1 - VIZ.normCdf(thr);          // P(score > thr | negative, mean 0)
+      var nPos = Math.round(prev * N), nNeg = N - nPos;
+      var TP = nPos * TPR, FN = nPos * (1 - TPR), FP = nNeg * FPR, TN = nNeg * (1 - FPR);
+      return { TP: TP, FN: FN, FP: FP, TN: TN, nPos: nPos, nNeg: nNeg };
+    }
+
+    function drawCurve(mu, scale, hmax, color, alpha) {
+      ctx.beginPath();
+      for (var px = padL; px <= W - padR; px += 1) {
+        var yv = scale * VIZ.normPdf(xs(px), mu, 1);
+        var py = base - yv / hmax * (base - top);
+        if (px === padL) ctx.moveTo(px, base); ctx.lineTo(px, py);
+      }
+      ctx.lineTo(W - padR, base); ctx.closePath();
+      ctx.fillStyle = color; ctx.globalAlpha = alpha; ctx.fill(); ctx.globalAlpha = 1;
+      ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.beginPath();
+      for (var p2 = padL; p2 <= W - padR; p2 += 1) {
+        var yv2 = scale * VIZ.normPdf(xs(p2), mu, 1);
+        var py2 = base - yv2 / hmax * (base - top);
+        if (p2 === padL) ctx.moveTo(p2, py2); else ctx.lineTo(p2, py2);
+      }
+      ctx.stroke();
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      var nPos = Math.round(prev * N), nNeg = N - nPos;
+      var hmax = 0;
+      for (var s = SMIN; s <= SMAX; s += 0.1) {
+        hmax = Math.max(hmax, nNeg * VIZ.normPdf(s, 0, 1), nPos * VIZ.normPdf(s, d, 1));
+      }
+      hmax *= 1.08;
+      var tpx = sx(thr);
+      // "predicted positive" zone (right of threshold) — subtle highlight
+      ctx.fillStyle = VIZ.css("--text"); ctx.globalAlpha = 0.05;
+      ctx.fillRect(tpx, top, (W - padR) - tpx, base - top); ctx.globalAlpha = 1;
+      // baseline
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, base); ctx.lineTo(W - padR, base); ctx.stroke();
+      // curves (area proportional to class size, so a rare class looks rare)
+      drawCurve(0, nNeg, hmax, VIZ.css("--secondary"), 0.16);
+      drawCurve(d, nPos, hmax, "#f97316", 0.18);
+      // threshold line + handle
+      ctx.strokeStyle = VIZ.css("--text"); ctx.lineWidth = 2; ctx.setLineDash([4, 3]);
+      ctx.beginPath(); ctx.moveTo(tpx, top - 2); ctx.lineTo(tpx, base); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = VIZ.css("--text");
+      ctx.beginPath(); ctx.moveTo(tpx, top + 1); ctx.lineTo(tpx - 5, top - 7); ctx.lineTo(tpx + 5, top - 7); ctx.closePath(); ctx.fill();
+      // labels
+      ctx.font = "600 11px " + VIZ.css("--font"); ctx.textAlign = "center";
+      ctx.fillStyle = VIZ.css("--secondary"); ctx.fillText("healthy", sx(0), base - 4);
+      ctx.fillStyle = "#f97316"; ctx.fillText("has condition", Math.min(sx(d), W - padR - 34), top + 12);
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px " + VIZ.css("--font");
+      ctx.textAlign = "left"; ctx.fillText("← predicted negative", padL + 2, base + 15);
+      ctx.textAlign = "right"; ctx.fillText("predicted positive →", W - padR - 2, base + 15);
+    }
+
+    function pct(x) { return isFinite(x) ? (x * 100).toFixed(1) + "%" : "—"; }
+    function update() {
+      var c = counts();
+      var TP = c.TP, FN = c.FN, FP = c.FP, TN = c.TN;
+      document.getElementById("cm-tp").textContent = Math.round(TP);
+      document.getElementById("cm-fp").textContent = Math.round(FP);
+      document.getElementById("cm-fn").textContent = Math.round(FN);
+      document.getElementById("cm-tn").textContent = Math.round(TN);
+      var acc = (TP + TN) / N;
+      var rec = TP + FN > 0 ? TP / (TP + FN) : NaN;
+      var prec = TP + FP > 0 ? TP / (TP + FP) : NaN;
+      var spec = TN + FP > 0 ? TN / (TN + FP) : NaN;
+      var f1 = (isFinite(prec) && isFinite(rec) && prec + rec > 0) ? 2 * prec * rec / (prec + rec) : NaN;
+      document.getElementById("mt-acc").textContent = pct(acc);
+      document.getElementById("mt-rec").textContent = pct(rec);
+      document.getElementById("mt-prec").textContent = pct(prec);
+      document.getElementById("mt-spec").textContent = pct(spec);
+      document.getElementById("mt-f1").textContent = isFinite(f1) ? f1.toFixed(2) : "—";
+      var v = "";
+      if (prev <= 0.1 && acc > 0.85 && (rec < 0.35 || !isFinite(rec))) {
+        v = "⚠️ The accuracy trap: " + pct(acc) + " accurate, but recall is only " + pct(rec) + " — the model is coasting on the common class.";
+      } else if (isFinite(rec) && isFinite(prec) && rec > 0.85 && prec < 0.55) {
+        v = "High recall, low precision: catches most cases but with many false alarms.";
+      } else if (isFinite(prec) && isFinite(rec) && prec > 0.85 && rec < 0.55) {
+        v = "High precision, low recall: its flags are trustworthy, but it misses many real cases.";
+      } else {
+        v = "Move the threshold and watch precision and recall trade off; drop prevalence to spring the trap.";
+      }
+      document.getElementById("cm-verdict").textContent = v;
+      document.getElementById("thr-val").textContent = thr.toFixed(2);
+      document.getElementById("sep-val").textContent = "d = " + d.toFixed(2);
+      document.getElementById("prev-val").textContent = Math.round(prev * 100) + "%";
+      draw();
+    }
+
+    // dragging the threshold on the canvas
+    var dragging = false;
+    function setThrFromEvent(e) {
+      var r = canvas.getBoundingClientRect();
+      var px = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+      var s = Math.max(-3.5, Math.min(6, xs(px)));
+      thr = Math.round(s / 0.05) * 0.05;
+      document.getElementById("thr-range").value = thr;
+      update();
+    }
+    canvas.addEventListener("pointerdown", function (e) { dragging = true; canvas.setPointerCapture(e.pointerId); setThrFromEvent(e); });
+    canvas.addEventListener("pointermove", function (e) { if (dragging) setThrFromEvent(e); });
+    canvas.addEventListener("pointerup", function () { dragging = false; });
+    canvas.style.touchAction = "none"; canvas.style.cursor = "ew-resize";
+
+    document.getElementById("thr-range").addEventListener("input", function () { thr = +this.value; update(); });
+    document.getElementById("sep-range").addEventListener("input", function () { d = +this.value; update(); });
+    document.getElementById("prev-range").addEventListener("input", function () { prev = +this.value / 100; update(); });
+    window.addEventListener("resize", function () { fit(); draw(); });
+    if (window.ResizeObserver) new ResizeObserver(function () { fit(); draw(); }).observe(canvas);
+    VIZ.onTheme(draw);
+
+    fit(); update();
+  })();
+  </script>
+</body>
+</html>

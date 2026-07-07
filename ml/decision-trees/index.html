@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Decision Trees — StatsCapybara</title>
+  <meta name="description" content="How decision trees split data with yes/no questions, why Gini impurity guides each split, and how depth turns from helpful into overfitting you can watch." />
+  <link rel="canonical" href="https://statscapybara.com/ml/decision-trees/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Decision Trees — StatsCapybara" />
+  <meta property="og:description" content="Recursive splitting, Gini impurity, and depth as the overfitting dial — grow a tree click by click and watch test accuracy peak then fall." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/ml/decision-trees/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Decision Trees — StatsCapybara" />
+  <meta name="twitter:description" content="Decision trees explained visually: yes/no splits, Gini impurity, interpretability, and the depth dial that tips into overfitting." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Decision Trees", "description": "Decision trees classify by recursive yes/no splits chosen to reduce Gini impurity; they are highly interpretable, and their depth is a direct overfitting dial.", "url": "https://statscapybara.com/ml/decision-trees/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — ML & AI: Machine Learning for Researchers", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Decision Trees", "item": "https://statscapybara.com/ml/decision-trees/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why do decision trees overfit so easily?", "acceptedAnswer": {"@type": "Answer", "text": "Because an unrestricted tree keeps splitting until every training point sits in its own tiny, pure region — at which point it has effectively memorized the data, including the noise. Each extra level of depth lets the tree carve out more, smaller rectangles, so it can always drive training accuracy toward 100%. But those last splits are fitting flukes specific to this sample, not real structure, so performance on new data peaks at a moderate depth and then declines. The cures are to limit growth (maximum depth, a minimum number of samples per leaf) or to grow a large tree and prune it back using cross-validation."}}, {"@type": "Question", "name": "How deep should a decision tree be?", "acceptedAnswer": {"@type": "Answer", "text": "Deep enough to capture the real pattern, no deeper — and you find that point with data, not by guessing. Use cross-validation to try a range of depths (or minimum-leaf sizes) and pick the setting where held-out accuracy peaks, not where training accuracy is highest. Training accuracy keeps rising with depth right up to memorization, so it can never tell you when to stop; only performance on data the tree didn't see can. In practice a single tree is often kept deliberately shallow for interpretability, or grown deep and then pruned. If you need both accuracy and stability, an ensemble of trees usually beats tuning one tree's depth."}}, {"@type": "Question", "name": "Why did my tree change completely when I added a little data?", "acceptedAnswer": {"@type": "Answer", "text": "That instability is inherent to single trees, not a bug. Because the tree is built greedily, the very first split is chosen to look best right now, and everything below it is conditional on that choice. If a small change in the data makes a different feature win that top split by a hair, the entire structure beneath it can be rebuilt into something that looks unrelated — even though its predictions may be similar. This high variance is exactly why ensembles like random forests exist: by averaging many trees grown on resampled data, they cancel out each individual tree's jumpiness and predict far more stably."}}]}
+  </script>
+</head>
+<body data-course="ml" data-section="decision-trees">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 4.6</span>
+        <h1>Decision Trees</h1>
+
+        <p class="lede">Most models hand you coefficients or scores. A decision tree hands you something rarer: a flowchart you can read aloud. "Is the applicant's income above €40k? If yes, is their debt below 30%? Then approve." That transparency is its superpower — and the way it can grow itself into memorizing noise is its cautionary tale. Both are visible in a single picture.</p>
+
+        <h2>Twenty questions, but for data</h2>
+        <p>A decision tree classifies by asking a sequence of yes/no questions, each about a single feature: <em>is x&#8321; &lt; 5?</em>, then <em>is x&#8322; &gt; 12?</em>, and so on. Each question <strong>splits</strong> the data into two groups; the tree then asks a fresh question inside each group, and repeats. This is <strong>recursive splitting</strong>: the same "find the best split" step applied again and again to smaller and smaller subsets, carving the feature space into axis-aligned rectangles, each finally labelled with a class.</p>
+
+        <h2>Which split? The one that purifies</h2>
+        <p>At every step the tree tries all possible split points and keeps the one that makes the two resulting groups as <strong>pure</strong> as possible — ideally one group nearly all class A, the other nearly all class B. Purity is measured by <strong>Gini impurity</strong>: for a group, it's the chance you'd mislabel a random member if you guessed labels in proportion to the group's mix. A group that's 50/50 is maximally impure (Gini = 0.5); a group that's all one class is perfectly pure (Gini = 0). The tree greedily chooses whichever split drops the (size-weighted) impurity the most. "Greedily" matters: it grabs the best split available <em>right now</em>, never reconsidering — which is what makes trees fast, and also a little short-sighted.</p>
+
+        <h2>Depth is a dial — watch it turn into overfitting</h2>
+        <p>Each level of depth lets the tree ask one more round of questions, drawing finer rectangles. A shallow tree captures the big picture; a very deep tree can wall off every single training point in its own box. Grow the tree below one split at a time and keep an eye on the two accuracy lines: training accuracy marches upward toward a perfect 100%, but accuracy on a held-out <a href="../../ml/train-test-split-and-generalization/">test set</a> rises, <em>peaks</em>, and then falls as the deep splits start fitting noise. That peak-then-fall is <a href="../../stats-4/cross-validation-and-overfitting/">overfitting</a>, made visible.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="dtviz">
+          <p class="viz-title">🌳 Grow a tree, split by split</p>
+          <p class="viz-sub">Two classes (<span style="color:var(--primary);font-weight:700">indigo</span> and <span style="color:#f97316;font-weight:700">orange</span>) scattered with a curved true boundary plus some label noise. Each <strong>Grow</strong> adds one level of depth; the shaded regions are the tree's current decision boundary. Below, training vs test accuracy at every depth so far — grow past the peak and watch the tree start memorizing.</p>
+
+          <div class="controls">
+            <div class="control"><button class="btn btn-primary btn-sm" id="grow-btn">＋ Grow one level</button></div>
+            <div class="control"><button class="btn btn-sm" id="prune-btn">− Prune</button></div>
+            <div class="control"><button class="btn btn-sm" id="new-btn">↺ New dataset</button></div>
+            <div class="control" style="margin-left:auto"><span class="val" id="dep-val" style="font-size:.95rem">depth = 0</span></div>
+          </div>
+
+          <canvas id="dt-canvas"></canvas>
+
+          <div style="display:flex;flex-wrap:wrap;gap:.7rem;justify-content:center;margin-top:.9rem">
+            <div style="border:1px solid var(--border);border-left:4px solid var(--text-muted);border-radius:10px;padding:.5rem .85rem;text-align:center;min-width:120px">
+              <div style="font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em">Training acc.</div>
+              <div id="tr-acc" style="font-size:1.2rem;font-weight:800">—</div>
+            </div>
+            <div style="border:1px solid var(--border);border-left:4px solid var(--secondary);border-radius:10px;padding:.5rem .85rem;text-align:center;min-width:120px">
+              <div style="font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em">Test acc.</div>
+              <div id="te-acc" style="font-size:1.2rem;font-weight:800;color:var(--secondary)">—</div>
+            </div>
+          </div>
+          <p id="dt-verdict" style="font-size:.85rem;color:var(--text-faint);margin-top:.6rem;text-align:center;min-height:1.2em"></p>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>Notice the asymmetry the interactive drives home: <strong>training accuracy can never warn you</strong>, because it keeps improving right up to memorization. Only the held-out line reveals the sweet spot. This is why a lone tree is usually kept shallow (for readability) or grown large and then <em>pruned</em> back to the cross-validated best depth.</p>
+
+        <h2>The strengths — and the catch</h2>
+        <ul>
+          <li><strong>Interpretability.</strong> You can print the tree and follow any prediction as a path of plain-language rules. For a stakeholder who needs to know <em>why</em>, nothing else comes close.</li>
+          <li><strong>No fuss.</strong> Trees don't need feature scaling, handle mixed variable types, and cope with nonlinear boundaries and interactions automatically.</li>
+          <li><strong>Instability (the catch).</strong> Because splitting is greedy and top-down, a tiny change in the data can flip the first split — and rebuild the entire tree beneath it into something that looks completely different. A single tree is a high-variance model.</li>
+        </ul>
+        <p>That last weakness is the whole motivation for what comes next. If one tree is jumpy, grow <em>many</em> of them on resampled data and average their votes — the individual jitters cancel out, and you get a far more stable predictor. That's the idea behind random forests, and it's where this course heads next.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> decision trees give you a model you can actually explain, and a crystal-clear picture of overfitting: depth helps until it doesn't, and only held-out accuracy tells you when to stop. Tune depth (or minimum leaf size) with cross-validation, never with training accuracy — and remember that a single tree's transparency comes at the price of instability, which ensembles are built to fix.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>Why do decision trees overfit so easily?</summary>
+            <div class="faq-a"><p>Because an unrestricted tree keeps splitting until every training point sits in its own tiny, pure region — at which point it has effectively memorized the data, including the noise. Each extra level of depth lets the tree carve out more, smaller rectangles, so it can always drive training accuracy toward 100%. But those last splits are fitting flukes specific to this sample, not real structure, so performance on new data peaks at a moderate depth and then declines. The cures are to limit growth (maximum depth, a minimum number of samples per leaf) or to grow a large tree and prune it back using <a href="../../stats-4/cross-validation-and-overfitting/">cross-validation</a>.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>How deep should a decision tree be?</summary>
+            <div class="faq-a"><p>Deep enough to capture the real pattern, no deeper — and you find that point with data, not by guessing. Use cross-validation to try a range of depths (or minimum-leaf sizes) and pick the setting where <em>held-out</em> accuracy peaks, not where training accuracy is highest. Training accuracy keeps rising with depth right up to memorization, so it can never tell you when to stop; only performance on data the tree didn't see can. In practice a single tree is often kept deliberately shallow for interpretability, or grown deep and then pruned. If you need both accuracy and stability, an ensemble of trees usually beats tuning one tree's depth.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Why did my tree change completely when I added a little data?</summary>
+            <div class="faq-a"><p>That instability is inherent to single trees, not a bug. Because the tree is built greedily, the very first split is chosen to look best right now, and everything below it is conditional on that choice. If a small change in the data makes a different feature win that top split by a hair, the entire structure beneath it can be rebuilt into something that looks unrelated — even though its predictions may be similar. This high variance is exactly why ensembles like random forests exist: by averaging many trees grown on resampled data, they cancel out each individual tree's jumpiness and predict far more stably.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ decision tree visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var canvas = document.getElementById("dt-canvas"), ctx, W = 0, H = 430;
+    var MAXD = 9, NTR = 90, NTE = 400, NOISE = 0.13;
+    var seedPair = 0;                 // 0 -> train seed 2 / test seed 1002 (verified overfitting curve)
+    var tr, te, root, trAcc = [], teAcc = [], dep = 0, peakD = 0;
+
+    /* ---- deterministic data: curved boundary + label noise (frozen per seed) ---- */
+    function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+    function makeData(seed, n) {
+      var rng = mulberry32(seed), X = [], Y = [];
+      for (var i = 0; i < n; i++) {
+        var x = rng(), y = rng();
+        var boundary = 0.45 + 0.35 * Math.sin(x * Math.PI);
+        var cls = y > boundary ? 1 : 0;
+        if (rng() < NOISE) cls = 1 - cls;
+        X.push([x, y]); Y.push(cls);
+      }
+      return { X: X, Y: Y };
+    }
+
+    /* ---- greedy CART with Gini impurity (deterministic) ---- */
+    function gini(idx, Y) { var n = idx.length; if (!n) return 0; var c1 = 0; for (var i = 0; i < n; i++) c1 += Y[idx[i]]; var p = c1 / n; return 1 - p * p - (1 - p) * (1 - p); }
+    function majority(idx, Y) { var c1 = 0; for (var i = 0; i < idx.length; i++) c1 += Y[idx[i]]; return c1 * 2 >= idx.length ? 1 : 0; }
+    function build(idx, X, Y, depth) {
+      var node = { pred: majority(idx, Y), depth: depth };
+      if (depth >= MAXD || idx.length < 2) return node;
+      var g0 = gini(idx, Y); if (g0 === 0) return node;
+      var best = null;
+      for (var f = 0; f < 2; f++) {
+        var vals = idx.map(function (i) { return X[i][f]; }).slice().sort(function (a, b) { return a - b; });
+        var seen = {};
+        for (var v = 0; v < vals.length - 1; v++) {
+          var thr = (vals[v] + vals[v + 1]) / 2; if (seen[thr]) continue; seen[thr] = 1;
+          var L = [], R = [];
+          for (var i2 = 0; i2 < idx.length; i2++) { (X[idx[i2]][f] < thr ? L : R).push(idx[i2]); }
+          if (!L.length || !R.length) continue;
+          var w = (L.length * gini(L, Y) + R.length * gini(R, Y)) / idx.length;
+          if (!best || w < best.w - 1e-12) best = { w: w, f: f, thr: thr, L: L, R: R };
+        }
+      }
+      if (!best || best.w >= g0 - 1e-9) return node;
+      node.f = best.f; node.thr = best.thr;
+      node.L = build(best.L, X, Y, depth + 1);
+      node.R = build(best.R, X, Y, depth + 1);
+      return node;
+    }
+    function predict(node, x, limit) { while (node.L && node.depth < limit) { node = (x[node.f] < node.thr ? node.L : node.R); } return node.pred; }
+    function acc(node, X, Y, limit) { var c = 0; for (var i = 0; i < X.length; i++) if (predict(node, X[i], limit) === Y[i]) c++; return c / X.length; }
+
+    function rebuild() {
+      tr = makeData(2 + seedPair, NTR);
+      te = makeData(1002 + seedPair, NTE);
+      var idx = tr.X.map(function (_, i) { return i; });
+      root = build(idx, tr.X, tr.Y, 0);
+      trAcc = []; teAcc = []; peakD = 0;
+      for (var dd = 0; dd <= MAXD; dd++) { trAcc.push(acc(root, tr.X, tr.Y, dd)); teAcc.push(acc(root, te.X, te.Y, dd)); if (teAcc[dd] > teAcc[peakD]) peakD = dd; }
+    }
+
+    /* ---- drawing ---- */
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function plotGeom() {
+      var top = 8, size = Math.min(212, W - 40);
+      var x0 = (W - size) / 2;
+      return { x0: x0, y0: top, size: size };
+    }
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      var g = plotGeom();
+      var indigo = VIZ.css("--primary"), orange = "#f97316";
+      // decision regions
+      var cells = 60, cs = g.size / cells;
+      for (var ix = 0; ix < cells; ix++) for (var iy = 0; iy < cells; iy++) {
+        var xx = (ix + 0.5) / cells, yy = 1 - (iy + 0.5) / cells;
+        var p = predict(root, [xx, yy], dep);
+        ctx.fillStyle = p === 1 ? orange : indigo; ctx.globalAlpha = 0.14;
+        ctx.fillRect(g.x0 + ix * cs, g.y0 + iy * cs, cs + 0.6, cs + 0.6);
+      }
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.strokeRect(g.x0, g.y0, g.size, g.size);
+      // training points, coloured by TRUE class
+      for (var i = 0; i < tr.X.length; i++) {
+        var px = g.x0 + tr.X[i][0] * g.size, py = g.y0 + (1 - tr.X[i][1]) * g.size;
+        ctx.fillStyle = tr.Y[i] === 1 ? orange : indigo;
+        ctx.beginPath(); ctx.arc(px, py, 3, 0, 6.2832); ctx.fill();
+        ctx.strokeStyle = VIZ.css("--bg"); ctx.lineWidth = 1; ctx.stroke();
+      }
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px " + VIZ.css("--font"); ctx.textAlign = "center";
+      ctx.fillText("training data · shaded = tree's decision at depth " + dep, W / 2, g.y0 + g.size + 15);
+
+      // accuracy vs depth chart
+      var cTop = g.y0 + g.size + 32, cBot = H - 22, cL = 40, cR = W - 16;
+      var lo = 0.5, hi = 1.0;
+      function bx(dd) { return cL + dd / MAXD * (cR - cL); }
+      function by(a) { return cBot - (a - lo) / (hi - lo) * (cBot - cTop); }
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(cL, cBot); ctx.lineTo(cR, cBot); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cL, cTop); ctx.lineTo(cL, cBot); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace, monospace"; ctx.textAlign = "right";
+      ctx.fillText("100%", cL - 4, by(1) + 3); ctx.fillText("50%", cL - 4, by(0.5) + 3);
+      ctx.textAlign = "center";
+      for (var dd2 = 0; dd2 <= MAXD; dd2++) ctx.fillText(dd2, bx(dd2), cBot + 13);
+      ctx.fillText("tree depth →", (cL + cR) / 2, H - 3);
+      // current-depth marker
+      ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.moveTo(bx(dep), cTop); ctx.lineTo(bx(dep), cBot); ctx.stroke(); ctx.setLineDash([]);
+      function line(arr, color) {
+        ctx.strokeStyle = color; ctx.lineWidth = 2.2; ctx.beginPath();
+        for (var dd = 0; dd <= dep; dd++) { if (dd === 0) ctx.moveTo(bx(dd), by(arr[dd])); else ctx.lineTo(bx(dd), by(arr[dd])); }
+        ctx.stroke();
+        ctx.fillStyle = color; for (var e = 0; e <= dep; e++) { ctx.beginPath(); ctx.arc(bx(e), by(arr[e]), 2.6, 0, 6.2832); ctx.fill(); }
+      }
+      line(trAcc, VIZ.css("--text-muted"));
+      line(teAcc, VIZ.css("--secondary"));
+      ctx.font = "600 11px " + VIZ.css("--font"); ctx.textAlign = "left";
+      ctx.fillStyle = VIZ.css("--text-muted"); ctx.fillText("training", cL + 4, cTop + 10);
+      ctx.fillStyle = VIZ.css("--secondary"); ctx.fillText("test (held-out)", cL + 4, cTop + 24);
+    }
+
+    function update() {
+      document.getElementById("dep-val").textContent = "depth = " + dep;
+      document.getElementById("tr-acc").textContent = (trAcc[dep] * 100).toFixed(1) + "%";
+      document.getElementById("te-acc").textContent = (teAcc[dep] * 100).toFixed(1) + "%";
+      var v;
+      if (dep === 0) v = "Depth 0 is a single guess — the majority class everywhere. Start growing.";
+      else if (dep < peakD) v = "Test accuracy still climbing — the tree is learning real structure. Keep going.";
+      else if (dep === peakD) v = "Sweet spot: test accuracy peaks around depth " + peakD + ". Growing further starts to hurt.";
+      else v = "Past the peak: training keeps rising toward 100% but test accuracy is falling — that's overfitting.";
+      document.getElementById("dt-verdict").textContent = v;
+      draw();
+    }
+
+    document.getElementById("grow-btn").addEventListener("click", function () { if (dep < MAXD) { dep++; update(); } });
+    document.getElementById("prune-btn").addEventListener("click", function () { if (dep > 0) { dep--; update(); } });
+    document.getElementById("new-btn").addEventListener("click", function () { seedPair += 1; rebuild(); dep = 0; update(); });
+    window.addEventListener("resize", function () { fit(); draw(); });
+    if (window.ResizeObserver) new ResizeObserver(function () { fit(); draw(); }).observe(canvas);
+    VIZ.onTheme(draw);
+
+    fit(); rebuild(); dep = 0; update();
+  })();
+  </script>
+</body>
+</html>
