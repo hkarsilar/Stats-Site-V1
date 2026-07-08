@@ -69,6 +69,7 @@ for fname, title in [
     ("effect-sizes.html", "Effect-Size Converter"),
     ("power.html", "Power & Sample-Size Calculator"),
     ("descriptives.html", "Descriptives Calculator"),
+    ("apa.html", "APA Results Formatter"),
     ("toolbox.html", "Statistics Toolbox"),
 ]:
     p = ROOT / fname

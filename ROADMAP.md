@@ -12,7 +12,7 @@ This file is the master plan. The copy-paste prompts that execute it live in **[
 |---|---|---|---|
 | Courses | 4 (Stats 1–4) | 9 (Methods, Data, Ethics, ML, Writing all complete) | **9** in two tracks |
 | Lessons | 45 | 95 | **~95** |
-| Tool pages | 8 | 9 (+ power calculator) | **~14** |
+| Tool pages | 8 | 10 (+ power calc, APA formatter) | **~14** |
 | Long-form guides | 0 | 0 | 4 cornerstone guides |
 | Personas served | "stats course student" | + first-time researcher, data cleaner, ML-curious | + thesis writer |
 
@@ -79,7 +79,7 @@ Hard dependencies: **P2 before any new course** (P4+). **P32 after at least two 
 
 Tick these as sessions complete them (each prompt ends by updating this list).
 
-> **Where things stand (8 Jul 2026):** 20 of 36 one-shot prompts done. Phase 0 complete; **all five toolkit courses (Methods, Data, Ethics, ML & AI, Writing) are now complete** — the Writing course finished with 5.7 abstracts & titles and 5.8 the final checklist (accent lime `#84cc16`). The site has **9 courses / 95 lessons / 9 tools**, audit passing clean. (5.4–5.8 are conceptual writing lessons — no software.js/snippets entries, warn-only in the audit; the static homepage lesson count is now 95.) P20 also added the **"thesis pathway"** cross-link block to `toolbox.html` (Methods → Data → Stats → Power → Writing → Ethics). **All course content (Phases 1–5) is done.** Next: the deferred Phase-6 tools — P21 (APA formatter, pairs with Writing 5.2), P22 (practice datasets), P23 (flashcards), P24 (which-chart), P25 (analysis planner), P26 (correlation explorer).
+> **Where things stand (8 Jul 2026):** 21 of 36 one-shot prompts done. Phase 0 complete; **all five toolkit courses (Methods, Data, Ethics, ML & AI, Writing) are complete** — the Writing course finished with 5.7 abstracts & titles and 5.8 the final checklist (accent lime `#84cc16`). Phase 6 tools underway: **P21 shipped `apa.html`, the APA Results Formatter** (t / ANOVA / χ² / correlation / regression → correct APA 7 sentence with a statcheck-style consistency check; also adds a BASE-aware "Format your own numbers →" link at the foot of every injected APA block). The site now has **9 courses / 95 lessons / 10 tools**, audit passing clean. (5.4–5.8 are conceptual writing lessons — no software.js/snippets entries, warn-only in the audit; the static homepage lesson count is 95.) P20 added the **"thesis pathway"** cross-link block to `toolbox.html` (Methods → Data → Stats → Power → Writing → Ethics). **All course content (Phases 1–5) is done.** Next Phase-6 tools: P22 (practice datasets), P23 (flashcards), P24 (which-chart), P25 (analysis planner), P26 (correlation explorer).
 
 - [x] P1 · audit.js
 - [x] P2 · multi-track platform
@@ -101,7 +101,7 @@ Tick these as sessions complete them (each prompt ends by updating this list).
 - [x] P18 · Writing 1–3 (+ scaffold)
 - [x] P19 · Writing 4–6
 - [x] P20 · Writing 7–8
-- [ ] P21 · APA formatter tool
+- [x] P21 · APA formatter tool
 - [ ] P22 · practice datasets library
 - [ ] P23 · glossary flashcards
 - [ ] P24 · which-chart tool

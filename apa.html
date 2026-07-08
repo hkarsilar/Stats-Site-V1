@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>APA Results Formatter — Turn Your Numbers into Correct APA 7 Text — StatsCapybara</title>
+  <meta name="description" content="Enter your t, F, χ², r, or regression numbers and get a correctly formatted APA 7 results sentence — right italics, no leading zeros on p and r, the p < .001 floor, plus a statcheck-style consistency check." />
+  <link rel="canonical" href="https://statscapybara.com/apa.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="APA Results Formatter — StatsCapybara" />
+  <meta property="og:description" content="Type your statistics, copy a correctly formatted APA 7 results sentence — right italics, no leading zeros, and a consistency check that recomputes your p-value." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/apa.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="APA Results Formatter — StatsCapybara" />
+  <meta name="twitter:description" content="Type your statistics, copy a correctly formatted APA 7 results sentence — right italics, no leading zeros, and a p-value consistency check." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <style>
+    /* apa.html-scoped bits — everything else reuses the shared design system */
+    #apaviz .controls { max-width: 100%; }
+    /* the 5-way analysis picker can be wider than a phone — let it scroll inside
+       itself (labels stay on one line) so the page body never scrolls sideways.
+       min-width:0 lets the flex item shrink below its content so the scroll works. */
+    #ana-wrap { min-width: 0; max-width: 100%; }
+    #ana-seg { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
+    #ana-seg button { white-space: nowrap; flex-shrink: 0; }
+    @media (max-width: 480px) { #ana-seg button, #variant-seg button { padding: .4rem .6rem; } }
+    .apa-fields { display: flex; flex-wrap: wrap; gap: .9rem 1.25rem; align-items: flex-end; margin: 1rem 0 1.2rem; }
+    .apa-fields .control input.txt {
+      font: inherit; font-size: .9rem; width: 11rem; padding: .45rem .6rem;
+      border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--text);
+    }
+    .apa-fields .control input.txt:focus { outline: none; border-color: var(--primary); }
+    .apa-fields .control label .opt { font-weight: 500; color: var(--text-faint); text-transform: none; letter-spacing: 0; }
+    .apa-out-head { border: 1px solid var(--border); border-radius: 12px 12px 0 0; }
+    #apa-out { margin: 0; border: 1px solid var(--border); border-top: none; border-left: 3px solid #f97316;
+      border-radius: 0 0 12px 12px; font-size: 1.05rem; line-height: 1.65; }
+    .apa-note { font-size: .9rem; line-height: 1.55; border-radius: 10px; padding: .6rem .85rem; margin: 0 0 .7rem;
+      border: 1px solid var(--border); background: var(--surface-2); color: var(--text-muted); }
+    .apa-note.ok { border-color: color-mix(in srgb, #22c55e 45%, var(--border)); background: color-mix(in srgb, #22c55e 10%, var(--surface)); }
+    .apa-note.warn { border-color: color-mix(in srgb, #f97316 55%, var(--border)); background: color-mix(in srgb, #f97316 12%, var(--surface)); }
+    .apa-note.info { border-color: color-mix(in srgb, var(--primary) 40%, var(--border)); background: color-mix(in srgb, var(--primary) 8%, var(--surface)); }
+    .apa-note strong { color: var(--text); }
+    #apa-links { display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; margin: .9rem 0 0; }
+    #apa-links a { white-space: nowrap; }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="container narrow">
+      <article class="lesson" style="margin:0 auto">
+        <span class="lesson-eyebrow">Tools</span>
+        <h1>APA Results Formatter</h1>
+        <p class="lede">You ran the analysis; now you have to <em>write it up</em>. APA 7 has fussy little rules — which symbols are italic, when to drop the leading zero, why you never type <em>p</em> = .000. Enter your numbers and get a clean, copy-ready results sentence, with a statcheck-style warning if your <em>p</em>-value doesn't match your statistic.</p>
+
+        <div class="viz" id="apaviz">
+          <div class="controls">
+            <div class="control" id="ana-wrap">
+              <label>Analysis</label>
+              <div class="seg" id="ana-seg">
+                <button type="button" data-a="t" class="active"><em>t</em>-test</button>
+                <button type="button" data-a="anova">ANOVA</button>
+                <button type="button" data-a="chi">χ²</button>
+                <button type="button" data-a="corr">Correlation</button>
+                <button type="button" data-a="reg">Regression</button>
+              </div>
+            </div>
+            <div class="control" id="variant-wrap">
+              <label id="variant-label">Type</label>
+              <div class="seg" id="variant-seg"></div>
+            </div>
+          </div>
+
+          <div class="apa-fields" id="apa-fields"></div>
+
+          <div id="apa-notes"></div>
+
+          <div class="sw-head apa-out-head"><span class="sw-title">📝 APA 7 results sentence</span>
+            <button class="tc-copy" type="button" id="apa-copy">Copy</button></div>
+          <blockquote class="apa-quote" id="apa-out"></blockquote>
+
+          <p class="viz-sub" id="apa-links"></p>
+        </div>
+
+        <h2>The rules graders actually check</h2>
+        <ul>
+          <li><strong>Italics are meaningful.</strong> Latin-letter statistics are italic — <em>t</em>, <em>F</em>, <em>p</em>, <em>r</em>, <em>d</em>, <em>M</em>, <em>SD</em>, <em>N</em>, <em>b</em>, <em>SE</em>, <em>R</em>². Greek letters are <strong>not</strong> — η², χ², β, α stay upright. This tool applies both automatically, so a copy-paste keeps the formatting.</li>
+          <li><strong>No leading zero</strong> on anything that can't exceed 1 in magnitude: <em>p</em>, <em>r</em>, <em>R</em>², η², β, Cramér's <em>V</em> → write <code>.03</code>, not <code>0.03</code>. Statistics that <em>can</em> exceed 1 keep the zero: <em>t</em> = 0.85, <em>d</em> = 0.20.</li>
+          <li><strong>Never <em>p</em> = .000.</strong> A <em>p</em>-value is never exactly zero. The smallest value APA reports is <em>p</em> &lt; .001 — this tool floors it for you and leaves a note.</li>
+          <li><strong>Degrees of freedom in parentheses</strong>, right after the italic statistic: <em>t</em>(48), <em>F</em>(2, 87), <em>r</em>(58), χ²(2, <em>N</em> = 120).</li>
+          <li><strong>Report an effect size</strong> alongside the test — <em>d</em>, η², <em>r</em>, or <em>V</em>. Significance answers "is there an effect?"; the effect size answers "how big?"</li>
+        </ul>
+
+        <h2>The master patterns</h2>
+        <table class="ref-table">
+          <thead><tr><th>Test</th><th>APA 7 pattern</th></tr></thead>
+          <tbody>
+            <tr><td>Independent <em>t</em></td><td><em>t</em>(df) = 2.35, <em>p</em> = .022, <em>d</em> = 0.62</td></tr>
+            <tr><td>Paired <em>t</em></td><td><em>t</em>(df) = 3.10, <em>p</em> = .004, <em>d</em><sub>z</sub> = 0.57</td></tr>
+            <tr><td>One-way ANOVA</td><td><em>F</em>(2, 87) = 5.40, <em>p</em> = .006, η² = .11</td></tr>
+            <tr><td>Chi-square</td><td>χ²(2, <em>N</em> = 120) = 8.14, <em>p</em> = .017, <em>V</em> = .26</td></tr>
+            <tr><td>Correlation</td><td><em>r</em>(58) = .42, <em>p</em> &lt; .001</td></tr>
+            <tr><td>Regression coef.</td><td><em>b</em> = 2.31, <em>SE</em> = 0.68, β = .38, <em>t</em>(87) = 3.40, <em>p</em> &lt; .001</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout key">
+          <p><strong>The consistency check is the honest bit.</strong> This tool recomputes your <em>p</em>-value from the test statistic and its <em>df</em> — the same idea as the <em>statcheck</em> tool that scans published papers. If your reported <em>p</em> doesn't match, it's usually a typo, a rounding slip, or a one- vs two-tailed mix-up. Fix it before your grader (or a reviewer) does. Learn the full write-up craft in <a href="writing/reporting-statistics-apa/">Reporting Statistics in APA Style</a>, and if you still need the numbers, the <a href="descriptives.html">Descriptives Calculator</a> hands you <em>M</em> and <em>SD</em> ready to paste.</p>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="assets/js/curriculum.js"></script>
+  <script src="assets/js/site.js"></script>
+  <script src="assets/js/viz.js"></script>
+
+  <!-- ============ APA results formatter ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var MINUS = "−";
+
+    /* ---------- number + typography helpers ---------- */
+    function fx(x, dp) { return isFinite(x) ? (x < 0 ? MINUS : "") + Math.abs(x).toFixed(dp) : "?"; }
+    function iv(x) { return isFinite(x) ? String(Math.round(x)) : "?"; }
+    /* no leading zero — for values that can't exceed 1 in magnitude (p, r, β, η², V, R²) */
+    function nz(x, dp) {
+      if (!isFinite(x)) return "?";
+      return (x < 0 ? MINUS : "") + Math.abs(x).toFixed(dp).replace(/^0\./, ".");
+    }
+    function em(s) { return "<em>" + s + "</em>"; }
+    function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+
+    /* p-value → { html, floor } with the p < .001 floor applied */
+    function fmtP(p) {
+      if (!isFinite(p)) return null;
+      if (p <= 0) return { html: "&lt; .001", floor: true };
+      if (p >= 1) return { html: "= 1.00", floor: false };
+      if (p < 0.001) return { html: "&lt; .001", floor: true };
+      return { html: "= " + p.toFixed(3).replace(/^0\./, "."), floor: false };
+    }
+    function pShow(p) { return p < 0.001 ? "&lt; .001" : "= " + p.toFixed(3).replace(/^0\./, "."); }
+    function pBare(p) { return p < 0.001 ? "&lt; .001" : p.toFixed(3).replace(/^0\./, "."); }
+
+    /* read a live field value */
+    function val(id) { var e = document.getElementById("f-" + id); return e ? parseFloat(e.value) : NaN; }
+    function txt(id, fb) { var e = document.getElementById("f-" + id); var s = e ? e.value.trim() : ""; return s || fb; }
+    function sig(p) { return isFinite(p) && p < 0.05; }
+    function sigWord(p) { return sig(p) ? "a significant" : "a non-significant"; }
+    /* optional " (M = .., SD = ..)" descriptives clause */
+    function ds(mId, sdId) {
+      var m = val(mId), sd = val(sdId);
+      if (!isFinite(m) || !isFinite(sd)) return "";
+      return " (" + em("M") + " = " + fx(m, 2) + ", " + em("SD") + " = " + fx(sd, 2) + ")";
+    }
+
+    /* ---------- analysis definitions ---------- */
+    var A = {
+      t: {
+        variants: [{ k: "ind", label: "Independent" }, { k: "paired", label: "Paired" }, { k: "one", label: "One-sample" }],
+        fields: function (v) {
+          var core = [
+            { id: "t", label: "t", def: v === "paired" ? 3.10 : (v === "one" ? 2.68 : 2.35), step: "0.01" },
+            { id: "df", label: "df", def: v === "paired" ? 29 : (v === "one" ? 41 : 58), step: "1" },
+            { id: "p", label: "p", def: v === "paired" ? 0.004 : (v === "one" ? 0.011 : 0.022), step: "0.001" },
+            { id: "d", label: v === "paired" ? "Cohen's dz" : "Cohen's d", def: v === "paired" ? 0.57 : (v === "one" ? 0.42 : 0.62), step: "0.01" }
+          ];
+          if (v === "one") {
+            return [
+              { id: "lbl1", label: "Variable", def: "reading scores", type: "txt" },
+              { id: "mu", label: "Test value (μ₀)", def: 100, step: "1" }
+            ].concat(core, [
+              { id: "m", label: "M", def: "", step: "0.01", opt: true },
+              { id: "sd", label: "SD", def: "", step: "0.01", opt: true }
+            ]);
+          }
+          return [
+            { id: "lbl1", label: v === "paired" ? "Condition 1" : "Group 1", def: v === "paired" ? "post-test" : "the training group", type: "txt" },
+            { id: "lbl2", label: v === "paired" ? "Condition 2" : "Group 2", def: v === "paired" ? "pre-test" : "the control group", type: "txt" }
+          ].concat(core, [
+            { id: "m1", label: "M₁", def: "", step: "0.01", opt: true },
+            { id: "sd1", label: "SD₁", def: "", step: "0.01", opt: true },
+            { id: "m2", label: "M₂", def: "", step: "0.01", opt: true },
+            { id: "sd2", label: "SD₂", def: "", step: "0.01", opt: true }
+          ]);
+        },
+        sentence: function (v) {
+          var p = fmtP(val("p")); if (!p) return null;
+          var tail = ", " + em("t") + "(" + iv(val("df")) + ") = " + fx(val("t"), 2) + ", " + em("p") + " " + p.html +
+            ", " + em(v === "paired" ? "d" : "d") + (v === "paired" ? "<sub>z</sub>" : "") + " = " + fx(val("d"), 2) + ".";
+          if (v === "one") {
+            return "A one-sample " + em("t") + " test showed that " + txt("lbl1", "reading scores") + ds("m", "sd") +
+              " " + (sig(val("p")) ? "differed significantly" : "did not differ significantly") + " from " + fx(val("mu"), 2).replace(/\.00$/, "") + tail;
+          }
+          var noun = v === "paired" ? "A paired-samples " : "An independent-samples ";
+          return noun + em("t") + " test showed " + sigWord(val("p")) + " difference between " +
+            txt("lbl1", "group 1") + ds("m1", "sd1") + " and " + txt("lbl2", "group 2") + ds("m2", "sd2") + tail;
+        },
+        recomp: function () { var t = val("t"), df = val("df"); return (isFinite(t) && isFinite(df) && df > 0) ? 2 * VIZ.tUpper(Math.abs(t), df) : null; },
+        links: function (v) {
+          return v === "ind"
+            ? { l: "stats-1/independent-samples-t-test/", t: "Independent-samples t-test lesson" }
+            : { l: "stats-1/one-sample-and-paired-t-tests/", t: "One-sample & paired t-test lesson" };
+        }
+      },
+
+      anova: {
+        variants: [{ k: "one", label: "One-way" }, { k: "fact", label: "Factorial" }],
+        fields: function (v) {
+          return [
+            { id: "eff", label: "Effect", def: v === "fact" ? "interaction between condition and time" : "effect of condition", type: "txt" },
+            { id: "F", label: "F", def: v === "fact" ? 6.02 : 5.40, step: "0.01" },
+            { id: "df1", label: "df₁ (effect)", def: v === "fact" ? 1 : 2, step: "1" },
+            { id: "df2", label: "df₂ (error)", def: v === "fact" ? 116 : 87, step: "1" },
+            { id: "p", label: "p", def: v === "fact" ? 0.016 : 0.006, step: "0.001" },
+            { id: "eta", label: v === "fact" ? "partial η²" : "η²", def: v === "fact" ? 0.05 : 0.11, step: "0.001" }
+          ];
+        },
+        sentence: function (v) {
+          var p = fmtP(val("p")); if (!p) return null;
+          var etaSym = v === "fact" ? "η²<sub>p</sub>" : "η²";
+          return "There was " + sigWord(val("p")) + " " + txt("eff", v === "fact" ? "interaction" : "effect of condition") +
+            ", " + em("F") + "(" + iv(val("df1")) + ", " + iv(val("df2")) + ") = " + fx(val("F"), 2) +
+            ", " + em("p") + " " + p.html + ", " + etaSym + " = " + nz(val("eta"), 2) + ".";
+        },
+        recomp: function () { var f = val("F"), d1 = val("df1"), d2 = val("df2"); return (isFinite(f) && isFinite(d1) && isFinite(d2) && d1 > 0 && d2 > 0) ? VIZ.fUpper(f, d1, d2) : null; },
+        links: function (v) {
+          return v === "fact"
+            ? { l: "stats-2/factorial-anova-two-way/", t: "Factorial ANOVA lesson" }
+            : { l: "stats-2/one-way-anova/", t: "One-way ANOVA lesson" };
+        }
+      },
+
+      chi: {
+        fields: function () {
+          return [
+            { id: "lbl1", label: "Variable 1", def: "gender", type: "txt" },
+            { id: "lbl2", label: "Variable 2", def: "handedness", type: "txt" },
+            { id: "chi", label: "χ²", def: 8.14, step: "0.01" },
+            { id: "df", label: "df", def: 2, step: "1" },
+            { id: "N", label: "N", def: 120, step: "1" },
+            { id: "p", label: "p", def: 0.017, step: "0.001" },
+            { id: "V", label: "Cramér's V", def: 0.26, step: "0.01", opt: true }
+          ];
+        },
+        sentence: function () {
+          var p = fmtP(val("p")); if (!p) return null;
+          var vv = val("V"), vClause = isFinite(vv) ? ", " + em("V") + " = " + nz(vv, 2) : "";
+          return "A chi-square test of independence showed " + sigWord(val("p")) + " association between " +
+            txt("lbl1", "gender") + " and " + txt("lbl2", "handedness") +
+            ", χ²(" + iv(val("df")) + ", " + em("N") + " = " + iv(val("N")) + ") = " + fx(val("chi"), 2) +
+            ", " + em("p") + " " + p.html + vClause + ".";
+        },
+        recomp: function () { var c = val("chi"), df = val("df"); return (isFinite(c) && isFinite(df) && df > 0) ? VIZ.chiSqUpper(c, df) : null; },
+        links: function () { return { l: "stats-2/chi-square-tests/", t: "Chi-square tests lesson" }; }
+      },
+
+      corr: {
+        fields: function () {
+          return [
+            { id: "lbl1", label: "Variable 1", def: "sleep", type: "txt" },
+            { id: "lbl2", label: "Variable 2", def: "exam score", type: "txt" },
+            { id: "r", label: "r", def: 0.42, step: "0.01" },
+            { id: "n", label: "n (sample size)", def: 60, step: "1" },
+            { id: "p", label: "p", def: 0.001, step: "0.001" }
+          ];
+        },
+        sentence: function () {
+          var p = fmtP(val("p")); if (!p) return null;
+          var r = val("r"), n = val("n"), df = isFinite(n) ? n - 2 : NaN;
+          var dir = r >= 0 ? "positively" : "negatively";
+          return cap(txt("lbl1", "sleep")) + " was " + dir + " correlated with " + txt("lbl2", "exam score") +
+            ", " + em("r") + "(" + iv(df) + ") = " + nz(r, 2) + ", " + em("p") + " " + p.html + ".";
+        },
+        recomp: function () {
+          var r = val("r"), n = val("n"), df = n - 2;
+          if (!isFinite(r) || !isFinite(n) || df <= 0 || Math.abs(r) >= 1) return null;
+          var t = r * Math.sqrt(df / (1 - r * r));
+          return 2 * VIZ.tUpper(Math.abs(t), df);
+        },
+        links: function () { return { l: "stats-2/correlation/", t: "Correlation lesson" }; }
+      },
+
+      reg: {
+        variants: [{ k: "coef", label: "Coefficient" }, { k: "model", label: "Model fit" }],
+        fields: function (v) {
+          if (v === "model") return [
+            { id: "r2", label: "R²", def: 0.34, step: "0.01" },
+            { id: "F", label: "F", def: 14.20, step: "0.01" },
+            { id: "df1", label: "df₁ (model)", def: 3, step: "1" },
+            { id: "df2", label: "df₂ (residual)", def: 96, step: "1" },
+            { id: "p", label: "p", def: 0.001, step: "0.001" }
+          ];
+          return [
+            { id: "pred", label: "Predictor", def: "study time", type: "txt" },
+            { id: "out", label: "Outcome", def: "exam score", type: "txt" },
+            { id: "b", label: "b (unstandardized)", def: 2.31, step: "0.01" },
+            { id: "se", label: "SE", def: 0.68, step: "0.01" },
+            { id: "beta", label: "β (standardized)", def: 0.38, step: "0.01" },
+            { id: "df", label: "df (residual)", def: 87, step: "1" },
+            { id: "p", label: "p", def: 0.001, step: "0.001" }
+          ];
+        },
+        sentence: function (v) {
+          var p = fmtP(val("p")); if (!p) return null;
+          if (v === "model") {
+            return "The model explained " + sigWord(val("p")) + " proportion of variance in the outcome, " +
+              em("R") + "² = " + nz(val("r2"), 2) + ", " + em("F") + "(" + iv(val("df1")) + ", " + iv(val("df2")) + ") = " +
+              fx(val("F"), 2) + ", " + em("p") + " " + p.html + ".";
+          }
+          var b = val("b"), se = val("se"), df = val("df");
+          var seClause = isFinite(se) ? ", " + em("SE") + " = " + fx(se, 2) : "";
+          var tClause = (isFinite(b) && isFinite(se) && se !== 0) ? ", " + em("t") + "(" + iv(df) + ") = " + fx(b / se, 2) : "";
+          return cap(txt("pred", "study time")) + " " + (sig(val("p")) ? "significantly predicted" : "did not significantly predict") +
+            " " + txt("out", "exam score") + ", " + em("b") + " = " + fx(b, 2) + seClause +
+            ", β = " + nz(val("beta"), 2) + tClause + ", " + em("p") + " " + p.html + ".";
+        },
+        recomp: function (v) {
+          if (v === "model") { var f = val("F"), d1 = val("df1"), d2 = val("df2"); return (isFinite(f) && isFinite(d1) && isFinite(d2) && d1 > 0 && d2 > 0) ? VIZ.fUpper(f, d1, d2) : null; }
+          var b = val("b"), se = val("se"), df = val("df");
+          return (isFinite(b) && isFinite(se) && se > 0 && isFinite(df) && df > 0) ? 2 * VIZ.tUpper(Math.abs(b / se), df) : null;
+        },
+        links: function () { return { l: "stats-2/simple-linear-regression/", t: "Simple linear regression lesson" }; }
+      }
+    };
+
+    /* ---------- state + rendering ---------- */
+    var cur = "t", variant = "ind";
+
+    function fieldHtml(f) {
+      var input = f.type === "txt"
+        ? '<input class="txt" id="f-' + f.id + '" type="text" value="' + (f.def || "") + '">'
+        : '<input class="num" id="f-' + f.id + '" type="number" step="' + (f.step || "0.01") + '" value="' + (f.def != null ? f.def : "") + '">';
+      return '<div class="control"><label>' + f.label + (f.opt ? ' <span class="opt">(optional)</span>' : '') + '</label>' + input + '</div>';
+    }
+
+    function renderVariants() {
+      var wrap = document.getElementById("variant-wrap"), seg = document.getElementById("variant-seg");
+      var vs = A[cur].variants;
+      if (!vs) { wrap.style.display = "none"; seg.innerHTML = ""; return; }
+      wrap.style.display = "";
+      seg.innerHTML = vs.map(function (o) {
+        return '<button type="button" data-v="' + o.k + '"' + (o.k === variant ? ' class="active"' : '') + '>' + o.label + '</button>';
+      }).join("");
+    }
+
+    function renderFields() {
+      document.getElementById("apa-fields").innerHTML = A[cur].fields(variant).map(fieldHtml).join("");
+    }
+
+    function render() {
+      var out = document.getElementById("apa-out"), notes = document.getElementById("apa-notes"), links = document.getElementById("apa-links");
+      var s = A[cur].sentence(variant);
+      if (s == null) {
+        out.innerHTML = '<p style="color:var(--text-faint)">Enter a <em>p</em>-value to build the sentence.</p>';
+        notes.innerHTML = ""; links.innerHTML = "";
+        return;
+      }
+      out.innerHTML = "<p>" + s + "</p>";
+
+      /* typography + consistency notes */
+      var html = "";
+      var pv = val("p"), pf = fmtP(pv);
+      if (isFinite(pv)) {
+        if (pv <= 0) html += '<div class="apa-note info">APA never reports <em>p</em> = .000 — a <em>p</em>-value is never exactly zero. Rounded up to the reporting floor: <strong><em>p</em> &lt; .001</strong>.</div>';
+        else if (pv < 0.001) html += '<div class="apa-note info">Very small <em>p</em> shown as <strong><em>p</em> &lt; .001</strong> (APA’s reporting floor — never write out more zeros).</div>';
+        else if (pv > 1) html += '<div class="apa-note info">A <em>p</em>-value can’t exceed 1 — clamped to 1.00.</div>';
+      }
+      var rec = A[cur].recomp ? A[cur].recomp(variant) : null;
+      if (isFinite(pv) && rec != null && isFinite(rec)) {
+        var ok = rec < 0.001 ? (pv < 0.0015) : (Math.abs(pv - rec) <= 0.01);
+        if (ok) {
+          html += '<div class="apa-note ok">✓ Your <em>p</em> is consistent with the statistic and <em>df</em> — recomputed <em>p</em> ' + pShow(rec) + '.</div>';
+        } else {
+          html += '<div class="apa-note warn">⚠️ From the statistic and <em>df</em>, <em>p</em> should be about <strong>' + pBare(rec) +
+            '</strong>, but you entered <em>p</em> ' + (pv <= 0 ? "= .000" : "= " + pv.toFixed(3).replace(/^0\./, ".")) +
+            '. Double-check for a typo or a one- vs two-tailed mix-up — this is exactly the slip a <a href="ethics/fraud-and-self-correction/">statcheck</a> scan catches.</div>';
+        }
+      }
+      notes.innerHTML = html;
+
+      var lk = A[cur].links(variant);
+      links.innerHTML = '<a href="' + lk.l + '">' + lk.t + ' &rarr;</a>' +
+        '<a href="writing/reporting-statistics-apa/">APA reporting rules &rarr;</a>';
+    }
+
+    /* ---------- events ---------- */
+    document.getElementById("ana-seg").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      cur = b.getAttribute("data-a");
+      Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x === b); });
+      var vs = A[cur].variants;
+      variant = vs ? vs[0].k : null;
+      renderVariants(); renderFields(); render();
+    });
+    document.getElementById("variant-seg").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      variant = b.getAttribute("data-v");
+      Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x === b); });
+      renderFields(); render();
+    });
+    document.getElementById("apa-fields").addEventListener("input", render);
+
+    document.getElementById("apa-copy").addEventListener("click", function () {
+      var btn = this, host = document.getElementById("apa-out");
+      var html = host.innerHTML, text = host.textContent.trim();
+      function done() { btn.textContent = "Copied!"; setTimeout(function () { btn.textContent = "Copy"; }, 1300); }
+      function plain() { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () {}); }
+      try {
+        if (navigator.clipboard && window.ClipboardItem) {
+          var item = new ClipboardItem({
+            "text/html": new Blob([html], { type: "text/html" }),
+            "text/plain": new Blob([text], { type: "text/plain" })
+          });
+          navigator.clipboard.write([item]).then(done, plain);
+        } else { plain(); }
+      } catch (e) { plain(); }
+    });
+
+    /* ---------- boot ---------- */
+    renderVariants(); renderFields(); render();
+  })();
+  </script>
+</body>
+</html>
