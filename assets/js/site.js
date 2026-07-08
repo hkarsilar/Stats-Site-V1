@@ -158,6 +158,8 @@
     "writing-results": "What it tested, how big, how sure — the capybara says each result in one tidy past-tense sentence, then bites its tongue. 'What it means' waits its turn in the Discussion.",
     "nonsignificant-results": "p = .08 is not 'a trend toward a nap.' The capybara reads the interval instead — wide means 'who knows yet,' tight-and-near-zero means 'genuinely nothing here.'",
     "discussion-and-limitations": "The capybara found a correlation, so it writes 'was associated with,' never 'causes.' Match the verb to the design and your claims outlive the ones that oversold.",
+    "abstracts-and-titles": "The capybara writes the abstract last, in five tidy moves, and puts the actual number in the result. Its titles say what it found — searchable beats clever when a reader is looking for exactly you.",
+    "final-checklist": "The capybara rereads its own paper as a grumpy grader: does every number match, does each df fit the n, is every figure and citation accounted for? Cheap mistakes, caught before they cost marks.",
     /* Root pages */
     "home": "No rush — capybaras never cram.",
     "toolbox": "A capybara's toolbox: warm water, good snacks, zero deadlines. Yours has calculators too.",

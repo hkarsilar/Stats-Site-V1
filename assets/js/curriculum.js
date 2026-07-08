@@ -191,7 +191,9 @@ window.CURRICULUM = [
       { n: "5.3", slug: "tables-and-figures",         title: "Tables & Figures That Don't Lie", ready: true },
       { n: "5.4", slug: "writing-results",            title: "From Output to Results Section", ready: true },
       { n: "5.5", slug: "nonsignificant-results",     title: "Writing About Non-Significant Results", ready: true },
-      { n: "5.6", slug: "discussion-and-limitations", title: "Discussion & Limitations", ready: true }
+      { n: "5.6", slug: "discussion-and-limitations", title: "Discussion & Limitations", ready: true },
+      { n: "5.7", slug: "abstracts-and-titles",       title: "Abstracts & Titles", ready: true },
+      { n: "5.8", slug: "final-checklist",            title: "The Final Checklist", ready: true }
     ]
   }
 ];

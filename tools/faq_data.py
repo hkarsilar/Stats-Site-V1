@@ -887,6 +887,24 @@ FAQS_WRITING = {
   "Say what the limitation could have <strong>changed</strong>. Every weak limitation names a flaw and stops; every strong one names the flaw, its likely direction, and its consequence for a specific result. Instead of \"the sample was small,\" write what that cost you: \"the study was underpowered, so we can't rule out a real small effect.\" Instead of \"the design was correlational,\" write \"because the design was correlational, an unmeasured factor such as workload could drive both variables, so the association should not be read causally.\" A limitation that tells the reader exactly which sentence in your Discussion to trust less is doing its job."),
 ],
 
+"abstracts-and-titles": [
+ ("How long should a thesis abstract be?",
+  "Most abstracts run <strong>150–250 words</strong> — check your programme's or journal's limit, which is often a hard 200 or 250. But length is a constraint, not the goal: completeness is. A tight 180-word abstract that lands all five moves — context, aim, method, a result <em>with numbers</em>, and a calibrated conclusion — beats a padded 250-word one that never quite says what was found. If you're over the limit, cut the sentences that carry no move: background throat-clearing and \"further research is needed\" go first, never the numbers."),
+ ("Should I write the abstract first or last?",
+  "<strong>Last</strong>, always — after the whole paper is finished. The abstract is a distillation of results you already have, not a plan for results you hope to get. Only once the analysis is final do you know your actual numbers, which framing survived, and how far your conclusion honestly reaches; drafting the abstract first tends to bake in claims the data never supported. Write the paper, then compress it, then check every figure in the abstract against your <a href=\"../writing-results/\">Results</a> so the two agree exactly."),
+ ("What makes a good research title?",
+  "<strong>Findability.</strong> In a database or a search engine your reader meets the title before anything else, so it should contain the words they would actually type — your variables, your population, your design. Two dependable shapes work: state the finding (\"More Sleep Predicts Higher Student Wellbeing\") or state the question (\"Does Napping Improve Memory?\"). Avoid vague, clever-but-empty titles like \"An Investigation into Certain Factors\" — they are invisible to search and tell the reader nothing. Put the same keywords in the keyword field, too."),
+],
+
+"final-checklist": [
+ ("Why do my degrees of freedom matter to the grader?",
+  "Because degrees of freedom quietly encode your sample size and design, so a grader can read them straight back to your <em>n</em>. For an independent <em>t</em>-test <em>df</em> = <em>N</em> − 2; for a one-way ANOVA the denominator is <em>N</em> − <em>k</em>; for a correlation <em>df</em> = <em>N</em> − 2. If you report two groups of 60 but write <em>t</em>(116), the arithmetic doesn't close — it should be 118 — and that mismatch signals either a typo or a misunderstanding of the test. Checking every reported <em>df</em> against your <em>n</em> is one of the fastest ways to catch an error before you submit."),
+ ("What do graders check first?",
+  "<strong>Internal consistency</strong> — whether your paper agrees with itself — because it is quick and revealing. Nobody re-runs your analysis; instead a grader glances across sections to see whether the numbers match (does the abstract's <em>n</em> equal the method's?), whether the degrees of freedom fit the design, and whether every table, figure, and citation is accounted for. A single contradiction plants doubt about everything else, so it costs marks out of proportion to the effort of fixing it. Do that same adversarial read yourself, last of all."),
+ ("How do I make sure the numbers in my abstract match the rest of the paper?",
+  "Treat one place as the source of truth — usually your results output — and copy from it, never from memory. Every statistic appears in several places (abstract, results sentence, tables, discussion), and all of them must be <em>identical</em>: an abstract that says <em>r</em> = .28 while the results say <em>r</em> = .31 tells the reader a number was mistyped and casts doubt on the others. On your final pass, list each reported value — sample sizes, means, effect sizes, percentages — and confirm it reads the same everywhere it appears."),
+],
+
 }
 
 FAQS = {**FAQS_12, **FAQS_34, **FAQS_METHODS, **FAQS_DATA, **FAQS_ETHICS, **FAQS_ML, **FAQS_WRITING}

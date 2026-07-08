@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Final Checklist — StatsCapybara</title>
+  <meta name="description" content="The grader's final pass: make every number match across abstract, results, and tables, check your df against n, and confirm every figure, table, and citation lines up." />
+  <link rel="canonical" href="https://statscapybara.com/writing/final-checklist/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="The Final Checklist — StatsCapybara" />
+  <meta property="og:description" content="The grader's final pass: make every number match across abstract, results, and tables, check your df against n, and confirm every figure, table, and citation lines up." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/writing/final-checklist/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="The Final Checklist — StatsCapybara" />
+  <meta name="twitter:description" content="The grader's final pass: make every number match across abstract, results, and tables, check your df against n, and confirm every figure, table, and citation lines up." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "The Final Checklist", "description": "The grader's final pass: make every number match across abstract, results, and tables, check your df against n, and confirm every figure, table, and citation lines up.", "url": "https://statscapybara.com/writing/final-checklist/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Writing: Reporting Your Research", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "The Final Checklist", "item": "https://statscapybara.com/writing/final-checklist/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why do my degrees of freedom matter to the grader?", "acceptedAnswer": {"@type": "Answer", "text": "Because degrees of freedom quietly encode your sample size and design, so a grader can read them straight back to your n. For an independent t-test df = N − 2; for a one-way ANOVA the denominator is N − k; for a correlation df = N − 2. If you report two groups of 60 but write t(116), the arithmetic doesn't close — it should be 118 — and that mismatch signals either a typo or a misunderstanding of the test. Checking every reported df against your n is one of the fastest ways to catch an error before you submit."}}, {"@type": "Question", "name": "What do graders check first?", "acceptedAnswer": {"@type": "Answer", "text": "Internal consistency — whether your paper agrees with itself — because it is quick and revealing. Nobody re-runs your analysis; instead a grader glances across sections to see whether the numbers match (does the abstract's n equal the method's?), whether the degrees of freedom fit the design, and whether every table, figure, and citation is accounted for. A single contradiction plants doubt about everything else, so it costs marks out of proportion to the effort of fixing it. Do that same adversarial read yourself, last of all."}}, {"@type": "Question", "name": "How do I make sure the numbers in my abstract match the rest of the paper?", "acceptedAnswer": {"@type": "Answer", "text": "Treat one place as the source of truth — usually your results output — and copy from it, never from memory. Every statistic appears in several places (abstract, results sentence, tables, discussion), and all of them must be identical: an abstract that says r = .28 while the results say r = .31 tells the reader a number was mistyped and casts doubt on the others. On your final pass, list each reported value — sample sizes, means, effect sizes, percentages — and confirm it reads the same everywhere it appears."}}]}
+  </script>
+</head>
+<body data-course="writing" data-section="final-checklist">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 5.8</span>
+        <h1>The Final Checklist</h1>
+
+        <p class="lede">Your study is done, the sections are written, the interpretation is calibrated. One task remains, and it's the one most students skip: the <strong>consistency pass</strong>. Graders and reviewers rarely re-run your analysis — they can't. What they <em>can</em> do, in seconds, is check whether your own document agrees with itself. Does the sample size in the abstract match the method? Do the degrees of freedom fit the design? Is every figure referenced, every citation listed? An internal contradiction is a red flag that something deeper may be wrong — and it's the easiest kind of error to catch and to lose marks for.</p>
+
+        <h2>Do the numbers match everywhere?</h2>
+        <p>A single result appears in several places: the abstract, the results sentence, maybe a table, maybe the discussion. Every one of those copies must be <em>identical</em>. An abstract that says <em>r</em> = .28 while the Results report <em>r</em> = .31 tells the reader that at least one number was typed from memory — and now they doubt all of them. The same goes for sample sizes, means, and percentages. Pick the true value once, then make every mention agree.</p>
+
+        <h2>Your degrees of freedom tell on you</h2>
+        <p>Degrees of freedom are a quiet audit of your design. For an independent two-group <em>t</em>-test, <em>df</em> = <em>N</em> − 2; for a one-way ANOVA, the denominator <em>df</em> = <em>N</em> − <em>k</em>; for a correlation, <em>df</em> = <em>N</em> − 2. So if you report two groups of 60 but write <em>t</em>(116), the arithmetic doesn't close — 60 + 60 − 2 = 118, not 116. A grader who knows the formula reads your <em>df</em> straight back to your <em>n</em>, and a mismatch signals either a typo or a misunderstanding. Check that every reported <em>df</em> is consistent with the sample size and design you described.</p>
+
+        <h2>The cross-reference checks</h2>
+        <p>Three quick sweeps catch most of the rest:</p>
+        <ul>
+          <li><strong>Every table and figure is referenced in the text</strong> — "as Figure 1 shows…" — and every one you reference actually exists. An unreferenced figure is either clutter or a broken promise.</li>
+          <li><strong>Every citation is in the reference list, and every reference is cited.</strong> A name in the text that's missing from the list (or vice versa) is the classic reference-manager slip.</li>
+          <li><strong>Every statistic is complete:</strong> test, degrees of freedom, the statistic's value, an exact <em>p</em>, and an effect size — and <em>p</em> is floored at <em>p</em> &lt; .001, never <em>p</em> = .000 (see <a href="../reporting-statistics-apa/">Reporting Statistics in APA Style</a>).</li>
+        </ul>
+
+        <h2>Find the six inconsistencies</h2>
+        <p>Here is a one-page paper in miniature — abstract, method, results, a table, a figure, and references. Six internal inconsistencies are hidden in it: numbers that disagree, degrees of freedom that don't fit, a display that's never referenced, a citation that's missing. Read like a grader and <strong>click each problem</strong>. Some things you click will turn out to be fine — that's part of the job too.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="cc">
+          <p class="viz-title">🔎 Consistency checker</p>
+          <p class="viz-sub">Click the internal contradictions. <span id="cc-count">0 of 6 found.</span></p>
+
+          <div class="cc-paper cc-noprint" id="cc-paper">
+            <h4>Abstract</h4>
+            <p>We tested whether a daytime nap improves memory. A total of <span class="cc-hot" data-err="e1">120</span> undergraduates were randomly assigned to a nap or no-nap group and completed a word-recall test. The nap group recalled significantly more words, and nap duration correlated with recall, <em>r</em> = <span class="cc-hot" data-err="e2">.28</span>. Napping may support memory consolidation.</p>
+
+            <h4>Method</h4>
+            <p>A total of <span class="cc-hot" data-err="e1">118</span> students (aged 18–24) took part in exchange for course credit. The study used a between-subjects design with a nap and a no-nap condition. Recall was scored as the number of word pairs correctly remembered.</p>
+
+            <h4>Results</h4>
+            <p>The nap group (<em>n</em> = 60) recalled more word pairs than the no-nap group (<em>n</em> = 60), <span class="cc-hot" data-err="e4"><em>t</em>(116)</span> = 2.84, <em>p</em> = .006, <span class="cc-hot" data-err="ok-d"><em>d</em> = 0.52</span>. Mean recall by condition is given in <span class="cc-hot" data-err="ok-tab">Table 1</span>. Nap duration was positively correlated with recall, <em>r</em> = <span class="cc-hot" data-err="e2">.31</span>, <em>p</em> = <span class="cc-hot" data-err="e3">.000</span>. These findings echo earlier work on sleep and memory <span class="cc-hot" data-err="ok-cite">(Walker, 2017)</span> and on retention <span class="cc-hot" data-err="e6">(Smith, 2019)</span>.</p>
+
+            <div class="cc-tab">
+              <div class="cc-caption">Table 1. Mean recall by condition.</div>
+              <table><tbody>
+                <tr><td>Nap</td><td>28.4 (5.1)</td></tr>
+                <tr><td>No nap</td><td>24.1 (5.4)</td></tr>
+              </tbody></table>
+            </div>
+
+            <div class="cc-fig">
+              <div class="cc-figbox">📊</div>
+              <div class="cc-caption cc-hot" data-err="e5">Figure 1. Distribution of nap durations across the nap group.</div>
+            </div>
+
+            <h4>References</h4>
+            <p class="cc-refs">Walker, M. (2017). <em>Why we sleep.</em> Scribner.</p>
+          </div>
+
+          <div class="cc-found" id="cc-found"></div>
+          <button type="button" class="cc-showlist" id="cc-showlist" hidden>Show the final-submission checklist ↓</button>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <div class="cc-checklist" id="cc-checklist" hidden>
+          <h3>Final-submission checklist</h3>
+          <p class="cc-print-note">Print this page (<code>Ctrl/⌘ P</code>) for a clean copy of the checklist.</p>
+          <ul>
+            <li><strong>Numbers match everywhere.</strong> Sample size, means, effect sizes and percentages are identical in the abstract, results, tables, and discussion.</li>
+            <li><strong>Degrees of freedom fit the design.</strong> <em>t</em>: <em>df</em> = <em>N</em> − 2 · ANOVA denominator: <em>N</em> − <em>k</em> · correlation: <em>N</em> − 2 — and each traces back to your reported <em>n</em>.</li>
+            <li><strong>Every statistic is complete.</strong> Test, <em>df</em>, the statistic, an exact <em>p</em> (floored at <em>p</em> &lt; .001, never .000), and an effect size.</li>
+            <li><strong>Every table and figure is referenced</strong> in the text — and every reference points to a display that exists.</li>
+            <li><strong>Citations reconcile with the reference list</strong> in both directions: nothing cited is missing, nothing listed is uncited.</li>
+            <li><strong>Formatting hygiene.</strong> APA typography (italics, leading zeros), consistent decimals, tenses, and heading levels throughout.</li>
+            <li><strong>The abstract delivers.</strong> All five moves, a result with numbers, and a title built from real keywords (see <a href="../abstracts-and-titles/">Abstracts &amp; Titles</a>).</li>
+          </ul>
+        </div>
+
+        <div class="callout key">
+          <p><strong>A document that agrees with itself earns trust.</strong> Nobody re-runs your analysis; they check whether your own numbers, degrees of freedom, and cross-references line up. Do that pass yourself, last of all — one careful read as an adversary — and you'll catch the cheap mistakes before a grader does.</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> the difference between a good grade and a great one is often not the analysis — it's the polish. An internal contradiction costs marks out of proportion to the effort of fixing it, because it plants doubt about everything else. Reading your own paper as a skeptical grader is the highest-return hour in the whole project. You did the hard part; don't let a mistyped <em>df</em> undo it.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>Why do my degrees of freedom matter to the grader?</summary>
+            <div class="faq-a"><p>Because degrees of freedom quietly encode your sample size and design, so a grader can read them straight back to your <em>n</em>. For an independent <em>t</em>-test <em>df</em> = <em>N</em> − 2; for a one-way ANOVA the denominator is <em>N</em> − <em>k</em>; for a correlation <em>df</em> = <em>N</em> − 2. If you report two groups of 60 but write <em>t</em>(116), the arithmetic doesn't close — it should be 118 — and that mismatch signals either a typo or a misunderstanding of the test. Checking every reported <em>df</em> against your <em>n</em> is one of the fastest ways to catch an error before you submit.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What do graders check first?</summary>
+            <div class="faq-a"><p><strong>Internal consistency</strong> — whether your paper agrees with itself — because it is quick and revealing. Nobody re-runs your analysis; instead a grader glances across sections to see whether the numbers match (does the abstract's <em>n</em> equal the method's?), whether the degrees of freedom fit the design, and whether every table, figure, and citation is accounted for. A single contradiction plants doubt about everything else, so it costs marks out of proportion to the effort of fixing it. Do that same adversarial read yourself, last of all.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>How do I make sure the numbers in my abstract match the rest of the paper?</summary>
+            <div class="faq-a"><p>Treat one place as the source of truth — usually your results output — and copy from it, never from memory. Every statistic appears in several places (abstract, results sentence, tables, discussion), and all of them must be <em>identical</em>: an abstract that says <em>r</em> = .28 while the results say <em>r</em> = .31 tells the reader a number was mistyped and casts doubt on the others. On your final pass, list each reported value — sample sizes, means, effect sizes, percentages — and confirm it reads the same everywhere it appears.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <style>
+    /* consistency-checker (scoped) */
+    #cc .cc-paper {
+      border: 1px solid var(--border); border-radius: 12px; background: var(--surface);
+      padding: 1rem 1.2rem; font-size: .9rem; line-height: 1.6;
+    }
+    #cc .cc-paper h4 {
+      margin: 1rem 0 .25rem; font-size: .74rem; text-transform: uppercase; letter-spacing: .05em;
+      color: var(--text-muted); border-bottom: 1px solid var(--border); padding-bottom: .2rem;
+    }
+    #cc .cc-paper h4:first-child { margin-top: 0; }
+    #cc .cc-paper p { margin: .3rem 0; }
+    #cc .cc-hot {
+      cursor: pointer; border-bottom: 1.5px dotted var(--text-faint); border-radius: 2px;
+      padding: 0 .05em; transition: background .12s;
+    }
+    #cc .cc-hot:hover { background: color-mix(in srgb, var(--course-accent, #84cc16) 18%, transparent); }
+    #cc .cc-hot.err { background: color-mix(in srgb, #ef4444 24%, transparent); border-bottom-color: #ef4444; color: var(--text); }
+    #cc .cc-hot.okhit { background: color-mix(in srgb, #22c55e 20%, transparent); border-bottom-color: #22c55e; }
+    #cc .cc-tab { margin: .7rem 0; }
+    #cc .cc-caption { font-size: .82rem; color: var(--text-muted); margin-bottom: .3rem; }
+    #cc .cc-tab table { border-collapse: collapse; font-size: .84rem; }
+    #cc .cc-tab td { border-top: 1px solid var(--border); padding: .2rem .9rem .2rem 0; }
+    #cc .cc-fig { margin: .7rem 0; }
+    #cc .cc-figbox {
+      width: 100%; max-width: 220px; height: 60px; border: 1px dashed var(--border); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; font-size: 1.4rem; opacity: .6; margin-bottom: .3rem;
+    }
+    #cc .cc-refs { color: var(--text-muted); }
+    #cc .cc-found { display: flex; flex-direction: column; gap: .5rem; margin-top: 1rem; }
+    #cc .cc-fi {
+      border: 1px solid #22c55e; border-radius: 9px; padding: .5rem .8rem; font-size: .85rem; line-height: 1.5;
+      background: color-mix(in srgb, #22c55e 8%, var(--surface));
+    }
+    #cc .cc-fi.decoy { border-color: var(--border); background: var(--surface-2); }
+    #cc .cc-fi b { color: var(--text); }
+    #cc .cc-showlist {
+      margin-top: 1rem; cursor: pointer; border: 1px solid var(--course-accent, #84cc16);
+      background: color-mix(in srgb, var(--course-accent, #84cc16) 12%, var(--surface)); color: var(--text);
+      border-radius: 9px; padding: .55rem 1rem; font-size: .88rem; font-weight: 700; width: 100%;
+    }
+    /* printable checklist */
+    .cc-checklist {
+      border: 1px solid var(--border); border-radius: 12px; background: var(--surface);
+      padding: 1rem 1.3rem; margin: 1.4rem 0;
+    }
+    .cc-checklist h3 { margin: 0 0 .3rem; }
+    .cc-checklist .cc-print-note { font-size: .82rem; color: var(--text-muted); margin: 0 0 .6rem; }
+    .cc-checklist ul { margin: 0; padding-left: 1.2rem; }
+    .cc-checklist li { margin: .5rem 0; line-height: 1.55; }
+    @media print {
+      body * { visibility: hidden; }
+      .cc-checklist, .cc-checklist * { visibility: visible; }
+      .cc-checklist { position: absolute; left: 0; top: 0; width: 100%; border: none; display: block !important; }
+      .cc-print-note { display: none; }
+    }
+  </style>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ consistency-checker (deterministic; DOM only) ============ -->
+  <script>
+  (function () {
+    "use strict";
+
+    // Explanations keyed by hotspot id. e* = real inconsistency (6). ok-* = clean decoys.
+    var INFO = {
+      e1: { ok: false, txt: "<b>Sample size clash.</b> The abstract says 120 undergraduates; the method says 118. One value is wrong — pick the true n and make every mention agree." },
+      e2: { ok: false, txt: "<b>Statistic clash.</b> The correlation is reported as r = .28 in the abstract but r = .31 in the results. The same number must appear everywhere." },
+      e3: { ok: false, txt: "<b>Impossible p-value.</b> p = .000 can't happen — a p-value is never exactly zero. APA floors tiny values at p < .001." },
+      e4: { ok: false, txt: "<b>Degrees of freedom don't fit.</b> Two groups of 60 give df = 60 + 60 − 2 = 118, not 116. The df read straight back to your n." },
+      e5: { ok: false, txt: "<b>Unreferenced figure.</b> Figure 1 appears but the text never points to it. Every display must be called out (e.g. \"as Figure 1 shows\")." },
+      e6: { ok: false, txt: "<b>Citation not in the list.</b> Smith (2019) is cited but missing from the References. Every citation must appear in the reference list." },
+      "ok-d":   { ok: true, txt: "<b>This one's fine.</b> The t-test reports an effect size (d = 0.52) — a complete statistic needs one." },
+      "ok-tab": { ok: true, txt: "<b>This one's fine.</b> Table 1 is referenced in the text and exists below — properly cross-referenced." },
+      "ok-cite":{ ok: true, txt: "<b>This one's fine.</b> Walker (2017) is cited here and appears in the References — consistent." }
+    };
+
+    var TOTAL_ERR = 6;
+    var found = {};       // error ids found
+    var seenOk = {};      // decoys clicked
+    var countEl = document.getElementById("cc-count");
+    var foundEl = document.getElementById("cc-found");
+    var listBtn = document.getElementById("cc-showlist");
+    var checklist = document.getElementById("cc-checklist");
+
+    Array.prototype.forEach.call(document.querySelectorAll("#cc .cc-hot"), function (el) {
+      el.setAttribute("role", "button");
+      el.setAttribute("tabindex", "0");
+      function hit() {
+        var id = el.dataset.err;
+        var info = INFO[id];
+        if (!info) return;
+        if (info.ok) {
+          el.classList.add("okhit");
+          if (!seenOk[id]) { seenOk[id] = true; addRow(id, info, true); }
+        } else {
+          // light up every span that shares this error id, so a mismatched pair reveals together
+          Array.prototype.forEach.call(document.querySelectorAll('#cc .cc-hot[data-err="' + id + '"]'), function (m) { m.classList.add("err"); });
+          if (!found[id]) { found[id] = true; addRow(id, info, false); update(); }
+        }
+      }
+      el.addEventListener("click", hit);
+      el.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); hit(); }
+      });
+    });
+
+    function addRow(id, info, decoy) {
+      var d = document.createElement("div");
+      d.className = "cc-fi" + (decoy ? " decoy" : "");
+      d.innerHTML = (decoy ? "✓ " : "🔴 ") + info.txt;
+      foundEl.appendChild(d);
+    }
+
+    function update() {
+      var n = Object.keys(found).length;
+      countEl.textContent = n + " of " + TOTAL_ERR + " found.";
+      if (n >= TOTAL_ERR) {
+        countEl.textContent = "All 6 found — you read like a grader.";
+        listBtn.hidden = false;
+      }
+    }
+
+    listBtn.addEventListener("click", function () {
+      checklist.hidden = false;
+      listBtn.hidden = true;
+      checklist.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  })();
+  </script>
+</body>
+</html>
