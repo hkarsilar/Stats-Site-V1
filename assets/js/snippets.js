@@ -304,5 +304,11 @@ window.SNIPPETS = {
   "llms-and-ai-in-research": {
     r: '# a toy "next-word" model to demystify what an LLM does at scale\ncorpus <- strsplit("the capybara is the largest rodent the study found an effect", " ")[[1]]\nnxt <- split(corpus[-1], head(corpus, -1))   # word -> words that followed it\nw <- "the"; out <- "the"\nfor (i in 1:8) { w <- sample(nxt[[w]], 1); out <- c(out, w) }\ncat(paste(out, collapse = " "))              # grammatical, not necessarily true',
     py: 'import random\nfrom collections import defaultdict\n# a toy "next-word" model — the same idea an LLM runs at massive scale\ncorpus = "the capybara is the largest rodent the study found an effect".split()\nnxt = defaultdict(list)\nfor a, b in zip(corpus, corpus[1:]):\n    nxt[a].append(b)                         # word -> words that followed it\nw, out = "the", ["the"]\nfor _ in range(8):\n    w = random.choice(nxt[w]); out.append(w) # predict next word, repeat\nprint(" ".join(out))                         # fluent, and quite possibly false'
+  },
+
+  /* ---------------- Writing ---------------- */
+  "tables-and-figures": {
+    r: 'library(ggplot2)\ndf <- data.frame(method = c("A", "B", "C"),\n                 score = c(51, 48, 53), se = c(1.8, 1.9, 1.7))\ndf$method <- reorder(df$method, -df$score)          # sort bars by value\nggplot(df, aes(method, score)) +\n  geom_col(fill = "grey40", width = .65) +           # flat, one colour\n  geom_errorbar(aes(ymin = score - se, ymax = score + se), width = .15) +\n  scale_y_continuous(limits = c(0, 60), expand = c(0, 0)) +  # axis from 0\n  labs(x = NULL, y = "Score (0-60)",\n       caption = "Error bars: ±1 SE") +\n  theme_minimal()                                    # no chartjunk',
+    py: 'import numpy as np, matplotlib.pyplot as plt\nmethod = np.array(["A", "B", "C"]); score = np.array([51, 48, 53]); se = np.array([1.8, 1.9, 1.7])\norder = np.argsort(-score)                           # sort bars by value\nfig, ax = plt.subplots()\nax.bar(method[order], score[order], yerr=se[order],  # error bars = ±1 SE\n       color="grey", width=.65, capsize=4)\nax.set_ylim(0, 60)                                   # axis starts at 0\nax.set_ylabel("Score (0-60)")\nax.spines[["top", "right"]].set_visible(False)       # trim chartjunk\nplt.show()'
   }
 };

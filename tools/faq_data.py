@@ -829,4 +829,37 @@ FAQS_ML = {
 
 }
 
-FAQS = {**FAQS_12, **FAQS_34, **FAQS_METHODS, **FAQS_DATA, **FAQS_ETHICS, **FAQS_ML}
+FAQS_WRITING = {
+
+# ---------------- WRITING ----------------
+
+"imrad-structure": [
+ ("What does IMRaD stand for?",
+  "IMRaD is the standard structure of an empirical paper: <strong>I</strong>ntroduction, <strong>M</strong>ethods, <strong>R</strong>esults, and <strong>D</strong>iscussion. Each has exactly one job — the Introduction says <em>why</em> the study (context → gap → hypothesis), the Methods say <em>what you did</em> (in enough detail to replicate), the Results say <em>what you found</em> (the numbers, with no interpretation), and the Discussion says <em>what it means</em> (interpretation, limitations, and what's next). If a paragraph doesn't do the job of the section it's sitting in, it's in the wrong place. The lowercase 'a' is just 'and'."),
+ ("Should I write a paper in the order it's read?",
+  "No — and trying to is why blank-page paralysis hits at the Introduction. Reading order isn't writing order. Draft the <strong>Methods and Results first</strong>, because they're the most factual and concrete: you already know what you did and what you found. Then write the Introduction (now you know precisely what you're setting up) and the Discussion (now you know what you're interpreting). The <a href=\"../../stats-1/hypothesis-testing-logic/\">hypothesis</a> in your Intro should match the analyses in your Results, which is far easier to guarantee if the Results already exist. Write the abstract dead last, once everything it summarises is finished."),
+ ("Where do I put the interpretation of my results?",
+  "In the <strong>Discussion</strong>, never in the Results. The Results section reports the finding plainly — \"the nap group recalled more word pairs, <em>t</em>(58) = 3.72, <em>p</em> &lt; .001\" — and stops there. Saying what that finding <em>means</em> (\"this supports the idea that sleep aids consolidation\"), how it fits prior work, or why it might have happened is interpretation, and interpretation lives in the Discussion. The mirror-image mistake is just as common: don't introduce a finding for the first time in the Discussion — everything you interpret there must already have appeared, with its statistics, in the Results."),
+],
+
+"reporting-statistics-apa": [
+ ("Do I italicise p and t in APA style?",
+  "Yes. The rule is simple once you see it: statistical symbols written with <em>Latin</em> letters are italicised, and those written with <em>Greek</em> letters are not. So <em>t</em>, <em>F</em>, <em>r</em>, <em>p</em>, <em>M</em>, <em>SD</em>, <em>d</em>, <em>N</em>, and <em>R</em>² are all italic, while α, β, χ², and η² stay upright — even when they sit right next to an italic Latin symbol (it's <em>R</em>² but η²). The operators and labels around them (the '=' sign, parentheses, 'df', units) are never italicised. Getting this one rule right fixes the most frequently flagged APA error there is."),
+ ("Why is there no zero before the decimal in p = .03?",
+  "Because APA drops the leading zero for any number that <em>cannot</em> exceed 1 in absolute value — and a probability can't. The same applies to correlations and standardised coefficients: <em>p</em> = .03, <em>r</em> = .34, β = .29. Numbers that <em>can</em> be larger than 1 keep their leading zero: <em>t</em> = 3.72, <em>M</em> = 28.4, and even Cohen's <em>d</em> = 0.96 (because <em>d</em> routinely exceeds 1). So the leading zero isn't about the statistic's name — it's about whether the quantity is bounded by 1."),
+ ("How do I report a p-value of exactly zero?",
+  "You don't — a <em>p</em>-value is never exactly zero, so <em>p</em> = .000 is always wrong even though SPSS and other software print it. That output just means the value is too small to show at three decimals. Report it as <strong><em>p</em> &lt; .001</strong>, which is the smallest precision APA asks you to claim. More generally, give exact <em>p</em>-values when you can (<em>p</em> = .023 is more informative than '<em>p</em> &lt; .05'), round them to two or three decimals, and floor anything below .001 at <em>p</em> &lt; .001."),
+],
+
+"tables-and-figures": [
+ ("Should error bars show SD, SE, or a confidence interval?",
+  "It depends on what you want the reader to see — but whichever you pick, you <strong>must state it in the caption</strong>, because the three look identical and mean very different things. <strong>SD</strong> shows how spread out the individual data points are and doesn't shrink with sample size. <strong>SE</strong> (SD ÷ √<em>n</em>) shows how precisely you've pinned down the <em>mean</em>, and gets smaller with more data. A <strong>95% <a href=\"../../stats-1/confidence-intervals/\">confidence interval</a></strong> (≈ ±1.96 SE) gives a plausible range for the true mean and is usually the most reader-friendly choice. One caution: overlapping error bars do not automatically mean 'no significant difference' — let the actual test decide, not the eye."),
+ ("When should I use a table instead of a figure?",
+  "Match the tool to the message. Use a <strong>table</strong> when the reader needs the <em>exact</em> values, or many of them at once — several groups crossed with several measures, or a set of model coefficients. Use a <strong>figure</strong> when the <em>shape</em> of the data is the point: a trend over time, a distribution, an interaction. And use plain <strong>text</strong> for just two or three numbers — a sentence beats a two-row table. Whatever you choose, reference every display in the text ('as Table 1 shows…') and make it stand on its own through a clear title and notes; a table or figure nobody points to is one nobody reads."),
+ ("Why shouldn't a bar chart's y-axis start above zero?",
+  "Because a bar's entire promise is that its <em>length is proportional to its value</em>, and that only holds when the axis starts at 0. Start it at, say, 45 instead, and a difference of a few points balloons into a cliff — the picture screams 'huge effect' while every plotted number stays technically 'correct'. This truncated-axis trick is the single most common way an honest result gets oversold, and reviewers look for it. (Line charts, which encode value by <em>position</em> rather than length, can sometimes justify a non-zero baseline — but bars almost never can.) If the real effect is small, let the chart show it as small."),
+],
+
+}
+
+FAQS = {**FAQS_12, **FAQS_34, **FAQS_METHODS, **FAQS_DATA, **FAQS_ETHICS, **FAQS_ML, **FAQS_WRITING}

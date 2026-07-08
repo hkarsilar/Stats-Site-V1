@@ -178,6 +178,18 @@ window.CURRICULUM = [
       { n: "4.11",slug: "neural-networks-intuition",          title: "Neural Networks: The Intuition", ready: true },
       { n: "4.12",slug: "llms-and-ai-in-research",            title: "LLMs & AI in Your Research Workflow", ready: true }
     ]
+  },
+  {
+    slug: "writing",
+    title: "Writing",
+    subtitle: "Reporting Your Research",
+    accent: "#84cc16",
+    track: "toolkit",
+    sections: [
+      { n: "5.1", slug: "imrad-structure",           title: "The IMRaD Structure", ready: true },
+      { n: "5.2", slug: "reporting-statistics-apa",   title: "Reporting Statistics in APA Style", ready: true },
+      { n: "5.3", slug: "tables-and-figures",         title: "Tables & Figures That Don't Lie", ready: true }
+    ]
   }
 ];
 

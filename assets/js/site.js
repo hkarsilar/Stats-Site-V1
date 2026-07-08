@@ -151,6 +151,10 @@
     "dimensionality-reduction": "Two hundred variables won't fit on a lily pad. PCA squashes them flat and honestly; t-SNE untangles them beautifully but fibs about distances. Squash to measure, unfold to look.",
     "neural-networks-intuition": "A neuron is just the logistic regression the capybara already knows, wearing a lab coat. Stack a few, roll downhill, and straight lines learn to bend around XOR.",
     "llms-and-ai-in-research": "The capybara's chatbot writes with total confidence and occasional total fiction. Fluent isn't true — verify every fact, number, and citation, because your name is on it.",
+    /* Writing */
+    "imrad-structure": "Why it looked, how it looked, what it saw, what it means — the capybara tells every study the same four-part way. Put each sentence in its room and the paper reads itself.",
+    "reporting-statistics-apa": "Italic t, upright η², and no little zero before the dot. The capybara reports its p-value cleanly — and would never, ever write p = .000.",
+    "tables-and-figures": "Chop the axis at 45 and the capybara's three-point lead looks like a landslide. Start the bar at zero and let a small effect look small — that's information too.",
     /* Root pages */
     "home": "No rush — capybaras never cram.",
     "toolbox": "A capybara's toolbox: warm water, good snacks, zero deadlines. Yours has calculators too.",
