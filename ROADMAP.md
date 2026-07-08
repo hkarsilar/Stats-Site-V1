@@ -8,10 +8,10 @@ This file is the master plan. The copy-paste prompts that execute it live in **[
 
 ## End state
 
-| | At kickoff | Now (Jul 2026, post-P18) | Powerhouse |
+| | At kickoff | Now (Jul 2026, post-P19) | Powerhouse |
 |---|---|---|---|
-| Courses | 4 (Stats 1–4) | 9 (+ Methods, Data, Ethics, ML complete; Writing started) | **9** in two tracks |
-| Lessons | 45 | 90 | **~95** |
+| Courses | 4 (Stats 1–4) | 9 (+ Methods, Data, Ethics, ML complete; Writing 6/8) | **9** in two tracks |
+| Lessons | 45 | 93 | **~95** |
 | Tool pages | 8 | 9 (+ power calculator) | **~14** |
 | Long-form guides | 0 | 0 | 4 cornerstone guides |
 | Personas served | "stats course student" | + first-time researcher, data cleaner, ML-curious | + thesis writer |
@@ -79,7 +79,7 @@ Hard dependencies: **P2 before any new course** (P4+). **P32 after at least two 
 
 Tick these as sessions complete them (each prompt ends by updating this list).
 
-> **Where things stand (8 Jul 2026):** 18 of 36 one-shot prompts done. Phase 0 complete; Methods, Data, Ethics, and ML & AI courses all complete, and the **Writing course is now scaffolded with its first three lessons** (5.1 IMRaD structure, 5.2 reporting statistics in APA, 5.3 tables & figures; accent lime `#84cc16`). The site has 9 courses / 90 lessons / 9 tools, audit passing clean. (P18 also added the missing `ml` course-accent CSS rule alongside the new `writing` one.) **Next: finish Writing (P19–P20)** — 5.4–5.8 — or the deferred Phase-6 tools; P21 (APA formatter) pairs naturally with 5.2, per the recommended order.
+> **Where things stand (8 Jul 2026):** 19 of 36 one-shot prompts done. Phase 0 complete; Methods, Data, Ethics, and ML & AI courses all complete, and the **Writing course now has six of its eight lessons** (5.1 IMRaD structure, 5.2 reporting statistics in APA, 5.3 tables & figures, 5.4 from output to results section, 5.5 writing about non-significant results, 5.6 discussion & limitations; accent lime `#84cc16`). The site has 9 courses / 93 lessons / 9 tools, audit passing clean. (5.4–5.6 are conceptual writing lessons — no software.js/snippets entries, warn-only in the audit; the static homepage lesson count is now 93.) **Next: finish Writing (P20 — 5.7 abstracts & titles, 5.8 final checklist)** or the deferred Phase-6 tools; P21 (APA formatter) pairs naturally with 5.2, per the recommended order.
 
 - [x] P1 · audit.js
 - [x] P2 · multi-track platform
@@ -99,7 +99,7 @@ Tick these as sessions complete them (each prompt ends by updating this list).
 - [x] P16 · ML 7–9
 - [x] P17 · ML 10–12
 - [x] P18 · Writing 1–3 (+ scaffold)
-- [ ] P19 · Writing 4–6
+- [x] P19 · Writing 4–6
 - [ ] P20 · Writing 7–8
 - [ ] P21 · APA formatter tool
 - [ ] P22 · practice datasets library

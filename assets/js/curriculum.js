@@ -188,7 +188,10 @@ window.CURRICULUM = [
     sections: [
       { n: "5.1", slug: "imrad-structure",           title: "The IMRaD Structure", ready: true },
       { n: "5.2", slug: "reporting-statistics-apa",   title: "Reporting Statistics in APA Style", ready: true },
-      { n: "5.3", slug: "tables-and-figures",         title: "Tables & Figures That Don't Lie", ready: true }
+      { n: "5.3", slug: "tables-and-figures",         title: "Tables & Figures That Don't Lie", ready: true },
+      { n: "5.4", slug: "writing-results",            title: "From Output to Results Section", ready: true },
+      { n: "5.5", slug: "nonsignificant-results",     title: "Writing About Non-Significant Results", ready: true },
+      { n: "5.6", slug: "discussion-and-limitations", title: "Discussion & Limitations", ready: true }
     ]
   }
 ];

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>From Output to Results Section — StatsCapybara</title>
+  <meta name="description" content="Turn statistical output into a clean APA results sentence: what was tested, the statistic with df, the effect size and direction — and no interpretation. Build the sentence and dodge the traps." />
+  <link rel="canonical" href="https://statscapybara.com/writing/writing-results/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="From Output to Results Section — StatsCapybara" />
+  <meta property="og:description" content="Turn statistical output into a clean APA results sentence: what was tested, the statistic with df, the effect size and direction — and no interpretation. Build the sentence and dodge the traps." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/writing/writing-results/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="From Output to Results Section — StatsCapybara" />
+  <meta name="twitter:description" content="Turn statistical output into a clean APA results sentence: what was tested, the statistic with df, the effect size and direction — and no interpretation. Build the sentence and dodge the traps." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "From Output to Results Section", "description": "Turn statistical output into a clean APA results sentence: what was tested, the statistic with df, the effect size and direction — and no interpretation. Build the sentence and dodge the traps.", "url": "https://statscapybara.com/writing/writing-results/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Writing: Reporting Your Research", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "From Output to Results Section", "item": "https://statscapybara.com/writing/writing-results/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I turn my statistical output into a results sentence?", "acceptedAnswer": {"@type": "Answer", "text": "Follow a fixed four-part formula, and one analysis becomes one sentence. State (1) what you tested, in the variables' own words and with the direction — \"the nap group recalled more word pairs\"; (2) the descriptives that anchor it — group means with SDs in parentheses, M = 28.4, SD = 5.1; (3) the test statistic with its degrees of freedom and exact p — t(58) = 3.17, p = .002; and (4) the effect size — d = 0.82. Put together: \"The nap group recalled more word pairs (M = 28.4, SD = 5.1) than the no-nap group (M = 24.1, SD = 5.4), t(58) = 3.17, p = .002, d = 0.82.\" Once the formula is in your fingers, the Results section becomes the easiest one to write — see Reporting Statistics in APA Style for the typography."}}, {"@type": "Question", "name": "Should I report exact p-values or just p &lt; .05?", "acceptedAnswer": {"@type": "Answer", "text": "Report exact p-values wherever you can: p = .023 tells the reader far more than 'p &lt; .05', and modern APA style asks for it. Round to two or three decimals, and use the &lt; sign only at the floor — anything below .001 is written p &lt; .001, never p = .000 (a p-value is never exactly zero; that output just means 'too small to display'). The one time a threshold form is acceptable is a table footnote convention (e.g. * p &lt; .05), but in the running text, give the number."}}, {"@type": "Question", "name": "Do I interpret my results in the Results section?", "acceptedAnswer": {"@type": "Answer", "text": "No — that is the single most common Results-section error. The Results section reports what happened, in the past tense, with the numbers; the Discussion says what it means. \"Recall was higher in the nap group, t(58) = 3.17, p = .002\" is a result; \"…which shows that sleep consolidates memory\" is interpretation and belongs one section later. Keep the two apart. You can briefly note assumption checks (\"Levene's test indicated equal variances, p = .41\"), but save theory, mechanism, and implications for the Discussion."}}]}
+  </script>
+</head>
+<body data-course="writing" data-section="writing-results">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 5.4</span>
+        <h1>From Output to Results Section</h1>
+
+        <p class="lede">Your software just handed you a wall of numbers. The Results section turns that wall into a few plain, precise sentences — one per analysis — that a reader can trust and reproduce. The good news: every results sentence follows the same little formula, and once you can see it, writing them becomes mechanical. The catch is knowing what to leave <em>out</em>: no interpretation, no spin, and none of the tempting shortcuts that quietly break APA style.</p>
+
+        <h2>The results-sentence formula</h2>
+        <p>Almost every sentence in a Results section is built from the same four moves, in this order:</p>
+        <ol>
+          <li><strong>What was tested</strong>, in the variables' own words — "the nap group recalled more word pairs than the no-nap group". Name the comparison and, where it applies, the <em>direction</em>.</li>
+          <li><strong>The descriptives</strong> that anchor it — group means with SDs in parentheses (<em>M</em> = 28.4, <em>SD</em> = 5.1), so the reader sees the raw size of the difference.</li>
+          <li><strong>The test statistic</strong> with its degrees of freedom and exact <em>p</em> — <em>t</em>(58) = 3.17, <em>p</em> = .002. The df are not decoration: they encode your <em>n</em> and design, and a grader reads them first (see <a href="../reporting-statistics-apa/">Reporting Statistics in APA Style</a>).</li>
+          <li><strong>The effect size</strong> — <em>d</em> = 0.82, η² = .11, <em>r</em> = .34 — so "significant" comes with "how big". A <em>p</em>-value without an effect size is half a result.</li>
+        </ol>
+        <p>Put them together and a whole analysis fits in one sentence: <em>"The nap group recalled more word pairs (M = 28.4, SD = 5.1) than the no-nap group (M = 24.1, SD = 5.4), t(58) = 3.17, p = .002, d = 0.82."</em> Notice what's <em>not</em> there — no "which proves that sleep helps memory". That's the next section's job.</p>
+
+        <h2>Report the analysis you planned</h2>
+        <p>The Results section reports the test you said you would run — ideally the one in your <a href="../../methods/preregistration-and-open-science/">preregistration</a> or analysis plan. If you also ran extra, unplanned analyses, that's fine, but <strong>label them exploratory</strong> so the reader can weight them accordingly. Silently swapping the planned test for whichever one crossed <em>p</em> &lt; .05, or reporting only the comparisons that "worked", is the road to irreproducible results. Confirmatory and exploratory analyses are both legitimate — the only rule is that you say which is which.</p>
+
+        <h2>Results report; the Discussion interprets</h2>
+        <p>The single most common Results-section error is smuggling in interpretation. The Results section says <em>what happened</em>; the <a href="../discussion-and-limitations/">Discussion</a> says <em>what it means</em>. "Recall was higher in the nap group, <em>t</em>(58) = 3.17, <em>p</em> = .002" is a result. "…which shows that sleep consolidates memory" is a claim about the world — it belongs one section later, where you can hedge it, relate it to theory, and admit its limits. Keep the two apart and both sections get stronger.</p>
+        <p>Two more house rules that trip students up:</p>
+        <ul>
+          <li><strong>Past tense.</strong> You are reporting things that already happened — "scores <em>differed</em>", "the model <em>explained</em> 12% of the variance" — not "scores differ".</li>
+          <li><strong>Assumption checks, briefly.</strong> Mention that you checked (normality, homogeneity of variance, etc.) and what you did if they failed — in a clause or two, not a page. "Levene's test indicated equal variances (<em>p</em> = .41)" is plenty.</li>
+        </ul>
+
+        <h2>Build the results sentence</h2>
+        <p>Here are three real analyses as your software would report them. For each, click the fragments that belong in a clean APA results sentence — and leave the tempting traps (wrong df, <em>p</em> = .000, a stray leading zero, a sneaky interpretation) on the table. The sentence assembles as you go.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="rb">
+          <p class="viz-title">🧩 Assemble the results sentence</p>
+          <p class="viz-sub">Pick the correct pieces from the output; avoid the traps.</p>
+
+          <div class="rb-tabs" id="rb-tabs"></div>
+          <div class="rb-output" id="rb-output"></div>
+          <p class="rb-instr">Click every fragment that belongs in the sentence:</p>
+          <div class="rb-chips" id="rb-chips"></div>
+          <div class="rb-sentence" id="rb-sentence"></div>
+          <div class="rb-read" id="rb-read"></div>
+          <button class="rb-reset" id="rb-reset" type="button">↺ Clear picks</button>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <div class="callout key">
+          <p><strong>One analysis, one sentence, four parts.</strong> What you tested → the descriptives → the statistic with df and exact <em>p</em> → the effect size. If a piece you're about to add is a claim about <em>meaning</em>, or a number that doesn't come straight off the output, it doesn't belong in Results.</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> the Results section is the part a grader, reviewer, or replicator scrutinises hardest, because it's checkable — the df must match your <em>n</em>, the <em>p</em> must match the statistic, and every planned analysis must be there. A tidy, complete, interpretation-free Results section signals that the rest of the paper can be trusted. Get the formula into your fingers and this becomes the easiest section to write.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>How do I turn my statistical output into a results sentence?</summary>
+            <div class="faq-a"><p>Follow a fixed four-part formula, and one analysis becomes one sentence. State (1) <strong>what you tested</strong>, in the variables' own words and with the direction — "the nap group recalled more word pairs"; (2) the <strong>descriptives</strong> that anchor it — group means with SDs in parentheses, <em>M</em> = 28.4, <em>SD</em> = 5.1; (3) the <strong>test statistic</strong> with its degrees of freedom and exact <em>p</em> — <em>t</em>(58) = 3.17, <em>p</em> = .002; and (4) the <strong>effect size</strong> — <em>d</em> = 0.82. Put together: "The nap group recalled more word pairs (<em>M</em> = 28.4, <em>SD</em> = 5.1) than the no-nap group (<em>M</em> = 24.1, <em>SD</em> = 5.4), <em>t</em>(58) = 3.17, <em>p</em> = .002, <em>d</em> = 0.82." Once the formula is in your fingers, the Results section becomes the easiest one to write — see <a href="../reporting-statistics-apa/">Reporting Statistics in APA Style</a> for the typography.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Should I report exact p-values or just p &lt; .05?</summary>
+            <div class="faq-a"><p>Report <strong>exact</strong> <em>p</em>-values wherever you can: <em>p</em> = .023 tells the reader far more than '<em>p</em> &lt; .05', and modern APA style asks for it. Round to two or three decimals, and use the &lt; sign only at the floor — anything below .001 is written <em>p</em> &lt; .001, never <em>p</em> = .000 (a <em>p</em>-value is never exactly zero; that output just means 'too small to display'). The one time a threshold form is acceptable is a table footnote convention (e.g. * <em>p</em> &lt; .05), but in the running text, give the number.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Do I interpret my results in the Results section?</summary>
+            <div class="faq-a"><p>No — that is the single most common Results-section error. The Results section reports <em>what happened</em>, in the past tense, with the numbers; the <a href="../discussion-and-limitations/">Discussion</a> says <em>what it means</em>. "Recall was higher in the nap group, <em>t</em>(58) = 3.17, <em>p</em> = .002" is a result; "…which shows that sleep consolidates memory" is interpretation and belongs one section later. Keep the two apart. You can briefly note assumption checks ("Levene's test indicated equal variances, <em>p</em> = .41"), but save theory, mechanism, and implications for the Discussion.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <style>
+    /* sentence-builder (scoped) */
+    #rb .rb-tabs { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
+    #rb .rb-tab {
+      cursor: pointer; border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
+      border-radius: 8px; padding: .45rem .9rem; font-size: .85rem; font-weight: 600; transition: .15s;
+    }
+    #rb .rb-tab:hover { border-color: var(--course-accent, #84cc16); }
+    #rb .rb-tab.on { background: color-mix(in srgb, var(--course-accent, #84cc16) 16%, transparent); border-color: var(--course-accent, #84cc16); }
+    #rb .rb-output {
+      border: 1px solid var(--border); border-radius: 12px; background: var(--surface);
+      padding: .8rem 1rem; margin-bottom: 1rem; overflow-x: auto;
+    }
+    #rb .rb-output .rb-out-cap { font-size: .74rem; letter-spacing: .04em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 .5rem; }
+    #rb table.rb-tbl { border-collapse: collapse; font-size: .84rem; width: 100%; min-width: 320px; }
+    #rb table.rb-tbl th, #rb table.rb-tbl td { padding: .3rem .7rem; text-align: right; white-space: nowrap; }
+    #rb table.rb-tbl th:first-child, #rb table.rb-tbl td:first-child { text-align: left; color: var(--text-muted); }
+    #rb table.rb-tbl thead th { border-bottom: 1.5px solid var(--border); color: var(--text-muted); font-weight: 600; }
+    #rb table.rb-tbl tbody td { font-variant-numeric: tabular-nums; }
+    #rb .rb-instr { font-size: .88rem; color: var(--text-muted); margin: 0 0 .6rem; }
+    #rb .rb-chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
+    #rb .rb-chip {
+      cursor: pointer; border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
+      border-radius: 8px; padding: .4rem .75rem; font-size: .86rem; transition: .12s; user-select: none;
+    }
+    #rb .rb-chip:hover { border-color: var(--course-accent, #84cc16); }
+    #rb .rb-chip.good.sel { background: color-mix(in srgb, #22c55e 16%, transparent); border-color: #22c55e; }
+    #rb .rb-chip.trap.sel { background: color-mix(in srgb, #ef4444 16%, transparent); border-color: #ef4444; }
+    #rb .rb-sentence {
+      border: 1px dashed var(--border); border-radius: 12px; min-height: 2.6rem;
+      padding: .7rem 1rem; margin-bottom: 1rem; font-size: .96rem; line-height: 1.7; background: var(--surface);
+    }
+    #rb .rb-sentence .rb-placeholder { color: var(--text-faint); }
+    #rb .rb-read {
+      border: 1px solid var(--border); border-radius: 12px; padding: .8rem 1.05rem; margin-bottom: 1rem;
+      background: var(--surface); font-size: .88rem; line-height: 1.6; color: var(--text);
+    }
+    #rb .rb-read .rb-verdict { font-weight: 700; display: block; margin-bottom: .3rem; }
+    #rb .rb-read ul { margin: .4rem 0 0; padding-left: 1.15rem; }
+    #rb .rb-read li { margin: .25rem 0; color: var(--text-muted); }
+    #rb .rb-read li b { color: var(--text); }
+    #rb .rb-reset {
+      cursor: pointer; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-muted);
+      border-radius: 8px; padding: .4rem .8rem; font-size: .82rem; font-weight: 600;
+    }
+    #rb .rb-reset:hover { border-color: var(--course-accent, #84cc16); color: var(--text); }
+  </style>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ sentence-builder (deterministic; DOM only) ============ -->
+  <script>
+  (function () {
+    "use strict";
+
+    // Three rounds. Each fragment: id, html (APA-formatted), role good|trap,
+    // pos (canonical order for the good pieces), why (explanation on selection).
+    var ROUNDS = [
+      {
+        key: "t", label: "Independent t-test",
+        output: {
+          cap: "Group statistics · Independent-samples t test",
+          html: '<table class="rb-tbl"><thead><tr><th>Group</th><th>n</th><th>M</th><th>SD</th></tr></thead>' +
+                '<tbody><tr><td>Nap</td><td>30</td><td>28.4</td><td>5.1</td></tr>' +
+                '<tr><td>No nap</td><td>30</td><td>24.1</td><td>5.4</td></tr></tbody></table>' +
+                '<table class="rb-tbl" style="margin-top:.5rem"><thead><tr><th>t</th><th>df</th><th>Sig. (2-tailed)</th><th>Cohen&#39;s d</th></tr></thead>' +
+                '<tbody><tr><td>3.17</td><td>58</td><td>.002</td><td>0.82</td></tr></tbody></table>'
+        },
+        frags: [
+          { id: "g1", role: "good", pos: 1, html: "The nap group recalled more word pairs" },
+          { id: "g2", role: "good", pos: 2, html: "(<em>M</em> = 28.4, <em>SD</em> = 5.1)" },
+          { id: "g3", role: "good", pos: 3, html: "than the no-nap group (<em>M</em> = 24.1, <em>SD</em> = 5.4)," },
+          { id: "g4", role: "good", pos: 4, html: "<em>t</em>(58) = 3.17," },
+          { id: "g5", role: "good", pos: 5, html: "<em>p</em> = .002," },
+          { id: "g6", role: "good", pos: 6, html: "<em>d</em> = 0.82." },
+          { id: "t1", role: "trap", html: "<em>t</em>(60) = 3.17", why: "Wrong df — an independent t-test has df = N &minus; 2 = 58, not 60." },
+          { id: "t2", role: "trap", html: "<em>p</em> = .000", why: "A p-value is never exactly zero; .000 just means 'too small to display'. Floor it at p &lt; .001." },
+          { id: "t3", role: "trap", html: "<em>p</em> = 0.002", why: "No leading zero on p (it can't exceed 1): write .002, not 0.002." },
+          { id: "t4", role: "trap", html: "proving that napping boosts memory", why: "That's interpretation (and a causal claim) — it belongs in the Discussion, not the Results." }
+        ]
+      },
+      {
+        key: "f", label: "One-way ANOVA",
+        output: {
+          cap: "One-way ANOVA · exam score by teaching method (N = 90, 3 groups)",
+          html: '<table class="rb-tbl"><thead><tr><th>Source</th><th>SS</th><th>df</th><th>MS</th><th>F</th><th>Sig.</th></tr></thead>' +
+                '<tbody><tr><td>Between</td><td>142.6</td><td>2</td><td>71.30</td><td>5.42</td><td>.006</td></tr>' +
+                '<tr><td>Within</td><td>1144.7</td><td>87</td><td>13.16</td><td></td><td></td></tr>' +
+                '<tr><td>Total</td><td>1287.3</td><td>89</td><td></td><td></td><td></td></tr></tbody></table>' +
+                '<p class="rb-out-cap" style="margin:.5rem 0 0">Effect size &eta;&sup2; = .11</p>'
+        },
+        frags: [
+          { id: "g1", role: "good", pos: 1, html: "Exam scores differed across the three teaching methods," },
+          { id: "g2", role: "good", pos: 2, html: "<em>F</em>(2, 87) = 5.42," },
+          { id: "g3", role: "good", pos: 3, html: "<em>p</em> = .006," },
+          { id: "g4", role: "good", pos: 4, html: "η² = .11." },
+          { id: "t1", role: "trap", html: "<em>F</em>(2, 89) = 5.42", why: "Wrong error df — one-way ANOVA has df₂ = N &minus; k = 90 &minus; 3 = 87, not N &minus; 1." },
+          { id: "t2", role: "trap", html: "<em>F</em>(87, 2) = 5.42", why: "The df are reversed — report F(df between, df within) = F(2, 87)." },
+          { id: "t3", role: "trap", html: "<em>η²</em> = .11", why: "η² is a Greek symbol, so it stays upright — don't italicise it. (Latin stats letters are italic; Greek aren't.)" },
+          { id: "t4", role: "trap", html: "showing Method C is the best approach", why: "The omnibus F only says the groups differ somewhere — it doesn't say which, and 'best approach' is interpretation for the Discussion." }
+        ]
+      },
+      {
+        key: "r", label: "Regression",
+        output: {
+          cap: "Linear regression · wellbeing on nightly sleep (N = 100)",
+          html: '<table class="rb-tbl"><thead><tr><th>Predictor</th><th>b</th><th>SE</th><th>&beta;</th><th>t</th><th>Sig.</th></tr></thead>' +
+                '<tbody><tr><td>(Constant)</td><td>41.2</td><td>1.90</td><td></td><td>21.7</td><td>.000</td></tr>' +
+                '<tr><td>Sleep (hrs)</td><td>1.85</td><td>0.52</td><td>.34</td><td>3.56</td><td>.000</td></tr></tbody></table>' +
+                '<p class="rb-out-cap" style="margin:.5rem 0 0">Model R&sup2; = .12, F(1, 98) = 12.67, df = 98</p>'
+        },
+        frags: [
+          { id: "g1", role: "good", pos: 1, html: "Nightly sleep positively predicted wellbeing," },
+          { id: "g2", role: "good", pos: 2, html: "<em>b</em> = 1.85, <em>SE</em> = 0.52," },
+          { id: "g3", role: "good", pos: 3, html: "β = .34," },
+          { id: "g4", role: "good", pos: 4, html: "<em>t</em>(98) = 3.56," },
+          { id: "g5", role: "good", pos: 5, html: "<em>p</em> &lt; .001." },
+          { id: "t1", role: "trap", html: "<em>p</em> = .000", why: "The output shows .000 because the value is below .001 — report it as p &lt; .001, never p = .000." },
+          { id: "t2", role: "trap", html: "<em>t</em>(100) = 3.56", why: "Wrong df — with one predictor df = N &minus; k &minus; 1 = 100 &minus; 1 &minus; 1 = 98." },
+          { id: "t3", role: "trap", html: "β = 0.34", why: "Standardised β is bounded like a correlation, so drop the leading zero: .34, not 0.34." },
+          { id: "t4", role: "trap", html: "proving that more sleep causes greater wellbeing", why: "Regression on observational data can't establish causation, and any claim about meaning belongs in the Discussion." }
+        ]
+      }
+    ];
+
+    var tabsEl = document.getElementById("rb-tabs");
+    var outEl = document.getElementById("rb-output");
+    var chipsEl = document.getElementById("rb-chips");
+    var sentEl = document.getElementById("rb-sentence");
+    var readEl = document.getElementById("rb-read");
+    var resetEl = document.getElementById("rb-reset");
+
+    var cur = 0;
+    var sel = {};   // per-round: { roundKey: Set of selected frag ids }
+    ROUNDS.forEach(function (r) { sel[r.key] = {}; });
+
+    // shuffle order is fixed per round (deterministic) so chips don't reorder
+    ROUNDS.forEach(function (r) {
+      r.display = r.frags.slice().sort(function (a, b) {
+        // stable pseudo-shuffle: interleave goods and traps by a fixed key hash
+        function h(s) { var x = 0; for (var i = 0; i < s.length; i++) x = (x * 31 + s.charCodeAt(i)) % 997; return x; }
+        return h(a.id + r.key) - h(b.id + r.key);
+      });
+    });
+
+    ROUNDS.forEach(function (r, i) {
+      var b = document.createElement("button");
+      b.className = "rb-tab" + (i === 0 ? " on" : "");
+      b.type = "button";
+      b.textContent = r.label;
+      b.addEventListener("click", function () {
+        cur = i;
+        Array.prototype.forEach.call(tabsEl.children, function (c, k) { c.classList.toggle("on", k === i); });
+        render();
+      });
+      tabsEl.appendChild(b);
+    });
+
+    resetEl.addEventListener("click", function () { sel[ROUNDS[cur].key] = {}; render(); });
+
+    function render() {
+      var r = ROUNDS[cur];
+      var s = sel[r.key];
+
+      outEl.innerHTML = '<p class="rb-out-cap">' + r.output.cap + '</p>' + r.output.html;
+
+      chipsEl.innerHTML = "";
+      r.display.forEach(function (f) {
+        var c = document.createElement("span");
+        c.className = "rb-chip " + f.role + (s[f.id] ? " sel" : "");
+        c.innerHTML = f.html;
+        c.addEventListener("click", function () {
+          if (s[f.id]) delete s[f.id]; else s[f.id] = true;
+          render();
+        });
+        chipsEl.appendChild(c);
+      });
+
+      // assembled sentence = selected GOOD fragments in canonical order
+      var goods = r.frags.filter(function (f) { return f.role === "good"; });
+      var chosenGood = goods.filter(function (f) { return s[f.id]; })
+        .sort(function (a, b) { return a.pos - b.pos; });
+      if (chosenGood.length === 0) {
+        sentEl.innerHTML = '<span class="rb-placeholder">Your sentence will appear here as you pick pieces…</span>';
+      } else {
+        sentEl.innerHTML = chosenGood.map(function (f) { return f.html; }).join(" ");
+      }
+
+      // scoring
+      var totalGood = goods.length;
+      var goodSel = chosenGood.length;
+      var trapsSel = r.frags.filter(function (f) { return f.role === "trap" && s[f.id]; });
+
+      var verdict, extra = "";
+      if (goodSel === totalGood && trapsSel.length === 0) {
+        verdict = "✅ Clean APA results sentence — every piece belongs, no traps.";
+      } else {
+        verdict = "Correct pieces: " + goodSel + " / " + totalGood +
+          " · traps picked: " + trapsSel.length;
+        var notes = [];
+        if (trapsSel.length) {
+          trapsSel.forEach(function (f) {
+            notes.push("<li><b>" + f.html.replace(/<\/?em>/g, "") + "</b> — " + f.why + "</li>");
+          });
+        }
+        if (goodSel < totalGood && trapsSel.length === 0) {
+          notes.push("<li>Keep going — some correct pieces are still on the table.</li>");
+        }
+        if (notes.length) extra = "<ul>" + notes.join("") + "</ul>";
+      }
+      readEl.innerHTML = '<span class="rb-verdict">' + verdict + "</span>" + extra;
+    }
+
+    render();
+  })();
+  </script>
+</body>
+</html>

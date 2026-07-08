@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Writing About Non-Significant Results — StatsCapybara</title>
+  <meta name="description" content="p = .08 is not 'a trend toward significance'. How to report a non-significant result honestly with effect size, confidence interval, and power context — and when you can claim no meaningful effect." />
+  <link rel="canonical" href="https://statscapybara.com/writing/nonsignificant-results/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Writing About Non-Significant Results — StatsCapybara" />
+  <meta property="og:description" content="p = .08 is not 'a trend toward significance'. How to report a non-significant result honestly with effect size, confidence interval, and power context — and when you can claim no meaningful effect." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/writing/nonsignificant-results/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Writing About Non-Significant Results — StatsCapybara" />
+  <meta name="twitter:description" content="p = .08 is not 'a trend toward significance'. How to report a non-significant result honestly with effect size, confidence interval, and power context — and when you can claim no meaningful effect." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Writing About Non-Significant Results", "description": "p = .08 is not 'a trend toward significance'. How to report a non-significant result honestly with effect size, confidence interval, and power context — and when you can claim no meaningful effect.", "url": "https://statscapybara.com/writing/nonsignificant-results/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Writing: Reporting Your Research", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Writing About Non-Significant Results", "item": "https://statscapybara.com/writing/nonsignificant-results/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I report a non-significant result in APA style?", "acceptedAnswer": {"@type": "Answer", "text": "Report it exactly like a significant one — you never hide or soften it. Give the test statistic, degrees of freedom, and the exact p-value, then the effect size and its confidence interval: \"The groups did not differ significantly, t(58) = 1.30, p = .20, d = 0.24, 95% CI [−0.13, 0.61].\" The confidence interval is the important part — it shows the range of effects your data are compatible with. Frame it honestly (\"not significant\") and, if the interval is wide, note that the study was underpowered rather than claiming there is no effect."}}, {"@type": "Question", "name": "Can I say a result was 'marginally significant' or 'a trend toward significance'?", "acceptedAnswer": {"@type": "Answer", "text": "No. Significance is a yes/no threshold you set in advance, so a p of .06 is on the 'no' side — it is not 'nearly significant', and there is no such thing as 'marginally significant'. Tellingly, the phrase is only ever used to nudge a non-significant result upward; nobody writes that p = .04 'only marginally' made it. Report the exact p-value, the effect size, and the confidence interval, and interpret them honestly. If the point estimate looks promising but the interval includes zero, say the result is inconclusive and needs a larger, ideally preregistered, study."}}, {"@type": "Question", "name": "Does a non-significant result mean there is no effect?", "acceptedAnswer": {"@type": "Answer", "text": "Not by itself — absence of evidence is not evidence of absence (see The Logic of Hypothesis Testing). A high p-value can mean the effect really is near zero, or that your study was too small to detect a real one. The confidence interval settles which: if it is wide and straddles zero, you simply can't tell (underpowered); if it is tight and hugs zero — say d = 0.05, 95% CI [−0.15, 0.25] — you have ruled out anything beyond a small effect and may call the difference negligible. That is the logic of equivalence testing: same p &gt; .05, opposite conclusions, and only the interval reveals which one you have."}}]}
+  </script>
+</head>
+<body data-course="writing" data-section="nonsignificant-results">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 5.5</span>
+        <h1>Writing About Non-Significant Results</h1>
+
+        <p class="lede">Sooner or later a test comes back <em>p</em> = .08, and the temptation is instant: call it "a trend toward significance" and move on. Don't. A non-significant result is not a failure, not an embarrassment, and — crucially — not proof that the effect is zero. It's a specific, reportable finding, and reporting it honestly is one of the clearest signs of a careful researcher. This lesson is about what those results actually mean and how to write them without over- or under-claiming.</p>
+
+        <h2>"Not significant" is not "no effect"</h2>
+        <p>The deepest mistake is treating <em>p</em> &gt; .05 as evidence that nothing is there. But <strong>absence of evidence is not evidence of absence</strong>. A high <em>p</em>-value can mean the effect really is near zero — or it can mean your study was too small to detect a real effect that's genuinely there (see <a href="../../stats-1/hypothesis-testing-logic/">The Logic of Hypothesis Testing</a>). The <em>p</em>-value alone can't tell those two situations apart. That's why "we found no effect" is almost always the wrong sentence: what you actually found is that you <em>couldn't rule the null out</em>, which is a much humbler claim.</p>
+
+        <h2>There is no "trend toward significance"</h2>
+        <p>"Marginally significant," "approaching significance," "a trend toward…" — these phrases try to sneak a non-significant result across a line it didn't cross. A <em>p</em> of .06 is not "nearly .05 significant"; significance is a yes/no threshold you chose in advance, and .06 is on the "no" side. Worse, the phrase is only ever used in one direction — nobody writes that <em>p</em> = .04 "only marginally" made it. Report the <strong>exact <em>p</em>-value</strong> and let it speak: "<em>p</em> = .06" is honest and informative; "a trend toward significance" is spin.</p>
+
+        <h2>What to write instead</h2>
+        <p>A good non-significant sentence carries three things the bare <em>p</em>-value hides:</p>
+        <ul>
+          <li><strong>The effect size and its confidence interval.</strong> "<em>d</em> = 0.15, 95% CI [−0.29, 0.59]" tells the reader both your best guess and how much wiggle room it has. The CI is the hero here — it shows the whole range of effects your data are compatible with.</li>
+          <li><strong>Power or precision context.</strong> Was the study big enough to catch the effect you cared about? A wide CI that spans from "meaningfully negative" to "meaningfully positive" is your signal to say the study was <em>underpowered</em>, not that the effect is absent.</li>
+          <li><strong>Honest framing.</strong> "The difference was not significant" — then describe the interval. No apology, no spin, no burying it.</li>
+        </ul>
+
+        <h2>When you <em>can</em> say "no meaningful effect"</h2>
+        <p>Sometimes a null result <em>is</em> informative — when the confidence interval is <strong>tight and hugs zero</strong>. If <em>d</em> = 0.05 with a 95% CI of [−0.15, 0.25], you've effectively ruled out anything beyond a small effect, and you're entitled to say the difference is negligible. This is the intuition behind <strong>equivalence testing</strong>: instead of asking "is the effect exactly zero?", you ask "can I rule out effects big enough to matter?" A precise null answers yes; a wide null answers "I don't know yet". Same <em>p</em> &gt; .05 — completely different stories, and only the CI reveals which one you have.</p>
+        <p>And remember: a non-significant result is <strong>not unpublishable and not a wasted study</strong>. Well-designed nulls correct the record, feed <a href="../../stats-4/meta-analysis/">meta-analyses</a>, and stop others chasing effects that aren't there.</p>
+
+        <h2>Pick the honest sentence</h2>
+        <p>Five studies, all non-significant — but they don't all mean the same thing. Read each result card (the <em>p</em>-value, the effect size, and especially the confidence interval), then choose the one sentence that reports it honestly. The others overclaim, dismiss, or reach for "a trend."</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="ic">
+          <p class="viz-title">⚖️ Which sentence is honest?</p>
+          <p class="viz-sub">Same "not significant," five different stories. Let the interval decide.</p>
+
+          <div class="ic-progress" id="ic-progress"></div>
+          <div class="ic-card" id="ic-card"></div>
+          <div class="ic-ci" id="ic-ci"></div>
+          <div class="ic-opts" id="ic-opts"></div>
+          <div class="ic-feed" id="ic-feed"></div>
+          <div class="ic-nav">
+            <button class="ic-btn" id="ic-prev" type="button">← Prev</button>
+            <span class="ic-score" id="ic-score"></span>
+            <button class="ic-btn" id="ic-next" type="button">Next →</button>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <div class="callout key">
+          <p><strong>The confidence interval is the whole message.</strong> A wide interval that straddles zero means "underpowered — can't tell," not "no effect." A tight interval hugging zero means "we can rule out anything that matters." Two identical <em>p</em> &gt; .05 results can demand opposite sentences; only the interval tells you which.</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> how you write a null result is a character test that graders and reviewers watch for. Dress a <em>p</em> = .08 up as "a trend" and you've told the reader you'll bend language to get the result you wanted. Report it straight — effect size, interval, honest framing — and you've shown you can be trusted with the significant results too. Nulls aren't the absence of a finding; they're a finding that asks for precise, humble language.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>How do I report a non-significant result in APA style?</summary>
+            <div class="faq-a"><p>Report it exactly like a significant one — you never hide or soften it. Give the test statistic, degrees of freedom, and the <strong>exact <em>p</em>-value</strong>, then the <strong>effect size and its confidence interval</strong>: "The groups did not differ significantly, <em>t</em>(58) = 1.30, <em>p</em> = .20, <em>d</em> = 0.24, 95% CI [−0.13, 0.61]." The confidence interval is the important part — it shows the range of effects your data are compatible with. Frame it honestly ("not significant") and, if the interval is wide, note that the study was underpowered rather than claiming there is no effect.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Can I say a result was 'marginally significant' or 'a trend toward significance'?</summary>
+            <div class="faq-a"><p>No. Significance is a yes/no threshold you set in advance, so a <em>p</em> of .06 is on the 'no' side — it is not 'nearly significant', and there is no such thing as 'marginally significant'. Tellingly, the phrase is only ever used to nudge a non-significant result upward; nobody writes that <em>p</em> = .04 'only marginally' made it. Report the exact <em>p</em>-value, the effect size, and the confidence interval, and interpret them honestly. If the point estimate looks promising but the interval includes zero, say the result is inconclusive and needs a larger, ideally <a href="../../methods/preregistration-and-open-science/">preregistered</a>, study.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Does a non-significant result mean there is no effect?</summary>
+            <div class="faq-a"><p>Not by itself — <strong>absence of evidence is not evidence of absence</strong> (see <a href="../../stats-1/hypothesis-testing-logic/">The Logic of Hypothesis Testing</a>). A high <em>p</em>-value can mean the effect really is near zero, or that your study was too small to detect a real one. The confidence interval settles which: if it is <em>wide</em> and straddles zero, you simply can't tell (underpowered); if it is <em>tight</em> and hugs zero — say <em>d</em> = 0.05, 95% CI [−0.15, 0.25] — you have ruled out anything beyond a small effect and may call the difference negligible. That is the logic of equivalence testing: same <em>p</em> &gt; .05, opposite conclusions, and only the interval reveals which one you have.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <style>
+    /* interpretation-chooser (scoped) */
+    #ic .ic-progress { display: flex; gap: .4rem; margin-bottom: 1rem; }
+    #ic .ic-dot {
+      width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--border);
+      display: grid; place-items: center; font-size: .78rem; font-weight: 700; cursor: pointer;
+      background: var(--surface-2); color: var(--text-muted); transition: .15s;
+    }
+    #ic .ic-dot.on { border-color: var(--course-accent, #84cc16); color: var(--text); background: color-mix(in srgb, var(--course-accent, #84cc16) 16%, transparent); }
+    #ic .ic-dot.right { background: color-mix(in srgb, #22c55e 20%, transparent); border-color: #22c55e; color: var(--text); }
+    #ic .ic-dot.wrong { background: color-mix(in srgb, #ef4444 20%, transparent); border-color: #ef4444; color: var(--text); }
+    #ic .ic-card {
+      border: 1px solid var(--border); border-radius: 12px; background: var(--surface);
+      padding: .9rem 1.1rem; margin-bottom: .3rem; font-size: .92rem; line-height: 1.6;
+    }
+    #ic .ic-card .ic-desc { margin: 0 0 .5rem; }
+    #ic .ic-stats { display: flex; flex-wrap: wrap; gap: .4rem .9rem; font-size: .86rem; color: var(--text-muted); }
+    #ic .ic-stats b { color: var(--text); font-variant-numeric: tabular-nums; }
+    #ic .ic-ci {
+      border: 1px solid var(--border); border-top: none; border-radius: 0 0 12px 12px;
+      background: var(--surface); padding: .3rem 1.1rem 1rem; margin: -1rem 0 1rem;
+    }
+    #ic .ci-track { position: relative; height: 46px; margin-top: 1.4rem; }
+    #ic .ci-axis { position: absolute; left: 0; right: 0; top: 22px; height: 2px; background: var(--border); }
+    #ic .ci-zero { position: absolute; top: 6px; bottom: 6px; width: 2px; background: var(--text-muted); }
+    #ic .ci-zero span { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: .72rem; color: var(--text-muted); }
+    #ic .ci-band { position: absolute; top: 16px; height: 14px; border-radius: 7px; background: color-mix(in srgb, var(--primary) 32%, transparent); border: 1px solid var(--primary); }
+    #ic .ci-band.tight { background: color-mix(in srgb, #22c55e 32%, transparent); border-color: #22c55e; }
+    #ic .ci-pt { position: absolute; top: 13px; width: 10px; height: 20px; margin-left: -5px; border-radius: 3px; background: #f97316; }
+    #ic .ci-lab { position: absolute; top: 30px; font-size: .72rem; color: var(--text-muted); transform: translateX(-50%); white-space: nowrap; }
+    #ic .ic-opts { display: flex; flex-direction: column; gap: .5rem; margin-bottom: 1rem; }
+    #ic .ic-opt {
+      text-align: left; cursor: pointer; border: 1px solid var(--border); background: var(--surface-2);
+      color: var(--text); border-radius: 10px; padding: .6rem .85rem; font-size: .9rem; line-height: 1.5; transition: .12s;
+    }
+    #ic .ic-opt:hover:not(:disabled) { border-color: var(--course-accent, #84cc16); }
+    #ic .ic-opt.right { background: color-mix(in srgb, #22c55e 15%, transparent); border-color: #22c55e; }
+    #ic .ic-opt.wrong { background: color-mix(in srgb, #ef4444 13%, transparent); border-color: #ef4444; }
+    #ic .ic-opt .ic-tag { display: inline-block; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; margin-left: .4rem; opacity: .8; }
+    #ic .ic-feed {
+      font-size: .88rem; line-height: 1.6; color: var(--text-muted); min-height: 1.2rem;
+      padding: 0 .2rem; margin-bottom: 1rem;
+    }
+    #ic .ic-feed.show { border: 1px solid var(--border); border-radius: 12px; padding: .8rem 1.05rem; background: var(--surface); color: var(--text); }
+    #ic .ic-nav { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    #ic .ic-btn {
+      cursor: pointer; border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
+      border-radius: 8px; padding: .45rem .9rem; font-size: .85rem; font-weight: 600;
+    }
+    #ic .ic-btn:hover:not(:disabled) { border-color: var(--course-accent, #84cc16); }
+    #ic .ic-btn:disabled { opacity: .4; cursor: default; }
+    #ic .ic-score { font-size: .88rem; font-weight: 700; color: var(--text); }
+  </style>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ interpretation-chooser (deterministic; DOM only) ============ -->
+  <script>
+  (function () {
+    "use strict";
+
+    // Each scenario: description, stats line, effect metric + CI (for the number line),
+    // and four options with one honest answer. Options are pre-ordered (honest not always first).
+    // p/d/CI values verified against the t/correlation math (see lesson).
+    var SC = [
+      {
+        desc: "A two-group experiment (n = 40 per group) compared recall after a nap vs. no nap.",
+        metric: "d", est: 0.15, lo: -0.29, hi: 0.59, p: ".50",
+        stats: [["n", "40 / group"], ["d", "0.15"], ["95% CI", "[−0.29, 0.59]"], ["p", ".50"]],
+        opts: [
+          { t: "overclaim", s: "The nap group recalled more than the no-nap group." },
+          { t: "honest", s: "The groups did not differ significantly, <em>d</em> = 0.15, 95% CI [−0.29, 0.59]; the wide interval means this study can't tell a null apart from a moderate effect." },
+          { t: "underclaim", s: "There was no difference between the groups." },
+          { t: "trend", s: "The nap group showed a trend toward better recall." }
+        ],
+        note: "The interval runs from a small negative to a moderate positive effect — the study is simply too small to locate the truth. 'No difference' overstates precision; 'a trend' reaches for significance that isn't there."
+      },
+      {
+        desc: "A correlational study (n = 25) related nightly sleep to self-reported wellbeing.",
+        metric: "r", est: 0.30, lo: -0.11, hi: 0.62, p: ".14",
+        stats: [["n", "25"], ["r", ".30"], ["95% CI", "[−.11, .62]"], ["p", ".14"]],
+        opts: [
+          { t: "trend", s: "The correlation approached significance (<em>p</em> = .14)." },
+          { t: "overclaim", s: "More sleep was correlated with higher wellbeing, <em>r</em> = .30." },
+          { t: "honest", s: "The positive correlation was not significant, <em>r</em> = .30, 95% CI [−.11, .62]; with n = 25 the estimate is too imprecise to conclude much either way." },
+          { t: "underclaim", s: "Sleep and wellbeing were unrelated." }
+        ],
+        note: "p = .14 does not 'approach' anything — and the CI stretches from slightly negative to strongly positive. This is a classic underpowered correlation: report the estimate and its interval, and note the small sample."
+      },
+      {
+        desc: "A well-powered trial (n = 200 per group) compared two study apps on exam scores.",
+        metric: "d", est: 0.05, lo: -0.15, hi: 0.25, p: ".62", tight: true,
+        stats: [["n", "200 / group"], ["d", "0.05"], ["95% CI", "[−0.15, 0.25]"], ["p", ".62"]],
+        opts: [
+          { t: "overclaim", s: "App A produced higher scores than App B." },
+          { t: "underclaim", s: "The two apps produced identical scores." },
+          { t: "honest", s: "The apps did not differ, <em>d</em> = 0.05, 95% CI [−0.15, 0.25]; the tight interval rules out anything beyond a small effect, so the difference is negligible in practice." },
+          { t: "trend", s: "There was a slight trend favouring App A." }
+        ],
+        note: "Here the null is informative: a narrow interval hugging zero is real evidence of a negligible effect (the equivalence-testing idea). But 'identical' still overclaims — the data allow a genuinely small effect, just not a meaningful one."
+      },
+      {
+        desc: "A training study (n = 45 per group) tested whether a workshop improved performance.",
+        metric: "d", est: 0.40, lo: -0.03, hi: 0.83, p: ".06",
+        stats: [["n", "45 / group"], ["d", "0.40"], ["95% CI", "[−0.03, 0.83]"], ["p", ".06"]],
+        opts: [
+          { t: "honest", s: "The difference was not significant, <em>d</em> = 0.40, 95% CI [−0.03, 0.83]; the estimate is promising but the interval still includes zero, so a larger, preregistered study is needed." },
+          { t: "trend", s: "The effect was marginally significant, <em>p</em> = .06." },
+          { t: "overclaim", s: "The workshop improved performance, <em>d</em> = 0.40." },
+          { t: "underclaim", s: "The workshop had no effect." }
+        ],
+        note: "The tempting one is 'marginally significant' — but .06 is on the 'no' side of the line you set. A promising point estimate with a CI that grazes zero is exactly the case for saying 'inconclusive, needs more data'."
+      },
+      {
+        desc: "A within-subjects study (n = 30) compared scores before and after training.",
+        metric: "d", est: 0.33, lo: -0.04, hi: 0.70, p: ".08",
+        stats: [["n", "30"], ["d", "0.33"], ["95% CI", "[−0.04, 0.70]"], ["p", ".08"]],
+        opts: [
+          { t: "underclaim", s: "Training made no difference at all." },
+          { t: "honest", s: "Scores were not significantly higher after training, <em>d</em> = 0.33, 95% CI [−0.04, 0.70]; the effect may be real but the study was underpowered to detect it." },
+          { t: "overclaim", s: "Training raised scores, <em>d</em> = 0.33." },
+          { t: "trend", s: "Scores showed a trend toward improvement (<em>p</em> = .08)." }
+        ],
+        note: "A moderate point estimate with an interval that barely includes zero: 'no difference at all' throws away a plausibly real effect, while 'trend' and the bare d overclaim. Honest framing names the effect size and the power problem together."
+      }
+    ];
+
+    var TAGS = {
+      honest: "honest", overclaim: "overclaims", underclaim: "underclaims", trend: "trend-speak"
+    };
+
+    var progEl = document.getElementById("ic-progress");
+    var cardEl = document.getElementById("ic-card");
+    var ciEl = document.getElementById("ic-ci");
+    var optsEl = document.getElementById("ic-opts");
+    var feedEl = document.getElementById("ic-feed");
+    var prevEl = document.getElementById("ic-prev");
+    var nextEl = document.getElementById("ic-next");
+    var scoreEl = document.getElementById("ic-score");
+
+    var cur = 0;
+    var answered = SC.map(function () { return null; });   // chosen option index
+    var firstRight = SC.map(function () { return null; });  // boolean on first answer
+
+    // progress dots
+    SC.forEach(function (s, i) {
+      var d = document.createElement("div");
+      d.className = "ic-dot";
+      d.textContent = i + 1;
+      d.addEventListener("click", function () { cur = i; render(); });
+      progEl.appendChild(d);
+    });
+
+    prevEl.addEventListener("click", function () { if (cur > 0) { cur--; render(); } });
+    nextEl.addEventListener("click", function () { if (cur < SC.length - 1) { cur++; render(); } });
+
+    function drawCI(s) {
+      var lo = s.lo, hi = s.hi, est = s.est;
+      var span = Math.max(hi, 0) - Math.min(lo, 0);
+      var pad = span * 0.18 + 0.05;
+      var min = Math.min(lo, 0) - pad, max = Math.max(hi, 0) + pad;
+      function pct(v) { return ((v - min) / (max - min)) * 100; }
+      var band = pct(lo), bandW = pct(hi) - pct(lo);
+      ciEl.innerHTML =
+        '<div class="ci-track">' +
+        '<div class="ci-axis"></div>' +
+        '<div class="ci-zero" style="left:' + pct(0).toFixed(1) + '%"><span>0</span></div>' +
+        '<div class="ci-band' + (s.tight ? " tight" : "") + '" style="left:' + band.toFixed(1) + '%;width:' + bandW.toFixed(1) + '%"></div>' +
+        '<div class="ci-pt" style="left:' + pct(est).toFixed(1) + '%"></div>' +
+        '<div class="ci-lab" style="left:' + pct(lo).toFixed(1) + '%">' + s.lo + '</div>' +
+        '<div class="ci-lab" style="left:' + pct(hi).toFixed(1) + '%">' + s.hi + '</div>' +
+        '</div>';
+    }
+
+    function updateScore() {
+      var done = firstRight.filter(function (x) { return x !== null; }).length;
+      var right = firstRight.filter(function (x) { return x === true; }).length;
+      if (done === 0) { scoreEl.textContent = "Calibration: 0 / " + SC.length; return; }
+      var msg = "Calibration: " + right + " / " + SC.length;
+      if (done === SC.length) {
+        msg += right === SC.length ? " — perfect ear for honest framing." :
+               right >= SC.length - 1 ? " — sharp." : "";
+      }
+      scoreEl.textContent = msg;
+    }
+
+    function render() {
+      var s = SC[cur];
+
+      Array.prototype.forEach.call(progEl.children, function (d, i) {
+        d.className = "ic-dot" +
+          (i === cur ? " on" : "") +
+          (firstRight[i] === true ? " right" : firstRight[i] === false ? " wrong" : "");
+      });
+
+      cardEl.innerHTML =
+        '<p class="ic-desc"><b>Study ' + (cur + 1) + ':</b> ' + s.desc + '</p>' +
+        '<div class="ic-stats">' + s.stats.map(function (kv) {
+          return '<span>' + kv[0] + ' = <b>' + kv[1] + '</b></span>';
+        }).join("") + '</div>';
+
+      drawCI(s);
+
+      var locked = answered[cur] !== null;
+      optsEl.innerHTML = "";
+      s.opts.forEach(function (o, i) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "ic-opt";
+        b.innerHTML = o.s;
+        if (locked) {
+          b.disabled = true;
+          if (o.t === "honest") b.classList.add("right");
+          else if (i === answered[cur]) b.classList.add("wrong");
+          b.innerHTML = o.s + '<span class="ic-tag">' + TAGS[o.t] + '</span>';
+        }
+        b.addEventListener("click", function () {
+          if (answered[cur] !== null) return;
+          answered[cur] = i;
+          firstRight[cur] = (o.t === "honest");
+          render();
+        });
+        optsEl.appendChild(b);
+      });
+
+      if (locked) {
+        var chosen = s.opts[answered[cur]];
+        var head = chosen.t === "honest"
+          ? "✅ That's the honest one. "
+          : "The honest sentence is highlighted in green. ";
+        feedEl.className = "ic-feed show";
+        feedEl.innerHTML = "<b>" + head + "</b>" + s.note;
+      } else {
+        feedEl.className = "ic-feed";
+        feedEl.innerHTML = "";
+      }
+
+      prevEl.disabled = cur === 0;
+      nextEl.disabled = cur === SC.length - 1;
+      updateScore();
+    }
+
+    render();
+  })();
+  </script>
+</body>
+</html>
