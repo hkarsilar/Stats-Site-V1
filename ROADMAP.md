@@ -8,11 +8,11 @@ This file is the master plan. The copy-paste prompts that execute it live in **[
 
 ## End state
 
-| | At kickoff | Now (Jul 2026, post-P20) | Powerhouse |
+| | At kickoff | Now (Jul 2026, post-P24) | Powerhouse |
 |---|---|---|---|
 | Courses | 4 (Stats 1–4) | 9 (Methods, Data, Ethics, ML, Writing all complete) | **9** in two tracks |
 | Lessons | 45 | 95 | **~95** |
-| Tool pages | 8 | 10 (+ power calc, APA formatter) | **~14** |
+| Tool pages | 8 | 13 (+ power calc, APA formatter, datasets, flashcards, which-chart) | **~15** |
 | Long-form guides | 0 | 0 | 4 cornerstone guides |
 | Personas served | "stats course student" | + first-time researcher, data cleaner, ML-curious | + thesis writer |
 
