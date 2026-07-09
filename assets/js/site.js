@@ -165,6 +165,7 @@
     "toolbox": "A capybara's toolbox: warm water, good snacks, zero deadlines. Yours has calculators too.",
     "which-test": "Lost? The capybara also can't pick a pool. That's literally why this page exists.",
     "which-chart": "A pie chart of the capybara's day would be one giant slice labelled 'napping.' Even then, it says, use a bar.",
+    "plan": "The capybara writes the whole plan before the data arrive — test, sample size, and how it'll report it. Then, and only then, it naps.",
     "tables": "Capybaras have memorized exactly zero critical values. That's what this page is for.",
     "formulas": "Print it, laminate it, take it into the bath. The capybara approves.",
     "distributions": "Distributions are just personality types for data. Come meet the whole squad.",
@@ -232,6 +233,7 @@
   var TOOLBOX = [
     { url: "which-test.html",    key: "which-test",    group: "guide",    emoji: "🧭", title: "Which test should I use?", desc: "Answer a few questions, get the right test" },
     { url: "which-chart.html",   key: "which-chart",   group: "guide",    emoji: "📊", title: "Which chart should I use?", desc: "Pick the right chart for your data, mistakes and all" },
+    { url: "plan.html",          key: "plan",          group: "guide",    emoji: "🗺️", title: "Plan my analysis",         desc: "Question → test, sample size & APA — a printable plan" },
     { url: "tables.html",        key: "tables",        group: "calc",     emoji: "🎛️", title: "Tables & calculators",     desc: "Exact z, t, χ² and F — no appendix flipping" },
     { url: "distributions.html", key: "distributions", group: "practice", emoji: "🎢", title: "Distribution playground",  desc: "Poke 9 distributions and watch them wiggle" },
     { url: "effect-sizes.html",  key: "effect-sizes",  group: "calc",     emoji: "📏", title: "Effect-size converter",    desc: "d ↔ r ↔ η² — plus what they actually mean" },
@@ -588,6 +590,7 @@
       if (sw.spss || sw.jasp) {
         var box = document.createElement("section");
         box.className = "software";
+        box.id = "run-it";   // deep-link target for plan.html's "walkthrough" link
         box.setAttribute("aria-label", "Run this analysis in SPSS or JASP");
         box.innerHTML =
           '<div class="sw-head"><span class="sw-title">🖱️ Run it in SPSS / JASP</span>' +
@@ -607,6 +610,9 @@
         showSteps();
         var anchor1 = document.querySelector(".apa-report") || host.querySelector(".try-code") || document.querySelector(".lesson-progress-head") || nav;
         host.insertBefore(box, anchor1);
+        /* the block is injected async, so a #run-it deep link can't scroll on
+           its own — nudge it into view once it exists (e.g. arriving from plan.html) */
+        if (location.hash === "#run-it") setTimeout(function () { box.scrollIntoView({ behavior: "smooth", block: "start" }); }, 60);
       }
 
       if (sw.apa) {
@@ -780,6 +786,7 @@
     { title: "Statistics Toolbox", url: "toolbox.html", tag: "Tool", kw: "tools toolbox calculators references practice hub all" },
     { title: "Which Test Should I Use?", url: "which-test.html", tag: "Tool", kw: "chooser decision anova t-test regression choose" },
     { title: "Which Chart Should I Use?", url: "which-chart.html", tag: "Tool", kw: "chart graph plot chooser decision visualization histogram bar boxplot scatter line heatmap pie table which chart" },
+    { title: "Plan My Analysis", url: "plan.html", tag: "Tool", kw: "plan analysis planner wizard thesis dissertation study design sample size power apa assumptions which test recommendation printable supervisor proposal preregistration" },
     { title: "Statistical Tables & Calculators", url: "tables.html", tag: "Tool", kw: "z t chi-square f critical value p-value calculator table" },
     { title: "Statistics Formula Sheet", url: "formulas.html", tag: "Reference", kw: "formula cheat sheet equations print reference" },
     { title: "Distribution Playground", url: "distributions.html", tag: "Tool", kw: "normal binomial poisson beta exponential uniform pdf explore distribution" },

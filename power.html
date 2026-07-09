@@ -120,6 +120,10 @@
           <li><strong>Power analysis for complex designs</strong> — using power as a planning tool, and what to do when formulas run out. <a href="stats-3/power-analysis-for-complex-designs/">See the Stats 3 lesson →</a></li>
           <li>Need the critical values behind these curves? The <a href="tables.html">tables &amp; calculators</a> page has exact z, t, χ² and F. The <a href="formulas.html">formula sheet</a> lists every formula these tests are built from.</li>
         </ul>
+
+        <div class="callout key">
+          <p><strong>Not sure which test to power for?</strong> The <a href="plan.html">Plan My Analysis</a> wizard walks you from your research question to the right test <em>and</em> its sample size — the same exact math as this page — then hands you a printable plan for your supervisor. <a href="plan.html">Plan your analysis →</a></p>
+        </div>
       </article>
     </div>
   </main>
@@ -407,7 +411,18 @@
     if (window.ResizeObserver) new ResizeObserver(function () { if (lastRes) draw(lastRes); }).observe(canvas);
     V.onTheme(function () { if (lastRes) draw(lastRes); });
 
-    applyDefaults();
+    /* deep-link prefill, e.g. power.html?sc=t2&es=0.5 (used by plan.html) */
+    (function () {
+      var q = new URLSearchParams(location.search);
+      var s = q.get("sc");
+      if (s && META[s]) {
+        sc = s;
+        Array.prototype.forEach.call(el("seg-sc").querySelectorAll("button"), function (x) { x.classList.toggle("active", x.getAttribute("data-s") === s); });
+      }
+      applyDefaults();
+      var e = parseFloat(q.get("es"));
+      if (isFinite(e) && sc !== "prop") el("in-es").value = e;
+    })();
     compute();
   })();
   </script>

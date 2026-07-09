@@ -68,6 +68,7 @@ for fname, title in [
     ("distributions.html", "Distribution Playground"),
     ("which-test.html", "Which Test Should I Use?"),
     ("which-chart.html", "Which Chart Should I Use?"),
+    ("plan.html", "Plan My Analysis"),
     ("effect-sizes.html", "Effect-Size Converter"),
     ("power.html", "Power & Sample-Size Calculator"),
     ("descriptives.html", "Descriptives Calculator"),

@@ -201,7 +201,7 @@ const courseSlugs = new Set(CURRICULUM.map((c) => c.slug));   // any track, not 
 
 /* root / tool pages (excluding the self-contained 404.html) */
 const ROOT_PAGES = ['index.html', 'quiz.html', 'glossary.html', 'toolbox.html', 'which-test.html', 'which-chart.html',
-  'tables.html', 'formulas.html', 'distributions.html', 'effect-sizes.html', 'descriptives.html', 'power.html', 'apa.html', 'datasets.html', 'flashcards.html'];
+  'plan.html', 'tables.html', 'formulas.html', 'distributions.html', 'effect-sizes.html', 'descriptives.html', 'power.html', 'apa.html', 'datasets.html', 'flashcards.html'];
 /* allowed non-lesson QUIPS keys: index→"home" plus each root page's basename */
 const rootKeys = new Set(['home', ...ROOT_PAGES.filter((f) => f !== 'index.html').map((f) => f.replace('.html', ''))]);
 

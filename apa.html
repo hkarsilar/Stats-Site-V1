@@ -437,6 +437,17 @@
     });
 
     /* ---------- boot ---------- */
+    /* deep-link preset, e.g. apa.html?a=t&v=ind (used by plan.html) */
+    (function () {
+      var q = new URLSearchParams(location.search);
+      var a = q.get("a");
+      if (a && A[a]) {
+        cur = a;
+        Array.prototype.forEach.call(document.querySelectorAll("#ana-seg button"), function (x) { x.classList.toggle("active", x.getAttribute("data-a") === a); });
+        var vs = A[cur].variants, v = q.get("v");
+        variant = vs ? (vs.some(function (o) { return o.k === v; }) ? v : vs[0].k) : null;
+      }
+    })();
     renderVariants(); renderFields(); render();
   })();
   </script>
