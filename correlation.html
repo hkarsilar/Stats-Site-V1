@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Correlation & Regression Calculator — Pearson r, Spearman ρ, Line of Best Fit — StatsCapybara</title>
+  <meta name="description" content="Paste two columns and get a live scatterplot, Pearson r with p-value and 95% CI, Spearman ρ, the least-squares line, R², residuals, a leave-one-out robustness check, and copy-ready APA text." />
+  <link rel="canonical" href="https://statscapybara.com/correlation.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Correlation & Regression Calculator — StatsCapybara" />
+  <meta property="og:description" content="Paste X and Y: scatterplot, Pearson r (p + 95% CI), Spearman ρ, the best-fit line, R², residuals, an outlier robustness check, and APA text — all in your browser." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/correlation.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Correlation & Regression Calculator — StatsCapybara" />
+  <meta name="twitter:description" content="Paste X and Y: scatterplot, Pearson r (p + 95% CI), Spearman ρ, best-fit line, R², residuals, robustness check, and APA text." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body>
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="container narrow">
+      <article class="lesson" style="margin:0 auto">
+        <span class="lesson-eyebrow">Tools</span>
+        <h1>Correlation &amp; Regression Calculator</h1>
+        <p class="lede">Paste two columns of numbers and see the whole relationship at once — the scatterplot, Pearson <em>r</em> with its <em>p</em>-value and confidence interval, Spearman's ρ, the least-squares line, R², and the residuals. It even checks how much one stray point is holding the number up. Nothing leaves your browser.</p>
+
+        <div class="viz" id="crviz">
+          <div class="controls" style="align-items:stretch;gap:.8rem">
+            <div class="control" style="flex:1;min-width:170px">
+              <label for="cr-x">X — one value per line (or paste two columns here)</label>
+              <textarea id="cr-x" rows="8" spellcheck="false" style="font-family:var(--mono);font-size:.85rem;padding:.6rem .7rem;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);resize:vertical" placeholder="1&#10;2&#10;3&#10;4"></textarea>
+            </div>
+            <div class="control" style="flex:1;min-width:170px">
+              <label for="cr-y">Y — one value per line</label>
+              <textarea id="cr-y" rows="8" spellcheck="false" style="font-family:var(--mono);font-size:.85rem;padding:.6rem .7rem;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);resize:vertical" placeholder="52&#10;55&#10;61&#10;65"></textarea>
+            </div>
+          </div>
+          <div class="controls" style="margin:-.25rem 0 1rem">
+            <div class="control" style="flex-direction:row;align-items:center;gap:.6rem;flex-wrap:wrap">
+              <button class="btn btn-primary btn-sm" id="cr-go">Calculate</button>
+              <button class="btn btn-ghost btn-sm" id="cr-demo">Load example data</button>
+              <button class="btn btn-ghost btn-sm" id="cr-ansc">Anscombe's quartet ↓</button>
+              <span id="cr-msg" style="font-size:.84rem;color:var(--text-faint)"></span>
+            </div>
+          </div>
+
+          <canvas id="cr-scatter"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">n (pairs)</span><span class="v" id="s-n">—</span></div>
+            <div class="stat"><span class="k">Pearson <em>r</em></span><span class="v" id="s-r">—</span></div>
+            <div class="stat"><span class="k"><em>p</em>-value (two-tailed)</span><span class="v" id="s-p">—</span></div>
+            <div class="stat"><span class="k">95% CI for <em>r</em> (Fisher <em>z</em>)</span><span class="v" id="s-ci">—</span></div>
+          </div>
+          <div class="stat-row">
+            <div class="stat"><span class="k">Spearman ρ (rank)</span><span class="v" id="s-rho">—</span></div>
+            <div class="stat"><span class="k">R²</span><span class="v" id="s-r2">—</span></div>
+            <div class="stat"><span class="k">Best-fit line</span><span class="v" id="s-eq" style="font-size:.95rem">—</span></div>
+            <div class="stat"><span class="k">Slope (<em>b</em>) &amp; 95% CI</span><span class="v" id="s-slope" style="font-size:.95rem">—</span></div>
+          </div>
+
+          <div id="cr-robust" class="callout" style="display:none;margin:1rem 0 0;font-size:.9rem"></div>
+
+          <div id="cr-resid-wrap" style="display:none;margin-top:1rem">
+            <div style="font-size:.82rem;color:var(--text-muted);font-weight:600;margin-bottom:.3rem">Residuals (vertical distance from the line) vs. X — look for a shapeless cloud</div>
+            <canvas id="cr-resid"></canvas>
+          </div>
+
+          <div id="cr-apa-wrap" style="display:none;margin-top:1rem">
+            <div class="sw-head" style="border:1px solid var(--border);border-radius:12px 12px 0 0"><span class="sw-title">📝 APA-style write-up</span>
+              <button class="tc-copy" type="button" id="cr-copy">Copy</button></div>
+            <blockquote class="apa-quote" style="margin:0;border:1px solid var(--border);border-top:none;border-left:3px solid #f97316;border-radius:0 0 12px 12px" id="cr-apa"></blockquote>
+          </div>
+
+          <!-- Anscombe's quartet panel -->
+          <div id="cr-ansc-panel" style="display:none;margin-top:1.25rem;border-top:1px solid var(--border);padding-top:1rem">
+            <p style="font-size:.9rem;margin:0 0 .6rem"><strong>Anscombe's quartet.</strong> Four datasets with <em>identical</em> summary stats — same means, same <em>r</em> ≈ .82, same line ŷ = 3.00 + 0.50<em>x</em> — yet the scatter tells four completely different stories. Click one to load it. This is why you always plot your data first.</p>
+            <div id="cr-ansc-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.6rem"></div>
+          </div>
+        </div>
+
+        <h2>Before you trust the number</h2>
+        <ul>
+          <li><strong>Look at the scatter, always.</strong> Anscombe's quartet (button above) shows four datasets with the same <em>r</em> and the same line but wildly different shapes — a curve, an outlier, a lone leverage point. The number alone can lie. (<a href="stats-2/correlation/">Correlation</a>)</li>
+          <li><strong>Pearson vs Spearman.</strong> Pearson <em>r</em> measures <em>straight-line</em> association and is sensitive to outliers; Spearman's ρ ranks the data first, so it captures any <em>monotonic</em> trend and shrugs off extremes. A big gap between them is a clue your relationship is curved or outlier-driven.</li>
+          <li><strong>Check the robustness readout.</strong> If removing a single point swings <em>r</em> from .6 to .3, that point — not the relationship — is running the show. Click it on the scatterplot to see the line and <em>r</em> without it, then investigate why it's there. (<a href="stats-2/regression-diagnostics/">Regression Diagnostics</a>)</li>
+          <li><strong>Correlation isn't causation, and R² isn't proof.</strong> A tidy line predicts; it doesn't explain <em>why</em>. Turn the relationship into a model on the <a href="stats-2/simple-linear-regression/">Simple Linear Regression</a> lesson, and mind the assumptions.</li>
+        </ul>
+
+        <div class="callout key">
+          <p><strong>Privacy note:</strong> everything runs locally in your browser — your data is never uploaded anywhere. Paste away.</p>
+          <p style="margin-top:.6rem">No data of your own yet? <a href="datasets.html">Grab a practice dataset</a> — realistic CSVs with stories and worked solutions — or summarise a single column on the <a href="descriptives.html">Descriptives Calculator</a>.</p>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="assets/js/curriculum.js"></script>
+  <script src="assets/js/site.js"></script>
+  <script src="assets/js/viz.js"></script>
+
+  <!-- ============ correlation & regression calculator ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var scatter = document.getElementById("cr-scatter"), sctx, SW = 0, SH = 320;
+    var resid = document.getElementById("cr-resid"), rctx, RW = 0, RH = 150;
+    var X = [], Y = [], st = null, selected = -1, pts = [], loo = null;
+
+    function fitAll() {
+      var a = VIZ.fit(scatter, SH); sctx = a.ctx; SW = a.w;
+      var b = VIZ.fit(resid, RH); rctx = b.ctx; RW = b.w;
+    }
+
+    /* ---------- parsing ----------
+       Handles: one value per line, or space/comma/tab/semicolon separated;
+       decimal commas ("1,5") when every comma sits between digits and there
+       are no decimal points; header rows fall out for free (parseFloat → NaN). */
+    function decimalComma(txt) {
+      if (txt.indexOf(".") >= 0) return false;
+      var commas = (txt.match(/,/g) || []).length;
+      if (!commas) return false;
+      return (txt.match(/\d,\d/g) || []).length === commas; // every comma is a decimal comma
+    }
+    function parseCol(txt) {
+      txt = String(txt); if (!txt.trim()) return [];
+      var t = decimalComma(txt) ? txt.replace(/,/g, ".") : txt;
+      return t.split(/[\s;,]+/).map(parseFloat).filter(isFinite);
+    }
+    /* two columns pasted into the X box: each line has 2 numbers */
+    function parseTwoCol(txt) {
+      var dc = decimalComma(txt), xs = [], ys = [];
+      String(txt).split(/[\r\n]+/).forEach(function (line) {
+        var t = dc ? line.replace(/,/g, ".") : line;
+        var toks = t.split(/[\s;,\t]+/).map(parseFloat).filter(isFinite);
+        if (toks.length >= 2) { xs.push(toks[0]); ys.push(toks[1]); }
+      });
+      return { x: xs, y: ys };
+    }
+    function readInputs() {
+      var xb = document.getElementById("cr-x").value, yb = document.getElementById("cr-y").value;
+      var xs = parseCol(xb), ys = parseCol(yb);
+      if (ys.length === 0 && xs.length > 0) {          // maybe two columns went into the X box
+        var tc = parseTwoCol(xb);
+        if (tc.x.length >= 3 && tc.y.length === tc.x.length) { xs = tc.x; ys = tc.y; }
+      }
+      var n = Math.min(xs.length, ys.length);
+      return { x: xs.slice(0, n), y: ys.slice(0, n), lenX: xs.length, lenY: ys.length };
+    }
+
+    /* ---------- stats ---------- */
+    function pearson(x, y) {
+      var n = x.length; if (n < 2) return null;
+      var mx = VIZ.mean(x), my = VIZ.mean(y), sxy = 0, sxx = 0, syy = 0;
+      for (var i = 0; i < n; i++) { var dx = x[i] - mx, dy = y[i] - my; sxy += dx * dy; sxx += dx * dx; syy += dy * dy; }
+      var r = (sxx > 0 && syy > 0) ? sxy / Math.sqrt(sxx * syy) : NaN;
+      return { n: n, mx: mx, my: my, sxy: sxy, sxx: sxx, syy: syy, r: r,
+               slope: sxx > 0 ? sxy / sxx : NaN, intercept: sxx > 0 ? my - (sxy / sxx) * mx : NaN };
+    }
+    /* average-rank (tie-corrected) ranks */
+    function ranks(a) {
+      var idx = a.map(function (v, i) { return i; }).sort(function (p, q) { return a[p] - a[q]; });
+      var r = new Array(a.length), i = 0;
+      while (i < idx.length) {
+        var j = i; while (j + 1 < idx.length && a[idx[j + 1]] === a[idx[i]]) j++;
+        var avg = (i + j) / 2 + 1;
+        for (var k = i; k <= j; k++) r[idx[k]] = avg;
+        i = j + 1;
+      }
+      return r;
+    }
+    function spearman(x, y) { var p = pearson(ranks(x), ranks(y)); return p ? p.r : NaN; }
+
+    function compute(x, y) {
+      var p = pearson(x, y); if (!p || !isFinite(p.r)) return null;
+      var n = p.n, r = p.r, df = n - 2;
+      var tstat = NaN, pval = NaN;
+      if (df > 0 && Math.abs(r) < 1) { tstat = r * Math.sqrt(df / (1 - r * r)); pval = 2 * VIZ.tUpper(Math.abs(tstat), df); }
+      else if (df > 0) { tstat = r > 0 ? Infinity : -Infinity; pval = 0; }
+      var ciLo = NaN, ciHi = NaN;
+      if (n > 3 && Math.abs(r) < 1) {                 // Fisher z transform
+        var z = Math.atanh(r), se = 1 / Math.sqrt(n - 3), zc = VIZ.normInv(0.975);
+        ciLo = Math.tanh(z - zc * se); ciHi = Math.tanh(z + zc * se);
+      }
+      var rho = spearman(x, y);
+      var sse = p.syy * (1 - r * r), sReg = df > 0 ? Math.sqrt(sse / df) : NaN;
+      var seB = p.sxx > 0 ? sReg / Math.sqrt(p.sxx) : NaN;
+      var tB = seB > 0 ? p.slope / seB : NaN, tcrit = df > 0 ? VIZ.tInv(0.025, df) : NaN;
+      var bLo = p.slope - tcrit * seB, bHi = p.slope + tcrit * seB;
+      return { n: n, r: r, df: df, tstat: tstat, pval: pval, ciLo: ciLo, ciHi: ciHi, rho: rho,
+               slope: p.slope, intercept: p.intercept, r2: r * r, seB: seB, tB: tB, bLo: bLo, bHi: bHi,
+               mx: p.mx, my: p.my, resSD: sReg };
+    }
+    /* leave-one-out: r without each point, the range, and the most influential point */
+    function looAnalyse(x, y) {
+      var full = pearson(x, y).r, n = x.length, out = new Array(n),
+          rmin = full, rmax = full, culprit = -1, bestD = -1;
+      for (var i = 0; i < n; i++) {
+        var xx = x.slice(), yy = y.slice(); xx.splice(i, 1); yy.splice(i, 1);
+        var pr = pearson(xx, yy), ri = pr ? pr.r : NaN; out[i] = ri;
+        if (isFinite(ri)) {
+          if (ri < rmin) rmin = ri; if (ri > rmax) rmax = ri;
+          var d = Math.abs(ri - full); if (d > bestD) { bestD = d; culprit = i; }
+        }
+      }
+      return { full: full, rmin: rmin, rmax: rmax, culprit: culprit, culpritR: out[culprit], rWithout: out, delta: bestD };
+    }
+
+    /* ---------- formatting ---------- */
+    function nz(v, dp) { if (!isFinite(v)) return "—"; var s = v.toFixed(dp); return s.replace(/^(-?)0\./, "$1."); } // no leading zero
+    function num(v, dp) { return isFinite(v) ? v.toFixed(dp == null ? 2 : dp) : "—"; }
+    function pText(p) { return p < 0.001 ? "< .001" : "= " + nz(p, 3); }
+    function strength(r) {
+      var a = Math.abs(r);
+      return a < 0.1 ? "negligible" : a < 0.3 ? "weak" : a < 0.5 ? "moderate" : a < 0.7 ? "strong" : "very strong";
+    }
+
+    /* ---------- drawing ---------- */
+    function axes(ctx, w, h, pad, xLo, xHi, yLo, yHi, xlab, ylab) {
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, h - pad.b); ctx.lineTo(w - pad.r, h - pad.b); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace";
+      ctx.textAlign = "right"; ctx.textBaseline = "middle";
+      ctx.fillText(fmtT(yHi), pad.l - 5, pad.t + 4);
+      ctx.fillText(fmtT(yLo), pad.l - 5, h - pad.b - 2);
+      ctx.textAlign = "center"; ctx.textBaseline = "top";
+      ctx.fillText(fmtT(xLo), pad.l, h - pad.b + 5);
+      ctx.fillText(fmtT(xHi), w - pad.r, h - pad.b + 5);
+      if (xlab) { ctx.fillStyle = VIZ.css("--text-muted"); ctx.font = "600 11px Inter,sans-serif";
+        ctx.textAlign = "center"; ctx.fillText(xlab, (pad.l + w - pad.r) / 2, h - pad.b + 18); }
+    }
+    function fmtT(v) { var a = Math.abs(v); return v.toFixed(a >= 100 ? 0 : a >= 1 ? 1 : 2); }
+
+    function drawScatter() {
+      sctx.clearRect(0, 0, SW, SH);
+      pts = [];
+      if (!st) {
+        sctx.fillStyle = VIZ.css("--text-faint"); sctx.font = "600 13px Inter,sans-serif";
+        sctx.textAlign = "center"; sctx.textBaseline = "middle";
+        sctx.fillText("Paste X and Y above and press Calculate.", SW / 2, SH / 2);
+        return;
+      }
+      var pad = { l: 42, r: 16, t: 16, b: 30 };
+      var xmin = Math.min.apply(null, X), xmax = Math.max.apply(null, X);
+      var ymin = Math.min.apply(null, Y), ymax = Math.max.apply(null, Y);
+      var xs = (xmax - xmin) || 1, ys = (ymax - ymin) || 1;
+      var xLo = xmin - xs * 0.06, xHi = xmax + xs * 0.06, yLo = ymin - ys * 0.08, yHi = ymax + ys * 0.08;
+      function px(v) { return pad.l + ((v - xLo) / (xHi - xLo)) * (SW - pad.l - pad.r); }
+      function py(v) { return (SH - pad.b) - ((v - yLo) / (yHi - yLo)) * (SH - pad.t - pad.b); }
+      axes(sctx, SW, SH, pad, xLo, xHi, yLo, yHi, "X", "Y");
+
+      // least-squares line
+      if (isFinite(st.slope)) {
+        sctx.strokeStyle = VIZ.css("--primary"); sctx.lineWidth = 2.5;
+        var x0 = xLo, x1 = xHi, y0 = st.intercept + st.slope * x0, y1 = st.intercept + st.slope * x1;
+        // clip endpoints into the plot vertically for a clean look
+        sctx.save();
+        sctx.beginPath(); sctx.rect(pad.l, pad.t, SW - pad.l - pad.r, SH - pad.t - pad.b); sctx.clip();
+        sctx.beginPath(); sctx.moveTo(px(x0), py(y0)); sctx.lineTo(px(x1), py(y1)); sctx.stroke();
+        sctx.restore();
+      }
+      // points
+      for (var i = 0; i < X.length; i++) {
+        var cx = px(X[i]), cy = py(Y[i]);
+        pts.push({ x: cx, y: cy, i: i });
+        var hot = (i === selected) || (selected < 0 && loo && i === loo.culprit && loo.delta > 0.04);
+        sctx.beginPath(); sctx.arc(cx, cy, hot ? 5.5 : 3.6, 0, 2 * Math.PI);
+        sctx.fillStyle = hot ? "#f97316" : VIZ.css("--secondary");
+        sctx.globalAlpha = hot ? 1 : 0.85; sctx.fill(); sctx.globalAlpha = 1;
+        if (hot) { sctx.lineWidth = 1.5; sctx.strokeStyle = VIZ.css("--surface"); sctx.stroke(); }
+      }
+      // equation label
+      sctx.fillStyle = VIZ.css("--primary"); sctx.font = "600 11px Inter,sans-serif";
+      sctx.textAlign = "left"; sctx.textBaseline = "top";
+      sctx.fillText("ŷ = " + num(st.intercept) + " " + (st.slope < 0 ? "− " : "+ ") + num(Math.abs(st.slope)) + "x", pad.l + 6, pad.t + 2);
+    }
+
+    function drawResid() {
+      rctx.clearRect(0, 0, RW, RH);
+      if (!st) return;
+      var pad = { l: 42, r: 16, t: 12, b: 26 };
+      var res = X.map(function (xi, i) { return Y[i] - (st.intercept + st.slope * xi); });
+      var xmin = Math.min.apply(null, X), xmax = Math.max.apply(null, X);
+      var rmax = Math.max.apply(null, res.map(Math.abs)) || 1;
+      var xs = (xmax - xmin) || 1;
+      var xLo = xmin - xs * 0.06, xHi = xmax + xs * 0.06, yLo = -rmax * 1.15, yHi = rmax * 1.15;
+      function px(v) { return pad.l + ((v - xLo) / (xHi - xLo)) * (RW - pad.l - pad.r); }
+      function py(v) { return (RH - pad.b) - ((v - yLo) / (yHi - yLo)) * (RH - pad.t - pad.b); }
+      axes(rctx, RW, RH, pad, xLo, xHi, yLo, yHi, "X", null);
+      // zero line
+      rctx.strokeStyle = VIZ.css("--primary"); rctx.setLineDash([4, 3]); rctx.lineWidth = 1.5;
+      rctx.beginPath(); rctx.moveTo(pad.l, py(0)); rctx.lineTo(RW - pad.r, py(0)); rctx.stroke();
+      rctx.setLineDash([]);
+      for (var i = 0; i < X.length; i++) {
+        var hot = (i === selected) || (selected < 0 && loo && i === loo.culprit && loo.delta > 0.04);
+        rctx.beginPath(); rctx.arc(px(X[i]), py(res[i]), hot ? 4.5 : 3, 0, 2 * Math.PI);
+        rctx.fillStyle = hot ? "#f97316" : "#f97316"; rctx.globalAlpha = hot ? 1 : 0.7; rctx.fill(); rctx.globalAlpha = 1;
+      }
+    }
+
+    /* ---------- readouts ---------- */
+    function setDash() {
+      ["s-n", "s-r", "s-p", "s-ci", "s-rho", "s-r2", "s-eq", "s-slope"].forEach(function (id) {
+        document.getElementById(id).textContent = "—";
+      });
+      document.getElementById("cr-apa-wrap").style.display = "none";
+      document.getElementById("cr-robust").style.display = "none";
+      document.getElementById("cr-resid-wrap").style.display = "none";
+    }
+
+    function robustText() {
+      var box = document.getElementById("cr-robust");
+      if (!loo || X.length < 4) { box.style.display = "none"; return; }
+      box.style.display = "";
+      var swing = loo.delta;
+      var head = swing >= 0.1
+        ? "⚠️ One point is holding this correlation up. "
+        : "✓ Robust to single points. ";
+      var range = "Leave-one-out <em>r</em> ranges from <strong>" + nz(loo.rmin, 2) + "</strong> to <strong>" + nz(loo.rmax, 2) + "</strong>.";
+      var culprit = "";
+      if (loo.culprit >= 0 && swing > 0.01) {
+        culprit = " Removing point #" + (loo.culprit + 1) +
+          " alone (" + num(X[loo.culprit], 2) + ", " + num(Y[loo.culprit], 2) + ") moves <em>r</em> from " +
+          nz(loo.full, 2) + " to <strong>" + nz(loo.culpritR, 2) + "</strong>" +
+          (swing >= 0.1 ? " — investigate it." : ".");
+      }
+      var tip = selected >= 0
+        ? " <span style='color:var(--text-faint)'>Without the selected point #" + (selected + 1) + ": r = " + nz(loo.rWithout[selected], 2) + ". Click it again or click empty space to reset.</span>"
+        : " <span style='color:var(--text-faint)'>Click any point on the scatterplot to see r without it.</span>";
+      box.innerHTML = "<strong>Outlier robustness. </strong>" + head + range + culprit + tip;
+    }
+
+    function apaText() {
+      var wrap = document.getElementById("cr-apa-wrap");
+      if (!st) { wrap.style.display = "none"; return; }
+      wrap.style.display = "";
+      var dir = st.r >= 0 ? "positive" : "negative";
+      var ci = isFinite(st.ciLo) ? ", 95% CI [" + nz(st.ciLo, 2) + ", " + nz(st.ciHi, 2) + "]" : "";
+      var corr = "A Pearson correlation found a " + strength(st.r) + " " + dir +
+        " relationship, <em>r</em>(" + st.df + ") = " + nz(st.r, 2) + ", <em>p</em> " + pText(st.pval) + ci +
+        ". Spearman's ρ = " + nz(st.rho, 2) + ".";
+      var eq = "ŷ = " + num(st.intercept) + " " + (st.slope < 0 ? "− " : "+ ") + num(Math.abs(st.slope)) + "<em>x</em>";
+      var reg = "A simple linear regression indicated that X " + (st.pval < 0.05 ? "significantly predicted" : "did not significantly predict") +
+        " Y, <em>b</em> = " + num(st.slope, 3) + ", <em>SE</em> = " + num(st.seB, 3) +
+        ", <em>t</em>(" + st.df + ") = " + num(st.tB, 2) + ", <em>p</em> " + pText(st.pval) +
+        ", <em>R</em>² = " + nz(st.r2, 2) + " (" + eq + ").";
+      document.getElementById("cr-apa").innerHTML = "<p style='margin:0 0 .6rem'>" + corr + "</p><p style='margin:0'>" + reg + "</p>";
+    }
+
+    function update() {
+      var inp = readInputs();
+      X = inp.x; Y = inp.y;
+      var msg = document.getElementById("cr-msg");
+      if (X.length < 3) {
+        msg.textContent = (inp.lenX || inp.lenY)
+          ? "Need at least 3 paired values in both X and Y." : "";
+        st = null; loo = null; selected = -1;
+        setDash(); drawScatter(); drawResid();
+        return;
+      }
+      var warnLen = inp.lenX !== inp.lenY ? " (trimmed to " + X.length + " pairs — X and Y had different lengths)" : "";
+      st = compute(X, Y);
+      if (!st) { msg.textContent = "All values in one column are identical — no variation to correlate."; st = null; loo = null; setDash(); drawScatter(); drawResid(); return; }
+      loo = looAnalyse(X, Y);
+      msg.textContent = "paired " + X.length + " values ✓" + warnLen;
+
+      document.getElementById("s-n").textContent = st.n;
+      document.getElementById("s-r").textContent = nz(st.r, 3);
+      document.getElementById("s-p").textContent = pText(st.pval).replace("= ", "");
+      document.getElementById("s-ci").textContent = isFinite(st.ciLo) ? "[" + nz(st.ciLo, 2) + ", " + nz(st.ciHi, 2) + "]" : "n ≥ 4 needed";
+      document.getElementById("s-rho").textContent = nz(st.rho, 3);
+      document.getElementById("s-r2").textContent = nz(st.r2, 3);
+      document.getElementById("s-eq").innerHTML = "ŷ = " + num(st.intercept) + " " + (st.slope < 0 ? "− " : "+ ") + num(Math.abs(st.slope)) + "x";
+      document.getElementById("s-slope").textContent = num(st.slope, 3) + "  [" + num(st.bLo, 3) + ", " + num(st.bHi, 3) + "]";
+
+      document.getElementById("cr-resid-wrap").style.display = "";
+      robustText(); apaText();
+      drawScatter(); drawResid();
+    }
+
+    /* ---------- point selection ---------- */
+    scatter.addEventListener("click", function (e) {
+      if (!st || !pts.length) return;
+      var rect = scatter.getBoundingClientRect();
+      var mx = e.clientX - rect.left, my = e.clientY - rect.top, best = -1, bd = 14 * 14;
+      pts.forEach(function (p) { var d = (p.x - mx) * (p.x - mx) + (p.y - my) * (p.y - my); if (d < bd) { bd = d; best = p.i; } });
+      selected = (best === selected) ? -1 : best;   // click again (or empty space) to deselect
+      robustText(); drawScatter(); drawResid();
+    });
+
+    /* ---------- Anscombe's quartet ---------- */
+    var ANSCOMBE = {
+      x123: [10, 8, 13, 9, 11, 14, 6, 4, 12, 7, 5],
+      I: [8.04, 6.95, 7.58, 8.81, 8.33, 9.96, 7.24, 4.26, 10.84, 4.82, 5.68],
+      II: [9.14, 8.14, 8.74, 8.77, 9.26, 8.10, 6.13, 3.10, 9.13, 7.26, 4.74],
+      III: [7.46, 6.77, 12.74, 7.11, 7.81, 8.84, 6.08, 5.39, 8.15, 6.42, 5.73],
+      x4: [8, 8, 8, 8, 8, 8, 8, 19, 8, 8, 8],
+      IV: [6.58, 5.76, 7.71, 8.84, 8.47, 7.04, 5.25, 12.50, 5.56, 7.91, 6.89]
+    };
+    function anscSets() {
+      return [
+        { name: "I — clean linear", x: ANSCOMBE.x123, y: ANSCOMBE.I },
+        { name: "II — curved", x: ANSCOMBE.x123, y: ANSCOMBE.II },
+        { name: "III — one outlier", x: ANSCOMBE.x123, y: ANSCOMBE.III },
+        { name: "IV — leverage point", x: ANSCOMBE.x4, y: ANSCOMBE.IV }
+      ];
+    }
+    function drawMini(cv, dx, dy) {
+      var o = VIZ.fit(cv, 110), ctx = o.ctx, w = o.w, h = 110, pad = 8;
+      ctx.clearRect(0, 0, w, h);
+      var xmin = 2, xmax = 20, ymin = 2, ymax = 14;   // shared frame so all four align
+      function px(v) { return pad + ((v - xmin) / (xmax - xmin)) * (w - pad * 2); }
+      function py(v) { return (h - pad) - ((v - ymin) / (ymax - ymin)) * (h - pad * 2); }
+      ctx.strokeStyle = VIZ.css("--primary"); ctx.lineWidth = 1.6;   // shared line ŷ = 3 + 0.5x
+      ctx.beginPath(); ctx.moveTo(px(xmin), py(3 + 0.5 * xmin)); ctx.lineTo(px(xmax), py(3 + 0.5 * xmax)); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--secondary");
+      for (var i = 0; i < dx.length; i++) { ctx.beginPath(); ctx.arc(px(dx[i]), py(dy[i]), 3, 0, 2 * Math.PI); ctx.fill(); }
+    }
+    function buildAnsc() {
+      var grid = document.getElementById("cr-ansc-grid");
+      if (grid.childElementCount) return;
+      anscSets().forEach(function (s) {
+        var card = document.createElement("button");
+        card.type = "button";
+        card.className = "btn btn-ghost";
+        card.style.cssText = "display:flex;flex-direction:column;gap:.3rem;padding:.5rem;height:auto;align-items:stretch;text-align:left";
+        card.innerHTML = "<span style='font-size:.78rem;font-weight:700'>" + s.name + "</span>" +
+          "<span style='font-size:.72rem;color:var(--text-faint)'>r = .82 · ŷ = 3.00 + 0.50x</span>";
+        var cv = document.createElement("canvas");
+        cv.style.width = "100%"; card.insertBefore(cv, card.firstChild.nextSibling);
+        card.addEventListener("click", function () {
+          document.getElementById("cr-x").value = s.x.join("\n");
+          document.getElementById("cr-y").value = s.y.join("\n");
+          selected = -1; update();
+          scatter.scrollIntoView({ behavior: "smooth", block: "center" });
+        });
+        grid.appendChild(card);
+        drawMini(cv, s.x, s.y);
+      });
+    }
+
+    /* ---------- buttons ---------- */
+    document.getElementById("cr-go").addEventListener("click", update);
+    document.getElementById("cr-x").addEventListener("input", function () { if (readInputs().x.length >= 3) update(); });
+    document.getElementById("cr-y").addEventListener("input", function () { if (readInputs().x.length >= 3) update(); });
+    document.getElementById("cr-demo").addEventListener("click", function () {
+      // hours studied vs exam score — a clear positive trend with one telling point
+      document.getElementById("cr-x").value = [2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 10, 11, 12, 3].join("\n");
+      document.getElementById("cr-y").value = [55, 58, 61, 60, 65, 68, 66, 72, 74, 75, 78, 80, 83, 85, 88, 90, 92, 89].join("\n");
+      selected = -1; update();
+    });
+    document.getElementById("cr-ansc").addEventListener("click", function () {
+      var panel = document.getElementById("cr-ansc-panel");
+      var open = panel.style.display === "";
+      panel.style.display = open ? "none" : "";
+      this.textContent = open ? "Anscombe's quartet ↓" : "Anscombe's quartet ↑";
+      if (!open) { buildAnsc(); panel.scrollIntoView({ behavior: "smooth", block: "nearest" }); }
+    });
+    document.getElementById("cr-copy").addEventListener("click", function () {
+      var btn = this, node = document.getElementById("cr-apa");
+      try {
+        navigator.clipboard.writeText(node.textContent.trim().replace(/\s+/g, " ")).then(function () {
+          btn.textContent = "Copied!"; setTimeout(function () { btn.textContent = "Copy"; }, 1200);
+        });
+      } catch (e) {}
+    });
+
+    function redraw() { fitAll(); drawScatter(); drawResid();
+      var grid = document.getElementById("cr-ansc-grid");
+      if (grid.childElementCount) { grid.innerHTML = ""; buildAnsc(); } }
+    window.addEventListener("resize", redraw);
+    if (window.ResizeObserver) new ResizeObserver(redraw).observe(scatter);
+    VIZ.onTheme(function () { drawScatter(); drawResid();
+      var grid = document.getElementById("cr-ansc-grid"); if (grid.childElementCount) { grid.innerHTML = ""; buildAnsc(); } });
+    fitAll(); drawScatter(); drawResid();
+  })();
+  </script>
+</body>
+</html>
