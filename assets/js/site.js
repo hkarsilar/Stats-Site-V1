@@ -171,6 +171,7 @@
     "power": "How many capybaras do you need to prove capybaras are chill? Fewer than you'd think, if the effect is big.",
     "descriptives": "Paste your data. The capybara will not judge it. The capybara judges nothing.",
     "apa": "Italic t, upright η², and never a little zero before the dot. The capybara writes its p-values just so.",
+    "datasets": "Reading about a t-test isn't running one. Grab a CSV, wrangle real numbers, and the capybara will happily wait — it has nowhere to be.",
     "quiz": "Test anxiety? Unknown to capybaras. Breathe in, breathe out, click an answer.",
     "glossary": "Big words, small stress. The capybara defines, you vibe."
   };
@@ -234,6 +235,7 @@
     { url: "power.html",         key: "power",         group: "calc",     emoji: "⚡", title: "Power & sample size",       desc: "How many participants? Solve n, power, or effect" },
     { url: "descriptives.html",  key: "descriptives",  group: "calc",     emoji: "🧮", title: "Descriptives calculator",  desc: "Paste data, get stats, a histogram & APA text" },
     { url: "apa.html",           key: "apa",           group: "calc",     emoji: "📝", title: "APA results formatter",    desc: "Type your numbers, copy a correct APA 7 sentence" },
+    { url: "datasets.html",      key: "datasets",      group: "practice", emoji: "🗂️", title: "Practice datasets",        desc: "Download real CSVs with stories, exercises & solutions" },
     { url: "formulas.html",      key: "formulas",      group: "guide",    emoji: "🖨️", title: "Formula sheet",            desc: "Every formula from the course, printable" },
     { url: "glossary.html",      key: "glossary",      group: "guide",    emoji: "📖", title: "Glossary",                 desc: "Every stats term, defined without the jargon" },
     { url: "quiz.html",          key: "quiz",          group: "practice", emoji: "✅", title: "Quiz",                     desc: "Test yourself across every course" }
@@ -780,6 +782,7 @@
     { title: "Power & Sample-Size Calculator", url: "power.html", tag: "Tool", kw: "power sample size calculator n gpower a priori effect noncentral t anova correlation chi-square proportions minimum detectable how many participants" },
     { title: "Descriptives Calculator", url: "descriptives.html", tag: "Tool", kw: "mean sd median iqr descriptive statistics calculator paste data histogram boxplot outliers apa" },
     { title: "APA Results Formatter", url: "apa.html", tag: "Tool", kw: "apa 7 format results sentence write up report t f chi-square correlation regression italics leading zero p value statcheck consistency copy" },
+    { title: "Practice Datasets", url: "datasets.html", tag: "Practice", kw: "practice datasets csv download data sample example real t-test anova regression factorial likert reliability cronbach cleaning messy logistic exercises worked solutions" },
     { title: "Course Quiz", url: "quiz.html", tag: "Practice", kw: "test yourself questions practice" },
     { title: "Statistics Glossary", url: "glossary.html", tag: "Reference", kw: "terms definitions dictionary" }
   ];

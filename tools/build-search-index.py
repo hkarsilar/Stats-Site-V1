@@ -70,6 +70,7 @@ for fname, title in [
     ("power.html", "Power & Sample-Size Calculator"),
     ("descriptives.html", "Descriptives Calculator"),
     ("apa.html", "APA Results Formatter"),
+    ("datasets.html", "Practice Datasets"),
     ("toolbox.html", "Statistics Toolbox"),
 ]:
     p = ROOT / fname

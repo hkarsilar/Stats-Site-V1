@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Practice Datasets — Free CSVs with Stories for Stats Practice — StatsCapybara</title>
+  <meta name="description" content="Eight free practice datasets (CSV) with stories, exercises and worked solutions — for t-tests, ANOVA, regression, factorial designs, reliability and cleaning." />
+  <link rel="canonical" href="https://statscapybara.com/datasets.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Practice Datasets — StatsCapybara" />
+  <meta property="og:description" content="Eight realistic practice datasets with stories, exercises and worked solutions — download the CSV and run the analysis for real." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/datasets.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Practice Datasets — StatsCapybara" />
+  <meta name="twitter:description" content="Eight realistic practice datasets with stories, exercises and worked solutions — download the CSV and run the analysis for real." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <style>
+    .ds-index { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:.6rem; margin:1.4rem 0 2rem; padding:0; list-style:none; }
+    .ds-index a { display:block; padding:.6rem .8rem; border:1px solid var(--border); border-radius:10px; text-decoration:none; background:var(--surface); color:var(--text); }
+    .ds-index a:hover { border-color:var(--primary); }
+    .ds-index .t { font-weight:600; font-size:.92rem; }
+    .ds-index .m { color:var(--text-faint); font-size:.8rem; }
+    .ds-card { border:1px solid var(--border); border-radius:14px; padding:1.05rem 1.2rem 1.2rem; margin:1.4rem 0; background:var(--surface); }
+    .ds-head { display:flex; flex-wrap:wrap; gap:.6rem; align-items:center; justify-content:space-between; }
+    .ds-head h2 { margin:.15rem 0; font-size:1.15rem; scroll-margin-top:90px; }
+    .ds-emoji { margin-right:.4rem; }
+    .ds-story { color:var(--text-muted); margin:.55rem 0 .9rem; }
+    .ds-card .ref-table { margin:.3rem 0 1rem; table-layout:fixed; }
+    .ds-vars th:nth-child(1), .ds-vars td:nth-child(1) { width:33%; font-family:var(--mono); color:var(--text); }
+    .ds-vars th:nth-child(2), .ds-vars td:nth-child(2) { width:23%; font-family:inherit; color:var(--text-muted); }
+    .ds-vars th, .ds-vars td { overflow-wrap:anywhere; }
+    .ds-try-h { margin:.5rem 0 .1rem; font-size:.74rem; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em; }
+    .ds-try { margin:.2rem 0 1rem 1.1rem; color:var(--text-muted); }
+    .ds-try li { margin:.32rem 0; }
+    details.ds-sol { border:1px solid var(--border); border-left:3px solid #f97316; border-radius:0 10px 10px 0; padding:.55rem .85rem; background:var(--surface-2); }
+    details.ds-sol summary { cursor:pointer; font-weight:600; font-size:.92rem; }
+    details.ds-sol[open] summary { margin-bottom:.5rem; }
+    details.ds-sol ul { margin:.2rem 0 .1rem 1.05rem; color:var(--text-muted); font-size:.92rem; }
+    details.ds-sol li { margin:.28rem 0; }
+    .dl-btn { text-decoration:none; }
+    @media (max-width:560px) { .ds-head { align-items:stretch; } .ds-head .dl-btn { width:100%; text-align:center; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="container narrow">
+      <article class="lesson" style="margin:0 auto">
+        <span class="lesson-eyebrow">Tools</span>
+        <h1>Practice Datasets</h1>
+        <p class="lede">Reading about a t-test is not the same as running one. These eight small, realistic CSV files each come with a story, three suggested exercises, and a worked solution with the real numbers — so you can practise every analysis on data that behaves like the messy, interesting real thing.</p>
+
+        <div class="callout key">
+          <p><strong>How to use them:</strong> download a CSV, open it in SPSS, JASP, R, Python, or even the <a href="descriptives.html">Descriptives calculator</a> right here, and try the exercises. Peek at the worked solution only after you've had a go — the numbers there are computed from the exact file you downloaded, so they'll match if you did it right.</p>
+        </div>
+
+        <p style="color:var(--text-muted);font-size:.92rem">Every file is generated by a seeded, committed script (<code>tools/make-datasets.py</code>, master seed <code>20260709</code>) — rerunning it reproduces byte-for-byte identical CSVs, so the shipped worked-solution numbers stay true. Nothing here is uploaded anywhere; the files are static.</p>
+
+        <ul class="ds-index">
+          <li><a href="#sleep"><span class="t">😴 Sleep &amp; attention</span><br><span class="m">two-group t-test · 80 rows</span></a></li>
+          <li><a href="#study"><span class="t">📚 Study methods</span><br><span class="m">one-way ANOVA · 105 rows</span></a></li>
+          <li><a href="#screen"><span class="t">📱 Screen time &amp; sleep</span><br><span class="m">correlation + outlier · 60 rows</span></a></li>
+          <li><a href="#memory"><span class="t">🧠 Memory 2×2</span><br><span class="m">factorial ANOVA · 100 rows</span></a></li>
+          <li><a href="#wellbeing"><span class="t">🙂 Wellbeing survey</span><br><span class="m">Likert · reliability · 120 rows</span></a></li>
+          <li><a href="#clinic"><span class="t">🩺 Messy clinic intake</span><br><span class="m">data cleaning · 52 rows</span></a></li>
+          <li><a href="#training"><span class="t">🏋️ Strength training</span><br><span class="m">wide · repeated measures · 60 rows</span></a></li>
+          <li><a href="#admissions"><span class="t">🎓 Grad admissions</span><br><span class="m">logistic regression · 160 rows</span></a></li>
+        </ul>
+
+        <!-- ============ 1 · sleep-experiment ============ -->
+        <section class="ds-card">
+          <div class="ds-head">
+            <h2 id="sleep"><span class="ds-emoji">😴</span>Sleep &amp; attention</h2>
+            <a class="btn btn-primary btn-sm dl-btn" download href="assets/data/sleep-experiment.csv">⬇ sleep-experiment.csv · 80 rows</a>
+          </div>
+          <p class="ds-story">Eighty volunteers were randomly assigned to a normal night's sleep or a night restricted to four hours, then took a 30-minute vigilance task the next morning. The outcome is the number of attention lapses (errors). Did sleep restriction hurt performance, and by how much?</p>
+          <table class="ref-table ds-vars">
+            <thead><tr><th>Variable</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>participant_id</td><td>ID</td><td>1–80, one row per person</td></tr>
+              <tr><td>condition</td><td>categorical</td><td><code>normal_sleep</code> vs <code>restricted_sleep</code> (40 each)</td></tr>
+              <tr><td>errors</td><td>count</td><td>attention lapses on the vigilance task</td></tr>
+            </tbody>
+          </table>
+          <p class="ds-try-h">Try these</p>
+          <ol class="ds-try">
+            <li>Run an <a href="stats-1/independent-samples-t-test/">independent-samples <em>t</em>-test</a> comparing errors across the two conditions.</li>
+            <li>Report and interpret <a href="stats-1/effect-size-and-power/">Cohen's <em>d</em></a> — the study was built around a medium effect (check it with the <a href="effect-sizes.html">effect-size converter</a>).</li>
+            <li>Before trusting the <em>p</em>-value, <a href="stats-2/assumptions-and-when-they-break/">check the assumptions</a> (normality, equal variances).</li>
+          </ol>
+          <details class="ds-sol">
+            <summary>Worked solution — the key numbers</summary>
+            <ul>
+              <li><code>normal_sleep</code>: <em>M</em> = 20.07, <em>SD</em> = 5.92, <em>n</em> = 40</li>
+              <li><code>restricted_sleep</code>: <em>M</em> = 22.77, <em>SD</em> = 6.02, <em>n</em> = 40</li>
+              <li>Independent <em>t</em>-test: <em>t</em>(78) = 2.02, <em>p</em> = .047</li>
+              <li>Effect size: <em>d</em> = 0.45 — a medium effect, restricted sleepers made more errors.</li>
+            </ul>
+          </details>
+        </section>
+
+        <!-- ============ 2 · study-methods ============ -->
+        <section class="ds-card">
+          <div class="ds-head">
+            <h2 id="study"><span class="ds-emoji">📚</span>Study methods</h2>
+            <a class="btn btn-primary btn-sm dl-btn" download href="assets/data/study-methods.csv">⬇ study-methods.csv · 105 rows</a>
+          </div>
+          <p class="ds-story">Three groups of 35 students revised for the same exam using one of three techniques — rereading, flashcards, or practice testing — then sat the exam (scored 0–100). Which method wins? And notice the spread differs by group, so this doubles as a homogeneity-of-variance workout.</p>
+          <table class="ref-table ds-vars">
+            <thead><tr><th>Variable</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>student_id</td><td>ID</td><td>1–105, one row per student</td></tr>
+              <tr><td>method</td><td>categorical</td><td><code>rereading</code> · <code>flashcards</code> · <code>practice_testing</code></td></tr>
+              <tr><td>exam_score</td><td>continuous</td><td>final exam mark, 0–100</td></tr>
+            </tbody>
+          </table>
+          <p class="ds-try-h">Try these</p>
+          <ol class="ds-try">
+            <li>Run a <a href="stats-2/one-way-anova/">one-way ANOVA</a> across the three methods.</li>
+            <li>Check <a href="stats-2/assumptions-and-when-they-break/">equal variances</a> (Levene's test) — the SDs are deliberately unequal.</li>
+            <li>Follow up with <a href="stats-2/post-hoc-tests/">post-hoc tests</a> (e.g. Tukey) to see which methods actually differ.</li>
+          </ol>
+          <details class="ds-sol">
+            <summary>Worked solution — the key numbers</summary>
+            <ul>
+              <li>rereading: <em>M</em> = 66.14, <em>SD</em> = 7.97 · flashcards: <em>M</em> = 74.43, <em>SD</em> = 8.86 · practice_testing: <em>M</em> = 76.83, <em>SD</em> = 11.97</li>
+              <li>SD ratio (largest / smallest) = 1.50 — enough heterogeneity for Levene to notice.</li>
+              <li>One-way ANOVA: <em>F</em>(2, 102) = 11.57, <em>p</em> &lt; .001, η² = .185.</li>
+              <li>Practice testing &gt; flashcards &gt; rereading; post-hoc, rereading is the one that clearly trails.</li>
+            </ul>
+          </details>
+        </section>
+
+        <!-- ============ 3 · screen-time ============ -->
+        <section class="ds-card">
+          <div class="ds-head">
+            <h2 id="screen"><span class="ds-emoji">📱</span>Screen time &amp; sleep</h2>
+            <a class="btn btn-primary btn-sm dl-btn" download href="assets/data/screen-time.csv">⬇ screen-time.csv · 60 rows</a>
+          </div>
+          <p class="ds-story">Sixty people reported their average daily screen time and rated their sleep quality (0–10). There's a real negative relationship in here — but one person (row 60) reports 11.5 hours of screen time <em>and</em> excellent sleep, sitting far off to the right. This dataset is really about what one influential point can do.</p>
+          <table class="ref-table ds-vars">
+            <thead><tr><th>Variable</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>person_id</td><td>ID</td><td>1–60, one row per person</td></tr>
+              <tr><td>screen_hours</td><td>continuous</td><td>average screen time per day (hours)</td></tr>
+              <tr><td>sleep_quality</td><td>continuous</td><td>self-rated sleep quality, 0–10</td></tr>
+            </tbody>
+          </table>
+          <p class="ds-try-h">Try these</p>
+          <ol class="ds-try">
+            <li>Plot it, then compute <a href="stats-2/correlation/">Pearson's <em>r</em></a> — always look before you trust a coefficient.</li>
+            <li>Fit a <a href="stats-2/simple-linear-regression/">simple regression</a> and inspect <a href="stats-2/regression-diagnostics/">leverage &amp; influence</a> (Cook's distance) for row 60.</li>
+            <li>Recompute <em>r</em> without that point, then <a href="data/outliers-in-practice/">decide what to do with it</a> — and report both.</li>
+          </ol>
+          <details class="ds-sol">
+            <summary>Worked solution — the key numbers</summary>
+            <ul>
+              <li>All 60 points: <em>r</em> = −.21 (slope = −0.23) — looks weak.</li>
+              <li>Drop the influential person 60 (11.5 h, 8.6): <em>r</em> = −.40 (slope = −0.56) — the real, moderate relationship.</li>
+              <li>A single high-leverage point moved <em>r</em> by .19 and nearly halved the slope.</li>
+              <li>Honest line (without the point): sleep ≈ 7.92 − 0.56 × screen_hours.</li>
+            </ul>
+          </details>
+        </section>
+
+        <!-- ============ 4 · memory-2x2 ============ -->
+        <section class="ds-card">
+          <div class="ds-head">
+            <h2 id="memory"><span class="ds-emoji">🧠</span>Memory 2×2</h2>
+            <a class="btn btn-primary btn-sm dl-btn" download href="assets/data/memory-2x2.csv">⬇ memory-2x2.csv · 100 rows</a>
+          </div>
+          <p class="ds-story">A classic 2×2 memory experiment: participants encoded a word list either shallowly or deeply, then were tested in the same room or a different one (25 per cell). The number of words recalled hides a genuine interaction — context only matters when encoding was deep.</p>
+          <table class="ref-table ds-vars">
+            <thead><tr><th>Variable</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>id</td><td>ID</td><td>1–100, one row per participant</td></tr>
+              <tr><td>encoding</td><td>categorical</td><td><code>shallow</code> vs <code>deep</code></td></tr>
+              <tr><td>context</td><td>categorical</td><td><code>same</code> vs <code>different</code> room at test</td></tr>
+              <tr><td>recall</td><td>count</td><td>words recalled (0–30)</td></tr>
+            </tbody>
+          </table>
+          <p class="ds-try-h">Try these</p>
+          <ol class="ds-try">
+            <li>Run a <a href="stats-2/factorial-anova-two-way/">two-way factorial ANOVA</a> — you want the encoding × context interaction.</li>
+            <li>Draw the <a href="writing/tables-and-figures/">interaction plot</a> of the four cell means (non-parallel lines = interaction).</li>
+            <li>Put the <a href="stats-3/interactions-in-regression/">interaction into words</a>: the effect of context <em>depends on</em> encoding depth.</li>
+          </ol>
+          <details class="ds-sol">
+            <summary>Worked solution — the key numbers</summary>
+            <ul>
+              <li>Cell means: shallow/same = 9.32, shallow/different = 8.20; deep/same = 19.04, deep/different = 14.12.</li>
+              <li>Context effect when shallow = 1.12 words; when deep = 4.92 words.</li>
+              <li>Interaction (difference of those differences) ≈ 3.80 words — the lines are clearly non-parallel.</li>
+              <li>Main effect of encoding is large; context alone is small — the story lives in the interaction.</li>
+            </ul>
+          </details>
+        </section>
+
+        <!-- ============ 5 · wellbeing-survey ============ -->
+        <section class="ds-card">
+          <div class="ds-head">
+            <h2 id="wellbeing"><span class="ds-emoji">🙂</span>Wellbeing survey</h2>
+            <a class="btn btn-primary btn-sm dl-btn" download href="assets/data/wellbeing-survey.csv">⬇ wellbeing-survey.csv · 120 rows</a>
+          </div>
+          <p class="ds-story">An 8-item wellbeing questionnaire (each item 1–5). Two items are negatively worded and must be reverse-coded before scoring: <code>q3</code> and <code>q6</code>. A few cells are blank — real surveys have missing data. Practise reverse-coding, building a composite, and checking the scale's reliability.</p>
+          <table class="ref-table ds-vars">
+            <thead><tr><th>Variable</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>respondent_id</td><td>ID</td><td>1–120, one row per respondent</td></tr>
+              <tr><td>q1 … q8</td><td>ordinal (Likert)</td><td>1–5 agreement; <code>q3</code> &amp; <code>q6</code> reverse-worded; blank = missing</td></tr>
+            </tbody>
+          </table>
+          <p class="ds-try-h">Try these</p>
+          <ol class="ds-try">
+            <li><a href="data/transformations-and-recoding/">Reverse-code</a> <code>q3</code> and <code>q6</code> (new = 6 − old), then compute a composite (mean of the 8 items).</li>
+            <li>Assess the scale with <a href="methods/reliability-and-validity/">Cronbach's α</a>.</li>
+            <li>Decide how to <a href="stats-4/missing-data/">handle the missing values</a> (listwise vs pairwise) and note how many cases each keeps.</li>
+          </ol>
+          <details class="ds-sol">
+            <summary>Worked solution — the key numbers</summary>
+            <ul>
+              <li>Reverse-code <code>q3</code> and <code>q6</code> as 6 − <em>x</em> <em>before</em> anything else, or α will look terrible.</li>
+              <li>51 cells are missing; listwise deletion leaves 75 of 120 complete cases (a real cost — pairwise keeps more).</li>
+              <li>Cronbach's α (raw, complete cases) = .90 — a reliable scale.</li>
+              <li>Composite score: <em>M</em> = 2.88, <em>SD</em> = 0.93.</li>
+            </ul>
+          </details>
+        </section>
+
+        <!-- ============ 6 · messy-clinic ============ -->
+        <section class="ds-card">
+          <div class="ds-head">
+            <h2 id="clinic"><span class="ds-emoji">🩺</span>Messy clinic intake</h2>
+            <a class="btn btn-primary btn-sm dl-btn" download href="assets/data/messy-clinic.csv">⬇ messy-clinic.csv · 52 rows</a>
+          </div>
+          <p class="ds-story">A deliberately dirty clinic intake sheet, built for the <a href="data/tidy-data/">Data course</a>. It hides duplicates, impossible values, a unit mix-up, inconsistent category spellings, and three different date formats. Your job is to find every problem <em>before</em> you analyse anything — and to never edit the raw file, only a cleaning script.</p>
+          <table class="ref-table ds-vars">
+            <thead><tr><th>Variable</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>patient_id</td><td>ID</td><td>P001–P050 (with two duplicated rows)</td></tr>
+              <tr><td>age</td><td>count</td><td>years — one value is impossible</td></tr>
+              <tr><td>sex</td><td>categorical</td><td>eight different spellings of two categories</td></tr>
+              <tr><td>height_cm</td><td>continuous</td><td>cm — but one row is in metres, another impossible</td></tr>
+              <tr><td>weight_kg</td><td>continuous</td><td>kg — one is negative</td></tr>
+              <tr><td>systolic_bp</td><td>count</td><td>mmHg — one is zero</td></tr>
+              <tr><td>visit_date</td><td>date</td><td>three inconsistent formats</td></tr>
+            </tbody>
+          </table>
+          <p class="ds-try-h">Try these</p>
+          <ol class="ds-try">
+            <li>Find and <a href="data/data-entry-and-validation/">document every data-quality problem</a> — how many can you spot before reading the solution?</li>
+            <li>Build a <a href="data/data-cleaning-workflow/">reproducible cleaning workflow</a>: de-duplicate, standardise <code>sex</code>, fix the units, parse the dates.</li>
+            <li>Write the <a href="data/data-entry-and-validation/">validation rules</a> (allowed ranges, allowed categories) that would have caught each error at entry.</li>
+          </ol>
+          <details class="ds-sol">
+            <summary>Worked solution — the planted problems</summary>
+            <ul>
+              <li><strong>Duplicates:</strong> P004 is an exact duplicate row; P016 appears twice with a slightly different weight (near-duplicate).</li>
+              <li><strong>Impossible values:</strong> age 511 (P007, a typo for 51), systolic_bp 0 (P020), weight −78 kg (P031, a sign error), height 400 cm (P042).</li>
+              <li><strong>Unit mix-up:</strong> P013's height is 1.72 — that's metres, not cm.</li>
+              <li><strong>Inconsistent categories:</strong> <code>sex</code> is spelled eight ways — <code>Male</code>/<code>M</code>/<code>male</code>/<code>&nbsp;Male&nbsp;</code> vs <code>Female</code>/<code>F</code>/<code>female</code>/<code>f</code>/<code>&nbsp;&nbsp;female</code> (mind the whitespace).</li>
+              <li><strong>Date formats:</strong> mostly ISO (<code>2025-06-08</code>), but <code>07/04/2025</code> (P034) and <code>April 12 2025</code> (P039) sneak in.</li>
+              <li><strong>After cleaning:</strong> 50 unique patients remain (two duplicate rows removed); the impossible values are then fixed or flagged, not silently deleted.</li>
+            </ul>
+          </details>
+        </section>
+
+        <!-- ============ 7 · training-longitudinal ============ -->
+        <section class="ds-card">
+          <div class="ds-head">
+            <h2 id="training"><span class="ds-emoji">🏋️</span>Strength training</h2>
+            <a class="btn btn-primary btn-sm dl-btn" download href="assets/data/training-longitudinal.csv">⬇ training-longitudinal.csv · 60 rows</a>
+          </div>
+          <p class="ds-story">Sixty athletes were measured on a strength lift (1RM, kg) at weeks 0, 6, and 12, split between a training program and a control group. The data is in <strong>wide</strong> format — one row per athlete, one column per timepoint — perfect for practising reshaping <em>and</em> repeated-measures analysis.</p>
+          <table class="ref-table ds-vars">
+            <thead><tr><th>Variable</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>athlete_id</td><td>ID</td><td>1–60, one row per athlete</td></tr>
+              <tr><td>group</td><td>categorical</td><td><code>program</code> vs <code>control</code> (30 each)</td></tr>
+              <tr><td>strength_wk0</td><td>continuous</td><td>baseline 1RM (kg)</td></tr>
+              <tr><td>strength_wk6</td><td>continuous</td><td>1RM at week 6 (kg)</td></tr>
+              <tr><td>strength_wk12</td><td>continuous</td><td>1RM at week 12 (kg)</td></tr>
+            </tbody>
+          </table>
+          <p class="ds-try-h">Try these</p>
+          <ol class="ds-try">
+            <li><a href="data/wide-vs-long-data/">Pivot wide → long</a> so each row is one athlete-at-one-time (R/JASP usually want long).</li>
+            <li>Run a <a href="stats-2/repeated-measures-anova/">repeated-measures / mixed ANOVA</a> with time (within) and group (between).</li>
+            <li>Interpret the <a href="stats-2/factorial-anova-two-way/">group × time interaction</a> — does the program gain more than the control?</li>
+          </ol>
+          <details class="ds-sol">
+            <summary>Worked solution — the key numbers</summary>
+            <ul>
+              <li>Program means (wk0 / wk6 / wk12): 101.5 / 107.7 / 110.2 kg — a gain of about +8.7 kg.</li>
+              <li>Control means (wk0 / wk6 / wk12): 101.9 / 103.8 / 105.1 kg — a gain of about +3.2 kg.</li>
+              <li>Both improve over time, but the program improves more → a group × time interaction.</li>
+              <li>After pivoting, you'll have 180 rows (60 athletes × 3 timepoints).</li>
+            </ul>
+          </details>
+        </section>
+
+        <!-- ============ 8 · admissions ============ -->
+        <section class="ds-card">
+          <div class="ds-head">
+            <h2 id="admissions"><span class="ds-emoji">🎓</span>Grad admissions</h2>
+            <a class="btn btn-primary btn-sm dl-btn" download href="assets/data/admissions.csv">⬇ admissions.csv · 160 rows</a>
+          </div>
+          <p class="ds-story">Records for 160 graduate applicants: undergraduate GPA, a GRE-style test score, whether they had research experience, and the binary outcome — admitted or not. A binary outcome means logistic regression, not linear.</p>
+          <table class="ref-table ds-vars">
+            <thead><tr><th>Variable</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>applicant_id</td><td>ID</td><td>A001–A160, one row per applicant</td></tr>
+              <tr><td>gpa</td><td>continuous</td><td>undergraduate GPA, 2.0–4.0</td></tr>
+              <tr><td>gre_score</td><td>count</td><td>standardised test score (~260–340)</td></tr>
+              <tr><td>research</td><td>binary</td><td>1 = has research experience, 0 = none</td></tr>
+              <tr><td>admitted</td><td>binary</td><td>1 = admitted, 0 = rejected (the outcome)</td></tr>
+            </tbody>
+          </table>
+          <p class="ds-try-h">Try these</p>
+          <ol class="ds-try">
+            <li>Fit a <a href="stats-3/logistic-regression/">logistic regression</a>: <code>admitted ~ gpa + gre_score + research</code>.</li>
+            <li>Interpret the <a href="stats-3/logistic-regression/">odds ratios</a> (convert them from the coefficients — the <a href="effect-sizes.html">effect-size tool</a> handles OR too).</li>
+            <li>As a warm-up, compare admit rates by research with a <a href="stats-2/chi-square-tests/">chi-square test</a> on the 2×2 table.</li>
+          </ol>
+          <details class="ds-sol">
+            <summary>Worked solution — the key numbers</summary>
+            <ul>
+              <li>Overall admit rate = 45.6% (73 of 160).</li>
+              <li>Admit rate: research = 58.0% vs no research = 36.3% — research helps.</li>
+              <li>Mean GPA: admitted = 3.44 vs rejected = 3.16.</li>
+              <li>Logistic fit: GPA <em>b</em> = 3.98 (OR ≈ 53.6 per whole GPA point), GRE <em>b</em> = 0.029, research <em>b</em> = 1.37 (OR ≈ 3.9). All three predictors point the right way.</li>
+            </ul>
+          </details>
+        </section>
+
+        <div class="callout">
+          <p>Got your own numbers instead? Paste them into the <a href="descriptives.html">Descriptives calculator</a> for a full rundown, size your next study with the <a href="power.html">Power calculator</a>, or format the result with the <a href="apa.html">APA formatter</a>.</p>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="assets/js/curriculum.js"></script>
+  <script src="assets/js/site.js"></script>
+</body>
+</html>
