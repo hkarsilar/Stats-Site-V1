@@ -40,7 +40,8 @@ def page_text(path: Path) -> str:
 
 
 def glossary_text(path: Path) -> str:
-    """Glossary terms live in a JS array — pull the term + definition strings."""
+    """Glossary terms live in a JS array (assets/js/glossary-data.js,
+    window.GLOSSARY) — pull the term + definition strings."""
     src = path.read_text(encoding="utf-8")
     terms = re.findall(r'\{ t: "((?:[^"\\]|\\.)*)", d: "((?:[^"\\]|\\.)*)"', src)
     joined = " ".join(f"{t}: {d}" for t, d in terms)
@@ -71,12 +72,14 @@ for fname, title in [
     ("descriptives.html", "Descriptives Calculator"),
     ("apa.html", "APA Results Formatter"),
     ("datasets.html", "Practice Datasets"),
+    ("flashcards.html", "Glossary Flashcards"),
     ("toolbox.html", "Statistics Toolbox"),
 ]:
     p = ROOT / fname
     if p.exists():
         pages.append({"u": fname, "txt": page_text(p)})
-gl = ROOT / "glossary.html"
+# glossary terms now live in assets/js/glossary-data.js; index them under glossary.html
+gl = ROOT / "assets/js/glossary-data.js"
 if gl.exists():
     pages.append({"u": "glossary.html", "txt": glossary_text(gl)})
 

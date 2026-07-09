@@ -173,7 +173,8 @@
     "apa": "Italic t, upright η², and never a little zero before the dot. The capybara writes its p-values just so.",
     "datasets": "Reading about a t-test isn't running one. Grab a CSV, wrangle real numbers, and the capybara will happily wait — it has nowhere to be.",
     "quiz": "Test anxiety? Unknown to capybaras. Breathe in, breathe out, click an answer.",
-    "glossary": "Big words, small stress. The capybara defines, you vibe."
+    "glossary": "Big words, small stress. The capybara defines, you vibe.",
+    "flashcards": "Flip, rate, repeat. The capybara only revises the words it forgot — and it forgets nothing on purpose, only for spacing."
   };
   var QUIP_POOL = [
     "Be the least stressed mammal in the room.",
@@ -238,6 +239,7 @@
     { url: "datasets.html",      key: "datasets",      group: "practice", emoji: "🗂️", title: "Practice datasets",        desc: "Download real CSVs with stories, exercises & solutions" },
     { url: "formulas.html",      key: "formulas",      group: "guide",    emoji: "🖨️", title: "Formula sheet",            desc: "Every formula from the course, printable" },
     { url: "glossary.html",      key: "glossary",      group: "guide",    emoji: "📖", title: "Glossary",                 desc: "Every stats term, defined without the jargon" },
+    { url: "flashcards.html",    key: "flashcards",    group: "practice", emoji: "🃏", title: "Glossary flashcards",      desc: "Spaced-repetition drilling of every glossary term" },
     { url: "quiz.html",          key: "quiz",          group: "practice", emoji: "✅", title: "Quiz",                     desc: "Test yourself across every course" }
   ];
   window.TOOLBOX = TOOLBOX;   // toolbox.html renders its grouped grid from this
@@ -784,7 +786,8 @@
     { title: "APA Results Formatter", url: "apa.html", tag: "Tool", kw: "apa 7 format results sentence write up report t f chi-square correlation regression italics leading zero p value statcheck consistency copy" },
     { title: "Practice Datasets", url: "datasets.html", tag: "Practice", kw: "practice datasets csv download data sample example real t-test anova regression factorial likert reliability cronbach cleaning messy logistic exercises worked solutions" },
     { title: "Course Quiz", url: "quiz.html", tag: "Practice", kw: "test yourself questions practice" },
-    { title: "Statistics Glossary", url: "glossary.html", tag: "Reference", kw: "terms definitions dictionary" }
+    { title: "Statistics Glossary", url: "glossary.html", tag: "Reference", kw: "terms definitions dictionary" },
+    { title: "Glossary Flashcards", url: "flashcards.html", tag: "Practice", kw: "flashcards spaced repetition leitner revise revision memorize memorise drill study cards terms definitions glossary due box" }
   ];
   function escHtml(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
   /* a short excerpt around the first occurrence of q, with the match <mark>ed */

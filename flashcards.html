@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Glossary Flashcards — Spaced-Repetition Stats Revision — StatsCapybara</title>
+  <meta name="description" content="Revise statistics terms with spaced-repetition flashcards. A Leitner box system schedules each of 240+ glossary terms by how well you know it, filterable by course. Free, in your browser." />
+  <link rel="canonical" href="https://statscapybara.com/flashcards.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Glossary Flashcards — StatsCapybara" />
+  <meta property="og:description" content="Spaced-repetition flashcards over the whole statistics glossary. A Leitner box system schedules each term by how well you know it — filter by course, learn in your browser." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/flashcards.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Glossary Flashcards — StatsCapybara" />
+  <meta name="twitter:description" content="Spaced-repetition flashcards over the statistics glossary — a Leitner box system, filterable by course, all in your browser." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <style>
+    /* ---------- flashcards (scoped, fc-) ---------- */
+    .fc-bar { display:flex; flex-wrap:wrap; align-items:center; gap:.7rem; margin:.5rem 0 1.1rem; }
+    .fc-bar label { font-size:.85rem; font-weight:600; color:var(--text-muted); }
+    .fc-select { padding:.5rem .7rem; border:1px solid var(--border); border-radius:10px; background:var(--surface); color:var(--text); font:inherit; font-size:.88rem; font-weight:600; cursor:pointer; }
+    .fc-select:focus { outline:none; border-color:var(--primary); }
+    .fc-due { font-size:.85rem; color:var(--text-muted); margin-left:auto; }
+    .fc-due strong { color:var(--primary); }
+
+    .fc-boxes { display:grid; grid-template-columns:repeat(3,1fr); gap:.6rem; margin-bottom:1.3rem; }
+    .fc-box { border:1px solid var(--border); border-radius:12px; padding:.55rem .4rem; text-align:center; background:var(--surface); }
+    .fc-box-n { display:block; font-size:1.4rem; font-weight:800; font-family:var(--mono); line-height:1.1; }
+    .fc-box-l { display:block; font-size:.7rem; text-transform:uppercase; letter-spacing:.06em; color:var(--text-faint); margin-top:.2rem; }
+    .fc-box.b1 .fc-box-n { color:#f97316; }
+    .fc-box.b2 .fc-box-n { color:var(--primary); }
+    .fc-box.b3 .fc-box-n { color:#22c55e; }
+
+    .fc-card { position:relative; width:100%; min-height:230px; perspective:1600px; cursor:pointer; margin-bottom:1rem; }
+    .fc-card:focus-visible { outline:2px solid var(--primary); outline-offset:5px; border-radius:20px; }
+    .fc-inner { position:relative; width:100%; min-height:230px; transition:transform .45s cubic-bezier(.2,.7,.2,1); transform-style:preserve-3d; }
+    .fc-card.flipped .fc-inner { transform:rotateY(180deg); }
+    .fc-face { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+      padding:1.7rem 1.6rem 2.4rem; border:1px solid var(--border); border-radius:18px; background:var(--surface); box-shadow:var(--shadow);
+      -webkit-backface-visibility:hidden; backface-visibility:hidden; }
+    .fc-back { transform:rotateY(180deg); justify-content:flex-start; overflow:auto; }
+    .fc-course-tag { display:inline-block; font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em;
+      padding:.2rem .65rem; border-radius:999px; border:1.5px solid currentColor; margin-bottom:1.1rem; opacity:.9; }
+    .fc-term { font-size:1.7rem; font-weight:800; line-height:1.22; }
+    .fc-term-sm { font-size:1.12rem; font-weight:800; margin-bottom:.55rem; width:100%; }
+    .fc-hint { position:absolute; left:0; right:0; bottom:1rem; font-size:.74rem; color:var(--text-faint); }
+    .fc-def { font-size:.95rem; color:var(--text-muted); line-height:1.55; width:100%; }
+    .fc-link { display:inline-block; margin-top:1rem; font-size:.8rem; font-weight:700; color:var(--primary); text-decoration:none; }
+    .fc-link:hover { text-decoration:underline; }
+
+    .fc-rate { display:grid; grid-template-columns:repeat(3,1fr); gap:.6rem; margin-bottom:.9rem; }
+    .fc-rate[hidden] { display:none; }
+    .fc-rate .btn { justify-content:center; width:100%; }
+    .fc-again { background:color-mix(in srgb, #ef4444 12%, var(--surface)); color:#ef4444; border-color:color-mix(in srgb, #ef4444 34%, var(--border)); box-shadow:var(--shadow); }
+    .fc-good  { background:var(--surface-2); color:var(--text); border-color:var(--border); box-shadow:var(--shadow); }
+    .fc-easy  { background:color-mix(in srgb, #22c55e 13%, var(--surface)); color:#16a34a; border-color:color-mix(in srgb, #22c55e 34%, var(--border)); box-shadow:var(--shadow); }
+    .fc-again:hover, .fc-good:hover, .fc-easy:hover { transform:translateY(-1px); box-shadow:var(--shadow-lg); }
+    .fc-rate kbd { font-family:var(--mono); font-size:.7rem; padding:.05rem .38rem; border:1px solid currentColor; border-radius:5px; opacity:.65; margin-left:.4rem; }
+    .fc-sub { font-size:.72rem; font-weight:500; opacity:.7; display:block; margin-top:.15rem; }
+
+    .fc-session { text-align:center; font-size:.84rem; color:var(--text-faint); min-height:1.2em; margin:.2rem 0 0; }
+    .fc-done { text-align:center; padding:2.4rem 1.4rem; border:1px dashed var(--border); border-radius:18px; background:var(--surface); }
+    .fc-done h2 { margin:.3rem 0 .5rem; border:none; padding:0; }
+    .fc-done p { color:var(--text-muted); margin:.3rem auto .9rem; max-width:34rem; }
+    @media (max-width:480px) {
+      .fc-term { font-size:1.4rem; }
+      .fc-rate .btn { padding:.65rem .4rem; font-size:.85rem; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="container narrow">
+      <article class="lesson" style="margin:0 auto">
+        <span class="lesson-eyebrow">Practice</span>
+        <h1>Glossary Flashcards</h1>
+        <p class="lede">Spaced repetition over the whole <a href="glossary.html">glossary</a>. Flip a card, rate how well you knew it, and a Leitner box system decides when to show it again — soon for the shaky ones, weeks later for the ones you own. Everything is saved in this browser.</p>
+
+        <div class="fc-bar">
+          <label for="fc-course">Course</label>
+          <select id="fc-course" class="fc-select" aria-label="Filter flashcards by course"></select>
+          <span class="fc-due" id="fc-due" aria-live="polite"></span>
+          <button class="btn btn-ghost btn-sm" id="fc-reset" type="button">Reset progress</button>
+        </div>
+
+        <div class="fc-boxes" role="group" aria-label="Cards in each Leitner box">
+          <div class="fc-box b1"><span class="fc-box-n" id="fc-b1">0</span><span class="fc-box-l">New</span></div>
+          <div class="fc-box b2"><span class="fc-box-n" id="fc-b2">0</span><span class="fc-box-l">Learning</span></div>
+          <div class="fc-box b3"><span class="fc-box-n" id="fc-b3">0</span><span class="fc-box-l">Known</span></div>
+        </div>
+
+        <!-- study stage -->
+        <div id="fc-stage">
+          <div class="fc-card" id="fc-card" role="button" tabindex="0"
+               aria-label="Flashcard. Press Space or Enter to reveal the definition.">
+            <div class="fc-inner" id="fc-inner">
+              <div class="fc-face fc-front">
+                <span class="fc-course-tag" id="fc-tag"></span>
+                <div class="fc-term" id="fc-term"></div>
+                <div class="fc-hint">Click or press <kbd>Space</kbd> to reveal</div>
+              </div>
+              <div class="fc-face fc-back">
+                <div class="fc-term-sm" id="fc-term-b"></div>
+                <div class="fc-def" id="fc-def"></div>
+                <a class="fc-link" id="fc-link" href="#">See it in the lesson →</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="fc-rate" id="fc-rate" hidden>
+            <button class="btn fc-again" type="button" data-a="again">Again <kbd>1</kbd><span class="fc-sub">see it tomorrow</span></button>
+            <button class="btn fc-good"  type="button" data-a="good">Good <kbd>2</kbd><span class="fc-sub">move it up a box</span></button>
+            <button class="btn fc-easy"  type="button" data-a="easy">Easy <kbd>3</kbd><span class="fc-sub">straight to Known</span></button>
+          </div>
+          <p class="fc-session" id="fc-session"></p>
+        </div>
+
+        <!-- all-caught-up state -->
+        <div class="fc-done" id="fc-done" hidden>
+          <div style="font-size:2.2rem" aria-hidden="true">🌿</div>
+          <h2>All caught up</h2>
+          <p id="fc-done-msg">Nothing is due right now. Come back tomorrow, switch course above, or get a head start below.</p>
+          <button class="btn btn-primary btn-sm" id="fc-ahead" type="button">Review ahead</button>
+        </div>
+
+        <details style="margin-top:1.6rem">
+          <summary style="cursor:pointer;font-weight:650">How the boxes work</summary>
+          <div style="margin-top:.7rem;color:var(--text-muted);font-size:.93rem;line-height:1.6">
+            <p style="margin-top:0">Every term starts in the <strong>New</strong> box. Each time you rate a card, it moves:</p>
+            <ul>
+              <li><strong>Again</strong> sends it back to New — you'll see it again tomorrow.</li>
+              <li><strong>Good</strong> promotes it one box: New → Learning → Known. Learning cards return in 3 days, Known cards in a week.</li>
+              <li><strong>Easy</strong> jumps it straight to Known.</li>
+            </ul>
+            <p>This is the classic <em>Leitner system</em>: cards you struggle with come back often, cards you know fade into the background, so your revision time lands where it's needed. Progress is stored only in this browser (<code>sc-cards</code>) — clearing your browser data resets it.</p>
+          </div>
+        </details>
+
+        <div class="callout key" style="margin-top:1.2rem">
+          <p>Prefer to read straight through? The full <a href="glossary.html">glossary</a> lists every term with its definition and a link to the lesson where you can watch it in action.</p>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="assets/js/curriculum.js"></script>
+  <script src="assets/js/site.js"></script>
+  <script src="assets/js/glossary-data.js"></script>
+
+  <!-- ============ flashcards ============ -->
+  <script>
+  (function () {
+    "use strict";
+
+    var STORE = "sc-cards";                 // { term: { box:1|2|3, due:<dayNumber> } }
+    var INT = { 1: 1, 2: 3, 3: 7 };         // days until a card in each box is due again
+    var DAY = 86400000;
+    function today() { return Math.floor(Date.now() / DAY); }
+
+    /* ---- deck: de-duplicated by term (one term text appears twice in the glossary) ---- */
+    var DECK = [];
+    (function () {
+      var seen = {};
+      (window.GLOSSARY || []).forEach(function (x) {
+        if (seen[x.t]) return;
+        seen[x.t] = 1;
+        DECK.push(x);
+      });
+    })();
+    function courseOf(x) { return x.s ? x.s.split("/")[0] : "general"; }
+
+    /* ---- course metadata for the filter + tag colour (from curriculum.js) ---- */
+    var COURSE = {};
+    (window.CURRICULUM || []).forEach(function (c) { COURSE[c.slug] = { title: c.title, accent: c.accent }; });
+    COURSE.general = { title: "General", accent: "var(--text-faint)" };
+    function courseTitle(slug) { return (COURSE[slug] && COURSE[slug].title) || slug; }
+    function courseAccent(slug) { return (COURSE[slug] && COURSE[slug].accent) || "var(--text-muted)"; }
+
+    /* ---- persistence ---- */
+    var cards = {};
+    try { cards = JSON.parse(localStorage.getItem(STORE)) || {}; } catch (e) { cards = {}; }
+    function save() { try { localStorage.setItem(STORE, JSON.stringify(cards)); } catch (e) {} }
+
+    /* ---- state ---- */
+    var course = "all";
+    var queue = [];                 // this session's remaining cards
+    var current = null;             // the card on screen
+    var revealed = false;
+    var reviewAhead = false;        // studying not-yet-due cards
+    var session = { reviewed: 0, promoted: 0 };
+
+    /* ---- elements ---- */
+    var $ = function (id) { return document.getElementById(id); };
+    var cardEl = $("fc-card"), rateEl = $("fc-rate"), doneEl = $("fc-done"), stageEl = $("fc-stage");
+    var tagEl = $("fc-tag"), termEl = $("fc-term"), termBEl = $("fc-term-b"), defEl = $("fc-def"), linkEl = $("fc-link");
+    var sessEl = $("fc-session"), dueEl = $("fc-due");
+
+    function deckFor(c) { return DECK.filter(function (x) { return c === "all" || courseOf(x) === c; }); }
+    function isDue(x) { var r = cards[x.t]; return !r || r.due <= today(); }
+    function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+
+    /* ---- build the course <select> from courses that actually have terms ---- */
+    function buildCourseSelect() {
+      var sel = $("fc-course");
+      var order = (window.CURRICULUM || []).map(function (c) { return c.slug; });
+      order.push("general");
+      var counts = {};
+      DECK.forEach(function (x) { var c = courseOf(x); counts[c] = (counts[c] || 0) + 1; });
+      var html = '<option value="all">All courses (' + DECK.length + ')</option>';
+      order.forEach(function (slug) {
+        if (!counts[slug]) return;
+        html += '<option value="' + slug + '">' + courseTitle(slug) + " (" + counts[slug] + ")</option>";
+      });
+      sel.innerHTML = html;
+      sel.value = course;
+    }
+
+    /* ---- box tallies + due count for the current filter ---- */
+    function updateStats() {
+      var d = deckFor(course), b = [0, 0, 0], due = 0;
+      d.forEach(function (x) {
+        var r = cards[x.t], box = r ? r.box : 1;
+        b[box - 1]++;
+        if (isDue(x)) due++;
+      });
+      $("fc-b1").textContent = b[0];
+      $("fc-b2").textContent = b[1];
+      $("fc-b3").textContent = b[2];
+      dueEl.innerHTML = due ? "<strong>" + due + "</strong> due" + (due === 1 ? "" : "") + " today" : "0 due today";
+    }
+
+    function updateSession() {
+      sessEl.textContent = session.reviewed
+        ? "This session: " + session.reviewed + " reviewed · " + session.promoted + " promoted"
+        : "";
+    }
+
+    /* ---- flip ---- */
+    function setFlipped(on) {
+      revealed = on;
+      cardEl.classList.toggle("flipped", on);
+      cardEl.setAttribute("aria-pressed", on ? "true" : "false");
+      if (on) { rateEl.hidden = false; }
+    }
+    function toggleFlip() { if (current) setFlipped(!revealed); }
+
+    /* size the (absolutely-positioned) faces so the card fits the taller one */
+    function sizeCard() {
+      var inner = $("fc-inner");
+      cardEl.style.height = "auto"; inner.style.height = "auto";
+      var front = cardEl.querySelector(".fc-front");
+      var back = cardEl.querySelector(".fc-back");
+      var h = Math.max(front.scrollHeight, back.scrollHeight, 230);
+      cardEl.style.height = h + "px"; inner.style.height = h + "px";
+    }
+
+    /* ---- show a card ---- */
+    function show(x) {
+      current = x;
+      setFlipped(false);
+      rateEl.hidden = true;
+      var slug = courseOf(x), acc = courseAccent(slug);
+      tagEl.textContent = courseTitle(slug);
+      tagEl.style.color = acc;
+      termEl.textContent = x.t;
+      termBEl.textContent = x.t;
+      defEl.textContent = x.d;
+      if (x.s) { linkEl.href = x.s + "/"; linkEl.textContent = (x.l || "See the lesson") + " →"; linkEl.style.display = ""; }
+      else { linkEl.style.display = "none"; }
+      sizeCard();
+    }
+
+    function startQueue(ahead) {
+      reviewAhead = !!ahead;
+      var d = deckFor(course);
+      var pool = ahead ? d.slice() : d.filter(isDue);
+      shuffle(pool);
+      queue = pool;
+      next();
+    }
+
+    function next() {
+      if (queue.length) {
+        stageEl.hidden = false;
+        doneEl.hidden = true;
+        show(queue.shift());
+      } else {
+        current = null;
+        stageEl.hidden = true;
+        doneEl.hidden = false;
+        var due = deckFor(course).filter(isDue).length;
+        $("fc-done-msg").textContent = due
+          ? "You've cleared the ones you started with. " + due + " more are still due — keep going, or come back later."
+          : "Nothing is due right now. Come back tomorrow, switch course above, or get a head start below.";
+        // "Review ahead" only helps when there are not-yet-due cards left to study
+        $("fc-ahead").style.display = deckFor(course).length ? "" : "none";
+      }
+    }
+
+    /* ---- rate the current card ---- */
+    function rate(action) {
+      if (!current || !revealed) return;
+      var x = current, r = cards[x.t] || { box: 1 }, oldBox = r.box;
+      var newBox = action === "again" ? 1 : action === "good" ? Math.min(3, r.box + 1) : 3;
+      cards[x.t] = { box: newBox, due: today() + INT[newBox] };
+      save();
+      session.reviewed++;
+      if (newBox > oldBox) session.promoted++;
+      updateStats(); updateSession();
+      next();
+    }
+
+    /* ---- events ---- */
+    cardEl.addEventListener("click", toggleFlip);
+    cardEl.addEventListener("keydown", function (e) {
+      if (e.key === " " || e.key === "Enter" || e.key === "Spacebar") { e.preventDefault(); toggleFlip(); }
+    });
+    Array.prototype.forEach.call(rateEl.querySelectorAll("button"), function (b) {
+      b.addEventListener("click", function () { rate(b.getAttribute("data-a")); });
+    });
+    // global number-key ratings while a revealed card is on screen
+    document.addEventListener("keydown", function (e) {
+      var tag = (e.target.tagName || "").toLowerCase();
+      if (tag === "select" || tag === "input" || tag === "textarea") return;
+      if (!current) return;
+      if (!revealed && (e.key === " " || e.key === "Enter")) { e.preventDefault(); toggleFlip(); return; }
+      if (!revealed) return;
+      if (e.key === "1") { e.preventDefault(); rate("again"); }
+      else if (e.key === "2") { e.preventDefault(); rate("good"); }
+      else if (e.key === "3") { e.preventDefault(); rate("easy"); }
+    });
+    $("fc-course").addEventListener("change", function () {
+      course = this.value;
+      updateStats();
+      startQueue(false);
+    });
+    $("fc-ahead").addEventListener("click", function () { startQueue(true); });
+    $("fc-reset").addEventListener("click", function () {
+      if (!confirm("Reset all flashcard progress? This clears which box every term is in. It can't be undone.")) return;
+      cards = {};
+      save();
+      session = { reviewed: 0, promoted: 0 };
+      updateStats(); updateSession();
+      startQueue(false);
+    });
+    window.addEventListener("resize", function () { if (current) sizeCard(); });
+
+    /* ---- go ---- */
+    buildCourseSelect();
+    updateStats();
+    updateSession();
+    startQueue(false);
+  })();
+  </script>
+</body>
+</html>
