@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Progress — Your StatsCapybara Dashboard</title>
+  <meta name="description" content="Your personal StatsCapybara dashboard: per-course progress rings, lessons done and left, a button to pick up where you left off, and a printable certificate for each course you finish. All private, stored only in your browser." />
+  <!-- Personal-state page: it renders empty to a crawler (everything is drawn
+       from this browser's localStorage), so there's nothing to index. We keep a
+       canonical + OG for on-site/share sanity but tell search engines to skip it. -->
+  <meta name="robots" content="noindex, follow" />
+  <link rel="canonical" href="https://statscapybara.com/progress.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="My Progress — StatsCapybara" />
+  <meta property="og:description" content="Your personal dashboard: per-course progress rings, lessons done and left, resume where you stopped, and a printable certificate for every course you complete." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/progress.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="My Progress — StatsCapybara" />
+  <meta name="twitter:description" content="Per-course progress rings, lessons done and left, resume, and a printable certificate for every course you finish — all private to your browser." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <style>
+    /* ---------- progress dashboard (scoped, pr-) ---------- */
+    .pr-hero {
+      display:flex; align-items:center; gap:1.1rem 1.4rem; flex-wrap:wrap;
+      background: color-mix(in srgb, var(--primary) 8%, var(--surface));
+      border:1px solid color-mix(in srgb, var(--primary) 22%, var(--border));
+      border-radius:var(--radius); padding:1.15rem 1.4rem; margin:.5rem 0 1.7rem;
+    }
+    .pr-hero .ring { flex-shrink:0; }
+    .pr-hero-txt { flex:1; min-width:200px; }
+    .pr-hero-num { font-size:1.9rem; font-weight:800; line-height:1.05; letter-spacing:-.02em; }
+    .pr-hero-num small { font-size:.95rem; font-weight:600; color:var(--text-faint); }
+    .pr-hero-sub { font-size:.9rem; color:var(--text-muted); margin-top:.25rem; }
+    .pr-hero-cta { display:flex; gap:.6rem; flex-wrap:wrap; margin-left:auto; align-items:center; }
+
+    .pr-empty {
+      text-align:center; padding:2rem 1.5rem; border:1px dashed var(--border);
+      border-radius:var(--radius); background:var(--surface); margin:.5rem 0 1.6rem;
+    }
+    .pr-empty .cap { font-size:0; margin-bottom:.4rem; }
+    .pr-empty h2 { border:none; padding:0; margin:.2rem 0 .5rem; font-size:1.2rem; }
+    .pr-empty p { color:var(--text-muted); max-width:38rem; margin:.3rem auto .9rem; }
+
+    .pr-track-head {
+      display:flex; align-items:center; gap:.7rem; margin:1.7rem 0 .8rem;
+      font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--text-faint);
+    }
+    .pr-track-head::after { content:""; flex:1; height:1px; background:var(--border); }
+
+    .pr-courses { display:flex; flex-direction:column; gap:.7rem; }
+    .pr-course {
+      display:flex; align-items:center; gap:1rem; padding:.8rem 1rem;
+      border:1px solid var(--border); border-radius:14px; background:var(--surface);
+    }
+    .pr-course .ring { flex-shrink:0; }
+    .pr-course-info { flex:1; min-width:0; }
+    .pr-course-info h3 { margin:0; font-size:1.02rem; color:color-mix(in srgb, var(--accent, var(--primary)) 72%, var(--text)); }
+    .pr-course-sub { font-weight:500; font-size:.8rem; color:var(--text-faint); margin-left:.4rem; }
+    .pr-course-meta { font-size:.82rem; color:var(--text-muted); margin-top:.2rem; }
+    .pr-course-meta .sep { color:var(--text-faint); margin:0 .45rem; }
+    .pr-course-cta { flex-shrink:0; text-align:right; }
+    .pr-left { font-size:.8rem; color:var(--text-faint); white-space:nowrap; }
+    .pr-cert-btn {
+      background: color-mix(in srgb, var(--accent, var(--primary)) 14%, var(--surface));
+      color: color-mix(in srgb, var(--accent, var(--primary)) 72%, var(--text));
+      border-color: color-mix(in srgb, var(--accent, var(--primary)) 40%, var(--border));
+      white-space:nowrap;
+    }
+    .pr-cert-btn:hover { transform:translateY(-1px); box-shadow:var(--shadow); }
+
+    .pr-cards { margin-top:1.3rem; font-size:.86rem; color:var(--text-muted); }
+    .pr-cards strong { color:var(--text); font-family:var(--mono); }
+    .pr-cards a { font-weight:650; }
+
+    /* ---------- certificate modal ---------- */
+    .pr-modal {
+      position:fixed; inset:0; z-index:200; display:none; align-items:center; justify-content:center;
+      padding:1.2rem; background:rgba(24,18,12,.55); backdrop-filter:blur(2px);
+    }
+    .pr-modal.open { display:flex; }
+    .pr-modal-inner {
+      background:var(--surface); border:1px solid var(--border); border-radius:18px;
+      padding:1.2rem 1.3rem 1.35rem; max-width:780px; width:100%; max-height:93vh; overflow:auto;
+      box-shadow:var(--shadow-lg);
+    }
+    .pr-modal-head { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:.8rem; }
+    .pr-modal-head h2 { border:none; padding:0; margin:0; font-size:1.15rem; }
+    .pr-close { background:none; border:none; color:var(--text-muted); font-size:1.5rem; line-height:1; cursor:pointer; padding:.1rem .35rem; border-radius:8px; }
+    .pr-close:hover { background:var(--surface-2); color:var(--text); }
+    .pr-cert-canvas { width:100%; height:auto; display:block; border-radius:8px; box-shadow:var(--shadow); }
+    .pr-modal-row { display:flex; gap:.6rem; flex-wrap:wrap; align-items:center; margin-top:.95rem; }
+    .pr-name-input {
+      flex:1; min-width:190px; padding:.58rem .8rem; border:1px solid var(--border);
+      border-radius:10px; background:var(--surface-2); color:var(--text); font:inherit; font-size:.92rem;
+    }
+    .pr-name-input:focus { outline:none; border-color:var(--primary); }
+    .pr-fine { font-size:.74rem; color:var(--text-faint); margin:.7rem 0 0; line-height:1.5; }
+
+    /* ---------- print: certificate only ---------- */
+    #pr-print-area { display:none; }
+    @media print {
+      body.pr-printing > *:not(#pr-print-area) { display:none !important; }
+      #pr-print-area { display:block !important; }
+      #pr-print-area img { width:100%; height:auto; }
+      @page { size:A4 landscape; margin:12mm; }
+    }
+
+    @media (max-width:560px) {
+      .pr-hero-cta { margin-left:0; width:100%; }
+      .pr-course { flex-wrap:wrap; }
+      /* give the CTA its own full-width row so a wide certificate button
+         never collides with the (wrapping) course meta text */
+      .pr-course-cta { flex-basis:100%; text-align:left; margin-top:.35rem; }
+      .pr-course-cta .btn { width:100%; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="container narrow">
+      <article class="lesson" style="margin:0 auto">
+        <span class="lesson-eyebrow">Practice</span>
+        <h1>My Progress</h1>
+        <p class="lede">One calm page for the whole journey — which lessons you've finished, what's left, and a way back to wherever you stopped. Finish a whole course and there's a printable certificate waiting. Everything here lives only in <em>this</em> browser; nothing is uploaded.</p>
+
+        <!-- honest empty state (shown by JS when nothing is tracked yet) -->
+        <div class="pr-empty" id="pr-empty" hidden>
+          <div class="cap" id="pr-empty-cap" aria-hidden="true"></div>
+          <h2>Nothing tracked yet</h2>
+          <p>As you read lessons, mark them complete, and answer the “check your understanding” questions, your progress fills in here — automatically. It's stored only in this browser (nothing to sign up for, nothing sent anywhere), so it stays private and resets if you clear your browser data.</p>
+          <a class="btn btn-primary btn-sm" href="./#curriculum">Start with Lesson 1.1 →</a>
+        </div>
+
+        <!-- hero: overall total + continue -->
+        <div class="pr-hero" id="pr-hero" hidden>
+          <span id="pr-hero-ring"></span>
+          <div class="pr-hero-txt">
+            <div class="pr-hero-num" id="pr-hero-num"></div>
+            <div class="pr-hero-sub" id="pr-hero-sub"></div>
+          </div>
+          <div class="pr-hero-cta" id="pr-hero-cta"></div>
+        </div>
+
+        <!-- per-course rings, grouped by track -->
+        <div id="pr-tracks"></div>
+
+        <!-- optional flashcards line -->
+        <p class="pr-cards" id="pr-cards" hidden></p>
+
+        <div class="callout key" style="margin-top:1.5rem">
+          <p style="margin:0">Your progress is saved with the keys <code>sc-progress</code>, <code>sc-checks</code> and <code>sc-last</code> in this browser only. There's no account and no server — clearing your site data resets everything here. Want to drill terms instead? Try the <a href="flashcards.html">glossary flashcards</a>.</p>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <!-- ============ certificate modal ============ -->
+  <div class="pr-modal" id="pr-cert" role="dialog" aria-modal="true" aria-labelledby="pr-cert-title" hidden>
+    <div class="pr-modal-inner">
+      <div class="pr-modal-head">
+        <h2 id="pr-cert-title">Your certificate</h2>
+        <button class="pr-close" id="pr-cert-close" type="button" aria-label="Close">×</button>
+      </div>
+      <canvas class="pr-cert-canvas" id="pr-cert-canvas" width="2240" height="1580" role="img" aria-label="Certificate of completion"></canvas>
+      <div class="pr-modal-row">
+        <input class="pr-name-input" id="pr-cert-name" type="text" maxlength="42" placeholder="Type your name" aria-label="Your name on the certificate" autocomplete="name" />
+        <button class="btn btn-primary btn-sm" id="pr-cert-download" type="button">⬇ Download PNG</button>
+        <button class="btn btn-ghost btn-sm" id="pr-cert-print" type="button">🖨 Print</button>
+      </div>
+      <p class="pr-fine">A capybara-approved keepsake for finishing — charming, but not a formal qualification, accreditation, or transcript. Enjoy it, frame it, don't put it on your CV.</p>
+    </div>
+  </div>
+
+  <!-- printable image target (populated on Print, shown only via @media print) -->
+  <div id="pr-print-area" aria-hidden="true"></div>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="assets/js/curriculum.js"></script>
+  <script src="assets/js/site.js"></script>
+
+  <!-- ============ progress dashboard ============ -->
+  <script>
+  (function () {
+    "use strict";
+
+    /* ---- reuse the shared ring + mascot drawing from site.js ---- */
+    var SC = window.SC || {};
+    var ring = SC.ring || function () { return ""; };
+    var capy = SC.capy || function () { return ""; };
+
+    var DAY = 86400000;
+    function today() { return Math.floor(Date.now() / DAY); }
+    function load(key) { try { return JSON.parse(localStorage.getItem(key)) || {}; } catch (e) { return {}; } }
+    function loadLast() { try { return JSON.parse(localStorage.getItem("sc-last")); } catch (e) { return null; } }
+
+    var progress = load("sc-progress");   // { slug: { v, d } }
+    var checks   = load("sc-checks");      // { slug: { c, t } }
+    var cards    = load("sc-cards");       // { term: { box, due } }  (flashcards, optional)
+    var last     = loadLast();             // { course, slug, n, title }
+
+    function isDone(slug) { return !!(progress[slug] && progress[slug].d); }
+    function isVisited(slug) { return !!progress[slug]; }
+
+    /* ---- per-course tallies ---- */
+    function tally(course) {
+      var ready = course.sections.filter(function (s) { return s.ready; });
+      var done = 0, visited = 0, cCorrect = 0, cTotal = 0, cTaken = 0;
+      ready.forEach(function (s) {
+        if (isDone(s.slug)) done++;
+        if (isVisited(s.slug)) visited++;
+        var ck = checks[s.slug];
+        if (ck) { cCorrect += ck.c; cTotal += ck.t; cTaken++; }
+      });
+      return { ready: ready.length, done: done, visited: visited, cCorrect: cCorrect, cTotal: cTotal, cTaken: cTaken };
+    }
+
+    var courses = window.CURRICULUM || [];
+    var totals = { ready: 0, done: 0, visited: 0 };
+    courses.forEach(function (c) { var t = tally(c); totals.ready += t.ready; totals.done += t.done; totals.visited += t.visited; });
+
+    /* ---- is anything tracked at all? ---- */
+    var tracked = Object.keys(progress).length || Object.keys(checks).length || Object.keys(cards).length || !!last;
+
+    /* ============================================================
+       HERO + EMPTY STATE
+       ============================================================ */
+    var heroEl = document.getElementById("pr-hero");
+    var emptyEl = document.getElementById("pr-empty");
+    if (!tracked) {
+      emptyEl.hidden = false;
+      document.getElementById("pr-empty-cap").innerHTML = capy(52);
+    } else {
+      heroEl.hidden = false;
+      var frac = totals.ready ? totals.done / totals.ready : 0;
+      document.getElementById("pr-hero-ring").innerHTML = ring(frac, "var(--primary)");
+      document.getElementById("pr-hero-num").innerHTML =
+        totals.done + " <small>of " + totals.ready + " lessons complete</small>";
+      var remaining = totals.ready - totals.done;
+      var sub = remaining > 0 ? (remaining + " to go") : "Every lesson done — the whole course. 🌿";
+      if (totals.visited > totals.done) sub += " · " + totals.visited + " explored";
+      document.getElementById("pr-hero-sub").textContent = sub;
+
+      var ctaEl = document.getElementById("pr-hero-cta");
+      if (last && last.slug) {
+        ctaEl.innerHTML = '<a class="btn btn-primary" href="' + last.course + '/' + last.slug + '/">Continue: ' + last.n + ' ' + last.title + ' →</a>';
+      } else {
+        ctaEl.innerHTML = '<a class="btn btn-ghost btn-sm" href="./#curriculum">Browse the curriculum →</a>';
+      }
+    }
+
+    /* ============================================================
+       PER-COURSE RINGS, grouped by track
+       ============================================================ */
+    var tracksHost = document.getElementById("pr-tracks");
+    var TRACKS = (window.TRACKS && window.TRACKS.length) ? window.TRACKS : [{ id: "core", title: "" }];
+    var known = {};
+    TRACKS.forEach(function (t) { known[t.id] = 1; });
+    var groups = TRACKS.map(function (t) {
+      return { title: t.title, courses: courses.filter(function (c) { return (c.track || "core") === t.id; }) };
+    }).filter(function (g) { return g.courses.length; });
+    var orphans = courses.filter(function (c) { return !known[c.track || "core"]; });
+    if (orphans.length) groups.push({ title: "", courses: orphans });
+    var multi = groups.length > 1;
+
+    function courseRow(c) {
+      var t = tally(c);
+      var frac = t.ready ? t.done / t.ready : 0;
+      var complete = t.ready > 0 && t.done === t.ready;
+      var meta = t.done + " of " + t.ready + " complete";
+      if (t.visited > t.done) meta += '<span class="sep">·</span>' + t.visited + " explored";
+      if (t.cTaken) meta += '<span class="sep">·</span>checks ' + t.cCorrect + "/" + t.cTotal;
+      var cta = complete
+        ? '<button class="btn btn-sm pr-cert-btn" type="button" data-cert="' + c.slug + '">🏅 Get your certificate</button>'
+        : '<span class="pr-left">' + (t.ready - t.done) + ' left</span>';
+      return '<div class="pr-course" style="--accent:' + c.accent + '">' +
+        ring(frac, c.accent) +
+        '<div class="pr-course-info">' +
+          '<h3>' + c.title + '<span class="pr-course-sub">' + c.subtitle + '</span></h3>' +
+          '<div class="pr-course-meta">' + meta + '</div>' +
+        '</div>' +
+        '<div class="pr-course-cta">' + cta + '</div>' +
+      '</div>';
+    }
+
+    tracksHost.innerHTML = groups.map(function (g) {
+      return (multi && g.title ? '<div class="pr-track-head">' + g.title + '</div>' : '') +
+        '<div class="pr-courses">' + g.courses.map(courseRow).join("") + '</div>';
+    }).join("");
+
+    /* ============================================================
+       FLASHCARDS SUMMARY (optional — only if sc-cards has data)
+       ============================================================ */
+    (function () {
+      var terms = Object.keys(cards);
+      if (!terms.length) return;
+      var box = [0, 0, 0], due = 0;
+      terms.forEach(function (k) {
+        var r = cards[k];
+        if (r && r.box >= 1 && r.box <= 3) box[r.box - 1]++;
+        if (!r || r.due <= today()) due++;
+      });
+      var el = document.getElementById("pr-cards");
+      el.hidden = false;
+      el.innerHTML = '🃏 <strong>' + box[2] + '</strong> terms known · <strong>' + box[1] + '</strong> learning · <strong>' +
+        due + '</strong> due today in your <a href="flashcards.html">flashcards</a>.';
+    })();
+
+    /* ============================================================
+       CERTIFICATE (canvas, drawn from capy() geometry)
+       ============================================================ */
+    var NAME_KEY = "sc-name";
+    var modal = document.getElementById("pr-cert");
+    var cv = document.getElementById("pr-cert-canvas");
+    var nameInput = document.getElementById("pr-cert-name");
+    var certTitle = document.getElementById("pr-cert-title");
+    var currentCourse = null;
+
+    function resolveColor(c) {
+      if (/^var\(/.test(c)) {
+        var name = c.slice(4, -1).trim();
+        var v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        return v || "#6366f1";
+      }
+      return c;
+    }
+    function roundRectPath(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+    /* the same shapes as site.js capy() (64×60 viewBox), rendered on canvas */
+    function drawCapy(ctx, cx, cy, size) {
+      var s = size / 64;
+      ctx.save();
+      ctx.translate(cx - 32 * s, cy - 30 * s);
+      ctx.scale(s, s);
+      function ell(x, y, rx, ry, fill) { ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); ctx.fillStyle = fill; ctx.fill(); }
+      ell(19, 15, 7, 6, "#9a6f43"); ell(45, 15, 7, 6, "#9a6f43");
+      roundRectPath(ctx, 9, 14, 46, 40, 17); ctx.fillStyle = "#b3824f"; ctx.fill();
+      ell(32, 44, 16, 12, "#9a6f43");
+      ell(23, 31, 2.7, 2.7, "#3a2a1b"); ell(41, 31, 2.7, 2.7, "#3a2a1b");
+      ell(26.5, 45, 2.3, 1.6, "#3a2a1b"); ell(37.5, 45, 2.3, 1.6, "#3a2a1b");
+      ctx.restore();
+    }
+    function spacedText(ctx, text, x, y, ls) {
+      // letter-spacing for the eyebrow; ctx.letterSpacing when supported, else manual
+      if ("letterSpacing" in ctx) { ctx.letterSpacing = ls + "px"; ctx.fillText(text, x, y); ctx.letterSpacing = "0px"; return; }
+      var widths = [], total = 0;
+      for (var i = 0; i < text.length; i++) { var w = ctx.measureText(text[i]).width; widths.push(w); total += w + (i ? ls : 0); }
+      var cur = x - total / 2;
+      var prevAlign = ctx.textAlign; ctx.textAlign = "left";
+      for (var j = 0; j < text.length; j++) { ctx.fillText(text[j], cur, y); cur += widths[j] + ls; }
+      ctx.textAlign = prevAlign;
+    }
+
+    function drawCert() {
+      if (!currentCourse) return;
+      var W = 1120, H = 790, scale = 2;
+      var ctx = cv.getContext("2d");
+      ctx.setTransform(scale, 0, 0, scale, 0, 0);
+      var accent = resolveColor(currentCourse.accent);
+      var ink = "#2a2320", muted = "#6f6152", faint = "#a99e8f";
+      var name = (nameInput.value || "").trim() || "Your Name";
+      var F = "Inter, -apple-system, system-ui, sans-serif";
+
+      // parchment background
+      ctx.fillStyle = "#fffdf8"; ctx.fillRect(0, 0, W, H);
+      // double border in the course accent
+      ctx.strokeStyle = accent; ctx.lineWidth = 9; ctx.strokeRect(30, 30, W - 60, H - 60);
+      ctx.globalAlpha = 0.5; ctx.lineWidth = 2; ctx.strokeRect(46, 46, W - 92, H - 92); ctx.globalAlpha = 1;
+
+      ctx.textAlign = "center";
+      // capybara
+      drawCapy(ctx, W / 2, 170, 130);
+      // eyebrow
+      ctx.fillStyle = accent; ctx.font = "700 19px " + F;
+      spacedText(ctx, "CERTIFICATE OF COMPLETION", W / 2, 288, 6);
+      // "presented to"
+      ctx.fillStyle = muted; ctx.font = "400 22px " + F;
+      ctx.fillText("This certifies that", W / 2, 342);
+      // name
+      ctx.fillStyle = ink; ctx.font = "700 56px Georgia, 'Times New Roman', serif";
+      ctx.fillText(name, W / 2, 408);
+      // underline
+      var nw = Math.min(ctx.measureText(name).width + 60, W - 220);
+      ctx.strokeStyle = accent; ctx.globalAlpha = 0.45; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo((W - nw) / 2, 428); ctx.lineTo((W + nw) / 2, 428); ctx.stroke(); ctx.globalAlpha = 1;
+      // course
+      ctx.fillStyle = muted; ctx.font = "400 22px " + F;
+      ctx.fillText("has completed the StatsCapybara course", W / 2, 476);
+      ctx.fillStyle = accent; ctx.font = "800 34px " + F;
+      ctx.fillText(currentCourse.title + " · " + currentCourse.subtitle, W / 2, 522);
+      var nLessons = currentCourse.sections.filter(function (s) { return s.ready; }).length;
+      ctx.fillStyle = muted; ctx.font = "400 18px " + F;
+      ctx.fillText(nLessons + " interactive lessons", W / 2, 556);
+      // date + site
+      var dateStr = new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
+      ctx.fillStyle = ink; ctx.font = "600 19px " + F;
+      ctx.fillText(dateStr, W * 0.31, 662);
+      ctx.fillText("statscapybara.com", W * 0.69, 662);
+      ctx.strokeStyle = faint; ctx.globalAlpha = 0.6; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(W * 0.31 - 100, 678); ctx.lineTo(W * 0.31 + 100, 678); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(W * 0.69 - 100, 678); ctx.lineTo(W * 0.69 + 100, 678); ctx.stroke();
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = muted; ctx.font = "400 15px " + F;
+      ctx.fillText("Date", W * 0.31, 698);
+      ctx.fillText("Where the capybara lives", W * 0.69, 698);
+      // small print
+      ctx.fillStyle = faint; ctx.font = "italic 400 14px " + F;
+      ctx.fillText("A fun keepsake for finishing — not a formal qualification or accredited credential.", W / 2, 742);
+    }
+
+    function openCert(slug) {
+      currentCourse = courses.find(function (c) { return c.slug === slug; });
+      if (!currentCourse) return;
+      certTitle.textContent = currentCourse.title + " — certificate";
+      var saved = "";
+      try { saved = localStorage.getItem(NAME_KEY) || ""; } catch (e) {}
+      nameInput.value = saved;
+      modal.hidden = false;
+      modal.classList.add("open");
+      // fonts must be ready or canvas text falls back to a serif
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawCert);
+      drawCert();
+      setTimeout(function () { nameInput.focus(); nameInput.select(); }, 30);
+    }
+    function closeCert() { modal.classList.remove("open"); modal.hidden = true; }
+
+    document.getElementById("pr-tracks").addEventListener("click", function (e) {
+      var b = e.target.closest("[data-cert]");
+      if (b) openCert(b.getAttribute("data-cert"));
+    });
+    document.getElementById("pr-cert-close").addEventListener("click", closeCert);
+    modal.addEventListener("click", function (e) { if (e.target === modal) closeCert(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && modal.classList.contains("open")) closeCert(); });
+
+    nameInput.addEventListener("input", function () {
+      try { localStorage.setItem(NAME_KEY, nameInput.value.trim()); } catch (e) {}
+      drawCert();
+    });
+
+    document.getElementById("pr-cert-download").addEventListener("click", function () {
+      drawCert();
+      var a = document.createElement("a");
+      a.href = cv.toDataURL("image/png");
+      a.download = "statscapybara-" + (currentCourse ? currentCourse.slug : "course") + "-certificate.png";
+      document.body.appendChild(a); a.click(); a.remove();
+    });
+
+    var printArea = document.getElementById("pr-print-area");
+    document.getElementById("pr-cert-print").addEventListener("click", function () {
+      drawCert();
+      printArea.innerHTML = '<img alt="StatsCapybara certificate" src="' + cv.toDataURL("image/png") + '">';
+      document.body.classList.add("pr-printing");
+      window.print();
+    });
+    window.addEventListener("afterprint", function () {
+      document.body.classList.remove("pr-printing");
+      printArea.innerHTML = "";
+    });
+  })();
+  </script>
+</body>
+</html>

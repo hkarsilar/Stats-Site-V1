@@ -176,7 +176,8 @@
     "datasets": "Reading about a t-test isn't running one. Grab a CSV, wrangle real numbers, and the capybara will happily wait — it has nowhere to be.",
     "quiz": "Test anxiety? Unknown to capybaras. Breathe in, breathe out, click an answer.",
     "glossary": "Big words, small stress. The capybara defines, you vibe.",
-    "flashcards": "Flip, rate, repeat. The capybara only revises the words it forgot — and it forgets nothing on purpose, only for spacing."
+    "flashcards": "Flip, rate, repeat. The capybara only revises the words it forgot — and it forgets nothing on purpose, only for spacing.",
+    "progress": "No streaks, no nagging — just your rings filling up at capybara pace. Finish a whole course and there's a certificate soaking in it for you."
   };
   var QUIP_POOL = [
     "Be the least stressed mammal in the room.",
@@ -245,7 +246,8 @@
     { url: "formulas.html",      key: "formulas",      group: "guide",    emoji: "🖨️", title: "Formula sheet",            desc: "Every formula from the course, printable" },
     { url: "glossary.html",      key: "glossary",      group: "guide",    emoji: "📖", title: "Glossary",                 desc: "Every stats term, defined without the jargon" },
     { url: "flashcards.html",    key: "flashcards",    group: "practice", emoji: "🃏", title: "Glossary flashcards",      desc: "Spaced-repetition drilling of every glossary term" },
-    { url: "quiz.html",          key: "quiz",          group: "practice", emoji: "✅", title: "Quiz",                     desc: "Test yourself across every course" }
+    { url: "quiz.html",          key: "quiz",          group: "practice", emoji: "✅", title: "Quiz",                     desc: "Test yourself across every course" },
+    { url: "progress.html",      key: "progress",      group: "practice", emoji: "🌱", title: "My progress",              desc: "Your rings, what's left, and course certificates" }
   ];
   window.TOOLBOX = TOOLBOX;   // toolbox.html renders its grouped grid from this
   function renderNav() {
@@ -305,6 +307,9 @@
         '<circle class="ring-fill" cx="24" cy="24" r="' + r + '" fill="none" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + off.toFixed(1) + '"/>' +
       '</svg><span class="ring-label">' + pct + '%</span></span>';
   }
+  /* expose the ring + mascot so a standalone page (progress.html) can reuse the
+     exact same drawing instead of duplicating it */
+  window.SC = { ring: ring, capy: capy };
 
   /* ---------- homepage curriculum grid ---------- */
   function courseCard(c) {
@@ -410,7 +415,8 @@
     bar.innerHTML =
       capy(34) +
       '<span class="rb-text">Pick up where you left off — <strong>' + last.n + ' ' + last.title + '</strong></span>' +
-      '<a class="btn btn-primary btn-sm" href="' + BASE + last.course + '/' + last.slug + '/">Resume →</a>';
+      '<a class="btn btn-primary btn-sm" href="' + BASE + last.course + '/' + last.slug + '/">Resume →</a>' +
+      '<a class="rb-progress" href="' + BASE + 'progress.html" style="font-size:.85rem;font-weight:650;color:var(--primary);text-decoration:none;white-space:nowrap">My progress →</a>';
     grid.parentNode.insertBefore(bar, grid);
   }
   function firstUnexplored() {
@@ -799,7 +805,8 @@
     { title: "Practice Datasets", url: "datasets.html", tag: "Practice", kw: "practice datasets csv download data sample example real t-test anova regression factorial likert reliability cronbach cleaning messy logistic exercises worked solutions" },
     { title: "Course Quiz", url: "quiz.html", tag: "Practice", kw: "test yourself questions practice" },
     { title: "Statistics Glossary", url: "glossary.html", tag: "Reference", kw: "terms definitions dictionary" },
-    { title: "Glossary Flashcards", url: "flashcards.html", tag: "Practice", kw: "flashcards spaced repetition leitner revise revision memorize memorise drill study cards terms definitions glossary due box" }
+    { title: "Glossary Flashcards", url: "flashcards.html", tag: "Practice", kw: "flashcards spaced repetition leitner revise revision memorize memorise drill study cards terms definitions glossary due box" },
+    { title: "My Progress", url: "progress.html", tag: "Practice", kw: "progress dashboard my progress rings completed lessons done remaining continue resume certificate certificates course completion percent tracking enrolled" }
   ];
   function escHtml(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
   /* a short excerpt around the first occurrence of q, with the match <mark>ed */

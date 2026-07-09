@@ -76,6 +76,7 @@ for fname, title in [
     ("apa.html", "APA Results Formatter"),
     ("datasets.html", "Practice Datasets"),
     ("flashcards.html", "Glossary Flashcards"),
+    ("progress.html", "My Progress"),
     ("toolbox.html", "Statistics Toolbox"),
 ]:
     p = ROOT / fname
