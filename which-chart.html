@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Which Chart Should I Use? — Interactive Chart Chooser — StatsCapybara</title>
+  <meta name="description" content="Answer a few plain questions about your data and get the right chart — histogram, bar, boxplot, scatter, line or heatmap — and the classic mistake to avoid." />
+  <link rel="canonical" href="https://statscapybara.com/which-chart.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Which Chart Should I Use? — StatsCapybara" />
+  <meta property="og:description" content="An interactive decision tree: answer a few plain-English questions about your data and get the right chart, with a live thumbnail and the classic mistake to avoid." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/which-chart.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Which Chart Should I Use? — StatsCapybara" />
+  <meta name="twitter:description" content="An interactive decision tree: answer a few plain-English questions about your data and get the right chart, with a live thumbnail and the classic mistake to avoid." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <style>
+    /* thumbnail + leaf extras (reuses the wt-* chooser styles from styles.css) */
+    .wc-thumb { max-width: 340px; margin: .4rem 0 1.1rem; }
+    .wc-thumb canvas { border: 1px solid var(--border); }
+    .wc-mistake { font-size: .9rem; color: var(--text-muted); margin: 0 0 1.1rem; padding: .6rem .85rem; border-left: 3px solid #f97316; background: var(--bg-soft); border-radius: 0 8px 8px 0; }
+    .wc-mistake strong { color: var(--text); }
+    .wc-alt { font-size: .88rem; color: var(--text-muted); margin: 0 0 1.1rem; }
+    .wc-alt strong { color: var(--text); }
+  </style>
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+</head>
+<body>
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="container narrow">
+      <article class="lesson" style="margin:0 auto">
+        <span class="lesson-eyebrow">Tools</span>
+        <h1>Which Chart Should I Use?</h1>
+        <p class="lede">Every dataset has one chart that tells its story clearly — and a dozen that muddle it. Answer a few plain-English questions about what you're showing and the kind of data you have, and get the right chart: a live thumbnail, when to use it, and the classic mistake to sidestep.</p>
+
+        <div class="viz" id="chooser">
+          <div id="wt-crumbs" class="wt-crumbs"></div>
+          <div id="wt-stage"></div>
+        </div>
+
+        <div class="callout key">
+          <p><strong>A starting point, not a rule.</strong> The best chart depends on your data <em>and</em> your audience. When in doubt, show the data — a scatter or box plot reveals more than a bar of means — and always label your axes and start bar counts at zero. For the theory, see <a href="stats-1/visualizing-data/">Visualizing Data</a>; for putting them in a report honestly, <a href="writing/tables-and-figures/">Tables &amp; Figures That Don't Lie</a>.</p>
+        </div>
+
+        <h2>The whole map on one screen</h2>
+        <p>Prefer to scan? Here's the cheat-sheet version — goal and data type in, chart out.</p>
+        <table class="ref-table wt-map">
+          <thead><tr><th>Your goal</th><th style="font-family:inherit">Data type</th><th>Reach for</th></tr></thead>
+          <tbody>
+            <tr><td>See one variable's shape</td><td>One quantitative</td><td>Histogram</td></tr>
+            <tr><td>Compare centre &amp; spread across groups</td><td>Quantitative × categorical</td><td>Box plot(s)</td></tr>
+            <tr><td>Compare one value per category</td><td>Quantitative × categorical (few)</td><td>Bar chart</td></tr>
+            <tr><td>Rank many categories / long labels</td><td>Quantitative × categorical (many)</td><td>Horizontal bar chart</td></tr>
+            <tr><td>Compare across two categorical splits</td><td>Quantitative × two categorical</td><td>Grouped / stacked bar</td></tr>
+            <tr><td>See how two numbers relate</td><td>Two quantitative</td><td>Scatter plot</td></tr>
+            <tr><td>Summarise or predict a relationship</td><td>Two quantitative</td><td>Scatter + trend line</td></tr>
+            <tr><td>Show change over time</td><td>Quantitative × time</td><td>Line chart</td></tr>
+            <tr><td>Show association of two categories</td><td>Two categorical</td><td>Heatmap / mosaic</td></tr>
+            <tr><td>Show parts of a whole</td><td>Categorical proportions</td><td>Stacked bar (not a pie)</td></tr>
+            <tr><td>Let readers read exact values</td><td>Any</td><td>Table</td></tr>
+          </tbody>
+        </table>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="assets/js/curriculum.js"></script>
+  <script src="assets/js/viz.js"></script>
+  <script src="assets/js/site.js"></script>
+
+  <!-- ============ chart chooser ============ -->
+  <script>
+  (function () {
+    "use strict";
+
+    /* Questions. Each option leads to another question (next) or a result (leaf). */
+    var NODES = {
+      start: { q: "What's the main story your chart should tell?", opts: [
+        { label: "The shape or spread of one measurement", desc: "Distribution of a single numeric variable", next: "dist" },
+        { label: "How a number compares across categories or groups", desc: "Comparison of means, totals or counts", next: "comp" },
+        { label: "Whether two variables are related", desc: "Association / relationship", next: "rel" },
+        { label: "How a whole divides into parts", desc: "Composition / proportions", next: "parts" },
+        { label: "How something changes over time", desc: "A trend across an ordered axis", next: "time" },
+        { label: "The precise numbers, meant to be read exactly", desc: "Your reader needs exact values", leaf: "table" }
+      ]},
+      dist: { q: "Whose distribution are you showing?", opts: [
+        { label: "One numeric variable", desc: "See its shape — centre, skew, gaps, extra peaks", leaf: "histogram" },
+        { label: "The same measure across several groups", desc: "Compare centre and spread side by side", leaf: "boxplot" }
+      ]},
+      comp: { q: "What are you comparing across the categories?", opts: [
+        { label: "One value per category", desc: "A mean, total or count", next: "comp1" },
+        { label: "One value across two grouping variables at once", desc: "e.g. treatment × sex", leaf: "grouped" },
+        { label: "The full distribution within each group", desc: "not just one summary number", leaf: "boxplot" }
+      ]},
+      comp1: { q: "How many categories, and how long are the labels?", opts: [
+        { label: "A handful, with short labels", leaf: "bar" },
+        { label: "Many categories, long names, or a ranking", leaf: "bar_h" }
+      ]},
+      rel: { q: "What types are the two variables?", opts: [
+        { label: "Both numeric", next: "rel_num" },
+        { label: "Both categorical", leaf: "heatmap" },
+        { label: "One numeric, one categorical", desc: "that's a group comparison in disguise", next: "comp" }
+      ]},
+      rel_num: { q: "Do you just want to see the link, or summarise it too?", opts: [
+        { label: "See whether — and how — they move together, and spot outliers", leaf: "scatter" },
+        { label: "Also fit a trend line or predict one from the other", leaf: "scatter_trend" }
+      ]},
+      parts: { q: "One whole, or several wholes compared?", opts: [
+        { label: "Parts of a single whole (they add up to 100%)", leaf: "pie_resist" },
+        { label: "Compositions compared across groups or time", leaf: "grouped" }
+      ]},
+      time: { q: "How dense is your time axis?", opts: [
+        { label: "Many time points — show a continuous trend", desc: "one or several series", leaf: "line" },
+        { label: "A few discrete periods, comparing totals", desc: "e.g. one bar per year", leaf: "bar" }
+      ]}
+    };
+
+    /* Results. Each has a live-drawn thumbnail (id = key), when to use it,
+       the classic mistake, and a "consider instead" nudge. */
+    var LEAVES = {
+      histogram: {
+        name: "Histogram",
+        why: "Showing the distribution of one numeric variable — its centre, spread, skew, gaps and any second peak. The go-to first look at a single measurement.",
+        mistake: "Too few or too many bins hides the real shape — try a couple of bin widths. And don't confuse it with a bar chart: histogram bars touch (a continuous axis), bar-chart bars have gaps (separate categories).",
+        alt: "A density plot or dot plot for small samples; box plots to compare the distribution across several groups."
+      },
+      boxplot: {
+        name: "Box plot(s)",
+        why: "Comparing the centre and spread of a numeric variable across two or more groups at a glance — median, quartiles and outliers, lined up side by side.",
+        mistake: "A box plot hides the shape: bimodal or clustered data can look identical to smooth data. Overlay the raw points (or use a violin plot) when each group is small.",
+        alt: "A histogram for a single group; a violin or strip plot when you also want to see the shape."
+      },
+      bar: {
+        name: "Bar chart",
+        why: "Comparing a single value — a mean, total or count — across a handful of clearly-labelled categories. Length is the easiest visual quantity to compare accurately.",
+        mistake: "Truncating the y-axis so it doesn't start at zero exaggerates the differences; bars encode length, so the baseline must be zero. Add error bars (and say what they show) when the bar is a mean.",
+        alt: "A dot or lollipop plot for many categories; box plots when you have each group's full distribution, not just one number."
+      },
+      bar_h: {
+        name: "Horizontal bar chart",
+        why: "Comparing or ranking a value across many categories, or when the labels are long — turning the bars sideways gives the text room and makes a ranking easy to read top-to-bottom.",
+        mistake: "Leaving the bars in arbitrary order. Unless the categories have a natural order (age bands, months), sort by value so the ranking is the message.",
+        alt: "A vertical bar chart for a few short-labelled categories."
+      },
+      grouped: {
+        name: "Grouped or stacked bar",
+        why: "Breaking a comparison down by a second categorical variable. Grouped (bars side by side) compares values within each group; stacked (segments on top of each other) shows how a whole splits into parts across groups.",
+        mistake: "Stacking too many segments makes every series except the bottom one impossible to compare — only the bottom shares a common baseline. Keep the segments few, or switch to grouped bars or small multiples.",
+        alt: "A heatmap when both variables are categorical and the pattern is the point; a line chart if one axis is time."
+      },
+      scatter: {
+        name: "Scatter plot",
+        why: "Showing how two numeric variables relate — the direction, strength, curvature, clusters and outliers of the cloud. Always the first thing to draw for two quantities.",
+        mistake: "Overplotting: with thousands of points the cloud turns into a solid blob. Use transparency, smaller dots or a 2-D density/hexbin. And never trust a correlation number without looking at the scatter (remember Anscombe's quartet).",
+        alt: "Add a trend line to summarise or predict; a heatmap or hexbin plot for very large samples."
+      },
+      scatter_trend: {
+        name: "Scatter plot with a trend line",
+        why: "The relationship of two numeric variables when you also want to summarise it or predict one from the other — the fitted line, and its slope, drawn on top of the raw cloud.",
+        mistake: "Drawing the line far beyond the data (extrapolation), or fitting a straight line to an obviously curved cloud. Let the points, not the line, have the final say.",
+        alt: "A plain scatter when the trend isn't the point; a line chart when the x-axis is time rather than a second measurement."
+      },
+      line: {
+        name: "Line chart",
+        why: "Showing how a measurement changes along an ordered axis — usually time. The connecting line implies the points are steps on a continuum, guiding the eye through the trend.",
+        mistake: "Connecting categories that have no order — a line chart implies continuity — or plotting so many series they tangle into spaghetti. A truncated y-axis can still mislead, so label it honestly.",
+        alt: "A bar chart for a few discrete periods; small multiples when you have many series to compare."
+      },
+      heatmap: {
+        name: "Heatmap / mosaic plot",
+        why: "Showing the association between two categorical variables — colour (heatmap) or tile area (mosaic) reveals which combinations are over- or under-represented in a contingency table.",
+        mistake: "A rainbow colour scale invents structure that isn't there and fails colour-blind readers. Use a single-hue sequential scale, and label cells with the counts so exact values are still readable.",
+        alt: "A grouped or stacked bar for just a few categories; a table when the exact counts matter most."
+      },
+      pie_resist: {
+        name: "Parts of a whole → resist the pie",
+        why: "Showing how one whole splits into parts. The honest answer is usually a bar chart of the parts (or a single stacked bar): people compare lengths far more accurately than angles or wedge areas.",
+        mistake: "The pie chart itself. Beyond two or three slices, similar wedges are impossible to rank and the labels crowd the rim. If you must use one, keep it to a two-way split — otherwise reach for a bar.",
+        alt: "A bar chart with the parts sorted by size; a stacked bar to compare compositions across several groups."
+      },
+      table: {
+        name: "Table",
+        why: "When the reader needs the exact numbers — to look a specific value up, compare precise figures, or reference them later. A well-built table beats a chart whenever precision matters more than pattern.",
+        mistake: "Turning a table into a wall of numbers. Round to the precision that matters, right-align the numbers, drop the vertical rules (APA style), and don't table data whose story is really a trend — that wants a chart.",
+        alt: "A chart when the shape or trend is the message; both — a chart in the text, the full table in an appendix — for a thorough report."
+      }
+    };
+
+    /* ---- tiny example data + theme-aware thumbnails (VIZ helpers) ---- */
+    function pal() {
+      return {
+        primary: VIZ.css('--primary') || '#6366f1',
+        secondary: VIZ.css('--secondary') || '#14b8a6',
+        orange: '#f97316',
+        text: VIZ.css('--text') || '#0f172a',
+        muted: VIZ.css('--text-muted') || '#475569',
+        faint: VIZ.css('--text-faint') || '#94a3b8',
+        border: VIZ.css('--border') || '#e2e8f0',
+        bg: VIZ.css('--bg-soft') || '#f8fafc'
+      };
+    }
+    function baseAxis(x, w, h, C, p) {
+      x.strokeStyle = C.border; x.lineWidth = 1;
+      x.beginPath(); x.moveTo(p.l, p.t - 2); x.lineTo(p.l, h - p.b); x.lineTo(w - p.r, h - p.b); x.stroke();
+    }
+    /* deterministic scatter cloud (fixed seed → identical every draw) */
+    var SCAT = (function () {
+      var a = [], s = 42;
+      function r() { s = (s * 1103515245 + 12345) & 0x7fffffff; return s / 0x7fffffff; }
+      for (var i = 0; i < 20; i++) {
+        var xx = i / 19, yy = 0.15 + 0.7 * xx + (r() - 0.5) * 0.28;
+        a.push([xx, Math.max(0.04, Math.min(0.96, yy))]);
+      }
+      return a;
+    })();
+    var SLINE = (function () {   // least-squares line over SCAT
+      var n = SCAT.length, sx = 0, sy = 0, sxx = 0, sxy = 0;
+      for (var i = 0; i < n; i++) { sx += SCAT[i][0]; sy += SCAT[i][1]; sxx += SCAT[i][0] * SCAT[i][0]; sxy += SCAT[i][0] * SCAT[i][1]; }
+      var b = (n * sxy - sx * sy) / (n * sxx - sx * sx), a = (sy - b * sx) / n;
+      return { a: a, b: b };
+    })();
+    function dots(x, w, h, C, p) {
+      var pw = w - p.l - p.r, ph = h - p.t - p.b;
+      x.fillStyle = C.secondary;
+      for (var i = 0; i < SCAT.length; i++) {
+        var cx = p.l + SCAT[i][0] * pw, cy = h - p.b - SCAT[i][1] * ph;
+        x.beginPath(); x.arc(cx, cy, 3, 0, 6.2832); x.fill();
+      }
+    }
+
+    var THUMBS = {
+      histogram: function (x, w, h, C) {
+        var d = [1, 3, 6, 9, 8, 5, 2], m = 9, p = { l: 20, r: 12, t: 14, b: 18 };
+        var pw = w - p.l - p.r, ph = h - p.t - p.b, bw = pw / d.length;
+        x.fillStyle = C.primary;
+        for (var i = 0; i < d.length; i++) { var bh = d[i] / m * ph; x.fillRect(p.l + i * bw + 1, h - p.b - bh, bw - 2, bh); }
+        baseAxis(x, w, h, C, p);
+      },
+      boxplot: function (x, w, h, C) {
+        var p = { l: 16, r: 12, t: 12, b: 18 }, pw = w - p.l - p.r, ph = h - p.t - p.b;
+        var G = [{ lo: 1, q1: 3, md: 4.5, q3: 6, hi: 8 }, { lo: 2.5, q1: 4.5, md: 6, q3: 7.5, hi: 9.5 }, { lo: 0.5, q1: 2, md: 3, q3: 4.2, hi: 6 }];
+        var cols = [C.primary, C.orange, C.secondary], slot = pw / G.length;
+        function Y(v) { return h - p.b - v / 10 * ph; }
+        for (var i = 0; i < G.length; i++) {
+          var cx = p.l + slot * (i + 0.5), bw = slot * 0.5, g = G[i];
+          x.strokeStyle = cols[i]; x.fillStyle = cols[i]; x.lineWidth = 1.5;
+          x.beginPath(); x.moveTo(cx, Y(g.hi)); x.lineTo(cx, Y(g.lo)); x.stroke();
+          x.beginPath(); x.moveTo(cx - bw * 0.3, Y(g.hi)); x.lineTo(cx + bw * 0.3, Y(g.hi));
+          x.moveTo(cx - bw * 0.3, Y(g.lo)); x.lineTo(cx + bw * 0.3, Y(g.lo)); x.stroke();
+          x.globalAlpha = 0.18; x.fillRect(cx - bw / 2, Y(g.q3), bw, Y(g.q1) - Y(g.q3)); x.globalAlpha = 1;
+          x.strokeRect(cx - bw / 2, Y(g.q3), bw, Y(g.q1) - Y(g.q3));
+          x.lineWidth = 2; x.beginPath(); x.moveTo(cx - bw / 2, Y(g.md)); x.lineTo(cx + bw / 2, Y(g.md)); x.stroke();
+        }
+        baseAxis(x, w, h, C, p);
+      },
+      bar: function (x, w, h, C) {
+        var d = [5, 8, 4, 9, 6], m = 9, p = { l: 20, r: 12, t: 14, b: 18 };
+        var pw = w - p.l - p.r, ph = h - p.t - p.b, slot = pw / d.length, bw = slot * 0.62, mi = d.indexOf(Math.max.apply(null, d));
+        for (var i = 0; i < d.length; i++) {
+          var bh = d[i] / m * ph;
+          x.fillStyle = (i === mi ? C.orange : C.primary);
+          x.fillRect(p.l + slot * i + (slot - bw) / 2, h - p.b - bh, bw, bh);
+        }
+        baseAxis(x, w, h, C, p);
+      },
+      bar_h: function (x, w, h, C) {
+        var d = [9, 7, 5.5, 4, 2], m = 9, p = { l: 14, r: 14, t: 12, b: 12 };
+        var pw = w - p.l - p.r, ph = h - p.t - p.b, slot = ph / d.length, bh = slot * 0.6;
+        x.fillStyle = C.primary;
+        for (var i = 0; i < d.length; i++) { var bw = d[i] / m * pw; x.fillRect(p.l, p.t + slot * i + (slot - bh) / 2, bw, bh); }
+        x.strokeStyle = C.border; x.lineWidth = 1; x.beginPath(); x.moveTo(p.l, p.t); x.lineTo(p.l, h - p.b); x.stroke();
+      },
+      grouped: function (x, w, h, C) {
+        var G = [[6, 4], [8.5, 7], [5, 3.5]], m = 9, p = { l: 20, r: 12, t: 14, b: 18 };
+        var pw = w - p.l - p.r, ph = h - p.t - p.b, slot = pw / G.length, bw = slot * 0.28;
+        for (var i = 0; i < G.length; i++) {
+          var gx = p.l + slot * i + slot * 0.5;
+          for (var j = 0; j < 2; j++) {
+            var bh = G[i][j] / m * ph;
+            x.fillStyle = (j === 0 ? C.primary : C.orange);
+            x.fillRect(gx + (j === 0 ? -bw - 1 : 1), h - p.b - bh, bw, bh);
+          }
+        }
+        baseAxis(x, w, h, C, p);
+      },
+      scatter: function (x, w, h, C) {
+        var p = { l: 18, r: 12, t: 12, b: 16 };
+        baseAxis(x, w, h, C, p); dots(x, w, h, C, p);
+      },
+      scatter_trend: function (x, w, h, C) {
+        var p = { l: 18, r: 12, t: 12, b: 16 }, pw = w - p.l - p.r, ph = h - p.t - p.b;
+        baseAxis(x, w, h, C, p); dots(x, w, h, C, p);
+        function Y(vx) { return h - p.b - (SLINE.a + SLINE.b * vx) * ph; }
+        x.strokeStyle = C.primary; x.lineWidth = 2.5;
+        x.beginPath(); x.moveTo(p.l, Y(0)); x.lineTo(p.l + pw, Y(1)); x.stroke();
+      },
+      line: function (x, w, h, C) {
+        var s1 = [3, 4, 3.4, 5, 6.2, 5.6, 7], s2 = [2, 2.6, 3, 2.7, 3.6, 4.1, 3.8], m = 8, p = { l: 18, r: 12, t: 14, b: 16 };
+        var pw = w - p.l - p.r, ph = h - p.t - p.b, step = pw / (s1.length - 1);
+        function draw(s, col, dot) {
+          x.strokeStyle = col; x.fillStyle = col; x.lineWidth = 2.4; x.beginPath();
+          for (var i = 0; i < s.length; i++) { var cx = p.l + i * step, cy = h - p.b - s[i] / m * ph; if (i) x.lineTo(cx, cy); else x.moveTo(cx, cy); }
+          x.stroke();
+          if (dot) for (var k = 0; k < s.length; k++) { var dx = p.l + k * step, dy = h - p.b - s[k] / m * ph; x.beginPath(); x.arc(dx, dy, 2.6, 0, 6.2832); x.fill(); }
+        }
+        draw(s2, C.orange, false); draw(s1, C.primary, true);
+        baseAxis(x, w, h, C, p);
+      },
+      heatmap: function (x, w, h, C) {
+        var M = [[0.15, 0.35, 0.6, 0.22], [0.3, 0.55, 0.82, 0.35], [0.5, 0.78, 0.95, 0.5], [0.2, 0.42, 0.66, 0.3]];
+        var p = { l: 12, r: 12, t: 12, b: 12 }, cw = (w - p.l - p.r) / 4, ch = (h - p.t - p.b) / 4, gap = 2.5;
+        for (var r = 0; r < 4; r++) for (var c = 0; c < 4; c++) {
+          x.fillStyle = C.primary; x.globalAlpha = 0.12 + 0.85 * M[r][c];
+          x.fillRect(p.l + c * cw + gap / 2, p.t + r * ch + gap / 2, cw - gap, ch - gap);
+        }
+        x.globalAlpha = 1;
+      },
+      pie_resist: function (x, w, h, C) {
+        /* left: a pie with a red "no" ring; an arrow; right: the honest bars */
+        var cx = w * 0.24, cy = h * 0.52, r = Math.min(h * 0.34, w * 0.19);
+        var segs = [0.30, 0.24, 0.20, 0.15, 0.11], shades = [C.faint, C.border, C.muted, C.faint, C.border], a0 = -1.5708;
+        for (var i = 0; i < segs.length; i++) {
+          var a1 = a0 + segs[i] * 6.2832;
+          x.beginPath(); x.moveTo(cx, cy); x.arc(cx, cy, r, a0, a1); x.closePath();
+          x.fillStyle = shades[i]; x.globalAlpha = 0.55; x.fill(); x.globalAlpha = 1;
+          x.strokeStyle = C.bg; x.lineWidth = 1.5; x.stroke(); a0 = a1;
+        }
+        x.strokeStyle = '#ef4444'; x.lineWidth = 2.5;
+        x.beginPath(); x.arc(cx, cy, r + 3, 0, 6.2832); x.stroke();
+        x.beginPath(); x.moveTo(cx - (r + 3) * 0.71, cy - (r + 3) * 0.71); x.lineTo(cx + (r + 3) * 0.71, cy + (r + 3) * 0.71); x.stroke();
+        // arrow
+        var ax = w * 0.52; x.strokeStyle = C.muted; x.fillStyle = C.muted; x.lineWidth = 2;
+        x.beginPath(); x.moveTo(ax, cy); x.lineTo(ax + 22, cy); x.stroke();
+        x.beginPath(); x.moveTo(ax + 22, cy - 5); x.lineTo(ax + 30, cy); x.lineTo(ax + 22, cy + 5); x.closePath(); x.fill();
+        // honest bars (sorted)
+        var bx = w * 0.64, bw2 = (w - bx - 12) / segs.length, base = h - 18, maxh = h - 30;
+        x.fillStyle = C.primary;
+        for (var j = 0; j < segs.length; j++) { var bh = segs[j] / 0.30 * maxh; x.fillRect(bx + j * bw2 + 1, base - bh, bw2 - 2, bh); }
+        x.strokeStyle = C.border; x.lineWidth = 1; x.beginPath(); x.moveTo(bx - 2, base); x.lineTo(w - 10, base); x.stroke();
+      },
+      table: function (x, w, h, C) {
+        var p = { l: 16, r: 16, t: 14, b: 14 }, tw = w - p.l - p.r, th = h - p.t - p.b, rows = 4, cols = 3;
+        var rh = th / rows, cwd = tw / cols;
+        x.fillStyle = C.faint; x.globalAlpha = 0.28; x.fillRect(p.l, p.t, tw, rh); x.globalAlpha = 1; // header shade
+        x.strokeStyle = C.border; x.lineWidth = 1; x.strokeRect(p.l, p.t, tw, th);
+        x.beginPath(); // horizontal rules only (APA: no vertical lines)
+        for (var r = 1; r < rows; r++) { x.moveTo(p.l, p.t + r * rh); x.lineTo(p.l + tw, p.t + r * rh); }
+        x.stroke();
+        for (var rr = 0; rr < rows; rr++) for (var c = 0; c < cols; c++) {
+          x.fillStyle = (rr === 0) ? C.muted : C.faint; x.globalAlpha = (rr === 0) ? 0.9 : 0.6;
+          var pad = 7, tW = cwd - pad * 2, tH = 4;
+          x.fillRect(p.l + c * cwd + pad, p.t + rr * rh + rh / 2 - tH / 2, tW * (c === 0 ? 0.9 : 0.6), tH);
+        }
+        x.globalAlpha = 1;
+      }
+    };
+
+    var stage = document.getElementById("wt-stage");
+    var crumbsEl = document.getElementById("wt-crumbs");
+    var path = [];              // { node, choiceLabel, to }
+    var currentThumb = null;    // { id, canvas } while a leaf is showing
+
+    function renderThumb() {
+      if (!currentThumb) return;
+      var o = VIZ.fit(currentThumb.canvas, 150), C = pal();
+      o.ctx.clearRect(0, 0, o.w, o.h);
+      o.ctx.fillStyle = C.bg; o.ctx.fillRect(0, 0, o.w, o.h);
+      (THUMBS[currentThumb.id] || function () {})(o.ctx, o.w, o.h, C);
+    }
+    var raf = 0;
+    function scheduleThumb() { if (raf) return; raf = requestAnimationFrame(function () { raf = 0; renderThumb(); }); }
+    VIZ.onTheme(scheduleThumb);
+    window.addEventListener("resize", scheduleThumb);
+
+    function renderCrumbs() {
+      if (!path.length) { crumbsEl.innerHTML = ""; return; }
+      crumbsEl.innerHTML = path.map(function (step, i) {
+        return '<button class="wt-crumb" data-i="' + i + '" title="Go back to this question">' + step.choiceLabel + '</button>';
+      }).join('<span class="wt-sep">›</span>') +
+        '<button class="wt-crumb wt-restart" data-i="-1">↺ start over</button>';
+      Array.prototype.forEach.call(crumbsEl.querySelectorAll(".wt-crumb"), function (b) {
+        b.addEventListener("click", function () {
+          var i = +b.getAttribute("data-i");
+          path = i < 0 ? [] : path.slice(0, i);
+          show(path.length ? path[path.length - 1].to : "start");
+        });
+      });
+    }
+
+    function goBack() {
+      path.pop();
+      show(path.length ? path[path.length - 1].to : "start");
+    }
+    function wireStageNav() {
+      var back = stage.querySelector(".wt-back");
+      if (back) back.addEventListener("click", goBack);
+      var again = stage.querySelector(".wt-again");
+      if (again) again.addEventListener("click", function () { path = []; show("start"); });
+    }
+    function stageHead(label) {
+      return '<div class="wt-head">' +
+        (path.length ? '<button class="wt-back" type="button">← Back</button>' : '') +
+        '<span class="wt-step">' + label + '</span></div>';
+    }
+
+    function show(id) {
+      currentThumb = null;
+      renderCrumbs();
+      var leaf = LEAVES[id];
+      if (leaf) { showLeaf(id, leaf); return; }
+      var node = NODES[id];
+      stage.innerHTML = stageHead("Question " + (path.length + 1)) +
+        '<p class="wt-q">' + node.q + '</p>' +
+        '<div class="wt-opts">' + node.opts.map(function (o, i) {
+          return '<button class="wt-opt" data-i="' + i + '"><span class="wt-opt-label">' + o.label + '</span>' +
+            (o.desc ? '<span class="wt-opt-desc">' + o.desc + '</span>' : '') + '</button>';
+        }).join("") + '</div>';
+      wireStageNav();
+      Array.prototype.forEach.call(stage.querySelectorAll(".wt-opt"), function (b) {
+        b.addEventListener("click", function () {
+          var o = node.opts[+b.getAttribute("data-i")];
+          var to = o.leaf || o.next;
+          path.push({ node: id, choiceLabel: o.label, to: to });
+          show(to);
+        });
+      });
+    }
+
+    function showLeaf(id, leaf) {
+      stage.innerHTML = stageHead("Your chart") +
+        '<div class="wt-result">' +
+          '<span class="wt-result-eyebrow">Recommended chart</span>' +
+          '<h3 class="wt-result-name">' + leaf.name + '</h3>' +
+          '<div class="wc-thumb"><canvas role="img" aria-label="Example ' + leaf.name + '"></canvas></div>' +
+          '<p class="wt-result-why">' + leaf.why + '</p>' +
+          '<p class="wc-mistake"><strong>Classic mistake:</strong> ' + leaf.mistake + '</p>' +
+          (leaf.alt ? '<p class="wc-alt"><strong>Consider instead:</strong> ' + leaf.alt + '</p>' : '') +
+          '<div style="display:flex;flex-wrap:wrap;gap:.6rem">' +
+            '<button class="btn btn-ghost btn-sm wt-again" type="button">↺ Start over</button>' +
+          '</div>' +
+          '<p class="wt-alts-label">Learn more:</p>' +
+          '<ul class="wt-alts">' +
+            '<li><a href="stats-1/visualizing-data/">Visualizing Data</a> — the interactive lesson on reading and building charts.</li>' +
+            '<li><a href="writing/tables-and-figures/">Tables &amp; Figures That Don\'t Lie</a> — putting charts in a report honestly.</li>' +
+          '</ul>' +
+        '</div>';
+      wireStageNav();
+      currentThumb = { id: id, canvas: stage.querySelector(".wc-thumb canvas") };
+      renderThumb();
+      if (window.ResizeObserver) { new ResizeObserver(scheduleThumb).observe(currentThumb.canvas); }
+    }
+
+    show("start");
+  })();
+  </script>
+</body>
+</html>
