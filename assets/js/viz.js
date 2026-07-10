@@ -10,6 +10,16 @@ window.VIZ = (function () {
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   }
 
+  /* True when the visitor has asked their OS for reduced motion. Lessons with
+     "draw-many" animation loops (sample-by-sample builds, ROC sweeps, k-means
+     steps) should check this and jump straight to the final frame instead of
+     animating. CSS transitions/animations are already neutralised by the
+     prefers-reduced-motion block in styles.css — this covers JS-driven ones. */
+  function reducedMotion() {
+    try { return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); }
+    catch (e) { return false; }
+  }
+
   // High-DPI canvas setup. Returns { ctx, w, h } in CSS pixels.
   function fit(canvas, cssHeight) {
     var ratio = window.devicePixelRatio || 1;
@@ -218,5 +228,5 @@ window.VIZ = (function () {
     return negdel ? 1 - tnc : tnc;
   }
 
-  return { css: css, fit: fit, randn: randn, gauss: gauss, erf: erf, normCdf: normCdf, normPdf: normPdf, normInv: normInv, mean: mean, sd: sd, onTheme: onTheme, gammaln: gammaln, gammp: gammp, betai: betai, fUpper: fUpper, chiSqUpper: chiSqUpper, tUpper: tUpper, tPdf: tPdf, chiSqPdf: chiSqPdf, fPdf: fPdf, tInv: tInv, chiSqInv: chiSqInv, fInv: fInv, nctCdf: nctCdf, ncx2Cdf: ncx2Cdf, ncfCdf: ncfCdf };
+  return { css: css, reducedMotion: reducedMotion, fit: fit, randn: randn, gauss: gauss, erf: erf, normCdf: normCdf, normPdf: normPdf, normInv: normInv, mean: mean, sd: sd, onTheme: onTheme, gammaln: gammaln, gammp: gammp, betai: betai, fUpper: fUpper, chiSqUpper: chiSqUpper, tUpper: tUpper, tPdf: tPdf, chiSqPdf: chiSqPdf, fPdf: fPdf, tInv: tInv, chiSqInv: chiSqInv, fInv: fInv, nctCdf: nctCdf, ncx2Cdf: ncx2Cdf, ncfCdf: ncfCdf };
 })();

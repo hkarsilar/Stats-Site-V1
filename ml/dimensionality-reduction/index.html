@@ -62,7 +62,7 @@
             <div class="control" style="margin-left:auto"><button class="btn btn-sm" id="new-btn">↺ New sample</button></div>
           </div>
 
-          <canvas id="dr-canvas" style="touch-action:none"></canvas>
+          <canvas id="dr-canvas" tabindex="0" aria-label="3-D point cloud of two interlocked rings and a blob. In the 3-D view, rotate it with the arrow keys; use the buttons above to switch to the PCA or nonlinear projection." style="touch-action:none"></canvas>
           <p id="dr-verdict" style="font-size:.85rem;color:var(--text-faint);margin-top:.5rem;text-align:center;min-height:1.2em"></p>
         </div>
         <!-- ============ /INTERACTIVE ============ -->
@@ -266,6 +266,17 @@
     function endDrag() { dragging = false; }
     canvas.addEventListener("pointerup", endDrag);
     canvas.addEventListener("pointercancel", endDrag);
+    // keyboard equivalent for the drag-to-rotate (3-D view only)
+    canvas.addEventListener("keydown", function (e) {
+      if (view !== "3d") return;
+      var s = 0.12, moved = true;
+      if (e.key === "ArrowLeft") yaw -= s;
+      else if (e.key === "ArrowRight") yaw += s;
+      else if (e.key === "ArrowUp") pitch = Math.max(-1.4, pitch - s);
+      else if (e.key === "ArrowDown") pitch = Math.min(1.4, pitch + s);
+      else moved = false;
+      if (moved) { e.preventDefault(); draw(); }
+    });
 
     /* ---- controls ---- */
     document.getElementById("v3d-btn").addEventListener("click", function () { setView("3d"); });

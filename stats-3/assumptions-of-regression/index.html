@@ -60,9 +60,9 @@
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="lvviz">
           <p class="viz-title">🎮 Leverage &amp; Influence Playground</p>
-          <p class="viz-sub">Drag the ringed point. The solid line is fit <em>with</em> it; the dashed line is fit <em>without</em> it. Out at the edges (high leverage), small moves swing the whole line.</p>
+          <p class="viz-sub">Drag the ringed point — or focus the chart and nudge it with the arrow keys (hold Shift for bigger steps). The solid line is fit <em>with</em> it; the dashed line is fit <em>without</em> it. Out at the edges (high leverage), small moves swing the whole line.</p>
 
-          <canvas id="lv-canvas" style="touch-action:none;cursor:grab"></canvas>
+          <canvas id="lv-canvas" tabindex="0" aria-label="Leverage and influence playground. Move the highlighted point with the arrow keys; the leverage and slope readouts below update as you move it." style="touch-action:none;cursor:grab"></canvas>
 
           <div class="stat-row">
             <div class="stat"><span class="k">Leverage of the point</span><span class="v" id="stat-lev" style="font-size:1rem">—</span></div>
@@ -184,6 +184,16 @@
     });
     function end() { dragging = false; canvas.style.cursor = "grab"; }
     canvas.addEventListener("pointerup", end); canvas.addEventListener("pointercancel", end);
+    // keyboard equivalent for the drag: arrow keys nudge the point (Shift = 3× step)
+    canvas.addEventListener("keydown", function (e) {
+      var step = (e.shiftKey ? 6 : 2), moved = true;
+      if (e.key === "ArrowLeft") drag.x = Math.max(LO, drag.x - step);
+      else if (e.key === "ArrowRight") drag.x = Math.min(HI, drag.x + step);
+      else if (e.key === "ArrowUp") drag.y = Math.min(HI, drag.y + step);
+      else if (e.key === "ArrowDown") drag.y = Math.max(LO, drag.y - step);
+      else moved = false;
+      if (moved) { e.preventDefault(); update(); }
+    });
     window.addEventListener("resize", function () { fit(); update(); });
     VIZ.onTheme(update);
     fit(); update();

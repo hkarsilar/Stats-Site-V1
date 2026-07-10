@@ -30,7 +30,11 @@
   --border: #e2e8f0;
   --text: #0f172a;
   --text-muted: #475569;
-  --text-faint: #94a3b8;
+  /* faint text still needs to clear WCAG AA 4.5:1 — #5f6e86 is ≥4.72:1 on
+     every light surface (white / bg-soft / surface-2); the old #94a3b8 was
+     only ~2.5:1. Still visibly lighter than --text-muted, so the hierarchy
+     (text → muted → faint) survives. */
+  --text-faint: #5f6e86;
   --shadow: 0 1px 3px rgba(15, 23, 42, .08), 0 1px 2px rgba(15, 23, 42, .04);
   --shadow-lg: 0 10px 30px -10px rgba(15, 23, 42, .18);
 
@@ -49,7 +53,9 @@ html[data-theme="dark"] {
   --border: #243049;
   --text: #e7ecf5;
   --text-muted: #a7b3c9;
-  --text-faint: #64748b;
+  /* dark faint lightened to #94a3b8 (≥5.9:1 on every dark surface); the old
+     #64748b was only ~3.2–3.9:1. See the light-mode note above. */
+  --text-faint: #94a3b8;
   --shadow: 0 1px 3px rgba(0, 0, 0, .4);
   --shadow-lg: 0 10px 30px -10px rgba(0, 0, 0, .6);
 }
@@ -452,9 +458,14 @@ body[data-course="writing"] { --course-accent: #84cc16; }
     display: none;
   }
   body.nav-open .nav-links { display: flex; }
-  .nav-links .nav-link { padding: .7rem .75rem; font-size: 1rem; border-radius: 10px; }
+  .nav-links .nav-link { padding: .7rem .75rem; font-size: 1rem; border-radius: 10px; min-height: 44px; display: flex; align-items: center; }
   .nav-actions { margin-left: auto; }
   .nav-toggle { display: inline-flex; }
+
+  /* WCAG 2.5.5 — comfortable touch targets (≥44×44px) for the always-on
+     nav chrome on phones, where fingers replace a mouse. */
+  .icon-btn, .nav-search-btn { width: 44px; height: 44px; }
+  .nav-search-btn { border-radius: 12px; }
 
   /* in the mobile menu the Toolbox is a single link to the hub page —
      the page itself lists every tool, so no need to flatten them here */
@@ -477,6 +488,17 @@ body[data-course="writing"] { --course-accent: #84cc16; }
 
 :focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: 4px; }
 .viz canvas:focus-visible { outline-offset: 4px; }
+
+/* honest accessibility statement, in the About section (index.html) */
+.a11y-statement {
+  margin: 2.5rem 0 0; padding: 1.1rem 1.3rem;
+  border: 1px solid var(--border); border-left: 3px solid var(--primary);
+  border-radius: 12px; background: var(--surface); box-shadow: var(--shadow);
+}
+.a11y-statement h3 { margin: 0 0 .4rem; font-size: 1.05rem; }
+.a11y-statement p { margin: 0 0 .5rem; color: var(--text-muted); font-size: .92rem; }
+.a11y-statement p:last-child { margin-bottom: 0; }
+.a11y-statement a { color: var(--primary); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

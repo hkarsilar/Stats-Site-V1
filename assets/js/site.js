@@ -13,6 +13,14 @@
   var BASE = (document.body && document.body.getAttribute("data-section")) ? "../../" : "";
   var HERE = document.body ? document.body.getAttribute("data-section") : null;
 
+  /* respect the OS "reduce motion" setting for JS-driven scrolls/animations
+     (CSS transitions are already handled in styles.css) */
+  function prefersReducedMotion() {
+    try { return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); }
+    catch (e) { return false; }
+  }
+  function scrollBehavior() { return prefersReducedMotion() ? "auto" : "smooth"; }
+
   /* ---------- mascot ---------- */
   function capy(size) {
     var s = size || 26;
@@ -296,6 +304,14 @@
     document.getElementById("nav-links").addEventListener("click", function (e) {
       if (e.target.closest("a")) { document.body.classList.remove("nav-open"); tog.setAttribute("aria-expanded", "false"); }
     });
+    // Escape closes the open mobile menu and returns focus to the hamburger
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && document.body.classList.contains("nav-open")) {
+        document.body.classList.remove("nav-open");
+        tog.setAttribute("aria-expanded", "false");
+        tog.focus();
+      }
+    });
   }
 
   /* ---------- progress ring (SVG) for homepage cards ---------- */
@@ -548,7 +564,7 @@
       box.className = "try-code";
       box.innerHTML =
         '<div class="tc-head"><span class="tc-title">💻 Try it yourself</span>' +
-          '<span class="seg"><button class="active" data-lang="r">R</button><button data-lang="py">Python</button></span>' +
+          '<span class="seg" role="group" aria-label="Choose language"><button type="button" class="active" data-lang="r" aria-pressed="true">R</button><button type="button" data-lang="py" aria-pressed="false">Python</button></span>' +
           '<button class="tc-copy" type="button">Copy</button></div>' +
         '<pre><code></code></pre>';
       var code = box.querySelector("code"), lang = "r";
@@ -557,7 +573,7 @@
         b.addEventListener("click", function () {
           lang = b.getAttribute("data-lang");
           Array.prototype.forEach.call(box.querySelectorAll("[data-lang]"), function (b2) {
-            b2.className = b2 === b ? "active" : "";
+            var on = b2 === b; b2.className = on ? "active" : ""; b2.setAttribute("aria-pressed", on ? "true" : "false");
           });
           show();
         });
@@ -601,7 +617,7 @@
         box.setAttribute("aria-label", "Run this analysis in SPSS or JASP");
         box.innerHTML =
           '<div class="sw-head"><span class="sw-title">🖱️ Run it in SPSS / JASP</span>' +
-            '<span class="seg"><button type="button" class="active" data-app="spss">SPSS</button><button type="button" data-app="jasp">JASP</button></span></div>' +
+            '<span class="seg" role="group" aria-label="Choose software"><button type="button" class="active" data-app="spss" aria-pressed="true">SPSS</button><button type="button" data-app="jasp" aria-pressed="false">JASP</button></span></div>' +
           '<ol class="sw-steps"></ol>';
         var list = box.querySelector(".sw-steps"), app = "spss";
         var showSteps = function () {
@@ -610,7 +626,9 @@
         Array.prototype.forEach.call(box.querySelectorAll("[data-app]"), function (b) {
           b.addEventListener("click", function () {
             app = b.getAttribute("data-app");
-            Array.prototype.forEach.call(box.querySelectorAll("[data-app]"), function (b2) { b2.className = b2 === b ? "active" : ""; });
+            Array.prototype.forEach.call(box.querySelectorAll("[data-app]"), function (b2) {
+              var on = b2 === b; b2.className = on ? "active" : ""; b2.setAttribute("aria-pressed", on ? "true" : "false");
+            });
             showSteps();
           });
         });
@@ -619,7 +637,7 @@
         host.insertBefore(box, anchor1);
         /* the block is injected async, so a #run-it deep link can't scroll on
            its own — nudge it into view once it exists (e.g. arriving from plan.html) */
-        if (location.hash === "#run-it") setTimeout(function () { box.scrollIntoView({ behavior: "smooth", block: "start" }); }, 60);
+        if (location.hash === "#run-it") setTimeout(function () { box.scrollIntoView({ behavior: scrollBehavior(), block: "start" }); }, 60);
       }
 
       if (sw.apa) {
@@ -739,7 +757,9 @@
     document.addEventListener("keydown", function (e) {
       if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
       var el = document.activeElement;
-      if (el && (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) || el.isContentEditable)) return;
+      // don't hijack ←/→ while a form field OR a keyboard-operable canvas has
+      // focus — those vizzes use the arrow keys themselves (e.g. nudge a point)
+      if (el && (/^(INPUT|TEXTAREA|SELECT|CANVAS)$/.test(el.tagName) || el.isContentEditable)) return;
       if (searchEl && searchEl.classList.contains("open")) return;
       var to = null;
       if (e.key === "ArrowLeft" && flat[i - 1]) to = flat[i - 1];
@@ -751,13 +771,14 @@
   /* ============================================================
      SEARCH OVERLAY
      ============================================================ */
-  var searchEl = null, searchInput = null, searchResults = null, searchIdx = 0, searchMatches = [];
+  var searchEl = null, searchInput = null, searchResults = null, searchIdx = 0, searchMatches = [], searchOpener = null;
   function buildSearch() {
     if (searchEl) return;
     searchEl = document.createElement("div");
     searchEl.className = "search-overlay";
+    /* aria-modal so screen readers treat the page behind as inert while it's open */
     searchEl.innerHTML =
-      '<div class="search-panel" role="dialog" aria-label="Search lessons">' +
+      '<div class="search-panel" role="dialog" aria-modal="true" aria-label="Search lessons">' +
         '<input type="text" id="search-input" placeholder="Search lessons…" autocomplete="off" aria-label="Search lessons" />' +
         '<ul class="search-results" id="search-results"></ul>' +
         '<div class="search-hint"><span><kbd>↑</kbd><kbd>↓</kbd> navigate</span><span><kbd>↵</kbd> open</span><span><kbd>esc</kbd> close</span></div>' +
@@ -767,11 +788,22 @@
     searchResults = searchEl.querySelector("#search-results");
     searchEl.addEventListener("click", function (e) { if (e.target === searchEl) closeSearch(); });
     searchInput.addEventListener("input", runSearch);
+    // list-navigation keys only make sense while typing in the input
     searchInput.addEventListener("keydown", function (e) {
       if (e.key === "ArrowDown") { e.preventDefault(); move(1); }
       else if (e.key === "ArrowUp") { e.preventDefault(); move(-1); }
       else if (e.key === "Enter") { e.preventDefault(); go(); }
-      else if (e.key === "Escape") { closeSearch(); }
+    });
+    /* Escape closes and Tab is trapped inside the dialog no matter which
+       element (input or a result link) currently holds focus (WCAG 2.1.2) */
+    searchEl.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") { e.preventDefault(); closeSearch(); return; }
+      if (e.key !== "Tab") return;
+      var focusable = [searchInput].concat(Array.prototype.slice.call(searchResults.querySelectorAll("a")));
+      if (!focusable.length) return;
+      var first = focusable[0], last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     });
   }
   /* full-text index (assets/js/search-index.js) — fetched once, the first
@@ -786,8 +818,18 @@
     s.onload = function () { if (searchEl && searchEl.classList.contains("open")) runSearch(); };
     document.body.appendChild(s);
   }
-  function openSearch() { buildSearch(); loadSearchIndex(); searchEl.classList.add("open"); searchInput.value = ""; runSearch(); searchInput.focus(); }
-  function closeSearch() { if (searchEl) searchEl.classList.remove("open"); }
+  function openSearch() {
+    buildSearch(); loadSearchIndex();
+    searchOpener = (document.activeElement && document.activeElement !== document.body) ? document.activeElement : null;
+    searchEl.classList.add("open"); searchInput.value = ""; runSearch(); searchInput.focus();
+  }
+  function closeSearch() {
+    if (!searchEl) return;
+    searchEl.classList.remove("open");
+    // return focus to whatever opened the overlay (the search pill, usually)
+    if (searchOpener && searchOpener.focus) { searchOpener.focus(); }
+    searchOpener = null;
+  }
   // site pages surfaced alongside lessons in the search overlay
   var SEARCH_PAGES = [
     { title: "Statistics Toolbox", url: "toolbox.html", tag: "Tool", kw: "tools toolbox calculators references practice hub all" },
@@ -927,12 +969,40 @@
         document.body.insertBefore(sk, document.body.firstChild);
       }
     }
-    // label every interactive canvas for screen readers
+    // describe every interactive canvas for screen readers — the title says
+    // WHAT the chart is, the sub-caption HOW it responds, so the label is a
+    // real description ("Leverage playground — drag the ringed point…") not "canvas"
     Array.prototype.forEach.call(document.querySelectorAll(".viz canvas"), function (cv) {
       if (cv.getAttribute("aria-label") || cv.getAttribute("role")) return;
-      var viz = cv.closest(".viz"), title = viz && viz.querySelector(".viz-title");
+      var viz = cv.closest(".viz");
+      var title = viz && viz.querySelector(".viz-title");
+      var sub = viz && viz.querySelector(".viz-sub");
+      var name = title ? title.textContent.replace(/^[^\w]+/, "").trim() : "Interactive statistics visualization";
+      var extra = sub ? " — " + sub.textContent.trim().replace(/\s+/g, " ").slice(0, 150) : " — interactive chart";
       cv.setAttribute("role", "img");
-      cv.setAttribute("aria-label", (title ? title.textContent.replace(/^[^\w]+/, "").trim() : "Interactive statistics visualization") + " — interactive chart");
+      cv.setAttribute("aria-label", name + extra);
+    });
+    // announce live readouts: when a slider changes a stat, screen readers hear
+    // the new value. The whole .stat-row is a polite live region so any of its
+    // values updating is spoken, without flooding (polite = queued, not urgent).
+    Array.prototype.forEach.call(document.querySelectorAll(".stat-row"), function (row) {
+      if (!row.getAttribute("aria-live")) row.setAttribute("aria-live", "polite");
+    });
+    // give every slider / number / select an accessible NAME from its visible
+    // label. The lesson/tool markup writes `<label>Foo <span class="val">…</span></label>`
+    // next to a sibling `<input>` with no `for`, so the name was invisible to
+    // screen readers — here we wire it up site-wide instead of editing 90 pages.
+    Array.prototype.forEach.call(document.querySelectorAll(".control"), function (ctrl) {
+      var field = ctrl.querySelector("input, select, textarea");
+      if (!field) return;
+      if (field.getAttribute("aria-label") || field.closest("label")) return;
+      if (field.id && ctrl.querySelector('label[for="' + field.id + '"]')) return;
+      var label = ctrl.querySelector("label");
+      if (!label) return;
+      var clone = label.cloneNode(true);
+      Array.prototype.forEach.call(clone.querySelectorAll(".val"), function (v) { v.remove(); });
+      var name = clone.textContent.replace(/\s+/g, " ").trim();
+      if (name) field.setAttribute("aria-label", name);
     });
   }
   function injectHead() {
