@@ -13,10 +13,13 @@
 
 /* Ordered list of curriculum tracks. The homepage groups the course
    cards by track (in this order) and shows a heading above each group
-   only when more than one track actually has courses. */
+   only when more than one track actually has courses; `desc` renders
+   as a one-liner under the heading. */
 window.TRACKS = [
-  { id: "core",    title: "The Statistics Core" },
-  { id: "toolkit", title: "The Research Toolkit" }
+  { id: "core",    title: "The Statistics Core",
+    desc: "The analysis itself — from describing your first dataset to Bayesian, causal, and multilevel models." },
+  { id: "toolkit", title: "The Research Toolkit",
+    desc: "Everything around the analysis — designing studies, wrangling data, research ethics, machine learning, and writing it all up." }
 ];
 
 window.CURRICULUM = [

@@ -239,6 +239,22 @@ main { padding-top: var(--nav-h); }
 .feature h3 { margin: 0 0 .4rem; font-size: 1.1rem; }
 .feature p { margin: 0; color: var(--text-muted); font-size: .92rem; }
 
+/* "Start here" persona cards (homepage) — quiet guidance above the
+   curriculum grid, deliberately flatter than the course cards */
+.personas { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+.persona {
+  display: flex; flex-direction: column; gap: .3rem;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 1rem 1.15rem; background: var(--surface);
+}
+.persona .p-emoji { font-size: 1.25rem; line-height: 1; }
+.persona h3 { margin: .15rem 0 .05rem; font-size: .97rem; color: var(--text); }
+.persona p { margin: 0; font-size: .85rem; color: var(--text-muted); line-height: 1.5; }
+.persona .p-links { margin-top: auto; padding-top: .5rem; font-weight: 650; line-height: 1.7; }
+.persona .p-links a { color: var(--primary); }
+.persona .p-links a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.persona .p-links .sep { color: var(--text-faint); font-weight: 400; }
+
 /* curriculum */
 .courses { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; align-items: start; }
 /* track heading inside the curriculum grid — spans the whole row, and
@@ -250,6 +266,11 @@ main { padding-top: var(--nav-h); }
 }
 .courses .track-head:not(:first-child) { margin-top: 1.6rem; }
 .courses .track-head::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+/* one-line track description, tucked right under its heading */
+.courses .track-desc {
+  grid-column: 1 / -1; margin: -1.05rem 0 -.5rem;
+  font-size: .92rem; color: var(--text-faint); line-height: 1.5;
+}
 .course-card {
   border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
   background: var(--surface); box-shadow: var(--shadow); border-left: 4px solid var(--accent, var(--primary));
@@ -283,6 +304,9 @@ li a:hover .sec-dot { border-color: var(--accent, var(--primary)); }
 .tool-card .tool-emoji { font-size: 1.7rem; margin-bottom: .35rem; }
 .tool-card .tool-title { font-weight: 700; font-size: 1rem; color: var(--text); }
 .tool-card .tool-desc { font-size: .84rem; color: var(--text-muted); line-height: 1.45; }
+/* the homepage's "see everything" card — an index entry, not another tool */
+.tool-card-all { border-style: dashed; background: transparent; box-shadow: none; }
+.tool-card-all .tool-title { color: var(--primary); }
 
 /* about */
 .about { display: flex; flex-wrap: wrap; align-items: center; gap: 3rem; }
