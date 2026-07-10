@@ -190,7 +190,7 @@
     var canvas = document.getElementById("z-canvas"), ctx;
     var dims = { w: 0, h: 200 };
     function fit() {
-      var r = window.devicePixelRatio || 1;
+      var r = Math.min(window.devicePixelRatio || 1, 2);
       var w = canvas.clientWidth || canvas.parentElement.clientWidth;
       canvas.width = w * r; canvas.height = dims.h * r; canvas.style.height = dims.h + "px";
       ctx = canvas.getContext("2d"); ctx.setTransform(r, 0, 0, r, 0, 0); dims.w = w;
@@ -283,7 +283,7 @@
     var padL = 16, padR = 16, padT = 30, padB = 26, ZLO = -4, ZHI = 4, PK = phi(0);
 
     function fit() {
-      var r = window.devicePixelRatio || 1, w = canvas.clientWidth || canvas.parentElement.clientWidth;
+      var r = Math.min(window.devicePixelRatio || 1, 2), w = canvas.clientWidth || canvas.parentElement.clientWidth;
       canvas.width = w * r; canvas.height = H * r; canvas.style.height = H + "px";
       ctx = canvas.getContext("2d"); ctx.setTransform(r, 0, 0, r, 0, 0); W = w;
     }

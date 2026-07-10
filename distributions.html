@@ -312,8 +312,9 @@
       cur = b.getAttribute("data-k");
       renderSeg(); renderParams(); update();
     });
-    window.addEventListener("resize", draw);
-    if (window.ResizeObserver) new ResizeObserver(draw).observe(canvas);
+    var onResize = V.rafThrottle(draw);
+    window.addEventListener("resize", onResize);
+    if (window.ResizeObserver) new ResizeObserver(onResize).observe(canvas);
     V.onTheme(draw);
     renderSeg(); renderParams(); update();
   })();

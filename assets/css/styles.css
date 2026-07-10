@@ -13,6 +13,19 @@
   font-display: swap;
   src: url("../fonts/Inter.woff2") format("woff2");
 }
+/* Metric-matched fallback: local Arial scaled to Inter's line box so the
+   fallback→Inter swap causes NO reflow (kills the ~0.2 font-swap CLS on first,
+   uncached loads). Overrides are Inter-over-Arial values; Arial is present on
+   every OS so this is deterministic cross-platform. Sits first in the stack
+   (before system-ui) so it — not the platform UI font — fills the swap window. */
+@font-face {
+  font-family: "Inter Fallback";
+  src: local("Arial");
+  ascent-override: 90.44%;
+  descent-override: 22.52%;
+  line-gap-override: 0%;
+  size-adjust: 107.12%;
+}
 
 :root {
   /* palette */
@@ -41,7 +54,7 @@
   --maxw: 72rem;
   --radius: 16px;
   --nav-h: 4rem;
-  --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font: "Inter", "Inter Fallback", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
 }
 
@@ -399,7 +412,13 @@ body[data-course="writing"] { --course-accent: #84cc16; }
 }
 .viz-title { font-weight: 700; font-size: 1rem; margin: 0 0 .25rem; }
 .viz-sub { font-size: .85rem; color: var(--text-faint); margin: 0 0 1rem; }
-.viz canvas { width: 100%; height: auto; display: block; border-radius: 10px; background: var(--bg-soft); }
+/* height:auto + aspect-ratio reserves a close-to-final box BEFORE the lesson's
+   inline script runs VIZ.fit() (which sets an exact pixel height that overrides
+   this). Without a reserved box the browser paints unsized canvases at the 2:1
+   intrinsic default, then fit() shrinks them — a large layout shift (CLS). The
+   default ratio (~3:1) matches the common full-width viz; a tall or wide canvas
+   can override per-instance with style="--viz-ar: 2 / 1". Keeps CLS < 0.1. */
+.viz canvas { width: 100%; height: auto; aspect-ratio: var(--viz-ar, 3 / 1); display: block; border-radius: 10px; background: var(--bg-soft); }
 
 .controls { display: flex; flex-wrap: wrap; gap: .9rem 1.25rem; align-items: flex-end; margin-bottom: 1rem; }
 .control { display: flex; flex-direction: column; gap: .3rem; }
@@ -444,7 +463,13 @@ body[data-course="writing"] { --course-accent: #84cc16; }
 /* ---------- mobile ---------- */
 @media (max-width: 860px) {
   .lesson-wrap { flex-direction: column; padding-top: 1rem; }
-  .sidebar { width: 100%; }
+  /* The sidebar (full course list) is JS-injected after first paint. In the
+     stacked mobile layout it lived ABOVE the article, so filling it shoved all
+     lesson content down ~800px — a huge layout shift (CLS ≈ 0.8). Order the
+     article first so the sidebar fills in BELOW existing content (no shift) —
+     which is also better mobile UX: the lesson, then "more in this course". */
+  .lesson { order: 0; }
+  .sidebar { width: 100%; order: 1; }
   .sidebar-sticky { position: static; max-height: none; }
   .sb-capy { display: none; }   /* don't push lesson content down on mobile */
 

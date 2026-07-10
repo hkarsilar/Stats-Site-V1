@@ -407,8 +407,9 @@
     segWire("seg-tails", "data-t", function (v) { tails = +v; compute(); });
     ["in-alpha", "in-es", "in-p1", "in-p2", "in-k", "in-df", "in-n", "in-power"].forEach(function (id) { el(id).addEventListener("input", compute); });
 
-    window.addEventListener("resize", function () { if (lastRes) draw(lastRes); });
-    if (window.ResizeObserver) new ResizeObserver(function () { if (lastRes) draw(lastRes); }).observe(canvas);
+    var onResize = V.rafThrottle(function () { if (lastRes) draw(lastRes); });
+    window.addEventListener("resize", onResize);
+    if (window.ResizeObserver) new ResizeObserver(onResize).observe(canvas);
     V.onTheme(function () { if (lastRes) draw(lastRes); });
 
     /* deep-link prefill, e.g. power.html?sc=t2&es=0.5 (used by plan.html) */

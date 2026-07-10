@@ -20,9 +20,27 @@ window.VIZ = (function () {
     catch (e) { return false; }
   }
 
+  // Coalesce bursty callbacks (resize + ResizeObserver both fire on a window
+  // resize) into at most one call per animation frame — avoids the double
+  // redraw and keeps resizing smooth. Returns a wrapped fn; call it freely.
+  function rafThrottle(fn) {
+    var scheduled = false;
+    return function () {
+      if (scheduled) return;
+      scheduled = true;
+      (window.requestAnimationFrame || function (cb) { return setTimeout(cb, 16); })(function () {
+        scheduled = false;
+        fn();
+      });
+    };
+  }
+
   // High-DPI canvas setup. Returns { ctx, w, h } in CSS pixels.
+  // DPR is capped at 2: beyond that the backing store grows quadratically
+  // (a 3× phone would allocate 2.25× the pixels of a 2× screen) for no visible
+  // gain on these flat charts, so cap it to keep memory/paint cost sane on 4K.
   function fit(canvas, cssHeight) {
-    var ratio = window.devicePixelRatio || 1;
+    var ratio = Math.min(window.devicePixelRatio || 1, 2);
     var w = canvas.clientWidth || canvas.parentElement.clientWidth || 640;
     canvas.width = w * ratio;
     canvas.height = cssHeight * ratio;
@@ -228,5 +246,5 @@ window.VIZ = (function () {
     return negdel ? 1 - tnc : tnc;
   }
 
-  return { css: css, reducedMotion: reducedMotion, fit: fit, randn: randn, gauss: gauss, erf: erf, normCdf: normCdf, normPdf: normPdf, normInv: normInv, mean: mean, sd: sd, onTheme: onTheme, gammaln: gammaln, gammp: gammp, betai: betai, fUpper: fUpper, chiSqUpper: chiSqUpper, tUpper: tUpper, tPdf: tPdf, chiSqPdf: chiSqPdf, fPdf: fPdf, tInv: tInv, chiSqInv: chiSqInv, fInv: fInv, nctCdf: nctCdf, ncx2Cdf: ncx2Cdf, ncfCdf: ncfCdf };
+  return { css: css, reducedMotion: reducedMotion, rafThrottle: rafThrottle, fit: fit, randn: randn, gauss: gauss, erf: erf, normCdf: normCdf, normPdf: normPdf, normInv: normInv, mean: mean, sd: sd, onTheme: onTheme, gammaln: gammaln, gammp: gammp, betai: betai, fUpper: fUpper, chiSqUpper: chiSqUpper, tUpper: tUpper, tPdf: tPdf, chiSqPdf: chiSqPdf, fPdf: fPdf, tInv: tInv, chiSqInv: chiSqInv, fInv: fInv, nctCdf: nctCdf, ncx2Cdf: ncx2Cdf, ncfCdf: ncfCdf };
 })();

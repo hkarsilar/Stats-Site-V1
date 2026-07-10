@@ -487,8 +487,9 @@
     function redraw() { fitAll(); drawScatter(); drawResid();
       var grid = document.getElementById("cr-ansc-grid");
       if (grid.childElementCount) { grid.innerHTML = ""; buildAnsc(); } }
-    window.addEventListener("resize", redraw);
-    if (window.ResizeObserver) new ResizeObserver(redraw).observe(scatter);
+    var onResize = VIZ.rafThrottle(redraw);
+    window.addEventListener("resize", onResize);
+    if (window.ResizeObserver) new ResizeObserver(onResize).observe(scatter);
     VIZ.onTheme(function () { drawScatter(); drawResid();
       var grid = document.getElementById("cr-ansc-grid"); if (grid.childElementCount) { grid.innerHTML = ""; buildAnsc(); } });
     fitAll(); drawScatter(); drawResid();

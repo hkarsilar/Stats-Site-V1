@@ -142,7 +142,7 @@
     function clamp(v) { return v < LO ? LO : v > HI ? HI : v; }
 
     function fit() {
-      var r = window.devicePixelRatio || 1;
+      var r = Math.min(window.devicePixelRatio || 1, 2);
       W = canvas.clientWidth || canvas.parentElement.clientWidth;
       canvas.width = W * r; canvas.height = H * r; canvas.style.height = H + "px";
       ctx = canvas.getContext("2d"); ctx.setTransform(r, 0, 0, r, 0, 0);

@@ -226,7 +226,7 @@
       ctx.restore();
     }
 
-    function fit() { var r = window.devicePixelRatio || 1; W = c.clientWidth; c.width = W * r; c.height = H * r; c.style.height = H + "px"; ctx = c.getContext("2d"); ctx.setTransform(r, 0, 0, r, 0, 0); }
+    function fit() { var r = Math.min(window.devicePixelRatio || 1, 2); W = c.clientWidth; c.width = W * r; c.height = H * r; c.style.height = H + "px"; ctx = c.getContext("2d"); ctx.setTransform(r, 0, 0, r, 0, 0); }
     function draw() {
       var center = W / 2, baseY = H - 30, top = 16, pxPerUnit = (W * 0.44) / 5;
       ctx.clearRect(0, 0, W, H);

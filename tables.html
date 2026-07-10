@@ -328,8 +328,9 @@
     ["in-stat", "in-alpha", "in-df1", "in-df2"].forEach(function (id) {
       el(id).addEventListener("input", update);
     });
-    window.addEventListener("resize", draw);
-    if (window.ResizeObserver) new ResizeObserver(draw).observe(canvas);
+    var onResize = V.rafThrottle(draw);
+    window.addEventListener("resize", onResize);
+    if (window.ResizeObserver) new ResizeObserver(onResize).observe(canvas);
     V.onTheme(draw);
     update();
   })();

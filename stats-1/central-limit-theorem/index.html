@@ -199,7 +199,7 @@
 
     /* ---- canvas helpers ---- */
     function fit(canvas, h) {
-      var ratio = window.devicePixelRatio || 1;
+      var ratio = Math.min(window.devicePixelRatio || 1, 2);
       var w = canvas.clientWidth || canvas.parentElement.clientWidth;
       canvas.width = w * ratio; canvas.height = h * ratio;
       canvas.style.height = h + "px";

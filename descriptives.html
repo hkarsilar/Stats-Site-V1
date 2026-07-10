@@ -267,7 +267,7 @@
         });
       } catch (e) {}
     });
-    window.addEventListener("resize", function () { fit(); update(); });
+    window.addEventListener("resize", VIZ.rafThrottle(function () { fit(); update(); }));
     VIZ.onTheme(update);
     fit(); update();
   })();

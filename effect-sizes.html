@@ -246,7 +246,7 @@
       update();
     });
 
-    window.addEventListener("resize", function () { fit(); draw(); });
+    window.addEventListener("resize", VIZ.rafThrottle(function () { fit(); draw(); }));
     VIZ.onTheme(draw);
     fit(); applyCfg(); update();
   })();

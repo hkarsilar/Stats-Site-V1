@@ -149,7 +149,7 @@
     })();
 
     function fit(id, h) {
-      var c = document.getElementById(id), r = window.devicePixelRatio || 1;
+      var c = document.getElementById(id), r = Math.min(window.devicePixelRatio || 1, 2);
       var w = c.clientWidth || c.parentElement.clientWidth;
       c.width = w * r; c.height = h * r; c.style.height = h + "px";
       var ctx = c.getContext("2d"); ctx.setTransform(r, 0, 0, r, 0, 0);
