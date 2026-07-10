@@ -20,7 +20,8 @@
         a QUIPS line, a SNIPPETS entry (warn), a SOFTWARE entry (info), and
         a sitemap URL; no stale/orphan keys anywhere.
      2. Per-lesson HTML — one GA tag, canonical + og:url = true URL,
-        og:type article, LearningResource+BreadcrumbList+FAQPage JSON-LD all
+        og:type article, og:image/twitter:image = the course's OG image (and
+        it exists on disk), LearningResource+BreadcrumbList+FAQPage JSON-LD all
         parse, data-course/data-section correct, "Section N.n" eyebrow matches
         curriculum, meta description present (50–160 chars).
      3. Root/tool pages — GA, canonical, meta description, OG present;
@@ -111,6 +112,14 @@ function canonicalOf(src) {
     if ((a.rel || '') === 'canonical') return a.href || null;
   }
   return null;
+}
+
+/* Absolute site URL (https://statscapybara.com/…) → does it resolve to a
+   file on disk? Used to verify og:image targets actually exist. */
+function siteAssetExists(url) {
+  if (!url || !url.startsWith(BASE_URL)) return false;
+  const relPath = url.slice(BASE_URL.length).split(/[?#]/)[0];
+  return fs.existsSync(path.join(ROOT, relPath));
 }
 
 function jsonLd(src) {
@@ -282,6 +291,14 @@ for (const s of READY) {
   const ogType = metaProp(ms, 'og:type');
   if (ogType !== 'article') err(`${rel(file)} → og:type is "${ogType || 'MISSING'}", expected "article"`);
 
+  // og:image / twitter:image = this course's OG image, and it exists on disk
+  const courseImg = `${BASE_URL}assets/og-${s.course}.png`;
+  const ogImg = metaProp(ms, 'og:image');
+  const twImg = metaName(ms, 'twitter:image');
+  if (ogImg !== courseImg) err(`${rel(file)} → og:image is ${ogImg || 'MISSING'}, expected ${courseImg}`);
+  if (twImg !== courseImg) err(`${rel(file)} → twitter:image is ${twImg || 'MISSING'}, expected ${courseImg}`);
+  if (!siteAssetExists(courseImg)) err(`${rel(file)} → og:image ${courseImg} does not resolve to a file on disk`);
+
   // JSON-LD blocks
   const lds = jsonLd(src);
   if (lds.some((b) => !b.ok)) err(`${rel(file)} → a JSON-LD block does not parse`);
@@ -322,6 +339,9 @@ for (const f of ROOT_PAGES) {
   if (!metaName(ms, 'description')) err(`${f} → missing meta description`);
   for (const p of ['og:title', 'og:type', 'og:url']) if (!metaProp(ms, p)) err(`${f} → missing ${p}`);
   for (const p of ['og:image', 'og:description']) if (!metaProp(ms, p)) warn(`${f} → missing ${p}`);
+  // og:image (if present) must resolve to a file on disk
+  const rootImg = metaProp(ms, 'og:image');
+  if (rootImg && !siteAssetExists(rootImg)) err(`${f} → og:image ${rootImg} does not resolve to a file on disk`);
 }
 // 404.html: self-contained, GA only
 const p404 = path.join(ROOT, '404.html');
