@@ -37,6 +37,10 @@
         <h1>Statistics Glossary</h1>
         <p class="lede">Every key term in the course, in plain language. Start typing to filter, and click a term's link to jump to the lesson where you can see it in action.</p>
 
+        <p style="display:flex;gap:.75rem;flex-wrap:wrap;margin:0 0 1rem">
+          <button class="btn btn-primary btn-sm" id="print-btn" type="button">🖨️ Print / save as PDF</button>
+        </p>
+
         <input type="text" id="gloss-filter" class="glossary-filter" placeholder="Filter terms… (e.g. p-value, variance, prior)" autocomplete="off" aria-label="Filter glossary terms" />
         <p id="gloss-count" style="font-size:.82rem;color:var(--text-faint);margin:-.75rem 0 1.25rem"></p>
 
@@ -87,6 +91,7 @@
     }
 
     filter.addEventListener("input", function () { render(filter.value); });
+    document.getElementById("print-btn").addEventListener("click", function () { window.print(); });
     render("");
     // support deep links like glossary.html#p-value
     if (location.hash) {

@@ -616,6 +616,15 @@ body[data-course="writing"] { --course-accent: #84cc16; }
 .lesson-done.done { border-color: var(--success); color: var(--success); }
 .lesson-done.done .box { background: var(--success); border-color: var(--success); }
 .lesson-progress-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 1.75rem 0 .5rem; }
+.lph-actions { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+/* "Print this lesson" — same pill as mark-complete, neutral hover (it's not a completion control) */
+.print-btn {
+  display: inline-flex; align-items: center; gap: .4rem; cursor: pointer;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text-muted);
+  border-radius: 10px; padding: .5rem .9rem; font: inherit; font-size: .85rem; font-weight: 600;
+  transition: .15s;
+}
+.print-btn:hover { border-color: var(--primary); color: var(--text); }
 
 /* ============================================================
    GLOSSARY
@@ -637,21 +646,73 @@ body[data-course="writing"] { --course-accent: #84cc16; }
 .gloss-empty { color: var(--text-faint); padding: 1rem 0; }
 
 /* ============================================================
-   PRINT — clean lesson → PDF
+   PRINT — turn any lesson (and the formulas / glossary reference
+   pages) into a clean, professor-ready handout. Site chrome, the
+   viz controls, and the interactive-only blocks (checks, SPSS/JASP)
+   drop away; prose, callouts, formulas, the frozen viz canvases, the
+   APA write-up, and the R/Python snippet stay — and the FAQ is
+   forced open by a beforeprint handler in site.js. A discreet fixed
+   footer prints the page URL on every sheet.
+   The variable overrides below force a light, ink-friendly palette
+   even when the reader is in dark mode, so cards never print as dark
+   boxes. See site.js setupPrint() for the canvas-snapshot + FAQ-open
+   logic and the injected "Print this lesson" button.
    ============================================================ */
+.print-footer { display: none; }   /* screen: hidden — shown only in @media print */
+
 @media print {
-  .nav, .sidebar, .lesson-nav, .footer, .kofi, .skip-link, .search-overlay,
-  .resume-bar, .lesson-done, .lesson-progress-head, .hero-cta, .nav-actions,
-  .lesson-toc, .tc-copy { display: none !important; }
-  .try-code { break-inside: avoid; border: 1px solid #ccc; box-shadow: none; }
+  /* force a light, printer-friendly palette regardless of the on-screen theme */
+  :root, html[data-theme="dark"] {
+    --bg: #fff; --bg-soft: #f6f7f9; --surface: #fff; --surface-2: #fff;
+    --border: #ccc; --text: #000; --text-muted: #1a1a1a; --text-faint: #555;
+    --shadow: none; --shadow-lg: none;
+  }
+
+  /* --- site chrome + personal-state / navigation UI --- */
+  .nav, .nav-toggle, .nav-actions, .sidebar, .sb-capy, .lesson-nav, .footer,
+  .kofi, .skip-link, .search-overlay, .resume-bar, .lesson-progress-head,
+  .lesson-done, .print-btn, .hero-cta, .lesson-toc, .tc-copy { display: none !important; }
+
+  /* --- interactive-only injected blocks (the APA + R/Python blocks stay;
+         they're reference material worth keeping on a handout) --- */
+  .checks, .software { display: none !important; }
+
+  /* --- viz: keep the frozen canvas + its title and stat readouts, but drop
+         the sliders/buttons/segmented controls that do nothing on paper. The
+         R/Python block's language toggle goes too (the selected code stays). --- */
+  .viz .controls, .viz .seg, .viz button, .viz input, .viz select,
+  .try-code .seg { display: none !important; }
+
+  /* --- reference pages (formulas / glossary): drop their live controls --- */
+  .glossary-filter, #gloss-count, .btn { display: none !important; }
+
+  /* --- page setup --- */
+  @page { margin: 1.6cm 1.6cm 1.9cm; }
   main { padding-top: 0; }
   .lesson-wrap { display: block; padding: 0; }
-  .lesson { max-width: none; }
-  body { background: #fff; color: #000; }
-  .viz { break-inside: avoid; border: 1px solid #ccc; box-shadow: none; }
-  .callout { break-inside: avoid; }
-  a { color: #000; text-decoration: underline; }
+  .lesson { max-width: none; margin: 0 !important; font-size: 10.5pt; line-height: 1.5; }
+  .lesson h1 { font-size: 20pt; }
+  .lesson h2 { font-size: 14pt; }
+  .lesson h3 { font-size: 12pt; }
+
+  /* --- keep related content together across page breaks --- */
+  .viz, .callout, .faq-item, .apa-report, .try-code, .gloss-item,
+  .ref-table tr { break-inside: avoid; }
+  .ref-table thead { display: table-header-group; }   /* repeat table headers per page */
   h1, h2, h3 { break-after: avoid; }
+
+  /* --- FAQ prints fully expanded (site.js opens each <details>) --- */
+  .faq-item summary::after { display: none; }          /* no ▾ marker once forced open */
+  .faq-item summary { background: transparent; }
+
+  a { color: #000 !important; text-decoration: underline; }
+
+  /* --- the one printed adornment: a discreet per-page URL footer --- */
+  .print-footer {
+    display: block; position: fixed; bottom: 0; left: 0; right: 0;
+    text-align: center; font-size: 8pt; color: #555;
+    padding: .18cm 0; background: #fff;
+  }
 }
 
 /* ============================================================
@@ -784,7 +845,7 @@ details.checks[open] .ck-open-label { display: none; }
 .ck-fb { min-height: 1rem; margin: .6rem 0; font-size: .88rem; color: var(--text-muted); }
 .ck-fb .ok { color: #22c55e; }
 .ck-fb .no { color: #ef4444; }
-@media print { .checks { display: none !important; } }
+/* checks block is hidden in print — see the main PRINT block above */
 
 /* ============================================================
    "COMMON QUESTIONS" — static per-lesson FAQ (in the HTML itself,
@@ -817,7 +878,7 @@ details.checks[open] .ck-open-label { display: none; }
 .faq-a strong { color: var(--text); }
 .faq-a a { color: var(--primary); font-weight: 600; }
 .faq { --faq-accent: #0ea5e9; }
-@media print { .faq-item[open] summary::after { display: none; } }
+/* FAQ prints fully expanded (details forced open) — see the main PRINT block */
 
 /* ============================================================
    "TRY IT YOURSELF" R / PYTHON SNIPPETS (auto-injected)
@@ -863,7 +924,7 @@ details.checks[open] .ck-open-label { display: none; }
 .apa-tips { margin: 0 1.1rem .95rem; padding-left: 1.2rem; font-size: .86rem; color: var(--text-muted); }
 .apa-tips li { margin: .3rem 0; line-height: 1.55; }
 .apa-formatter-link { margin: 0 1.1rem 1rem; font-size: .86rem; font-weight: 600; }
-@media print { .software .seg { display: none; } }
+/* the whole SPSS/JASP .software block is hidden in print — see the main PRINT block */
 
 /* ============================================================
    PER-BLOCK ACCENTS — the injected learning blocks each get their

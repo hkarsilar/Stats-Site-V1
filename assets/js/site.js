@@ -518,10 +518,85 @@
     }
     btn.addEventListener("click", function () { setDone(HERE, !isDone(HERE)); paint(); });
     paint();
-    wrap.appendChild(btn);
+    var actions = document.createElement("div");
+    actions.className = "lph-actions";
+    actions.appendChild(btn);
+    // "Print this lesson" — the print stylesheet (styles.css) turns the page into a
+    // clean handout; setupPrint() forces the FAQ open + snapshots canvases first.
+    var pbtn = document.createElement("button");
+    pbtn.type = "button";
+    pbtn.className = "print-btn";
+    pbtn.innerHTML = '<span aria-hidden="true">🖨️</span> Print';
+    pbtn.setAttribute("aria-label", "Print this lesson");
+    pbtn.addEventListener("click", function () { window.print(); });
+    actions.appendChild(pbtn);
+    wrap.appendChild(actions);
     // place just above the prev/next nav
     if (lessonNav) article.insertBefore(wrap, lessonNav);
     else article.appendChild(wrap);
+  }
+
+  /* ---------- print handout support (lesson pages) ----------
+     Before printing: force every closed <details> (the FAQ) open so
+     answers print, and snapshot each frozen viz canvas to an <img>
+     (some browsers rasterise <canvas> as blank on the print sheet).
+     Everything is reverted on afterprint. Also injects a discreet
+     per-page footer carrying the lesson's clean URL. */
+  function setupPrint() {
+    if (!HERE) return;
+    // discreet printed footer with the lesson's clean canonical URL
+    var canon = document.querySelector('link[rel="canonical"]');
+    var url = ((canon && canon.href) || window.location.href)
+      .replace(/^https?:\/\//, "").replace(/index\.html$/, "").replace(/\/+$/, "");
+    var foot = document.createElement("div");
+    foot.className = "print-footer";
+    foot.textContent = url;
+    document.body.appendChild(foot);
+
+    var opened = [], shots = [], active = false;
+    function before() {
+      if (active) return; active = true;
+      var scope = document.querySelector(".lesson") || document.body;
+      // open any closed <details> so answers/steps print (the checks block stays hidden)
+      var dets = scope.querySelectorAll("details:not([open])");
+      for (var i = 0; i < dets.length; i++) {
+        if (dets[i].classList.contains("checks")) continue;
+        dets[i].setAttribute("open", ""); opened.push(dets[i]);
+      }
+      // snapshot canvases → <img> so a frozen viz never prints blank
+      var cvs = scope.querySelectorAll(".viz canvas");
+      for (var j = 0; j < cvs.length; j++) {
+        var c = cvs[j];
+        if (!c.width || !c.height || c.offsetParent === null) continue;   // skip hidden canvases
+        try {
+          var img = document.createElement("img");
+          img.src = c.toDataURL("image/png");
+          img.className = "print-canvas-shot";
+          img.style.cssText = "width:100%;height:auto;display:block;border-radius:10px";
+          c.style.display = "none";
+          c.parentNode.insertBefore(img, c.nextSibling);
+          shots.push({ img: img, canvas: c });
+        } catch (e) { /* tainted/unsupported — leave the live canvas in place */ }
+      }
+    }
+    function after() {
+      if (!active) return; active = false;
+      for (var i = 0; i < opened.length; i++) opened[i].removeAttribute("open");
+      opened = [];
+      for (var j = 0; j < shots.length; j++) {
+        shots[j].canvas.style.display = "";
+        if (shots[j].img.parentNode) shots[j].img.parentNode.removeChild(shots[j].img);
+      }
+      shots = [];
+    }
+    window.addEventListener("beforeprint", before);
+    window.addEventListener("afterprint", after);
+    // Safari fires no before/afterprint — drive off the print media query instead
+    if (window.matchMedia) {
+      try {
+        window.matchMedia("print").addEventListener("change", function (e) { e.matches ? before() : after(); });
+      } catch (_) { /* older Safari lacks MQL.addEventListener — before/afterprint covers others */ }
+    }
   }
 
   /* ---------- "On this page" mini-TOC (longer lessons only) ---------- */
@@ -1035,6 +1110,7 @@
     renderSidebar();
     renderLessonNav();
     renderLessonDone();
+    setupPrint();
     renderTOC();
     renderTryCode();
     renderChecks();
