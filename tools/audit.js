@@ -32,6 +32,20 @@
      4. All internal href/src links resolve on disk; no leading-slash paths.
      5. Search index — freshness (mtime) + every ready slug indexed.
      6. Homepage counts — the course/lesson totals in index.html match reality.
+     7. Structured data (P36) — every JSON-LD object passes a per-type
+        required-fields check (name/url; itemListElement for BreadcrumbList;
+        mainEntity for FAQPage; …); every tool page carries a BreadcrumbList
+        (Home → Statistics Toolbox → Tool) and quiz.html a Quiz block; the
+        homepage carries Organization + WebSite (with SearchAction) + an
+        ItemList of one Course per curriculum course whose names, lesson
+        counts, track titles, first-lesson URLs, and educationalLevels all
+        match curriculum.js; each lesson's LearningResource names its own
+        course in isPartOf and carries the course's expected educationalLevel
+        (stats-1 Beginner, stats-2 Intermediate, stats-3/4 Advanced,
+        toolkit courses Intermediate).
+     8. Meta hygiene (P36) — no two audited pages share a meta description,
+        and every <title> follows "Thing — StatsCapybara" (the homepage is
+        brand-first: "StatsCapybara — …").
    ============================================================ */
 'use strict';
 const fs = require('fs');
@@ -137,6 +151,84 @@ function jsonLd(src) {
   return out;
 }
 
+/* Flatten parsed JSON-LD blocks → the top-level typed objects they contain
+   (a block may be a single object, an array of objects, or a @graph). */
+function ldObjects(lds) {
+  const out = [];
+  for (const b of lds) {
+    if (!b.ok || !b.parsed) continue;
+    const nodes = Array.isArray(b.parsed) ? b.parsed
+      : Array.isArray(b.parsed['@graph']) ? b.parsed['@graph'] : [b.parsed];
+    for (const n of nodes) if (n && typeof n === 'object') out.push(n);
+  }
+  return out;
+}
+
+/* CHECK 7 helper — minimal required fields per JSON-LD @type. Unknown types
+   only need a name (or headline); list-bearing types get their list items
+   sanity-checked too. */
+const LD_REQUIRED = {
+  LearningResource: ['name', 'description', 'url'],
+  Article: ['headline', 'description', 'url'],
+  Course: ['name', 'description', 'url'],
+  Quiz: ['name', 'url'],
+  WebSite: ['name', 'url'],
+  Organization: ['name', 'url'],
+  ItemList: ['itemListElement'],
+  BreadcrumbList: ['itemListElement'],
+  FAQPage: ['mainEntity']
+};
+function checkLdFields(label, objs) {
+  for (const o of objs) {
+    const t = o['@type'];
+    if (!t) { err(`${label} → JSON-LD object without @type`); continue; }
+    for (const f of LD_REQUIRED[t] || []) {
+      const v = o[f];
+      if (v === undefined || v === null || (typeof v === 'string' && !v.trim()) || (Array.isArray(v) && !v.length))
+        err(`${label} → ${t} JSON-LD missing required field "${f}"`);
+    }
+    if (t === 'BreadcrumbList' && Array.isArray(o.itemListElement))
+      o.itemListElement.forEach((it, i) => {
+        if (!it || it['@type'] !== 'ListItem' || !Number.isInteger(it.position) || !it.name || !it.item)
+          err(`${label} → BreadcrumbList item ${i + 1} needs @type ListItem + position + name + item`);
+      });
+    if (t === 'FAQPage' && Array.isArray(o.mainEntity))
+      o.mainEntity.forEach((q, i) => {
+        if (!q || !q.name || !q.acceptedAnswer || !q.acceptedAnswer.text)
+          err(`${label} → FAQPage question ${i + 1} needs name + acceptedAnswer.text`);
+      });
+  }
+}
+
+/* Expected LearningResource/Course educationalLevel per course (CHECK 7):
+   the core track ramps Beginner → Advanced; toolkit courses sit at
+   Intermediate (research-student audience). */
+const CORE_LEVELS = { 'stats-1': 'Beginner', 'stats-2': 'Intermediate', 'stats-3': 'Advanced', 'stats-4': 'Advanced' };
+function expectedLevel(course) {
+  if (CORE_LEVELS[course]) return CORE_LEVELS[course];
+  const c = CURRICULUM.find((x) => x.slug === course);
+  return c && (c.track || 'core') === 'toolkit' ? 'Intermediate' : null;
+}
+
+/* CHECK 8 accumulators — meta-description dedupe + title pattern, fed by
+   the per-page loops below. */
+const descSeen = new Map();   // description text → [pages]
+function metaHygiene(label, src, ms) {
+  const d = metaName(ms, 'description');
+  if (d) {
+    if (!descSeen.has(d)) descSeen.set(d, []);
+    descSeen.get(d).push(label);
+  }
+  const t = (src.match(/<title>([\s\S]*?)<\/title>/i) || [])[1];
+  if (!t) { err(`${label} → missing <title>`); return; }
+  const title = t.trim();
+  if (label === 'index.html') {
+    if (!/^StatsCapybara\s+—\s/.test(title)) err(`${label} → homepage <title> should start with "StatsCapybara — " (got "${title}")`);
+  } else if (!/—\sStatsCapybara$/.test(title)) {
+    err(`${label} → <title> should end with "— StatsCapybara" (got "${title}")`);
+  }
+}
+
 /* Every href/src in the page markup, with inline <script> bodies stripped
    first (script-built links are dynamic/BASE-prefixed, not static resources).
    <script src="…"> tags are kept — their src is a real resource link. */
@@ -210,6 +302,8 @@ const allSlugs = new Set(FLAT.map((s) => s.slug));
 const slugCourse = {}, slugN = {};
 FLAT.forEach((s) => { slugCourse[s.slug] = s.course; slugN[s.slug] = s.n; });
 const courseSlugs = new Set(CURRICULUM.map((c) => c.slug));   // any track, not just stats-N
+const courseBySlug = {};
+CURRICULUM.forEach((c) => { courseBySlug[c.slug] = c; });
 
 /* root / tool pages (excluding the self-contained 404.html) */
 const ROOT_PAGES = ['index.html', 'quiz.html', 'glossary.html', 'toolbox.html', 'which-test.html', 'which-chart.html',
@@ -316,6 +410,25 @@ for (const s of READY) {
   if (!faqLd) err(`${rel(file)} → missing FAQPage JSON-LD (data-faq)`);
   else if (!faqLd.ok || (faqLd.parsed && faqLd.parsed['@type'] !== 'FAQPage')) err(`${rel(file)} → data-faq block is not a valid FAQPage`);
 
+  // CHECK 7 — per-type required fields on every JSON-LD object (incl. the FAQ block)
+  const objs = ldObjects(lds);
+  checkLdFields(rel(file), objs);
+
+  // CHECK 7 — LearningResource names its own course + carries the expected level
+  const lr = objs.find((o) => o['@type'] === 'LearningResource');
+  if (lr) {
+    const c = courseBySlug[s.course];
+    const wantPart = `StatsCapybara — ${c.title}: ${c.subtitle}`;
+    const partName = lr.isPartOf && lr.isPartOf.name;
+    if (partName !== wantPart) err(`${rel(file)} → LearningResource isPartOf is "${partName || 'MISSING'}", expected "${wantPart}"`);
+    const wantLevel = expectedLevel(s.course);
+    if (wantLevel && lr.educationalLevel !== wantLevel) err(`${rel(file)} → educationalLevel is "${lr.educationalLevel || 'MISSING'}", expected "${wantLevel}"`);
+    if (lr.url !== trueUrl) err(`${rel(file)} → LearningResource url is ${lr.url || 'MISSING'}, expected ${trueUrl}`);
+  }
+
+  // CHECK 8 — description dedupe + title pattern
+  metaHygiene(rel(file), src, ms);
+
   // data-course / data-section
   const body = (src.match(/<body\b[^>]*>/i) || [''])[0];
   const ba = attrs(body);
@@ -342,12 +455,69 @@ for (const f of ROOT_PAGES) {
   const src = read(file), ms = metaTags(src);
   if (gaCount(src) !== 2) err(`${f} → expected exactly one GA tag (2 ${GA_ID} refs), found ${gaCount(src)}`);
   if (!canonicalOf(src)) err(`${f} → missing canonical`);
-  if (!metaName(ms, 'description')) err(`${f} → missing meta description`);
+  const rootDesc = metaName(ms, 'description');
+  if (!rootDesc) err(`${f} → missing meta description`);
+  else if (rootDesc.length < 50 || rootDesc.length > 160) warn(`${f} → meta description is ${rootDesc.length} chars (want 50–160)`);
   for (const p of ['og:title', 'og:type', 'og:url']) if (!metaProp(ms, p)) err(`${f} → missing ${p}`);
   for (const p of ['og:image', 'og:description']) if (!metaProp(ms, p)) warn(`${f} → missing ${p}`);
   // og:image (if present) must resolve to a file on disk
   const rootImg = metaProp(ms, 'og:image');
   if (rootImg && !siteAssetExists(rootImg)) err(`${f} → og:image ${rootImg} does not resolve to a file on disk`);
+
+  // CHECK 7 — JSON-LD parses + per-type required fields; every tool page
+  // carries a BreadcrumbList (Home → Statistics Toolbox → Tool), quiz.html
+  // additionally a Quiz block. The homepage's blocks get their own deep
+  // check against curriculum.js below.
+  const lds = jsonLd(src);
+  if (lds.some((b) => !b.ok)) err(`${f} → a JSON-LD block does not parse`);
+  const objs = ldObjects(lds);
+  checkLdFields(f, objs);
+  const types = objs.map((o) => o['@type']);
+  if (f !== 'index.html' && !types.includes('BreadcrumbList')) err(`${f} → missing BreadcrumbList JSON-LD (Home → Statistics Toolbox → Tool)`);
+  if (f === 'quiz.html' && !types.includes('Quiz')) err(`${f} → missing Quiz JSON-LD`);
+
+  // CHECK 8 — description dedupe + title pattern
+  metaHygiene(f, src, ms);
+}
+
+/* ---- CHECK 7 (homepage) — Organization + WebSite (SearchAction) + an
+   ItemList of Course objects that mirrors curriculum.js exactly ---- */
+{
+  const src = read(path.join(ROOT, 'index.html'));
+  const objs = ldObjects(jsonLd(src));
+  const org = objs.find((o) => o['@type'] === 'Organization');
+  const web = objs.find((o) => o['@type'] === 'WebSite');
+  const list = objs.find((o) => o['@type'] === 'ItemList');
+  if (!org) err('index.html → missing Organization JSON-LD');
+  else if (org.logo && !siteAssetExists(org.logo)) err(`index.html → Organization logo ${org.logo} does not resolve to a file on disk`);
+  if (!web) err('index.html → missing WebSite JSON-LD');
+  else {
+    const act = web.potentialAction;
+    if (!act || act['@type'] !== 'SearchAction' || !act.target || !/\{search_term_string\}/.test(act.target.urlTemplate || ''))
+      err('index.html → WebSite JSON-LD lost its SearchAction ?q={search_term_string}');
+  }
+  if (!list) err('index.html → missing ItemList JSON-LD (one Course per course)');
+  else {
+    const items = Array.isArray(list.itemListElement) ? list.itemListElement : [];
+    if (list.numberOfItems !== CURRICULUM.length) err(`index.html → ItemList numberOfItems is ${list.numberOfItems}, curriculum has ${CURRICULUM.length} courses`);
+    if (items.length !== CURRICULUM.length) err(`index.html → ItemList has ${items.length} items, curriculum has ${CURRICULUM.length} courses`);
+    CURRICULUM.forEach((c, i) => {
+      const item = items[i] && items[i].item;
+      const label = `index.html → ItemList course ${i + 1} (${c.slug})`;
+      if (!item || item['@type'] !== 'Course') { err(`${label} is not a Course object`); return; }
+      const wantName = `${c.title}: ${c.subtitle}`;
+      if (item.name !== wantName) err(`${label} name is "${item.name}", expected "${wantName}"`);
+      const ready = c.sections.filter((x) => x.ready);
+      const nm = (item.description || '').match(/^(\d+) interactive lessons/);
+      if (!nm || +nm[1] !== ready.length) err(`${label} description should start "${ready.length} interactive lessons" (got "${item.description}")`);
+      const track = (win.TRACKS || []).find((t) => t.id === (c.track || 'core'));
+      if (track && !(item.description || '').includes(track.title)) err(`${label} description should name its track "${track.title}"`);
+      const wantUrl = `${BASE_URL}${c.slug}/${ready[0].slug}/`;
+      if (item.url !== wantUrl) err(`${label} url is ${item.url}, expected first lesson ${wantUrl}`);
+      const wantLevel = expectedLevel(c.slug);
+      if (wantLevel && item.educationalLevel !== wantLevel) err(`${label} educationalLevel is "${item.educationalLevel}", expected "${wantLevel}"`);
+    });
+  }
 }
 // 404.html: self-contained, GA only
 const p404 = path.join(ROOT, '404.html');
@@ -379,9 +549,12 @@ for (const g of GUIDES) {
   else if (!siteAssetExists(gImg)) err(`guides/${g} → og:image ${gImg} does not resolve to a file on disk`);
   const lds = jsonLd(src);
   if (lds.some((b) => !b.ok)) err(`guides/${g} → a JSON-LD block does not parse`);
-  const gTypes = lds.filter((b) => b.ok).flatMap((b) => Array.isArray(b.parsed) ? b.parsed.map((x) => x['@type']) : b.parsed ? [b.parsed['@type']] : []);
+  const gObjs = ldObjects(lds);
+  const gTypes = gObjs.map((o) => o['@type']);
   if (!gTypes.includes('Article')) err(`guides/${g} → missing Article JSON-LD`);
   if (!gTypes.includes('BreadcrumbList')) err(`guides/${g} → missing BreadcrumbList JSON-LD`);
+  checkLdFields(`guides/${g}`, gObjs);           // CHECK 7 — per-type required fields
+  metaHygiene(`guides/${g}`, src, ms);           // CHECK 8 — dedupe + title pattern
   const body = (src.match(/<body\b[^>]*>/i) || [''])[0];
   if (attrs(body)['data-guide'] !== g) err(`guides/${g} → body data-guide is "${attrs(body)['data-guide'] || 'MISSING'}", expected "${g}"`);
   if (!sitemapLocs.has(trueUrl)) err(`sitemap.xml missing guides/${g}/`);
@@ -425,13 +598,25 @@ sitemapLocs.forEach((loc) => {
 /* ============================================================
    CHECK 6 — homepage counts match curriculum reality
    ============================================================ */
-const idx = read(path.join(ROOT, 'index.html'));
+/* The JSON-LD ItemList states per-course lesson counts ("13 interactive
+   lessons…") — those are verified per-course by CHECK 7, so strip the
+   JSON-LD blocks before scanning for the site-wide totals. */
+const idx = read(path.join(ROOT, 'index.html'))
+  .replace(/<script type="application\/ld\+json"[^>]*>[\s\S]*?<\/script>/gi, ' ');
 const courseCount = CURRICULUM.length;
 const lessonCount = READY.length;
 const cm = idx.match(/(\d+)\s+courses/i);
 if (cm && +cm[1] !== courseCount) err(`index.html says "${cm[1]} courses" but curriculum has ${courseCount}`);
 for (const lm of idx.matchAll(/(\d+)\s+(?:interactive |hands-on )?lessons/gi))
   if (+lm[1] !== lessonCount) err(`index.html says "${lm[1]} … lessons" but curriculum has ${lessonCount} ready lessons`);
+
+/* ============================================================
+   CHECK 8 — meta-description dedupe (titles are checked per page
+   by metaHygiene as the loops above run)
+   ============================================================ */
+descSeen.forEach((pages, d) => {
+  if (pages.length > 1) err(`duplicate meta description on ${pages.join(' + ')}: "${d.slice(0, 60)}…"`);
+});
 
 /* ============================================================
    Report
