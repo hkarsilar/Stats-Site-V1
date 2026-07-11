@@ -141,6 +141,32 @@ h1, h2, h3, h4 { line-height: 1.2; letter-spacing: -0.02em; }
      fixed nav and let it scroll rather than run off the bottom of the screen */
   max-height: calc(100vh - var(--nav-h) - 1.5rem); overflow-y: auto; overscroll-behavior: contain;
 }
+/* Firefox (no ::-webkit-scrollbar support): theme its native, always-present
+   thin scrollbar. Scoped so it does NOT apply on Blink/WebKit, where setting
+   scrollbar-width/color would override — and disable — the ::-webkit-scrollbar
+   styling below. */
+@supports not selector(::-webkit-scrollbar) {
+  .nav-drop-panel {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--text-faint) 70%, transparent) color-mix(in srgb, var(--border) 55%, transparent);
+  }
+}
+/* WebKit/Blink: styling ::-webkit-scrollbar replaces the macOS overlay bar
+   (which fades out) with a classic scrollbar that stays visible whenever the
+   menu overflows — an obvious "there's more below" affordance. Colours are
+   theme variables, so it adapts to light/dark automatically. */
+.nav-drop-panel::-webkit-scrollbar { width: 12px; }
+.nav-drop-panel::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--border) 45%, transparent);
+  border-radius: 999px; margin: 6px 0;
+}
+.nav-drop-panel::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--text-faint) 70%, transparent);
+  border: 3px solid var(--surface); border-radius: 999px; background-clip: padding-box;
+}
+.nav-drop-panel::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--primary) 55%, var(--text-faint)); background-clip: padding-box;
+}
 .nav-drop:hover .nav-drop-panel, .nav-drop:focus-within .nav-drop-panel { display: flex; }
 .nav-drop-item {
   display: flex; align-items: center; gap: .7rem; padding: .5rem .65rem;
