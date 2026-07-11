@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Assumption Checks Cheat Sheet (Printable) — StatsCapybara</title>
+  <meta name="description" content="A free, printable assumption-checks cheat sheet for t-tests, ANOVA, regression and chi-square: what to check, how to check it, and the fix when it's violated." />
+  <link rel="canonical" href="https://statscapybara.com/cheat-assumptions.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Assumption Checks Cheat Sheet — StatsCapybara" />
+  <meta property="og:description" content="Per test family — what to check, how (Q-Q, Levene, residual plots), and the fix when it's violated (Welch, Greenhouse–Geisser, non-parametric, transform). One printable page." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/cheat-assumptions.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Assumption Checks Cheat Sheet — StatsCapybara" />
+  <meta name="twitter:description" content="Per test family — what to check, how (Q-Q, Levene, residual plots), and the fix when it's violated (Welch, Greenhouse–Geisser, non-parametric, transform). One printable page." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <style>
+    /* ---- poster / cheat-sheet layout (shared across the three cheat sheets) ---- */
+    :root { --pa: var(--success); --pa-soft: rgba(34,197,94,.13); }
+    .cheat-wrap { max-width: 1040px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
+    .cheat-actions { display:flex; gap:.6rem; flex-wrap:wrap; align-items:center; margin-bottom:1.1rem; }
+    .cheat-actions .hint { color: var(--text-faint); font-size:.85rem; }
+    .poster {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+      box-shadow: var(--shadow-lg); padding: 1.7rem 1.7rem 1.2rem;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+    .poster-head { display:flex; align-items:center; gap:.9rem; border-bottom:3px solid var(--pa); padding-bottom:.7rem; margin-bottom:1.1rem; }
+    .ph-capy { flex-shrink:0; }
+    .poster-eyebrow { font-size:.7rem; text-transform:uppercase; letter-spacing:.12em; color:var(--pa); font-weight:700; }
+    .poster-head h1 { font-size:1.5rem; margin:.12rem 0 0; line-height:1.12; }
+    .poster-head p { margin:.2rem 0 0; color:var(--text-muted); font-size:.9rem; }
+    .poster-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:1.15rem 1.6rem; }
+    .pcard { break-inside:avoid; }
+    .pcard h2 { font-size:.82rem; text-transform:uppercase; letter-spacing:.05em; color:var(--pa); margin:0 0 .4rem; border-bottom:1px solid var(--border); padding-bottom:.25rem; }
+    .ptable { width:100%; border-collapse:collapse; font-size:.82rem; }
+    .ptable th { text-align:left; font-size:.63rem; text-transform:uppercase; letter-spacing:.04em; color:var(--text-faint); font-weight:600; padding:.15rem .45rem; }
+    .ptable td { padding:.26rem .45rem; border-top:1px solid var(--border); color:var(--text-muted); vertical-align:top; line-height:1.4; }
+    .ptable td.chk { color:var(--text); }
+    .ptable td.chk strong { font-weight:700; }
+    .how { color:var(--text-faint); }
+    .ptable td em { font-style:italic; }
+    .fix strong { color:var(--success); font-weight:700; }
+    .sec { display:inline-block; font-size:.66rem; font-weight:700; color:var(--pa); background:var(--pa-soft); border-radius:5px; padding:.03rem .32rem; white-space:nowrap; text-decoration:none; }
+    a.sec:hover { text-decoration:underline; }
+    .pnote { font-size:.8rem; color:var(--text-muted); line-height:1.5; }
+    .pnote strong { color:var(--text); }
+    .pnote em { font-style:italic; }
+    .poster-foot { display:flex; align-items:center; justify-content:space-between; gap:.6rem; margin-top:1.2rem; padding-top:.65rem; border-top:1px solid var(--border); font-size:.74rem; color:var(--text-faint); }
+    .poster-foot .pf-left { display:flex; align-items:center; gap:.4rem; }
+
+    @media print {
+      @page { size: auto; margin: 9mm; }
+      html, body { background:#fff !important; }
+      main { padding:0 !important; }
+      .cheat-wrap { max-width:none; margin:0; padding:0; }
+      .cheat-actions { display:none !important; }
+      .poster { border:none; box-shadow:none; border-radius:0; padding:0; background:#fff; }
+      .poster-head { border-bottom-width:2.5px; padding-bottom:.4rem; margin-bottom:.6rem; }
+      .poster-head h1 { font-size:16pt; }
+      .poster-head p { font-size:8pt; }
+      .poster-eyebrow { font-size:7pt; }
+      .ph-capy { width:34px; height:34px; }
+      .poster-grid { display:block; column-count:2; column-gap:8mm; }
+      .pcard { display:inline-block; width:100%; margin:0 0 3.4mm; }
+      .pcard h2 { font-size:8pt; margin-bottom:1.1mm; padding-bottom:.7mm; }
+      .ptable { font-size:7.3pt; }
+      .ptable th { font-size:6pt; padding:.3mm 1mm; }
+      .ptable td { padding:.8mm 1mm; line-height:1.32; }
+      .pnote { font-size:7.4pt; line-height:1.4; }
+      .sec { font-size:6.4pt; text-decoration:none !important; }
+      .poster-foot { margin-top:3mm; padding-top:1.4mm; font-size:7pt; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="cheat-wrap">
+      <div class="cheat-actions">
+        <button class="btn btn-primary btn-sm" id="print-btn" type="button">🖨️ Print / save as PDF</button>
+        <a class="btn btn-ghost btn-sm" href="stats-2/assumptions-and-when-they-break/">See them break → the lesson</a>
+        <span class="hint">Fits one page — A4 or US&nbsp;Letter.</span>
+      </div>
+
+      <article class="poster" id="poster">
+        <header class="poster-head">
+          <svg class="ph-capy" viewBox="0 0 64 60" width="42" height="42" aria-hidden="true">
+            <ellipse cx="19" cy="15" rx="7" ry="6" fill="#9a6f43"/><ellipse cx="45" cy="15" rx="7" ry="6" fill="#9a6f43"/>
+            <rect x="9" y="14" width="46" height="40" rx="17" fill="#b3824f"/>
+            <ellipse cx="32" cy="44" rx="16" ry="12" fill="#9a6f43"/>
+            <circle cx="23" cy="31" r="2.7" fill="#3a2a1b"/><circle cx="41" cy="31" r="2.7" fill="#3a2a1b"/>
+            <ellipse cx="26.5" cy="45" rx="2.3" ry="1.6" fill="#3a2a1b"/><ellipse cx="37.5" cy="45" rx="2.3" ry="1.6" fill="#3a2a1b"/>
+          </svg>
+          <div>
+            <div class="poster-eyebrow">StatsCapybara · Cheat sheet</div>
+            <h1>Assumption Checks</h1>
+            <p>What each test assumes, how to check it, and the fix when it's violated. Plot first, test second.</p>
+          </div>
+        </header>
+
+        <div class="poster-grid">
+
+          <section class="pcard">
+            <h2>① <em>t</em>-tests &amp; ANOVA · comparing means</h2>
+            <table class="ptable">
+              <thead><tr><th>Assumption (how to check)</th><th>If it's violated</th><th>§</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td class="chk"><strong>Normality</strong> <span class="how">— Q–Q plot; Shapiro–Wilk at small <em>n</em></span></td>
+                  <td class="fix">Non-parametric (<strong>Mann–Whitney</strong> / <strong>Kruskal–Wallis</strong>), or transform. Robust when <em>n</em> is large.</td>
+                  <td><a class="sec" href="stats-2/assumptions-and-when-they-break/">2.5</a></td>
+                </tr>
+                <tr>
+                  <td class="chk"><strong>Equal variances</strong> <span class="how">— Levene's test; compare boxplot spreads</span></td>
+                  <td class="fix">Use <strong>Welch's</strong> <em>t</em> / Welch's ANOVA — don't pool the variances.</td>
+                  <td><a class="sec" href="stats-1/independent-samples-t-test/">1.12</a></td>
+                </tr>
+                <tr>
+                  <td class="chk"><strong>Independence</strong> <span class="how">— by design; no hidden clustering</span></td>
+                  <td class="fix">Model the structure: <strong>paired</strong> / RM-ANOVA / <strong>mixed model</strong>.</td>
+                  <td><a class="sec" href="stats-4/mixed-and-multilevel-models/">4.5</a></td>
+                </tr>
+                <tr>
+                  <td class="chk"><strong>Sphericity</strong> <span class="how">— RM-ANOVA only; Mauchly's test</span></td>
+                  <td class="fix"><strong>Greenhouse–Geisser</strong> / Huynh–Feldt correction, or a mixed model.</td>
+                  <td><a class="sec" href="stats-2/repeated-measures-anova/">2.4</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section class="pcard">
+            <h2>② Correlation &amp; regression</h2>
+            <table class="ptable">
+              <thead><tr><th>Assumption (how to check)</th><th>If it's violated</th><th>§</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td class="chk"><strong>Linearity</strong> <span class="how">— scatterplot; residuals-vs-fitted</span></td>
+                  <td class="fix">Transform, add a polynomial term, or use <strong>Spearman ρ</strong>.</td>
+                  <td><a class="sec" href="stats-2/regression-diagnostics/">2.10</a></td>
+                </tr>
+                <tr>
+                  <td class="chk"><strong>Normal residuals</strong> <span class="how">— Q–Q plot of the residuals</span></td>
+                  <td class="fix">Usually fine at large <em>n</em>; transform <em>y</em>; <strong>bootstrap</strong> the CIs.</td>
+                  <td><a class="sec" href="stats-3/assumptions-of-regression/">3.8</a></td>
+                </tr>
+                <tr>
+                  <td class="chk"><strong>Constant variance</strong> <span class="how">— residuals-vs-fitted; a funnel = bad</span></td>
+                  <td class="fix"><strong>Robust (HC) SEs</strong>, transform <em>y</em>, or weighted least squares.</td>
+                  <td><a class="sec" href="stats-2/regression-diagnostics/">2.10</a></td>
+                </tr>
+                <tr>
+                  <td class="chk"><strong>No influential points</strong> <span class="how">— Cook's distance; leverage</span></td>
+                  <td class="fix">Investigate it; report <strong>with &amp; without</strong>; robust regression.</td>
+                  <td><a class="sec" href="stats-2/regression-diagnostics/">2.10</a></td>
+                </tr>
+                <tr>
+                  <td class="chk"><strong>Low multicollinearity</strong> <span class="how">— VIF (worry &gt; 10)</span></td>
+                  <td class="fix">Drop or combine predictors; <strong>ridge / lasso</strong>.</td>
+                  <td><a class="sec" href="stats-3/multicollinearity-and-variable-selection/">3.2</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section class="pcard">
+            <h2>③ Chi-square · counts</h2>
+            <table class="ptable">
+              <thead><tr><th>Assumption (how to check)</th><th>If it's violated</th><th>§</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td class="chk"><strong>Expected counts ≥ 5</strong> <span class="how">— read the expected-count table (~80% of cells)</span></td>
+                  <td class="fix"><strong>Fisher's exact test</strong> (small / 2×2), or merge sparse categories.</td>
+                  <td><a class="sec" href="stats-2/chi-square-tests/">2.7</a></td>
+                </tr>
+                <tr>
+                  <td class="chk"><strong>Independence</strong> <span class="how">— each case in exactly one cell</span></td>
+                  <td class="fix"><strong>McNemar's test</strong> for paired / repeated data.</td>
+                  <td><a class="sec" href="stats-2/chi-square-tests/">2.7</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section class="pcard">
+            <h2>The order of operations</h2>
+            <p class="pnote">
+              <strong>Look before you test.</strong> A Q–Q plot, a residual plot and a boxplot tell you more than a <em>p</em>-value for the assumption ever will.<br>
+              <strong>Sample size flips the risk.</strong> Assumption tests are themselves too weak at small <em>n</em> and too twitchy at large <em>n</em>. And by the CLT, mean-comparison tests are <em>robust</em> to non-normality when <em>n</em> is large — it's the small samples where violations bite.<br>
+              <strong>A violation is a fork, not a wall.</strong> It tells you which method to switch to — never a reason to look away and report the broken test anyway.
+            </p>
+          </section>
+
+        </div>
+
+        <footer class="poster-foot">
+          <span class="pf-left">
+            <svg viewBox="0 0 64 60" width="18" height="18" aria-hidden="true">
+              <ellipse cx="19" cy="15" rx="7" ry="6" fill="#9a6f43"/><ellipse cx="45" cy="15" rx="7" ry="6" fill="#9a6f43"/>
+              <rect x="9" y="14" width="46" height="40" rx="17" fill="#b3824f"/>
+              <ellipse cx="32" cy="44" rx="16" ry="12" fill="#9a6f43"/>
+              <circle cx="23" cy="31" r="2.7" fill="#3a2a1b"/><circle cx="41" cy="31" r="2.7" fill="#3a2a1b"/>
+            </svg>
+            statscapybara.com/cheat-assumptions
+          </span>
+          <span>Free · no login · print &amp; pin it up</span>
+        </footer>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="assets/js/curriculum.js"></script>
+  <script src="assets/js/site.js"></script>
+  <script>document.getElementById('print-btn').addEventListener('click', function () { window.print(); });</script>
+</body>
+</html>

@@ -64,6 +64,9 @@ for slug in course_slugs():
 pages = []
 for fname, title in [
     ("formulas.html", "Statistics Formula Sheet"),
+    ("cheat-test-chooser.html", "Which Test? One-Page Cheat Sheet"),
+    ("cheat-apa.html", "APA Statistics Reporting Cheat Sheet"),
+    ("cheat-assumptions.html", "Assumption Checks Cheat Sheet"),
     ("tables.html", "Statistical Tables & Calculators"),
     ("distributions.html", "Distribution Playground"),
     ("which-test.html", "Which Test Should I Use?"),

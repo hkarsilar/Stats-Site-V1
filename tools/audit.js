@@ -213,7 +213,8 @@ const courseSlugs = new Set(CURRICULUM.map((c) => c.slug));   // any track, not 
 
 /* root / tool pages (excluding the self-contained 404.html) */
 const ROOT_PAGES = ['index.html', 'quiz.html', 'glossary.html', 'toolbox.html', 'which-test.html', 'which-chart.html',
-  'plan.html', 'tables.html', 'formulas.html', 'distributions.html', 'effect-sizes.html', 'descriptives.html', 'correlation.html', 'power.html', 'apa.html', 'datasets.html', 'flashcards.html', 'progress.html'];
+  'plan.html', 'tables.html', 'formulas.html', 'distributions.html', 'effect-sizes.html', 'descriptives.html', 'correlation.html', 'power.html', 'apa.html', 'datasets.html', 'flashcards.html', 'progress.html',
+  'cheat-test-chooser.html', 'cheat-apa.html', 'cheat-assumptions.html'];
 /* long-form guides — guides/<slug>/index.html (P34); each is a body[data-guide] page */
 const GUIDES = ['analyze-thesis-data-jasp', 'spss-output-to-apa', 'choose-statistics-dissertation', 'clean-survey-data'];
 /* allowed non-lesson QUIPS keys: index→"home" plus each root page's basename, plus guide slugs */

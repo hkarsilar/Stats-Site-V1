@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Which Test? One-Page Cheat Sheet (Printable) — StatsCapybara</title>
+  <meta name="description" content="A free, printable one-page statistics cheat sheet: which test to use by outcome type and design — t-tests, ANOVA, correlation, regression — with assumption notes." />
+  <link rel="canonical" href="https://statscapybara.com/cheat-test-chooser.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Which Test? One-Page Cheat Sheet — StatsCapybara" />
+  <meta property="og:description" content="Every common statistical test on one printable page, sorted by outcome type and design, with assumption footnotes and lesson sections." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/cheat-test-chooser.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Which Test? One-Page Cheat Sheet — StatsCapybara" />
+  <meta name="twitter:description" content="Every common statistical test on one printable page, sorted by outcome type and design, with assumption footnotes and lesson sections." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <style>
+    /* ---- poster / cheat-sheet layout (shared across the three cheat sheets) ---- */
+    :root { --pa: var(--primary); --pa-soft: rgba(99,102,241,.12); }
+    .cheat-wrap { max-width: 1040px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
+    .cheat-actions { display:flex; gap:.6rem; flex-wrap:wrap; align-items:center; margin-bottom:1.1rem; }
+    .cheat-actions .hint { color: var(--text-faint); font-size:.85rem; }
+    .poster {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+      box-shadow: var(--shadow-lg); padding: 1.7rem 1.7rem 1.2rem;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+    .poster-head { display:flex; align-items:center; gap:.9rem; border-bottom:3px solid var(--pa); padding-bottom:.7rem; margin-bottom:1.1rem; }
+    .ph-capy { flex-shrink:0; }
+    .poster-eyebrow { font-size:.7rem; text-transform:uppercase; letter-spacing:.12em; color:var(--pa); font-weight:700; }
+    .poster-head h1 { font-size:1.5rem; margin:.12rem 0 0; line-height:1.12; }
+    .poster-head p { margin:.2rem 0 0; color:var(--text-muted); font-size:.9rem; }
+    .poster-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:1.15rem 1.6rem; }
+    .pcard { break-inside:avoid; }
+    .pcard h2 { font-size:.82rem; text-transform:uppercase; letter-spacing:.05em; color:var(--pa); margin:0 0 .4rem; border-bottom:1px solid var(--border); padding-bottom:.25rem; }
+    .ptable { width:100%; border-collapse:collapse; font-size:.83rem; }
+    .ptable th { text-align:left; font-size:.63rem; text-transform:uppercase; letter-spacing:.04em; color:var(--text-faint); font-weight:600; padding:.15rem .45rem; }
+    .ptable td { padding:.24rem .45rem; border-top:1px solid var(--border); color:var(--text-muted); vertical-align:top; }
+    .ptable td.t { color:var(--text); font-weight:600; white-space:nowrap; }
+    .ptable td.test { color:var(--text); }
+    .sec { display:inline-block; font-size:.66rem; font-weight:700; color:var(--pa); background:var(--pa-soft); border-radius:5px; padding:.03rem .32rem; white-space:nowrap; text-decoration:none; }
+    a.sec:hover { text-decoration:underline; }
+    .pnote { font-size:.8rem; color:var(--text-muted); line-height:1.5; }
+    .pnote strong { color:var(--text); }
+    .poster-foot { display:flex; align-items:center; justify-content:space-between; gap:.6rem; margin-top:1.2rem; padding-top:.65rem; border-top:1px solid var(--border); font-size:.74rem; color:var(--text-faint); }
+    .poster-foot .pf-left { display:flex; align-items:center; gap:.4rem; }
+
+    @media print {
+      @page { size: auto; margin: 9mm; }
+      html, body { background:#fff !important; }
+      main { padding:0 !important; }
+      .cheat-wrap { max-width:none; margin:0; padding:0; }
+      .cheat-actions { display:none !important; }
+      .poster { border:none; box-shadow:none; border-radius:0; padding:0; background:#fff; }
+      .poster-head { border-bottom-width:2.5px; padding-bottom:.4rem; margin-bottom:.6rem; }
+      .poster-head h1 { font-size:16pt; }
+      .poster-head p { font-size:8pt; }
+      .poster-eyebrow { font-size:7pt; }
+      .ph-capy { width:34px; height:34px; }
+      .poster-grid { display:block; column-count:2; column-gap:8mm; }
+      .pcard { display:inline-block; width:100%; margin:0 0 3.4mm; }
+      .pcard h2 { font-size:8pt; margin-bottom:1.1mm; padding-bottom:.7mm; }
+      .ptable { font-size:7.4pt; }
+      .ptable th { font-size:6pt; padding:.3mm 1mm; }
+      .ptable td { padding:.7mm 1mm; }
+      .sec { font-size:6.4pt; text-decoration:none !important; }
+      .pnote { font-size:7.4pt; line-height:1.4; }
+      .poster-foot { margin-top:3mm; padding-top:1.4mm; font-size:7pt; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="cheat-wrap">
+      <div class="cheat-actions">
+        <button class="btn btn-primary btn-sm" id="print-btn" type="button">🖨️ Print / save as PDF</button>
+        <a class="btn btn-ghost btn-sm" href="which-test.html">Prefer to click through? → Interactive chooser</a>
+        <span class="hint">Fits one page — A4 or US&nbsp;Letter.</span>
+      </div>
+
+      <article class="poster" id="poster">
+        <header class="poster-head">
+          <svg class="ph-capy" viewBox="0 0 64 60" width="42" height="42" aria-hidden="true">
+            <ellipse cx="19" cy="15" rx="7" ry="6" fill="#9a6f43"/><ellipse cx="45" cy="15" rx="7" ry="6" fill="#9a6f43"/>
+            <rect x="9" y="14" width="46" height="40" rx="17" fill="#b3824f"/>
+            <ellipse cx="32" cy="44" rx="16" ry="12" fill="#9a6f43"/>
+            <circle cx="23" cy="31" r="2.7" fill="#3a2a1b"/><circle cx="41" cy="31" r="2.7" fill="#3a2a1b"/>
+            <ellipse cx="26.5" cy="45" rx="2.3" ry="1.6" fill="#3a2a1b"/><ellipse cx="37.5" cy="45" rx="2.3" ry="1.6" fill="#3a2a1b"/>
+          </svg>
+          <div>
+            <div class="poster-eyebrow">StatsCapybara · Cheat sheet</div>
+            <h1>Which Test Should I Use?</h1>
+            <p>Find your outcome and design in the left column; the test is on the right. Sections (like <span class="sec">2.1</span>) point to the interactive lesson.</p>
+          </div>
+        </header>
+
+        <div class="poster-grid">
+
+          <section class="pcard">
+            <h2>① Compare means · a numeric outcome</h2>
+            <table class="ptable">
+              <thead><tr><th>Your design</th><th>Test</th><th>§</th></tr></thead>
+              <tbody>
+                <tr><td class="t">One group vs. a known value</td><td class="test">One-sample <em>t</em>-test</td><td><a class="sec" href="stats-1/one-sample-and-paired-t-tests/">1.11</a></td></tr>
+                <tr><td class="t">Same people, measured twice</td><td class="test">Paired <em>t</em>-test</td><td><a class="sec" href="stats-1/one-sample-and-paired-t-tests/">1.11</a></td></tr>
+                <tr><td class="t">Two separate groups</td><td class="test">Independent <em>t</em>-test (Welch)</td><td><a class="sec" href="stats-1/independent-samples-t-test/">1.12</a></td></tr>
+                <tr><td class="t">3+ groups, one factor</td><td class="test">One-way ANOVA</td><td><a class="sec" href="stats-2/one-way-anova/">2.1</a></td></tr>
+                <tr><td class="t">3+ groups, two crossed factors</td><td class="test">Factorial ANOVA</td><td><a class="sec" href="stats-2/factorial-anova-two-way/">2.3</a></td></tr>
+                <tr><td class="t">Same people, 3+ conditions</td><td class="test">Repeated-measures ANOVA</td><td><a class="sec" href="stats-2/repeated-measures-anova/">2.4</a></td></tr>
+                <tr><td class="t">Adjust for a baseline covariate</td><td class="test">ANCOVA</td><td><a class="sec" href="stats-3/ancova/">3.4</a></td></tr>
+                <tr><td class="t">Several outcomes tested jointly</td><td class="test">MANOVA</td><td><a class="sec" href="stats-3/manova/">3.11</a></td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section class="pcard">
+            <h2>② Assumptions broken? · swap to ranks</h2>
+            <table class="ptable">
+              <thead><tr><th>Parametric test</th><th>Rank-based swap</th><th>§</th></tr></thead>
+              <tbody>
+                <tr><td class="t">Independent <em>t</em>-test</td><td class="test">Mann–Whitney U</td><td><a class="sec" href="stats-2/non-parametric-alternatives/">2.6</a></td></tr>
+                <tr><td class="t">Paired / one-sample <em>t</em></td><td class="test">Wilcoxon signed-rank</td><td><a class="sec" href="stats-2/non-parametric-alternatives/">2.6</a></td></tr>
+                <tr><td class="t">One-way ANOVA</td><td class="test">Kruskal–Wallis</td><td><a class="sec" href="stats-2/non-parametric-alternatives/">2.6</a></td></tr>
+                <tr><td class="t">Repeated-measures ANOVA</td><td class="test">Friedman</td><td><a class="sec" href="stats-2/non-parametric-alternatives/">2.6</a></td></tr>
+              </tbody>
+            </table>
+            <p class="pnote" style="margin-top:.5rem">Reach for these when the outcome is <strong>ordinal</strong>, or badly skewed / outlier-ridden in a <strong>small</strong> sample. With a large <em>n</em>, the parametric tests are robust anyway.</p>
+          </section>
+
+          <section class="pcard">
+            <h2>③ Relationships &amp; association</h2>
+            <table class="ptable">
+              <thead><tr><th>Your variables</th><th>Test</th><th>§</th></tr></thead>
+              <tbody>
+                <tr><td class="t">Two numeric, roughly linear</td><td class="test">Pearson <em>r</em></td><td><a class="sec" href="stats-2/correlation/">2.8</a></td></tr>
+                <tr><td class="t">Two numeric, monotone / outliers</td><td class="test">Spearman ρ</td><td><a class="sec" href="stats-2/correlation/">2.8</a></td></tr>
+                <tr><td class="t">Two categorical</td><td class="test">Chi-square test</td><td><a class="sec" href="stats-2/chi-square-tests/">2.7</a></td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section class="pcard">
+            <h2>④ Predict / model an outcome</h2>
+            <table class="ptable">
+              <thead><tr><th>What you're predicting</th><th>Model</th><th>§</th></tr></thead>
+              <tbody>
+                <tr><td class="t">A number, one predictor</td><td class="test">Simple linear regression</td><td><a class="sec" href="stats-2/simple-linear-regression/">2.9</a></td></tr>
+                <tr><td class="t">A number, several predictors</td><td class="test">Multiple regression</td><td><a class="sec" href="stats-3/multiple-regression/">3.1</a></td></tr>
+                <tr><td class="t">Yes / no (binary)</td><td class="test">Logistic regression</td><td><a class="sec" href="stats-3/logistic-regression/">3.7</a></td></tr>
+                <tr><td class="t">A count (0, 1, 2, …)</td><td class="test">Poisson / NB (GLM)</td><td><a class="sec" href="stats-4/generalized-linear-models/">4.4</a></td></tr>
+                <tr><td class="t">Nested / clustered / repeated</td><td class="test">Mixed (multilevel) model</td><td><a class="sec" href="stats-4/mixed-and-multilevel-models/">4.5</a></td></tr>
+                <tr><td class="t">Time until an event, with dropouts</td><td class="test">Survival (Kaplan–Meier / Cox)</td><td><a class="sec" href="stats-4/survival-analysis/">4.8</a></td></tr>
+                <tr><td class="t">Combining many studies</td><td class="test">Meta-analysis</td><td><a class="sec" href="stats-4/meta-analysis/">4.10</a></td></tr>
+                <tr><td class="t">Max accuracy, not a hypothesis test</td><td class="test">Machine-learning models</td><td><a class="sec" href="ml/prediction-vs-explanation/">ML&nbsp;4.1</a></td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section class="pcard">
+            <h2>Before you trust the answer</h2>
+            <p class="pnote">
+              <strong>1 · Check the assumptions.</strong> Every test above has them — see the <a class="sec" href="cheat-assumptions.html">Assumption Checks</a> sheet, or <a class="sec" href="stats-2/assumptions-and-when-they-break/">§2.5</a>.<br>
+              <strong>2 · Pick one test, not many.</strong> Running several and keeping whatever hits <em>p</em> &lt; .05 manufactures false positives — the garden of <a class="sec" href="methods/the-replication-crisis/">forking paths</a>. Decide before you look.<br>
+              <strong>3 · A p-value needs an effect size.</strong> Significant ≠ large — always report one beside it (<a class="sec" href="stats-1/effect-size-and-power/">§1.13</a>).<br>
+              <strong>4 · One numeric + one categorical variable</strong> is just a group comparison in disguise → box ①.
+            </p>
+          </section>
+
+        </div>
+
+        <footer class="poster-foot">
+          <span class="pf-left">
+            <svg viewBox="0 0 64 60" width="18" height="18" aria-hidden="true">
+              <ellipse cx="19" cy="15" rx="7" ry="6" fill="#9a6f43"/><ellipse cx="45" cy="15" rx="7" ry="6" fill="#9a6f43"/>
+              <rect x="9" y="14" width="46" height="40" rx="17" fill="#b3824f"/>
+              <ellipse cx="32" cy="44" rx="16" ry="12" fill="#9a6f43"/>
+              <circle cx="23" cy="31" r="2.7" fill="#3a2a1b"/><circle cx="41" cy="31" r="2.7" fill="#3a2a1b"/>
+            </svg>
+            statscapybara.com/cheat-test-chooser
+          </span>
+          <span>Free · no login · print &amp; pin it up</span>
+        </footer>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="assets/js/curriculum.js"></script>
+  <script src="assets/js/site.js"></script>
+  <script>document.getElementById('print-btn').addEventListener('click', function () { window.print(); });</script>
+</body>
+</html>

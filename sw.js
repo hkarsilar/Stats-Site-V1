@@ -26,7 +26,7 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v2";
+const CACHE_VERSION = "sc-v3";
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location
