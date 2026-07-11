@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Analyze Your Thesis Data in JASP: Start to Finish — StatsCapybara</title>
+  <meta name="description" content="A start-to-finish JASP walkthrough for your thesis: import your data, run descriptives, check assumptions, run the right test, and report it in APA style." />
+  <link rel="canonical" href="https://statscapybara.com/guides/analyze-thesis-data-jasp/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Analyze Your Thesis Data in JASP: Start to Finish — StatsCapybara" />
+  <meta property="og:description" content="A start-to-finish JASP walkthrough for your thesis: import your data, run descriptives, check assumptions, run the right test, and report it in APA style." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/guides/analyze-thesis-data-jasp/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Analyze Your Thesis Data in JASP: Start to Finish — StatsCapybara" />
+  <meta name="twitter:description" content="A start-to-finish JASP walkthrough for your thesis: import, descriptives, assumptions, the right test, and an APA-ready sentence." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "Article", "headline": "Analyze Your Thesis Data in JASP: Start to Finish", "description": "A start-to-finish JASP walkthrough for your thesis: import your data, run descriptives, check assumptions, run the right test, and report it in APA style.", "url": "https://statscapybara.com/guides/analyze-thesis-data-jasp/", "mainEntityOfPage": "https://statscapybara.com/guides/analyze-thesis-data-jasp/", "image": "https://statscapybara.com/assets/og.png", "inLanguage": "en", "isAccessibleForFree": true, "datePublished": "2026-07-11", "dateModified": "2026-07-11", "author": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://statscapybara.com/toolbox.html"}, {"@type": "ListItem", "position": 3, "name": "Analyze Your Thesis Data in JASP: Start to Finish", "item": "https://statscapybara.com/guides/analyze-thesis-data-jasp/"}]}]
+  </script>
+  <style>
+    .mock { border: 1px solid var(--border); border-radius: 12px; background: var(--surface); padding: 1rem 1.1rem; margin: 1.25rem 0; overflow-x: auto; }
+    .mock-cap { font-family: var(--mono); font-size: .74rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-faint); margin: 0 0 .6rem; }
+    .mock table { border-collapse: collapse; font-size: .86rem; width: 100%; }
+    .mock th, .mock td { border: 1px solid var(--border); padding: .38rem .65rem; text-align: right; color: var(--text-muted); white-space: nowrap; }
+    .mock th { background: var(--surface-2); color: var(--text); font-weight: 650; text-align: center; }
+    .mock td:first-child, .mock th:first-child { text-align: left; }
+    .mock .hl { background: color-mix(in srgb, var(--primary) 14%, transparent); color: var(--text); font-weight: 650; }
+    .mock-note { font-size: .84rem; color: var(--text-faint); margin: .6rem 0 0; }
+  </style>
+</head>
+<body data-guide="analyze-thesis-data-jasp">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="container narrow">
+      <article class="lesson" style="margin:0 auto">
+        <span class="lesson-eyebrow">Guide</span>
+        <h1>Analyze Your Thesis Data in JASP: Start to Finish</h1>
+
+        <p class="lede">You have a data file, a deadline, and a supervisor who said "just run the analysis." This guide walks the whole path in <strong>JASP</strong> — free, point-and-click, and built to produce APA-style output — from opening your CSV to the finished results sentence. Every step links to the StatsCapybara lesson that explains the <em>why</em>, and there's a real dataset to follow along with.</p>
+
+        <nav class="lesson-toc" aria-label="In this guide">
+          <span class="toc-label">In this guide</span>
+          <a href="#why-jasp">Why JASP</a>
+          <a href="#before-you-open">Step 0 · Start tidy</a>
+          <a href="#import">Step 1 · Import</a>
+          <a href="#descriptives">Step 2 · Descriptives first</a>
+          <a href="#assumptions">Step 3 · Assumptions</a>
+          <a href="#choose">Step 4 · The right test</a>
+          <a href="#run">Step 5 · Run it</a>
+          <a href="#read-output">Step 6 · Read the output</a>
+          <a href="#write-up">Step 7 · Write it up</a>
+          <a href="#when-things-go-wrong">When things go wrong</a>
+          <a href="#keep-going">Keep going</a>
+        </nav>
+
+        <h2 id="why-jasp">Why JASP</h2>
+        <p><a href="https://jasp-stats.org/" rel="noopener">JASP</a> is free, open-source statistics software developed at the University of Amsterdam. For a thesis it has three real advantages: the menus are organised by <em>analysis</em> rather than by 40 years of accumulated dialog boxes, the output updates live as you tick options (so exploring costs nothing), and the tables it produces are already close to APA format. If your department requires SPSS instead, the same journey — with the same potholes — is covered in the companion guide <a href="../spss-output-to-apa/">From SPSS Output to APA Results</a>.</p>
+        <p><strong>Follow along for real:</strong> this guide uses <code>sleep-experiment.csv</code> from our <a href="../../datasets.html">practice datasets</a> — 80 volunteers randomly assigned to a normal night's sleep or a night restricted to four hours, then scored on attention lapses. Download it and every number below will appear on your own screen.</p>
+
+        <h2 id="before-you-open">Step 0 — Start tidy, keep the raw file sacred</h2>
+        <p>JASP can only be as good as the spreadsheet you feed it. Two rules before you even open the software:</p>
+        <ul>
+          <li><strong>One row per observation, one column per variable, one value per cell.</strong> No merged cells, no colour-coding-as-data, no two variables squeezed into one column. If your file breaks these rules, fix it first — the <a href="../../data/tidy-data/">Tidy Data</a> lesson shows every classic sin and its repair, and if your export needs real surgery, work through <a href="../clean-survey-data/">Clean Your Survey Data, Step by Step</a> before returning here.</li>
+          <li><strong>Never edit the raw export.</strong> Copy it, clean the copy, and keep a note of what you changed. Your future self — and anyone auditing your thesis — needs the original to exist. The <a href="../../data/data-cleaning-workflow/">Cleaning Workflow</a> lesson turns this into a habit.</li>
+        </ul>
+        <p>While you're at it, make sure every cryptic column name has a line in a <a href="../../data/codebooks-and-documentation/">codebook</a>: what it measures, its units, and how missing values are marked. Blank cells are the safest missing-value marker; numeric codes like <code>-99</code> will silently poison your means.</p>
+
+        <h2 id="import">Step 1 — Import, then check the variable types</h2>
+        <p>In JASP: <strong>☰ menu → Open → Computer</strong>, and pick your <code>.csv</code> (JASP also reads SPSS <code>.sav</code> and Excel files). The data appear in a spreadsheet view.</p>
+        <p>Now the step everyone skips: <strong>check the little icon in each column header</strong>. JASP guessed each variable's measurement level, and it guesses wrong exactly when it matters — a condition coded 1/2 will be treated as a number, group averages and all. Click the icon to fix it: the ruler means <em>scale</em> (continuous), the ordered bars mean <em>ordinal</em>, the overlapping circles mean <em>nominal</em>. If the distinction feels fuzzy, five minutes with <a href="../../stats-1/types-of-data/">Types of Data</a> will save you a semester of confusion.</p>
+        <p>For <code>sleep-experiment.csv</code>: <code>condition</code> should be nominal, <code>errors</code> scale, and <code>participant_id</code> is just an ID — set it to nominal so nothing ever averages it.</p>
+
+        <h2 id="descriptives">Step 2 — Descriptives first, always</h2>
+        <p>Before any test: <strong>Descriptives</strong> in the ribbon, drag your outcome into <em>Variables</em>, and — for a group design — drag the grouping variable into <em>Split</em>. Under <em>Plots</em>, tick <em>Distribution plots</em> and <em>Boxplots</em>.</p>
+        <p>You're looking for three things:</p>
+        <ul>
+          <li><strong>Sanity.</strong> Is <em>n</em> what it should be? Are the minimum and maximum possible values for your measure? An age of 511 or a reaction time of 3 ms is a data-entry error, not a finding — the <a href="../../data/data-entry-and-validation/">validation lesson</a> shows how these creep in.</li>
+          <li><strong>Shape.</strong> Roughly symmetric, or badly skewed? One hump or two? This preview tells you whether the assumption checks in Step 3 will be drama or formality.</li>
+          <li><strong>Outliers.</strong> Points far beyond the boxplot whiskers deserve investigation — <em>investigation</em>, not silent deletion. <a href="../../data/outliers-in-practice/">Outliers: Detect, Investigate, Decide</a> gives you the triage rules.</li>
+        </ul>
+        <p>For the sleep data you should see: normal sleep <em>M</em> = 20.07, <em>SD</em> = 5.92; restricted sleep <em>M</em> = 22.77, <em>SD</em> = 6.02, with 40 people per group and no impossible values. (Want the same numbers without opening JASP? Paste a column into our <a href="../../descriptives.html">descriptives calculator</a>.)</p>
+
+        <h2 id="assumptions">Step 3 — Check the assumptions</h2>
+        <p>Every classical test makes assumptions, and JASP will check the big ones <em>inside the analysis itself</em> — for a t-test, tick <em>Assumption checks</em> to get normality tests and Levene's test for equal variances in the same output panel.</p>
+        <p>Two honest rules for reading them, both argued properly in <a href="../../stats-2/assumptions-and-when-they-break/">Assumptions &amp; When They Break</a>:</p>
+        <ul>
+          <li><strong>Plots beat p-values.</strong> With large samples, normality tests flag harmless wobbles; with small samples, they miss disasters. Look at the Q-Q plot: points hugging the line are what "normal enough" looks like.</li>
+          <li><strong>Have the fallback ready.</strong> Unequal variances? Use the Welch row — many statisticians simply always do. Hopeless skew with a small sample? The <a href="../../stats-2/non-parametric-alternatives/">non-parametric alternatives</a> trade a little power for a lot of safety.</li>
+        </ul>
+        <p>For the sleep data, the two groups' spreads are nearly identical — Levene's <em>F</em>(1, 78) = 0.10, <em>p</em> = .758 — so equal variances is comfortable here.</p>
+
+        <h2 id="choose">Step 4 — Confirm you're running the right test</h2>
+        <p>You probably planned this before collecting data (if not: quietly, we won't tell — but read <a href="../../methods/preregistration-and-open-science/">why planning first matters</a>). The choice comes down to your outcome type, your group structure, and whether the same people were measured more than once. Two of our tools do the deciding with you: the quick <a href="../../which-test.html">Which test should I use?</a> chooser, and <a href="../../plan.html">Plan My Analysis</a>, which turns your answers into a printable plan with a sample-size estimate. The long-form reasoning lives in <a href="../choose-statistics-dissertation/">Choosing Statistics for Your Dissertation</a>.</p>
+        <p>Our example is the simplest case: one continuous outcome (<code>errors</code>), two independent groups (<code>condition</code>) — an <a href="../../stats-1/independent-samples-t-test/">independent-samples t-test</a>.</p>
+
+        <h2 id="run">Step 5 — Run it</h2>
+        <p>In JASP: <strong>T-Tests → Independent Samples T-Test</strong>. Drag <code>errors</code> into <em>Dependent Variables</em> and <code>condition</code> into <em>Grouping Variable</em>. Under <em>Tests</em>, tick <em>Welch</em> alongside <em>Student</em>; under <em>Additional Statistics</em>, tick <em>Descriptives</em> and <em>Effect size</em> (Cohen's <em>d</em>); tick the <em>Assumption checks</em>. The output appears instantly:</p>
+
+        <div class="mock" role="img" aria-label="Mock JASP output table for an independent-samples t-test: Student row t = 2.022, df = 78, p = 0.047, Cohen's d = 0.452; Welch row nearly identical.">
+          <p class="mock-cap">Independent Samples T-Test — JASP output (mock)</p>
+          <table>
+            <thead><tr><th></th><th>Test</th><th>t</th><th>df</th><th>p</th><th>Cohen's d</th></tr></thead>
+            <tbody>
+              <tr><td>errors</td><td>Student</td><td class="hl">2.022</td><td class="hl">78</td><td class="hl">0.047</td><td class="hl">0.452</td></tr>
+              <tr><td></td><td>Welch</td><td>2.022</td><td>77.98</td><td>0.047</td><td>0.452</td></tr>
+            </tbody>
+          </table>
+          <p class="mock-note">Highlighted cells are the four numbers your results sentence needs. Here the Student and Welch rows agree to two decimals because the groups' spreads are nearly identical — when they disagree, trust Welch.</p>
+        </div>
+
+        <h2 id="read-output">Step 6 — Read the output like an examiner</h2>
+        <ul>
+          <li><strong><em>t</em> and df</strong> — the test statistic and its degrees of freedom (here 78 = 40 + 40 − 2). The df going into your write-up must match your <em>n</em>; examiners check.</li>
+          <li><strong><em>p</em></strong> — two-tailed by default, which is almost always what you want. <em>p</em> = 0.047 means: if sleep restriction truly did nothing, data this extreme would turn up about 5% of the time. It is <em>not</em> the probability the effect is real — <a href="../../stats-1/hypothesis-testing-logic/">Hypothesis-Testing Logic</a> untangles that knot.</li>
+          <li><strong>Cohen's <em>d</em></strong> — the size of the effect in standard-deviation units, and the number your discussion section actually cares about. <em>d</em> = 0.45 is a medium-ish effect; <a href="../../stats-1/effect-size-and-power/">Effect Size &amp; Power</a> explains the benchmarks and their limits, and the <a href="../../effect-sizes.html">effect-size converter</a> translates <em>d</em> into overlap you can picture.</li>
+        </ul>
+
+        <h2 id="write-up">Step 7 — Write it up</h2>
+        <p>The pattern is: <em>what was compared, the descriptives, then the statistics</em> — past tense, no interpretation yet (that belongs in the Discussion, says <a href="../../writing/writing-results/">From Output to Results Section</a>):</p>
+        <blockquote class="apa-quote"><p>Participants in the restricted-sleep condition made more attention lapses (<em>M</em> = 22.77, <em>SD</em> = 6.02) than participants who slept normally (<em>M</em> = 20.07, <em>SD</em> = 5.92), <em>t</em>(78) = 2.02, <em>p</em> = .047, <em>d</em> = 0.45.</p></blockquote>
+        <p>Mind the typography: Latin statistical symbols (<em>t</em>, <em>p</em>, <em>d</em>, <em>M</em>, <em>SD</em>) are italic, <em>p</em> gets no leading zero, and <em>p</em> is reported exactly — never as <code>p = .000</code>. The full rules live in <a href="../../writing/reporting-statistics-apa/">Reporting Statistics in APA Style</a>, and the <a href="../../apa.html">APA results formatter</a> will build (and sanity-check) any such sentence from your raw numbers.</p>
+
+        <h2 id="when-things-go-wrong">When things don't go to plan</h2>
+        <ul>
+          <li><strong><em>p</em> = .06.</strong> Not "a trend toward significance." Report the exact <em>p</em>, the effect size, and its confidence interval, and interpret honestly — <a href="../../writing/nonsignificant-results/">Writing About Non-Significant Results</a> shows exactly how, and why a non-significant thesis is not a failed thesis.</li>
+          <li><strong>Assumptions failed.</strong> Unequal variances → Welch row (already in your output). Serious non-normality with small <em>n</em> → the matching <a href="../../stats-2/non-parametric-alternatives/">non-parametric test</a> (for two independent groups, Mann–Whitney; it's one tick away in the same JASP panel).</li>
+          <li><strong>An outlier is driving everything.</strong> Run the analysis with and without it, report both, and justify whatever you decide — the <a href="../../data/outliers-in-practice/">outlier triage</a> lesson gives the decision rules. Never delete silently.</li>
+          <li><strong>You're tempted to try "just one more" analysis.</strong> Every extra look inflates your false-positive rate. <a href="../../methods/the-replication-crisis/">The Replication Crisis</a> shows where that road ends; label exploratory analyses as exploratory and your integrity survives contact with the data.</li>
+        </ul>
+
+        <div class="callout key">
+          <p><strong>The whole path, one breath:</strong> tidy file → import → fix variable types → descriptives and plots → assumption checks → the planned test → effect size → APA sentence. Eight small steps. No single one is hard; the trick is doing them in order.</p>
+        </div>
+
+        <h2 id="keep-going">Keep going</h2>
+        <ul>
+          <li><a href="../../stats-1/independent-samples-t-test/">Independent-Samples t-Test</a> — the interactive lesson behind this guide's example.</li>
+          <li><a href="../../stats-2/assumptions-and-when-they-break/">Assumptions &amp; When They Break</a> — what actually matters, what's folklore.</li>
+          <li><a href="../../writing/writing-results/">From Output to Results Section</a> — build the sentence from any output.</li>
+          <li><a href="../../datasets.html">Practice Datasets</a> — seven more CSVs with stories, exercises, and worked solutions.</li>
+          <li><a href="../spss-output-to-apa/">From SPSS Output to APA Results</a> — the same journey in SPSS, output quirks and all.</li>
+          <li><a href="../../plan.html">Plan My Analysis</a> — next study, plan it before you collect.</li>
+        </ul>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+</body>
+</html>

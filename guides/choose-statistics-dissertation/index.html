@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Choosing Statistics for Your Dissertation — StatsCapybara</title>
+  <meta name="description" content="Three questions pick the right statistical test for your dissertation — outcome type, design, and pairing — plus honest advice for messy real-world designs." />
+  <link rel="canonical" href="https://statscapybara.com/guides/choose-statistics-dissertation/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Choosing Statistics for Your Dissertation — StatsCapybara" />
+  <meta property="og:description" content="Three questions pick the right statistical test for your dissertation — outcome type, design, and pairing — plus honest advice for messy real-world designs." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/guides/choose-statistics-dissertation/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Choosing Statistics for Your Dissertation — StatsCapybara" />
+  <meta name="twitter:description" content="Outcome type, design structure, pairing: answer three questions in order and the test picks itself — with honest words about messy real designs." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "Article", "headline": "Choosing Statistics for Your Dissertation", "description": "Three questions pick the right statistical test for your dissertation — outcome type, design, and pairing — plus honest advice for messy real-world designs.", "url": "https://statscapybara.com/guides/choose-statistics-dissertation/", "mainEntityOfPage": "https://statscapybara.com/guides/choose-statistics-dissertation/", "image": "https://statscapybara.com/assets/og.png", "inLanguage": "en", "isAccessibleForFree": true, "datePublished": "2026-07-11", "dateModified": "2026-07-11", "author": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://statscapybara.com/toolbox.html"}, {"@type": "ListItem", "position": 3, "name": "Choosing Statistics for Your Dissertation", "item": "https://statscapybara.com/guides/choose-statistics-dissertation/"}]}]
+  </script>
+</head>
+<body data-guide="choose-statistics-dissertation">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="container narrow">
+      <article class="lesson" style="margin:0 auto">
+        <span class="lesson-eyebrow">Guide</span>
+        <h1>Choosing Statistics for Your Dissertation</h1>
+
+        <p class="lede">There is no test-choosing talent, and you don't need to memorise a flowchart. Picking the right analysis is <strong>three boring questions asked in the right order</strong>: what kind of thing is your outcome, what structure are you comparing or relating, and were the same people measured more than once? Answer those and the test names itself. This guide walks the questions slowly, gives you the full map, and then says the honest things about real dissertations that flowcharts leave out.</p>
+
+        <nav class="lesson-toc" aria-label="In this guide">
+          <span class="toc-label">In this guide</span>
+          <a href="#three-questions">The three questions</a>
+          <a href="#outcome">Q1 · Your outcome</a>
+          <a href="#structure">Q2 · The structure</a>
+          <a href="#paired">Q3 · Paired or independent</a>
+          <a href="#the-map">The map</a>
+          <a href="#covariates">Covariates</a>
+          <a href="#messy">When reality is messy</a>
+          <a href="#prediction">Predicting, not testing</a>
+          <a href="#before-you-collect">Decide before you collect</a>
+          <a href="#keep-going">Keep going</a>
+        </nav>
+
+        <h2 id="three-questions">The three questions</h2>
+        <p>Every classical test is an answer to a sentence of the form: <em>"Is [outcome] related to [structure], given [how the data were collected]?"</em> So the choice decomposes:</p>
+        <ol>
+          <li><strong>What kind of thing is the outcome?</strong> Continuous number, category, count, or time-until-something?</li>
+          <li><strong>What is it being compared against or related to?</strong> Two groups, several groups, another continuous variable, several predictors?</li>
+          <li><strong>Were the same people (or matched pairs) measured more than once?</strong> Paired data need paired tests.</li>
+        </ol>
+        <p>If you'd rather answer these interactively, the <a href="../../which-test.html">Which test should I use?</a> chooser asks exactly this sequence, and <a href="../../plan.html">Plan My Analysis</a> goes further — it turns your answers into a printable plan with assumptions, a sample-size estimate, and an APA skeleton. This guide is the version you read to <em>understand</em> the choice, so you can defend it in your viva.</p>
+
+        <h2 id="outcome">Question 1 — What kind of thing is your outcome?</h2>
+        <p>The outcome (dependent variable) is whatever your hypothesis says should <em>change</em>. Its <a href="../../stats-1/types-of-data/">data type</a> does most of the deciding:</p>
+        <ul>
+          <li><strong>Continuous</strong> — reaction times, exam scores, blood pressure, questionnaire composites. Opens the t-test/ANOVA/regression family.</li>
+          <li><strong>Categorical</strong> — passed or failed, chose A or B, diagnosed or not. Points to <a href="../../stats-2/chi-square-tests/">chi-square</a> (relating two categoricals) or <a href="../../stats-3/logistic-regression/">logistic regression</a> (predicting a category).</li>
+          <li><strong>A count</strong> — number of errors, symptoms, visits. Small, bounded-at-zero counts are Poisson territory: <a href="../../stats-4/generalized-linear-models/">generalized linear models</a>.</li>
+          <li><strong>Time-until-an-event</strong> — days to relapse, weeks to dropout, where some people never have the event before the study ends. That censoring makes it <a href="../../stats-4/survival-analysis/">survival analysis</a>, not a t-test on the times.</li>
+        </ul>
+        <p><strong>The Likert question</strong>, because every dissertation asks it: a <em>single</em> 5-point item is ordinal — treat it with <a href="../../stats-2/non-parametric-alternatives/">rank-based methods</a>. A <em>composite</em> of several items (a scale mean across 8 questions) is conventionally treated as continuous, and that convention is defensible — provided you built the composite properly (reverse-coding and all: see <a href="../clean-survey-data/">Clean Your Survey Data</a>) and its distribution isn't pathological. Say in your methods section which you did.</p>
+
+        <h2 id="structure">Question 2 — What are you comparing or relating?</h2>
+        <p>Now look at the other side of your hypothesis — the independent variable(s):</p>
+        <ul>
+          <li><strong>Two groups</strong> → a <a href="../../stats-1/independent-samples-t-test/">t-test</a> family member.</li>
+          <li><strong>Three or more groups</strong> → <a href="../../stats-2/one-way-anova/">one-way ANOVA</a> (running several t-tests instead inflates your false-positive rate — that's the whole reason ANOVA exists, and why significant results are followed by <a href="../../stats-2/post-hoc-tests/">post-hoc tests</a>, not more t-tests).</li>
+          <li><strong>Two grouping factors at once</strong> — say, therapy type × session format — → <a href="../../stats-2/factorial-anova-two-way/">factorial ANOVA</a>, which also buys you the interaction: does the effect of one factor depend on the other? Interactions are often the most publishable thing in a dissertation.</li>
+          <li><strong>Another continuous variable</strong> → <a href="../../stats-2/correlation/">correlation</a> if you just want the strength of association, <a href="../../stats-2/simple-linear-regression/">simple regression</a> if one variable predicts the other.</li>
+          <li><strong>Several predictors at once</strong> → <a href="../../stats-3/multiple-regression/">multiple regression</a>, the workhorse of survey-based dissertations. Categorical predictors join via <a href="../../stats-3/categorical-predictors-and-dummy-coding/">dummy coding</a>; "does the effect of X depend on Z?" becomes an <a href="../../stats-3/interactions-in-regression/">interaction term</a>.</li>
+        </ul>
+
+        <h2 id="paired">Question 3 — Paired or independent?</h2>
+        <p>The quiet question that changes everything. If the same person contributes an observation to each condition — before/after, condition A and condition B, three time points — the observations are <em>correlated</em>, and a test that assumes independence will get its arithmetic wrong. Paired designs get paired tests: the <a href="../../stats-1/one-sample-and-paired-t-tests/">paired t-test</a> for two measurements, <a href="../../stats-2/repeated-measures-anova/">repeated-measures ANOVA</a> for more. The same applies to matched pairs (siblings, matched controls).</p>
+        <p>Pairing is usually a <em>gift</em> — each person serves as their own control, which strips out individual differences and buys power (fewer participants for the same detection ability). The price is carryover and order effects; <a href="../../methods/between-vs-within-designs/">Between vs Within Designs</a> shows when the gift turns poisonous. And if your design mixes both — a between-groups factor <em>and</em> repeated measurements — that's a mixed design, which brings us to the messy section below.</p>
+
+        <h2 id="the-map">The map</h2>
+        <p>The three answers, laid out. Every test links to its interactive lesson; the parenthetical is the rank-based fallback for when assumptions crumble (more on that below).</p>
+        <table class="ref-table">
+          <thead><tr><th>Your situation</th><th>The test</th><th>Learn it</th></tr></thead>
+          <tbody>
+            <tr><td>Continuous outcome, 2 independent groups</td><td>Independent t (Mann–Whitney)</td><td><a href="../../stats-1/independent-samples-t-test/">Stats 1.12</a></td></tr>
+            <tr><td>Continuous outcome, same people twice</td><td>Paired t (Wilcoxon)</td><td><a href="../../stats-1/one-sample-and-paired-t-tests/">Stats 1.11</a></td></tr>
+            <tr><td>Continuous outcome, 3+ independent groups</td><td>One-way ANOVA (Kruskal–Wallis)</td><td><a href="../../stats-2/one-way-anova/">Stats 2.1</a></td></tr>
+            <tr><td>Continuous outcome, same people 3+ times</td><td>RM-ANOVA (Friedman)</td><td><a href="../../stats-2/repeated-measures-anova/">Stats 2.4</a></td></tr>
+            <tr><td>Continuous outcome, two crossed factors</td><td>Factorial ANOVA</td><td><a href="../../stats-2/factorial-anova-two-way/">Stats 2.3</a></td></tr>
+            <tr><td>Two continuous variables, association</td><td>Pearson r (Spearman ρ)</td><td><a href="../../stats-2/correlation/">Stats 2.8</a></td></tr>
+            <tr><td>Continuous outcome, one continuous predictor</td><td>Simple regression</td><td><a href="../../stats-2/simple-linear-regression/">Stats 2.9</a></td></tr>
+            <tr><td>Continuous outcome, several predictors</td><td>Multiple regression</td><td><a href="../../stats-3/multiple-regression/">Stats 3.1</a></td></tr>
+            <tr><td>Two categorical variables</td><td>Chi-square (Fisher's exact for tiny cells)</td><td><a href="../../stats-2/chi-square-tests/">Stats 2.7</a></td></tr>
+            <tr><td>Categorical (yes/no) outcome, any predictors</td><td>Logistic regression</td><td><a href="../../stats-3/logistic-regression/">Stats 3.7</a></td></tr>
+            <tr><td>Group comparison, adjusting for a covariate</td><td>ANCOVA</td><td><a href="../../stats-3/ancova/">Stats 3.4</a></td></tr>
+            <tr><td>Count outcome</td><td>Poisson / negative binomial GLM</td><td><a href="../../stats-4/generalized-linear-models/">Stats 4.4</a></td></tr>
+            <tr><td>Time-to-event outcome (with censoring)</td><td>Survival analysis</td><td><a href="../../stats-4/survival-analysis/">Stats 4.8</a></td></tr>
+            <tr><td>People nested in groups (classes, clinics)</td><td>Multilevel models</td><td><a href="../../stats-4/mixed-and-multilevel-models/">Stats 4.5</a></td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="covariates">"But I need to control for age…" — covariates</h2>
+        <p>Almost every dissertation wants to adjust for something. Mechanically it's easy: in a group design, adding a continuous covariate turns ANOVA into <a href="../../stats-3/ancova/">ANCOVA</a>; in regression, you simply add the covariate as another predictor. Two honest cautions. First, "controlling for" is not a purification ritual — adjusting for the wrong variable (a mediator, or a collider) can <em>create</em> bias rather than remove it; <a href="../../stats-4/causal-dags-and-confounding/">Causal DAGs &amp; Confounding</a> is the map for which variables belong in the model. Second, decide your covariates <em>before</em> seeing the results. Covariates added until the effect becomes significant is one of the <a href="../../methods/the-replication-crisis/">garden of forking paths'</a> best-trodden trails.</p>
+
+        <h2 id="messy">When reality is messy (it will be)</h2>
+        <p>Real dissertations rarely match a textbook row exactly. The honest answers:</p>
+        <ul>
+          <li><strong>Unequal group sizes.</strong> Fine. Nothing in the t-test or ANOVA requires equal <em>n</em> — you lose a little power and equal-variance violations bite harder, but unequal groups alone are not a problem.</li>
+          <li><strong>Assumptions failed.</strong> Don't panic-switch tests over one significant normality check; look at the plots and the sample size first — <a href="../../stats-2/assumptions-and-when-they-break/">Assumptions &amp; When They Break</a> triages which violations actually matter. Unequal variances → Welch's version (one tick). Serious skew with small samples → the rank-based fallback in the map. What's <em>not</em> allowed: trying all three and reporting the one you liked best.</li>
+          <li><strong>Nested data.</strong> Students inside classrooms, patients inside clinics, trials inside participants: observations within a cluster resemble each other, which breaks independence and silently shrinks your <em>p</em>-values. Ignoring it is the most common serious error in otherwise-solid dissertations — <a href="../../stats-4/mixed-and-multilevel-models/">multilevel models</a> exist for exactly this.</li>
+          <li><strong>Mixed designs.</strong> A between factor plus repeated measures (treatment group × three time points) is a mixed ANOVA — conceptually just the marriage of <a href="../../stats-2/factorial-anova-two-way/">factorial</a> and <a href="../../stats-2/repeated-measures-anova/">repeated-measures</a> ANOVA, and increasingly analysed as a multilevel model instead.</li>
+          <li><strong>Missing data.</strong> People skip questions and drop out. <em>How</em> you handle it (and whether the missingness is random) changes your answer more than you'd like — <a href="../../stats-4/missing-data/">Missing Data</a> before you delete a single row.</li>
+          <li><strong>Your design fits nothing here.</strong> That's a finding, not a failure. Describe the design precisely — outcome type, predictors, nesting, pairing — to your supervisor, and resist forcing it into whichever test you happen to know. The right analysis for a design that doesn't fit this page exists; it's just a conversation, not a guess.</li>
+        </ul>
+
+        <h2 id="prediction">A different question entirely: predicting, not testing</h2>
+        <p>Everything above tests hypotheses: <em>is</em> there an effect, <em>how big</em>, with what uncertainty. If your question is instead "how accurately can I predict who drops out?" — accuracy on new cases, whatever works — you've crossed into machine learning, where the rules change (evaluation on held-out data replaces <em>p</em>-values). <a href="../../ml/prediction-vs-explanation/">Prediction vs Explanation</a> marks the border, and the ML course takes it from there. The same regression can serve either goal; what changes is how you judge it.</p>
+
+        <h2 id="before-you-collect">Decide before you collect</h2>
+        <p>The best time to choose your test is before you have data — it forces your hypothesis to be precise, it lets you compute how many participants you need (the <a href="../../power.html">power calculator</a> answers that exactly; underpowered studies are how promising dissertations end in <em>p</em> = .12), and a written-down plan is armour against the temptation to shop for significance later. <a href="../../methods/preregistration-and-open-science/">Preregistration</a> makes the plan official; <a href="../../plan.html">Plan My Analysis</a> will draft it — test, assumptions, sample size, APA skeleton — on one printable page your supervisor can sign off in a meeting.</p>
+
+        <div class="callout key">
+          <p><strong>The whole guide in one sentence:</strong> name your outcome's type, name the structure it's related to, say whether measurements repeat — then read the map, check the assumptions, and commit in writing before the data arrive.</p>
+        </div>
+
+        <h2 id="keep-going">Keep going</h2>
+        <ul>
+          <li><a href="../../which-test.html">Which test should I use?</a> — this guide as a 60-second interactive.</li>
+          <li><a href="../../plan.html">Plan My Analysis</a> — turn your answers into a printable analysis plan.</li>
+          <li><a href="../../stats-1/hypothesis-testing-logic/">Hypothesis-Testing Logic</a> — what a test actually asks, before you pick one.</li>
+          <li><a href="../../methods/from-question-to-hypothesis/">From Question to Hypothesis</a> — if the research question itself is still fuzzy.</li>
+          <li><a href="../analyze-thesis-data-jasp/">Analyze Your Thesis Data in JASP</a> — the chosen test, actually run.</li>
+          <li><a href="../spss-output-to-apa/">From SPSS Output to APA Results</a> — and reported correctly.</li>
+        </ul>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+</body>
+</html>

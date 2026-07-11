@@ -8,9 +8,13 @@
 
   /* ---------- base path ----------
      Lesson pages live two folders deep (/<course>/<slug>/), the homepage
-     at the root. Using relative links keeps the whole site working no
-     matter what the repo/folder is named or how deep it's hosted. */
-  var BASE = (document.body && document.body.getAttribute("data-section")) ? "../../" : "";
+     at the root. Long-form guides (guides/<slug>/) are also two deep and
+     mark themselves with body[data-guide] instead of data-section, so they
+     get lesson-depth links without being treated as curriculum lessons
+     (no sidebar, no progress tracking). Using relative links keeps the
+     whole site working no matter how deep it's hosted. */
+  var GUIDE = document.body ? document.body.getAttribute("data-guide") : null;
+  var BASE = (document.body && (document.body.getAttribute("data-section") || GUIDE)) ? "../../" : "";
   var HERE = document.body ? document.body.getAttribute("data-section") : null;
 
   /* respect the OS "reduce motion" setting for JS-driven scrolls/animations
@@ -51,10 +55,12 @@
   function iconMenu() { return '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>'; }
 
   /* ---------- page identity (for quips + nav highlighting) ----------
-     Lesson pages are keyed by their slug; root pages by their file name
-     ("which-test", "quiz", …); the homepage is "home". */
+     Lesson pages are keyed by their slug; guide pages by their data-guide
+     slug; root pages by their file name ("which-test", "quiz", …); the
+     homepage is "home". */
   function pageKey() {
     if (HERE) return HERE;
+    if (GUIDE) return GUIDE;
     var m = /([^\/]+)\.html$/.exec(window.location.pathname);
     return m ? m[1] : "home";
   }
@@ -168,6 +174,11 @@
     "discussion-and-limitations": "The capybara found a correlation, so it writes 'was associated with,' never 'causes.' Match the verb to the design and your claims outlive the ones that oversold.",
     "abstracts-and-titles": "The capybara writes the abstract last, in five tidy moves, and puts the actual number in the result. Its titles say what it found — searchable beats clever when a reader is looking for exactly you.",
     "final-checklist": "The capybara rereads its own paper as a grumpy grader: does every number match, does each df fit the n, is every figure and citation accounted for? Cheap mistakes, caught before they cost marks.",
+    /* Guides */
+    "analyze-thesis-data-jasp": "The capybara's first thesis analysis felt enormous too. Then it clicked Descriptives, breathed, and did the next step. There is always just a next step.",
+    "spss-output-to-apa": "SPSS prints eleven numbers; your sentence needs five. The capybara knows which five — and it has never once copied 'Sig. = .000'.",
+    "choose-statistics-dissertation": "One outcome, two groups, nobody measured twice — the capybara names the test before its tea cools. Not memory; just asking three questions in order.",
+    "clean-survey-data": "The capybara cleans data the way it grooms: gently, in a fixed order, and never losing the raw coat underneath.",
     /* Root pages */
     "home": "No rush — capybaras never cram.",
     "toolbox": "A capybara's toolbox: warm water, good snacks, zero deadlines. Yours has calculators too.",
@@ -255,7 +266,12 @@
     { url: "glossary.html",      key: "glossary",      group: "guide",    emoji: "📖", title: "Glossary",                 desc: "Every stats term, defined without the jargon" },
     { url: "flashcards.html",    key: "flashcards",    group: "practice", emoji: "🃏", title: "Glossary flashcards",      desc: "Spaced-repetition drilling of every glossary term" },
     { url: "quiz.html",          key: "quiz",          group: "practice", emoji: "✅", title: "Quiz",                     desc: "Test yourself across every course" },
-    { url: "progress.html",      key: "progress",      group: "practice", emoji: "🌱", title: "My progress",              desc: "Your rings, what's left, and course certificates" }
+    { url: "progress.html",      key: "progress",      group: "practice", emoji: "🌱", title: "My progress",              desc: "Your rings, what's left, and course certificates" },
+    /* long-form guides — guides/<slug>/index.html, group "read" (P34) */
+    { url: "guides/analyze-thesis-data-jasp/",       key: "analyze-thesis-data-jasp",       group: "read", emoji: "🧪", title: "Analyze your thesis data in JASP", desc: "Import → check → test → APA, the whole path in free software" },
+    { url: "guides/spss-output-to-apa/",             key: "spss-output-to-apa",             group: "read", emoji: "📄", title: "From SPSS output to APA results",  desc: "Annotated output for the five classic tests — and the exact sentence" },
+    { url: "guides/choose-statistics-dissertation/", key: "choose-statistics-dissertation", group: "read", emoji: "🎓", title: "Choosing statistics for your dissertation", desc: "Three questions that pick your test — plus honest words on messy designs" },
+    { url: "guides/clean-survey-data/",              key: "clean-survey-data",              group: "read", emoji: "🧹", title: "Clean your survey data, step by step", desc: "From raw export to analysis-ready, with a real dataset to follow along" }
   ];
   window.TOOLBOX = TOOLBOX;   // toolbox.html renders its grouped grid from this
   function renderNav() {
@@ -420,8 +436,9 @@
     }).join("") +
       '<a class="tool-card tool-card-all" href="' + BASE + 'toolbox.html">' +
         '<span class="tool-emoji" aria-hidden="true">🧰</span>' +
-        '<span class="tool-title">All ' + TOOLBOX.length + ' tools →</span>' +
-        '<span class="tool-desc">Choosers, calculators, flashcards, the quiz, your progress — the whole box</span></a>';
+        '<span class="tool-title">All ' + TOOLBOX.filter(function (t) { return t.group !== "read"; }).length +
+          ' tools & ' + TOOLBOX.filter(function (t) { return t.group === "read"; }).length + ' guides →</span>' +
+        '<span class="tool-desc">Choosers, calculators, long-form guides, flashcards, the quiz, your progress — the whole box</span></a>';
   }
 
   /* ---------- resume banner (homepage) ---------- */
@@ -931,7 +948,11 @@
     { title: "Course Quiz", url: "quiz.html", tag: "Practice", kw: "test yourself questions practice" },
     { title: "Statistics Glossary", url: "glossary.html", tag: "Reference", kw: "terms definitions dictionary" },
     { title: "Glossary Flashcards", url: "flashcards.html", tag: "Practice", kw: "flashcards spaced repetition leitner revise revision memorize memorise drill study cards terms definitions glossary due box" },
-    { title: "My Progress", url: "progress.html", tag: "Practice", kw: "progress dashboard my progress rings completed lessons done remaining continue resume certificate certificates course completion percent tracking enrolled" }
+    { title: "My Progress", url: "progress.html", tag: "Practice", kw: "progress dashboard my progress rings completed lessons done remaining continue resume certificate certificates course completion percent tracking enrolled" },
+    { title: "Analyze Your Thesis Data in JASP", url: "guides/analyze-thesis-data-jasp/", tag: "Guide", kw: "jasp guide tutorial thesis dissertation analyze data start to finish walkthrough import csv descriptives assumptions levene welch t-test run read output write up apa how to" },
+    { title: "From SPSS Output to APA Results", url: "guides/spss-output-to-apa/", tag: "Guide", kw: "spss guide output apa results report write up sig 2-tailed .000 levene two rows t-test anova correlation chi-square regression tables how to read coefficients" },
+    { title: "Choosing Statistics for Your Dissertation", url: "guides/choose-statistics-dissertation/", tag: "Guide", kw: "choose choosing statistics dissertation thesis which test analysis pick guide outcome predictor groups paired design likert messy real data decision" },
+    { title: "Clean Your Survey Data, Step by Step", url: "guides/clean-survey-data/", tag: "Guide", kw: "clean cleaning survey data guide questionnaire likert reverse code coding missing values composite score reliability cronbach alpha screening exclusions step by step raw export" }
   ];
   function escHtml(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
   /* a short excerpt around the first occurrence of q, with the match <mark>ed */

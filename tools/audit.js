@@ -25,7 +25,10 @@
         parse, data-course/data-section correct, "Section N.n" eyebrow matches
         curriculum, meta description present (50–160 chars).
      3. Root/tool pages — GA, canonical, meta description, OG present;
-        404.html carries the GA tag only.
+        404.html carries the GA tag only. Guide pages (guides/<slug>/,
+        P34) get the same checks plus og:type article, exact canonical/
+        og:url, Article + BreadcrumbList JSON-LD, the body[data-guide]
+        marker, and sitemap + search-index entries.
      4. All internal href/src links resolve on disk; no leading-slash paths.
      5. Search index — freshness (mtime) + every ready slug indexed.
      6. Homepage counts — the course/lesson totals in index.html match reality.
@@ -211,8 +214,10 @@ const courseSlugs = new Set(CURRICULUM.map((c) => c.slug));   // any track, not 
 /* root / tool pages (excluding the self-contained 404.html) */
 const ROOT_PAGES = ['index.html', 'quiz.html', 'glossary.html', 'toolbox.html', 'which-test.html', 'which-chart.html',
   'plan.html', 'tables.html', 'formulas.html', 'distributions.html', 'effect-sizes.html', 'descriptives.html', 'correlation.html', 'power.html', 'apa.html', 'datasets.html', 'flashcards.html', 'progress.html'];
-/* allowed non-lesson QUIPS keys: index→"home" plus each root page's basename */
-const rootKeys = new Set(['home', ...ROOT_PAGES.filter((f) => f !== 'index.html').map((f) => f.replace('.html', ''))]);
+/* long-form guides — guides/<slug>/index.html (P34); each is a body[data-guide] page */
+const GUIDES = ['analyze-thesis-data-jasp', 'spss-output-to-apa', 'choose-statistics-dissertation', 'clean-survey-data'];
+/* allowed non-lesson QUIPS keys: index→"home" plus each root page's basename, plus guide slugs */
+const rootKeys = new Set(['home', ...ROOT_PAGES.filter((f) => f !== 'index.html').map((f) => f.replace('.html', '')), ...GUIDES]);
 
 /* sitemap URLs */
 const sitemapSrc = read(path.join(ROOT, 'sitemap.xml'));
@@ -349,6 +354,40 @@ if (!fs.existsSync(p404)) err('missing 404.html');
 else if (gaCount(read(p404)) !== 2) err(`404.html → expected exactly one GA tag (2 ${GA_ID} refs), found ${gaCount(read(p404))}`);
 
 /* ============================================================
+   CHECK 3b — guide pages (guides/<slug>/index.html, P34):
+   root-page SEO rules + og:type article, canonical/og:url = the
+   guide's true URL, Article + BreadcrumbList JSON-LD, the
+   body[data-guide] marker (what gives them lesson-depth BASE),
+   a sitemap entry, and a search-index entry.
+   ============================================================ */
+for (const g of GUIDES) {
+  const file = path.join(ROOT, 'guides', g, 'index.html');
+  if (!fs.existsSync(file)) { err(`missing guide page: guides/${g}/index.html`); continue; }
+  const src = read(file), ms = metaTags(src);
+  const trueUrl = `${BASE_URL}guides/${g}/`;
+  if (gaCount(src) !== 2) err(`guides/${g} → expected exactly one GA tag (2 ${GA_ID} refs), found ${gaCount(src)}`);
+  const canon = canonicalOf(src);
+  if (canon !== trueUrl) err(`guides/${g} → canonical is ${canon || 'MISSING'}, expected ${trueUrl}`);
+  if (metaProp(ms, 'og:url') !== trueUrl) err(`guides/${g} → og:url is ${metaProp(ms, 'og:url') || 'MISSING'}, expected ${trueUrl}`);
+  if (metaProp(ms, 'og:type') !== 'article') err(`guides/${g} → og:type is "${metaProp(ms, 'og:type') || 'MISSING'}", expected "article"`);
+  const desc = metaName(ms, 'description');
+  if (!desc) err(`guides/${g} → missing meta description`);
+  else if (desc.length < 50 || desc.length > 160) warn(`guides/${g} → meta description is ${desc.length} chars (want 50–160)`);
+  const gImg = metaProp(ms, 'og:image');
+  if (!gImg) warn(`guides/${g} → missing og:image`);
+  else if (!siteAssetExists(gImg)) err(`guides/${g} → og:image ${gImg} does not resolve to a file on disk`);
+  const lds = jsonLd(src);
+  if (lds.some((b) => !b.ok)) err(`guides/${g} → a JSON-LD block does not parse`);
+  const gTypes = lds.filter((b) => b.ok).flatMap((b) => Array.isArray(b.parsed) ? b.parsed.map((x) => x['@type']) : b.parsed ? [b.parsed['@type']] : []);
+  if (!gTypes.includes('Article')) err(`guides/${g} → missing Article JSON-LD`);
+  if (!gTypes.includes('BreadcrumbList')) err(`guides/${g} → missing BreadcrumbList JSON-LD`);
+  const body = (src.match(/<body\b[^>]*>/i) || [''])[0];
+  if (attrs(body)['data-guide'] !== g) err(`guides/${g} → body data-guide is "${attrs(body)['data-guide'] || 'MISSING'}", expected "${g}"`);
+  if (!sitemapLocs.has(trueUrl)) err(`sitemap.xml missing guides/${g}/`);
+  if (!(SEARCH_INDEX.pages || []).some((p) => p.u === `guides/${g}/`)) err(`search-index.js has no page entry for "guides/${g}/" — rerun tools/build-search-index.py`);
+}
+
+/* ============================================================
    CHECK 4 — internal links resolve (lessons + root pages; not 404)
    ============================================================ */
 for (const s of READY) {
@@ -357,6 +396,10 @@ for (const s of READY) {
 }
 for (const f of ROOT_PAGES) {
   const file = path.join(ROOT, f);
+  if (fs.existsSync(file)) checkLinks(file);
+}
+for (const g of GUIDES) {
+  const file = path.join(ROOT, 'guides', g, 'index.html');
   if (fs.existsSync(file)) checkLinks(file);
 }
 

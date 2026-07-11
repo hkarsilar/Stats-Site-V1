@@ -82,6 +82,16 @@ for fname, title in [
     p = ROOT / fname
     if p.exists():
         pages.append({"u": fname, "txt": page_text(p)})
+# long-form guides (guides/<slug>/index.html) — indexed under their clean URL
+for slug in [
+    "analyze-thesis-data-jasp",
+    "spss-output-to-apa",
+    "choose-statistics-dissertation",
+    "clean-survey-data",
+]:
+    p = ROOT / "guides" / slug / "index.html"
+    if p.exists():
+        pages.append({"u": f"guides/{slug}/", "txt": page_text(p)})
 # glossary terms now live in assets/js/glossary-data.js; index them under glossary.html
 gl = ROOT / "assets/js/glossary-data.js"
 if gl.exists():
