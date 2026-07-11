@@ -1102,8 +1102,31 @@
     if (!head.querySelector('link[rel="manifest"]'))
       link({ rel: "manifest", href: BASE + "site.webmanifest" });
     if (!head.querySelector('meta[name="theme-color"]')) {
-      var m = document.createElement("meta"); m.name = "theme-color"; m.content = "#6366f1"; head.appendChild(m);
+      // theme-color for BOTH schemes: brand indigo in light, the dark page
+      // background in dark, so the browser chrome blends either way.
+      var mcLight = document.createElement("meta");
+      mcLight.name = "theme-color"; mcLight.setAttribute("media", "(prefers-color-scheme: light)"); mcLight.content = "#6366f1";
+      head.appendChild(mcLight);
+      var mcDark = document.createElement("meta");
+      mcDark.name = "theme-color"; mcDark.setAttribute("media", "(prefers-color-scheme: dark)"); mcDark.content = "#0b1120";
+      head.appendChild(mcDark);
     }
+  }
+
+  /* ---------- offline support (service worker) ----------
+     Registers sw.js (at the site root) so the site is installable and works
+     offline once visited. BASE-aware so it resolves from lesson pages two
+     folders deep; its scope defaults to the root, controlling the whole site.
+     Feature-detected and fully swallowed — offline is a bonus, never a page
+     breaker. Deferred to window "load" so it never competes with first paint. */
+  function registerSW() {
+    if (!("serviceWorker" in navigator)) return;
+    var go = function () {
+      try { navigator.serviceWorker.register(BASE + "sw.js").catch(function () {}); }
+      catch (e) {}
+    };
+    if (document.readyState === "complete") go();
+    else window.addEventListener("load", go, { once: true });
   }
 
   /* ---------- go ---------- */
@@ -1127,6 +1150,7 @@
     renderFooterCapy();
     wireSearchShortcuts();
     wireLessonKeys();
+    registerSW();
     // ?q=… deep link (also the target of the sitewide SearchAction schema)
     var qm = /[?&]q=([^&]+)/.exec(window.location.search);
     if (qm) {

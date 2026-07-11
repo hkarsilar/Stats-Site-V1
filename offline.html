@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Offline — StatsCapybara</title>
+  <meta name="robots" content="noindex" />
+  <style>
+    /* Fully self-contained: the service worker serves this page for
+       navigations while the network is down (at ANY URL depth), so — like
+       404.html — it can't rely on relative links to CSS/JS or a known path. */
+    :root { color-scheme: light dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center; padding: 2rem;
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: #ffffff; color: #0f172a;
+    }
+    @media (prefers-color-scheme: dark) { body { background: #0b1120; color: #e7ecf5; } }
+    .capy { width: 96px; height: 90px; }
+    h1 { font-size: 1.5rem; font-weight: 700; margin: 1rem 0 0; }
+    p { color: #64748b; max-width: 34rem; margin: .75rem 0 0; line-height: 1.6; }
+    @media (prefers-color-scheme: dark) { p { color: #94a3b8; } }
+    .actions { margin-top: 1.75rem; display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center; }
+    button.btn, a.btn {
+      display: inline-block; padding: .75rem 1.4rem; border-radius: 12px; font-weight: 600;
+      text-decoration: none; border: 0; font: inherit; cursor: pointer; transition: transform .15s;
+    }
+    .primary { background: #6366f1; color: #fff; }
+    .ghost { border: 1px solid #cbd5e1; color: inherit; background: transparent; }
+    @media (prefers-color-scheme: dark) { .ghost { border-color: #334155; } }
+    .btn:hover { transform: translateY(-1px); }
+    .cached { margin-top: 2.25rem; width: 100%; max-width: 34rem; text-align: left; }
+    .cached h2 { font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: #94a3b8; margin: 0 0 .6rem; text-align: center; }
+    .cached ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .4rem; }
+    .cached a {
+      display: block; padding: .6rem .85rem; border-radius: 10px; text-decoration: none; color: inherit;
+      border: 1px solid #e2e8f0; background: #f8fafc; font-size: .92rem;
+    }
+    @media (prefers-color-scheme: dark) { .cached a { border-color: #1e293b; background: #111a2e; } }
+    .cached a:hover { border-color: #6366f1; }
+    .cached .tag { color: #94a3b8; font-size: .78rem; }
+  </style>
+</head>
+<body>
+  <svg class="capy" viewBox="0 0 64 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <ellipse cx="19" cy="15" rx="7" ry="6" fill="#9a6f43"/><ellipse cx="45" cy="15" rx="7" ry="6" fill="#9a6f43"/>
+    <rect x="9" y="14" width="46" height="40" rx="17" fill="#b3824f"/><ellipse cx="32" cy="44" rx="16" ry="12" fill="#9a6f43"/>
+    <circle cx="23" cy="31" r="2.7" fill="#3a2a1b"/><circle cx="41" cy="31" r="2.7" fill="#3a2a1b"/>
+    <path d="M25 46 q7 4 14 0" stroke="#3a2a1b" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </svg>
+  <h1>You're offline</h1>
+  <p>No connection right now — but the capybara doesn't panic, and neither should you. Pages you've already visited still work. Anything below is saved on this device.</p>
+
+  <div class="actions">
+    <button class="btn primary" id="retry" type="button">Try again</button>
+    <a class="btn ghost" id="home" href="./">Back to home</a>
+  </div>
+
+  <div class="cached" id="cached" hidden>
+    <h2>Saved on this device</h2>
+    <ul id="cached-list"></ul>
+  </div>
+
+  <script>
+    /* Home link: on a github.io project page the site lives at /<repo>/;
+       on the custom domain it's the root. (Same trick as 404.html.) */
+    (function () {
+      var home = "./";
+      if (location.hostname.indexOf("github.io") !== -1) {
+        var seg = location.pathname.split("/")[1];
+        if (seg) home = "/" + seg + "/";
+      }
+      document.getElementById("home").setAttribute("href", home);
+    })();
+
+    document.getElementById("retry").addEventListener("click", function () { location.reload(); });
+
+    /* List the pages this browser has cached, straight from the Cache API,
+       so a stranded reader can see what's still reachable. Titles are derived
+       from the URL (prettified slug) — no external requests, so it works with
+       zero network. */
+    (function () {
+      if (!("caches" in window)) return;
+      function pretty(seg) {
+        return seg.replace(/-/g, " ").replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+      }
+      caches.keys()
+        .then(function (keys) {
+          return Promise.all(keys.map(function (k) {
+            return caches.open(k).then(function (c) { return c.keys(); });
+          }));
+        })
+        .then(function (lists) {
+          var seen = {}, items = [];
+          lists.forEach(function (reqs) {
+            reqs.forEach(function (r) {
+              var u = r.url;
+              if (u.indexOf(location.origin) !== 0) return;         // same-origin only
+              var path = u.slice(location.origin.length).split(/[?#]/)[0];
+              if (path.indexOf("/assets/") !== -1) return;          // skip assets
+              if (/\.(?:js|css|woff2?|png|svg|ico|json|webmanifest|xml|txt)$/i.test(path)) return;
+              if (/offline\.html$/.test(path) || /404\.html$/.test(path)) return;
+              // lesson / tool pages: a directory URL ending in "/" or an .html file
+              var parts = path.split("/").filter(Boolean);
+              if (parts.length < 2 && !/\.html$/.test(path)) return; // skip bare root "/"
+              if (seen[path]) return; seen[path] = 1;
+              var label, tag = "";
+              if (/\.html$/.test(path)) {
+                label = pretty(parts[parts.length - 1].replace(/\.html$/, ""));
+              } else {
+                label = pretty(parts[parts.length - 1]);
+                if (parts.length >= 2) tag = pretty(parts[parts.length - 2]);
+              }
+              items.push({ href: u, label: label, tag: tag });
+            });
+          });
+          if (!items.length) return;
+          items.sort(function (a, b) { return a.label.localeCompare(b.label); });
+          var ul = document.getElementById("cached-list");
+          ul.innerHTML = items.slice(0, 30).map(function (it) {
+            return '<li><a href="' + it.href + '">' + it.label +
+              (it.tag ? ' <span class="tag">· ' + it.tag + '</span>' : '') + '</a></li>';
+          }).join("");
+          document.getElementById("cached").hidden = false;
+        })
+        .catch(function () {});
+    })();
+  </script>
+</body>
+</html>
