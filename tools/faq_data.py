@@ -22,8 +22,8 @@ FAQS_12 = {
 ],
 
 "types-of-data": [
- ("What are the four levels of measurement?",
-  "Nominal (unordered categories like blood type), ordinal (ordered categories with unequal gaps like survey ratings), interval (equal gaps but no true zero, like °C), and ratio (equal gaps plus a true zero, like height or reaction time). Each level up supports more math — only interval and ratio data have meaningful means and standard deviations."),
+ ("Is age nominal, ordinal, interval, or ratio data?",
+  "Age in years is <strong>ratio</strong> data: zero means no age at all, so \"twice as old\" is meaningful. But the level of measurement lives in how you <em>record</em> a variable, not in the thing itself: age <em>groups</em> (18–25, 26–40, 41+) are ordinal, and birth <em>year</em> is interval (year 0 is an arbitrary calendar convention, so 1990 isn't \"twice\" 995). Recording age as coarse groups throws information away permanently — collect the exact value and bin later if you must."),
  ("Is a Likert scale ordinal or interval data?",
   "Strictly, a single Likert item (\"strongly disagree … strongly agree\") is <strong>ordinal</strong> — the gaps between labels aren't guaranteed equal. In practice, researchers often <em>treat</em> the sum or average of several items as approximately interval, which is usually defensible. For a single item, ordinal-friendly methods (medians, <a href=\"../../stats-2/non-parametric-alternatives/\">rank-based tests</a>) are the safer choice."),
  ("Why can't you calculate a mean for nominal data?",
@@ -35,15 +35,15 @@ FAQS_12 = {
   "Use the median when the data is skewed or contains outliers — incomes, house prices, reaction times. The mean gets dragged toward extreme values because it uses every value's actual magnitude; the median only cares about what's in the middle, so it stays a more honest \"typical value.\" For roughly symmetric data the two agree, and the mean is standard."),
  ("Why does the sample standard deviation divide by n − 1 instead of n?",
   "A sample's values are, on average, slightly closer to their own sample mean than to the true population mean — so dividing by n would systematically underestimate the population's spread. Dividing by n − 1 (Bessel's correction) inflates the result just enough to fix that bias. With large samples the difference becomes negligible."),
- ("What does standard deviation actually tell you?",
-  "Roughly, the average distance between a data point and the mean — a ruler for \"typical deviation.\" A small SD means values huddle near the mean; a large one means they're spread wide. It's also the unit that <a href=\"../../stats-1/z-scores-and-the-normal-distribution/\">z-scores</a> and effect sizes are measured in, which is why it appears everywhere in statistics."),
+ ("Should I report the mean with the SD, or the median with the IQR?",
+  "Pair the center with its matching spread. The mean and SD belong together (both use every value's magnitude, so both are outlier-sensitive), and the median pairs with the <strong>interquartile range</strong> — the span of the middle 50% of the data, built from quartiles just like the median. For roughly symmetric data, mean (SD) is the standard report and what t-tests work with; for skewed or outlier-prone data, median and IQR give the honest picture. Our <a href=\"../../descriptives.html\">descriptives calculator</a> computes both pairs so you can compare."),
 ],
 
 "visualizing-data": [
  ("How many bins should a histogram have?",
   "There's no single right answer — around 10–20 bins works well for a few hundred observations, and rules like Sturges' or Freedman–Diaconis give reasonable starting points. The practical advice: always try several bin widths. Too few bins hides real structure (like two peaks); too many turns the shape into noise."),
- ("What is the difference between a histogram and a bar chart?",
-  "A histogram displays one <em>quantitative</em> variable chopped into equal-width intervals — its bars touch because they cover a continuous range. A bar chart compares separate <em>categories</em>, so its bars are drawn with gaps. Confusing them matters: bar-chart tools happily reorder categories, which would be meaningless for a histogram's number line."),
+ ("Why do people say never to use a pie chart?",
+  "Because pie charts make readers judge <em>angles and areas</em>, which humans do poorly — classic perception experiments (Cleveland &amp; McGill, 1984) show we compare aligned bar lengths far more accurately. With more than two or three slices, \"which is bigger?\" becomes guesswork that a sorted bar chart answers instantly. The defensible pie is rare: a single part-of-whole message with two or three very different slices. Our <a href=\"../../which-chart.html\">chart chooser</a> has a whole \"resist the pie\" verdict explaining the alternatives."),
  ("When should I use a boxplot instead of a histogram?",
   "Use a boxplot when comparing several groups side by side — five boxplots fit neatly where five histograms would be a mess — or when you want outliers flagged automatically by the 1.5 × IQR rule. Use a histogram when the <em>shape</em> matters (skew, two peaks), because a boxplot can't show bimodality. Our <a href=\"../../descriptives.html\">descriptives calculator</a> draws both from pasted data."),
 ],
@@ -51,8 +51,8 @@ FAQS_12 = {
 "z-scores-and-the-normal-distribution": [
  ("What does a z-score of 2 mean?",
   "The value sits exactly 2 standard deviations above the mean. In a normal distribution that's roughly the 97.7th percentile — only about 2.3% of values land higher. The sign gives the direction (negative = below the mean) and the magnitude gives the rarity; beyond ±2 is conventionally \"unusual.\""),
- ("What is the 68–95–99.7 rule?",
-  "In any normal distribution, about 68% of values fall within 1 standard deviation of the mean, about 95% within 2, and about 99.7% within 3. It's a fast mental map from \"how many SDs out\" to \"how rare\" — and the origin of the familiar ±1.96 cutoff used for 95% confidence intervals."),
+ ("How do I convert a z-score to a percentile?",
+  "Take the area under the standard normal curve to the <em>left</em> of your z — that cumulative proportion × 100 is the percentile. z = +1.0 → the 84.1st percentile; z = −1.5 → the 6.7th; and \"% scoring above\" is just 100 minus it. Classically you'd look this up in a printed z-table; our <a href=\"../../tables.html\">statistical tables calculator</a> does the conversion in both directions (z → area, or a target percentile → the z that produces it). Remember it's only trustworthy when the data is roughly normal."),
  ("Can I use z-scores if my data isn't normal?",
   "You can always <em>compute</em> a z-score — subtracting the mean and dividing by the SD works for any data, and it's still a fine way to standardize scales. What you lose is the percentile table: \"z = 2 means top 2.3%\" is only true for normal-shaped data. For skewed data, the same z can correspond to a very different percentile."),
 ],
@@ -98,8 +98,8 @@ FAQS_12 = {
   "It means: <em>if</em> there were truly no effect (H₀ true), data this extreme would occur less than 5% of the time by chance alone. Since that's rare, we treat the result as evidence against H₀. It does <strong>not</strong> mean there's a 95% chance the effect is real, and it says nothing about how large or important the effect is — that's the job of <a href=\"../../stats-1/effect-size-and-power/\">effect sizes</a>."),
  ("Why do we say 'fail to reject' the null instead of 'accept' it?",
   "Because a non-significant result means the evidence wasn't strong enough to rule out chance — not that H₀ is true. Like a courtroom's \"not guilty,\" it reflects insufficient evidence, not established innocence. Small studies fail to reject false nulls all the time simply because they lack power."),
- ("What is the difference between Type I and Type II errors?",
-  "A Type I error is a false alarm: rejecting H₀ when it's actually true — its rate is your α (5% by convention). A Type II error is a miss: failing to detect an effect that's really there — its rate is β, and 1 − β is the test's power. They trade off: demanding stronger evidence (lower α) makes misses more likely, which is why sample-size planning matters."),
+ ("Why is the significance level set at 0.05?",
+  "Convention, not law of nature. R. A. Fisher suggested in the 1920s that one-in-twenty was a convenient benchmark for \"surprising\" — roughly the chance of landing beyond ±2 SDs — and it stuck. Nothing magical happens between p = .049 and p = .051, which is why fields with different stakes choose differently: particle physics demands \"5 sigma\" (about 1 in 3.5 million), genome-wide studies use 5 × 10⁻⁸, and some journals now suggest .005 for new discoveries. What matters is fixing α <em>before</em> you look at the data — and remembering that crossing it says nothing about how <a href=\"../../stats-1/effect-size-and-power/\">large or important</a> the effect is."),
 ],
 
 "one-sample-and-paired-t-tests": [

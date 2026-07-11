@@ -16,7 +16,7 @@ window.SOFTWARE = {
   /* ---------------- Stats 1 ---------------- */
   "one-sample-and-paired-t-tests": {
     spss: [
-      '<strong>Analyze → Compare Means → One-Sample T Test…</strong> (or <strong>Paired-Samples T Test…</strong>)',
+      '<strong>Analyze → Compare Means → One-Sample T Test…</strong> (or <strong>Paired-Samples T Test…</strong>). In SPSS 29+ the submenu is called <em>Compare Means and Proportions</em> — same procedures inside.',
       'One-sample: move your variable into <em>Test Variable(s)</em> and type the comparison value into <em>Test Value</em>.',
       'Paired: click the two variables (e.g. <em>before</em>, <em>after</em>) so they appear as one pair.',
       'In current SPSS versions, tick <em>Estimate effect sizes</em> to get Cohen’s d in the output.',
@@ -36,7 +36,7 @@ window.SOFTWARE = {
   },
   "independent-samples-t-test": {
     spss: [
-      '<strong>Analyze → Compare Means → Independent-Samples T Test…</strong>',
+      '<strong>Analyze → Compare Means → Independent-Samples T Test…</strong> (in SPSS 29+ the submenu is named <em>Compare Means and Proportions</em>).',
       'Move the outcome into <em>Test Variable(s)</em> and the group variable into <em>Grouping Variable</em>; click <em>Define Groups…</em> and enter the two codes.',
       'Tick <em>Estimate effect sizes</em> for Cohen’s d.',
       'Output shows two rows: check Levene’s test first — if it’s significant (unequal variances), read the <em>Equal variances not assumed</em> (Welch) row. Many statisticians recommend simply always using that row.'
@@ -75,7 +75,7 @@ window.SOFTWARE = {
   /* ---------------- Stats 2 ---------------- */
   "one-way-anova": {
     spss: [
-      '<strong>Analyze → Compare Means → One-Way ANOVA…</strong>',
+      '<strong>Analyze → Compare Means → One-Way ANOVA…</strong> (in SPSS 29+ the submenu is named <em>Compare Means and Proportions</em>).',
       'Outcome into <em>Dependent List</em>, group into <em>Factor</em>.',
       '<em>Options…</em>: tick <em>Descriptive</em>, <em>Homogeneity of variance test</em> (Levene), and <em>Welch</em> (robust F for unequal variances). Recent SPSS also offers effect-size estimates here.',
       '<em>Post Hoc…</em>: tick <em>Tukey</em> for pairwise follow-ups.',
@@ -570,7 +570,8 @@ window.SOFTWARE = {
       'Move all items of ONE scale into <em>Items</em>. Reverse-code any negatively worded items first (<strong>Transform → Recode into Different Variables</strong>), or α will be badly deflated.',
       'Set <em>Model</em> to <em>Alpha</em>.',
       'Click <em>Statistics…</em> and tick <em>Scale if item deleted</em> and <em>Inter-Item Correlations</em>.',
-      'Read <em>Cronbach’s Alpha</em> in the Reliability Statistics table; scan the <em>Cronbach’s Alpha if Item Deleted</em> column for items dragging the scale down.'
+      'Read <em>Cronbach’s Alpha</em> in the Reliability Statistics table; scan the <em>Cronbach’s Alpha if Item Deleted</em> column for items dragging the scale down.',
+      'SPSS 28+ can also compute <em>McDonald’s ω</em> here: set <em>Model</em> to <em>Omega</em> and run the analysis again.'
     ],
     jasp: [
       '<strong>Reliability → Unidimensional Reliability</strong> (the classical option).',
