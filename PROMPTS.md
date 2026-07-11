@@ -733,5 +733,145 @@ Standard verification. Add a dated note under P39 in ROADMAP.md's tracker.
 
 ---
 
-*End of prompt library. When every box in ROADMAP.md is ticked: the site has 9 courses, ~95 interactive lessons, ~14 tools, 4 guides, print/offline/a11y polish, and a live SEO feedback loop. At that point the loops (P37–P39) plus the human checklist ARE the roadmap.*
+## Phase 10 — The human-voice edit (P40–P46)
+
+The site's prose was written by one AI in one style in two weeks, and it shows — see ROADMAP.md's Phases 10–11 addendum for the measured baseline (median 24 em-dashes per lesson, ~80 "No —/Yes —" verdict openers, one meta-description formula on a third of all pages, templated lesson openers). P40 builds the standard and the measuring stick; P41–P46 do the editing in six bounded batches. **The iron rule for every batch: prose only — no verified number, statistical claim, formula, code block, element id/class/anchor, link target, or interactive may change.** Quips, the capybara, and the emoji block headers are brand chrome, not slop — they stay.
+
+### P40 — Voice charter + prose linter
+
+```
+StatsCapybara roadmap prompt P40 (see ROADMAP.md — read the Phases 10–11 addendum first; it has the measured baseline). Run node tools/audit.js first.
+
+The site's writing is accurate and warm but machine-regular: the same constructions repeat across all 95 lessons, and readers who notice will file the whole site under "AI slop". This prompt creates the standard and the measuring stick; P41–P46 do the rewriting.
+
+1. Write VOICE.md at the repo root (committed). It is the editorial law for all future prose. Contents:
+   - The goal in one line: pages that read like one good lecturer wrote them over months — same person, different days — not one process in one pass.
+   - HARD RULES (lintable budgets): em-dashes ≤ 10 per lesson/guide/tool page of prose and ≤ 1 per FAQ answer on average; ZERO instances of the banned constructions: the "isn't/wasn't just X — it's Y" contrast punch (and its "it's not about X — it's Y" cousins), "Here's the thing/why/how", "The point is", "That's the whole point/lesson/job", FAQ answers opening with "No — "/"Yes — " (state the actual fact first instead; a bare "No." as a full first sentence is fine occasionally), "Think of it as" (allow ≤ 3 sitewide), "quietly" as an intensifier, "Notice how/that" (≤ 1 per page); meta descriptions built on "…and watch…" capped at 15% of pages.
+   - SOFT RULES (judgment): vary sentence length within a paragraph — let a plain declarative sentence exist without a twist; not every list needs exactly three items; not every contrast needs a dash; openers within a course must not share a template (open some lessons with a definition, some with a concrete scenario, some with a number, some with a student's actual question); the three FAQ answers on one page should not all open the same way; prefer deleting a flourish to replacing it — word count should go DOWN.
+   - ANTI-RULES (overcorrection is also a tell): don't swap every em-dash for a semicolon (a semicolon plague is worse); don't strip the warmth or the capybara personality; quips are exempt brand voice; the injected emoji block headers ("🧠 …", "🖱️ …") are site chrome — leave them.
+   - The read-aloud test: before shipping a page, read one paragraph aloud; if it sounds like a keynote, flatten it.
+2. Build tools/prose-lint.js — zero-dependency Node, run from the repo root, documented in CLAUDE.md's Commands section. It extracts rendered prose (strip <script>/<style>/tags, decode entities) from every lesson, guide, and audited root page, plus every answer string in tools/faq_data.py and every meta description. Per page it reports: word count, em-dash count and rate per 1,000 words, and per-pattern hit counts from a PATTERNS table at the top of the script that mirrors VOICE.md's hard rules (keep the two in sync — say so in comments in both). Sitewide it reports: the "…and watch…" description share, total hits per pattern, and the 10 worst pages. Modes: default = full report sorted worst-first; --page <path> = one page; --strict = exit 1 if any hard budget is exceeded. Deliberately NOT wired into audit.js (voice is editorial judgment, not build health) — but document it in CLAUDE.md next to audit.js, plus a short "Voice" note pointing prose-writing sessions at VOICE.md.
+3. Run the baseline: paste the sitewide summary and the worst-10 table into your final report, and note the baseline numbers under P40's tick in ROADMAP.md so P41–P46 can show measured progress.
+
+Standard verification (audit stays clean; node --check the new script; no content changes in this prompt). Tick P40 in ROADMAP.md.
+```
+
+### P41 — Voice pass: Stats 1 + Stats 2
+
+```
+StatsCapybara roadmap prompt P41 (see ROADMAP.md). Requires P40 (VOICE.md + tools/prose-lint.js). Run node tools/audit.js AND node tools/prose-lint.js first; save the lint baseline for the report.
+
+De-AI editing pass over Stats 1 (13 lessons) and Stats 2 (10 lessons): each lesson's prose, its 3 FAQ answers in tools/faq_data.py, and its meta description (keeping the og:/twitter:/JSON-LD description copies in sync — audit checks enforce length and sitewide dedupe).
+
+Rules of engagement (VOICE.md is the law):
+1. Surgical prose edits only. Never touch: numbers, statistical claims, formulas, code, element ids/classes/anchors, link targets, the viz, or the JSON-LD beyond its description string. If a factual sentence gets rewritten, the fact survives with identical meaning. Restructure HTML only where a sentence is cut or two are merged.
+2. Kill every hard-banned construction in scope and get every page under the em-dash budget by VARYING the fixes — commas, periods, parentheses, actual restructuring — not a blanket swap to semicolons.
+3. De-template the batch as a SET: the 23 opening paragraphs must not share one rhythm; read them consecutively as your own check. FAQ answers stop opening with verdict words. Prefer deletion; batch word count must not grow.
+4. FAQ edits go through faq_data.py + ./tools/inject-faqs.py (never hand-edit lesson FAQ HTML), then rerun ./tools/build-search-index.py.
+
+Verification: node tools/prose-lint.js --strict passes for every page in the batch; before/after table (em-dash count + banned hits per page) in the report; node tools/audit.js clean; browser-check 3 rewritten lessons in light+dark (prose renders, TOC anchors, FAQ details and FAQPage JSON-LD intact); then read ONE rewritten lesson start to finish as the final smell test and say honestly in the report whether it passed. Tick P41 in ROADMAP.md.
+```
+
+### P42 — Voice pass: Stats 3 + Stats 4
+
+```
+StatsCapybara roadmap prompt P42 (see ROADMAP.md). Requires P40. Run node tools/audit.js AND node tools/prose-lint.js first.
+
+Same de-AI editing pass as P41 (same four rules of engagement — VOICE.md is the law, prose only, de-template the batch as a set, FAQs via faq_data.py + inject + search-index rebuild), applied to Stats 3 (12 lessons) and Stats 4 (10 lessons).
+
+One extra care point: these are the advanced courses — the prose leans hardest on precise technical claims (assumption conditions, model-comparison logic, Bayesian statements). When a sentence carries a technical qualifier ("under equal variances", "given the null"), the qualifier survives every rewrite verbatim in meaning.
+
+Verification: as P41 (prose-lint --strict on the batch, before/after table, audit clean, 3-lesson browser check, one full read-aloud-style pass). Tick P42 in ROADMAP.md.
+```
+
+### P43 — Voice pass: Methods + Data
+
+```
+StatsCapybara roadmap prompt P43 (see ROADMAP.md). Requires P40. Run node tools/audit.js AND node tools/prose-lint.js first.
+
+Same de-AI editing pass as P41 (same four rules of engagement), applied to Methods (12 lessons) and Data (10 lessons).
+
+Extra care points: these courses tell stories (Clever Hans, WEIRD samples, the 87% re-identification result, replication-crisis history) — keep every historical fact and cited figure byte-identical in meaning; the forking-paths and optional-stopping framing must stay honest and non-alarmist. The scenario/vignette text inside interactives (triage cases, fix-this-survey items) counts as prose and is IN scope, but its correct/incorrect logic and scoring are NOT — verify any touched interactive still behaves identically (round-trip its controls).
+
+Verification: as P41. Tick P43 in ROADMAP.md.
+```
+
+### P44 — Voice pass: Ethics + ML
+
+```
+StatsCapybara roadmap prompt P44 (see ROADMAP.md). Requires P40. Run node tools/audit.js AND node tools/prose-lint.js first.
+
+Same de-AI editing pass as P41 (same four rules of engagement), applied to Ethics (8 lessons) and ML (12 lessons).
+
+Extra care points: Ethics keeps its sober register — de-telling here means removing the machine rhythm, not adding levity; Tuskegee/Milgram/Stapel content changes only where a banned construction demands it, and gently. The ML course's ai-in-research-ethics sibling and llms-and-ai-in-research are the highest-irony pages on the site (AI-sounding prose about AI) — give them the deepest pass; ethics/ai-in-research-ethics is currently the single worst page at 49 em-dashes.
+
+Verification: as P41. Tick P44 in ROADMAP.md.
+```
+
+### P45 — Voice pass: Writing course + guides + posters
+
+```
+StatsCapybara roadmap prompt P45 (see ROADMAP.md). Requires P40. Run node tools/audit.js AND node tools/prose-lint.js first.
+
+Same de-AI editing pass as P41 (same four rules of engagement), applied to the Writing course (8 lessons), the four guides/<slug>/ pages, and the three cheat-<slug>.html posters.
+
+Extra care points: (1) The Writing course TEACHES prose style — after de-telling it, its own advice and its own writing must agree; treat that as an explicit check. (2) The guides are the SEO magnets: keep the searchable phrasing in headings and the query-shaped H2/H3s intact (a de-AI pass that deletes "How do I report a t-test in APA?" phrasing costs rankings); edit the body voice, not the search surface; every worked number stays byte-identical. (3) Posters are terse reference text — light touch, mostly banned-construction and dash-budget cleanup; afterwards REVERIFY one-page print fit at A4 and Letter the P30/P35 CSSOM way, since text length changed. Guides/posters edits → rerun ./tools/build-search-index.py.
+
+Verification: as P41, plus the poster fit re-measurement. Tick P45 in ROADMAP.md.
+```
+
+### P46 — Voice pass: tools, homepage & sitewide finish
+
+```
+StatsCapybara roadmap prompt P46 (see ROADMAP.md). Requires P40; run me LAST of the Phase-10 batches. Run node tools/audit.js AND node tools/prose-lint.js first.
+
+The closing sweep, in three layers:
+
+1. Remaining pages: all tool pages' prose (intros, help text, empty states, pro tips — including toolbox.html, datasets.html's stories and worked-solution text [every number untouchable], quiz.html copy, 404.html, offline.html) and the homepage + About section (hero sub-line, persona cards, "Why it's different", accessibility statement, instructor bio). The H1 brand line "Statistics You Can See, Touch, and Understand" and the matching <title>/og tags STAY — if a genuinely stronger line occurs to you, propose it in the report; don't change it. glossary-data.js definitions get a skim for banned constructions (they're mostly terse and fine); glossary edits → search-index rebuild.
+2. The injected-string layer (outside prose-lint's scope — apply VOICE.md by hand): checks.js "why" strings, software.js "tips" arrays (the APA example sentences' statistical content is untouchable), snippets.js comment lines. These are lazy-loaded (no SW bump needed) — but if site.js changes at all, bump CACHE_VERSION in sw.js.
+3. The sitewide finisher: run node tools/prose-lint.js --strict across EVERYTHING and fix stragglers from any earlier batch; meta-description variety pass — bring the "…and watch…" formula share under VOICE.md's 15% cap sitewide while keeping every description 50–160 chars and sitewide-unique (audit-enforced); rerun ./tools/build-search-index.py once at the end.
+
+Verification: prose-lint --strict passes SITEWIDE (paste the final sitewide summary vs the P40 baseline — this is Phase 10's exit number); audit clean; browser pass on homepage + one tool + 404 in light+dark, zero console errors. Tick P46 in ROADMAP.md.
+```
+
+---
+
+## Phase 11 — Feel & instructors (P47–P48)
+
+### P47 — Interaction-feel polish
+
+```
+StatsCapybara roadmap prompt P47 (see ROADMAP.md). Run node tools/audit.js first.
+
+A sitewide "feel" pass — the small tactile details that separate hand-made from generated. Constraints: keep it CALM (no bounce, no parallax), respect prefers-reduced-motion everywhere (VIZ.reducedMotion / the CSS block), zero new dependencies, no build step.
+
+1. Anchor comfort: nothing on the site sets scroll-margin — TOC-chip clicks and deep links (#run-it, #about, guide TOCs) land headings underneath the sticky nav. Add scroll-margin-top (nav height + breathing room) to anchor targets globally in styles.css; verify a lesson TOC click and a plan.html → #run-it deep link both land fully visible.
+2. Canvas cursor affordances as a CONVENTION: today only the hero slider and stats-3/assumptions-of-regression set grab/grabbing. Sweep every interactive canvas (lessons + tools): draggable → grab/grabbing, click-to-add/select → pointer or crosshair, display-only → default. Wire it consistently (a small helper if it stays clean) and document the convention in CLAUDE.md's viz notes.
+3. Copy feedback: apa.html, descriptives.html, and correlation.html each hand-rolled their own "Copied" state. Standardize one pattern (same wording, same transient timing, aria-live polite) and apply it to EVERY copy button sitewide.
+4. Hover/press consistency audit: course cards, toolbox tiles, persona cards, buttons, prev/next links — consistent hover elevation and a subtle :active press state from shared rules, not per-page one-offs; :focus-visible (P28) untouched.
+5. <details> smoothness: FAQ and checks blocks currently snap open. Animate the reveal (the CSS grid-template-rows 0fr→1fr technique or equivalent — still works when JS force-opens them for print); instant under reduced motion.
+6. Range inputs: lesson/tool sliders use default thumbs while the hero has a custom one — restyle range inputs sitewide (WebKit + Firefox pseudo-elements) into one family, keeping ≥44px touch targets.
+7. Mobile scroll affordance: horizontally scrolling containers (cheat tables, apa.html's 5-way seg, ref-tables) get an edge-fade cue where content actually overflows (scroll-driven or a small scroll-listener toggle).
+8. 404.html: one pass to make it charming AND useful (capybara, a link to search, 3–4 popular destinations) — it must stay fully self-contained (inline CSS, JS-computed home link).
+
+styles.css and site.js are precached shell assets — bump CACHE_VERSION in sw.js. Verify in the preview: light+dark+mobile, reduced-motion (emulate via CSSOM/eval), zero console errors; screenshot 2–3 before/afters; print still correct on one lesson (details animation must not break the beforeprint force-open). Standard verification. Tick P47 in ROADMAP.md.
+```
+
+### P48 — For Instructors page + embed mode + viz PNG export
+
+```
+StatsCapybara roadmap prompt P48 (see ROADMAP.md). Best after Phase 10 (VOICE.md applies to all new prose). Run node tools/audit.js first.
+
+Professors are the multiplier audience — one syllabus link is a semester of students. Three deliverables:
+
+1. teachers.html — "For Instructors" (a group "read" tool page). Calm, honest, VOICE.md-compliant. Content: how to use the site in a course — deep-linking lessons from a syllabus/LMS and what students see (no accounts, no tracking, progress stays in the student's browser — say this plainly, it's a selling point); print handouts (P30) and the three posters as classroom materials; the practice datasets for assignments (seeded and reproducible — same numbers for every student); quiz/flashcards for revision; how to embed a viz (below); a suggested week-by-week mapping of Stats 1–2 onto a typical one-semester intro course (table, lesson links); and a short "link to us / it's free forever" note replacing any license ambiguity. Integrate per the six-place tool-page checklist (TOOLBOX, SEARCH_PAGES, QUIPS, build-search-index.py + rerun, sitemap.xml, audit ROOT_PAGES) + BreadcrumbList JSON-LD.
+2. Lesson embed mode: site.js handles ?embed=1 on lesson pages — hide nav, sidebar, footer, checks, software, FAQ, prev/next, resume/progress chrome; keep eyebrow + title + the .viz block(s) with controls; add a one-line footer "From StatsCapybara — open the full lesson →" (BASE-aware absolute link, target="_top"). Test inside an actual <iframe> on a scratch page AND on the subpath server; canonical already points at the clean URL, so no SEO wrinkle — but confirm GA still fires once. Document the mode in CLAUDE.md and on teachers.html with a copy-ready iframe snippet.
+3. Viz PNG export: a small unobtrusive "PNG ↓" button injected next to each .viz-title (lessons + canvas tool pages) that downloads that canvas at 2× via toDataURL, filename statscapybara-<slug>-<n>.png, current theme as-is; hidden in print; skip decorative canvases (the hero demo). Keyboard-accessible, aria-labelled.
+
+site.js is a precached shell asset — bump CACHE_VERSION in sw.js. Standard verification incl. the subpath server and the iframe test; browser-verify a downloaded PNG is crisp at 2×. Tick P48 in ROADMAP.md.
+```
+
+---
+
+*End of prompt library. When every box in ROADMAP.md is ticked: the site has 9 courses, ~95 interactive lessons, 19 tools, 4 guides, print/offline/a11y polish, prose that reads like a person, instructor-ready embeds, and a live SEO feedback loop. At that point the loops (P37–P39) plus the human checklist ARE the roadmap.*
 

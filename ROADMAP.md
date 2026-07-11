@@ -55,12 +55,33 @@ This file is the master plan. The copy-paste prompts that execute it live in **[
 | **7 — UX & platform** | P27–P33 | progress dashboard + certificates · accessibility · performance · print handouts · per-course OG images · homepage v2 · offline PWA |
 | **8 — Growth & SEO** | P34–P37 | cornerstone guides · printable cheat sheets · schema upgrade · Search-Console feedback loop |
 | **9 — Maintenance loops** | P38–P39 | quarterly health audit · content refresh (recurring) |
+| **10 — Human-voice edit** | P40–P46 | VOICE.md charter + `tools/prose-lint.js` · six de-AI rewrite batches (lessons, FAQs, guides, tools, homepage, meta descriptions) |
+| **11 — Feel & instructors** | P47–P48 | interaction-feel polish pass · For Instructors page + lesson embed mode + viz PNG export |
 
 **Recommended order** (content and tools interleaved so the site visibly improves every week):
 
 > P1 → P2 → P3 → **Methods** P4–P7 → P21 (APA formatter) → **Writing** P18–P20 → P22 (datasets) → P25 (analysis planner) → **Data** P8–P10 → **Ethics** P11–P13 → **ML** P14–P17 → P23, P24, P26 → P27–P31 → P32 (homepage v2 — after several new courses exist) → P33 → P34–P36 → P37–P39 as recurring loops.
 
 Hard dependencies: **P2 before any new course** (P4+). **P32 after at least two new courses.** Everything else can be cherry-picked.
+
+**Post-buildout order (Phases 10–11, added 11 Jul 2026):** P40 first (it creates the standard and the measuring stick), then P41–P46 in any order but **P46 last** (it's the sitewide finisher), then P47 → P48.
+
+---
+
+## Phases 10–11 addendum (11 Jul 2026) — make it feel human
+
+The build-out is done (P1–P36, with P37 waiting on real Search-Console data). The remaining risk isn't a missing feature — it's that the site *reads* like what it is: 95 lessons written by one AI in two weeks. The prose is accurate and warm, but its constructions repeat with machine regularity, and a reader who spots the pattern discounts everything else, statistics included. Measured on 11 Jul 2026 as the Phase-10 baseline:
+
+- **Em-dashes:** median lesson page carries **24**, the worst **49** (min 13); `tools/faq_data.py` holds **272** more. A human editor uses a handful per page.
+- **The self-answered verdict opener:** FAQ answers and prose beginning **"No — " / "Yes — "** ≈ **80×** sitewide.
+- **The contrast punch** ("isn't X — it's Y" / "it's not about X — it's Y"): **21×**.
+- **Stock moves:** "Notice how/that" 17× · "Here's the/why" 17× · "quietly" 37× · "The point is" 9× · "Think of it as", "the good news", rule-of-three lists everywhere.
+- **Templated openers:** nearly every lesson's first paragraph rides the same em-dash-contrast rhythm ("Most of the pain in data analysis isn't the statistics — it's the shape of the spreadsheet…").
+- **One meta-description formula:** 40 of 120 descriptions are built on "…do X **and watch** Y…".
+
+Phase 10 (P40–P46) fixes this the way everything else on this site got fixed: a written standard (**VOICE.md**), a zero-dependency measuring stick (**`tools/prose-lint.js`**, so progress is a number, not a vibe), then six bounded editing passes that de-template the prose **without touching a single verified statistic, link, or interactive**. The goal is not to sand the personality off — quips, capybaras, and the playful chrome stay — it's variance: pages that read like they were written by the same person on different days, not by the same process in one pass.
+
+Phase 11 (P47–P48) is the product-side counterpart: an interaction-feel pass (anchor-scroll offsets, canvas cursor affordances, unified copy-button feedback, animated `<details>` — the small tactile stuff that separates hand-made from generated), then the instructor play (a For Instructors page, `?embed=1` lesson embeds for slides/LMS, one-click PNG export of any viz) — because professors are the multiplier audience the human checklist already targets.
 
 ---
 
@@ -72,6 +93,8 @@ Hard dependencies: **P2 before any new course** (P4+). **P32 after at least two 
 - [ ] **One big launch post** when the Research Toolkit track is live — r/InternetIsBeautiful, Hacker News (Show HN), relevant teaching newsletters.
 - [ ] **Tell your students** — real usage + feedback beats everything above.
 - [ ] Skim GA4/GSC monthly; paste interesting query data into prompt P37.
+- [ ] **A real photo in the About section** — replace the "HK" initials avatar; nothing says "a human made this" like a face. Consider adding one candid line to the bio about *why* a cognitive scientist built a capybara statistics site.
+- [ ] **The read-aloud test** — after Phase 10 lands, read two or three rewritten lessons aloud (or better: have a colleague or student read them cold) and mark anything that still sounds generated; feed the marks into the next P39 refresh run.
 
 ---
 
@@ -122,3 +145,12 @@ Tick these as sessions complete them (each prompt ends by updating this list).
   - **11 Jul 2026 — first run, site healthy.** audit.js 0 errors (21 warn = conceptual-lesson snippets, by design); 122 pages / 484 inline scripts + all JSON-LD + all shared JS syntax-clean; external links alive (LinkedIn 999 / ko-fi 403 are curl bot-blocks — button image 200, page verified fine); dependency purity clean (GA + Ko-fi only; CSS/manifest fully self-contained); localStorage schema consistent (sc-progress/sc-checks/sc-last write-paths only in site.js, progress.html read-only, sc-cards/flashcards, sc-name/certificate, no drift); statistical spot-audit passed — 5 random lessons (stats-1/independent-samples-t-test: FAQ power ns 26/64/394 per group + Welch APA sentence t(57.7)=2.30/p=.025/d=0.59/CI[0.6,8.8] all recomputed exactly; stats-4/bayesian-thinking Beta-posterior update textbook-correct; methods 1.1, writing 5.7, ethics 3.4 — Sweeney 87% figure correct) and both tool gates re-run live in-browser (tables.html z/t/χ²/F criticals match authoritative tables; power.html reproduces G*Power 64/group · r=.3→84 · f=.25,k=3→159 · w=.3→88 · inverse 80.1%); CLAUDE.md accurate except one stale TOOLBOX group list (fixed: +read); perf spot check CLS = 0 on all three page types at 721 px (P29 target ≤.1), loads <320 ms; browser pass homepage/lesson/tool light+dark+mobile zero console errors, SW scope correct. Also removed a stale P16-era git worktree (`.claude/worktrees/infallible-einstein-158707`, branch fully merged, nothing unique). **Deferred:** real Lighthouse runs remain a human-checklist item (preview-based CLS/timing used here).
 - [ ] P39 · content refresh loop (recurring)
   - **11 Jul 2026 — first run.** The 5 least-recently-touched lessons (per-file git history, mass passes excluded) were all early Stats 1, untouched since 26 Jun: types-of-data, describing-data, visualizing-data, z-scores, hypothesis-testing-logic. Each got surgical cross-links to tools/courses built since it was written (Distribution Playground, tables + descriptives calculators, which-test/which-chart choosers, Methods 1.1, Writing 5.3/5.5, Data 2.5) — 2–3 links each, no prose rewrites needed (content held up). **FAQ freshness:** each of the 5 had exactly one FAQ that repeated its own prose — swapped each for a better real-student question ("Is age nominal, ordinal, interval, or ratio?", "mean+SD or median+IQR?", "Why is α = .05?" — Fisher/5σ≈1-in-3.5M/5×10⁻⁸ figures verified, "How do I convert z to a percentile?" — Φ(1)=.8413/Φ(−1.5)=.0668 verified via node, "Why not pie charts?" — Cleveland & McGill 1984); duplicates against existing FAQs checked (first two candidates were already taken by sampling-distributions and methods 1.1); faq_data.py edited, re-injected 95/95, search index rebuilt. **software.js drift:** verified 4 walkthroughs (one-sample/paired t, independent t, one-way ANOVA, correlation, reliability) — added the SPSS 29+ *Compare Means and Proportions* submenu rename to the three t-test/ANOVA entries and SPSS 28+ McDonald's ω (Model → Omega) to Reliability Analysis; all JASP paths current (Unidimensional Reliability, Regression → Correlation ✓). **Snippets:** full package-API survey (scipy.stats, statsmodels, pingouin, dplyr/tidyr, car::, psych, metafor…) — zero deprecations (no gather/spread, no pairwise_ttests, binom.pmf/ttest_1samp/chi2_contingency all current). **Cross-pollination:** the P34 guides had *zero* static inbound links from content pages (nav/toolbox render from JS) — added 5 lesson one-liners (independent-t → JASP guide, writing-results → SPSS-to-APA, cleaning-workflow → clean-survey-data, final-checklist → cheat-apa poster, non-parametric → cheat-assumptions poster) plus which-test.html → dissertation guide, so all 4 guides now have crawlable inbound links. **Quips:** all 5 reviewed, none worn thin, none replaced. No Backlog section yet (P37 pending). Verification: audit 0 errors (21 warn = baseline), node --check clean, browser pass light+dark+mobile zero console errors on 3 changed pages (SPSS 29+ note confirmed live in the injected box); no CACHE_VERSION bump needed — no precached shell asset changed (quips untouched; software.js is lazy-loaded).
+- [ ] P40 · voice charter + prose linter
+- [ ] P41 · voice pass: Stats 1 + Stats 2 (23 lessons)
+- [ ] P42 · voice pass: Stats 3 + Stats 4 (22 lessons)
+- [ ] P43 · voice pass: Methods + Data (22 lessons)
+- [ ] P44 · voice pass: Ethics + ML (20 lessons)
+- [ ] P45 · voice pass: Writing + guides + posters (15 pages)
+- [ ] P46 · voice pass: tools, homepage & sitewide finish
+- [ ] P47 · interaction-feel polish
+- [ ] P48 · instructors page + embed mode + PNG export
