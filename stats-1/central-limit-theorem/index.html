@@ -30,7 +30,7 @@
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Central Limit Theorem", "description": "Watch the Central Limit Theorem happen: take samples from any weird distribution, average them, and see a normal curve appear.", "url": "https://statscapybara.com/stats-1/central-limit-theorem/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Foundations", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Central Limit Theorem", "item": "https://statscapybara.com/stats-1/central-limit-theorem/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What sample size is large enough for the Central Limit Theorem?", "acceptedAnswer": {"@type": "Answer", "text": "The folk rule is n ≥ 30, and for mildly skewed data that's usually plenty — sample means settle into a near-normal shape quickly. But it's a rule of thumb, not a law: heavily skewed or outlier-prone populations can need substantially more, while symmetric populations are fine much earlier. When in doubt, look at your data's shape rather than trusting the magic 30."}}, {"@type": "Question", "name": "Does the Central Limit Theorem make my data normally distributed?", "acceptedAnswer": {"@type": "Answer", "text": "No — this is the classic misreading. The CLT says the distribution of sample means approaches normal as n grows. Your raw data keeps whatever shape it has; skewed data stays skewed no matter how much you collect. The bell curve emerges one level up, in the averages across samples — which is what t-tests and confidence intervals actually rely on."}}, {"@type": "Question", "name": "Why does the standard error shrink with the square root of n?", "acceptedAnswer": {"@type": "Answer", "text": "Averaging cancels luck: within one sample, unusually high values tend to offset unusually low ones, and the bigger the sample, the better the cancellation. The math works out to SE = σ/√n — which has a sobering consequence: to halve your uncertainty you need four times the data. Precision gets expensive fast."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What sample size is large enough for the Central Limit Theorem?", "acceptedAnswer": {"@type": "Answer", "text": "The folk rule is n ≥ 30, and for mildly skewed data that's usually plenty — sample means settle into a near-normal shape quickly. But it's a rule of thumb, not a law: heavily skewed or outlier-prone populations can need substantially more, while symmetric populations are fine much earlier. When in doubt, look at your data's shape rather than trusting the magic 30."}}, {"@type": "Question", "name": "Does the Central Limit Theorem make my data normally distributed?", "acceptedAnswer": {"@type": "Answer", "text": "This is the classic misreading. The CLT says the distribution of sample means approaches normal as n grows. Your raw data keeps whatever shape it has; skewed data stays skewed no matter how much you collect. The bell curve emerges one level up, in the averages across samples, which is what t-tests and confidence intervals actually rely on."}}, {"@type": "Question", "name": "Why does the standard error shrink with the square root of n?", "acceptedAnswer": {"@type": "Answer", "text": "Averaging cancels luck: within one sample, unusually high values tend to offset unusually low ones, and the bigger the sample, the better the cancellation. The math works out to SE = σ/√n — which has a sobering consequence: to halve your uncertainty you need four times the data. Precision gets expensive fast."}}]}
   </script>
 </head>
 <body data-course="stats-1" data-section="central-limit-theorem">
@@ -44,17 +44,17 @@
         <span class="lesson-eyebrow">Section 1.8</span>
         <h1>The Central Limit Theorem</h1>
 
-        <p class="lede">Here's one of the most surprising ideas in all of statistics: take samples from <em>almost any</em> distribution — lopsided, lumpy, whatever — average each sample, and those averages pile up into a smooth, predictable bell curve. Let's not take that on faith. Let's watch it happen.</p>
+        <p class="lede">Take samples from <em>almost any</em> distribution (lopsided, lumpy, whatever), average each sample, and those averages pile up into a smooth, predictable bell curve. That is one of the most surprising facts in all of statistics. Let's not take it on faith. Let's watch it happen.</p>
 
         <h2>The setup</h2>
-        <p>Imagine a population — say, the reaction times of every student in a huge psychology study. The shape of that population can be anything. Most real data is <strong>not</strong> a tidy bell curve; reaction times are usually skewed, with a long tail of slow responses.</p>
+        <p>Imagine a population: say, the reaction times of every student in a huge psychology study. The shape of that population can be anything. Most real data is <strong>not</strong> a tidy bell curve; reaction times are usually skewed, with a long tail of slow responses.</p>
         <p>Now we do something simple and repeat it over and over:</p>
         <ol>
           <li>Reach into the population and grab a random <strong>sample of size <em>n</em></strong>.</li>
           <li>Compute the <strong>mean</strong> of just that sample — one number.</li>
           <li>Write that number down, and do it all again.</li>
         </ol>
-        <p>The collection of all those sample means has its own distribution — the <strong>sampling distribution of the mean</strong>. The Central Limit Theorem tells us what it looks like.</p>
+        <p>The collection of all those sample means has its own distribution, the <strong>sampling distribution of the mean</strong>. The Central Limit Theorem tells us what it looks like.</p>
 
         <!-- ============ INTERACTIVE PLAYGROUND ============ -->
         <div class="viz" id="clt">
@@ -110,7 +110,7 @@
         <!-- ============ /PLAYGROUND ============ -->
 
         <h2>What you should notice</h2>
-        <p>Play with it for a minute, and three things jump out — these <em>are</em> the Central Limit Theorem:</p>
+        <p>Play with it for a minute, and three things jump out. Together they <em>are</em> the Central Limit Theorem:</p>
         <div class="callout key">
           <p><strong>1. The averages form a bell curve</strong> — even when the population is skewed or lumpy. Start with the "Skewed" or "Bimodal" population and you'll still get a symmetric bell in panel ③.</p>
         </div>
@@ -118,18 +118,18 @@
           <p><strong>2. Bigger samples → tighter bell.</strong> Drag <em>n</em> from 1 up to 50 and watch panel ③ get narrower. Averaging more values per sample makes the averages cluster more tightly around the truth.</p>
         </div>
         <div class="callout key">
-          <p><strong>3. The bell is centered on the population mean.</strong> The averages don't drift — they pile up right over the true mean of the population.</p>
+          <p><strong>3. The bell is centered on the population mean.</strong> The averages pile up right over the population's true mean instead of drifting away from it.</p>
         </div>
 
         <h2>The one formula worth remembering</h2>
-        <p>The spread of the sampling distribution has a name — the <strong>standard error</strong> — and a tidy formula:</p>
+        <p>The spread of the sampling distribution has a name, the <strong>standard error</strong>, and a tidy formula:</p>
         <p style="text-align:center;font-size:1.25rem;margin:1.25rem 0">
           <strong>SE&nbsp;=&nbsp;σ&nbsp;/&nbsp;√<span style="text-decoration:overline">n</span></strong>
         </p>
         <p>where <code>σ</code> is the population's standard deviation and <code>n</code> is your sample size. Notice the <code>√n</code> on the bottom: to <em>halve</em> the standard error, you need <em>four times</em> the data. That diminishing return is why the playground's bell tightens quickly at first, then more slowly. Compare the "SE" you measured with the "σ/√n" the theorem predicts — they should match closely once you've drawn enough samples.</p>
 
         <div class="callout">
-          <p><strong>Why it matters:</strong> almost everything that comes next — confidence intervals, t-tests, p-values — leans on the fact that sample means behave predictably like this. The CLT is the bridge from "messy real data" to "clean, usable inference."</p>
+          <p><strong>Why it matters:</strong> confidence intervals, t-tests, p-values: almost everything that comes next leans on the fact that sample means behave predictably like this. The CLT is the bridge from "messy real data" to "clean, usable inference."</p>
         </div>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
@@ -141,7 +141,7 @@
           </details>
           <details class="faq-item">
             <summary>Does the Central Limit Theorem make my data normally distributed?</summary>
-            <div class="faq-a"><p>No — this is the classic misreading. The CLT says the distribution of <em>sample means</em> approaches normal as n grows. Your raw data keeps whatever shape it has; skewed data stays skewed no matter how much you collect. The bell curve emerges one level up, in the averages across samples — which is what t-tests and confidence intervals actually rely on.</p></div>
+            <div class="faq-a"><p>This is the classic misreading. The CLT says the distribution of <em>sample means</em> approaches normal as n grows. Your raw data keeps whatever shape it has; skewed data stays skewed no matter how much you collect. The bell curve emerges one level up, in the averages across samples, which is what t-tests and confidence intervals actually rely on.</p></div>
           </details>
           <details class="faq-item">
             <summary>Why does the standard error shrink with the square root of n?</summary>

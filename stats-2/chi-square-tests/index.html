@@ -12,25 +12,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Chi-Square Tests — StatsCapybara</title>
-  <meta name="description" content="Chi-square tests work on counts, not means. Adjust a contingency table and watch observed counts pull away from independence — driving chi-square up and p down." />
+  <meta name="description" content="Chi-square tests work on counts, not means. Pull a contingency table away from independence and see chi-square climb as p falls." />
   <link rel="canonical" href="https://statscapybara.com/stats-2/chi-square-tests/" />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Chi-Square Tests — StatsCapybara" />
-  <meta property="og:description" content="Chi-square tests work on counts, not means. Adjust a contingency table and watch observed counts pull away from independence — driving chi-square up and p down." />
+  <meta property="og:description" content="Chi-square tests work on counts, not means. Pull a contingency table away from independence and see chi-square climb as p falls." />
   <meta property="og:image" content="https://statscapybara.com/assets/og-stats-2.png" />
   <meta property="og:url" content="https://statscapybara.com/stats-2/chi-square-tests/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Chi-Square Tests — StatsCapybara" />
-  <meta name="twitter:description" content="Chi-square tests work on counts, not means. Adjust a contingency table and watch observed counts pull away from independence — driving chi-square up and p down." />
+  <meta name="twitter:description" content="Chi-square tests work on counts, not means. Pull a contingency table away from independence and see chi-square climb as p falls." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-2.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
-  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Chi-Square Tests", "description": "Chi-square tests work on counts, not means. Adjust a contingency table and watch observed counts pull away from independence — driving chi-square up and p down.", "url": "https://statscapybara.com/stats-2/chi-square-tests/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: Comparing Groups & Relationships", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Chi-Square Tests", "item": "https://statscapybara.com/stats-2/chi-square-tests/"}]}]
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Chi-Square Tests", "description": "Chi-square tests work on counts, not means. Pull a contingency table away from independence and see chi-square climb as p falls.", "url": "https://statscapybara.com/stats-2/chi-square-tests/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: Comparing Groups & Relationships", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Chi-Square Tests", "item": "https://statscapybara.com/stats-2/chi-square-tests/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I calculate expected counts in a chi-square test?", "acceptedAnswer": {"@type": "Answer", "text": "For each cell: (row total × column total) ÷ grand total. That's the count you'd expect if the two variables were perfectly independent — each row splitting across the columns in identical proportions. The χ² statistic then measures how far the observed counts stray from these expectations, relative to their size."}}, {"@type": "Question", "name": "What if my expected counts are less than 5?", "acceptedAnswer": {"@type": "Answer", "text": "The χ² p-value is an approximation that degrades with small expected counts. The standard rule: all (or at least 80% of) expected counts should be ≥ 5. Below that, use Fisher's exact test for 2×2 tables (exact, no approximation) — or collapse sparse categories together when it makes conceptual sense."}}, {"@type": "Question", "name": "Can a chi-square test tell me how strong the association is?", "acceptedAnswer": {"@type": "Answer", "text": "No — χ² grows with sample size, so a huge study can produce an enormous χ² from a trivial association. Pair the test with an effect size: Cramér's V (0 = none, 1 = perfect) for general tables, or the odds ratio for 2×2 tables, which our effect-size converter can translate into other metrics."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I calculate expected counts in a chi-square test?", "acceptedAnswer": {"@type": "Answer", "text": "For each cell: (row total × column total) ÷ grand total. That's the count you'd expect if the two variables were perfectly independent — each row splitting across the columns in identical proportions. The χ² statistic then measures how far the observed counts stray from these expectations, relative to their size."}}, {"@type": "Question", "name": "What if my expected counts are less than 5?", "acceptedAnswer": {"@type": "Answer", "text": "The χ² p-value is an approximation that degrades with small expected counts. The standard rule: all (or at least 80% of) expected counts should be ≥ 5. Below that, use Fisher's exact test for 2×2 tables (exact, no approximation) — or collapse sparse categories together when it makes conceptual sense."}}, {"@type": "Question", "name": "Can a chi-square test tell me how strong the association is?", "acceptedAnswer": {"@type": "Answer", "text": "χ² itself can't; it grows with sample size, so a huge study can produce an enormous χ² from a trivial association. Pair the test with an effect size: Cramér's V (0 = none, 1 = perfect) for general tables, or the odds ratio for 2×2 tables, which our effect-size converter can translate into other metrics."}}]}
   </script>
 </head>
 <body data-course="stats-2" data-section="chi-square-tests">
@@ -44,10 +44,10 @@
         <span class="lesson-eyebrow">Section 2.7</span>
         <h1>Chi-Square Tests</h1>
 
-        <p class="lede">Everything so far has compared <em>means</em> of numeric data. But what about <strong>counts</strong> — how many people picked option A vs. B, recovered vs. didn't, voted left vs. right? The <strong>chi-square (χ²) test</strong> works with frequencies in categories, and its most common job is asking: are two categorical variables <strong>associated</strong>, or independent?</p>
+        <p class="lede">Everything so far has compared <em>means</em> of numeric data. But what about <strong>counts</strong>: how many people picked option A vs. B, recovered vs. didn't, voted left vs. right? The <strong>chi-square (χ²) test</strong> works with frequencies in categories, and its most common job is asking: are two categorical variables <strong>associated</strong>, or independent?</p>
 
         <h2>Observed vs. expected</h2>
-        <p>The whole test rests on one comparison. You have the <strong>observed</strong> counts — what actually happened. Then you compute the <strong>expected</strong> counts — what you'd see if the two variables were completely unrelated (each cell's expected count is just its row total × column total ÷ grand total). The bigger the gap between observed and expected, the more evidence of a real association:</p>
+        <p>The whole test rests on one comparison. You have the <strong>observed</strong> counts (what actually happened). Then you compute the <strong>expected</strong> counts: what you'd see if the two variables were completely unrelated (each cell's expected count is just its row total × column total ÷ grand total). The bigger the gap between observed and expected, the more evidence of a real association:</p>
         <p style="text-align:center;font-size:1.15rem;margin:1.25rem 0"><strong>χ² = Σ (observed − expected)² / expected</strong></p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -83,8 +83,8 @@
 
         <h2>Two flavors of chi-square</h2>
         <ul>
-          <li><strong>Test of independence</strong> — the one above: are two categorical variables related? (Treatment × outcome, gender × preference.)</li>
-          <li><strong>Goodness-of-fit</strong> — does one categorical variable match an expected distribution? (Is this die fair? Do customers pick the four flavors equally?)</li>
+          <li><strong>Test of independence</strong> is the one above: are two categorical variables related? (Treatment × outcome, gender × preference.)</li>
+          <li><strong>Goodness-of-fit:</strong> does one categorical variable match an expected distribution? (Is this die fair? Do customers pick the four flavors equally?)</li>
         </ul>
 
         <h2>What you're assuming</h2>
@@ -110,7 +110,7 @@
           </details>
           <details class="faq-item">
             <summary>Can a chi-square test tell me how strong the association is?</summary>
-            <div class="faq-a"><p>No — χ² grows with sample size, so a huge study can produce an enormous χ² from a trivial association. Pair the test with an effect size: <strong>Cramér's V</strong> (0 = none, 1 = perfect) for general tables, or the <strong>odds ratio</strong> for 2×2 tables, which our <a href="../../effect-sizes.html">effect-size converter</a> can translate into other metrics.</p></div>
+            <div class="faq-a"><p>χ² itself can't; it grows with sample size, so a huge study can produce an enormous χ² from a trivial association. Pair the test with an effect size: <strong>Cramér's V</strong> (0 = none, 1 = perfect) for general tables, or the <strong>odds ratio</strong> for 2×2 tables, which our <a href="../../effect-sizes.html">effect-size converter</a> can translate into other metrics.</p></div>
           </details>
         </section>
         <!-- faq:end -->

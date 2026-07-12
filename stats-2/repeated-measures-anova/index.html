@@ -30,7 +30,7 @@
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Repeated Measures ANOVA", "description": "Measuring the same people repeatedly subtracts out their individual differences — a condition effect that between-subjects designs would drown in noise.", "url": "https://statscapybara.com/stats-2/repeated-measures-anova/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: Comparing Groups & Relationships", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Repeated Measures ANOVA", "item": "https://statscapybara.com/stats-2/repeated-measures-anova/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is sphericity and why does it matter?", "acceptedAnswer": {"@type": "Answer", "text": "Sphericity is the assumption that the variance of the difference between every pair of conditions is roughly equal. When it fails — typical for time-based measurements, where neighboring timepoints correlate more than distant ones — the F-test's p-values come out too small, inflating false positives. Mauchly's test flags it, and corrections fix it."}}, {"@type": "Question", "name": "What do I do if sphericity is violated?", "acceptedAnswer": {"@type": "Answer", "text": "Apply the Greenhouse–Geisser correction (or Huynh–Feldt when the violation is mild) — both shrink the degrees of freedom to restore an honest p-value, and every stats package offers them next to the uncorrected test. The modern alternative is a mixed model, which sidesteps sphericity entirely."}}, {"@type": "Question", "name": "Why are repeated-measures designs more powerful?", "acceptedAnswer": {"@type": "Answer", "text": "Because each participant serves as their own control. Stable individual differences — some people just score high — are removed from the error term instead of drowning the condition effect. The same effect that a between-subjects study needs dozens of participants to detect can emerge clearly from a handful measured repeatedly."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is sphericity and why does it matter?", "acceptedAnswer": {"@type": "Answer", "text": "Sphericity is the assumption that the variance of the difference between every pair of conditions is roughly equal. When it fails (typical for time-based measurements, where neighboring timepoints correlate more than distant ones), the F-test's p-values come out too small, inflating false positives. Mauchly's test flags it, and corrections fix it."}}, {"@type": "Question", "name": "What do I do if sphericity is violated?", "acceptedAnswer": {"@type": "Answer", "text": "Apply the Greenhouse–Geisser correction (or Huynh–Feldt when the violation is mild) — both shrink the degrees of freedom to restore an honest p-value, and every stats package offers them next to the uncorrected test. The modern alternative is a mixed model, which sidesteps sphericity entirely."}}, {"@type": "Question", "name": "Why are repeated-measures designs more powerful?", "acceptedAnswer": {"@type": "Answer", "text": "Because each participant serves as their own control. Stable individual differences (some people just score high) are removed from the error term instead of drowning the condition effect. The same effect that a between-subjects study needs dozens of participants to detect can emerge clearly from a handful measured repeatedly."}}]}
   </script>
 </head>
 <body data-course="stats-2" data-section="repeated-measures-anova">
@@ -44,7 +44,7 @@
         <span class="lesson-eyebrow">Section 2.4</span>
         <h1>Repeated Measures ANOVA</h1>
 
-        <p class="lede">When you measure the <em>same</em> people under several conditions — the same patients before, during, and after treatment — you have a repeated-measures design. Just as the <a href="../../stats-1/one-sample-and-paired-t-tests/">paired t-test</a> beats the independent one, repeated-measures ANOVA has a superpower: it can subtract out the fact that people just differ from each other.</p>
+        <p class="lede">When you measure the <em>same</em> people under several conditions (the same patients before, during, and after treatment), you have a repeated-measures design. Just as the <a href="../../stats-1/one-sample-and-paired-t-tests/">paired t-test</a> beats the independent one, repeated-measures ANOVA has a superpower: it can subtract out the fact that people just differ from each other.</p>
 
         <h2>The problem with big individual differences</h2>
         <p>Suppose you test three conditions and people vary enormously to begin with — some always score high, some always low. In a between-subjects design, that person-to-person variability becomes <em>noise</em> that swamps the condition effect. You might have a perfectly real effect and still fail to find it, buried under "well, people are just different."</p>
@@ -84,7 +84,7 @@
         <!-- ============ /INTERACTIVE ============ -->
 
         <h2>The repeated-measures trick</h2>
-        <p>Because every person is measured in every condition, each person serves as their <strong>own control</strong>. The analysis can split off a "subjects" chunk of variation and set it aside, leaving a much cleaner comparison of the conditions. In the <strong>subject-centered</strong> view above — where each person's own average is subtracted out — the tangle of lines collapses into a clear shared pattern. That's exactly what repeated-measures ANOVA does mathematically.</p>
+        <p>Because every person is measured in every condition, each person serves as their <strong>own control</strong>. The analysis can split off a "subjects" chunk of variation and set it aside, leaving a much cleaner comparison of the conditions. In the <strong>subject-centered</strong> view above, where each person's own average is subtracted out, the tangle of lines collapses into a clear shared pattern. That's exactly what repeated-measures ANOVA does mathematically.</p>
         <div class="callout key">
           <p><strong>The payoff is power.</strong> By removing stable individual differences from the error term, a repeated-measures design can detect a real effect with far fewer participants than a between-subjects design would need. Fewer people, more sensitivity — that's why it's so popular.</p>
         </div>
@@ -101,7 +101,7 @@
           <h2>Common questions</h2>
           <details class="faq-item">
             <summary>What is sphericity and why does it matter?</summary>
-            <div class="faq-a"><p>Sphericity is the assumption that the variance of the <em>difference</em> between every pair of conditions is roughly equal. When it fails — typical for time-based measurements, where neighboring timepoints correlate more than distant ones — the F-test's p-values come out too small, inflating false positives. Mauchly's test flags it, and corrections fix it.</p></div>
+            <div class="faq-a"><p>Sphericity is the assumption that the variance of the <em>difference</em> between every pair of conditions is roughly equal. When it fails (typical for time-based measurements, where neighboring timepoints correlate more than distant ones), the F-test's p-values come out too small, inflating false positives. Mauchly's test flags it, and corrections fix it.</p></div>
           </details>
           <details class="faq-item">
             <summary>What do I do if sphericity is violated?</summary>
@@ -109,7 +109,7 @@
           </details>
           <details class="faq-item">
             <summary>Why are repeated-measures designs more powerful?</summary>
-            <div class="faq-a"><p>Because each participant serves as their own control. Stable individual differences — some people just score high — are removed from the error term instead of drowning the condition effect. The same effect that a between-subjects study needs dozens of participants to detect can emerge clearly from a handful measured repeatedly.</p></div>
+            <div class="faq-a"><p>Because each participant serves as their own control. Stable individual differences (some people just score high) are removed from the error term instead of drowning the condition effect. The same effect that a between-subjects study needs dozens of participants to detect can emerge clearly from a handful measured repeatedly.</p></div>
           </details>
         </section>
         <!-- faq:end -->

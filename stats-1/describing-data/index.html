@@ -12,22 +12,22 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Describing Data — StatsCapybara</title>
-  <meta name="description" content="Drag data points on a number line and watch the mean get dragged by outliers while the median stays put." />
+  <meta name="description" content="Why outliers drag the mean while the median stays put: build the intuition for center and spread by dragging points on a number line." />
   <link rel="canonical" href="https://statscapybara.com/stats-1/describing-data/" />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Describing Data — StatsCapybara" />
-  <meta property="og:description" content="Drag data points on a number line and watch the mean get dragged by outliers while the median stays put." />
+  <meta property="og:description" content="Why outliers drag the mean while the median stays put: build the intuition for center and spread by dragging points on a number line." />
   <meta property="og:image" content="https://statscapybara.com/assets/og-stats-1.png" />
   <meta property="og:url" content="https://statscapybara.com/stats-1/describing-data/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Describing Data — StatsCapybara" />
-  <meta name="twitter:description" content="Drag data points on a number line and watch the mean get dragged by outliers while the median stays put." />
+  <meta name="twitter:description" content="Why outliers drag the mean while the median stays put: build the intuition for center and spread by dragging points on a number line." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-1.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
-  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Describing Data", "description": "Drag data points on a number line and watch the mean get dragged by outliers while the median stays put.", "url": "https://statscapybara.com/stats-1/describing-data/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Foundations", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Describing Data", "item": "https://statscapybara.com/stats-1/describing-data/"}]}]
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Describing Data", "description": "Why outliers drag the mean while the median stays put: build the intuition for center and spread by dragging points on a number line.", "url": "https://statscapybara.com/stats-1/describing-data/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Foundations", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Describing Data", "item": "https://statscapybara.com/stats-1/describing-data/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
   {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "When should I use the median instead of the mean?", "acceptedAnswer": {"@type": "Answer", "text": "Use the median when the data is skewed or contains outliers — incomes, house prices, reaction times. The mean gets dragged toward extreme values because it uses every value's actual magnitude; the median only cares about what's in the middle, so it stays a more honest \"typical value.\" For roughly symmetric data the two agree, and the mean is standard."}}, {"@type": "Question", "name": "Why does the sample standard deviation divide by n − 1 instead of n?", "acceptedAnswer": {"@type": "Answer", "text": "A sample's values are, on average, slightly closer to their own sample mean than to the true population mean — so dividing by n would systematically underestimate the population's spread. Dividing by n − 1 (Bessel's correction) inflates the result just enough to fix that bias. With large samples the difference becomes negligible."}}, {"@type": "Question", "name": "Should I report the mean with the SD, or the median with the IQR?", "acceptedAnswer": {"@type": "Answer", "text": "Pair the center with its matching spread. The mean and SD belong together (both use every value's magnitude, so both are outlier-sensitive), and the median pairs with the interquartile range — the span of the middle 50% of the data, built from quartiles just like the median. For roughly symmetric data, mean (SD) is the standard report and what t-tests work with; for skewed or outlier-prone data, median and IQR give the honest picture. Our descriptives calculator computes both pairs so you can compare."}}]}
@@ -44,21 +44,21 @@
         <span class="lesson-eyebrow">Section 1.3</span>
         <h1>Describing Data</h1>
 
-        <p class="lede">You've collected a pile of numbers. Before you can do anything clever with them, you need to summarize them — to say, in a couple of numbers, where the data sits and how spread out it is. Those two ideas, <strong>center</strong> and <strong>spread</strong>, are the heart of descriptive statistics.</p>
+        <p class="lede">You've collected a pile of numbers. Before you can do anything clever with them, you need to summarize them: where does the data sit, and how spread out is it? Those two ideas, <strong>center</strong> and <strong>spread</strong>, are the heart of descriptive statistics.</p>
 
         <h2>Measures of center</h2>
         <p>"Center" means a single typical value that stands in for the whole batch. There are three common ones:</p>
         <ul>
-          <li><strong>Mean</strong> — the everyday average: add everything up, divide by how many there are. It's the <em>balance point</em> of the data.</li>
-          <li><strong>Median</strong> — line the values up smallest to largest and take the one in the middle. Half the data is below it, half above.</li>
-          <li><strong>Mode</strong> — the value that shows up most often.</li>
+          <li>The <strong>mean</strong> is the everyday average: add everything up, divide by how many there are. It's the <em>balance point</em> of the data.</li>
+          <li>The <strong>median</strong>: line the values up smallest to largest and take the one in the middle. Half the data is below it, half above.</li>
+          <li>The <strong>mode</strong> is the value that shows up most often.</li>
         </ul>
-        <p>They often land close together — but not always. The playground below shows exactly when, and why, they part ways.</p>
+        <p>They often land close together, but not always. The playground below shows exactly when, and why, they part ways.</p>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="ddviz">
           <p class="viz-title">🎮 Mean vs. Median Playground</p>
-          <p class="viz-sub">Drag any dot along the line. Add a few, then drag one far to the right to make an outlier — watch which marker chases it.</p>
+          <p class="viz-sub">Drag any dot along the line. Add a few, then drag one far to the right to make an outlier, and watch which marker chases it.</p>
 
           <div class="controls">
             <div class="control"><button class="btn btn-primary btn-sm" id="add-pt">Add a point</button></div>
@@ -81,20 +81,20 @@
         <h2>Why the median shrugs off outliers</h2>
         <p>The mean uses the <em>actual value</em> of every point, so one extreme number can yank it a long way — drag a single dot out to 100 and the orange mean marker follows it across the line. The median only cares about <em>position</em> (which value sits in the middle), so a lone extreme barely budges it. The teal median marker stays parked over the bulk of the data. (And when you meet an outlier in real data, deciding what to <em>do</em> with it is its own skill — see <a href="../../data/outliers-in-practice/">Outliers: Detect, Investigate, Decide</a>.)</p>
         <div class="callout key">
-          <p><strong>Rule of thumb:</strong> when data is roughly symmetric, mean and median agree — report the mean. When it's skewed or has outliers (incomes, reaction times, house prices), the median is the more honest summary of "typical."</p>
+          <p><strong>Rule of thumb:</strong> when data is roughly symmetric, mean and median agree; report the mean. When it's skewed or has outliers (incomes, reaction times, house prices), the median is the more honest summary of "typical."</p>
         </div>
 
         <h2>Measures of spread</h2>
-        <p>Center isn't the whole story — two datasets can share a mean but look completely different. <strong>Spread</strong> captures how tightly the values cluster:</p>
+        <p>Center isn't the whole story: two datasets can share a mean but look completely different. <strong>Spread</strong> captures how tightly the values cluster:</p>
         <ul>
-          <li><strong>Range</strong> — biggest minus smallest. Simple, but driven entirely by the two extremes.</li>
-          <li><strong>Standard deviation</strong> — roughly, the <em>average distance of each point from the mean</em>. Small SD means the data huddles near the center; large SD means it's spread wide. Spread the dots apart in the playground and watch the SD grow.</li>
+          <li>The <strong>range</strong> is biggest minus smallest. Simple, but driven entirely by the two extremes.</li>
+          <li>The <strong>standard deviation</strong> is, roughly, the <em>average distance of each point from the mean</em>. Small SD means the data huddles near the center; large SD means it's spread wide. Spread the dots apart in the playground and watch the SD grow.</li>
         </ul>
-        <p>Standard deviation is the workhorse here — it shows up again the moment we standardize values into <a href="../../stats-1/z-scores-and-the-normal-distribution/">z-scores</a> and everywhere after.</p>
-        <p>Got numbers of your own? Paste them into the <a href="../../descriptives.html">descriptives calculator</a> — it computes center, spread, and outlier flags, draws the histogram and boxplot, and even drafts the APA sentence for you.</p>
+        <p>Standard deviation is the workhorse of the two; it shows up again the moment we standardize values into <a href="../../stats-1/z-scores-and-the-normal-distribution/">z-scores</a> and everywhere after.</p>
+        <p>Got numbers of your own? Paste them into the <a href="../../descriptives.html">descriptives calculator</a>, which computes center, spread, and outlier flags, draws the histogram and boxplot, and even drafts the APA sentence for you.</p>
 
         <div class="callout">
-          <p><strong>Why it matters:</strong> "center and spread" is the vocabulary you'll use to describe every dataset for the rest of the course. Choosing the right summary — and knowing when the mean is lying to you — is a real, practical skill.</p>
+          <p><strong>Why it matters:</strong> "center and spread" is the vocabulary you'll use to describe every dataset for the rest of the course. Choosing the right summary, and knowing when the mean is lying to you, is a real, practical skill.</p>
         </div>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->

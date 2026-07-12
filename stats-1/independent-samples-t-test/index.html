@@ -12,25 +12,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Independent Samples t-Test — StatsCapybara</title>
-  <meta name="description" content="Comparing two groups is a tug-of-war between the gap in their means and the noise within them. Adjust both and watch t and the p-value respond." />
+  <meta name="description" content="Comparing two groups is a tug-of-war between the gap in their means and the noise within them. Adjust both to see how t and the p-value respond." />
   <link rel="canonical" href="https://statscapybara.com/stats-1/independent-samples-t-test/" />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Independent Samples t-Test — StatsCapybara" />
-  <meta property="og:description" content="Comparing two groups is a tug-of-war between the gap in their means and the noise within them. Adjust both and watch t and the p-value respond." />
+  <meta property="og:description" content="Comparing two groups is a tug-of-war between the gap in their means and the noise within them. Adjust both to see how t and the p-value respond." />
   <meta property="og:image" content="https://statscapybara.com/assets/og-stats-1.png" />
   <meta property="og:url" content="https://statscapybara.com/stats-1/independent-samples-t-test/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Independent Samples t-Test — StatsCapybara" />
-  <meta name="twitter:description" content="Comparing two groups is a tug-of-war between the gap in their means and the noise within them. Adjust both and watch t and the p-value respond." />
+  <meta name="twitter:description" content="Comparing two groups is a tug-of-war between the gap in their means and the noise within them. Adjust both to see how t and the p-value respond." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-1.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
-  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Independent Samples t-Test", "description": "Comparing two groups is a tug-of-war between the gap in their means and the noise within them. Adjust both and watch t and the p-value respond.", "url": "https://statscapybara.com/stats-1/independent-samples-t-test/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Foundations", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Independent Samples t-Test", "item": "https://statscapybara.com/stats-1/independent-samples-t-test/"}]}]
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Independent Samples t-Test", "description": "Comparing two groups is a tug-of-war between the gap in their means and the noise within them. Adjust both to see how t and the p-value respond.", "url": "https://statscapybara.com/stats-1/independent-samples-t-test/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Foundations", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Independent Samples t-Test", "item": "https://statscapybara.com/stats-1/independent-samples-t-test/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the difference between Student's t-test and Welch's t-test?", "acceptedAnswer": {"@type": "Answer", "text": "Student's version assumes both groups have equal population variances and pools them; Welch's version drops that assumption and adjusts the degrees of freedom instead. Welch's costs almost nothing when variances are equal and protects you when they're not — which is why many statisticians (and R's default t.test) recommend Welch as the routine choice."}}, {"@type": "Question", "name": "Do my two groups need to be the same size?", "acceptedAnswer": {"@type": "Answer", "text": "No — the test handles unequal ns fine. Unequal group sizes do make the equal-variance assumption more consequential (the pooled test misbehaves when the smaller group also has the bigger variance), which is another argument for defaulting to Welch. For a fixed total sample, though, power is maximized when groups are equal."}}, {"@type": "Question", "name": "How many participants do I need for a t-test?", "acceptedAnswer": {"@type": "Answer", "text": "It depends entirely on the effect size you're trying to detect: with α = .05 and 80% power (two-tailed), a large effect (d = 0.8) needs about 26 per group, a medium one (d = 0.5) about 64, and a small one (d = 0.2) nearly 400. Run the numbers in the power playground before collecting data."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the difference between Student's t-test and Welch's t-test?", "acceptedAnswer": {"@type": "Answer", "text": "Student's version assumes both groups have equal population variances and pools them; Welch's version drops that assumption and adjusts the degrees of freedom instead. Welch's costs almost nothing when variances are equal and protects you when they're not — which is why many statisticians (and R's default t.test) recommend Welch as the routine choice."}}, {"@type": "Question", "name": "Do my two groups need to be the same size?", "acceptedAnswer": {"@type": "Answer", "text": "The test handles unequal ns fine. Unequal group sizes do make the equal-variance assumption more consequential (the pooled test misbehaves when the smaller group also has the bigger variance), which is another argument for defaulting to Welch. For a fixed total sample, though, power is maximized when groups are equal."}}, {"@type": "Question", "name": "How many participants do I need for a t-test?", "acceptedAnswer": {"@type": "Answer", "text": "It depends entirely on the effect size you're trying to detect: with α = .05 and 80% power (two-tailed), a large effect (d = 0.8) needs about 26 per group, a medium one (d = 0.5) about 64, and a small one (d = 0.2) nearly 400. Run the numbers in the power playground before collecting data."}}]}
   </script>
 </head>
 <body data-course="stats-1" data-section="independent-samples-t-test">
@@ -44,12 +44,12 @@
         <span class="lesson-eyebrow">Section 1.12</span>
         <h1>Independent Samples t-Test</h1>
 
-        <p class="lede">This is the test you reach for constantly: do two <em>separate</em> groups — treatment vs. control, men vs. women, version A vs. version B — differ on average? Unlike the paired test, the groups are made of different individuals, so we compare their two means head to head.</p>
+        <p class="lede">This is the test you reach for constantly: do two <em>separate</em> groups (treatment vs. control, men vs. women, version A vs. version B) differ on average? Unlike the paired test, the groups are made of different individuals, so we compare their two means head to head.</p>
 
         <h2>Signal over noise</h2>
         <p>The logic is a ratio. On top, the <strong>signal</strong>: how far apart the two sample means are. On the bottom, the <strong>noise</strong>: how much the scores bounce around <em>within</em> each group, adjusted for sample size. That ratio is the t-statistic:</p>
         <p style="text-align:center;font-size:1.15rem;margin:1.25rem 0"><strong>t = (x̄₁ − x̄₂) / (standard error of the difference)</strong></p>
-        <p>A big t — a clear signal sticking out of the noise — means the groups probably really differ. A small t means the gap could easily be chance. Crucially, the same mean difference can be convincing or meaningless depending on the noise and the sample size. The playground makes that tug-of-war visible.</p>
+        <p>A big t, a clear signal sticking out of the noise, means the groups probably really differ. A small t means the gap could easily be chance. Crucially, the same mean difference can be convincing or meaningless depending on the noise and the sample size. The playground makes that tug-of-war visible.</p>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="itviz">
@@ -103,7 +103,7 @@
         </ul>
 
         <div class="callout">
-          <p><strong>Why it matters:</strong> comparing two group means is one of the most common tasks in all of research. When you have <em>more</em> than two groups, you don't run a pile of t-tests — you move up to <a href="../../stats-2/one-way-anova/">ANOVA</a>, which is where Stats 2 begins. And when it's time to run this test on real thesis data, the guide <a href="../../guides/analyze-thesis-data-jasp/">Analyze Your Thesis Data in JASP</a> walks this exact analysis from CSV import to APA sentence.</p>
+          <p><strong>Why it matters:</strong> comparing two group means is one of the most common tasks in all of research. When you have <em>more</em> than two groups, the move is not a pile of t-tests but a step up to <a href="../../stats-2/one-way-anova/">ANOVA</a>, which is where Stats 2 begins. And when it's time to run this test on real thesis data, the guide <a href="../../guides/analyze-thesis-data-jasp/">Analyze Your Thesis Data in JASP</a> walks this exact analysis from CSV import to APA sentence.</p>
         </div>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
@@ -115,7 +115,7 @@
           </details>
           <details class="faq-item">
             <summary>Do my two groups need to be the same size?</summary>
-            <div class="faq-a"><p>No — the test handles unequal ns fine. Unequal group sizes do make the equal-variance assumption more consequential (the pooled test misbehaves when the smaller group also has the bigger variance), which is another argument for defaulting to Welch. For a fixed total sample, though, power is maximized when groups are equal.</p></div>
+            <div class="faq-a"><p>The test handles unequal ns fine. Unequal group sizes do make the equal-variance assumption more consequential (the pooled test misbehaves when the smaller group also has the bigger variance), which is another argument for defaulting to Welch. For a fixed total sample, though, power is maximized when groups are equal.</p></div>
           </details>
           <details class="faq-item">
             <summary>How many participants do I need for a t-test?</summary>

@@ -30,7 +30,7 @@
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Effect Size & Power", "description": "Significance says whether an effect exists; effect size says how big; power says whether you could detect it. See how effect size and sample size drive power.", "url": "https://statscapybara.com/stats-1/effect-size-and-power/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Foundations", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Effect Size & Power", "item": "https://statscapybara.com/stats-1/effect-size-and-power/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is a good effect size?", "acceptedAnswer": {"@type": "Answer", "text": "Cohen's benchmarks — d ≈ 0.2 small, 0.5 medium, 0.8 large — are rough field-wide defaults, not laws. What counts as meaningful depends on context: d = 0.2 on mortality is enormous; d = 0.5 on a novel lab task may be routine. Compare against typical effects in your literature, and translate d into overlap or percentile terms with the effect-size converter to build intuition."}}, {"@type": "Question", "name": "What does 80% power mean?", "acceptedAnswer": {"@type": "Answer", "text": "If the true effect is exactly the size you assumed, a study with 80% power has an 80% chance of returning a significant result — and a 20% chance of missing it (β = 0.20). It's a property of the design, chosen before data collection: the conventional compromise between missing real effects and the cost of ever-larger samples."}}, {"@type": "Question", "name": "Can a result be statistically significant but practically meaningless?", "acceptedAnswer": {"@type": "Answer", "text": "Absolutely — with a big enough sample, even a trivial difference (d = 0.02) reaches p < .05, because significance mixes effect size with sample size. The reverse also happens: a large effect in a small study can miss significance. That's precisely why journals require effect sizes alongside p-values: one answers \"is it real?\", the other \"does it matter?\""}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is a good effect size?", "acceptedAnswer": {"@type": "Answer", "text": "Cohen's benchmarks (d ≈ 0.2 small, 0.5 medium, 0.8 large) are rough field-wide defaults, not laws. What counts as meaningful depends on context: d = 0.2 on mortality is enormous; d = 0.5 on a novel lab task may be routine. Compare against typical effects in your literature, and translate d into overlap or percentile terms with the effect-size converter to build intuition."}}, {"@type": "Question", "name": "What does 80% power mean?", "acceptedAnswer": {"@type": "Answer", "text": "If the true effect is exactly the size you assumed, a study with 80% power has an 80% chance of returning a significant result — and a 20% chance of missing it (β = 0.20). It's a property of the design, chosen before data collection: the conventional compromise between missing real effects and the cost of ever-larger samples."}}, {"@type": "Question", "name": "Can a result be statistically significant but practically meaningless?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. With a big enough sample, even a trivial difference (d = 0.02) reaches p < .05, because significance mixes effect size with sample size. The reverse also happens: a large effect in a small study can miss significance. That's precisely why journals require effect sizes alongside p-values: one answers \"is it real?\", the other \"does it matter?\""}}]}
   </script>
 </head>
 <body data-course="stats-1" data-section="effect-size-and-power">
@@ -44,17 +44,17 @@
         <span class="lesson-eyebrow">Section 1.13</span>
         <h1>Effect Size &amp; Power</h1>
 
-        <p class="lede">A <a href="../../stats-1/hypothesis-testing-logic/">p-value</a> answers one narrow question: is there an effect at all? It says nothing about <em>how big</em> the effect is, or whether your study was even capable of finding it. Those two questions — answered by <strong>effect size</strong> and <strong>power</strong> — are what separate a meaningful result from a misleading one.</p>
+        <p class="lede">A <a href="../../stats-1/hypothesis-testing-logic/">p-value</a> answers one narrow question: is there an effect at all? It says nothing about <em>how big</em> the effect is, or whether your study was even capable of finding it. Those two questions, answered by <strong>effect size</strong> and <strong>power</strong>, separate a meaningful result from a misleading one.</p>
 
         <h2>Effect size: how big, not just whether</h2>
-        <p>With a huge sample, a trivially small difference can be "statistically significant." With a tiny sample, a huge difference can miss significance. Significance is tangled up with sample size — so we need a measure of the effect that <em>isn't</em>. That's <strong>effect size</strong>. For a difference between two means, the standard one is <strong>Cohen's d</strong>: the gap between the means measured in standard deviations.</p>
+        <p>With a huge sample, a trivially small difference can be "statistically significant." With a tiny sample, a huge difference can miss significance. Significance is tangled up with sample size, so we need a measure of the effect that <em>isn't</em>. That's <strong>effect size</strong>. For a difference between two means, the standard one is <strong>Cohen's d</strong>: the gap between the means measured in standard deviations.</p>
         <p style="text-align:center;font-size:1.2rem;margin:1.25rem 0"><strong>d = (mean₁ − mean₂) / standard deviation</strong></p>
-        <p>Rough conventions: d ≈ 0.2 is small, 0.5 medium, 0.8 large. It's the same currency as a <a href="../../stats-1/z-scores-and-the-normal-distribution/">z-score</a> — a standardized distance — so it's comparable across studies and scales.</p>
+        <p>Rough conventions: d ≈ 0.2 is small, 0.5 medium, 0.8 large. It's the same currency as a <a href="../../stats-1/z-scores-and-the-normal-distribution/">z-score</a> (a standardized distance), so it's comparable across studies and scales.</p>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="powviz">
           <p class="viz-title">🎮 The Power Playground</p>
-          <p class="viz-sub"><strong>Top panel:</strong> the two populations — this is what an effect of size d looks like in the world. <strong>Bottom panel:</strong> what your <em>test</em> sees — the distribution of results you could observe if there were no effect (H₀) vs. the effect being real (H₁). Power is the green area: the share of possible study outcomes that lands past the significance cutoff. Turn all four dials and watch the areas fight.</p>
+          <p class="viz-sub"><strong>Top panel:</strong> the two populations: this is what an effect of size d looks like in the world. <strong>Bottom panel:</strong> what your <em>test</em> sees, the distribution of results you could observe if there were no effect (H₀) vs. the effect being real (H₁). Power is the green area: the share of possible study outcomes that lands past the significance cutoff. Turn all four dials and watch the areas fight.</p>
 
           <div class="controls">
             <div class="control" style="flex:1;min-width:200px">
@@ -83,7 +83,7 @@
 
           <div class="stat-row">
             <div class="stat"><span class="k">Power (chance to detect)</span><span class="v" id="stat-power">—</span></div>
-            <div class="stat"><span class="k">β — Type II (miss) risk</span><span class="v" id="stat-beta">—</span></div>
+            <div class="stat"><span class="k">β: Type II (miss) risk</span><span class="v" id="stat-beta">—</span></div>
             <div class="stat"><span class="k">Smallest significant d̂</span><span class="v" id="stat-crit">—</span></div>
             <div class="stat"><span class="k">n/group for 80% power</span><span class="v" id="stat-n80">—</span></div>
             <div class="stat"><span class="k">Population overlap</span><span class="v" id="stat-overlap">—</span></div>
@@ -94,10 +94,10 @@
         <h2>Power: could you even detect it?</h2>
         <p><strong>Power</strong> is the probability that your study correctly rejects the null when a real effect exists — your chance of <em>not</em> missing it. The convention is to aim for at least 80%. Power analysis is really a four-way negotiation; the playground gives you all four dials:</p>
         <ul>
-          <li><strong>Effect size (d)</strong> — slide it up and the two populations pull apart <em>and</em> the H₁ curve below slides away from the cutoff: the green area swells. Tiny effects are genuinely hard to detect.</li>
-          <li><strong>Sample size (n)</strong> — the populations don't move an inch, but the <em>sampling</em> curves below sharpen dramatically. Same effect, narrower curves, less overlap across the cutoff → more power. This is the dial you usually control.</li>
-          <li><strong>Significance level (α)</strong> — a stricter α (say .001) drags the cutoff away from zero, shrinking the false-alarm area but eating your power with it. There's no free lunch: α and β trade off.</li>
-          <li><strong>One- vs. two-tailed</strong> — committing to a direction moves the cutoff closer to zero and buys power, at the price of being blind to an effect in the other direction.</li>
+          <li><strong>Effect size (d).</strong> Slide it up and the two populations pull apart <em>and</em> the H₁ curve below slides away from the cutoff: the green area swells. Tiny effects are genuinely hard to detect.</li>
+          <li><strong>Sample size (n).</strong> The populations don't move an inch, but the <em>sampling</em> curves below sharpen dramatically. Same effect, narrower curves, less overlap across the cutoff → more power. This is the dial you usually control.</li>
+          <li><strong>Significance level (α).</strong> A stricter α (say .001) drags the cutoff away from zero, shrinking the false-alarm area but eating your power with it. There's no free lunch: α and β trade off.</li>
+          <li><strong>One- vs. two-tailed.</strong> Committing to a direction moves the cutoff closer to zero and buys power, at the price of being blind to an effect in the other direction.</li>
         </ul>
         <div class="callout key">
           <p><strong>Try this:</strong> set d = 0.30 (a realistic effect in psychology), α = .05, two-tailed. At n = 30 the power readout is a coin flip at best. Now drag n until the green area hits 80% — that's a <em>power analysis</em>, and it's exactly the calculation you should run before collecting a single data point. Then set d = 0 and notice power equals α: with no real effect, "detections" are pure false alarms.</p>
@@ -118,7 +118,7 @@
           <h2>Common questions</h2>
           <details class="faq-item">
             <summary>What is a good effect size?</summary>
-            <div class="faq-a"><p>Cohen's benchmarks — d ≈ 0.2 small, 0.5 medium, 0.8 large — are rough field-wide defaults, not laws. What counts as meaningful depends on context: d = 0.2 on mortality is enormous; d = 0.5 on a novel lab task may be routine. Compare against typical effects in your literature, and translate d into overlap or percentile terms with the <a href="../../effect-sizes.html">effect-size converter</a> to build intuition.</p></div>
+            <div class="faq-a"><p>Cohen's benchmarks (d ≈ 0.2 small, 0.5 medium, 0.8 large) are rough field-wide defaults, not laws. What counts as meaningful depends on context: d = 0.2 on mortality is enormous; d = 0.5 on a novel lab task may be routine. Compare against typical effects in your literature, and translate d into overlap or percentile terms with the <a href="../../effect-sizes.html">effect-size converter</a> to build intuition.</p></div>
           </details>
           <details class="faq-item">
             <summary>What does 80% power mean?</summary>
@@ -126,7 +126,7 @@
           </details>
           <details class="faq-item">
             <summary>Can a result be statistically significant but practically meaningless?</summary>
-            <div class="faq-a"><p>Absolutely — with a big enough sample, even a trivial difference (d = 0.02) reaches p < .05, because significance mixes effect size with sample size. The reverse also happens: a large effect in a small study can miss significance. That's precisely why journals require effect sizes alongside p-values: one answers "is it real?", the other "does it matter?"</p></div>
+            <div class="faq-a"><p>Yes. With a big enough sample, even a trivial difference (d = 0.02) reaches p < .05, because significance mixes effect size with sample size. The reverse also happens: a large effect in a small study can miss significance. That's precisely why journals require effect sizes alongside p-values: one answers "is it real?", the other "does it matter?"</p></div>
           </details>
         </section>
         <!-- faq:end -->

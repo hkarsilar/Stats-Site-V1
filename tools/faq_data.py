@@ -14,9 +14,9 @@ FAQS_12 = {
 
 "what-is-statistics": [
  ("What is the difference between a parameter and a statistic?",
-  "A <strong>parameter</strong> is a number that describes the whole population (like the true mean μ) — it's usually unknown. A <strong>statistic</strong> is the matching number computed from your sample (like x̄), which you use to estimate the parameter. Memory hook: <em>p</em>arameter–<em>p</em>opulation, <em>s</em>tatistic–<em>s</em>ample."),
+  "A <strong>parameter</strong> is a number that describes the whole population (like the true mean μ), and it's usually unknown. A <strong>statistic</strong> is the matching number computed from your sample (like x̄), which you use to estimate the parameter. Memory hook: <em>p</em>arameter–<em>p</em>opulation, <em>s</em>tatistic–<em>s</em>ample."),
  ("What is the difference between descriptive and inferential statistics?",
-  "Descriptive statistics summarizes the data you actually collected — means, standard deviations, charts — and claims nothing beyond it. Inferential statistics uses that sample to draw conclusions about the wider population it came from, which is why it always comes with uncertainty attached (confidence intervals, p-values)."),
+  "Descriptive statistics summarizes the data you actually collected (means, standard deviations, charts) and claims nothing beyond it. Inferential statistics uses that sample to draw conclusions about the wider population it came from, which is why it always comes with uncertainty attached (confidence intervals, p-values)."),
  ("Why use a sample instead of measuring the whole population?",
   "Usually you can't measure everyone — the population is too large, too expensive to reach, or partly hypothetical (every <em>possible</em> patient, every future customer). The surprising good news is that a few hundred well-chosen, random observations can estimate a population value remarkably precisely — quantifying exactly <em>how</em> precisely is what <a href=\"../../stats-1/sampling-distributions/\">sampling distributions</a> are for."),
 ],
@@ -45,7 +45,7 @@ FAQS_12 = {
  ("Why do people say never to use a pie chart?",
   "Because pie charts make readers judge <em>angles and areas</em>, which humans do poorly — classic perception experiments (Cleveland &amp; McGill, 1984) show we compare aligned bar lengths far more accurately. With more than two or three slices, \"which is bigger?\" becomes guesswork that a sorted bar chart answers instantly. The defensible pie is rare: a single part-of-whole message with two or three very different slices. Our <a href=\"../../which-chart.html\">chart chooser</a> has a whole \"resist the pie\" verdict explaining the alternatives."),
  ("When should I use a boxplot instead of a histogram?",
-  "Use a boxplot when comparing several groups side by side — five boxplots fit neatly where five histograms would be a mess — or when you want outliers flagged automatically by the 1.5 × IQR rule. Use a histogram when the <em>shape</em> matters (skew, two peaks), because a boxplot can't show bimodality. Our <a href=\"../../descriptives.html\">descriptives calculator</a> draws both from pasted data."),
+  "Use a boxplot when comparing several groups side by side (five boxplots fit neatly where five histograms would be a mess), or when you want outliers flagged automatically by the 1.5 × IQR rule. Use a histogram when the <em>shape</em> matters (skew, two peaks), because a boxplot can't show bimodality. Our <a href=\"../../descriptives.html\">descriptives calculator</a> draws both from pasted data."),
 ],
 
 "z-scores-and-the-normal-distribution": [
@@ -72,14 +72,14 @@ FAQS_12 = {
  ("What is a sampling distribution in simple terms?",
   "Imagine repeating your study thousands of times, each time computing the same statistic — say, the sample mean. The pile of those thousands of values is the sampling distribution. It's a thought experiment (you only run the study once), but its shape and spread are exactly what let you judge how trustworthy your one estimate is."),
  ("Does every statistic have a sampling distribution?",
-  "Yes — the mean, the median, the SD, a correlation, a regression slope: anything you compute from a random sample would come out slightly different in another sample, so each has its own distribution across hypothetical repeats. That's what makes inference general: confidence intervals and standard errors exist for medians and correlations, not just means."),
+  "Anything you compute from a random sample has one: the mean, the median, the SD, a correlation, a regression slope. Each would come out slightly different in another sample, so each has its own distribution across hypothetical repeats. That's what makes inference general: confidence intervals and standard errors exist for medians and correlations, not just means."),
 ],
 
 "central-limit-theorem": [
  ("What sample size is large enough for the Central Limit Theorem?",
   "The folk rule is n ≥ 30, and for mildly skewed data that's usually plenty — sample means settle into a near-normal shape quickly. But it's a rule of thumb, not a law: heavily skewed or outlier-prone populations can need substantially more, while symmetric populations are fine much earlier. When in doubt, look at your data's shape rather than trusting the magic 30."),
  ("Does the Central Limit Theorem make my data normally distributed?",
-  "No — this is the classic misreading. The CLT says the distribution of <em>sample means</em> approaches normal as n grows. Your raw data keeps whatever shape it has; skewed data stays skewed no matter how much you collect. The bell curve emerges one level up, in the averages across samples — which is what t-tests and confidence intervals actually rely on."),
+  "This is the classic misreading. The CLT says the distribution of <em>sample means</em> approaches normal as n grows. Your raw data keeps whatever shape it has; skewed data stays skewed no matter how much you collect. The bell curve emerges one level up, in the averages across samples, which is what t-tests and confidence intervals actually rely on."),
  ("Why does the standard error shrink with the square root of n?",
   "Averaging cancels luck: within one sample, unusually high values tend to offset unusually low ones, and the bigger the sample, the better the cancellation. The math works out to SE = σ/√n — which has a sobering consequence: to <em>halve</em> your uncertainty you need <em>four times</em> the data. Precision gets expensive fast."),
 ],
@@ -99,7 +99,7 @@ FAQS_12 = {
  ("Why do we say 'fail to reject' the null instead of 'accept' it?",
   "Because a non-significant result means the evidence wasn't strong enough to rule out chance — not that H₀ is true. Like a courtroom's \"not guilty,\" it reflects insufficient evidence, not established innocence. Small studies fail to reject false nulls all the time simply because they lack power."),
  ("Why is the significance level set at 0.05?",
-  "Convention, not law of nature. R. A. Fisher suggested in the 1920s that one-in-twenty was a convenient benchmark for \"surprising\" — roughly the chance of landing beyond ±2 SDs — and it stuck. Nothing magical happens between p = .049 and p = .051, which is why fields with different stakes choose differently: particle physics demands \"5 sigma\" (about 1 in 3.5 million), genome-wide studies use 5 × 10⁻⁸, and some journals now suggest .005 for new discoveries. What matters is fixing α <em>before</em> you look at the data — and remembering that crossing it says nothing about how <a href=\"../../stats-1/effect-size-and-power/\">large or important</a> the effect is."),
+  "Convention, not law of nature. R. A. Fisher suggested in the 1920s that one-in-twenty was a convenient benchmark for \"surprising\" (roughly the chance of landing beyond ±2 SDs), and it stuck. Nothing magical happens between p = .049 and p = .051, which is why fields with different stakes choose differently: particle physics demands \"5 sigma\" (about 1 in 3.5 million), genome-wide studies use 5 × 10⁻⁸, and some journals now suggest .005 for new discoveries. What matters is fixing α <em>before</em> you look at the data, and remembering that crossing it says nothing about how <a href=\"../../stats-1/effect-size-and-power/\">large or important</a> the effect is."),
 ],
 
 "one-sample-and-paired-t-tests": [
@@ -108,25 +108,25 @@ FAQS_12 = {
  ("What are degrees of freedom in a t-test?",
   "Roughly, the number of values free to vary once you've estimated the necessary quantities — for a one-sample or paired test, df = n − 1 (estimating the mean uses up one). Degrees of freedom set the t-distribution's shape: small df means fatter tails and a stricter critical value, reflecting the extra uncertainty of estimating the SD from little data."),
  ("Can I run a t-test on a small sample?",
-  "Yes — small samples are exactly why the t-test exists; the t-distribution's heavy tails already price in the shakiness of estimating s from few observations. The caveat: with small n the data (or the paired differences) should be roughly normal, since the CLT can't rescue you yet. With visible skew or outliers in a small sample, a <a href=\"../../stats-2/non-parametric-alternatives/\">rank-based alternative</a> is safer."),
+  "Small samples are exactly why the t-test exists; the t-distribution's heavy tails already price in the shakiness of estimating s from few observations. The caveat: with small n the data (or the paired differences) should be roughly normal, since the CLT can't rescue you yet. With visible skew or outliers in a small sample, a <a href=\"../../stats-2/non-parametric-alternatives/\">rank-based alternative</a> is safer."),
 ],
 
 "independent-samples-t-test": [
  ("What is the difference between Student's t-test and Welch's t-test?",
   "Student's version assumes both groups have equal population variances and pools them; Welch's version drops that assumption and adjusts the degrees of freedom instead. Welch's costs almost nothing when variances are equal and protects you when they're not — which is why many statisticians (and R's default <code>t.test</code>) recommend Welch as the routine choice."),
  ("Do my two groups need to be the same size?",
-  "No — the test handles unequal ns fine. Unequal group sizes do make the equal-variance assumption more consequential (the pooled test misbehaves when the smaller group also has the bigger variance), which is another argument for defaulting to Welch. For a fixed total sample, though, power is maximized when groups are equal."),
+  "The test handles unequal ns fine. Unequal group sizes do make the equal-variance assumption more consequential (the pooled test misbehaves when the smaller group also has the bigger variance), which is another argument for defaulting to Welch. For a fixed total sample, though, power is maximized when groups are equal."),
  ("How many participants do I need for a t-test?",
   "It depends entirely on the effect size you're trying to detect: with α = .05 and 80% power (two-tailed), a large effect (d = 0.8) needs about 26 per group, a medium one (d = 0.5) about 64, and a small one (d = 0.2) nearly 400. Run the numbers in the <a href=\"../../stats-1/effect-size-and-power/\">power playground</a> before collecting data."),
 ],
 
 "effect-size-and-power": [
  ("What is a good effect size?",
-  "Cohen's benchmarks — d ≈ 0.2 small, 0.5 medium, 0.8 large — are rough field-wide defaults, not laws. What counts as meaningful depends on context: d = 0.2 on mortality is enormous; d = 0.5 on a novel lab task may be routine. Compare against typical effects in your literature, and translate d into overlap or percentile terms with the <a href=\"../../effect-sizes.html\">effect-size converter</a> to build intuition."),
+  "Cohen's benchmarks (d ≈ 0.2 small, 0.5 medium, 0.8 large) are rough field-wide defaults, not laws. What counts as meaningful depends on context: d = 0.2 on mortality is enormous; d = 0.5 on a novel lab task may be routine. Compare against typical effects in your literature, and translate d into overlap or percentile terms with the <a href=\"../../effect-sizes.html\">effect-size converter</a> to build intuition."),
  ("What does 80% power mean?",
   "If the true effect is exactly the size you assumed, a study with 80% power has an 80% chance of returning a significant result — and a 20% chance of missing it (β = 0.20). It's a property of the design, chosen before data collection: the conventional compromise between missing real effects and the cost of ever-larger samples."),
  ("Can a result be statistically significant but practically meaningless?",
-  "Absolutely — with a big enough sample, even a trivial difference (d = 0.02) reaches p < .05, because significance mixes effect size with sample size. The reverse also happens: a large effect in a small study can miss significance. That's precisely why journals require effect sizes alongside p-values: one answers \"is it real?\", the other \"does it matter?\""),
+  "Yes. With a big enough sample, even a trivial difference (d = 0.02) reaches p < .05, because significance mixes effect size with sample size. The reverse also happens: a large effect in a small study can miss significance. That's precisely why journals require effect sizes alongside p-values: one answers \"is it real?\", the other \"does it matter?\""),
 ],
 
 # ---------------- STATS 2 ----------------
@@ -160,25 +160,25 @@ FAQS_12 = {
 
 "repeated-measures-anova": [
  ("What is sphericity and why does it matter?",
-  "Sphericity is the assumption that the variance of the <em>difference</em> between every pair of conditions is roughly equal. When it fails — typical for time-based measurements, where neighboring timepoints correlate more than distant ones — the F-test's p-values come out too small, inflating false positives. Mauchly's test flags it, and corrections fix it."),
+  "Sphericity is the assumption that the variance of the <em>difference</em> between every pair of conditions is roughly equal. When it fails (typical for time-based measurements, where neighboring timepoints correlate more than distant ones), the F-test's p-values come out too small, inflating false positives. Mauchly's test flags it, and corrections fix it."),
  ("What do I do if sphericity is violated?",
   "Apply the <strong>Greenhouse–Geisser</strong> correction (or <strong>Huynh–Feldt</strong> when the violation is mild) — both shrink the degrees of freedom to restore an honest p-value, and every stats package offers them next to the uncorrected test. The modern alternative is a <a href=\"../../stats-4/mixed-and-multilevel-models/\">mixed model</a>, which sidesteps sphericity entirely."),
  ("Why are repeated-measures designs more powerful?",
-  "Because each participant serves as their own control. Stable individual differences — some people just score high — are removed from the error term instead of drowning the condition effect. The same effect that a between-subjects study needs dozens of participants to detect can emerge clearly from a handful measured repeatedly."),
+  "Because each participant serves as their own control. Stable individual differences (some people just score high) are removed from the error term instead of drowning the condition effect. The same effect that a between-subjects study needs dozens of participants to detect can emerge clearly from a handful measured repeatedly."),
 ],
 
 "assumptions-and-when-they-break": [
  ("How do I check if my data is normally distributed?",
   "Look, don't just test: a Q-Q plot (points hugging the diagonal = normal) plus a histogram tells you more than any p-value. Formal tests like Shapiro–Wilk have a trap: in large samples they flag trivial, harmless deviations, and in small samples they miss serious ones — exactly backwards from what you need. Learn the Q-Q signatures in the playground above and trust your eyes."),
  ("What should I do if my data isn't normal?",
-  "First ask whether it matters: with decent sample sizes the CLT makes t-tests and ANOVA quite robust to mild non-normality. If it's serious — heavy skew, wild outliers, small n — the standard escalation is: transform (a log often tames right-skew), switch to a robust variant (Welch, trimmed means), or go <a href=\"../../stats-2/non-parametric-alternatives/\">non-parametric</a>."),
+  "First ask whether it matters: with decent sample sizes the CLT makes t-tests and ANOVA quite robust to mild non-normality. If it's serious (heavy skew, wild outliers, small n), the standard escalation is: transform (a log often tames right-skew), switch to a robust variant (Welch, trimmed means), or go <a href=\"../../stats-2/non-parametric-alternatives/\">non-parametric</a>."),
  ("Which statistical assumption matters most?",
   "Independence, without question. Mild non-normality is usually forgiven by the CLT, and unequal variances have Welch-style fixes — but treating correlated observations (repeated measures, students in the same classroom) as independent silently shrinks your standard errors and manufactures significance. No correction rescues it afterward; it's fixed by design or by models built for structure, like <a href=\"../../stats-4/mixed-and-multilevel-models/\">multilevel models</a>."),
 ],
 
 "non-parametric-alternatives": [
  ("Are non-parametric tests less powerful than parametric ones?",
-  "Only slightly, and only when the parametric assumptions actually hold: on truly normal data, the Mann–Whitney test has about 95% of the t-test's efficiency. When assumptions fail — heavy tails, skew, outliers — the ranking tests are often <em>more</em> powerful, because a single wild value can't inflate the noise term. It's a small premium for a lot of insurance."),
+  "Only slightly, and only when the parametric assumptions actually hold: on truly normal data, the Mann–Whitney test has about 95% of the t-test's efficiency. When assumptions fail (heavy tails, skew, outliers), the ranking tests are often <em>more</em> powerful, because a single wild value can't inflate the noise term. It's a small premium for a lot of insurance."),
  ("Should I use a t-test or Mann–Whitney for Likert-scale data?",
   "For a single Likert item — ordinal, few distinct values — Mann–Whitney respects what the data actually is. For a multi-item scale <em>score</em> (summing 8 items into a 8–40 scale), treating it as approximately interval and using a t-test is common and generally defensible. Either way, look at the distributions first; ceiling effects and skew are what really cause trouble."),
  ("Does the Mann–Whitney test compare medians?",
@@ -191,7 +191,7 @@ FAQS_12 = {
  ("What if my expected counts are less than 5?",
   "The χ² p-value is an approximation that degrades with small expected counts. The standard rule: all (or at least 80% of) expected counts should be ≥ 5. Below that, use <strong>Fisher's exact test</strong> for 2×2 tables (exact, no approximation) — or collapse sparse categories together when it makes conceptual sense."),
  ("Can a chi-square test tell me how strong the association is?",
-  "No — χ² grows with sample size, so a huge study can produce an enormous χ² from a trivial association. Pair the test with an effect size: <strong>Cramér's V</strong> (0 = none, 1 = perfect) for general tables, or the <strong>odds ratio</strong> for 2×2 tables, which our <a href=\"../../effect-sizes.html\">effect-size converter</a> can translate into other metrics."),
+  "χ² itself can't; it grows with sample size, so a huge study can produce an enormous χ² from a trivial association. Pair the test with an effect size: <strong>Cramér's V</strong> (0 = none, 1 = perfect) for general tables, or the <strong>odds ratio</strong> for 2×2 tables, which our <a href=\"../../effect-sizes.html\">effect-size converter</a> can translate into other metrics."),
 ],
 
 "correlation": [

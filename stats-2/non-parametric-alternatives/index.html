@@ -12,25 +12,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Non-Parametric Alternatives — StatsCapybara</title>
-  <meta name="description" content="Rank-based tests work on order, not raw values, so one wild outlier can't hijack them. Drag an outlier and watch the t-test panic while Mann-Whitney stays calm." />
+  <meta name="description" content="Rank-based tests work on order, not raw values, so one wild outlier can't hijack them. Drag an outlier to see the t-test panic while Mann-Whitney stays calm." />
   <link rel="canonical" href="https://statscapybara.com/stats-2/non-parametric-alternatives/" />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Non-Parametric Alternatives — StatsCapybara" />
-  <meta property="og:description" content="Rank-based tests work on order, not raw values, so one wild outlier can't hijack them. Drag an outlier and watch the t-test panic while Mann-Whitney stays calm." />
+  <meta property="og:description" content="Rank-based tests work on order, not raw values, so one wild outlier can't hijack them. Drag an outlier to see the t-test panic while Mann-Whitney stays calm." />
   <meta property="og:image" content="https://statscapybara.com/assets/og-stats-2.png" />
   <meta property="og:url" content="https://statscapybara.com/stats-2/non-parametric-alternatives/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Non-Parametric Alternatives — StatsCapybara" />
-  <meta name="twitter:description" content="Rank-based tests work on order, not raw values, so one wild outlier can't hijack them. Drag an outlier and watch the t-test panic while Mann-Whitney stays calm." />
+  <meta name="twitter:description" content="Rank-based tests work on order, not raw values, so one wild outlier can't hijack them. Drag an outlier to see the t-test panic while Mann-Whitney stays calm." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-2.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
-  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Non-Parametric Alternatives", "description": "Rank-based tests work on order, not raw values, so one wild outlier can't hijack them. Drag an outlier and watch the t-test panic while Mann-Whitney stays calm.", "url": "https://statscapybara.com/stats-2/non-parametric-alternatives/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: Comparing Groups & Relationships", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Non-Parametric Alternatives", "item": "https://statscapybara.com/stats-2/non-parametric-alternatives/"}]}]
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Non-Parametric Alternatives", "description": "Rank-based tests work on order, not raw values, so one wild outlier can't hijack them. Drag an outlier to see the t-test panic while Mann-Whitney stays calm.", "url": "https://statscapybara.com/stats-2/non-parametric-alternatives/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: Comparing Groups & Relationships", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Non-Parametric Alternatives", "item": "https://statscapybara.com/stats-2/non-parametric-alternatives/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Are non-parametric tests less powerful than parametric ones?", "acceptedAnswer": {"@type": "Answer", "text": "Only slightly, and only when the parametric assumptions actually hold: on truly normal data, the Mann–Whitney test has about 95% of the t-test's efficiency. When assumptions fail — heavy tails, skew, outliers — the ranking tests are often more powerful, because a single wild value can't inflate the noise term. It's a small premium for a lot of insurance."}}, {"@type": "Question", "name": "Should I use a t-test or Mann–Whitney for Likert-scale data?", "acceptedAnswer": {"@type": "Answer", "text": "For a single Likert item — ordinal, few distinct values — Mann–Whitney respects what the data actually is. For a multi-item scale score (summing 8 items into a 8–40 scale), treating it as approximately interval and using a t-test is common and generally defensible. Either way, look at the distributions first; ceiling effects and skew are what really cause trouble."}}, {"@type": "Question", "name": "Does the Mann–Whitney test compare medians?", "acceptedAnswer": {"@type": "Answer", "text": "Not exactly, despite the common shorthand. It tests whether values from one group tend to be larger than values from the other (stochastic dominance). Only under the extra assumption that both distributions have the same shape does that reduce to \"the medians differ.\" With very different shapes or spreads, the test can be significant even when the medians are equal."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Are non-parametric tests less powerful than parametric ones?", "acceptedAnswer": {"@type": "Answer", "text": "Only slightly, and only when the parametric assumptions actually hold: on truly normal data, the Mann–Whitney test has about 95% of the t-test's efficiency. When assumptions fail (heavy tails, skew, outliers), the ranking tests are often more powerful, because a single wild value can't inflate the noise term. It's a small premium for a lot of insurance."}}, {"@type": "Question", "name": "Should I use a t-test or Mann–Whitney for Likert-scale data?", "acceptedAnswer": {"@type": "Answer", "text": "For a single Likert item — ordinal, few distinct values — Mann–Whitney respects what the data actually is. For a multi-item scale score (summing 8 items into a 8–40 scale), treating it as approximately interval and using a t-test is common and generally defensible. Either way, look at the distributions first; ceiling effects and skew are what really cause trouble."}}, {"@type": "Question", "name": "Does the Mann–Whitney test compare medians?", "acceptedAnswer": {"@type": "Answer", "text": "Not exactly, despite the common shorthand. It tests whether values from one group tend to be larger than values from the other (stochastic dominance). Only under the extra assumption that both distributions have the same shape does that reduce to \"the medians differ.\" With very different shapes or spreads, the test can be significant even when the medians are equal."}}]}
   </script>
 </head>
 <body data-course="stats-2" data-section="non-parametric-alternatives">
@@ -44,7 +44,7 @@
         <span class="lesson-eyebrow">Section 2.6</span>
         <h1>Non-Parametric Alternatives</h1>
 
-        <p class="lede">When the <a href="../../stats-2/assumptions-and-when-they-break/">assumptions</a> behind a t-test or ANOVA don't hold — heavy skew, nasty outliers, tiny samples — you don't have to give up. <strong>Non-parametric tests</strong> throw away the raw numbers and work with their <em>ranks</em> instead. That one move makes them remarkably tough.</p>
+        <p class="lede">When the <a href="../../stats-2/assumptions-and-when-they-break/">assumptions</a> behind a t-test or ANOVA don't hold (heavy skew, nasty outliers, tiny samples), you don't have to give up. <strong>Non-parametric tests</strong> throw away the raw numbers and work with their <em>ranks</em> instead. That one move makes them remarkably tough.</p>
 
         <h2>The trick: rank, don't measure</h2>
         <p>Most parametric tests care about <em>how far apart</em> values are. Rank-based tests only care about <em>order</em> — who's bigger than whom. Replace the numbers <code>[2, 5, 9, 400]</code> with their ranks <code>[1, 2, 3, 4]</code> and that monstrous 400 becomes just "the biggest one." Its ability to distort the result evaporates. That's why non-parametric tests are so robust to outliers and skew.</p>
@@ -77,10 +77,10 @@
         <h2>The non-parametric toolkit</h2>
         <p>For most parametric tests there's a rank-based counterpart:</p>
         <ul>
-          <li><strong>Mann-Whitney U</strong> (a.k.a. Wilcoxon rank-sum) — replaces the <a href="../../stats-1/independent-samples-t-test/">independent-samples t-test</a>.</li>
-          <li><strong>Wilcoxon signed-rank</strong> — replaces the <a href="../../stats-1/one-sample-and-paired-t-tests/">paired t-test</a>.</li>
-          <li><strong>Kruskal-Wallis</strong> — replaces <a href="../../stats-2/one-way-anova/">one-way ANOVA</a>.</li>
-          <li><strong>Spearman's ρ</strong> — a rank-based <a href="../../stats-2/correlation/">correlation</a>, robust to outliers and curved-but-monotonic relationships.</li>
+          <li><strong>Mann-Whitney U</strong> (a.k.a. Wilcoxon rank-sum) replaces the <a href="../../stats-1/independent-samples-t-test/">independent-samples t-test</a>.</li>
+          <li><strong>Wilcoxon signed-rank</strong> replaces the <a href="../../stats-1/one-sample-and-paired-t-tests/">paired t-test</a>.</li>
+          <li><strong>Kruskal-Wallis</strong> replaces <a href="../../stats-2/one-way-anova/">one-way ANOVA</a>.</li>
+          <li><strong>Spearman's ρ</strong> is a rank-based <a href="../../stats-2/correlation/">correlation</a>, robust to outliers and curved-but-monotonic relationships.</li>
         </ul>
 
         <h2>The trade-off</h2>
@@ -89,7 +89,7 @@
         </div>
 
         <div class="callout">
-          <p><strong>Why it matters:</strong> real data is messy — Likert scales, reaction times, income, anything with a few extreme values. Non-parametric tests give you a trustworthy answer exactly when the textbook assumptions fall apart. The one-page <a href="../../cheat-assumptions.html">assumption-checks cheat sheet</a> lists every parametric test's checks — and which rank-based swap rescues each one.</p>
+          <p><strong>Why it matters:</strong> real data is messy — Likert scales, reaction times, income, anything with a few extreme values. Non-parametric tests give you a trustworthy answer exactly when the textbook assumptions fall apart. The one-page <a href="../../cheat-assumptions.html">assumption-checks cheat sheet</a> lists every parametric test's checks, and which rank-based swap rescues each one.</p>
         </div>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
@@ -97,7 +97,7 @@
           <h2>Common questions</h2>
           <details class="faq-item">
             <summary>Are non-parametric tests less powerful than parametric ones?</summary>
-            <div class="faq-a"><p>Only slightly, and only when the parametric assumptions actually hold: on truly normal data, the Mann–Whitney test has about 95% of the t-test's efficiency. When assumptions fail — heavy tails, skew, outliers — the ranking tests are often <em>more</em> powerful, because a single wild value can't inflate the noise term. It's a small premium for a lot of insurance.</p></div>
+            <div class="faq-a"><p>Only slightly, and only when the parametric assumptions actually hold: on truly normal data, the Mann–Whitney test has about 95% of the t-test's efficiency. When assumptions fail (heavy tails, skew, outliers), the ranking tests are often <em>more</em> powerful, because a single wild value can't inflate the noise term. It's a small premium for a lot of insurance.</p></div>
           </details>
           <details class="faq-item">
             <summary>Should I use a t-test or Mann–Whitney for Likert-scale data?</summary>

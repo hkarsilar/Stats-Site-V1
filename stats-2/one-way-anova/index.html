@@ -12,22 +12,22 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>One-Way ANOVA — StatsCapybara</title>
-  <meta name="description" content="ANOVA compares three or more group means by weighing the variation between groups against the variation within them. Adjust both and watch the F-ratio respond." />
+  <meta name="description" content="ANOVA compares three or more group means by weighing the variation between groups against the variation within them. Adjust both to see the F-ratio respond." />
   <link rel="canonical" href="https://statscapybara.com/stats-2/one-way-anova/" />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="One-Way ANOVA — StatsCapybara" />
-  <meta property="og:description" content="ANOVA compares three or more group means by weighing the variation between groups against the variation within them. Adjust both and watch the F-ratio respond." />
+  <meta property="og:description" content="ANOVA compares three or more group means by weighing the variation between groups against the variation within them. Adjust both to see the F-ratio respond." />
   <meta property="og:image" content="https://statscapybara.com/assets/og-stats-2.png" />
   <meta property="og:url" content="https://statscapybara.com/stats-2/one-way-anova/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="One-Way ANOVA — StatsCapybara" />
-  <meta name="twitter:description" content="ANOVA compares three or more group means by weighing the variation between groups against the variation within them. Adjust both and watch the F-ratio respond." />
+  <meta name="twitter:description" content="ANOVA compares three or more group means by weighing the variation between groups against the variation within them. Adjust both to see the F-ratio respond." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-2.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
-  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "One-Way ANOVA", "description": "ANOVA compares three or more group means by weighing the variation between groups against the variation within them. Adjust both and watch the F-ratio respond.", "url": "https://statscapybara.com/stats-2/one-way-anova/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: Comparing Groups & Relationships", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "One-Way ANOVA", "item": "https://statscapybara.com/stats-2/one-way-anova/"}]}]
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "One-Way ANOVA", "description": "ANOVA compares three or more group means by weighing the variation between groups against the variation within them. Adjust both to see the F-ratio respond.", "url": "https://statscapybara.com/stats-2/one-way-anova/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: Comparing Groups & Relationships", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "One-Way ANOVA", "item": "https://statscapybara.com/stats-2/one-way-anova/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
   {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why use ANOVA instead of running several t-tests?", "acceptedAnswer": {"@type": "Answer", "text": "With k groups, pairwise t-tests multiply: four groups means six tests, each carrying its own 5% false-positive risk — together far more than 5%. ANOVA asks one omnibus question (\"are all the means equal?\") at a single controlled α. If it's significant, you then localize the differences with corrected post-hoc comparisons."}}, {"@type": "Question", "name": "What does a significant F-test tell you — and what doesn't it?", "acceptedAnswer": {"@type": "Answer", "text": "It tells you the group means are unlikely to all be equal: at least one differs from at least one other. It does not tell you which groups differ, how many differ, or by how much. For \"which,\" run post-hoc tests; for \"how much,\" report an effect size like η² alongside the F."}}, {"@type": "Question", "name": "What is the difference between between-group and within-group variance?", "acceptedAnswer": {"@type": "Answer", "text": "Between-group variance measures how far the group means spread around the grand mean — the potential signal. Within-group variance measures how much individuals scatter inside their own group — the noise baseline. Their ratio is the F-statistic: when nothing is going on, both estimate the same underlying variance and F hovers near 1; real group differences push F above it."}}]}
@@ -44,10 +44,10 @@
         <span class="lesson-eyebrow">Section 2.1</span>
         <h1>One-Way ANOVA</h1>
 
-        <p class="lede">The <a href="../../stats-1/independent-samples-t-test/">t-test</a> compares two groups. But what if you have three diets, four teaching methods, or five doses? <strong>Analysis of Variance (ANOVA)</strong> compares all the group means at once — and it does it with a beautiful trick: instead of comparing means directly, it compares <em>variances</em>.</p>
+        <p class="lede">The <a href="../../stats-1/independent-samples-t-test/">t-test</a> compares two groups. But what if you have three diets, four teaching methods, or five doses? <strong>Analysis of Variance (ANOVA)</strong> compares all the group means at once. The trick is beautiful: instead of comparing means directly, it compares <em>variances</em>.</p>
 
         <h2>Why not just run lots of t-tests?</h2>
-        <p>With four groups there are six possible pairwise t-tests. Each carries a 5% false-positive risk, and those risks pile up — run enough and you're almost guaranteed a "significant" result by chance alone. ANOVA sidesteps this with a single <strong>omnibus test</strong>: one verdict on whether <em>any</em> of the groups differ.</p>
+        <p>With four groups there are six possible pairwise t-tests. Each carries a 5% false-positive risk, and those risks pile up: run enough and you're almost guaranteed a "significant" result by chance alone. ANOVA sidesteps this with a single <strong>omnibus test</strong>: one verdict on whether <em>any</em> of the groups differ.</p>
 
         <h2>The F-ratio: signal vs. noise, again</h2>
         <p>ANOVA splits the total variation in the data into two pieces and takes their ratio:</p>
@@ -88,7 +88,7 @@
         <!-- ============ /INTERACTIVE ============ -->
 
         <h2>Reading the result</h2>
-        <p>The F-ratio comes with two degrees of freedom — one for the between part (number of groups minus 1) and one for the within part (total observations minus number of groups) — which together give the p-value. As usual, p &lt; 0.05 means "this much separation would be surprising if all the groups were really identical."</p>
+        <p>The F-ratio comes with two degrees of freedom, one for the between part (number of groups minus 1) and one for the within part (total observations minus number of groups), which together give the p-value. As usual, p &lt; 0.05 means "this much separation would be surprising if all the groups were really identical."</p>
         <div class="callout key">
           <p><strong>ANOVA is an omnibus test.</strong> A significant F tells you <em>that</em> the groups aren't all equal — but not <em>which</em> ones differ. Group A might tower over the rest while B, C, and D are identical. To find out where the differences actually are, you follow up with <a href="../../stats-2/post-hoc-tests/">post-hoc tests</a>.</p>
         </div>

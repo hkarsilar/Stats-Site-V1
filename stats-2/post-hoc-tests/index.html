@@ -47,7 +47,7 @@
         <p class="lede">A significant <a href="../../stats-2/one-way-anova/">ANOVA</a> tells you the groups aren't all equal — but not <em>which</em> ones differ. To find out, you compare the groups pairwise. The catch: every extra comparison is another roll of the dice for a false positive, and they add up fast. Post-hoc tests are how we go hunting for differences without fooling ourselves.</p>
 
         <h2>The multiple-comparisons problem</h2>
-        <p>Each test at α = 0.05 has a 5% chance of a false positive when nothing's really there. Run one test and you're fine. But four groups means six pairwise comparisons; six groups means fifteen. With enough comparisons, the chance that <em>at least one</em> comes up "significant" by pure luck — the <strong>family-wise error rate</strong> — balloons toward certainty.</p>
+        <p>Each test at α = 0.05 has a 5% chance of a false positive when nothing's really there. Run one test and you're fine. But four groups means six pairwise comparisons; six groups means fifteen. With enough comparisons, the chance that <em>at least one</em> comes up "significant" by pure luck (the <strong>family-wise error rate</strong>) balloons toward certainty.</p>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="phviz">
@@ -82,9 +82,9 @@
         <h2>How corrections fix it</h2>
         <p>The idea is to make each individual test more demanding so the <em>overall</em> error stays at 5%:</p>
         <ul>
-          <li><strong>Bonferroni</strong> — the simplest: just divide your α by the number of comparisons. Ten comparisons? Each must clear p &lt; 0.005. Dead simple and always valid, but conservative (it can miss real differences).</li>
-          <li><strong>Tukey's HSD</strong> — purpose-built for comparing all pairs of means after ANOVA; more powerful than Bonferroni when you're doing every pairwise comparison.</li>
-          <li><strong>Holm</strong> — a step-down tweak on Bonferroni that's uniformly more powerful while still controlling the family-wise error.</li>
+          <li><strong>Bonferroni</strong> is the simplest: just divide your α by the number of comparisons. Ten comparisons? Each must clear p &lt; 0.005. Dead simple and always valid, but conservative (it can miss real differences).</li>
+          <li><strong>Tukey's HSD</strong> is purpose-built for comparing all pairs of means after ANOVA; more powerful than Bonferroni when you're doing every pairwise comparison.</li>
+          <li><strong>Holm</strong> is a step-down tweak on Bonferroni that's uniformly more powerful while still controlling the family-wise error.</li>
         </ul>
 
         <div class="callout key">
