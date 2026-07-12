@@ -47,13 +47,13 @@
         <p class="lede">A training program looks brilliant — until you notice its students were already stronger on the pretest. <strong>ANCOVA</strong> (Analysis of <em>Covariance</em>) compares group means <em>after</em> statistically holding a covariate constant, so you compare like with like. It's the workhorse behind every "controlling for age / baseline / IQ" you've ever read.</p>
 
         <h2>Why compare like with like</h2>
-        <p>An ordinary <a href="../../stats-2/one-way-anova/">ANOVA</a> asks: do the group means differ? But raw means mix two things together — the effect of the treatment and whatever differences the groups <em>walked in with</em>. If the treatment group started ahead on a variable that predicts the outcome (a <strong>covariate</strong>), the raw comparison flatters the treatment. If they started behind, it hides a real effect.</p>
-        <p>ANCOVA fixes this with a simple, elegant move: fit a regression line from the covariate to the outcome <em>within</em> each group, then compare the groups <strong>at the same covariate value</strong> — conventionally the overall mean. Those are the <strong>adjusted means</strong>, and the vertical gap between the parallel lines is the adjusted effect.</p>
+        <p>An ordinary <a href="../../stats-2/one-way-anova/">ANOVA</a> asks: do the group means differ? But raw means mix two things together: the effect of the treatment and whatever differences the groups <em>walked in with</em>. If the treatment group started ahead on a variable that predicts the outcome (a <strong>covariate</strong>), the raw comparison flatters the treatment. If they started behind, it hides a real effect.</p>
+        <p>ANCOVA fixes this with a simple, elegant move: fit a regression line from the covariate to the outcome <em>within</em> each group, then compare the groups <strong>at the same covariate value</strong> (conventionally the overall mean). Those are the <strong>adjusted means</strong>, and the vertical gap between the parallel lines is the adjusted effect.</p>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="ancviz">
           <p class="viz-title">🎮 The Fair-Comparison Machine</p>
-          <p class="viz-sub">Each dot is a person: pretest score across, outcome up. The lines are the within-group regression fits; the dashed vertical line is the overall pretest mean, and the big markers on it are the <strong>adjusted means</strong>. Give the orange group a head start and watch the naive comparison lie while ANCOVA keeps its footing. (The same people stay on screen as you drag — "New sample" redraws them.)</p>
+          <p class="viz-sub">Each dot is a person: pretest score across, outcome up. The lines are the within-group regression fits; the dashed vertical line is the overall pretest mean, and the big markers on it are the <strong>adjusted means</strong>. Give the orange group a head start and watch the naive comparison lie while ANCOVA keeps its footing. (The same people stay on screen as you drag; "New sample" redraws them.)</p>
 
           <div class="controls">
             <div class="control" style="flex:1;min-width:190px">
@@ -90,26 +90,26 @@
         </ul>
 
         <div class="callout key">
-          <p><strong>The two-slider magic trick:</strong> set the true effect to 0 and the head start to +10 — the naive t-test "finds" an effect that is pure baseline difference, while ANCOVA reports ≈ 0. Now flip the head start to −10 with a true effect of 6: the naive test <em>misses</em> a real effect that ANCOVA recovers. Same data-generating world, opposite naive conclusions — that's why baseline adjustment matters.</p>
+          <p><strong>The two-slider magic trick:</strong> set the true effect to 0 and the head start to +10. The naive t-test "finds" an effect that is pure baseline difference, while ANCOVA reports ≈ 0. Now flip the head start to −10 with a true effect of 6: the naive test <em>misses</em> a real effect that ANCOVA recovers. Same data-generating world, opposite naive conclusions. That's why baseline adjustment matters.</p>
         </div>
 
         <h2>The assumptions that make it honest</h2>
         <ul>
           <li><strong>Linearity:</strong> the covariate–outcome relationship should be roughly a straight line within each group.</li>
-          <li><strong>Homogeneity of regression slopes:</strong> the group lines must be <em>parallel</em> — the covariate's effect is the same in every group. If treatment changes the slope itself, a single "adjusted difference" doesn't exist; fit the <a href="../../stats-3/interactions-in-regression/">interaction model</a> instead and report how the effect varies.</li>
-          <li><strong>The covariate is measured before (and unaffected by) treatment.</strong> Adjusting for a variable the treatment itself moved doesn't clean the comparison — it throws away part of the effect you're trying to measure.</li>
+          <li><strong>Homogeneity of regression slopes:</strong> the group lines must be <em>parallel</em>: the covariate's effect is the same in every group. If treatment changes the slope itself, a single "adjusted difference" doesn't exist; fit the <a href="../../stats-3/interactions-in-regression/">interaction model</a> instead and report how the effect varies.</li>
+          <li><strong>The covariate is measured before (and unaffected by) treatment.</strong> Adjusting for a variable the treatment itself moved throws away part of the effect you're trying to measure.</li>
           <li>Plus the usual suspects from <a href="../../stats-2/assumptions-and-when-they-break/">ANOVA</a>: independent observations, roughly normal residuals, similar residual spread.</li>
         </ul>
 
         <div class="callout">
-          <p><strong>"Controlling for" is not magic.</strong> In a randomized experiment, ANCOVA buys precision. In observational data it only removes the confounding carried by the covariates you measured — never the ones you didn't. And adjusting for a <em>post-treatment</em> variable or a collider can actively create bias. When causality is the question, draw the <a href="../../stats-4/causal-dags-and-confounding/">DAG</a> first, then decide what belongs in the model.</p>
+          <p><strong>"Controlling for" is not magic.</strong> In a randomized experiment, ANCOVA buys precision. In observational data it only removes the confounding carried by the covariates you measured, never the ones you didn't. And adjusting for a <em>post-treatment</em> variable or a collider can actively create bias. When causality is the question, draw the <a href="../../stats-4/causal-dags-and-confounding/">DAG</a> first, then decide what belongs in the model.</p>
         </div>
 
         <h2>One family: ANCOVA, ANOVA, regression</h2>
-        <p>Under the hood ANCOVA is just <a href="../../stats-3/multiple-regression/">multiple regression</a> with a <a href="../../stats-3/categorical-predictors-and-dummy-coding/">dummy-coded group</a> and a continuous covariate: <em>outcome = b₀ + b₁·group + b₂·covariate</em>. The b₁ coefficient <em>is</em> the adjusted difference. ANOVA, ANCOVA, and regression aren't three tools — they're one linear model wearing three outfits. And when you have several outcome variables to adjust at once, the same idea scales up to <a href="../../stats-3/manova/">MANCOVA</a>.</p>
+        <p>Under the hood ANCOVA is just <a href="../../stats-3/multiple-regression/">multiple regression</a> with a <a href="../../stats-3/categorical-predictors-and-dummy-coding/">dummy-coded group</a> and a continuous covariate: <em>outcome = b₀ + b₁·group + b₂·covariate</em>. The b₁ coefficient <em>is</em> the adjusted difference. ANOVA, ANCOVA, and regression are one linear model wearing three outfits. And when you have several outcome variables to adjust at once, the same idea scales up to <a href="../../stats-3/manova/">MANCOVA</a>.</p>
 
         <div class="callout">
-          <p><strong>Why it matters:</strong> almost every serious group comparison in psychology, medicine, and education is covariate-adjusted — pre/post designs, clinical baselines, demographic controls. Knowing what the adjustment does (and what it can't do) is the difference between reading results and being fooled by them.</p>
+          <p><strong>Why it matters:</strong> almost every serious group comparison in psychology, medicine, and education is covariate-adjusted: pre/post designs, clinical baselines, demographic controls. Knowing what the adjustment does (and what it can't do) is the difference between reading results and being fooled by them.</p>
         </div>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->

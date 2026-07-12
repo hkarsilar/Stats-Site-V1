@@ -12,25 +12,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Missing Data &amp; Imputation — StatsCapybara</title>
-  <meta name="description" content="Data rarely go missing at random. Toggle MCAR, MAR, and MNAR mechanisms and watch complete-case analysis and mean imputation quietly distort your estimates." />
+  <meta name="description" content="Data rarely go missing at random. Toggle MCAR, MAR, and MNAR mechanisms, then check what complete-case analysis and mean imputation do to your estimates." />
   <link rel="canonical" href="https://statscapybara.com/stats-4/missing-data/" />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Missing Data &amp; Imputation — StatsCapybara" />
-  <meta property="og:description" content="Data rarely go missing at random. Toggle MCAR, MAR, and MNAR mechanisms and watch complete-case analysis and mean imputation quietly distort your estimates." />
+  <meta property="og:description" content="Data rarely go missing at random. Toggle MCAR, MAR, and MNAR mechanisms, then check what complete-case analysis and mean imputation do to your estimates." />
   <meta property="og:image" content="https://statscapybara.com/assets/og-stats-4.png" />
   <meta property="og:url" content="https://statscapybara.com/stats-4/missing-data/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Missing Data &amp; Imputation — StatsCapybara" />
-  <meta name="twitter:description" content="Toggle MCAR, MAR, and MNAR and watch complete-case analysis and mean imputation quietly distort your estimates." />
+  <meta name="twitter:description" content="Toggle MCAR, MAR, and MNAR, then check what complete-case analysis and mean imputation do to your estimates." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-4.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
-  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Missing Data & Imputation", "description": "Data rarely go missing at random. Toggle MCAR, MAR, and MNAR mechanisms and watch complete-case analysis and mean imputation quietly distort your estimates.", "url": "https://statscapybara.com/stats-4/missing-data/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 4: Modern & Advanced", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Missing Data & Imputation", "item": "https://statscapybara.com/stats-4/missing-data/"}]}]
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Missing Data & Imputation", "description": "Data rarely go missing at random. Toggle MCAR, MAR, and MNAR mechanisms, then check what complete-case analysis and mean imputation do to your estimates.", "url": "https://statscapybara.com/stats-4/missing-data/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 4: Modern & Advanced", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Missing Data & Imputation", "item": "https://statscapybara.com/stats-4/missing-data/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How much missing data is too much?", "acceptedAnswer": {"@type": "Answer", "text": "Wrong first question — the mechanism outranks the amount. 5% missing not-at-random (MNAR) can bias conclusions more than 30% missing at random handled with multiple imputation. That said, practical strain grows past ~10% (report sensitivity analyses) and results lean heavily on the imputation model past ~40%. Always report how much was missing, why you believe it went missing, and how you handled it."}}, {"@type": "Question", "name": "Is it ever okay to just delete incomplete cases?", "acceptedAnswer": {"@type": "Answer", "text": "Listwise deletion is defensible when data is plausibly MCAR and the loss is small (a few percent, ample n remaining) — you sacrifice a little precision, no bias. It quietly betrays you when missingness relates to other variables (MAR): the surviving cases are no longer representative. With MAR data, multiple imputation or maximum likelihood recovers both the bias and the lost power."}}, {"@type": "Question", "name": "How many imputations should I use in multiple imputation?", "acceptedAnswer": {"@type": "Answer", "text": "The old advice of m = 5 came from an era of expensive computing. The modern heuristic: at least as many imputations as the percentage of incomplete cases (30% incomplete → m ≥ 30); m = 20–50 covers most studies and stabilizes standard errors and p-values across reruns. Computation is cheap now — err high."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How much missing data is too much?", "acceptedAnswer": {"@type": "Answer", "text": "Wrong first question — the mechanism outranks the amount. 5% missing not-at-random (MNAR) can bias conclusions more than 30% missing at random handled with multiple imputation. That said, practical strain grows past ~10% (report sensitivity analyses) and results lean heavily on the imputation model past ~40%. Always report how much was missing, why you believe it went missing, and how you handled it."}}, {"@type": "Question", "name": "Is it ever okay to just delete incomplete cases?", "acceptedAnswer": {"@type": "Answer", "text": "Listwise deletion is defensible when data is plausibly MCAR and the loss is small (a few percent, ample n remaining) — you sacrifice a little precision, no bias. It betrays you without warning when missingness relates to other variables (MAR): the surviving cases are no longer representative. With MAR data, multiple imputation or maximum likelihood recovers both the bias and the lost power."}}, {"@type": "Question", "name": "How many imputations should I use in multiple imputation?", "acceptedAnswer": {"@type": "Answer", "text": "The old advice of m = 5 came from an era of expensive computing. The modern heuristic: at least as many imputations as the percentage of incomplete cases (30% incomplete → m ≥ 30); m = 20–50 covers most studies and stabilizes standard errors and p-values across reruns. Computation is cheap now — err high."}}]}
   </script>
 </head>
 <body data-course="stats-4" data-section="missing-data">
@@ -44,19 +44,19 @@
         <span class="lesson-eyebrow">Section 4.9</span>
         <h1>Missing Data &amp; Imputation</h1>
 
-        <p class="lede">Real datasets have holes: participants skip questions, sensors fail, people drop out. The reflex — analyze whoever's left, or plug gaps with the average — feels harmless. But whether it <em>is</em> harmless depends entirely on <strong>why</strong> the data are missing. Statisticians sort that "why" into three mechanisms, and the difference between them decides whether your results are fine, slightly noisy, or systematically wrong.</p>
+        <p class="lede">Real datasets have holes: participants skip questions, sensors fail, people drop out. The reflex (analyze whoever's left, or plug gaps with the average) feels harmless. But whether it <em>is</em> harmless depends entirely on <strong>why</strong> the data are missing. Statisticians sort that "why" into three mechanisms, and the difference between them decides whether your results are fine, slightly noisy, or systematically wrong.</p>
 
         <h2>Three ways data go missing</h2>
         <ul>
-          <li><strong>MCAR</strong> — <em>Missing Completely At Random.</em> The holes are pure chance, unrelated to anything (a dropped test tube). Analyses of the remaining data are unbiased; you just lose precision.</li>
-          <li><strong>MAR</strong> — <em>Missing At Random</em> (a terrible name). Missingness depends on <em>other observed variables</em>, not on the missing value itself — e.g. students with heavy course loads (observed) skip your exam more often. Complete-case analysis can be biased, but the observed data contain enough information to correct it.</li>
-          <li><strong>MNAR</strong> — <em>Missing Not At Random.</em> Missingness depends on the missing value itself — the students who'd have scored worst are precisely the ones who didn't show. This is the dangerous one: the observed data alone can't fully fix it.</li>
+          <li><strong>MCAR:</strong> <em>Missing Completely At Random.</em> The holes are pure chance, unrelated to anything (a dropped test tube). Analyses of the remaining data are unbiased; you just lose precision.</li>
+          <li><strong>MAR:</strong> <em>Missing At Random</em> (a terrible name). Missingness depends on <em>other observed variables</em>, not on the missing value itself: for example, students with heavy course loads (observed) skip your exam more often. Complete-case analysis can be biased, but the observed data contain enough information to correct it.</li>
+          <li><strong>MNAR:</strong> <em>Missing Not At Random.</em> Missingness depends on the missing value itself — the students who'd have scored worst are precisely the ones who didn't show. This is the dangerous one: the observed data alone can't fully fix it.</li>
         </ul>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="missviz">
           <p class="viz-title">🎮 The Missingness Machine</p>
-          <p class="viz-sub">200 students: study hours (X, always observed) vs exam score (Y, sometimes missing). Hollow orange points are the values you never saw. Switch mechanisms and watch the estimated mean (orange line) drift from the truth (teal dashed) — then turn on mean imputation and check what happens to the SD and the correlation.</p>
+          <p class="viz-sub">200 students: study hours (X, always observed) vs exam score (Y, sometimes missing). Hollow orange points are the values you never saw. Switch mechanisms and watch the estimated mean (orange line) drift from the truth (teal dashed). Then turn on mean imputation and check what happens to the SD and the correlation.</p>
 
           <div class="controls">
             <div class="control">
@@ -95,13 +95,13 @@
         <!-- ============ /INTERACTIVE ============ -->
 
         <h2>Why mean imputation is a trap</h2>
-        <p>Replacing every hole with the observed average looks tidy, but you've invented data with <em>zero variability</em> sitting exactly on the mean. The imputed sample's standard deviation shrinks, every correlation weakens (all those flat points pull r toward 0), and — worst of all — your software now believes it has a full n, so standard errors and p-values come out overconfident. The visualization makes this visible: flip to mean imputation and watch the SD and r readouts sag while the mean stays put.</p>
+        <p>Replacing every hole with the observed average looks tidy, but you've invented data with <em>zero variability</em> sitting exactly on the mean. The imputed sample's standard deviation shrinks, every correlation weakens (all those flat points pull r toward 0), and, worst of all, your software now believes it has a full n, so standard errors and p-values come out overconfident. The visualization makes this visible: flip to mean imputation and watch the SD and r readouts sag while the mean stays put.</p>
 
         <h2>What to do instead</h2>
-        <p>The modern default is <strong>multiple imputation</strong>: fill each hole several times with plausible values drawn from a model of the data (spread included!), analyze each completed dataset, and pool the results — so the extra uncertainty from the holes flows honestly into your standard errors. Maximum-likelihood approaches (like FIML, standard in <a href="../../stats-4/mixed-and-multilevel-models/">mixed models</a> software) get the same job done. Both are valid under MCAR and MAR; under MNAR nothing is automatic and sensitivity analysis becomes your friend.</p>
+        <p>The modern default is <strong>multiple imputation</strong>: fill each hole several times with plausible values drawn from a model of the data (spread included!), analyze each completed dataset, and pool the results, so the extra uncertainty from the holes flows honestly into your standard errors. Maximum-likelihood approaches (like FIML, standard in <a href="../../stats-4/mixed-and-multilevel-models/">mixed models</a> software) get the same job done. Both are valid under MCAR and MAR; under MNAR nothing is automatic and sensitivity analysis becomes your friend.</p>
 
         <div class="callout">
-          <p><strong>Why it matters:</strong> deleting incomplete cases or plugging in averages silently rewrites your data with the strongest assumption possible — that the holes were harmless. Name the mechanism first (MCAR, MAR, MNAR), then choose a method built for it. "It's just a few missing values" is how biased conclusions are born.</p>
+          <p><strong>Why it matters:</strong> deleting incomplete cases or plugging in averages silently rewrites your data with the strongest assumption possible: that the holes were harmless. Name the mechanism first (MCAR, MAR, MNAR), then choose a method built for it. "It's just a few missing values" is how biased conclusions are born.</p>
         </div>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
@@ -113,7 +113,7 @@
           </details>
           <details class="faq-item">
             <summary>Is it ever okay to just delete incomplete cases?</summary>
-            <div class="faq-a"><p>Listwise deletion is defensible when data is plausibly MCAR <em>and</em> the loss is small (a few percent, ample n remaining) — you sacrifice a little precision, no bias. It quietly betrays you when missingness relates to other variables (MAR): the surviving cases are no longer representative. With MAR data, multiple imputation or maximum likelihood recovers both the bias and the lost power.</p></div>
+            <div class="faq-a"><p>Listwise deletion is defensible when data is plausibly MCAR <em>and</em> the loss is small (a few percent, ample n remaining) — you sacrifice a little precision, no bias. It betrays you without warning when missingness relates to other variables (MAR): the surviving cases are no longer representative. With MAR data, multiple imputation or maximum likelihood recovers both the bias and the lost power.</p></div>
           </details>
           <details class="faq-item">
             <summary>How many imputations should I use in multiple imputation?</summary>

@@ -30,7 +30,7 @@
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Multiple Regression", "description": "Multiple regression isolates the effect of one predictor while holding others constant — sometimes reversing the naive conclusion entirely. See it happen.", "url": "https://statscapybara.com/stats-3/multiple-regression/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced Modeling", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Multiple Regression", "item": "https://statscapybara.com/stats-3/multiple-regression/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What does 'controlling for' a variable actually mean?", "acceptedAnswer": {"@type": "Answer", "text": "It means comparing like with like, statistically: the coefficient for x₁ describes how y differs between cases that differ in x₁ but are identical on every other predictor in the model. It's an adjustment computed from the data, not a real experiment — and it only works for confounders you actually measured and included."}}, {"@type": "Question", "name": "How many predictors can I put in a regression?", "acceptedAnswer": {"@type": "Answer", "text": "A classic rule of thumb: at least 10–15 observations per predictor, or the model starts fitting noise — with n = 50, stay around 3–5 predictors. It's a guideline rather than a law (what really matters is effect sizes and collinearity), but models that flout it produce coefficients and R² values that collapse on new data. Honest checks: adjusted R² and cross-validation."}}, {"@type": "Question", "name": "What is the difference between R² and adjusted R²?", "acceptedAnswer": {"@type": "Answer", "text": "Plain R² can only go up when you add a predictor — even a column of random numbers — so it silently rewards complexity. Adjusted R² subtracts a penalty for each predictor, so it rises only when a variable explains more than chance would. When comparing models with different numbers of predictors, adjusted R² is the fairer scoreboard."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What does 'controlling for' a variable actually mean?", "acceptedAnswer": {"@type": "Answer", "text": "It means comparing like with like, statistically: the coefficient for x₁ describes how y differs between cases that differ in x₁ but are identical on every other predictor in the model. It's an adjustment computed from the data, not a real experiment — and it only works for confounders you actually measured and included."}}, {"@type": "Question", "name": "How many predictors can I put in a regression?", "acceptedAnswer": {"@type": "Answer", "text": "A classic rule of thumb: at least 10–15 observations per predictor, or the model starts fitting noise — with n = 50, stay around 3–5 predictors. It's a guideline rather than a law (what really matters is effect sizes and collinearity), but models that flout it produce coefficients and R² values that collapse on new data. Honest checks: adjusted R² and cross-validation."}}, {"@type": "Question", "name": "What is the difference between R² and adjusted R²?", "acceptedAnswer": {"@type": "Answer", "text": "Plain R² can only go up when you add a predictor (even a column of random numbers), so it silently rewards complexity. Adjusted R² subtracts a penalty for each predictor, so it rises only when a variable explains more than chance would. When comparing models with different numbers of predictors, adjusted R² is the fairer scoreboard."}}]}
   </script>
 </head>
 <body data-course="stats-3" data-section="multiple-regression">
@@ -44,12 +44,12 @@
         <span class="lesson-eyebrow">Section 3.1</span>
         <h1>Multiple Regression</h1>
 
-        <p class="lede">Real outcomes have many causes at once. Income depends on education <em>and</em> experience <em>and</em> region; health depends on diet <em>and</em> exercise <em>and</em> age. <strong>Multiple regression</strong> extends the <a href="../../stats-2/simple-linear-regression/">simple line</a> to several predictors at once — and in doing so unlocks its single most important idea: <em>holding everything else constant</em>.</p>
+        <p class="lede">Income depends on education <em>and</em> experience <em>and</em> region; health depends on diet <em>and</em> exercise <em>and</em> age. <strong>Multiple regression</strong> extends the <a href="../../stats-2/simple-linear-regression/">simple line</a> to several predictors at once, and in doing so unlocks its single most important idea: <em>holding everything else constant</em>.</p>
 
         <h2>What a coefficient means now</h2>
         <p>The model is just a line with more terms:</p>
         <p style="text-align:center;font-size:1.1rem;margin:1.2rem 0"><strong>ŷ = b₀ + b₁x₁ + b₂x₂ + … + bₖxₖ</strong></p>
-        <p>The magic is in how you read each coefficient. <strong>b₁ is the effect of x₁ on y while holding every other predictor fixed.</strong> It's the "all else equal" effect — the bit of x₁'s influence that isn't already explained by the other variables. This is what lets regression <em>control for confounders</em>, and it can completely change the story.</p>
+        <p>The magic is in how you read each coefficient. <strong>b₁ is the effect of x₁ on y while holding every other predictor fixed.</strong> It's the "all else equal" effect: the bit of x₁'s influence that isn't already explained by the other variables. This is what lets regression <em>control for confounders</em>, and it can completely change the story.</p>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="mrviz">
@@ -82,7 +82,7 @@
 
         <h2>Reading the whole model</h2>
         <ul>
-          <li>Each <strong>coefficient</strong> is a partial effect — holding the other predictors constant.</li>
+          <li>Each <strong>coefficient</strong> is a partial effect, holding the other predictors constant.</li>
           <li><strong>R²</strong> now reports how much of the outcome's variation <em>all</em> the predictors explain together.</li>
           <li>Each coefficient gets its own <strong>p-value</strong>, testing whether that predictor adds anything beyond the others.</li>
         </ul>
@@ -90,7 +90,7 @@
         <!-- ============ INTERACTIVE 2 ============ -->
         <div class="viz" id="mrviz2">
           <p class="viz-title">🎮 More Predictors Always Look Better</p>
-          <p class="viz-sub">The first two predictors are real; the rest are pure noise. Add them and watch the scoreboard: plain <strong>R²</strong> only ever climbs, but <strong>adjusted R²</strong> rises only for genuine signal, then flattens out — the widening gap between the two curves is R² fooling you.</p>
+          <p class="viz-sub">The first two predictors are real; the rest are pure noise. Add them and watch the scoreboard: plain <strong>R²</strong> only ever climbs, but <strong>adjusted R²</strong> rises only for genuine signal, then flattens out. The widening gap between the two curves is R² fooling you.</p>
 
           <div class="controls">
             <div class="control" style="flex:1;min-width:280px">
@@ -110,13 +110,13 @@
         </div>
         <!-- ============ /INTERACTIVE 2 ============ -->
 
-        <p>Plain R² is a ratchet — it can only go up, because adding a column never hurts the best in-sample fit, even if that column is random noise. <strong>Adjusted R²</strong> charges a toll for every predictor, so it only rises when a variable earns its keep. That's why it's the fairer scoreboard for comparing models of different sizes — and why chasing a high R² by piling on predictors is a trap.</p>
+        <p>Plain R² is a ratchet: it can only go up, because adding a column never hurts the best in-sample fit, even if that column is random noise. <strong>Adjusted R²</strong> charges a toll for every predictor, so it only rises when a variable earns its keep. That's why it's the fairer scoreboard for comparing models of different sizes, and why chasing a high R² by piling on predictors is a trap.</p>
 
         <h2>A caution</h2>
-        <p>"Holding constant" is a <em>statistical</em> operation, not a real experiment. Regression can only adjust for variables you actually measured and put in the model — it can't control for confounders you forgot. And it never, by itself, proves causation. It's a powerful lens, not a magic wand.</p>
+        <p>"Holding constant" is a <em>statistical</em> operation, not a real experiment. Regression can only adjust for variables you actually measured and put in the model; it can't control for confounders you forgot. And it never, by itself, proves causation. It's a powerful lens, not a magic wand.</p>
 
         <div class="callout">
-          <p><strong>Why it matters:</strong> multiple regression is the workhorse of the social and health sciences, and the foundation for almost everything left in this course — <a href="../../stats-3/interactions-in-regression/">interactions</a>, <a href="../../stats-3/categorical-predictors-and-dummy-coding/">categorical predictors</a>, <a href="../../stats-3/logistic-regression/">logistic regression</a>, and more.</p>
+          <p><strong>Why it matters:</strong> multiple regression is the workhorse of the social and health sciences, and the foundation for almost everything left in this course: <a href="../../stats-3/interactions-in-regression/">interactions</a>, <a href="../../stats-3/categorical-predictors-and-dummy-coding/">categorical predictors</a>, <a href="../../stats-3/logistic-regression/">logistic regression</a>, and more.</p>
         </div>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
@@ -132,7 +132,7 @@
           </details>
           <details class="faq-item">
             <summary>What is the difference between R² and adjusted R²?</summary>
-            <div class="faq-a"><p>Plain R² can only go up when you add a predictor — even a column of random numbers — so it silently rewards complexity. Adjusted R² subtracts a penalty for each predictor, so it rises only when a variable explains more than chance would. When comparing models with different numbers of predictors, adjusted R² is the fairer scoreboard.</p></div>
+            <div class="faq-a"><p>Plain R² can only go up when you add a predictor (even a column of random numbers), so it silently rewards complexity. Adjusted R² subtracts a penalty for each predictor, so it rises only when a variable explains more than chance would. When comparing models with different numbers of predictors, adjusted R² is the fairer scoreboard.</p></div>
           </details>
         </section>
         <!-- faq:end -->

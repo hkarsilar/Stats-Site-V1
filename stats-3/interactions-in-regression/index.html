@@ -12,22 +12,22 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Interactions in Regression — StatsCapybara</title>
-  <meta name="description" content="An interaction term lets one predictor's slope depend on another. Slide the interaction and watch two regression lines go from parallel to fanning to crossing." />
+  <meta name="description" content="An interaction term lets one predictor's slope depend on another. Slide it to send two regression lines from parallel to fanning to crossing." />
   <link rel="canonical" href="https://statscapybara.com/stats-3/interactions-in-regression/" />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Interactions in Regression — StatsCapybara" />
-  <meta property="og:description" content="An interaction term lets one predictor's slope depend on another. Slide the interaction and watch two regression lines go from parallel to fanning to crossing." />
+  <meta property="og:description" content="An interaction term lets one predictor's slope depend on another. Slide it to send two regression lines from parallel to fanning to crossing." />
   <meta property="og:image" content="https://statscapybara.com/assets/og-stats-3.png" />
   <meta property="og:url" content="https://statscapybara.com/stats-3/interactions-in-regression/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Interactions in Regression — StatsCapybara" />
-  <meta name="twitter:description" content="An interaction term lets one predictor's slope depend on another. Slide the interaction and watch two regression lines go from parallel to fanning to crossing." />
+  <meta name="twitter:description" content="An interaction term lets one predictor's slope depend on another. Slide it to send two regression lines from parallel to fanning to crossing." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-3.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
-  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Interactions in Regression", "description": "An interaction term lets one predictor's slope depend on another. Slide the interaction and watch two regression lines go from parallel to fanning to crossing.", "url": "https://statscapybara.com/stats-3/interactions-in-regression/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced Modeling", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Interactions in Regression", "item": "https://statscapybara.com/stats-3/interactions-in-regression/"}]}]
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Interactions in Regression", "description": "An interaction term lets one predictor's slope depend on another. Slide it to send two regression lines from parallel to fanning to crossing.", "url": "https://statscapybara.com/stats-3/interactions-in-regression/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced Modeling", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Interactions in Regression", "item": "https://statscapybara.com/stats-3/interactions-in-regression/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
   {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why should I center variables before creating an interaction term?", "acceptedAnswer": {"@type": "Answer", "text": "Two reasons. Interpretability: with a product term in the model, b₁ is the effect of x₁ when the other variable equals zero — often a meaningless value (age 0, income 0); centering moves \"zero\" to the mean, so b₁ reads as the effect at a typical value. Stability: centering also reduces the artificial correlation between x and x×z, taming multicollinearity in the estimates."}}, {"@type": "Question", "name": "How do I interpret coefficients when there's an interaction term?", "acceptedAnswer": {"@type": "Answer", "text": "Carefully — the rules change. In ŷ = b₀ + b₁x + b₂z + b₃xz, the coefficient b₁ is the slope of x specifically when z = 0, not an overall effect; b₃ says how much that slope changes per unit of z. Nobody reads these raw numbers fluently: plot predicted lines at low/medium/high values of the moderator and interpret the picture."}}, {"@type": "Question", "name": "What are simple slopes?", "acceptedAnswer": {"@type": "Answer", "text": "The effect of x computed at chosen values of the moderator — conventionally at its mean and ±1 SD. They turn an abstract product coefficient into direct statements: \"among low-experience users the feature gains 4 points; among high-experience users, 0.5.\" Simple-slope tests then tell you at which moderator values the effect is significantly different from zero."}}]}
@@ -44,12 +44,12 @@
         <span class="lesson-eyebrow">Section 3.5</span>
         <h1>Interactions in Regression</h1>
 
-        <p class="lede">Sometimes the effect of one predictor <em>depends on</em> another. A training program might help beginners a lot and experts barely at all; a drug's benefit might grow with the dose only for younger patients. The <a href="../../stats-2/factorial-anova-two-way/">factorial-ANOVA interaction</a> idea lives in regression too — through an <strong>interaction term</strong>.</p>
+        <p class="lede">Sometimes the effect of one predictor <em>depends on</em> another. A training program might help beginners a lot and experts barely at all; a drug's benefit might grow with the dose only for younger patients. The <a href="../../stats-2/factorial-anova-two-way/">factorial-ANOVA interaction</a> idea lives in regression too, through an <strong>interaction term</strong>.</p>
 
         <h2>Adding a product term</h2>
         <p>A model with two predictors and their interaction looks like this:</p>
         <p style="text-align:center;font-size:1.1rem;margin:1.2rem 0"><strong>ŷ = b₀ + b₁·x + b₂·group + b₃·(x × group)</strong></p>
-        <p>That last term — the <em>product</em> of the two predictors — is the whole trick. Its coefficient <strong>b₃ measures how much the slope of x changes between groups</strong>. If b₃ = 0, both groups share one slope (the lines are parallel — just a level difference). If b₃ ≠ 0, the groups have <em>different slopes</em>: x matters more for one than the other.</p>
+        <p>That last term (the <em>product</em> of the two predictors) is the whole trick. Its coefficient <strong>b₃ measures how much the slope of x changes between groups</strong>. If b₃ = 0, both groups share one slope (the lines are parallel, just a level difference). If b₃ ≠ 0, the groups have <em>different slopes</em>: x matters more for one than the other.</p>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="ixviz">
@@ -76,13 +76,13 @@
         <!-- ============ /INTERACTIVE ============ -->
 
         <h2>Why the main effects get tricky</h2>
-        <p>When an interaction is present, the "main effect" of x is no longer a single number — it's different in each group, so quoting one average slope can be misleading. With a product term in the model, <strong>b₁ becomes the slope of x specifically when group = 0</strong> (the reference), not an overall effect. This is the #1 source of confusion in interpreting interaction models.</p>
+        <p>When an interaction is present, the "main effect" of x is no longer a single number: it's different in each group, so quoting one average slope can be misleading. With a product term in the model, <strong>b₁ becomes the slope of x specifically when group = 0</strong> (the reference), not an overall effect. This is the #1 source of confusion in interpreting interaction models.</p>
         <div class="callout key">
           <p><strong>Center your predictors.</strong> Interpreting interactions is far easier when continuous predictors are mean-centered first. Then b₁ and b₂ read as effects "at the average" of the other variable, instead of at the often-meaningless value of zero. It also reduces <a href="../../stats-3/multicollinearity-and-variable-selection/">multicollinearity</a> between the predictors and their product.</p>
         </div>
 
         <h2>Continuous × continuous interactions</h2>
-        <p>Interactions aren't just for groups. Two continuous predictors can interact too — the effect of advertising spend on sales might depend on the season. These are harder to picture (the "lines" become a tilted surface), so we usually probe them with <strong>simple slopes</strong>: plot the effect of x at a few representative values of the moderator (say, low / medium / high), exactly as we did with two groups here.</p>
+        <p>Interactions aren't just for groups. Two continuous predictors can interact too: the effect of advertising spend on sales might depend on the season. These are harder to picture (the "lines" become a tilted surface), so we usually probe them with <strong>simple slopes</strong>: plot the effect of x at a few representative values of the moderator (say, low / medium / high), exactly as we did with two groups here.</p>
 
         <div class="callout">
           <p><strong>Why it matters:</strong> "it depends" is one of the most honest and useful things data can tell you, and interactions are how you say it rigorously. They're essential whenever an effect isn't one-size-fits-all — which is most of the time.</p>

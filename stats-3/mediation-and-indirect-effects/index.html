@@ -12,25 +12,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mediation & Indirect Effects — StatsCapybara</title>
-  <meta name="description" content="Mediation explains HOW one thing affects another, through a mechanism in between. Adjust the path coefficients and watch the indirect effect flow through it." />
+  <meta name="description" content="Mediation explains HOW one thing affects another, through a mechanism in between. Adjust the three paths and the indirect effect updates live." />
   <link rel="canonical" href="https://statscapybara.com/stats-3/mediation-and-indirect-effects/" />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Mediation &amp; Indirect Effects — StatsCapybara" />
-  <meta property="og:description" content="Mediation explains HOW one thing affects another, through a mechanism in between. Adjust the path coefficients and watch the indirect effect flow through it." />
+  <meta property="og:description" content="Mediation explains HOW one thing affects another, through a mechanism in between. Adjust the three paths and the indirect effect updates live." />
   <meta property="og:image" content="https://statscapybara.com/assets/og-stats-3.png" />
   <meta property="og:url" content="https://statscapybara.com/stats-3/mediation-and-indirect-effects/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Mediation &amp; Indirect Effects — StatsCapybara" />
-  <meta name="twitter:description" content="Mediation explains HOW one thing affects another, through a mechanism in between. Adjust the path coefficients and watch the indirect effect flow through it." />
+  <meta name="twitter:description" content="Mediation explains HOW one thing affects another, through a mechanism in between. Adjust the three paths and the indirect effect updates live." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-3.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
-  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Mediation & Indirect Effects", "description": "Mediation explains HOW one thing affects another, through a mechanism in between. Adjust the path coefficients and watch the indirect effect flow through it.", "url": "https://statscapybara.com/stats-3/mediation-and-indirect-effects/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced Modeling", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Mediation & Indirect Effects", "item": "https://statscapybara.com/stats-3/mediation-and-indirect-effects/"}]}]
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Mediation & Indirect Effects", "description": "Mediation explains HOW one thing affects another, through a mechanism in between. Adjust the three paths and the indirect effect updates live.", "url": "https://statscapybara.com/stats-3/mediation-and-indirect-effects/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced Modeling", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Mediation & Indirect Effects", "item": "https://statscapybara.com/stats-3/mediation-and-indirect-effects/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the difference between a mediator and a moderator?", "acceptedAnswer": {"@type": "Answer", "text": "A mediator is a mechanism: X causes M, which causes Y — stress harms sleep, which harms health (an arrow chain, tested with indirect effects). A moderator changes the strength of an effect: the training works for novices but not experts (an \"it depends,\" tested with interaction terms). Mediation answers \"how does it work?\"; moderation answers \"for whom / when?\""}}, {"@type": "Question", "name": "Why is bootstrapping used to test mediation?", "acceptedAnswer": {"@type": "Answer", "text": "The indirect effect is a product, a × b, and products of normal-ish estimates are themselves skewed — the old Sobel test pretends otherwise and loses power. Bootstrapping resamples the data thousands of times, computes a×b in each, and reads the confidence interval straight off that skewed distribution. If the interval excludes zero, the indirect effect is supported."}}, {"@type": "Question", "name": "Can mediation analysis prove causation?", "acceptedAnswer": {"@type": "Answer", "text": "No — it quantifies a pattern consistent with your proposed causal chain, but the statistics can't verify the arrows' directions; reversed or confounded models often fit equally well. The causal weight rests on design (temporal ordering, experiments, longitudinal data) and theory. Cross-sectional mediation, where X, M, and Y are measured simultaneously, deserves particular skepticism."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the difference between a mediator and a moderator?", "acceptedAnswer": {"@type": "Answer", "text": "A mediator is a mechanism: X causes M, which causes Y — stress harms sleep, which harms health (an arrow chain, tested with indirect effects). A moderator changes the strength of an effect: the training works for novices but not experts (an \"it depends,\" tested with interaction terms). Mediation answers \"how does it work?\"; moderation answers \"for whom / when?\""}}, {"@type": "Question", "name": "Why is bootstrapping used to test mediation?", "acceptedAnswer": {"@type": "Answer", "text": "The indirect effect is a product, a × b, and products of normal-ish estimates are themselves skewed — the old Sobel test pretends otherwise and loses power. Bootstrapping resamples the data thousands of times, computes a×b in each, and reads the confidence interval straight off that skewed distribution. If the interval excludes zero, the indirect effect is supported."}}, {"@type": "Question", "name": "Can mediation analysis prove causation?", "acceptedAnswer": {"@type": "Answer", "text": "It quantifies a pattern consistent with your proposed causal chain, nothing stronger: the statistics can't verify the arrows' directions, and reversed or confounded models often fit equally well. The causal weight rests on design (temporal ordering, experiments, longitudinal data) and theory. Cross-sectional mediation, where X, M, and Y are measured simultaneously, deserves particular skepticism."}}]}
   </script>
 </head>
 <body data-course="stats-3" data-section="mediation-and-indirect-effects">
@@ -44,7 +44,7 @@
         <span class="lesson-eyebrow">Section 3.6</span>
         <h1>Mediation &amp; Indirect Effects</h1>
 
-        <p class="lede"><a href="../../stats-2/simple-linear-regression/">Regression</a> tells you <em>that</em> X affects Y. <strong>Mediation</strong> asks the deeper question: <em>how</em>? It proposes a mechanism — a <strong>mediator</strong> M that sits in the causal chain between them. Stress (X) worsens health (Y)… but <em>through</em> poor sleep (M). Mediation analysis is how you test that story with numbers.</p>
+        <p class="lede"><a href="../../stats-2/simple-linear-regression/">Regression</a> tells you <em>that</em> X affects Y. <strong>Mediation</strong> asks the deeper question: <em>how</em>? It proposes a mechanism: a <strong>mediator</strong> M that sits in the causal chain between them. Stress (X) worsens health (Y)… but <em>through</em> poor sleep (M). Mediation analysis is how you test that story with numbers.</p>
 
         <h2>Three paths, one diagram</h2>
         <p>Mediation breaks the X → Y relationship into a chain of regression paths:</p>
@@ -53,7 +53,7 @@
           <li><strong>Path b</strong>: the effect of M on Y, controlling for X.</li>
           <li><strong>Path c′</strong> (the <em>direct</em> effect): whatever effect of X on Y remains after accounting for M.</li>
         </ul>
-        <p>The <strong>indirect effect</strong> — the part of X's influence that travels through M — is simply <strong>a × b</strong>. And the total effect of X on Y is the indirect plus the direct: <strong>a×b + c′</strong>.</p>
+        <p>The <strong>indirect effect</strong>, the part of X's influence that travels through M, is simply <strong>a × b</strong>. And the total effect of X on Y is the indirect plus the direct: <strong>a×b + c′</strong>.</p>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="medviz">
@@ -79,17 +79,17 @@
 
         <h2>Full vs. partial mediation</h2>
         <ul>
-          <li><strong>Full mediation</strong> — the direct path c′ is essentially zero. X affects Y <em>only</em> through M; the mechanism explains the whole story.</li>
-          <li><strong>Partial mediation</strong> — c′ is still meaningful. M carries some of the effect, but X also reaches Y by other routes.</li>
+          <li><strong>Full mediation:</strong> the direct path c′ is essentially zero. X affects Y <em>only</em> through M; the mechanism explains the whole story.</li>
+          <li><strong>Partial mediation:</strong> c′ is still meaningful. M carries some of the effect, but X also reaches Y by other routes.</li>
         </ul>
-        <p>The interesting quantity is usually the <strong>proportion mediated</strong> — the indirect effect as a share of the total. A large share means you've found a real mechanism, not just a correlation.</p>
+        <p>The interesting quantity is usually the <strong>proportion mediated</strong>, the indirect effect as a share of the total. A large share means you've found a real mechanism, not just a correlation.</p>
 
         <div class="callout key">
-          <p><strong>Test the indirect effect directly.</strong> The modern approach doesn't just check whether each path is "significant" — it puts a confidence interval on the <em>product</em> a×b, usually with <strong>bootstrapping</strong> (resampling the data thousands of times). The old Sobel test assumes a×b is normally distributed, which it often isn't, so bootstrapped intervals are preferred.</p>
+          <p><strong>Test the indirect effect directly.</strong> Rather than checking each path for "significance" on its own, the modern approach puts a confidence interval on the <em>product</em> a×b, usually with <strong>bootstrapping</strong> (resampling the data thousands of times). The old Sobel test assumes a×b is normally distributed, which it often isn't, so bootstrapped intervals are preferred.</p>
         </div>
 
         <h2>A serious caution</h2>
-        <p>Mediation makes a strong <strong>causal</strong> claim — that X causes M causes Y, in that order. The statistics can't verify the ordering; they only quantify a pattern that's <em>consistent</em> with your proposed mechanism. Reverse the arrows and the math often still "works." So mediation is only as trustworthy as the theory and study design behind it. Cross-sectional mediation, in particular, is easy to over-interpret.</p>
+        <p>Mediation makes a strong <strong>causal</strong> claim: that X causes M causes Y, in that order. The statistics can't verify the ordering; they only quantify a pattern that's <em>consistent</em> with your proposed mechanism. Reverse the arrows and the math often still "works." So mediation is only as trustworthy as the theory and study design behind it. Cross-sectional mediation, in particular, is easy to over-interpret.</p>
 
         <div class="callout">
           <p><strong>Why it matters:</strong> "why" and "how" questions are the heart of science. Mediation is the main statistical tool for testing mechanisms — turning "X is associated with Y" into "X works <em>by way of</em> M."</p>
@@ -108,7 +108,7 @@
           </details>
           <details class="faq-item">
             <summary>Can mediation analysis prove causation?</summary>
-            <div class="faq-a"><p>No — it quantifies a pattern <em>consistent with</em> your proposed causal chain, but the statistics can't verify the arrows' directions; reversed or confounded models often fit equally well. The causal weight rests on design (temporal ordering, experiments, longitudinal data) and theory. Cross-sectional mediation, where X, M, and Y are measured simultaneously, deserves particular skepticism.</p></div>
+            <div class="faq-a"><p>It quantifies a pattern <em>consistent with</em> your proposed causal chain, nothing stronger: the statistics can't verify the arrows' directions, and reversed or confounded models often fit equally well. The causal weight rests on design (temporal ordering, experiments, longitudinal data) and theory. Cross-sectional mediation, where X, M, and Y are measured simultaneously, deserves particular skepticism.</p></div>
           </details>
         </section>
         <!-- faq:end -->

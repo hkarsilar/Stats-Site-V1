@@ -232,7 +232,7 @@ FAQS_34 = {
  ("How many predictors can I put in a regression?",
   "A classic rule of thumb: at least 10–15 observations per predictor, or the model starts fitting noise — with n = 50, stay around 3–5 predictors. It's a guideline rather than a law (what really matters is effect sizes and collinearity), but models that flout it produce coefficients and R² values that collapse on new data. Honest checks: adjusted R² and <a href=\"../../stats-4/cross-validation-and-overfitting/\">cross-validation</a>."),
  ("What is the difference between R² and adjusted R²?",
-  "Plain R² can only go up when you add a predictor — even a column of random numbers — so it silently rewards complexity. Adjusted R² subtracts a penalty for each predictor, so it rises only when a variable explains more than chance would. When comparing models with different numbers of predictors, adjusted R² is the fairer scoreboard."),
+  "Plain R² can only go up when you add a predictor (even a column of random numbers), so it silently rewards complexity. Adjusted R² subtracts a penalty for each predictor, so it rises only when a variable explains more than chance would. When comparing models with different numbers of predictors, adjusted R² is the fairer scoreboard."),
 ],
 
 "multicollinearity-and-variable-selection": [
@@ -250,7 +250,7 @@ FAQS_34 = {
  ("How do I choose the reference category?",
   "Statistically it doesn't matter — predictions and the overall fit are identical either way; only the comparisons the coefficients report change. Practically, pick the level that makes those comparisons meaningful: the control condition, the placebo, the standard treatment, or the largest group. Avoid tiny reference groups, whose noisy mean muddies every contrast against it."),
  ("Is ANOVA just a special case of regression?",
-  "Yes — run a regression with one dummy-coded categorical predictor and you get literally the same F, p, and group means as the one-way ANOVA; two groups reduces further to the t-test. ANOVA, t-tests, ANCOVA, and regression are one linear model in different notation, which is why learning regression unlocks all of them at once."),
+  "Run a regression with one dummy-coded categorical predictor and you get literally the same F, p, and group means as the one-way ANOVA; two groups reduces further to the t-test. ANOVA, t-tests, ANCOVA, and regression are one linear model in different notation, which is why learning regression unlocks all of them at once."),
 ],
 
 "ancova": [
@@ -277,7 +277,7 @@ FAQS_34 = {
  ("Why is bootstrapping used to test mediation?",
   "The indirect effect is a product, a × b, and products of normal-ish estimates are themselves skewed — the old Sobel test pretends otherwise and loses power. <a href=\"../../stats-4/bootstrap-and-resampling/\">Bootstrapping</a> resamples the data thousands of times, computes a×b in each, and reads the confidence interval straight off that skewed distribution. If the interval excludes zero, the indirect effect is supported."),
  ("Can mediation analysis prove causation?",
-  "No — it quantifies a pattern <em>consistent with</em> your proposed causal chain, but the statistics can't verify the arrows' directions; reversed or confounded models often fit equally well. The causal weight rests on design (temporal ordering, experiments, longitudinal data) and theory. Cross-sectional mediation, where X, M, and Y are measured simultaneously, deserves particular skepticism."),
+  "It quantifies a pattern <em>consistent with</em> your proposed causal chain, nothing stronger: the statistics can't verify the arrows' directions, and reversed or confounded models often fit equally well. The causal weight rests on design (temporal ordering, experiments, longitudinal data) and theory. Cross-sectional mediation, where X, M, and Y are measured simultaneously, deserves particular skepticism."),
 ],
 
 "logistic-regression": [
@@ -291,7 +291,7 @@ FAQS_34 = {
 
 "assumptions-of-regression": [
  ("Do my predictors need to be normally distributed?",
-  "No — this is one of the most persistent regression myths. The normality assumption concerns the <em>residuals</em>, not the predictors or even the raw outcome. Skewed predictors, binary dummies, lumpy x-distributions: all perfectly fine. Fit the model, then check a Q-Q plot of the residuals — that's the only normality that matters, and mostly for small samples at that."),
+  "This is one of the most persistent regression myths: the normality assumption concerns the <em>residuals</em>, not the predictors or even the raw outcome. Skewed predictors, binary dummies, lumpy x-distributions: all perfectly fine. Fit the model, then check a Q-Q plot of the residuals. That's the only normality that matters, and mostly for small samples at that."),
  ("What is leverage in regression?",
   "A point's potential to move the line, determined purely by how unusual its predictor values are — far from the center of the x's means high leverage, like sitting at the end of a seesaw. Leverage alone isn't a problem: a high-leverage point right on the trend just stabilizes the fit. Danger requires leverage <em>plus</em> a large residual — that combination is influence."),
  ("What is a high Cook's distance, and what do I do about it?",
@@ -311,16 +311,16 @@ FAQS_34 = {
  ("How many factors or components should I keep?",
   "Triangulate: the scree plot's elbow (keep components before the curve flattens), parallel analysis (keep factors whose eigenvalues beat those from random data — the most defensible modern criterion), and interpretability (can you name each factor?). The old Kaiser rule (eigenvalue > 1) is simple but notoriously over-extracts. When criteria disagree, favor the solution that makes theoretical sense."),
  ("Should I use PCA or factor analysis?",
-  "Ask what you're claiming. PCA is compression: repackage correlated variables into fewer composite scores, no theory attached — right for reducing dimensions before another analysis. Factor analysis is a measurement model: it says latent traits (extraversion, anxiety) <em>cause</em> the observed responses, and separates shared from unique variance — right for scale development and psychometrics. Similar arithmetic, different stories."),
+  "Ask what you're claiming. PCA is compression: repackage correlated variables into fewer composite scores, no theory attached, right for reducing dimensions before another analysis. Factor analysis is a measurement model: it says latent traits (extraversion, anxiety) <em>cause</em> the observed responses, and separates shared from unique variance, right for scale development and psychometrics. Similar arithmetic, different stories."),
  ("What is a factor loading, and what value is good?",
   "The correlation-like weight tying an observed variable to a factor — how much that item \"belongs.\" Conventional floors: |loading| ≥ .40 for a variable to count toward a factor (≥ .70 is excellent), while items loading ≥ .30–.40 on <em>multiple</em> factors (cross-loadings) make interpretation murky and are often revised or dropped in scale development."),
 ],
 
 "manova": [
  ("When should I use MANOVA instead of separate ANOVAs?",
-  "When your outcomes form a conceptually related set (anxiety + depression + stress) and you want one honest verdict about the <em>profile</em>. MANOVA controls the family-wise error a pile of ANOVAs would inflate, and — its underrated superpower — it can detect coordinated patterns (small opposite shifts in correlated outcomes) that every univariate test misses. Unrelated outcomes, though, just dilute each other; don't stuff the model."),
+  "When your outcomes form a conceptually related set (anxiety + depression + stress) and you want one honest verdict about the <em>profile</em>. MANOVA controls the family-wise error a pile of ANOVAs would inflate, and it can detect coordinated patterns (small opposite shifts in correlated outcomes) that every univariate test misses. Unrelated outcomes, though, just dilute each other; don't stuff the model."),
  ("Should I report Wilks' lambda or Pillai's trace?",
-  "Wilks' Λ is the traditional default and what most textbooks tabulate. Pillai's trace is the most robust when assumptions wobble — unequal covariance matrices, unequal group sizes — so many methodologists recommend it outright. With two groups they (and Hotelling's T²) agree exactly; when they disagree materially with 3+ groups, that itself hints at assumption trouble, and Pillai is the safer citation."),
+  "Wilks' Λ is the traditional default and what most textbooks tabulate. Pillai's trace is the most robust when assumptions wobble (unequal covariance matrices, unequal group sizes), so many methodologists recommend it outright. With two groups they (and Hotelling's T²) agree exactly; when they disagree materially with 3+ groups, that itself hints at assumption trouble, and Pillai is the safer citation."),
  ("What should I do after a significant MANOVA?",
   "Localize the effect. The standard route: univariate ANOVAs on each outcome with a multiplicity correction, to see which variables carry the difference. The more multivariate route: descriptive discriminant analysis, which reveals <em>what combination</em> of outcomes best separates the groups — often the more faithful summary, since a combination is what MANOVA actually tested."),
 ],
@@ -338,11 +338,11 @@ FAQS_34 = {
 
 "bootstrap-and-resampling": [
  ("How many bootstrap resamples do I need?",
-  "For standard errors, ~1,000 is plenty; for confidence intervals — which depend on the distribution's tails — 5,000–10,000 is the modern norm, and since computation is cheap there's no reason to skimp. Note what B does and doesn't fix: more resamples reduce simulation noise, but the information ceiling is set by your original n. B = 100,000 can't rescue a sample of 12."),
+  "For standard errors, ~1,000 is plenty; for confidence intervals (which depend on the distribution's tails), 5,000–10,000 is the modern norm, and since computation is cheap there's no reason to skimp. Note what B does and doesn't fix: more resamples reduce simulation noise, but the information ceiling is set by your original n. B = 100,000 can't rescue a sample of 12."),
  ("When does the bootstrap fail?",
-  "Its known weak spots: very small samples (resampling 8 values just reshuffles 8 values), statistics driven by extremes (the maximum, extreme quantiles — the resamples can never exceed your observed max), and dependent data (time series, clustered observations) unless you use block or cluster variants. And no amount of resampling fixes a biased sample — the bootstrap replicates your data's flaws faithfully."),
+  "Its known weak spots: very small samples (resampling 8 values just reshuffles 8 values), statistics driven by extremes (the maximum, extreme quantiles; the resamples can never exceed your observed max), and dependent data (time series, clustered observations) unless you use block or cluster variants. And no amount of resampling fixes a biased sample: the bootstrap replicates your data's flaws faithfully."),
  ("What is the difference between bootstrapping and permutation tests?",
-  "Different questions. The bootstrap resamples <em>with replacement</em> to estimate uncertainty — standard errors and confidence intervals for an estimate. A permutation test <em>reshuffles group labels</em> to build the null distribution — \"what differences would chance produce if the labels meant nothing?\" — yielding an exact p-value. Estimation → bootstrap; hypothesis testing → permutation."),
+  "Different questions. The bootstrap resamples <em>with replacement</em> to estimate uncertainty: standard errors and confidence intervals for an estimate. A permutation test <em>reshuffles group labels</em> to build the null distribution — \"what differences would chance produce if the labels meant nothing?\" — yielding an exact p-value. Estimation → bootstrap; hypothesis testing → permutation."),
 ],
 
 "bayesian-thinking": [
@@ -358,9 +358,9 @@ FAQS_34 = {
  ("What is the difference between a credible interval and a confidence interval?",
   "A 95% credible interval means what everyone wants: \"given the data (and prior), the parameter is 95% likely to be in here.\" A 95% <a href=\"../../stats-1/confidence-intervals/\">confidence interval</a> promises only that the <em>procedure</em> captures the truth 95% of the time across repeated studies. With flat priors and decent data they're often numerically similar — but only the credible interval licenses the direct probability sentence."),
  ("What is a MAP estimate?",
-  "The <em>maximum a posteriori</em> estimate — the single parameter value at the posterior's peak, its most probable point. It's one of three standard point summaries: mean (the balance point, most common), median (robust for skewed posteriors), and mode/MAP. With a flat prior, the MAP coincides exactly with the frequentist maximum-likelihood estimate — a tidy bridge between the two worlds."),
+  "The <em>maximum a posteriori</em> estimate: the single parameter value at the posterior's peak, its most probable point. It's one of three standard point summaries: mean (the balance point, most common), median (robust for skewed posteriors), and mode/MAP. With a flat prior, the MAP coincides exactly with the frequentist maximum-likelihood estimate, a tidy bridge between the two worlds."),
  ("Do Bayesian and frequentist results ever agree?",
-  "Constantly — with flat/weak priors and reasonable sample sizes, credible and confidence intervals often match to two decimals, since the likelihood dominates both. They part ways when priors carry real information, when data is thin, and in interpretation always. The practical upshot: the frameworks usually corroborate each other, and genuine disagreement is itself diagnostic — it means your prior is doing heavy lifting."),
+  "Constantly: with flat/weak priors and reasonable sample sizes, credible and confidence intervals often match to two decimals, since the likelihood dominates both. They part ways when priors carry real information, when data is thin, and in interpretation always. The practical upshot: the frameworks usually corroborate each other, and genuine disagreement is itself diagnostic — it means your prior is doing heavy lifting."),
 ],
 
 "generalized-linear-models": [
@@ -369,12 +369,12 @@ FAQS_34 = {
  ("What is overdispersion and how do I handle it?",
   "Poisson regression hard-codes variance = mean, and real counts are almost always messier — more zeros, longer tails (event counts cluster within people, days, sites). The symptoms: deviance far exceeding its degrees of freedom, deceptively tiny standard errors. Standard fixes: a quasi-Poisson model (scales the errors) or, more commonly, a <strong>negative binomial</strong> model with its own dispersion parameter."),
  ("Which GLM family should I use for my outcome?",
-  "Read it off the outcome type: continuous and roughly symmetric → Gaussian (ordinary regression); yes/no → binomial with logit link (logistic); counts of events → Poisson with log link (negative binomial if overdispersed); strictly positive skewed amounts (costs, durations) → Gamma, usually with a log link. The workflow — predictors, interactions, diagnostics — stays identical across all of them."),
+  "Read it off the outcome type: continuous and roughly symmetric → Gaussian (ordinary regression); yes/no → binomial with logit link (logistic); counts of events → Poisson with log link (negative binomial if overdispersed); strictly positive skewed amounts (costs, durations) → Gamma, usually with a log link. The workflow (predictors, interactions, diagnostics) stays identical across all of them."),
 ],
 
 "mixed-and-multilevel-models": [
  ("What is the difference between fixed and random effects?",
-  "Fixed effects are coefficients estimated for effects you care about specifically and would keep in a replication (treatment, age, condition). Random effects model <em>sampled clusters</em> — these particular schools, participants, litters — as draws from a population, estimating how much clusters vary rather than each one in isolation. Litmus test: would new data bring the <em>same levels</em> (fixed) or new ones (random)?"),
+  "Fixed effects are coefficients estimated for effects you care about specifically and would keep in a replication (treatment, age, condition). Random effects model <em>sampled clusters</em> (these particular schools, participants, litters) as draws from a population, estimating how much clusters vary rather than each one in isolation. Litmus test: would new data bring the <em>same levels</em> (fixed) or new ones (random)?"),
  ("When do I need a multilevel model instead of ordinary regression?",
   "Whenever observations come in clusters that share something — students within classrooms, repeated measures within people, patients within clinics. Ordinary regression assumes independence; clustered data violates it, shrinking standard errors and manufacturing false positives. Check the intraclass correlation (ICC): even a modest ICC of .10 badly distorts naive p-values once clusters are large."),
  ("How many groups do I need to fit random effects?",
@@ -385,7 +385,7 @@ FAQS_34 = {
  ("What value of k should I use for k-fold cross-validation?",
   "k = 5 or k = 10 is the standard, well-studied compromise: each fold's training set is nearly the full data (low bias), without the variance and cost of leave-one-out (k = n). Small datasets lean toward k = 10 or repeated CV (multiple random fold splits, averaged) to stabilize the estimate. There's rarely a reason to deviate."),
  ("What is the difference between a validation set and a test set?",
-  "The validation set is used <em>during</em> modeling — comparing candidate models, tuning complexity — so decisions get optimized against it, and its error estimate becomes optimistic. The test set is opened exactly once, after all decisions are final, to report honest performance. Cross-validation typically replaces the validation set; the untouched final test set remains best practice."),
+  "The validation set is used <em>during</em> modeling (comparing candidate models, tuning complexity), so decisions get optimized against it, and its error estimate becomes optimistic. The test set is opened exactly once, after all decisions are final, to report honest performance. Cross-validation typically replaces the validation set; the untouched final test set remains best practice."),
  ("Does cross-validation prevent overfitting?",
   "It <em>detects</em> overfitting — it can't stop you from responding badly to what it shows. Two classic ways to overfit anyway: hammering CV repeatedly while hand-tweaking until the score looks good (you've now overfit to the folds), and data leakage — preprocessing (scaling, feature selection) computed on all data before splitting. Leakage-proof rule: every step that learns from data must live inside the CV loop."),
 ],
@@ -394,14 +394,14 @@ FAQS_34 = {
  ("What is a collider in simple terms?",
   "A variable caused by two others: X → C ← Y. Left alone, it transmits nothing. But select or adjust on it and you <em>create</em> a spurious X–Y association. The classic intuition: among hospitalized patients (being hospitalized = the collider), two diseases look negatively correlated even if independent in the population — because having either one is enough to get you admitted."),
  ("Should I control for every variable I measured?",
-  "Emphatically no — \"kitchen-sink regression\" is a recipe for bias, not rigor. Adjusting for confounders (common causes) removes bias; adjusting for colliders (common effects) creates it; adjusting for mediators erases the very effect you're estimating. Since the data alone can't tell these apart, the covariate list must come from a causal diagram of how the data was generated — that's the DAG's whole job."),
+  "Emphatically no: \"kitchen-sink regression\" is a recipe for bias, not rigor. Adjusting for confounders (common causes) removes bias; adjusting for colliders (common effects) creates it; adjusting for mediators erases the very effect you're estimating. Since the data alone can't tell these apart, the covariate list must come from a causal diagram of how the data was generated. That's the DAG's whole job."),
  ("What is a backdoor path?",
-  "Any route from X to Y that starts with an arrow <em>into</em> X — like X ← Z → Y through a confounder Z. Backdoor paths leak non-causal association into the X–Y relationship. Pearl's backdoor criterion is the recipe: find an adjustment set that blocks every backdoor path while leaving directed (causal) paths alone — then, if your DAG is right, the adjusted estimate is the causal effect."),
+  "Any route from X to Y that starts with an arrow <em>into</em> X, like X ← Z → Y through a confounder Z. Backdoor paths leak non-causal association into the X–Y relationship. Pearl's backdoor criterion is the recipe: find an adjustment set that blocks every backdoor path while leaving directed (causal) paths alone — then, if your DAG is right, the adjusted estimate is the causal effect."),
 ],
 
 "survival-analysis": [
  ("What is censoring in survival analysis?",
-  "A censored observation is an unfinished clock: the event hadn't happened when you stopped observing (study ended, participant moved away) — so you know survival exceeded some time, but not by how much. It's information, not garbage: censored subjects rightly count in the at-risk pool while observed. Standard methods assume censoring is uninformative — dropping out mustn't be related to imminent risk."),
+  "A censored observation is an unfinished clock: the event hadn't happened when you stopped observing (study ended, participant moved away), so you know survival exceeded some time, but not by how much. It's information, not garbage: censored subjects rightly count in the at-risk pool while observed. Standard methods assume censoring is uninformative; dropping out mustn't be related to imminent risk."),
  ("What does a hazard ratio mean?",
   "The instantaneous event-rate multiplier between groups: HR = 2 means at any moment, the exposed group's event rate is double the reference group's. It is <em>not</em> \"twice as likely to die overall\" nor \"half the survival time.\" HR < 1 is protective; and a proportional-hazards model assumes this ratio is constant over follow-up — worth checking, not assuming."),
  ("What is the difference between Kaplan–Meier and Cox regression?",
@@ -412,14 +412,14 @@ FAQS_34 = {
  ("How much missing data is too much?",
   "Wrong first question — the <em>mechanism</em> outranks the amount. 5% missing not-at-random (MNAR) can bias conclusions more than 30% missing at random handled with multiple imputation. That said, practical strain grows past ~10% (report sensitivity analyses) and results lean heavily on the imputation model past ~40%. Always report how much was missing, why you believe it went missing, and how you handled it."),
  ("Is it ever okay to just delete incomplete cases?",
-  "Listwise deletion is defensible when data is plausibly MCAR <em>and</em> the loss is small (a few percent, ample n remaining) — you sacrifice a little precision, no bias. It quietly betrays you when missingness relates to other variables (MAR): the surviving cases are no longer representative. With MAR data, multiple imputation or maximum likelihood recovers both the bias and the lost power."),
+  "Listwise deletion is defensible when data is plausibly MCAR <em>and</em> the loss is small (a few percent, ample n remaining) — you sacrifice a little precision, no bias. It betrays you without warning when missingness relates to other variables (MAR): the surviving cases are no longer representative. With MAR data, multiple imputation or maximum likelihood recovers both the bias and the lost power."),
  ("How many imputations should I use in multiple imputation?",
   "The old advice of m = 5 came from an era of expensive computing. The modern heuristic: at least as many imputations as the percentage of incomplete cases (30% incomplete → m ≥ 30); m = 20–50 covers most studies and stabilizes standard errors and p-values across reruns. Computation is cheap now — err high."),
 ],
 
 "meta-analysis": [
  ("What does I² tell you in a meta-analysis?",
-  "The share of visible between-study variation that reflects real differences in effects rather than sampling noise. Rough bands: 25% low, 50% moderate, 75% high heterogeneity. High I² isn't a defect — it's a finding: the effect genuinely varies across populations or protocols, the fixed-effect summary is too confident, and the interesting question becomes <em>what moderates the effect</em>."),
+  "The share of visible between-study variation that reflects real differences in effects rather than sampling noise. Rough bands: 25% low, 50% moderate, 75% high heterogeneity. High I² is a finding, not a defect: the effect genuinely varies across populations or protocols, the fixed-effect summary is too confident, and the interesting question becomes <em>what moderates the effect</em>."),
  ("Should I use a fixed-effect or random-effects model?",
   "Fixed-effect assumes every study estimates one identical true effect — defensible only for near-exact replications. Random-effects allows true effects to vary across studies and widens the pooled interval honestly; with real-world literatures (different populations, doses, designs), it's the sensible default. When heterogeneity is genuinely zero the two coincide anyway — you lose nothing."),
  ("What is a funnel plot and what does asymmetry mean?",

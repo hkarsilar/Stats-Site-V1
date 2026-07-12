@@ -44,10 +44,10 @@
         <span class="lesson-eyebrow">Section 3.2</span>
         <h1>Multicollinearity &amp; Variable Selection</h1>
 
-        <p class="lede"><a href="../../stats-3/multiple-regression/">Multiple regression</a> gives each predictor its own "holding the others constant" coefficient. But that only works if the predictors are actually distinguishable. When two predictors are highly correlated <em>with each other</em> — <strong>multicollinearity</strong> — the model genuinely can't tell whose effect is whose, and the coefficients become wildly unreliable.</p>
+        <p class="lede"><a href="../../stats-3/multiple-regression/">Multiple regression</a> gives each predictor its own "holding the others constant" coefficient. But that only works if the predictors are actually distinguishable. When two predictors are highly correlated <em>with each other</em> (<strong>multicollinearity</strong>), the model genuinely can't tell whose effect is whose, and the coefficients become wildly unreliable.</p>
 
         <h2>The problem: overlapping predictors</h2>
-        <p>Imagine predicting salary from "years of experience" and "age." They move together almost in lockstep. If you ask the model "what's the effect of experience holding age fixed?" you're asking about a situation that barely exists in your data — people with lots of experience but low age are rare. With almost no independent variation to learn from, the estimate becomes a wild guess.</p>
+        <p>Imagine predicting salary from "years of experience" and "age." They move together almost in lockstep. If you ask the model "what's the effect of experience holding age fixed?" you're asking about a situation that barely exists in your data: people with lots of experience but low age are rare. With almost no independent variation to learn from, the estimate becomes a wild guess.</p>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="mcviz">
@@ -75,9 +75,9 @@
 
         <h2>The tell-tale signs</h2>
         <ul>
-          <li><strong>Huge standard errors</strong> — coefficients with enormous uncertainty, so individual predictors look "not significant" even though the model as a whole fits well.</li>
-          <li><strong>Unstable, surprising coefficients</strong> — estimates that flip sign or balloon in size, and lurch around when you add or drop a variable.</li>
-          <li><strong>A high VIF</strong> — the <strong>Variance Inflation Factor</strong> measures exactly this. VIF = 1/(1 − R²) where R² is how well the other predictors explain this one. A common alarm threshold is <strong>VIF &gt; 5</strong> (some say 10).</li>
+          <li><strong>Huge standard errors:</strong> coefficients with enormous uncertainty, so individual predictors look "not significant" even though the model as a whole fits well.</li>
+          <li><strong>Unstable, surprising coefficients:</strong> estimates that flip sign or balloon in size, and lurch around when you add or drop a variable.</li>
+          <li><strong>A high VIF.</strong> The <strong>Variance Inflation Factor</strong> measures exactly this. VIF = 1/(1 − R²) where R² is how well the other predictors explain this one. A common alarm threshold is <strong>VIF &gt; 5</strong> (some say 10).</li>
         </ul>
         <div class="callout key">
           <p><strong>Key reassurance:</strong> multicollinearity inflates the uncertainty of individual coefficients, but it does <em>not</em> hurt the model's overall predictions or its R². If you only care about predicting <code>y</code>, you can often ignore it. It only bites when you need to <em>interpret</em> individual coefficients.</p>
@@ -86,12 +86,12 @@
         <h2>What to do about it</h2>
         <ul>
           <li><strong>Drop or combine</strong> redundant predictors (keep one of experience/age, or average several items into a single index).</li>
-          <li><strong>Use domain knowledge</strong> to choose which variable to keep — not a blind algorithm.</li>
-          <li><strong>Regularize</strong> — ridge regression deliberately shrinks coefficients to tame the instability.</li>
+          <li><strong>Use domain knowledge</strong> to choose which variable to keep, not a blind algorithm.</li>
+          <li><strong>Regularize:</strong> ridge regression deliberately shrinks coefficients to tame the instability.</li>
         </ul>
 
         <h2>A warning about stepwise selection</h2>
-        <p>It's tempting to let the computer pick variables automatically (stepwise: add/drop predictors by p-value). Resist over-relying on it. Automated selection capitalizes on chance, produces over-optimistic p-values and R², and isn't reproducible. Thoughtful, theory-driven choices — and honest validation on held-out data — beat algorithmic dredging.</p>
+        <p>It's tempting to let the computer pick variables automatically (stepwise: add/drop predictors by p-value). Resist over-relying on it. Automated selection capitalizes on chance, produces over-optimistic p-values and R², and isn't reproducible. Thoughtful, theory-driven choices, backed by honest validation on held-out data, beat algorithmic dredging.</p>
 
         <div class="callout">
           <p><strong>Why it matters:</strong> with real datasets full of related measurements, multicollinearity is the rule, not the exception. Recognizing it stops you from over-interpreting a coefficient that's really just statistical noise.</p>
