@@ -264,6 +264,9 @@
     function drawScatter() {
       sctx.clearRect(0, 0, SW, SH);
       pts = [];
+      // points are click-to-select (the robustness check), so cue it —
+      // display-only until there's data
+      scatter.style.cursor = st ? "pointer" : "default";
       if (!st) {
         sctx.fillStyle = VIZ.css("--text-faint"); sctx.font = "600 13px Inter,sans-serif";
         sctx.textAlign = "center"; sctx.textBaseline = "middle";
@@ -490,7 +493,7 @@
       var btn = this, node = document.getElementById("cr-apa");
       try {
         navigator.clipboard.writeText(node.textContent.trim().replace(/\s+/g, " ")).then(function () {
-          btn.textContent = "Copied!"; setTimeout(function () { btn.textContent = "Copy"; }, 1200);
+          window.SC.copied(btn);   // shared sitewide "Copied!" pattern (site.js)
         });
       } catch (e) {}
     });

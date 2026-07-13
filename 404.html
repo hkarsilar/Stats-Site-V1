@@ -12,51 +12,101 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Page not found — StatsCapybara</title>
+  <script>
+    /* honor the site's saved theme toggle, pre-paint (falls back to the OS
+       preference via the media query below) */
+    try { var t = localStorage.getItem("theme"); if (t) document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+  </script>
   <style>
     /* Self-contained: a 404 can be served at any URL depth, so it can't
        rely on relative links to the stylesheet. Keep everything inline. */
-    :root { color-scheme: light dark; }
+    :root {
+      color-scheme: light dark;
+      --bg: #ffffff; --text: #0f172a; --muted: #64748b;
+      --border: #cbd5e1; --surface-2: #f1f5f9; --primary: #6366f1;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0b1120; --text: #e7ecf5; --muted: #a7b3c9;
+        --border: #334155; --surface-2: #1a2540;
+      }
+    }
+    :root[data-theme="dark"] {
+      --bg: #0b1120; --text: #e7ecf5; --muted: #a7b3c9;
+      --border: #334155; --surface-2: #1a2540;
+    }
     * { box-sizing: border-box; }
     body {
       margin: 0; min-height: 100vh; display: flex; flex-direction: column;
       align-items: center; justify-content: center; text-align: center; padding: 2rem;
       font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-      background: #ffffff; color: #0f172a;
+      background: var(--bg); color: var(--text);
     }
-    @media (prefers-color-scheme: dark) { body { background: #0b1120; color: #e7ecf5; } }
-    .code { font-size: clamp(4rem, 16vw, 9rem); font-weight: 800; letter-spacing: -.04em; color: #6366f1; line-height: 1; margin: 0; }
-    h1 { font-size: 1.5rem; font-weight: 700; margin: .5rem 0 0; }
-    p { color: #64748b; max-width: 32rem; margin: .75rem 0 0; line-height: 1.6; }
-    .actions { margin-top: 2rem; display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center; }
+    .capy { display: block; margin: 0 auto .25rem; }
+    .code { font-size: clamp(4rem, 14vw, 7.5rem); font-weight: 800; letter-spacing: -.04em; color: var(--primary); line-height: 1; margin: 0; }
+    h1 { font-size: 1.5rem; font-weight: 700; margin: .6rem 0 0; }
+    p { color: var(--muted); max-width: 32rem; margin: .75rem 0 0; line-height: 1.6; }
+    .actions { margin-top: 1.9rem; display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center; }
     a.btn {
       display: inline-block; padding: .75rem 1.4rem; border-radius: 12px; font-weight: 600; text-decoration: none;
-      transition: transform .15s;
+      transition: transform .15s; color: inherit;
     }
-    a.primary { background: #6366f1; color: #fff; }
-    a.ghost { border: 1px solid #cbd5e1; color: inherit; }
-    @media (prefers-color-scheme: dark) { a.ghost { border-color: #334155; } }
+    a.primary { background: var(--primary); color: #fff; }
+    a.ghost { border: 1px solid var(--border); }
     a.btn:hover { transform: translateY(-1px); }
+    a.btn:active { transform: translateY(0) scale(.985); transition-duration: .07s; }
+    .dests { margin-top: 2.4rem; }
+    .dests .lbl { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin: 0 0 .6rem; }
+    .dest-links { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: center; max-width: 34rem; }
+    a.dest {
+      display: inline-block; padding: .45rem .9rem; border: 1px solid var(--border); border-radius: 999px;
+      font-size: .86rem; font-weight: 600; text-decoration: none; color: var(--text);
+      background: var(--surface-2); transition: transform .15s, border-color .15s;
+    }
+    a.dest .e { margin-right: .4rem; }
+    a.dest:hover { transform: translateY(-1px); border-color: var(--primary); }
+    a.dest:active { transform: translateY(0) scale(.985); transition-duration: .07s; }
+    @media (prefers-reduced-motion: reduce) { a.btn, a.dest { transition: none; } }
   </style>
 </head>
 <body>
+  <svg class="capy" viewBox="0 0 64 60" width="76" height="72" aria-hidden="true">
+    <ellipse cx="19" cy="15" rx="7" ry="6" fill="#9a6f43"/><ellipse cx="45" cy="15" rx="7" ry="6" fill="#9a6f43"/>
+    <rect x="9" y="14" width="46" height="40" rx="17" fill="#b3824f"/>
+    <ellipse cx="32" cy="44" rx="16" ry="12" fill="#9a6f43"/>
+    <circle cx="23" cy="31" r="2.7" fill="#3a2a1b"/><circle cx="41" cy="31" r="2.7" fill="#3a2a1b"/>
+    <ellipse cx="26.5" cy="45" rx="2.3" ry="1.6" fill="#3a2a1b"/><ellipse cx="37.5" cy="45" rx="2.3" ry="1.6" fill="#3a2a1b"/>
+  </svg>
   <p class="code">404</p>
-  <h1>That page doesn't exist (yet)</h1>
-  <p>It may still be on the "coming soon" list, or the link might be off. Let's get you back on track.</p>
+  <h1>That page doesn't exist</h1>
+  <p>The capybara looked everywhere, twice. Maybe the link has a typo, or the page moved when the site grew. Either way, nothing lives at this address.</p>
   <div class="actions">
-    <a class="btn primary" id="home" href="/">Back to home</a>
-    <a class="btn ghost" id="curriculum" href="/">Browse the curriculum</a>
+    <a class="btn primary" data-path="" href="/">Back to home</a>
+    <a class="btn ghost" data-path="?q=" href="/">Search the site</a>
+  </div>
+  <div class="dests">
+    <p class="lbl">Or head somewhere popular</p>
+    <div class="dest-links">
+      <a class="dest" data-path="#curriculum" href="/"><span class="e" aria-hidden="true">📚</span>The curriculum</a>
+      <a class="dest" data-path="toolbox.html" href="/"><span class="e" aria-hidden="true">🧰</span>Statistics Toolbox</a>
+      <a class="dest" data-path="which-test.html" href="/"><span class="e" aria-hidden="true">🧭</span>Which test should I use?</a>
+      <a class="dest" data-path="glossary.html" href="/"><span class="e" aria-hidden="true">📖</span>Glossary</a>
+    </div>
   </div>
   <script>
     /* Figure out where "home" is. On a GitHub project page the site lives at
-       /<repo>/; on a custom domain or user site it's at the root. */
+       /<repo>/; on a custom domain or user site it's at the root. Every link
+       carries its home-relative path in data-path. */
     (function () {
       var home = "/";
       if (location.hostname.indexOf("github.io") !== -1) {
         var seg = location.pathname.split("/")[1];
         if (seg) home = "/" + seg + "/";
       }
-      document.getElementById("home").setAttribute("href", home);
-      document.getElementById("curriculum").setAttribute("href", home + "#curriculum");
+      var links = document.querySelectorAll("a[data-path]");
+      for (var i = 0; i < links.length; i++) {
+        links[i].setAttribute("href", home + links[i].getAttribute("data-path"));
+      }
     })();
   </script>
 </body>

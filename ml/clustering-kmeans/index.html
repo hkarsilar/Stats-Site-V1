@@ -77,7 +77,7 @@
             <div class="control" style="margin-left:auto"><span class="val" id="km-status" style="font-size:.9rem">Ready — press Step</span></div>
           </div>
 
-          <canvas id="km-canvas" style="touch-action:none"></canvas>
+          <canvas id="km-canvas" style="touch-action:none;cursor:grab"></canvas>
           <p id="km-verdict" style="font-size:.85rem;color:var(--text-faint);margin-top:.5rem;text-align:center;min-height:1.2em"></p>
         </div>
         <!-- ============ /INTERACTIVE ============ -->
@@ -294,7 +294,7 @@
     canvas.addEventListener("pointerdown", function (ev) {
       var g = scatterGeom(), m = evtPt(ev), best = -1, bd = 196;   // 14px grab radius²
       for (var i = 0; i < P.length; i++) { var pp = toPx(g, P[i]); var dd = (pp[0] - m[0]) * (pp[0] - m[0]) + (pp[1] - m[1]) * (pp[1] - m[1]); if (dd < bd) { bd = dd; best = i; } }
-      if (best >= 0) { drag = best; stopTimer(); canvas.setPointerCapture(ev.pointerId); ev.preventDefault(); }
+      if (best >= 0) { drag = best; stopTimer(); canvas.setPointerCapture(ev.pointerId); canvas.style.cursor = "grabbing"; ev.preventDefault(); }
     });
     canvas.addEventListener("pointermove", function (ev) {
       if (drag < 0) return;
@@ -302,7 +302,7 @@
       P[drag] = [Math.min(0.97, Math.max(0.03, (m[0] - g.x0) / g.size)), Math.min(0.97, Math.max(0.03, 1 - (m[1] - g.y0) / g.size))];
       draw();
     });
-    function endDrag() { if (drag < 0) return; drag = -1; computeElbow(); asg = new Array(P.length).fill(-1); phase = "assign"; converged = false; iter = 0; status(); verdict(); draw(); }
+    function endDrag() { if (drag < 0) return; drag = -1; canvas.style.cursor = "grab"; computeElbow(); asg = new Array(P.length).fill(-1); phase = "assign"; converged = false; iter = 0; status(); verdict(); draw(); }
     canvas.addEventListener("pointerup", endDrag);
     canvas.addEventListener("pointercancel", endDrag);
 

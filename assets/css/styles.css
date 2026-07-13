@@ -209,6 +209,10 @@ h1, h2, h3, h4 { line-height: 1.2; letter-spacing: -0.02em; }
 /* page is pushed below the fixed nav */
 main { padding-top: var(--nav-h); }
 
+/* anchor comfort: any in-page anchor target (TOC chips, #run-it, #about,
+   guide TOCs) lands clear of the fixed nav instead of underneath it */
+[id] { scroll-margin-top: calc(var(--nav-h) + .85rem); }
+
 /* ---------- buttons ---------- */
 .btn {
   display: inline-flex; align-items: center; gap: .5rem; cursor: pointer;
@@ -223,6 +227,19 @@ main { padding-top: var(--nav-h); }
 .btn-ghost { background: var(--surface); color: var(--text); border-color: var(--border); box-shadow: var(--shadow); }
 .btn-ghost:hover { transform: translateY(-1px); box-shadow: var(--shadow-lg); }
 .btn svg { width: 1rem; height: 1rem; }
+
+/* one shared press state for everything clickable: the hover lift settles
+   back and the control dips a hair, so every click on the site feels the
+   same. (Cards receive :active from links inside them, which is the point —
+   the whole card presses.) Kept subtle on purpose; :focus-visible untouched. */
+.btn:active, .icon-btn:active, .nav-search-btn:active, .nav-link:active,
+.feature:active, .tool-card:active, .course-card:active, .persona .p-links a:active,
+.quiz-pick:active, .wt-opt:active, .wt-crumb:active, .wt-back:active,
+.lesson-toc a:active, .about-link:active, .lesson-done:active, .print-btn:active,
+.tc-copy:active, .seg button:active, .ck-opt:not(:disabled):active {
+  transform: translateY(0) scale(.985);
+  transition-duration: .07s;
+}
 
 /* ---------- hero ---------- */
 .hero {
@@ -245,10 +262,56 @@ main { padding-top: var(--nav-h); }
 .hero-eyebrow { display: inline-flex; align-items: center; gap: .45rem; font-weight: 600; color: var(--text-muted); font-size: .98rem; margin: 0 0 .75rem; }
 .hero-demo { margin: 1.75rem auto .25rem; max-width: 46rem; }
 .hero-demo canvas { width: 100%; display: block; }
-.hero-slider input[type="range"] { -webkit-appearance: none; appearance: none; width: min(34rem, 92%); height: 8px; border-radius: 6px; background: color-mix(in srgb, #f97316 25%, var(--surface-2)); accent-color: #f97316; outline: none; cursor: pointer; }
-.hero-slider input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 26px; height: 26px; border-radius: 50%; background: #f97316; border: 3px solid var(--surface); box-shadow: 0 2px 8px rgba(249,115,22,.5); cursor: grab; }
-.hero-slider input[type="range"]::-moz-range-thumb { width: 24px; height: 24px; border-radius: 50%; background: #f97316; border: 3px solid var(--surface); cursor: grab; }
+/* the hero slider is the same sitewide family (see "range inputs" below),
+   just bigger and orange */
+.hero-slider input[type="range"] { --range-accent: #f97316; --range-thumb: 26px; width: min(34rem, 92%); }
 .hero-slider label { display: block; margin-top: .7rem; color: #f97316; font-weight: 700; font-size: 1.02rem; }
+
+/* ---------- range inputs: one sitewide family ----------
+   Every slider on the site (lessons, tools, the hero) shares this look: a
+   soft accent track and a round thumb with a surface ring — the custom
+   thumb the hero used to keep to itself. Accent and thumb size are CSS
+   variables so a one-off (the orange hero) restyles without new pseudo
+   rules. The input itself is a taller transparent strip, so the touch
+   target is comfortable (44px on coarse pointers) while the visible track
+   stays slim. WebKit and Firefox pseudo-elements kept in separate rules —
+   a browser drops a rule whose selector it doesn't parse. */
+input[type="range"] {
+  --range-accent: var(--primary);
+  --range-thumb: 18px;
+  -webkit-appearance: none; appearance: none;
+  height: 28px; margin: 0; padding: 0; border-radius: 999px;
+  background: transparent; cursor: pointer;
+}
+@media (pointer: coarse) { input[type="range"] { height: 44px; } }
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px; border-radius: 999px;
+  background: color-mix(in srgb, var(--range-accent) 25%, var(--surface-2));
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: var(--range-thumb); height: var(--range-thumb);
+  margin-top: calc((6px - var(--range-thumb)) / 2);
+  border-radius: 50%; background: var(--range-accent);
+  border: 3px solid var(--surface);
+  box-shadow: 0 1px 5px color-mix(in srgb, var(--range-accent) 45%, transparent);
+  cursor: grab; transition: transform .12s;
+}
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.1); }
+input[type="range"]:active::-webkit-slider-thumb { cursor: grabbing; transform: scale(1.1); }
+input[type="range"]::-moz-range-track {
+  height: 6px; border-radius: 999px;
+  background: color-mix(in srgb, var(--range-accent) 25%, var(--surface-2));
+}
+input[type="range"]::-moz-range-thumb {
+  box-sizing: border-box;
+  width: var(--range-thumb); height: var(--range-thumb);
+  border-radius: 50%; background: var(--range-accent);
+  border: 3px solid var(--surface);
+  box-shadow: 0 1px 5px color-mix(in srgb, var(--range-accent) 45%, transparent);
+  cursor: grab;
+}
+input[type="range"]:active::-moz-range-thumb { cursor: grabbing; }
 
 /* ---------- sections ---------- */
 .section { padding: 5.5rem 0; }
@@ -263,7 +326,7 @@ main { padding-top: var(--nav-h); }
   border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem;
   background: var(--surface); box-shadow: var(--shadow); transition: .2s;
 }
-.feature:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.feature:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }   /* same lift as every card */
 .feature .emoji { font-size: 2.25rem; display: block; margin-bottom: .75rem; }
 .feature h3 { margin: 0 0 .4rem; font-size: 1.1rem; }
 .feature p { margin: 0; color: var(--text-muted); font-size: .92rem; }
@@ -329,7 +392,7 @@ li a:hover .sec-dot { border-color: var(--accent, var(--primary)); }
   border: 1px solid var(--border); border-radius: var(--radius); padding: 1.1rem 1.2rem;
   background: var(--surface); box-shadow: var(--shadow); transition: .18s;
 }
-.tool-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
+.tool-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
 .tool-card .tool-emoji { font-size: 1.7rem; margin-bottom: .35rem; }
 .tool-card .tool-title { font-weight: 700; font-size: 1rem; color: var(--text); }
 .tool-card .tool-desc { font-size: .84rem; color: var(--text-muted); line-height: 1.45; }
@@ -451,7 +514,10 @@ body[data-course="writing"] { --course-accent: #84cc16; }
 
 /* prev / next nav */
 .lesson-nav { display: flex; justify-content: space-between; gap: 1rem; margin-top: 3.5rem; padding-top: 1.75rem; border-top: 1px solid var(--border); }
-.lesson-nav a { display: flex; align-items: center; gap: .7rem; color: color-mix(in srgb, var(--course-accent, var(--primary)) 78%, var(--text)); font-weight: 600; max-width: 48%; }
+.lesson-nav a { display: flex; align-items: center; gap: .7rem; color: color-mix(in srgb, var(--course-accent, var(--primary)) 78%, var(--text)); font-weight: 600; max-width: 48%; transition: transform .15s; }
+.lesson-nav a.prev:hover { transform: translateX(-2px); }
+.lesson-nav a.next:hover { transform: translateX(2px); }
+.lesson-nav a:active { transform: none; }
 .lesson-nav a.next { margin-left: auto; text-align: right; }
 .lesson-nav .lbl { display: block; font-size: .72rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: .06em; }
 .lesson-nav svg { width: 1.1rem; height: 1.1rem; flex-shrink: 0; }
@@ -758,6 +824,14 @@ body[data-course="writing"] { --course-accent: #84cc16; }
   .faq-item summary::after { display: none; }          /* no ▾ marker once forced open */
   .faq-item summary { background: transparent; }
 
+  /* the <details> reveal animation must not crop force-opened content on
+     paper: full height immediately, no transition. (Own rule on purpose —
+     see the ::details-content note in the screen styles.) */
+  details::details-content { transition: none !important; block-size: auto !important; overflow: visible !important; }
+
+  /* scrollable containers print full-width with no edge fade */
+  .hscroll { overflow-x: visible; -webkit-mask-image: none !important; mask-image: none !important; }
+
   a { color: #000 !important; text-decoration: underline; }
 
   /* --- the one printed adornment: a discreet per-page URL footer --- */
@@ -934,6 +1008,49 @@ details.checks[open] .ck-open-label { display: none; }
 /* FAQ prints fully expanded (details forced open) — see the main PRINT block */
 
 /* ============================================================
+   <details> REVEAL — every disclosure on the site (FAQ items, the
+   checks block, sidebar course groups, dataset solutions) eases open
+   instead of snapping. Pure-CSS progressive enhancement via the
+   ::details-content pseudo-element (Chrome 131+); other browsers keep
+   the instant toggle. IMPORTANT: keep every ::details-content selector
+   in its OWN rule — a browser that can't parse it drops the whole rule,
+   so comma-mixing it with normal selectors would kill those too.
+   Print + reduced-motion guards live in their own blocks below/inside
+   @media print, so the beforeprint force-open still renders full-height.
+   ============================================================ */
+details { interpolate-size: allow-keywords; }   /* lets block-size animate to auto */
+details::details-content {
+  block-size: 0;
+  overflow-y: clip;
+  transition: content-visibility .25s allow-discrete, block-size .25s ease;
+}
+details[open]::details-content { block-size: auto; }
+@media (prefers-reduced-motion: reduce) {
+  details::details-content { transition: none; }
+}
+
+/* ============================================================
+   HORIZONTAL-SCROLL EDGE FADE — .hscroll containers (wide reference
+   tables, code blocks, the APA tool's analysis switcher) show a soft
+   fade on whichever edge still has content hidden past it. site.js
+   tags the containers and toggles .hs-l / .hs-r from scrollLeft, so
+   the cue appears only where content actually overflows.
+   ============================================================ */
+.hscroll { overflow-x: auto; }
+.hscroll.hs-r {
+  -webkit-mask-image: linear-gradient(to left, transparent, #000 32px);
+  mask-image: linear-gradient(to left, transparent, #000 32px);
+}
+.hscroll.hs-l {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 32px);
+  mask-image: linear-gradient(to right, transparent, #000 32px);
+}
+.hscroll.hs-l.hs-r {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 32px, #000 calc(100% - 32px), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 32px, #000 calc(100% - 32px), transparent);
+}
+
+/* ============================================================
    "TRY IT YOURSELF" R / PYTHON SNIPPETS (auto-injected)
    ============================================================ */
 .try-code {
@@ -948,6 +1065,9 @@ details.checks[open] .ck-open-label { display: none; }
   border-radius: 8px; padding: .3rem .7rem; transition: .15s;
 }
 .tc-copy:hover { color: var(--text); background: var(--surface-2); }
+/* shared "Copied!" flash — window.SC.copied(btn) in site.js applies this
+   class + swaps the label for 1.4s on every copy button sitewide */
+.tc-copy.copied, button.copied { color: var(--success); border-color: var(--success); }
 .try-code pre {
   margin: 0; padding: 1rem 1.1rem; overflow-x: auto; background: var(--bg-soft);
   font-family: var(--mono); font-size: .8rem; line-height: 1.6; color: var(--text);

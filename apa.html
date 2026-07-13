@@ -434,7 +434,7 @@
     document.getElementById("apa-copy").addEventListener("click", function () {
       var btn = this, host = document.getElementById("apa-out");
       var html = host.innerHTML, text = host.textContent.trim();
-      function done() { btn.textContent = "Copied!"; setTimeout(function () { btn.textContent = "Copy"; }, 1300); }
+      function done() { window.SC.copied(btn); }   // shared sitewide "Copied!" pattern (site.js)
       function plain() { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () {}); }
       try {
         if (navigator.clipboard && window.ClipboardItem) {

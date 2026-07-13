@@ -345,9 +345,29 @@
         '<circle class="ring-fill" cx="24" cy="24" r="' + r + '" fill="none" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + off.toFixed(1) + '"/>' +
       '</svg><span class="ring-label">' + pct + '%</span></span>';
   }
+  /* ---------- shared "Copied!" feedback ----------
+     One pattern for every copy button on the site (the R/Python snippet
+     block here, plus the APA / descriptives / correlation tools): same
+     wording, same 1.4s revert, green .copied tint, and aria-live polite
+     so screen readers hear the confirmation. Call AFTER the clipboard
+     write resolves. */
+  function flashCopied(btn) {
+    if (!btn) return;
+    if (!btn.getAttribute("aria-live")) btn.setAttribute("aria-live", "polite");
+    if (!btn.__copyLabel) btn.__copyLabel = btn.textContent;
+    btn.classList.add("copied");
+    btn.textContent = "Copied!";
+    clearTimeout(btn.__copyT);
+    btn.__copyT = setTimeout(function () {
+      btn.classList.remove("copied");
+      btn.textContent = btn.__copyLabel;
+    }, 1400);
+  }
+
   /* expose the ring + mascot so a standalone page (progress.html) can reuse the
-     exact same drawing instead of duplicating it */
-  window.SC = { ring: ring, capy: capy };
+     exact same drawing instead of duplicating it — and the copy feedback so
+     tool pages share one "Copied!" pattern */
+  window.SC = { ring: ring, capy: capy, copied: flashCopied };
 
   /* ---------- homepage curriculum grid ---------- */
   function courseCard(c) {
@@ -687,15 +707,13 @@
       var copyBtn = box.querySelector(".tc-copy");
       copyBtn.addEventListener("click", function () {
         try {
-          navigator.clipboard.writeText(sn[lang]).then(function () {
-            copyBtn.textContent = "Copied!";
-            setTimeout(function () { copyBtn.textContent = "Copy"; }, 1200);
-          });
+          navigator.clipboard.writeText(sn[lang]).then(function () { flashCopied(copyBtn); });
         } catch (e) {}
       });
       show();
       var anchor = document.querySelector(".lesson-progress-head") || nav;
       host.insertBefore(box, anchor);
+      scanHScroll();   // the injected <pre> can overflow sideways on phones
     };
     document.body.appendChild(s);
   }
@@ -1067,6 +1085,42 @@
     if (first) first.innerHTML = '<span class="footer-capy" aria-hidden="true">' + capy(22) + '</span>' + first.innerHTML;
   }
 
+  /* ---------- horizontal-scroll edge fades ----------
+     Wide content scrolls inside its own container; a soft mask fade on
+     the left/right edge (styles.css .hscroll rules) cues "there's more"
+     only where content actually overflows. Known scrollable containers
+     get tagged here; .ref-table additionally gets WRAPPED in a scroll
+     div, so a wide table scrolls in place instead of the whole page. */
+  var HS_SELECTOR = ".hscroll, .try-code pre, .mock, #ana-seg, .tbl-demo, .cb-book-wrap, .td-grid-wrap, .apa-ref, .rb-output";
+  function hsUpdate(el) {
+    var can = el.scrollWidth > el.clientWidth + 1;
+    el.classList.toggle("hs-l", can && el.scrollLeft > 2);
+    el.classList.toggle("hs-r", can && el.scrollLeft < el.scrollWidth - el.clientWidth - 2);
+  }
+  function scanHScroll() {
+    Array.prototype.forEach.call(document.querySelectorAll(HS_SELECTOR), function (el) {
+      el.classList.add("hscroll");
+      if (!el.__hs) {
+        el.__hs = 1;
+        el.addEventListener("scroll", function () { hsUpdate(el); }, { passive: true });
+      }
+      hsUpdate(el);
+    });
+  }
+  function setupHScroll() {
+    Array.prototype.forEach.call(document.querySelectorAll("table.ref-table"), function (t) {
+      if (t.parentNode.classList && t.parentNode.classList.contains("hscroll")) return;
+      var w = document.createElement("div");
+      w.className = "hscroll";
+      t.parentNode.insertBefore(w, t);
+      w.appendChild(t);
+    });
+    scanHScroll();
+    window.addEventListener("load", scanHScroll);   // fonts/layout settle late
+    var hsT;
+    window.addEventListener("resize", function () { clearTimeout(hsT); hsT = setTimeout(scanHScroll, 150); });
+  }
+
   /* ============================================================
      ACCESSIBILITY + HEAD extras (injected once, so all 40 pages
      get them without editing every file)
@@ -1178,11 +1232,13 @@
     renderSoftware();
     renderKofi();
     renderFooterCapy();
+    setupHScroll();
     wireSearchShortcuts();
     wireLessonKeys();
     registerSW();
-    // ?q=… deep link (also the target of the sitewide SearchAction schema)
-    var qm = /[?&]q=([^&]+)/.exec(window.location.search);
+    // ?q=… deep link (also the target of the sitewide SearchAction schema);
+    // a bare "?q=" (no term — the 404 page's search link) just opens the box
+    var qm = /[?&]q=([^&]*)/.exec(window.location.search);
     if (qm) {
       openSearch();
       searchInput.value = decodeURIComponent(qm[1].replace(/\+/g, " "));

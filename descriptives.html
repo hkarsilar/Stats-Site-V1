@@ -273,8 +273,7 @@
       var btn = this;
       try {
         navigator.clipboard.writeText(document.getElementById("dc-apa").textContent.trim()).then(function () {
-          btn.textContent = "Copied!";
-          setTimeout(function () { btn.textContent = "Copy"; }, 1200);
+          window.SC.copied(btn);   // shared sitewide "Copied!" pattern (site.js)
         });
       } catch (e) {}
     });

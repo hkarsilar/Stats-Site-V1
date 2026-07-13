@@ -255,15 +255,16 @@
       document.getElementById("v3d-btn").className = "btn btn-sm" + (v === "3d" ? " btn-primary" : "");
       document.getElementById("pca-btn").className = "btn btn-sm" + (v === "pca" ? " btn-primary" : "");
       document.getElementById("nl-btn").className = "btn btn-sm" + (v === "nl" ? " btn-primary" : "");
+      canvas.style.cursor = v === "3d" ? "grab" : "default";   // only the 3-D view is draggable
       verdict(); draw();
     }
 
     /* ---- rotate by dragging (3D view only) ---- */
     var dragging = false, lastX = 0, lastY = 0;
     function evtPt(ev) { var r = canvas.getBoundingClientRect(); return [ev.clientX - r.left, ev.clientY - r.top]; }
-    canvas.addEventListener("pointerdown", function (ev) { if (view !== "3d") return; var g = mainGeom(), m = evtPt(ev); if (m[0] < g.x0 || m[0] > g.x0 + g.S || m[1] < g.y0 || m[1] > g.y0 + g.S) return; dragging = true; lastX = m[0]; lastY = m[1]; canvas.setPointerCapture(ev.pointerId); ev.preventDefault(); });
+    canvas.addEventListener("pointerdown", function (ev) { if (view !== "3d") return; var g = mainGeom(), m = evtPt(ev); if (m[0] < g.x0 || m[0] > g.x0 + g.S || m[1] < g.y0 || m[1] > g.y0 + g.S) return; dragging = true; lastX = m[0]; lastY = m[1]; canvas.setPointerCapture(ev.pointerId); canvas.style.cursor = "grabbing"; ev.preventDefault(); });
     canvas.addEventListener("pointermove", function (ev) { if (!dragging) return; var m = evtPt(ev); yaw += (m[0] - lastX) * 0.01; pitch += (m[1] - lastY) * 0.01; pitch = Math.max(-1.4, Math.min(1.4, pitch)); lastX = m[0]; lastY = m[1]; draw(); });
-    function endDrag() { dragging = false; }
+    function endDrag() { dragging = false; if (view === "3d") canvas.style.cursor = "grab"; }
     canvas.addEventListener("pointerup", endDrag);
     canvas.addEventListener("pointercancel", endDrag);
     // keyboard equivalent for the drag-to-rotate (3-D view only)
