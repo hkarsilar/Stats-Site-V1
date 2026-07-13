@@ -236,7 +236,7 @@ main { padding-top: var(--nav-h); }
 .feature:active, .tool-card:active, .course-card:active, .persona .p-links a:active,
 .quiz-pick:active, .wt-opt:active, .wt-crumb:active, .wt-back:active,
 .lesson-toc a:active, .about-link:active, .lesson-done:active, .print-btn:active,
-.tc-copy:active, .seg button:active, .ck-opt:not(:disabled):active {
+.tc-copy:active, .seg button:active, .ck-opt:not(:disabled):active, .viz-png-btn:active {
   transform: translateY(0) scale(.985);
   transition-duration: .07s;
 }
@@ -531,6 +531,20 @@ body[data-course="writing"] { --course-accent: #84cc16; }
 }
 .viz-title { font-weight: 700; font-size: 1rem; margin: 0 0 .25rem; }
 .viz-sub { font-size: .85rem; color: var(--text-faint); margin: 0 0 1rem; }
+/* PNG export (site.js injectVizExport): a small unobtrusive button that
+   downloads the block's canvas at 2×. Sits next to the .viz-title (wrapped
+   in .viz-head) or, on a titleless calculator viz, in a right-aligned bar. */
+.viz-head { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; }
+.viz-head .viz-title { flex: 1; min-width: 0; }
+.viz-exportbar { display: flex; justify-content: flex-end; margin-bottom: .5rem; }
+.viz-png-btn {
+  flex-shrink: 0; cursor: pointer; font: inherit; font-size: .72rem; font-weight: 650;
+  line-height: 1; letter-spacing: .01em; color: var(--text-faint);
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  padding: .32rem .5rem; transition: .15s; white-space: nowrap;
+}
+.viz-png-btn:hover { color: var(--text); border-color: var(--primary); }
+.viz-png-btn span { font-size: .8rem; }
 /* height:auto + aspect-ratio reserves a close-to-final box BEFORE the lesson's
    inline script runs VIZ.fit() (which sets an exact pixel height that overrides
    this). Without a reserved box the browser paints unsized canvases at the 2:1
@@ -800,7 +814,7 @@ body[data-course="writing"] { --course-accent: #84cc16; }
          the sliders/buttons/segmented controls that do nothing on paper. The
          R/Python block's language toggle goes too (the selected code stays). --- */
   .viz .controls, .viz .seg, .viz button, .viz input, .viz select,
-  .try-code .seg { display: none !important; }
+  .viz-png-btn, .viz-exportbar, .try-code .seg { display: none !important; }
 
   /* --- reference pages (formulas / glossary): drop their live controls --- */
   .glossary-filter, #gloss-count, .btn { display: none !important; }
@@ -841,6 +855,30 @@ body[data-course="writing"] { --course-accent: #84cc16; }
     padding: .18cm 0; background: #fff;
   }
 }
+
+/* ============================================================
+   EMBED MODE — a lesson rendered as a bare interactive widget for
+   an <iframe> (?embed=1). site.js adds body.embed-mode and skips the
+   chrome renders; these rules hide anything left and trim the page to
+   the eyebrow + title + .viz block(s) plus a one-line back-link footer.
+   ============================================================ */
+body.embed-mode .nav,
+body.embed-mode .sidebar,
+body.embed-mode .footer,
+body.embed-mode .kofi { display: none !important; }
+body.embed-mode main { padding-top: 1rem; }
+body.embed-mode .lesson-wrap,
+body.embed-mode .container { display: block; padding-left: 1rem; padding-right: 1rem; max-width: 720px; }
+/* keep only the eyebrow, the h1, and the interactive block(s) */
+body.embed-mode .lesson > *:not(.lesson-eyebrow):not(h1):not(.viz) { display: none !important; }
+body.embed-mode .lesson { max-width: none; margin: 0 auto; }
+.embed-foot {
+  max-width: 720px; margin: .5rem auto 1.25rem; padding: .7rem 1rem;
+  text-align: center; font-size: .82rem; color: var(--text-muted);
+  border-top: 1px solid var(--border);
+}
+.embed-foot a { color: var(--primary); font-weight: 650; text-decoration: none; }
+.embed-foot a:hover { text-decoration: underline; }
 
 /* ============================================================
    QUIZ — start-screen picker

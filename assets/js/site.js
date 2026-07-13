@@ -17,6 +17,19 @@
   var BASE = (document.body && (document.body.getAttribute("data-section") || GUIDE)) ? "../../" : "";
   var HERE = document.body ? document.body.getAttribute("data-section") : null;
 
+  /* ---------- embed mode (?embed=1 on a lesson page) ----------
+     Renders a lesson as a bare interactive widget for an <iframe> in slides
+     or an LMS: nav, sidebar, prose, FAQ, prev/next and all progress chrome
+     drop away (styles.css body.embed-mode), leaving the eyebrow, title, and
+     the .viz block(s) with their controls, plus a one-line "open the full
+     lesson" footer. Only lessons embed; the canonical still points at the
+     clean URL, so there's no SEO wrinkle. GA already fired in the head. */
+  function qparam(n) {
+    var m = new RegExp("[?&]" + n + "=([^&]*)").exec(window.location.search);
+    return m ? decodeURIComponent(m[1].replace(/\+/g, " ")) : null;
+  }
+  var EMBED = !!HERE && qparam("embed") === "1";
+
   /* respect the OS "reduce motion" setting for JS-driven scrolls/animations
      (CSS transitions are already handled in styles.css) */
   function prefersReducedMotion() {
@@ -199,7 +212,8 @@
     "quiz": "Test anxiety? Unknown to capybaras. Breathe in, breathe out, click an answer.",
     "glossary": "Big words, small stress. The capybara defines, you vibe.",
     "flashcards": "Flip, rate, repeat. The capybara only revises the words it forgot — and it forgets nothing on purpose, only for spacing.",
-    "progress": "No streaks, no nagging — just your rings filling up at capybara pace. Finish a whole course and there's a certificate soaking in it for you."
+    "progress": "No streaks, no nagging — just your rings filling up at capybara pace. Finish a whole course and there's a certificate soaking in it for you.",
+    "teachers": "One syllabus link, a whole class taught. The capybara would put that on its CV, if capybaras had jobs."
   };
   var QUIP_POOL = [
     "Be the least stressed mammal in the room.",
@@ -277,7 +291,8 @@
     { url: "guides/analyze-thesis-data-jasp/",       key: "analyze-thesis-data-jasp",       group: "read", emoji: "🧪", title: "Analyze your thesis data in JASP", desc: "Import → check → test → APA, the whole path in free software" },
     { url: "guides/spss-output-to-apa/",             key: "spss-output-to-apa",             group: "read", emoji: "📄", title: "From SPSS output to APA results",  desc: "Annotated output for the five classic tests — and the exact sentence" },
     { url: "guides/choose-statistics-dissertation/", key: "choose-statistics-dissertation", group: "read", emoji: "🎓", title: "Choosing statistics for your dissertation", desc: "Three questions that pick your test — plus honest words on messy designs" },
-    { url: "guides/clean-survey-data/",              key: "clean-survey-data",              group: "read", emoji: "🧹", title: "Clean your survey data, step by step", desc: "From raw export to analysis-ready, with a real dataset to follow along" }
+    { url: "guides/clean-survey-data/",              key: "clean-survey-data",              group: "read", emoji: "🧹", title: "Clean your survey data, step by step", desc: "From raw export to analysis-ready, with a real dataset to follow along" },
+    { url: "teachers.html",                          key: "teachers",                       group: "read", emoji: "🎓", title: "For instructors",                     desc: "Use the site in your course: link, embed, print & assign — free" }
   ];
   window.TOOLBOX = TOOLBOX;   // toolbox.html renders its grouped grid from this
   function renderNav() {
@@ -650,6 +665,94 @@
     }
   }
 
+  /* ---------- embed footer (embed mode only) ----------
+     A single discreet line under the widget linking back to the full lesson.
+     target="_top" so it escapes the iframe; the href is the lesson's clean
+     canonical URL (absolute), which works from any host embedding us. */
+  function renderEmbedFooter() {
+    var canon = document.querySelector('link[rel="canonical"]');
+    var url = (canon && canon.href) || window.location.href.replace(/\?.*$/, "");
+    var foot = document.createElement("div");
+    foot.className = "embed-foot";
+    foot.innerHTML = 'From <strong>StatsCapybara</strong> — ' +
+      '<a href="' + url + '" target="_top" rel="noopener">open the full lesson &rarr;</a>';
+    var main = document.querySelector("main") || document.body;
+    main.appendChild(foot);
+  }
+
+  /* ---------- viz PNG export (lessons + canvas tool pages) ----------
+     A small "PNG ↓" button next to each .viz-title (or, on a titleless
+     calculator viz, a right-aligned bar at the top of the block) that
+     downloads that block's primary canvas at 2× via toDataURL. The current
+     theme is captured as-is (the canvas background is painted underneath so
+     dark-mode exports aren't transparent). Decorative canvases outside a
+     .viz (the homepage hero) are never touched; the button is hidden in
+     print. Keyboard-operable and aria-labelled (it's a real <button>). */
+  function biggestCanvas(viz) {
+    var cs = viz.querySelectorAll("canvas"), best = null, bestArea = -1;
+    for (var i = 0; i < cs.length; i++) {
+      var c = cs[i];
+      if (c.hasAttribute("data-no-export")) continue;
+      var r = c.getBoundingClientRect();
+      var area = r.width * r.height;
+      if (area > bestArea) { bestArea = area; best = c; }
+    }
+    return best;
+  }
+  function exportCanvasPng(canvas, name) {
+    try {
+      var r = canvas.getBoundingClientRect();
+      var scale = 2;
+      var w = Math.max(1, Math.round((r.width || canvas.width) * scale));
+      var h = Math.max(1, Math.round((r.height || canvas.height) * scale));
+      var off = document.createElement("canvas");
+      off.width = w; off.height = h;
+      var ctx = off.getContext("2d");
+      var bg = getComputedStyle(canvas).backgroundColor;
+      if (bg && bg !== "transparent" && bg !== "rgba(0, 0, 0, 0)") { ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h); }
+      ctx.drawImage(canvas, 0, 0, w, h);
+      var a = document.createElement("a");
+      a.href = off.toDataURL("image/png");
+      a.download = name;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    } catch (e) { /* tainted canvas / unsupported — silently no-op */ }
+  }
+  function injectVizExport() {
+    var slug = pageKey();
+    var vizzes = document.querySelectorAll(".viz");
+    var n = 0;
+    Array.prototype.forEach.call(vizzes, function (viz) {
+      if (viz.hasAttribute("data-no-export")) return;
+      if (!viz.querySelector("canvas")) return;   // e.g. apa.html's live-sentence "viz" has none
+      n++;
+      var idx = n;
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "viz-png-btn";
+      btn.innerHTML = 'PNG <span aria-hidden="true">&darr;</span>';
+      btn.setAttribute("aria-label", "Download this visualization as a PNG image");
+      btn.addEventListener("click", function () {
+        var canvas = biggestCanvas(viz);
+        if (canvas) exportCanvasPng(canvas, "statscapybara-" + slug + "-" + idx + ".png");
+      });
+      var title = viz.querySelector(".viz-title");
+      if (title) {
+        // wrap the title + button in a flex row so the button sits at the far right
+        var head = document.createElement("div");
+        head.className = "viz-head";
+        title.parentNode.insertBefore(head, title);
+        head.appendChild(title);
+        head.appendChild(btn);
+      } else {
+        // titleless calculator viz: a right-aligned bar at the top of the block
+        var bar = document.createElement("div");
+        bar.className = "viz-exportbar";
+        bar.appendChild(btn);
+        viz.insertBefore(bar, viz.firstChild);
+      }
+    });
+  }
+
   /* ---------- "On this page" mini-TOC (longer lessons only) ---------- */
   function renderTOC() {
     if (!HERE) return;
@@ -979,7 +1082,8 @@
     { title: "Analyze Your Thesis Data in JASP", url: "guides/analyze-thesis-data-jasp/", tag: "Guide", kw: "jasp guide tutorial thesis dissertation analyze data start to finish walkthrough import csv descriptives assumptions levene welch t-test run read output write up apa how to" },
     { title: "From SPSS Output to APA Results", url: "guides/spss-output-to-apa/", tag: "Guide", kw: "spss guide output apa results report write up sig 2-tailed .000 levene two rows t-test anova correlation chi-square regression tables how to read coefficients" },
     { title: "Choosing Statistics for Your Dissertation", url: "guides/choose-statistics-dissertation/", tag: "Guide", kw: "choose choosing statistics dissertation thesis which test analysis pick guide outcome predictor groups paired design likert messy real data decision" },
-    { title: "Clean Your Survey Data, Step by Step", url: "guides/clean-survey-data/", tag: "Guide", kw: "clean cleaning survey data guide questionnaire likert reverse code coding missing values composite score reliability cronbach alpha screening exclusions step by step raw export" }
+    { title: "Clean Your Survey Data, Step by Step", url: "guides/clean-survey-data/", tag: "Guide", kw: "clean cleaning survey data guide questionnaire likert reverse code coding missing values composite score reliability cronbach alpha screening exclusions step by step raw export" },
+    { title: "For Instructors", url: "teachers.html", tag: "Guide", kw: "instructors teachers professors teaching course syllabus lms canvas moodle blackboard embed iframe classroom handouts posters assignments datasets reproducible semester week by week map free license link to us lecturer educator" }
   ];
   function escHtml(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
   /* a short excerpt around the first occurrence of q, with the match <mark>ed */
@@ -1217,6 +1321,15 @@
   function init() {
     injectHead();
     injectA11y();
+    // embed mode: skip all the chrome, keep the widget, add one footer line.
+    // The viz still runs (its inline script is independent of site.js).
+    if (EMBED) {
+      document.body.classList.add("embed-mode");
+      injectVizExport();
+      renderEmbedFooter();
+      registerSW();
+      return;
+    }
     renderNav();
     renderCurriculum();
     renderCounts();
@@ -1233,6 +1346,7 @@
     renderKofi();
     renderFooterCapy();
     setupHScroll();
+    injectVizExport();
     wireSearchShortcuts();
     wireLessonKeys();
     registerSW();
