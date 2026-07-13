@@ -30,7 +30,7 @@
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Wide vs Long Data", "description": "Wide and long — the two shapes of a dataset, why repeated-measures software wants one or the other, and an animated pivot that reshapes it live.", "url": "https://statscapybara.com/data/wide-vs-long-data/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Data: From Raw to Ready", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Wide vs Long Data", "item": "https://statscapybara.com/data/wide-vs-long-data/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Should repeated-measures data be in long or wide format?", "acceptedAnswer": {"@type": "Answer", "text": "It depends entirely on the tool. Classic point-and-click repeated-measures ANOVA in SPSS wants wide — each timepoint in its own column, which it reads as the levels of your within-subject factor. Almost everything else — the tidyverse, pandas, JASP's mixed-model tools, and every multilevel model — wants long, with one row per measurement and a column naming the occasion. The practical answer: keep your clean data in long (tidy) form as the master copy, and pivot to wide only when a specific procedure demands it."}}, {"@type": "Question", "name": "What's the difference between pivot_longer and pivot_wider?", "acceptedAnswer": {"@type": "Answer", "text": "They're inverse operations. pivot_longer() (or pandas melt()) takes several columns and stacks them into two: a key column holding the old column names and a value column holding the numbers — wide becomes long. pivot_wider() (or pandas pivot()) does the reverse, spreading one key column back out into a column per level — long becomes wide. Run one then the other and you return to where you started, as long as each row is uniquely identified by its keys."}}, {"@type": "Question", "name": "Is tidy data the same as long data?", "acceptedAnswer": {"@type": "Answer", "text": "Nearly, but not exactly. Tidy data means each variable is a column, each observation a row, and each cell one value — and for repeated measures that usually produces a long layout, because \"time\" is a variable and so belongs in its own column rather than being smeared across headers. So tidy data is typically long, but \"long\" is really a description of shape while \"tidy\" is a description of meaning. A table can be long and still untidy if, say, two different variables are crammed into one value column."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Should repeated-measures data be in long or wide format?", "acceptedAnswer": {"@type": "Answer", "text": "It depends entirely on the tool. Classic point-and-click repeated-measures ANOVA in SPSS wants wide — each timepoint in its own column, which it reads as the levels of your within-subject factor. Almost everything else (the tidyverse, pandas, JASP's mixed-model tools, and every multilevel model) wants long, with one row per measurement and a column naming the occasion. The practical answer: keep your clean data in long (tidy) form as the master copy, and pivot to wide only when a specific procedure demands it."}}, {"@type": "Question", "name": "What's the difference between pivot_longer and pivot_wider?", "acceptedAnswer": {"@type": "Answer", "text": "They're inverse operations. pivot_longer() (or pandas melt()) takes several columns and stacks them into two: a key column holding the old column names and a value column holding the numbers, so wide becomes long. pivot_wider() (or pandas pivot()) does the reverse, spreading one key column back out into a column per level, so long becomes wide. Run one then the other and you return to where you started, as long as each row is uniquely identified by its keys."}}, {"@type": "Question", "name": "Is tidy data the same as long data?", "acceptedAnswer": {"@type": "Answer", "text": "Nearly, but not exactly. Tidy data means each variable is a column, each observation a row, and each cell one value — and for repeated measures that usually produces a long layout, because \"time\" is a variable and so belongs in its own column rather than being smeared across headers. So tidy data is typically long, but \"long\" is really a description of shape while \"tidy\" is a description of meaning. A table can be long and still untidy if, say, two different variables are crammed into one value column."}}]}
   </script>
 </head>
 <body data-course="data" data-section="wide-vs-long-data">
@@ -44,10 +44,10 @@
         <span class="lesson-eyebrow">Section 2.7</span>
         <h1>Wide vs Long Data</h1>
 
-        <p class="lede">The <em>same</em> numbers can be laid out two ways. In <strong>wide</strong> format each person gets one row and their repeated measurements fan out across several columns. In <strong>long</strong> format each measurement gets its own row, tagged by who it belongs to and when it was taken. Neither is more correct — but your software has a strong opinion, and moving between the two is a single command once you can picture it.</p>
+        <p class="lede">The <em>same</em> numbers can be laid out two ways. In <strong>wide</strong> format each person gets one row and their repeated measurements fan out across several columns. In <strong>long</strong> format each measurement gets its own row, tagged by who it belongs to and when it was taken. Neither is more correct, but your software has a strong opinion, and moving between the two is a single command once you can picture it.</p>
 
         <h2>The same data, two shapes</h2>
-        <p>Picture four students measured three times. In <strong>wide</strong> form the table is short and fat — one row per student, a column for each timepoint:</p>
+        <p>Picture four students measured three times. In <strong>wide</strong> form the table is short and fat, with one row per student and a column for each timepoint:</p>
         <div class="tbl-demo" aria-hidden="true">
           <table class="mini-tbl">
             <thead><tr><th>name</th><th>T1</th><th>T2</th><th>T3</th></tr></thead>
@@ -71,7 +71,7 @@
             </tbody>
           </table>
         </div>
-        <p>Notice what happens to the column <em>headers</em> when you go long: <strong>T1, T2, T3 stop being column names and become values</strong> in the <code>time</code> column, and the name repeats down the rows. That's the whole trick — the reshape below lets you watch every cell make the trip.</p>
+        <p>Notice what happens to the column <em>headers</em> when you go long: <strong>T1, T2, T3 stop being column names and become values</strong> in the <code>time</code> column, and the name repeats down the rows. That's the whole trick: the reshape below lets you watch every cell make the trip.</p>
 
         <!-- ============ INTERACTIVE 1 ============ -->
         <div class="viz" id="pv">
@@ -94,18 +94,18 @@
         <!-- ============ /INTERACTIVE 1 ============ -->
 
         <h2>Which shape does my software want?</h2>
-        <p>This is the practical reason the distinction matters — the two ecosystems disagree:</p>
+        <p>This is the practical reason the distinction matters, because the two ecosystems disagree:</p>
         <ul>
-          <li><strong>Wide</strong> — classic point-and-click <a href="../../stats-2/repeated-measures-anova/">repeated-measures ANOVA</a> in SPSS expects each timepoint in its own column (it reads "T1, T2, T3" as the levels of your within-subject factor). Correlation matrices and many spreadsheets are happiest wide too.</li>
-          <li><strong>Long</strong> — the tidyverse (R), pandas, JASP's mixed-model tools, and every <a href="../../stats-4/mixed-and-multilevel-models/">mixed / multilevel model</a> want one row per observation, with columns for the person ID, the occasion, and the value. This is exactly <a href="../tidy-data/">tidy data</a>: T1/T2/T3 are values of the variable <em>time</em>, so they belong in a column, not in the header.</li>
+          <li><strong>Wide:</strong> classic point-and-click <a href="../../stats-2/repeated-measures-anova/">repeated-measures ANOVA</a> in SPSS expects each timepoint in its own column (it reads "T1, T2, T3" as the levels of your within-subject factor). Correlation matrices and many spreadsheets are happiest wide too.</li>
+          <li><strong>Long:</strong> the tidyverse (R), pandas, JASP's mixed-model tools, and every <a href="../../stats-4/mixed-and-multilevel-models/">mixed / multilevel model</a> want one row per observation, with columns for the person ID, the occasion, and the value. This is exactly <a href="../tidy-data/">tidy data</a>: T1/T2/T3 are values of the variable <em>time</em>, so they belong in a column, not in the header.</li>
         </ul>
-        <p>So "which is right?" has no answer in the abstract — it depends on the next tool in your pipeline. What matters is that you can <em>get from one to the other on demand</em>.</p>
+        <p>So "which is right?" has no answer in the abstract. It depends on the next tool in your pipeline. What matters is that you can <em>get from one to the other on demand</em>.</p>
 
         <h2>Pivoting is one operation, not a rebuild</h2>
         <p>You never reshape a table by hand. Every data package has a matched pair of verbs:</p>
         <ul>
-          <li><strong>wide → long</strong>: <code>pivot_longer()</code> (tidyr) or <code>melt()</code> (pandas) — collapse a set of columns into a key column (which header?) and a value column (what number?).</li>
-          <li><strong>long → wide</strong>: <code>pivot_wider()</code> (tidyr) or <code>pivot()</code> (pandas) — spread a key column back out into one column per level.</li>
+          <li><strong>wide → long</strong>: <code>pivot_longer()</code> (tidyr) or <code>melt()</code> (pandas), which collapse a set of columns into a key column (which header?) and a value column (what number?).</li>
+          <li><strong>long → wide</strong>: <code>pivot_wider()</code> (tidyr) or <code>pivot()</code> (pandas), which spread a key column back out into one column per level.</li>
         </ul>
         <p>Both are lossless and reversible: pivot longer then wider and you're back where you started, provided each row is uniquely identified by its keys (here, <code>name</code> + <code>time</code>). If a pivot silently drops or duplicates rows, that's usually a sign your keys aren't unique — the same alarm bell you'll meet again when <a href="../merging-datasets/">merging datasets</a>.</p>
 
@@ -114,7 +114,7 @@
         </div>
 
         <div class="callout">
-          <p><strong>Why it matters:</strong> half of "my analysis won't run" is really "my data is in the wrong shape for this tool." Keep your <a href="../tidy-data/">clean data</a> in long (tidy) form as the reference copy, and pivot to wide only when a specific procedure demands it — as a step <em>in your script</em>, so the reshape is documented and reversible like every other <a href="../data-cleaning-workflow/">cleaning step</a>.</p>
+          <p><strong>Why it matters:</strong> half of "my analysis won't run" is really "my data is in the wrong shape for this tool." Keep your <a href="../tidy-data/">clean data</a> in long (tidy) form as the reference copy, and pivot to wide only when a specific procedure demands it, as a step <em>in your script</em>, so the reshape is documented and reversible like every other <a href="../data-cleaning-workflow/">cleaning step</a>.</p>
         </div>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
@@ -122,11 +122,11 @@
           <h2>Common questions</h2>
           <details class="faq-item">
             <summary>Should repeated-measures data be in long or wide format?</summary>
-            <div class="faq-a"><p>It depends entirely on the tool. Classic point-and-click <a href="../../stats-2/repeated-measures-anova/">repeated-measures ANOVA</a> in SPSS wants <strong>wide</strong> — each timepoint in its own column, which it reads as the levels of your within-subject factor. Almost everything else — the tidyverse, pandas, JASP's mixed-model tools, and every <a href="../../stats-4/mixed-and-multilevel-models/">multilevel model</a> — wants <strong>long</strong>, with one row per measurement and a column naming the occasion. The practical answer: keep your clean data in long (tidy) form as the master copy, and pivot to wide only when a specific procedure demands it.</p></div>
+            <div class="faq-a"><p>It depends entirely on the tool. Classic point-and-click <a href="../../stats-2/repeated-measures-anova/">repeated-measures ANOVA</a> in SPSS wants <strong>wide</strong> — each timepoint in its own column, which it reads as the levels of your within-subject factor. Almost everything else (the tidyverse, pandas, JASP's mixed-model tools, and every <a href="../../stats-4/mixed-and-multilevel-models/">multilevel model</a>) wants <strong>long</strong>, with one row per measurement and a column naming the occasion. The practical answer: keep your clean data in long (tidy) form as the master copy, and pivot to wide only when a specific procedure demands it.</p></div>
           </details>
           <details class="faq-item">
             <summary>What's the difference between pivot_longer and pivot_wider?</summary>
-            <div class="faq-a"><p>They're inverse operations. <code>pivot_longer()</code> (or pandas <code>melt()</code>) takes several columns and stacks them into two: a <em>key</em> column holding the old column names and a <em>value</em> column holding the numbers — wide becomes long. <code>pivot_wider()</code> (or pandas <code>pivot()</code>) does the reverse, spreading one key column back out into a column per level — long becomes wide. Run one then the other and you return to where you started, as long as each row is uniquely identified by its keys.</p></div>
+            <div class="faq-a"><p>They're inverse operations. <code>pivot_longer()</code> (or pandas <code>melt()</code>) takes several columns and stacks them into two: a <em>key</em> column holding the old column names and a <em>value</em> column holding the numbers, so wide becomes long. <code>pivot_wider()</code> (or pandas <code>pivot()</code>) does the reverse, spreading one key column back out into a column per level, so long becomes wide. Run one then the other and you return to where you started, as long as each row is uniquely identified by its keys.</p></div>
           </details>
           <details class="faq-item">
             <summary>Is tidy data the same as long data?</summary>

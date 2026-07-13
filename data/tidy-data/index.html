@@ -30,7 +30,7 @@
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Tidy Data", "description": "Tidy data means rows are observations, columns are variables, one value per cell. Spot the spreadsheet sins and reshape a messy grade sheet into tidy form.", "url": "https://statscapybara.com/data/tidy-data/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Data: From Raw to Ready", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Tidy Data", "item": "https://statscapybara.com/data/tidy-data/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What does tidy data mean?", "acceptedAnswer": {"@type": "Answer", "text": "Tidy data is a simple, standard shape for a table: each variable is a column, each observation is a row, and each cell holds a single value. The term comes from Hadley Wickham. A tidy table is usually long and a little dull to read, but that consistency is exactly what lets you filter, group, plot, and model it without reshaping first — messy data is messy in endless ways, whereas tidy data is all tidy in the same way."}}, {"@type": "Question", "name": "Should data cleaning ever change my raw data file?", "acceptedAnswer": {"@type": "Answer", "text": "No — treat the raw file as read-only. Save exactly what you collected, never overwrite it, and do every fix in a script that reads the raw file and writes a separate clean one. That way the messy original stays intact as the ground truth, every change is documented and reversible, and anyone (including future-you) can rerun the whole pipeline from scratch. Hand-editing cells in the raw sheet destroys the record of what actually happened."}}, {"@type": "Question", "name": "Do I have to reshape everything into long format?", "acceptedAnswer": {"@type": "Answer", "text": "Tidy (long) format is the analysis-ready default, and most modern tools expect it. But some procedures genuinely want a wide layout: repeated-measures ANOVA in SPSS, or a correlation matrix, put each measure in its own column. The point isn't that long is always right; it's that you can move between shapes on demand once tidy is your reference point. Reshaping (pivoting) is a one-line operation, not a manual rebuild."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What does tidy data mean?", "acceptedAnswer": {"@type": "Answer", "text": "Tidy data is a simple, standard shape for a table: each variable is a column, each observation is a row, and each cell holds a single value. The term comes from Hadley Wickham. A tidy table is usually long and a little dull to read, but that consistency is exactly what lets you filter, group, plot, and model it without reshaping first — messy data is messy in endless ways, whereas tidy data is all tidy in the same way."}}, {"@type": "Question", "name": "Should data cleaning ever change my raw data file?", "acceptedAnswer": {"@type": "Answer", "text": "Treat the raw file as read-only. Save exactly what you collected, never overwrite it, and do every fix in a script that reads the raw file and writes a separate clean one. That way the messy original stays intact as the ground truth, every change is documented and reversible, and anyone (including future-you) can rerun the whole pipeline from scratch. Hand-editing cells in the raw sheet destroys the record of what actually happened."}}, {"@type": "Question", "name": "Do I have to reshape everything into long format?", "acceptedAnswer": {"@type": "Answer", "text": "Tidy (long) format is the analysis-ready default, and most modern tools expect it. But some procedures genuinely want a wide layout: repeated-measures ANOVA in SPSS, or a correlation matrix, put each measure in its own column. Long is not a universal rule so much as a reliable reference point, and once your data is tidy you can move between shapes on demand. Reshaping (pivoting) is a one-line operation, not a manual rebuild."}}]}
   </script>
 </head>
 <body data-course="data" data-section="tidy-data">
@@ -44,7 +44,7 @@
         <span class="lesson-eyebrow">Section 2.1</span>
         <h1>Tidy Data</h1>
 
-        <p class="lede">Most of the pain in data analysis isn't the statistics — it's the shape of the spreadsheet you start from. <strong>Tidy data</strong> is one simple, boring convention that makes every tool downstream just <em>work</em>: rows are observations, columns are variables, one value per cell. Learn to see the shape, and half of "cleaning" disappears before it begins.</p>
+        <p class="lede">Before any statistics happen, your data has a <em>shape</em>, and the wrong shape is where most analysis pain actually comes from. <strong>Tidy data</strong> is one simple, boring convention that makes every tool downstream just <em>work</em>: rows are observations, columns are variables, one value per cell. Learn to see the shape, and half of "cleaning" disappears before it begins.</p>
 
         <h2>The one rule (that is really three)</h2>
         <p>Coined by Hadley Wickham, a <strong>tidy</strong> dataset satisfies three conditions at once:</p>
@@ -53,18 +53,18 @@
           <li><strong>Each observation is a row.</strong> One row per unit of analysis (per person, per trial, per person-per-timepoint), consistently.</li>
           <li><strong>Each cell holds one value.</strong> No "88/100", no "Ann (Year 2)", no notes crammed in beside the number.</li>
         </ul>
-        <p>That's it. Tidy data is <em>long</em> and a little dull to look at — and that dullness is exactly what lets you filter, group, plot, and model it without wrestling the layout first. Messy data is messy in a thousand creative ways; tidy data is all tidy in the same way.</p>
+        <p>That's it. Tidy data is <em>long</em> and a little dull to look at, and that dullness is exactly what lets you filter, group, plot, and model it without wrestling the layout first. Messy data is messy in a thousand creative ways; tidy data is all tidy in the same way.</p>
 
         <h2>The classic spreadsheet sins</h2>
         <p>Human-friendly spreadsheets are usually machine-hostile. The same handful of sins show up everywhere:</p>
         <ul>
-          <li><strong>Metadata living in the data</strong> — a title banner, a blank spacer row, a "totals" row mixed in with real observations.</li>
-          <li><strong>Two variables in one column</strong> — <code>Ann (Year 2)</code> packs identity <em>and</em> year of study into a single cell.</li>
-          <li><strong>Colour as data</strong> — a red-shaded cell that secretly means "resit". No program can compute on a fill colour, and neither can future-you.</li>
-          <li><strong>One variable spread across many columns</strong> — <code>Quiz 1</code>, <code>Quiz 2</code>, <code>Final</code> are three columns of the <em>same</em> variable (a score). This "wide" layout is friendly to read and painful to analyse.</li>
+          <li><strong>Metadata living in the data.</strong> A title banner, a blank spacer row, a "totals" row mixed in with real observations.</li>
+          <li><strong>Two variables in one column.</strong> <code>Ann (Year 2)</code> packs identity <em>and</em> year of study into a single cell.</li>
+          <li><strong>Colour as data.</strong> A red-shaded cell that secretly means "resit". No program can compute on a fill colour, and neither can future-you.</li>
+          <li><strong>One variable spread across many columns.</strong> <code>Quiz 1</code>, <code>Quiz 2</code>, <code>Final</code> are three columns of the <em>same</em> variable (a score). This "wide" layout is friendly to read and painful to analyse.</li>
         </ul>
 
-        <p>Here's a gloriously messy grade sheet with all four. Fix them one at a time and watch it morph into tidy form.</p>
+        <p>Below is a gloriously messy grade sheet with all four. Fix them one at a time and watch it morph into tidy form.</p>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="td">
@@ -75,7 +75,7 @@
           <div id="td-grid" class="td-grid-wrap"></div>
           <p class="td-legend" id="td-legend"></p>
 
-          <p style="margin:.9rem 0 .35rem;font-weight:600;font-size:.9rem">Sins to fix — click the highlighted one:</p>
+          <p style="margin:.9rem 0 .35rem;font-weight:600;font-size:.9rem">Sins to fix, click the highlighted one:</p>
           <div id="td-sins" class="td-sins"></div>
 
           <p class="td-verdict" id="td-verdict"></p>
@@ -91,14 +91,14 @@
         <p>Notice the end state: it's <em>taller</em> and less pretty, but every column now answers "what variable is this?" with a single word, and you could compute the mean score, the resit rate, or a per-year average with one line of code. That's the whole payoff.</p>
 
         <h2>Why tidy unlocks everything downstream</h2>
-        <p>Tidy data is the shared language your tools already speak. A tidy frame drops straight into a <a href="../../stats-1/describing-data/">descriptives</a> routine, a <code>group_by</code>, a boxplot, or a regression with no reshaping. The moment your data is tidy, "how do I get the software to accept this?" stops being a question — and the questions become statistical again. Reshaping <em>between</em> tidy-long and human-wide is itself a routine operation (you'll meet <code>pivot_longer</code>/<code>pivot_wider</code> later in this course), but it's only painless because tidy is the well-defined destination.</p>
+        <p>Tidy data is the shared language your tools already speak. A tidy frame drops straight into a <a href="../../stats-1/describing-data/">descriptives</a> routine, a <code>group_by</code>, a boxplot, or a regression with no reshaping. The moment your data is tidy, "how do I get the software to accept this?" stops being a question, and the questions become statistical again. Reshaping <em>between</em> tidy-long and human-wide is itself a routine operation (you'll meet <code>pivot_longer</code>/<code>pivot_wider</code> later in this course), but it's only painless because tidy is the well-defined destination.</p>
 
         <div class="callout key">
           <p><strong>The tidy test:</strong> point at any column and ask "is this <em>one</em> variable?" and point at any row and ask "is this <em>one</em> observation?". If a column name is actually a <em>value</em> (like <code>2019</code>, <code>Male</code>, or <code>Quiz 1</code>), your data is wide, not tidy — that variable is hiding in your headers.</p>
         </div>
 
         <div class="callout">
-          <p><strong>Why it matters:</strong> tidy data isn't fussiness for its own sake — it's the difference between an analysis you can rerun in a second and one you rebuild by hand every time. Keep the raw file exactly as collected, then reshape to tidy <em>in a script</em>, so the messy original stays intact and the tidy version is reproducible. A good <a href="../codebooks-and-documentation/">codebook</a> and disciplined <a href="../data-entry-and-validation/">data entry</a> are what keep a sheet tidy in the first place.</p>
+          <p><strong>Why it matters:</strong> tidy data is not fussiness for its own sake. It's the difference between an analysis you can rerun in a second and one you rebuild by hand every time. Keep the raw file exactly as collected, then reshape to tidy <em>in a script</em>, so the messy original stays intact and the tidy version is reproducible. A good <a href="../codebooks-and-documentation/">codebook</a> and disciplined <a href="../data-entry-and-validation/">data entry</a> are what keep a sheet tidy in the first place.</p>
         </div>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
@@ -110,11 +110,11 @@
           </details>
           <details class="faq-item">
             <summary>Should data cleaning ever change my raw data file?</summary>
-            <div class="faq-a"><p>No — treat the raw file as read-only. Save exactly what you collected, never overwrite it, and do every fix in a <em>script</em> that reads the raw file and writes a separate clean one. That way the messy original stays intact as the ground truth, every change is documented and reversible, and anyone (including future-you) can rerun the whole pipeline from scratch. Hand-editing cells in the raw sheet destroys the record of what actually happened.</p></div>
+            <div class="faq-a"><p>Treat the raw file as read-only. Save exactly what you collected, never overwrite it, and do every fix in a <em>script</em> that reads the raw file and writes a separate clean one. That way the messy original stays intact as the ground truth, every change is documented and reversible, and anyone (including future-you) can rerun the whole pipeline from scratch. Hand-editing cells in the raw sheet destroys the record of what actually happened.</p></div>
           </details>
           <details class="faq-item">
             <summary>Do I have to reshape everything into long format?</summary>
-            <div class="faq-a"><p>Tidy (long) format is the analysis-ready default, and most modern tools expect it. But some procedures genuinely want a <em>wide</em> layout: repeated-measures ANOVA in SPSS, or a correlation matrix, put each measure in its own column. The point isn't that long is always right; it's that you can move between shapes on demand once tidy is your reference point. Reshaping (pivoting) is a one-line operation, not a manual rebuild.</p></div>
+            <div class="faq-a"><p>Tidy (long) format is the analysis-ready default, and most modern tools expect it. But some procedures genuinely want a <em>wide</em> layout: repeated-measures ANOVA in SPSS, or a correlation matrix, put each measure in its own column. Long is not a universal rule so much as a reliable reference point, and once your data is tidy you can move between shapes on demand. Reshaping (pivoting) is a one-line operation, not a manual rebuild.</p></div>
           </details>
         </section>
         <!-- faq:end -->

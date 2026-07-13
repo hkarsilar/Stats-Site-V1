@@ -44,22 +44,22 @@
         <span class="lesson-eyebrow">Section 2.2</span>
         <h1>Codebooks &amp; Documentation</h1>
 
-        <p class="lede">A dataset without a codebook is a puzzle with the picture thrown away. Six months from now, <code>grp</code>, <code>q3_rev</code>, and a lone <code>-99</code> will mean nothing to you — and the person most likely to reopen this file is <strong>future-you</strong>, who has forgotten everything. A codebook is the short document that keeps your data legible to that stranger.</p>
+        <p class="lede">A dataset without a codebook is a puzzle with the picture thrown away. Six months from now, <code>grp</code>, <code>q3_rev</code>, and a lone <code>-99</code> will mean nothing to you, and the person most likely to reopen this file is <strong>future-you</strong>, who has forgotten everything. A codebook is the short document that keeps your data legible to that stranger.</p>
 
         <h2>What a codebook records</h2>
         <p>A codebook is a variable-by-variable dictionary. For every column it names:</p>
         <ul>
-          <li><strong>Name</strong> — the exact column header as it appears in the file.</li>
-          <li><strong>Label</strong> — a human-readable description ("Annual household income, USD").</li>
-          <li><strong>Type</strong> — continuous, ordinal, nominal, date, or identifier (this is the same idea as <a href="../../stats-1/types-of-data/">types of data</a>, written down where the software can't guess wrong).</li>
-          <li><strong>Units / allowed values</strong> — kilograms; 1–5; the category set <code>{1 = control, 2 = drug A}</code>.</li>
-          <li><strong>Missing codes</strong> — how "no answer" is stored, ideally a blank rather than a number.</li>
+          <li><strong>Name:</strong> the exact column header as it appears in the file.</li>
+          <li><strong>Label:</strong> a human-readable description ("Annual household income, USD").</li>
+          <li><strong>Type:</strong> continuous, ordinal, nominal, date, or identifier (this is the same idea as <a href="../../stats-1/types-of-data/">types of data</a>, written down where the software can't guess wrong).</li>
+          <li><strong>Units / allowed values:</strong> kilograms; 1–5; the category set <code>{1 = control, 2 = drug A}</code>.</li>
+          <li><strong>Missing codes:</strong> how "no answer" is stored, ideally a blank rather than a number.</li>
         </ul>
 
         <h2>Naming conventions and the landmines</h2>
-        <p>Good column names are short, lowercase, without spaces, and stable: <code>age</code>, <code>income_usd</code>, <code>item3_rev</code>. Cryptic names age badly, but the truly dangerous documentation gap is the <strong>numeric missing code</strong>. Storing "declined to answer" as <code>-99</code> or <code>999</code> is a landmine: the day you forget to tell the software those aren't real numbers, they get <em>averaged in</em>, and a mean income quietly drops by thousands. Prefer a genuinely blank cell (or <code>NA</code>); if you must use a code, the codebook is the one place that keeps it from detonating.</p>
+        <p>Good column names are short, lowercase, without spaces, and stable: <code>age</code>, <code>income_usd</code>, <code>item3_rev</code>. Cryptic names age badly, but the truly dangerous documentation gap is the <strong>numeric missing code</strong>. Storing "declined to answer" as <code>-99</code> or <code>999</code> is a landmine: the day you forget to tell the software those aren't real numbers, they get <em>averaged in</em>, and a mean income drops by thousands. Prefer a genuinely blank cell (or <code>NA</code>); if you must use a code, the codebook is the one place that keeps it from detonating.</p>
 
-        <p>Below are six cryptic columns from a real-feeling export. For each, decide what it <em>actually</em> is — then read the codebook entry future-you needs, landmine and all.</p>
+        <p>Below are six cryptic columns from a real-feeling export. For each, decide what it <em>actually</em> is, then read the codebook entry future-you needs, landmine and all.</p>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="cb">

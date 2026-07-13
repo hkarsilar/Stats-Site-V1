@@ -30,7 +30,7 @@
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Outliers: Detect, Investigate, Decide", "description": "Outliers in practice: detect with z and 1.5×IQR, investigate the cause, then decide — correct, exclude and report, or keep and use robust methods.", "url": "https://statscapybara.com/data/outliers-in-practice/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Data: From Raw to Ready", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Outliers: Detect, Investigate, Decide", "item": "https://statscapybara.com/data/outliers-in-practice/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Should I remove outliers before or after checking assumptions?", "acceptedAnswer": {"@type": "Answer", "text": "Neither in isolation — investigate the cause first, because the two questions are entangled. Never delete points simply to make an assumption check pass; that's how honest analysis slides into p-hacking. Often a single fix resolves both at once: a genuine data-entry error corrected removes an assumption violation too, and a log transform can tame a skewed distribution without discarding any data. If an extreme point is real and you're unsure, run the analysis with and without it (a sensitivity analysis) and report both."}}, {"@type": "Question", "name": "Is it ever okay to just delete an outlier?", "acceptedAnswer": {"@type": "Answer", "text": "Only when you can point to a documented reason the observation is invalid — an equipment failure, a participant who didn't follow instructions, an impossible value with no recoverable source — and you report that you removed it and why. What's never acceptable is silently dropping points because they weaken your result. A genuine extreme (a real, rare value from a heavy-tailed distribution) is information, not contamination: keep it and lean on robust methods such as medians, trimmed means, or rank tests so it doesn't dominate."}}, {"@type": "Question", "name": "Should I flag outliers with z &gt; 3 or the 1.5 × IQR rule?", "acceptedAnswer": {"@type": "Answer", "text": "Both are rules of thumb, not laws, and they answer slightly different questions. The z-score rule (|z| &gt; 3) assumes roughly normal data and uses the mean and SD — which the outlier itself inflates, so a lone giant can mask itself. The 1.5 × IQR rule is built from quartiles, so it's far more robust and better for skewed data. Look at a boxplot or histogram first, decide the rule in advance so the result can't steer it, and remember that either way you've only flagged a point for investigation, not sentenced it."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Should I remove outliers before or after checking assumptions?", "acceptedAnswer": {"@type": "Answer", "text": "Neither in isolation — investigate the cause first, because the two questions are entangled. Never delete points simply to make an assumption check pass; that's how honest analysis slides into p-hacking. Often a single fix resolves both at once: a genuine data-entry error corrected removes an assumption violation too, and a log transform can tame a skewed distribution without discarding any data. If an extreme point is real and you're unsure, run the analysis with and without it (a sensitivity analysis) and report both."}}, {"@type": "Question", "name": "Is it ever okay to just delete an outlier?", "acceptedAnswer": {"@type": "Answer", "text": "Only when you can point to a documented reason the observation is invalid (an equipment failure, a participant who didn't follow instructions, an impossible value with no recoverable source) and you report that you removed it and why. What's never acceptable is silently dropping points because they weaken your result. A genuine extreme (a real, rare value from a heavy-tailed distribution) is information, not contamination: keep it and lean on robust methods such as medians, trimmed means, or rank tests so it doesn't dominate."}}, {"@type": "Question", "name": "Should I flag outliers with z &gt; 3 or the 1.5 × IQR rule?", "acceptedAnswer": {"@type": "Answer", "text": "Both are rules of thumb, not laws, and they answer slightly different questions. The z-score rule (|z| &gt; 3) assumes roughly normal data and uses the mean and SD — which the outlier itself inflates, so a lone giant can mask itself. The 1.5 × IQR rule is built from quartiles, so it's far more robust and better for skewed data. Look at a boxplot or histogram first, decide the rule in advance so the result can't steer it, and remember that either way you've only flagged a point for investigation, not sentenced it."}}]}
   </script>
 </head>
 <body data-course="data" data-section="outliers-in-practice">
@@ -44,22 +44,22 @@
         <span class="lesson-eyebrow">Section 2.5</span>
         <h1>Outliers: Detect, Investigate, Decide</h1>
 
-        <p class="lede">An outlier is a value far from the rest. What it is <em>not</em> is automatically a mistake to delete. The single most damaging habit in data analysis is quietly dropping the points that spoil the pattern. The professional move is a three-step loop: <strong>detect</strong> the extreme value, <strong>investigate</strong> why it's there, and only then <strong>decide</strong> — with the reason on record.</p>
+        <p class="lede">An outlier is a value far from the rest. What it is <em>not</em> is automatically a mistake to delete. The single most damaging habit in data analysis is covertly dropping the points that spoil the pattern. The professional move is a three-step loop: <strong>detect</strong> the extreme value, <strong>investigate</strong> why it's there, and only then <strong>decide</strong>, with the reason on record.</p>
 
-        <h2>Detect — look before you calculate</h2>
+        <h2>Detect: look before you calculate</h2>
         <p>Your eyes are the best first detector. A histogram, a boxplot, or a scatterplot shows an extreme point instantly, in context. Two rules of thumb then put numbers on it:</p>
         <ul>
           <li><strong>z-score:</strong> how many SDs from the mean. <code>|z| &gt; 3</code> is a common flag — but the mean and SD are themselves dragged by the outlier, so a lone giant can hide by inflating the SD.</li>
-          <li><strong>1.5 × IQR:</strong> anything below <code>Q1 − 1.5·IQR</code> or above <code>Q3 + 1.5·IQR</code> — the rule that draws a boxplot's whiskers. It uses quartiles, so it resists the very extremes it's hunting.</li>
+          <li><strong>1.5 × IQR:</strong> anything below <code>Q1 − 1.5·IQR</code> or above <code>Q3 + 1.5·IQR</code>, the rule that draws a boxplot's whiskers. It uses quartiles, so it resists the very extremes it's hunting.</li>
         </ul>
         <p>Both are <em>flags, not verdicts</em>: they nominate points for investigation, they don't sentence them. (Our <a href="../../descriptives.html">descriptives calculator</a> reports both automatically for pasted data.)</p>
 
-        <h2>Investigate — the three explanations</h2>
+        <h2>Investigate: the three explanations</h2>
         <p>Every flagged point has one of three stories, and each has its own correct action:</p>
         <ol>
-          <li><strong>An error</strong> — a typo, a unit mix-up, an equipment glitch. If the source is recoverable, <strong>correct it</strong> (age 511 → 51). If not, mark it <em>missing</em>.</li>
-          <li><strong>A different population / invalid observation</strong> — the participant fell asleep, the assay batch failed, the trial doesn't measure what you meant. <strong>Exclude and report</strong> it, with the pre-decided reason.</li>
-          <li><strong>A genuine extreme</strong> — a real, rare member of a heavy-tailed distribution (a millionaire in an income survey). <strong>Keep it</strong>, and lean on <em>robust</em> methods (medians, trimmed means, rank tests) so one true point doesn't dominate.</li>
+          <li><strong>An error.</strong> A typo, a unit mix-up, an equipment glitch. If the source is recoverable, <strong>correct it</strong> (age 511 → 51). If not, mark it <em>missing</em>.</li>
+          <li><strong>A different population, or an invalid observation.</strong> The participant fell asleep, the assay batch failed, the trial doesn't measure what you meant. <strong>Exclude and report</strong> it, with the pre-decided reason.</li>
+          <li><strong>A genuine extreme.</strong> A real, rare member of a heavy-tailed distribution (a millionaire in an income survey). <strong>Keep it</strong>, and lean on <em>robust</em> methods (medians, trimmed means, rank tests) so one true point doesn't dominate.</li>
         </ol>
 
         <p>Time to be the methodologist. Here are six flagged cases, each with the context you'd actually have. Pick the action you'd defend, then see the verdict.</p>
@@ -77,8 +77,8 @@
         </div>
         <!-- ============ /INTERACTIVE 1 ============ -->
 
-        <h2>Decide — and notice the leverage</h2>
-        <p>Why does the decision matter so much? Because a single extreme point can swing a whole result. Below is a real two-group reaction-time study: the treatment truly worked — but one participant's timer kept running after they left the room, logging <strong>24,000 ms</strong>. Watch what that one value does to the <em>t</em>-test, and what three defensible responses do to it.</p>
+        <h2>Decide, and notice the leverage</h2>
+        <p>Why does the decision matter so much? Because a single extreme point can swing a whole result. Below is a real two-group reaction-time study: the treatment truly worked, but one participant's timer kept running after they left the room, logging <strong>24,000 ms</strong>. Watch what that one value does to the <em>t</em>-test, and what three defensible responses do to it.</p>
 
         <!-- ============ INTERACTIVE 2 ============ -->
         <div class="viz" id="ol">
@@ -103,11 +103,11 @@
         <!-- ============ /INTERACTIVE 2 ============ -->
 
         <div class="callout key">
-          <p><strong>An outlier is a question, not a verdict.</strong> "This point is extreme" is the start of an investigation, never the end. Decide the rule you'll use <em>before</em> you see how it changes your p-value, apply it to every point equally, and report what you did — ideally with and without the point, so the reader can judge for themselves.</p>
+          <p><strong>An outlier is a question, not a verdict.</strong> "This point is extreme" is the start of an investigation, never the end. Decide the rule you'll use <em>before</em> you see how it changes your p-value, apply it to every point equally, and report what you did, ideally with and without the point, so the reader can judge for themselves.</p>
         </div>
 
         <div class="callout">
-          <p><strong>Why it matters:</strong> silently deleting inconvenient points is how honest researchers drift into <a href="../../methods/the-replication-crisis/">p-hacking</a> without noticing — each deletion feels justified, and the false-positive rate climbs. The disciplined alternative is cheap: flag with z or IQR, investigate the cause, act on the cause, and log it. In models, an extreme point can also be a high-<em>leverage</em> case that bends the whole fit — see <a href="../../stats-2/regression-diagnostics/">regression diagnostics</a>. And when a variable is genuinely heavy-tailed, a <a href="../transformations-and-recoding/">transformation</a> often tames the extremes without throwing any data away.</p>
+          <p><strong>Why it matters:</strong> silently deleting inconvenient points is how honest researchers drift into <a href="../../methods/the-replication-crisis/">p-hacking</a> without noticing: each deletion feels justified, and the false-positive rate climbs. The disciplined alternative is cheap: flag with z or IQR, investigate the cause, act on the cause, and log it. In models, an extreme point can also be a high-<em>leverage</em> case that bends the whole fit (see <a href="../../stats-2/regression-diagnostics/">regression diagnostics</a>). And when a variable is genuinely heavy-tailed, a <a href="../transformations-and-recoding/">transformation</a> often tames the extremes without throwing any data away.</p>
         </div>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
@@ -119,7 +119,7 @@
           </details>
           <details class="faq-item">
             <summary>Is it ever okay to just delete an outlier?</summary>
-            <div class="faq-a"><p>Only when you can point to a documented reason the observation is invalid — an equipment failure, a participant who didn't follow instructions, an impossible value with no recoverable source — and you <em>report</em> that you removed it and why. What's never acceptable is silently dropping points because they weaken your result. A genuine extreme (a real, rare value from a heavy-tailed distribution) is information, not contamination: keep it and lean on robust methods such as medians, trimmed means, or rank tests so it doesn't dominate.</p></div>
+            <div class="faq-a"><p>Only when you can point to a documented reason the observation is invalid (an equipment failure, a participant who didn't follow instructions, an impossible value with no recoverable source) and you <em>report</em> that you removed it and why. What's never acceptable is silently dropping points because they weaken your result. A genuine extreme (a real, rare value from a heavy-tailed distribution) is information, not contamination: keep it and lean on robust methods such as medians, trimmed means, or rank tests so it doesn't dominate.</p></div>
           </details>
           <details class="faq-item">
             <summary>Should I flag outliers with z &gt; 3 or the 1.5 × IQR rule?</summary>
