@@ -95,7 +95,7 @@ window.CHECKS = {
     { q: "A worry unique to repeated-measures designs (vs. between-subjects) is…", o: ["outliers", "practice and carryover effects across conditions", "unequal variances", "measurement error"], a: 1, why: "Doing all conditions means earlier ones can contaminate later ones — hence counterbalancing the order." }
   ],
   "assumptions-and-when-they-break": [
-    { q: "The assumption whose violation is usually MOST serious for t-tests and ANOVA is…", o: ["normality", "equal variances", "independence of observations", "balanced group sizes"], a: 2, why: "Normality and variance issues are often survivable; dependent observations (e.g. classmates chatting) quietly wreck the error calculations." },
+    { q: "The assumption whose violation is usually MOST serious for t-tests and ANOVA is…", o: ["normality", "equal variances", "independence of observations", "balanced group sizes"], a: 2, why: "Normality and variance issues are often survivable; dependent observations (e.g. classmates chatting) wreck the error calculations without any warning in the output." },
     { q: "Thanks to the CLT, moderate non-normality with large samples typically…", o: ["invalidates the test", "barely matters for tests about means", "flips the direction of effects", "requires a chi-square test instead"], a: 1, why: "Tests about means ride on the sampling distribution of the mean, which normalizes as n grows." },
     { q: "Unequal variances are most dangerous when…", o: ["group sizes are also unequal", "samples are large", "data are normal", "there are only two groups"], a: 0, why: "With unequal n, the pooled error is dominated by the wrong group and the test's true error rate drifts — Welch's test fixes this." }
   ],
@@ -127,7 +127,7 @@ window.CHECKS = {
 
   /* ---------- Stats 3 — Advanced Modeling ---------- */
   "multiple-regression": [
-    { q: "In a multiple regression, each coefficient represents the predictor's effect…", o: ["ignoring the other predictors", "holding the other predictors constant", "only when others are zero", "on the other predictors"], a: 1, why: "That 'all else equal' reading is the whole point — it's how regression statistically controls for other variables." },
+    { q: "In a multiple regression, each coefficient represents the predictor's effect…", o: ["ignoring the other predictors", "holding the other predictors constant", "only when others are zero", "on the other predictors"], a: 1, why: "That 'all else equal' reading is how regression statistically controls for other variables." },
     { q: "Exercise predicts health with r = .4, but the regression coefficient for exercise (controlling for age) is near 0. A likely reason is…", o: ["the data are wrong", "age drives both exercise and health", "the model has too few predictors", "r was computed incorrectly"], a: 1, why: "Controlling for a confounder can absorb a simple association — the raw correlation was partly age in disguise." },
     { q: "R² = .35 in a multiple regression means…", o: ["each predictor explains 35%", "the model explains 35% of outcome variance", "35% of predictions are correct", "the correlation between predictors is .35"], a: 1, why: "R² pools the model's total explanatory share of the outcome's variance." }
   ],

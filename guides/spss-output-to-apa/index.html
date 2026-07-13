@@ -66,13 +66,13 @@
 
         <h2 id="three-rules">Three rules before any output</h2>
         <ul>
-          <li><strong><code>Sig.</code> means <em>p</em> — and it is never .000.</strong> SPSS truncates at three decimals, so <code>.000</code> means <em>p</em> &lt; .0005. Write <em>p</em> &lt; .001, never <em>p</em> = .000. (Double-clicking a value in the output viewer reveals its full precision.)</li>
-          <li><strong>Typography carries meaning.</strong> Latin statistical symbols are italic (<em>t</em>, <em>F</em>, <em>p</em>, <em>r</em>, <em>d</em>, <em>M</em>, <em>SD</em>, <em>N</em>); Greek ones are not (χ², η², β as a population parameter — though sample standardized β is commonly italicised). Statistics that cannot exceed 1 (<em>p</em>, <em>r</em>, η², Cramér's <em>V</em>) get no leading zero: <em>p</em> = .047, not 0.047.</li>
-          <li><strong>A result is four things, not one:</strong> the descriptives, the test statistic with its df, the <em>p</em>-value, and an effect size. If your sentence has only a <em>p</em>, it's half a result — <a href="../../stats-1/effect-size-and-power/">Effect Size &amp; Power</a> explains why. The full ruleset lives in <a href="../../writing/reporting-statistics-apa/">Reporting Statistics in APA Style</a>, and the <a href="../../apa.html">APA results formatter</a> builds any of the sentences below from your own numbers — and warns you if your <em>p</em> doesn't match your statistic.</li>
+          <li><strong><code>Sig.</code> means <em>p</em>, and it is never .000.</strong> SPSS truncates at three decimals, so <code>.000</code> means <em>p</em> &lt; .0005. Write <em>p</em> &lt; .001, never <em>p</em> = .000. (Double-clicking a value in the output viewer reveals its full precision.)</li>
+          <li><strong>Typography carries meaning.</strong> Latin statistical symbols are italic (<em>t</em>, <em>F</em>, <em>p</em>, <em>r</em>, <em>d</em>, <em>M</em>, <em>SD</em>, <em>N</em>); Greek ones are not (χ², η², β as a population parameter, though sample standardized β is commonly italicised). Statistics that cannot exceed 1 (<em>p</em>, <em>r</em>, η², Cramér's <em>V</em>) get no leading zero: <em>p</em> = .047, not 0.047.</li>
+          <li><strong>A result is four things, not one:</strong> the descriptives, the test statistic with its df, the <em>p</em>-value, and an effect size. If your sentence has only a <em>p</em>, it's half a result — <a href="../../stats-1/effect-size-and-power/">Effect Size &amp; Power</a> explains why. The full ruleset lives in <a href="../../writing/reporting-statistics-apa/">Reporting Statistics in APA Style</a>, and the <a href="../../apa.html">APA results formatter</a> builds any of the sentences below from your own numbers, and warns you if your <em>p</em> doesn't match your statistic.</li>
         </ul>
 
         <h2 id="t-test">1 · Independent-samples t-test</h2>
-        <p><strong>Menu:</strong> Analyze → Compare Means → Independent-Samples T Test. <strong>Data:</strong> <code>sleep-experiment.csv</code> from the <a href="../../datasets.html">practice datasets</a> — 40 sleep-restricted vs 40 normally rested people, counting attention lapses (the same example our <a href="../analyze-thesis-data-jasp/">JASP guide</a> runs, so you can compare the two programs side by side).</p>
+        <p><strong>Menu:</strong> Analyze → Compare Means → Independent-Samples T Test. <strong>Data:</strong> <code>sleep-experiment.csv</code> from the <a href="../../datasets.html">practice datasets</a>, 40 sleep-restricted vs 40 normally rested people, counting attention lapses (the same example our <a href="../analyze-thesis-data-jasp/">JASP guide</a> runs, so you can compare the two programs side by side).</p>
 
         <div class="mock" role="img" aria-label="Mock SPSS Group Statistics table: restricted sleep n 40 mean 22.77 SD 6.02; normal sleep n 40 mean 20.07 SD 5.92.">
           <p class="mock-cap">Group Statistics</p>
@@ -94,14 +94,14 @@
               <tr><td>Equal variances not assumed</td><td class="dim"></td><td class="dim"></td><td>2.022</td><td>77.980</td><td>.047</td><td>2.700</td><td>1.335</td><td class="dim"></td><td class="dim"></td></tr>
             </tbody>
           </table>
-          <p class="mock-note">Read Levene's columns <em>first</em>, and only to choose your row: Levene's <em>p</em> = .758 is above .05, so equal variances are fine and the top row applies. Had Levene's been significant, you'd read the bottom (Welch) row — many statisticians simply always do.</p>
+          <p class="mock-note">Read Levene's columns <em>first</em>, and only to choose your row: Levene's <em>p</em> = .758 is above .05, so equal variances are fine and the top row applies. Had Levene's been significant, you'd read the bottom (Welch) row, which many statisticians simply always do.</p>
         </div>
 
         <p><strong>The trap:</strong> that first <code>Sig.</code> column belongs to <em>Levene's test</em>, not your t-test. Reporting it as your <em>p</em>-value is the single most common SPSS misreading — your <em>p</em> lives under <code>Sig. (2-tailed)</code>. <a href="../../stats-1/independent-samples-t-test/">The lesson</a> explains what each piece means; note SPSS also gives Cohen's <em>d</em> if you tick <em>Estimate effect sizes</em> (here <em>d</em> = 0.45).</p>
         <blockquote class="apa-quote"><p>Sleep-restricted participants made more attention lapses (<em>M</em> = 22.77, <em>SD</em> = 6.02) than rested participants (<em>M</em> = 20.07, <em>SD</em> = 5.92), <em>t</em>(78) = 2.02, <em>p</em> = .047, <em>d</em> = 0.45, 95% CI of the difference [0.04, 5.36].</p></blockquote>
 
         <h2 id="anova">2 · One-way ANOVA</h2>
-        <p><strong>Menu:</strong> Analyze → Compare Means → One-Way ANOVA; under <em>Options</em> tick <em>Homogeneity of variance test</em> and <em>Welch</em>. <strong>Data:</strong> <code>study-methods.csv</code> — 105 students, three revision techniques, one exam score.</p>
+        <p><strong>Menu:</strong> Analyze → Compare Means → One-Way ANOVA; under <em>Options</em> tick <em>Homogeneity of variance test</em> and <em>Welch</em>. <strong>Data:</strong> <code>study-methods.csv</code>, 105 students, three revision techniques, one exam score.</p>
 
         <div class="mock" role="img" aria-label="Mock SPSS Test of Homogeneity of Variances: Levene statistic 3.615, df1 2, df2 102, Sig .030.">
           <p class="mock-cap">Test of Homogeneity of Variances</p>
@@ -127,14 +127,14 @@
             <thead><tr><th></th><th>Statistic</th><th>df1</th><th>df2</th><th>Sig.</th></tr></thead>
             <tbody><tr><td>Welch</td><td class="hl">13.104</td><td class="hl">2</td><td class="hl">66.43</td><td class="hl">.000</td></tr></tbody>
           </table>
-          <p class="mock-note">Because Levene's failed, report the Welch row — note its fractional df₂. And <code>Sig. .000</code> becomes <em>p</em> &lt; .001, always.</p>
+          <p class="mock-note">Because Levene's failed, report the Welch row (note its fractional df₂). And <code>Sig. .000</code> becomes <em>p</em> &lt; .001, always.</p>
         </div>
 
-        <p><strong>Effect size:</strong> recent SPSS versions offer η² in the options; from the table it's just SS<sub>between</sub> / SS<sub>total</sub> = 2200.30 / 11902.13 = .185. <strong>Follow-ups:</strong> a significant omnibus <em>F</em> says "the means aren't all equal," not which ones differ — that's the post-hoc table's job (with unequal variances, use Games–Howell rather than Tukey; <a href="../../stats-2/post-hoc-tests/">Post-Hoc Tests</a> explains the multiple-comparisons problem it's solving). The <a href="../../stats-2/one-way-anova/">one-way ANOVA lesson</a> covers the logic end to end.</p>
+        <p><strong>Effect size:</strong> recent SPSS versions offer η² in the options; from the table it's just SS<sub>between</sub> / SS<sub>total</sub> = 2200.30 / 11902.13 = .185. <strong>Follow-ups:</strong> a significant omnibus <em>F</em> says "the means aren't all equal," not which ones differ. Naming the pairs that differ is the post-hoc table's job (with unequal variances, use Games–Howell rather than Tukey; <a href="../../stats-2/post-hoc-tests/">Post-Hoc Tests</a> explains the multiple-comparisons problem it's solving). The <a href="../../stats-2/one-way-anova/">one-way ANOVA lesson</a> covers the logic end to end.</p>
         <blockquote class="apa-quote"><p>Exam scores differed across revision techniques, Welch's <em>F</em>(2, 66.43) = 13.10, <em>p</em> &lt; .001, η² = .19. Because Levene's test indicated unequal variances (<em>p</em> = .030), Welch's robust test is reported.</p></blockquote>
 
         <h2 id="correlation">3 · Pearson correlation</h2>
-        <p><strong>Menu:</strong> Analyze → Correlate → Bivariate. <strong>Data:</strong> <code>screen-time.csv</code> — 60 people's daily screen hours and sleep quality.</p>
+        <p><strong>Menu:</strong> Analyze → Correlate → Bivariate. <strong>Data:</strong> <code>screen-time.csv</code>, 60 people's daily screen hours and sleep quality.</p>
 
         <div class="mock" role="img" aria-label="Mock SPSS Correlations table: Pearson correlation between screen hours and sleep quality is -.205 with Sig. .115 and N 60.">
           <p class="mock-cap">Correlations</p>
@@ -146,14 +146,14 @@
               <tr><td>N</td><td>60</td><td class="hl">60</td></tr>
             </tbody>
           </table>
-          <p class="mock-note">The matrix mirrors itself — each pair appears twice, plus a useless diagonal of 1s. You need three numbers: <em>r</em>, its <em>p</em>, and <em>N</em>.</p>
+          <p class="mock-note">The matrix mirrors itself: each pair appears twice, plus a useless diagonal of 1s. You need three numbers: <em>r</em>, its <em>p</em>, and <em>N</em>.</p>
         </div>
 
-        <p><strong>Two traps.</strong> First, the df in your sentence is <em>N</em> − 2 = 58, not <em>N</em> — SPSS never prints it, examiners always check it. Second, and bigger: <em>this particular r is a lie</em>. One influential participant (11.5 hours of screen time, excellent sleep) is dragging a real relationship toward zero — drop that point and <em>r</em> goes from −.21 to −.40. A correlation without a scatterplot is a rumor: plot it (Graphs → Chart Builder, or paste both columns into our <a href="../../correlation.html">correlation calculator</a>, which computes the leave-one-out range automatically), then <a href="../../data/outliers-in-practice/">decide what to do</a> and report both versions. Non-significant is also perfectly reportable — <a href="../../writing/nonsignificant-results/">honestly, with the CI</a>, not as "a trend."</p>
+        <p><strong>Two traps.</strong> First, the df in your sentence is <em>N</em> − 2 = 58, not <em>N</em>; SPSS never prints it, examiners always check it. Second, and bigger: <em>this particular r is a lie</em>. One influential participant (11.5 hours of screen time, excellent sleep) is dragging a real relationship toward zero — drop that point and <em>r</em> goes from −.21 to −.40. A correlation without a scatterplot is a rumor: plot it (Graphs → Chart Builder, or paste both columns into our <a href="../../correlation.html">correlation calculator</a>, which computes the leave-one-out range automatically), then <a href="../../data/outliers-in-practice/">decide what to do</a> and report both versions. Non-significant is also perfectly reportable, <a href="../../writing/nonsignificant-results/">honestly, with the CI</a>, not as "a trend."</p>
         <blockquote class="apa-quote"><p>Screen time and sleep quality were not significantly correlated, <em>r</em>(58) = −.21, <em>p</em> = .115. One influential observation attenuated the association; excluding it, <em>r</em>(57) = −.40, <em>p</em> = .002.</p></blockquote>
 
         <h2 id="chi-square">4 · Chi-square test of independence</h2>
-        <p><strong>Menu:</strong> Analyze → Descriptive Statistics → Crosstabs; under <em>Statistics</em> tick <em>Chi-square</em> and <em>Phi and Cramér's V</em>; under <em>Cells</em> tick <em>Expected</em>. <strong>Example:</strong> 120 students — did those who attended a revision workshop (38 of 60) pass a methods exam more often than those who didn't (24 of 60)?</p>
+        <p><strong>Menu:</strong> Analyze → Descriptive Statistics → Crosstabs; under <em>Statistics</em> tick <em>Chi-square</em> and <em>Phi and Cramér's V</em>; under <em>Cells</em> tick <em>Expected</em>. <strong>Example:</strong> 120 students. Did those who attended a revision workshop (38 of 60) pass a methods exam more often than those who didn't (24 of 60)?</p>
 
         <div class="mock" role="img" aria-label="Mock SPSS Chi-Square Tests table: Pearson chi-square 6.541, df 1, Sig .011; continuity correction 5.640, Sig .018; likelihood ratio 6.602, Sig .010; N 120.">
           <p class="mock-cap">Chi-Square Tests</p>
@@ -166,10 +166,10 @@
               <tr><td>N of Valid Cases</td><td>120</td><td></td><td></td></tr>
             </tbody>
           </table>
-          <p class="mock-note">Report the <strong>Pearson Chi-Square</strong> row. The footnote SPSS prints under this table matters: if any cell's <em>expected</em> count falls below 5, the approximation wobbles — here the smallest expected count is 29, so all is well.</p>
+          <p class="mock-note">Report the <strong>Pearson Chi-Square</strong> row. The footnote SPSS prints under this table matters: if any cell's <em>expected</em> count falls below 5, the approximation wobbles; here the smallest expected count is 29, so all is well.</p>
         </div>
 
-        <p><strong>The trap:</strong> three plausible-looking rows. Pearson is the standard report; the continuity correction is a conservative historical fix for 2×2 tables that most modern advice skips; the likelihood ratio is a different statistic entirely. Pick Pearson, say what the cells showed in plain language, and add Cramér's <em>V</em> from the Symmetric Measures table as the effect size — <a href="../../stats-2/chi-square-tests/">Chi-Square Tests</a> walks the whole logic.</p>
+        <p><strong>The trap:</strong> three plausible-looking rows. Pearson is the standard report; the continuity correction is a conservative historical fix for 2×2 tables that most modern advice skips; the likelihood ratio is a different statistic entirely. Pick Pearson, say what the cells showed in plain language, and add Cramér's <em>V</em> from the Symmetric Measures table as the effect size; <a href="../../stats-2/chi-square-tests/">Chi-Square Tests</a> walks the whole logic.</p>
         <blockquote class="apa-quote"><p>Workshop attendees passed more often (63%) than non-attendees (40%), χ²(1, <em>N</em> = 120) = 6.54, <em>p</em> = .011, Cramér's <em>V</em> = .23.</p></blockquote>
 
         <h2 id="regression">5 · Simple linear regression</h2>
@@ -201,31 +201,31 @@
           <p class="mock-note">Model Summary → how much variance the model explains (R²). ANOVA → whether the model as a whole beats nothing (<em>F</em>, with df 1 and 83). Coefficients → the slope's size (<em>B</em>, in real units), its standardized version (Beta), and its own test (<em>t</em>). The (Constant) row is the intercept — you rarely interpret it, and its <em>p</em>-value is almost never worth reporting.</p>
         </div>
 
-        <p><strong>The trap:</strong> both <code>.000</code>s here become <em>p</em> &lt; .001 — this is the table where students most often copy the forbidden <em>p</em> = .000 into a thesis. And don't confuse <em>B</em> (unstandardized: +0.35 wellbeing points per extra hour) with Beta (in SD units, comparable across predictors) — <a href="../../stats-2/simple-linear-regression/">Simple Linear Regression</a> unpacks the difference, and <a href="../../stats-3/multiple-regression/">Multiple Regression</a> takes over when you add predictors. Before trusting any of it, glance at the <a href="../../stats-3/assumptions-of-regression/">residual plots</a>.</p>
+        <p><strong>The trap:</strong> both <code>.000</code>s here become <em>p</em> &lt; .001 — this is the table where students most often copy the forbidden <em>p</em> = .000 into a thesis. And don't confuse <em>B</em> (unstandardized: +0.35 wellbeing points per extra hour) with Beta (in SD units, comparable across predictors); <a href="../../stats-2/simple-linear-regression/">Simple Linear Regression</a> unpacks the difference, and <a href="../../stats-3/multiple-regression/">Multiple Regression</a> takes over when you add predictors. Before trusting any of it, glance at the <a href="../../stats-3/assumptions-of-regression/">residual plots</a>.</p>
         <blockquote class="apa-quote"><p>Exercise significantly predicted wellbeing, <em>b</em> = 0.35, <em>SE</em> = 0.08, β = .44, <em>t</em>(83) = 4.41, <em>p</em> &lt; .001; the model explained 19% of the variance, <em>R</em>² = .19, <em>F</em>(1, 83) = 19.47, <em>p</em> &lt; .001.</p></blockquote>
 
         <h2 id="misreadings">The classic misreadings, in one list</h2>
         <ul>
-          <li><strong>Reporting Levene's <code>Sig.</code> as your <em>p</em></strong> — Levene's columns only choose your row (t-test) or your table (ANOVA → Robust Tests).</li>
-          <li><strong>Copying <code>Sig. = .000</code></strong> — write <em>p</em> &lt; .001.</li>
-          <li><strong>Wrong df</strong> — a correlation's df is <em>N</em> − 2; a t-test's df must match your group sizes. Examiners recompute these.</li>
-          <li><strong>A <em>p</em>-value with no effect size</strong> — add <em>d</em>, η², <em>r</em> itself, Cramér's <em>V</em>, or R². The <a href="../../effect-sizes.html">effect-size converter</a> translates between them.</li>
-          <li><strong>Trusting a coefficient you never plotted</strong> — one influential point can hide (or invent) a relationship.</li>
-          <li><strong>Interpreting in the Results section</strong> — the sentence states what was found; what it <em>means</em> waits for the Discussion (<a href="../../writing/writing-results/">From Output to Results Section</a>).</li>
+          <li><strong>Reporting Levene's <code>Sig.</code> as your <em>p</em>.</strong> Levene's columns only choose your row (t-test) or your table (ANOVA → Robust Tests).</li>
+          <li><strong>Copying <code>Sig. = .000</code>.</strong> Write <em>p</em> &lt; .001.</li>
+          <li><strong>Wrong df.</strong> A correlation's df is <em>N</em> − 2; a t-test's df must match your group sizes. Examiners recompute these.</li>
+          <li><strong>A <em>p</em>-value with no effect size.</strong> Add <em>d</em>, η², <em>r</em> itself, Cramér's <em>V</em>, or R². The <a href="../../effect-sizes.html">effect-size converter</a> translates between them.</li>
+          <li><strong>Trusting a coefficient you never plotted.</strong> One influential point can hide (or invent) a relationship.</li>
+          <li><strong>Interpreting in the Results section.</strong> The sentence states what was found; what it <em>means</em> waits for the Discussion (<a href="../../writing/writing-results/">From Output to Results Section</a>).</li>
         </ul>
 
         <div class="callout key">
-          <p><strong>Check yourself in seconds:</strong> paste any statistic + df into the <a href="../../apa.html">APA results formatter</a> — it rebuilds the sentence with correct typography and recomputes the <em>p</em>-value from the statistic, statcheck-style, so a typo in your numbers gets caught before your examiner finds it.</p>
+          <p><strong>Check yourself in seconds:</strong> paste any statistic + df into the <a href="../../apa.html">APA results formatter</a>, and it rebuilds the sentence with correct typography and recomputes the <em>p</em>-value from the statistic, statcheck-style, so a typo in your numbers gets caught before your examiner finds it.</p>
         </div>
 
         <h2 id="keep-going">Keep going</h2>
         <ul>
-          <li><a href="../../writing/reporting-statistics-apa/">Reporting Statistics in APA Style</a> — the full formatting ruleset, with an error-hunt game.</li>
-          <li><a href="../../writing/writing-results/">From Output to Results Section</a> — build results sentences from any output.</li>
-          <li><a href="../analyze-thesis-data-jasp/">Analyze Your Thesis Data in JASP</a> — the same journey in free software.</li>
-          <li><a href="../../datasets.html">Practice Datasets</a> — reproduce this guide's t-test, ANOVA, and correlation yourself.</li>
-          <li><a href="../../which-test.html">Which test should I use?</a> — if you're not yet sure which of the five you need.</li>
-          <li><a href="../../writing/final-checklist/">The Final Checklist</a> — the numbers-match-everywhere pass before you submit.</li>
+          <li><a href="../../writing/reporting-statistics-apa/">Reporting Statistics in APA Style</a>: the full formatting ruleset, with an error-hunt game.</li>
+          <li><a href="../../writing/writing-results/">From Output to Results Section</a>: build results sentences from any output.</li>
+          <li><a href="../analyze-thesis-data-jasp/">Analyze Your Thesis Data in JASP</a>: the same journey in free software.</li>
+          <li><a href="../../datasets.html">Practice Datasets</a>: reproduce this guide's t-test, ANOVA, and correlation yourself.</li>
+          <li><a href="../../which-test.html">Which test should I use?</a> if you're not yet sure which of the five you need.</li>
+          <li><a href="../../writing/final-checklist/">The Final Checklist</a>: the numbers-match-everywhere pass before you submit.</li>
         </ul>
       </article>
     </div>
