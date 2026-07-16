@@ -873,5 +873,174 @@ site.js is a precached shell asset — bump CACHE_VERSION in sw.js. Standard ver
 
 ---
 
-*End of prompt library. When every box in ROADMAP.md is ticked: the site has 9 courses, ~95 interactive lessons, 19 tools, 4 guides, print/offline/a11y polish, prose that reads like a person, instructor-ready embeds, and a live SEO feedback loop. At that point the loops (P37–P39) plus the human checklist ARE the roadmap.*
+## Phase 12 — Requests & polish (P49–P57)
+
+Hand-picked fixes and upgrades from Hakan's 16 Jul 2026 review of the live site. Independent and cherry-pickable; the two front-of-house items (P54, P55) are the highest impact-per-effort.
+
+**Each prompt names a recommended model + effort** (pick them when you start the session):
+
+- **Model — Powerful** = Claude Sonnet (well-scoped, single-area, or mechanical work). **Extra Powerful** = Claude Opus (site-wide, new-lesson, or judgment-heavy work).
+- **Effort — High** = one focused pass, standard verification. **Extra** = elevated reasoning (several related changes or a bug to diagnose). **Max** = maximum single-agent reasoning + verification (high blast radius: site-wide / homepage / new lesson). **Ultra** = multi-agent deployment (parallel build + independent verification/review, e.g. `/code-review ultra` on the branch).
+
+Course-number key (toolkit courses restart at 1): Stats 1–4 = `stats-1…4`; Methods = `methods/*` (1.x), Data = `data/*` (2.x), Ethics = `ethics/*` (3.x), ML = `ml/*` (4.x), Writing = `writing/*` (5.x). Section numbers below are the on-page eyebrows.
+
+### P49 — Stats 1 interactive upgrades
+
+**→ Powerful · Extra effort**
+
+```
+StatsCapybara roadmap prompt P49 (see ROADMAP.md). Run node tools/audit.js first.
+
+Three upgrades to Stats 1 lesson interactives. Preserve the frozen-noise pattern (seeded pools, deterministic gen/rebuild, "New sample" reseeds) and don't touch prose beyond captions the change makes stale.
+
+1. stats-1/sampling-distributions — "🎮 Build a Sampling Distribution" only ever samples from one fixed skewed population. Add a population-shape selector (Skewed / Uniform / Bimodal — reuse the exact shapes + pattern from stats-1/central-limit-theorem so the two lessons agree) so students watch the sampling distribution form from different parents. Update the "(fixed, and deliberately skewed)" caption and any prose that assumes a single shape.
+2. stats-1/sampling-distributions AND stats-1/central-limit-theorem — change the "Draw 50" / "Draw 50 (animated)" button to Draw 100 (button label + the drawMany(50) → 100 call). Honour VIZ.reducedMotion() (jump to the final frame). Leave the n-range slider max unless 100 reads better.
+3. stats-1/hypothesis-testing-logic — in "🎮 P-Value Explorer" the orange shaded tail doesn't meet the bell curve; there's a visible gap between the fill's top edge and the stroked outline. Diagnose (shadeRegion samples the pdf at a different step/scale/baseline than the curve) and make the fill reuse the SAME sampled points + baseline as the curve so they coincide exactly.
+
+SWEEP (the issue may recur — Hakan flagged one example, judge the rest): the same tail-shading pattern is in stats-1/z-scores-and-the-normal-distribution, tables.html, and distributions.html — check each and fix any identical fill-vs-curve gap.
+
+No precached shell asset changes → no CACHE_VERSION bump. Standard verification (slider round-trip on each; screenshot the P-Value fill meeting the curve in light + dark). Tick P49 in ROADMAP.md.
+```
+
+### P50 — Stats 2 interactive fixes
+
+**→ Powerful · High effort**
+
+```
+StatsCapybara roadmap prompt P50 (see ROADMAP.md). Run node tools/audit.js first.
+
+Two layout fixes in Stats 2 interactives.
+
+1. stats-2/post-hoc-tests — in the "fooled experiments" readout the two paired stats "Experiments fooled · no correction" (#stat-unc) and "Experiments fooled · Bonferroni" (#stat-bonfr) don't sit together. Put "· no correction" on the SAME row, to the LEFT of "· Bonferroni" (they're the direct comparison, so they belong side by side); the "Bonferroni per-test α" stat can sit on its own row above. It's a .stat-row / .stat grid/flex tweak — verify at desktop AND mobile widths that the two never re-order or wrap apart.
+2. stats-2/simple-linear-regression — the "🎮 Least-Squares Playground" canvas is cramped and claustrophobic (H = 360). Enlarge the plotting area (raise the canvas height and/or set a taller --viz-ar, add plot padding) without breaking the drag-a-point interaction, the frozen data, or CLS.
+
+SWEEP: if other draggable-scatter lessons feel equally cramped, note them in your summary (don't necessarily resize).
+
+No precached shell asset changes → no CACHE_VERSION bump. Standard verification. Tick P50 in ROADMAP.md.
+```
+
+### P51 — Stats 3 interactive fixes
+
+**→ Powerful · High effort**
+
+```
+StatsCapybara roadmap prompt P51 (see ROADMAP.md). Run node tools/audit.js first.
+
+Four small fixes in Stats 3 interactives. No prose/stat changes beyond the control ranges.
+
+1. stats-3/multicollinearity-and-variable-selection — in "🎮 Watch the Coefficients Go Haywire" the Severity readout (#stat-sev) shifts horizontally as its label length changes ("Low" ↔ "Catastrophic"). Pin it: give the value a fixed min-width (or a tabular/grid cell) so nothing to its right reflows as severity updates.
+2. stats-3/ancova — raise "True treatment effect" max from 15 to 20 (#eff-range max="15" → "20"). Confirm the canvas y-scale still frames the largest effect without clipping.
+3. stats-3/mediation-and-indirect-effects — the path-diagram arrowheads disappear when the path lines are thick. Enlarge the arrowheads and scale them with lineWidth so they stay visible at maximum thickness. SWEEP: stats-4/causal-dags-and-confounding draws similar arrows — check it for the same weakness.
+4. stats-3/logistic-regression — raise "Steepness (b₁)" so the displayed value reaches 0.5 (the slider is scaled ×100: #b1-range max="40" → "50").
+
+No precached shell asset changes → no CACHE_VERSION bump. Standard verification (round-trip each slider to identical readouts). Tick P51 in ROADMAP.md.
+```
+
+### P52 — Stats 4 interactive fixes
+
+**→ Powerful · High effort**
+
+```
+StatsCapybara roadmap prompt P52 (see ROADMAP.md). Run node tools/audit.js first.
+
+Two fixes in Stats 4 interactives.
+
+1. stats-4/bayesian-thinking — in "🎮 Prior → Data → Posterior" the x-axis label ("possible value of p →") overlaps the tick numbers along the baseline. Separate them: add bottom padding / raise the canvas height and draw the axis label clearly below the ticks so they never collide.
+2. stats-4/generalized-linear-models — widen the Intercept b₀ and Slope b₁ slider ranges (they're set in the inline JS, not the HTML min/max) so the fitted mean curve can move more. Keep the fixed data cloud + frozen-noise behaviour, and confirm the curve stays on-canvas at the new extremes.
+
+No precached shell asset changes → no CACHE_VERSION bump. Standard verification. Tick P52 in ROADMAP.md.
+```
+
+### P53 — Repair two dead toolkit interactives
+
+**→ Powerful · Extra effort**
+
+```
+StatsCapybara roadmap prompt P53 (see ROADMAP.md). Run node tools/audit.js first.
+
+Two interactives that don't work. Read each inline script, reproduce the failure in the preview, fix, and confirm the readouts populate.
+
+1. data/data-cleaning-workflow — in "Cleaning Pipeline Simulator" the Control and Treatment bars always render empty (no fill). Diagnose (likely a data-binding / scale / zero-height fillRect bug) and make the bars draw their real values through the cleaning steps.
+2. writing/abstracts-and-titles — the "🎯 Abstract grader" vague → findable title rewrite doesn't work (the rewrite/scoring path is broken). Diagnose and fix so the before/after demo produces its intended output.
+
+SWEEP: while here, click through the other toolkit-lesson interactives; flag (don't necessarily fix) anything else visibly dead in your summary.
+
+No precached shell asset changes → no CACHE_VERSION bump. Standard verification (drive each interactive in-browser; screenshot the fixed output). Tick P53 in ROADMAP.md.
+```
+
+### P54 — Site-wide: make in-prose links look clickable
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P54 (see ROADMAP.md). Run node tools/audit.js first.
+
+The base rule `a { color: inherit; text-decoration: none }` in styles.css leaves body-prose links indistinguishable from ordinary text — readers can't tell they're clickable. Example (one of many): the "Descriptives calculator / Power calculator / APA formatter" links in the paragraph at datasets.html#admissions render as plain text. This is site-wide: lesson prose, callouts, FAQ answers, guides, and tool-page copy all inherit it.
+
+Add a CONTENT-SCOPED link treatment: in prose contexts (lesson/guide article body, .callout, .faq-a, tool-page .lesson copy, datasets/toolbox body text, the About bio already does this well — reuse its look: brand colour + underline with text-underline-offset, thickening/darkening on hover) links become clearly clickable. Do NOT underline or recolour chrome that is intentionally styled as UI: the nav, tool/course/persona cards, the toolbox grid, sidebar, prev/next, the "On this page" TOC, buttons, segmented controls, search results, breadcrumb-style chips. This is a scoping problem — target prose containers, exclude UI. Prefer a small number of well-scoped selectors over a blanket `a{}` change plus a long exclusion list.
+
+Verify in light AND dark across ≥6 page types (a lesson, a guide, datasets.html, toolbox.html, a cheat poster, the homepage About) that prose links are obviously clickable and NO card / nav / button / TOC gained an unwanted underline or colour. Confirm the @media print link rule (underline, black) still wins.
+
+styles.css is a precached shell asset → BUMP CACHE_VERSION in sw.js. Standard verification. Tick P54 in ROADMAP.md.
+```
+
+### P55 — Front door: Toolbox prominence + homepage declutter
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P55 (see ROADMAP.md). Run node tools/audit.js first.
+
+Four "first impression" changes. The Statistics Toolbox has quietly become the site's most useful hub (it grew into a catch-all for every tool) but it reads as a faint dropdown, and the homepage hides most of it.
+
+1. Nav prominence — make the "Statistics Toolbox" nav item stand out from Curriculum / About (an icon or emoji before the label, heavier weight, and/or a subtle pill). Keep the hover/focus dropdown + click-to-toolbox.html behaviour, keep mobile (single link, no dropdown), keep the :focus-visible ring and the active state.
+2. Homepage: don't collapse the toolbox. renderToolbox() in site.js currently shows only star:true tools plus an "All N tools →" card, so most tools hide behind that card. Show the FULL box on the homepage instead (the grouped grid like toolbox.html, or all tools) — tidy but complete, nothing collapsed.
+3. Remove "Why it's different" — delete the .features "Why it's different" section from index.html (leave the shared .feature CSS in place).
+4. Repoint the hero CTA — "Start with Stats 1" currently lands on the flat stats-1/what-is-statistics/. Point it at a striking first impression — stats-1/central-limit-theorem/ (or another cool lesson) — and reconcile the button label (e.g. "See statistics in motion →"). Use judgment on the "Begin with 1.1" persona card (it's the logical first step; leave it or adjust).
+
+Guard the homepage's OG/JSON-LD counts and the data-count spans (don't break audit checks 6/7). If site.js changes, BUMP CACHE_VERSION in sw.js. Standard verification (homepage light + dark + mobile; nav on a lesson AND a tool page). Tick P55 in ROADMAP.md.
+```
+
+### P56 — "Capybara says" replaces "Why it matters" (site-wide)
+
+**→ Extra Powerful · Max effort** *(Ultra if you want bespoke per-lesson capybara lines — see note)*
+
+```
+StatsCapybara roadmap prompt P56 (see ROADMAP.md). Run node tools/audit.js first.
+
+Every lesson ends its core with a flat `<strong>Why it matters:</strong>` callout (95 lessons). Turn that into a branded "Capybara says" moment that actually uses the mascot: a distinct callout style carrying the hand-drawn capy() SVG (NEVER a beaver 🦫 / hamster 🐹 emoji — there is no capybara emoji), a warm label, and the same substance.
+
+Pick the cleanest mechanism and say why: (a) a shared-layer restyle — one CSS + site.js change keyed off a class, plus a mechanical per-lesson label swap — or (b) a scripted transform of the 95 blocks. Keep VOICE.md: quirky but not flippant, and Ethics lessons stay sober (no levity on Tuskegee/Milgram/etc.). Keep it print-friendly (it currently prints) and accessible (SVG aria-hidden; the text carries the meaning). Do NOT touch the substance, numbers, or links inside the callout. If you reword any blurb to be more voiced, every factual claim survives intact — run tools/prose-lint.js.
+
+Shared asset change (site.js and/or styles.css) → BUMP CACHE_VERSION in sw.js. If any prose text changes, rerun python tools/build-search-index.py. Standard verification on ≥3 lessons across different courses (include an Ethics lesson) in light + dark + print. Tick P56 in ROADMAP.md.
+
+NOTE — Ultra option: for genuinely bespoke, quirky capybara one-liners on all 95 lessons (rather than a restyle of the existing copy), run this as a multi-agent Ultra job: one agent drafts per course, one checks voice + that no factual claim moved, one runs audit + prose-lint + a11y/print.
+```
+
+### P57 — New lesson: Psychometric Functions & the PSE
+
+**→ Extra Powerful · Ultra (multi-agent)**
+
+```
+StatsCapybara roadmap prompt P57 (see ROADMAP.md). Run node tools/audit.js first.
+
+Add a new lesson on FITTING PSYCHOMETRIC FUNCTIONS — the page a psychophysics supervisor points students to. Frame it generally (proportion of "long"/"yes" responses vs a stimulus level in a 2AFC or bisection task) with the TEMPORAL BISECTION PROCEDURE as the worked example: fit a curve (offer logistic / cumulative-Gaussian / Weibull), read off the PSE (point of subjective equality — the 50% point) and the slope / JND (just-noticeable difference), and show how an experimental manipulation (e.g. a brighter stimulus perceived as longer) either SHIFTS the PSE or CHANGES the slope.
+
+Interactive (frozen-noise pattern, VIZ helpers, statistics must be correct and verified — this is for real students):
+- proportion-response points across stimulus levels, with a live fit of the chosen function (MLE or least-squares) drawn through them;
+- PSE and slope/JND readouts that update with the fit;
+- a "manipulation" control that shifts the curve so students see a PSE shift vs a slope change side by side (a two-curve compare is ideal);
+- a function selector (logistic / Gaussian / Weibull) so they see the choice barely moves the PSE but changes the tails.
+Verify the math: recover a known PSE/JND from simulated data, and check each curve's equation against a textbook form.
+
+Placement: recommend APPENDING as a new Stats 4 section (Modern & Advanced — it's applied MLE curve-fitting, next of kin to stats-3/logistic-regression and stats-4/generalized-linear-models), so no eyebrow renumbering. Alternatively frame it as a Methods procedure lesson. CONFIRM the course + slug before building; APPEND, never insert.
+
+Do the full "Standard lesson integration" (CLAUDE.md): curriculum.js (ready:true, appended), page copied from an existing Stats 4 lesson with ALL per-page SEO retargeted, correct data-course/data-section + Section N.n eyebrow, 3 checks, 3 FAQs (+ inject-faqs), a QUIPS line, glossary terms for PSE + JND, a course-tagged quiz question, R/Python snippet (psignifit / a logistic GLM fit) and SPSS/JASP+APA if applicable, then rerun make-og-images.py --retag-only (existing course) + build-search-index.py + add to sitemap.xml. Cross-link logistic regression and GLM.
+
+Run as ULTRA (multi-agent): one agent builds the lesson + interactive, one independently verifies the psychometric-fit math (PSE/JND recovery, curve equations), one runs audit + prose-lint + a11y. Standard verification + full slider/drag round-trip. Tick P57 in ROADMAP.md.
+```
+
+---
+
+*End of prompt library. When every box in ROADMAP.md is ticked: the site has 9 courses, ~95 interactive lessons, 20 tools, 4 guides, print/offline/a11y polish, prose that reads like a person, instructor-ready embeds, and a live SEO feedback loop. At that point the loops (P37–P39) plus the human checklist ARE the roadmap. Phase 12 (P49–P57) is a live-review punch-list layered on top — cherry-pick as time allows.*
 
