@@ -1003,6 +1003,8 @@ Guard the homepage's OG/JSON-LD counts and the data-count spans (don't break aud
 
 ### P56 — "Capybara says" replaces "Why it matters" (site-wide)
 
+> **DROPPED — 17 Jul 2026.** Hakan reconsidered: the "Why it matters" callouts stay as they are. Kept for the record only; **do not run this prompt.**
+
 **→ Extra Powerful · Max effort** *(Ultra if you want bespoke per-lesson capybara lines — see note)*
 
 ```
@@ -1042,5 +1044,87 @@ Run as ULTRA (multi-agent): one agent builds the lesson + interactive, one indep
 
 ---
 
-*End of prompt library. When every box in ROADMAP.md is ticked: the site has 9 courses, ~95 interactive lessons, 20 tools, 4 guides, print/offline/a11y polish, prose that reads like a person, instructor-ready embeds, and a live SEO feedback loop. At that point the loops (P37–P39) plus the human checklist ARE the roadmap. Phase 12 (P49–P57) is a live-review punch-list layered on top — cherry-pick as time allows.*
+## Phase 13 — Requests round 2 (P58–P60)
+
+Hakan's 17 Jul 2026 review: two teaching-content upgrades and the front-door follow-through. Model/effort legend as in Phase 12. **P58 and P59 share registries (`curriculum.js`, `faq_data.py`, the search index) — run them one at a time.** P60 is independent.
+
+### P58 — New lesson: Signal Detection Theory
+
+**→ Extra Powerful · Ultra (multi-agent)**
+
+```
+StatsCapybara roadmap prompt P58 (see ROADMAP.md). Run node tools/audit.js first.
+
+Add a new Stats 4 lesson on SIGNAL DETECTION THEORY — append as section 4.12, slug signal-detection-theory, right after 4.11 psychometric-functions (its natural sibling: 4.11 fits the response curve, SDT explains the decision behind it). Make it one of the most interactive lessons on the site — SDT is pure see-it-touch-it material.
+
+Core interactive (frozen-noise pattern, VIZ helpers):
+- Two overlapping distributions (noise vs signal+noise) with a DRAGGABLE criterion line (ew-resize cursor per the P47 convention + arrow-key nudge per the a11y convention) and a d′ separation slider.
+- The four outcomes as live-shaded regions + a 2×2 quadrant (Hit / Miss / False Alarm / Correct Rejection) whose rates update as you drag.
+- Readouts: hit rate, FA rate, d′, criterion c, β — with the liberal ↔ conservative direction labelled.
+- An ROC panel: the current (FA, H) point, plus a "sweep the criterion" animation tracing the whole curve (VIZ.reducedMotion() → jump to the final frame). Optional bonus: a short trial-by-trial "be the detector" run that estimates the student's own d′ from their responses.
+
+The math must be exact and independently verified: d′ = z(H) − z(FA), c = −(z(H) + z(FA))/2, and AUC = Φ(d′/√2). That last identity already appears in ml/roc-curves-and-auc (Φ(d/√2) → .76/.92/.50) — the two lessons MUST agree. Acceptance test via node -e: recover a known d′ from simulated counts. Handle the 0/1 proportion edge (log-linear or 1/(2N) correction — name the choice in a callout).
+
+Prose: the yes/no detection story (radiologist, smoke detector, airport screening); sensitivity vs response bias as THE conceptual payoff (two ways to get more hits — better separation or a laxer criterion — and only one of them is skill); where SDT shows up in research (perception, recognition memory ROCs, diagnostics). VOICE.md applies; prose-lint --strict stays clean.
+
+Cross-links both ways: stats-4/psychometric-functions (sibling procedure), ml/roc-curves-and-auc (same curve in an ML hat), ml/classification-metrics (the confusion matrix IS SDT's 2×2), stats-1/z-scores-and-the-normal-distribution (z does the work).
+
+Standard lesson integration (CLAUDE.md "Adding a lesson" — APPENDING, so no eyebrow renumbering): copy FROM another stats-4 lesson so og:image stays assets/og-stats-4.png; educationalLevel Advanced; 3 checks, 3 FAQs (+ inject-faqs), a QUIPS line, glossary terms (d′, criterion, hit/false alarm — check GLOSSARY first, the ML lessons may already own ROC/sensitivity), a c:"stats-4" quiz question, R/Python snippet (d′ from counts via qnorm / scipy.stats.norm.ppf). software.js only if you can give an honest SPSS/JASP path (neither has a native SDT module — skipping is legitimate, say so). Bump the homepage ItemList (Stats 4 → "12 interactive lessons") and the static og:/twitter: site-wide lesson count (96 → 97) — audit checks 6/7 enforce both. sitemap.xml + rerun build-search-index.py.
+
+curriculum.js is a precached shell asset → BUMP CACHE_VERSION in sw.js.
+
+Run as ULTRA (multi-agent): one agent builds the lesson + interactive; one independently re-derives every formula and readout against standard SDT conventions (Macmillan & Creelman) and the cross-lesson AUC identity; one runs audit + prose-lint + a11y/print/embed checks. Standard verification incl. drag + keyboard round-trips. Tick P58 in ROADMAP.md.
+```
+
+### P59 — Stats 2.6 rebuild: the logic behind each non-parametric test
+
+**→ Extra Powerful · Ultra (multi-agent)**
+
+```
+StatsCapybara roadmap prompt P59 (see ROADMAP.md). Run node tools/audit.js first.
+
+Rebuild stats-2/non-parametric-alternatives (2.6) so each test is EXPLAINED, not name-dropped. Today the lesson has one strong interactive (the Outlier Stress Test — KEEP it as is) followed by a bare "which test replaces which" list. Give each test its logic, intuitively, plus a hands-on playground per test.
+
+1. Prose — a short section per test with the actual mechanism:
+   - Mann–Whitney U: count pairwise wins (U = how often a group-1 value beats a group-2 value); tie to the probability-of-superiority reading and why an extreme value can't change any ranks.
+   - Wilcoxon signed-rank: rank the |differences|, sum the signed ranks — more information than a sign test, still calm about outliers.
+   - Kruskal–Wallis: ANOVA on ranks (H) — pool, rank, ask whether the rank sums split evenly across groups.
+   - Friedman: ranks WITHIN each person/block — the repeated-measures counterpart.
+   Spearman's ρ already lives in stats-2/correlation — cross-link it, don't duplicate. Keep the replaces-which list as the summary table it wants to be.
+2. Tabbed playground — one .seg-tabbed viz (Mann–Whitney / Wilcoxon / Kruskal–Wallis / Friedman) where every tab shows the SAME core move on a small frozen dataset: raw values → their ranks (highlighted/animated), the statistic assembling from the ranks, and the p-value; plus a shared "nudge an outlier" control per tab so the ranks-don't-care point lands for every test, not just Mann–Whitney. Frozen-noise pattern throughout. Give each tab section an id so which-test.html / plan.html can deep-link; wire those links if quick.
+3. The statistics must be exact: implement each with the standard normal/χ² approximations WITH tie corrections, state the approximation honestly in the UI, and verify every displayed p against R (wilcox.test / kruskal.test / friedman.test) or scipy reference values via node -e re-derivation — record the reference cases in a code comment.
+
+Consistency sweep after the rebuild: the 3 FAQs (faq_data.py → inject) and 3 checks still fit the richer content (upgrade any that now undersell it); software.js/snippets.js entries still accurate; meta description still true (respect the audit's dedupe + 50–160 rules); VOICE.md + prose-lint --strict stay clean; rerun build-search-index.py. Lesson HTML only → no CACHE_VERSION bump.
+
+Run as ULTRA (multi-agent): one agent builds prose + tabs; one independently re-derives every statistic/p-value shown (tie cases included); one runs audit + prose-lint + browser round-trips (each tab's controls return identical readouts after a there-and-back). Tick P59 in ROADMAP.md.
+```
+
+### P60 — Front door v2: track-based nav + homepage order
+
+**→ Extra Powerful · Max effort** *(then run `/code-review ultra` on the diff — the nav renders on every page)*
+
+```
+StatsCapybara roadmap prompt P60 (see ROADMAP.md). Run node tools/audit.js first.
+
+Front door v2. The homepage and nav accreted feature by feature; restructure both around the site's real shape (two curriculum tracks + the toolbox). One coherent redesign — keep it CALM, and keep P54's prose-link rules, P55's Toolbox pill, and every a11y guarantee (focus-visible, Escape, 44px targets, reduced motion).
+
+NAV (site.js renderNav + styles.css):
+1. Retire the "Curriculum" and "About" tabs. The brand mark stays the home link. Keep the #about SECTION on the homepage (many pages link to ./#about — those keep working) and add a quiet "About" link to the footer so it stays discoverable.
+2. New structure mirroring the homepage: "Statistics Core ▾" and "Research Toolkit ▾" (built from window.TRACKS + CURRICULUM — never hardcode course lists) alongside the existing "Statistics Toolbox ▾" pill. The Core/Toolkit dropdowns list ONLY the courses (title + subtitle line), each clickable — recommended target: the course's first ready lesson (matches the homepage ItemList JSON-LD; if you choose the homepage course-card anchor instead, say so in CLAUDE.md). Clicking the tab itself goes to the homepage scrolled to that track: give the rendered .track-head elements stable ids (#track-core / #track-toolkit) and BASE-aware hrefs so it works from lesson depth.
+3. Toolbox dropdown: stop rendering the flat TOOLBOX list — group it by TOOLBOX_GROUPS in the exact order and titles of toolbox.html (Decide & look up / Calculate / Explore & practice / Read the guides), small group headers inside the panel. 20 tools + 4 headers is tall: cap the panel height or go two-column; it must not overflow a 768px-tall viewport.
+4. Interaction parity for all three dropdowns: reuse the existing CSS hover/focus-within machinery + invisible hover bridge; correct aria-haspopup/aria-expanded; Escape closes and restores focus; on mobile all three flatten to plain links (Core/Toolkit → the homepage track anchors, Toolbox → toolbox.html, pill styling kept) — no hover panels on touch.
+5. Active states: a lesson page lights the tab of ITS track (course → track via curriculum.js); tool/guide pages keep lighting Statistics Toolbox; the homepage lights nothing.
+
+HOMEPAGE (index.html + site.js):
+6. Promote the resume banner into the hero: renderResume() currently injects above the curriculum grid — move its slot to sit between the .hero-eyebrow ("Meet StatsCapybara…") and the h1 ("Statistics You Can See…"), and scale the type up so "Pick up where you left off — …" reads as a real welcome-back, not a footnote. Keep the Resume → and My progress → links. It renders only for returning visitors (sc-last): keep the injection CLS-conscious so the hero doesn't jolt when it appears.
+7. Remove the "Jump in wherever you are" section (the h2 + .personas block) from index.html. Delete persona-only CSS if nothing else uses it.
+
+Bookkeeping: site.js + styles.css are precached → BUMP CACHE_VERSION in sw.js. index.html text changed → rerun build-search-index.py. Update CLAUDE.md's nav/homepage paragraphs (they still describe the Curriculum/About tabs, the persona cards, and the resume bar's old position). Audit stays 0 errors (homepage counts + ItemList untouched).
+
+Verify across page types (homepage, a core lesson, a toolkit lesson, a tool page, a guide) in light + dark + mobile + keyboard-only: every dropdown opens on hover AND focus, closes on Escape, every course/tool link resolves (subpath server too), active states correct, zero console errors. Then run /code-review ultra on the diff before pushing. Tick P60 in ROADMAP.md.
+```
+
+---
+
+*End of prompt library. When every box in ROADMAP.md is ticked: the site has 9 courses, ~97 interactive lessons, 20 tools, 4 guides, print/offline/a11y polish, prose that reads like a person, instructor-ready embeds, and a live SEO feedback loop. At that point the loops (P37–P39) plus the human checklist ARE the roadmap. Phases 12–13 (P49–P60) are live-review punch-lists layered on top — cherry-pick as time allows.*
 
