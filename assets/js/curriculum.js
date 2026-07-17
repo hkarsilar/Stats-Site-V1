@@ -102,7 +102,8 @@ window.CURRICULUM = [
       { n: "4.8", slug: "survival-analysis",               title: "Survival Analysis & Kaplan–Meier", ready: true },
       { n: "4.9", slug: "missing-data",                    title: "Missing Data & Imputation", ready: true },
       { n: "4.10",slug: "meta-analysis",                   title: "Meta-Analysis & Forest Plots", ready: true },
-      { n: "4.11",slug: "psychometric-functions",          title: "Psychometric Functions & the PSE", ready: true }
+      { n: "4.11",slug: "psychometric-functions",          title: "Psychometric Functions & the PSE", ready: true },
+      { n: "4.12",slug: "signal-detection-theory",         title: "Signal Detection Theory", ready: true }
     ]
   },
   {

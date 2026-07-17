@@ -434,6 +434,15 @@ FAQS_34 = {
  ("Do I need a lapse rate in my psychometric model?",
   "For real observers, usually yes. People blink, press the wrong key, and drift off, so a few errors appear even at the easiest stimulus levels. A two-parameter fit has to tilt the whole curve to accommodate those trials, which biases the slope (and so the JND); adding a small lapse parameter, either fixed at something like 0.02 or estimated with an upper bound, absorbs them instead. Tools built for psychophysics (psignifit, quickpsy) include lapse and guess rates by default, which is a good reason to graduate to them once the basic fit makes sense."),
 ],
+
+"signal-detection-theory": [
+ ("What is a good d′ value?",
+  "Zero means the observer cannot tell signal from noise at all, and values grow without a fixed ceiling. Useful anchors come from the ROC identity AUC = Φ(d′/√2): d′ = 1 corresponds to getting a two-alternative comparison right about 76% of the time, d′ = 2 about 92%, and beyond 3 performance is so close to perfect that hit and false-alarm rates start saturating at 0 and 1, where the estimate itself turns fragile. What counts as good is task-dependent — a d′ of 1 is respectable for faint stimuli near threshold and alarming for a tumor-versus-clean judgment."),
+ ("What is the difference between d′ and the criterion c?",
+  "They answer different questions about the same observer. d′ measures how far apart the signal and noise evidence distributions sit — the discriminability the observer actually has, which no amount of strategy can raise. The criterion c measures where they drew their yes/no line: negative is liberal (many hits, many false alarms), positive is conservative (few of both). The two are estimated independently, so an experimental manipulation can move one without touching the other; showing <em>which</em> one moved is often the entire finding, as in <a href=\"../../stats-4/psychometric-functions/\">psychophysics</a> or recognition-memory work."),
+ ("What should I do when a hit or false-alarm rate is exactly 0 or 1?",
+  "The z-transform sends those proportions to infinity, so d′ cannot be computed from them directly. Two standard corrections exist. The log-linear rule adds 0.5 to every count and 1 to every trial total before converting — applied to all observers, not just the extreme ones. The 1/(2N) rule instead replaces only the offending rates, with 1/(2N) standing in for 0 and 1 − 1/(2N) for 1. Both shrink extreme estimates toward the middle; the log-linear version is less biased in simulations and is what this lesson uses. Whichever you pick, apply it uniformly and name it in your methods section."),
+],
 }
 
 FAQS_METHODS = {

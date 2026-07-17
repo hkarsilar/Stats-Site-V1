@@ -26,7 +26,7 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v8";   /* P57: curriculum.js + site.js changed (psychometric-functions lesson) */
+const CACHE_VERSION = "sc-v9";   /* P58: curriculum.js + site.js changed (signal-detection-theory lesson) */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location
