@@ -149,10 +149,12 @@
       var col = Math.abs(val) < 0.04 ? VIZ.css("--text-faint") : (val > 0 ? VIZ.css("--secondary") : "#ef4444");
       // thickness swings hard with the coefficient: a near-zero path is a
       // hairline, a strong one is a beam
-      ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 0.6 + Math.min(7, Math.abs(val) * 6.5);
+      var lw = 0.6 + Math.min(7, Math.abs(val) * 6.5);
+      ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = lw;
       ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
       var ang = Math.atan2(y2 - y1, x2 - x1);
-      var ah = 7 + Math.min(6, Math.abs(val) * 5);
+      // arrowhead scales with the line so a thick beam never swallows its point
+      var ah = 10 + lw * 1.8;
       ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - ah * Math.cos(ang - 0.4), y2 - ah * Math.sin(ang - 0.4)); ctx.lineTo(x2 - ah * Math.cos(ang + 0.4), y2 - ah * Math.sin(ang + 0.4)); ctx.closePath(); ctx.fill();
       labels.push({ mx: (x1 + x2) / 2, my: (y1 + y2) / 2, col: col, txt: label + " = " + val.toFixed(2) });
     }
