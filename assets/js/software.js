@@ -562,6 +562,23 @@ window.SOFTWARE = {
       'The trio to report: pooled effect with CI, heterogeneity (<em>Q</em>, <em>I</em>², τ), and a publication-bias check.'
     ]
   },
+  "psychometric-functions": {
+    spss: [
+      'Arrange the data trial-by-trial: one row per trial, with <em>duration</em> (the stimulus level) and <em>resp_long</em> (1 = "long", 0 = "short").',
+      '<strong>Analyze → Regression → Binary Logistic…</strong>: <em>resp_long</em> as Dependent, <em>duration</em> as Covariate.',
+      'From the coefficients table, compute PSE = −Constant / B<sub>duration</sub> and JND = ln(3) / B<sub>duration</sub> (by hand or via <strong>Transform → Compute Variable</strong>).',
+      'To compare conditions, add the condition variable and its <em>condition × duration</em> interaction (<em>Categorical…</em> for the dummy): the condition term tests a PSE shift, the interaction a slope change.'
+    ],
+    jasp: [
+      '<strong>Regression → Logistic Regression</strong>: <em>resp_long</em> as Dependent, <em>duration</em> as Covariate.',
+      'PSE and JND come from the same two coefficients: PSE = −intercept/slope, JND = ln(3)/slope.',
+      'Add the condition factor plus its interaction with duration to test a PSE shift (main effect) versus a slope change (interaction).'
+    ],
+    apa: '<p>Proportions of &ldquo;long&rdquo; responses were fit with a logistic psychometric function per condition. The bright condition shifted the curve leftward relative to baseline, PSE = 462 ms vs. 508 ms, Δ = −46 ms, 95% CI [−72, −20], <em>z</em> = 3.46, <em>p</em> &lt; .001, with no reliable change in precision (JND = 84 ms vs. 79 ms, <em>p</em> = .62).</p>',
+    tips: [
+      'Report the fitted family (logistic, cumulative Gaussian, or Weibull), the number of trials per level, the PSE and JND per condition, and how lapses were handled — the PSE is robust to the family choice, the JND less so.'
+    ]
+  },
 
   /* ---------------- Methods — Research Design ---------------- */
   "reliability-and-validity": {

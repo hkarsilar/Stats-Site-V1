@@ -425,6 +425,15 @@ FAQS_34 = {
  ("What is a funnel plot and what does asymmetry mean?",
   "Each study plotted as effect size vs. precision: big precise studies cluster at the top, small noisy ones fan out below — symmetrically, if all results reached publication. A missing lower corner (typically small null studies) suggests publication bias, testable with Egger's regression and probed with trim-and-fill. Caveat: asymmetry has innocent causes too, like small studies using different populations."),
 ],
+
+"psychometric-functions": [
+ ("What is the difference between the PSE and the JND?",
+  "The PSE locates the curve; the JND measures how steeply it rises. A shifted PSE means the observer's subjective midpoint moved (a bias in perception), while a larger JND means discrimination got noisier (a loss of precision). They come from the same fit but answer different questions, and a manipulation can change either one without touching the other — that dissociation is often the headline result of a psychophysics study."),
+ ("Which function should I fit: logistic, cumulative Gaussian, or Weibull?",
+  "The two symmetric families (logistic and cumulative Gaussian) put the PSE in essentially the same place, and the asymmetric Weibull is usually within a handful of milliseconds; the spread parameter (and with it the JND) varies more, and the tails differ most. The cumulative Gaussian has the cleanest signal-detection interpretation (internal noise is normal), the logistic is computationally convenient and matches <a href=\"../../stats-3/logistic-regression/\">logistic regression</a>, and the Weibull suits detection tasks where performance is anchored at zero stimulus. Convention in your subfield is a fine tie-breaker; just report the family and keep it constant across conditions."),
+ ("Do I need a lapse rate in my psychometric model?",
+  "For real observers, usually yes. People blink, press the wrong key, and drift off, so a few errors appear even at the easiest stimulus levels. A two-parameter fit has to tilt the whole curve to accommodate those trials, which biases the slope (and so the JND); adding a small lapse parameter, either fixed at something like 0.02 or estimated with an upper bound, absorbs them instead. Tools built for psychophysics (psignifit, quickpsy) include lapse and guess rates by default, which is a good reason to graduate to them once the basic fit makes sense."),
+],
 }
 
 FAQS_METHODS = {

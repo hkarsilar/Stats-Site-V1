@@ -189,6 +189,10 @@ window.SNIPPETS = {
     r: 'library(metafor)\nres <- rma(yi = d, sei = se, data = studies)  # DerSimonian-Laird family\nsummary(res)      # pooled effect, tau^2, I^2, Q\nforest(res)       # the forest plot\nfunnel(res)       # eyeball publication bias',
     py: 'from statsmodels.stats.meta_analysis import combine_effects\nres = combine_effects(studies["d"], studies["se"]**2)\nprint(res.summary_frame())   # fixed + random effects, I^2'
   },
+  "psychometric-functions": {
+    r: '# one row per trial: duration (ms), resp_long (1 = "long", 0 = "short")\nm <- glm(resp_long ~ duration, family = binomial, data = trials)\nb <- coef(m)\npse <- -b[1] / b[2]     # 50% point of the logistic fit\njnd <- log(3) / b[2]    # half the 25-75% spread\n# lapse rates + CIs done properly: the quickpsy or psignifit packages',
+    py: 'import numpy as np\nimport statsmodels.formula.api as smf\n# one row per trial: duration (ms), resp_long (1 = "long", 0 = "short")\nm = smf.logit("resp_long ~ duration", data=trials).fit()\nb0, b1 = m.params\npse = -b0 / b1          # 50% point of the logistic fit\njnd = np.log(3) / b1    # half the 25-75% spread\n# lapse rates + CIs done properly: the python-psignifit package'
+  },
 
   /* ---------------- Methods — Research Design ---------------- */
   "from-question-to-hypothesis": {

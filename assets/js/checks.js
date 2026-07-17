@@ -238,6 +238,11 @@ window.CHECKS = {
     { q: "In a forest plot, the diamond at the bottom shows…", o: ["the largest study", "the pooled effect and its confidence interval", "the range of all studies", "publication bias"], a: 1, why: "The diamond's center is the combined estimate; its width is the CI. If it doesn't cross the no-effect line, the pooled effect is significant." },
     { q: "A funnel plot with a missing bottom-left corner (small studies with small effects absent) suggests…", o: ["high heterogeneity", "publication bias", "a calculation error", "low power in the meta-analysis"], a: 1, why: "Small null studies are the ones that tend to go unpublished — their absence makes the funnel asymmetric and the pooled effect optimistic." }
   ],
+  "psychometric-functions": [
+    { q: "The point of subjective equality (PSE) is the stimulus level at which…", o: ["the observer is always correct", "the two responses are equally likely — the 50% point of the fitted curve", "reaction time is fastest", "the curve's slope is steepest for every function"], a: 1, why: "At the PSE the observer says “long” exactly as often as “short”: subjectively, that stimulus sits at the midpoint between the response options." },
+    { q: "A manipulation flattens the psychometric curve without moving its midpoint. What changed?", o: ["the PSE dropped", "the JND grew — the observer became less sensitive", "the anchors changed", "nothing measurable"], a: 1, why: "Slope and JND are two views of the same thing: a shallower curve spreads the 25–75% points apart, so the just-noticeable difference grows while the PSE stays put." },
+    { q: "Fitting a psychometric function by maximum likelihood treats each trial as…", o: ["a normally distributed measurement", "a Bernoulli (binary) outcome whose probability depends on the stimulus level", "a rank to be ordered", "an F-ratio"], a: 1, why: "Every trial is a yes/no draw with probability given by the curve at that stimulus level — the same binomial likelihood that logistic regression maximizes." }
+  ],
 
   /* ---------------- Methods — Research Design ---------------- */
   "from-question-to-hypothesis": [
