@@ -127,7 +127,7 @@
   <script>
   (function () {
     "use strict";
-    var canvas = document.getElementById("bayes-canvas"), ctx, W = 0, H = 240, pad = 28;
+    var canvas = document.getElementById("bayes-canvas"), ctx, W = 0, H = 258, pad = 28;
     function val(id) { return +document.getElementById(id).value; }
     function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
     function vx(p) { return pad + p * (W - 2 * pad); }
@@ -145,12 +145,12 @@
       var n = val("n-range"), obs = val("obs-range") / 100, k = Math.round(obs * n);
       var a1 = a0 + k, b1 = b0 + (n - k);
 
-      var baseY = H - 20, top = 14;
+      var baseY = H - 38, top = 14;
       ctx.clearRect(0, 0, W, H);
       ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(pad, baseY); ctx.lineTo(W - pad, baseY); ctx.stroke();
       ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center";
       for (var t = 0; t <= 1; t += 0.25) ctx.fillText(t.toFixed(2), vx(t), baseY + 14);
-      ctx.fillText("possible value of p →", W / 2, H - 3);
+      ctx.fillText("possible value of p →", W / 2, baseY + 30);
 
       var prior = curve(function (p) { return Math.exp(logBetaPdf(p, a0, b0)); });
       // likelihood ∝ p^k (1-p)^(n-k)
