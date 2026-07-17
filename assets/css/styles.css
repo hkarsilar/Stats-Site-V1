@@ -154,9 +154,28 @@ h1, h2, h3, h4 { line-height: 1.2; letter-spacing: -0.02em; }
 
 /* ---------- Statistics Toolbox dropdown ----------
    Hovering (or keyboard-focusing) the nav item drops the menu;
-   clicking the item itself navigates to the toolbox.html hub page. */
+   clicking the item itself navigates to the toolbox.html hub page.
+   P55: the Toolbox is the site's second front door, so its nav item
+   wears a quiet pill (icon + tint + border) to stand apart from the
+   plain links either side. States stay distinct: rest = tinted pill,
+   hover = deeper tint, .active (on a tool page) = primary text from
+   .nav-link.active plus the stronger border below. */
 .nav-drop { position: relative; }
-.nav-drop-btn { display: inline-flex; align-items: center; gap: .35rem; }
+.nav-drop-btn {
+  display: inline-flex; align-items: center; gap: .35rem;
+  padding: .42rem .85rem; border-radius: 999px;
+  font-weight: 700; color: var(--text);
+  border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent);
+  background: color-mix(in srgb, var(--primary) 7%, transparent);
+}
+.nav-drop-btn:hover {
+  color: var(--text);
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 55%, transparent);
+}
+.nav-drop-btn.active { border-color: color-mix(in srgb, var(--primary) 60%, transparent); }
+.ndb-label { display: inline-flex; align-items: center; gap: .4rem; }
+.ndb-emoji { font-size: .95em; line-height: 1; }
 .nav-drop-btn svg { transition: transform .15s; }
 .nav-drop:hover .nav-drop-btn svg, .nav-drop:focus-within .nav-drop-btn svg { transform: rotate(180deg); }
 /* invisible bridge so the pointer can cross the gap to the panel */
@@ -426,9 +445,20 @@ li a:hover .sec-dot { border-color: var(--accent, var(--primary)); }
 .tool-card .tool-emoji { font-size: 1.7rem; margin-bottom: .35rem; }
 .tool-card .tool-title { font-weight: 700; font-size: 1rem; color: var(--text); }
 .tool-card .tool-desc { font-size: .84rem; color: var(--text-muted); line-height: 1.45; }
-/* the homepage's "see everything" card — an index entry, not another tool */
-.tool-card-all { border-style: dashed; background: transparent; box-shadow: none; }
-.tool-card-all .tool-title { color: var(--primary); }
+/* group heading + blurb rows inside the homepage toolbox grid — they span
+   the grid like the curriculum's track heads, same visual language (P55:
+   the homepage shows the full box, grouped, nothing collapsed) */
+.toolbox-grid .tbx-head {
+  grid-column: 1 / -1; margin: 0 0 -.4rem; font-size: 1.02rem; font-weight: 700;
+  letter-spacing: .01em; color: var(--text-muted);
+  display: flex; align-items: center; gap: .7rem;
+}
+.toolbox-grid .tbx-head:not(:first-child) { margin-top: 1.35rem; }
+.toolbox-grid .tbx-head::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+.toolbox-grid .tbx-desc {
+  grid-column: 1 / -1; margin: -.55rem 0 -.35rem;
+  font-size: .9rem; color: var(--text-faint); line-height: 1.5;
+}
 
 /* about */
 .about { display: flex; flex-wrap: wrap; align-items: center; gap: 3rem; }

@@ -270,15 +270,15 @@
   var TOOLBOX = [
     { url: "which-test.html",    key: "which-test",    group: "guide",    emoji: "🧭", title: "Which test should I use?", desc: "Answer a few questions, get the right test" },
     { url: "which-chart.html",   key: "which-chart",   group: "guide",    emoji: "📊", title: "Which chart should I use?", desc: "Pick the right chart for your data, mistakes and all" },
-    { url: "plan.html",          key: "plan",          group: "guide",    emoji: "🗺️", title: "Plan my analysis",         desc: "Question → test, sample size & APA — a printable plan", star: true },
-    { url: "tables.html",        key: "tables",        group: "calc",     emoji: "🎛️", title: "Tables & calculators",     desc: "Exact z, t, χ² and F — no appendix flipping", star: true },
+    { url: "plan.html",          key: "plan",          group: "guide",    emoji: "🗺️", title: "Plan my analysis",         desc: "Question → test, sample size & APA — a printable plan" },
+    { url: "tables.html",        key: "tables",        group: "calc",     emoji: "🎛️", title: "Tables & calculators",     desc: "Exact z, t, χ² and F — no appendix flipping" },
     { url: "distributions.html", key: "distributions", group: "practice", emoji: "🎢", title: "Distribution playground",  desc: "Poke 9 distributions and watch them wiggle" },
     { url: "effect-sizes.html",  key: "effect-sizes",  group: "calc",     emoji: "📏", title: "Effect-size converter",    desc: "d ↔ r ↔ η² — plus what they actually mean" },
-    { url: "power.html",         key: "power",         group: "calc",     emoji: "⚡", title: "Power & sample size",       desc: "How many participants? Solve n, power, or effect", star: true },
+    { url: "power.html",         key: "power",         group: "calc",     emoji: "⚡", title: "Power & sample size",       desc: "How many participants? Solve n, power, or effect" },
     { url: "descriptives.html",  key: "descriptives",  group: "calc",     emoji: "🧮", title: "Descriptives calculator",  desc: "Paste data, get stats, a histogram & APA text" },
     { url: "correlation.html",   key: "correlation",   group: "calc",     emoji: "📈", title: "Correlation & regression",  desc: "Paste X and Y: scatter, r, ρ, the best-fit line & APA" },
-    { url: "apa.html",           key: "apa",           group: "calc",     emoji: "📝", title: "APA results formatter",    desc: "Type your numbers, copy a correct APA 7 sentence", star: true },
-    { url: "datasets.html",      key: "datasets",      group: "practice", emoji: "🗂️", title: "Practice datasets",        desc: "Download real CSVs with stories, exercises & solutions", star: true },
+    { url: "apa.html",           key: "apa",           group: "calc",     emoji: "📝", title: "APA results formatter",    desc: "Type your numbers, copy a correct APA 7 sentence" },
+    { url: "datasets.html",      key: "datasets",      group: "practice", emoji: "🗂️", title: "Practice datasets",        desc: "Download real CSVs with stories, exercises & solutions" },
     { url: "formulas.html",      key: "formulas",      group: "guide",    emoji: "🖨️", title: "Formula sheet",            desc: "Every formula from the course, printable" },
     { url: "cheat-test-chooser.html", key: "cheat-test-chooser", group: "guide", emoji: "🧾", title: "Cheat sheet: which test",  desc: "Printable poster — outcome × design → the test" },
     { url: "cheat-apa.html",     key: "cheat-apa",     group: "guide",    emoji: "🖋️", title: "Cheat sheet: APA reporting", desc: "Printable poster — report t, F, χ², r & regression" },
@@ -294,7 +294,16 @@
     { url: "guides/clean-survey-data/",              key: "clean-survey-data",              group: "read", emoji: "🧹", title: "Clean your survey data, step by step", desc: "From raw export to analysis-ready, with a real dataset to follow along" },
     { url: "teachers.html",                          key: "teachers",                       group: "read", emoji: "🎓", title: "For instructors",                     desc: "Use the site in your course: link, embed, print & assign — free" }
   ];
-  window.TOOLBOX = TOOLBOX;   // toolbox.html renders its grouped grid from this
+  /* the four toolbox groups — the homepage grid and toolbox.html render the
+     same grouped layout, so the titles/blurbs live here beside TOOLBOX */
+  var TOOLBOX_GROUPS = [
+    { id: "guide",    title: "🧭 Decide & look up",   sub: "For when you know what you need but not what it's called — or the other way round." },
+    { id: "calc",     title: "🎛️ Calculate",          sub: "Exact numbers for your homework and write-ups — no appendix tables, no approximations." },
+    { id: "practice", title: "🎮 Explore & practice", sub: "Build intuition by playing, then prove to yourself it stuck." },
+    { id: "read",     title: "📚 Read the guides",    sub: "Long-form walkthroughs for the big moments — a whole thesis analysis, cryptic SPSS output, a messy survey export." }
+  ];
+  window.TOOLBOX = TOOLBOX;                 // toolbox.html renders its grouped grid
+  window.TOOLBOX_GROUPS = TOOLBOX_GROUPS;   // from these two
   function renderNav() {
     var nav = document.getElementById("nav");
     if (!nav) return;
@@ -313,7 +322,7 @@
         '<nav class="nav-links" id="nav-links" aria-label="Primary">' +
           '<a class="nav-link' + curActive + '" href="' + (BASE || "./") + '#curriculum">Curriculum</a>' +
           '<div class="nav-drop" id="nav-drop">' +
-            '<a class="nav-link nav-drop-btn' + (toolboxActive ? " active" : "") + '" href="' + BASE + 'toolbox.html" aria-haspopup="true">Statistics Toolbox' +
+            '<a class="nav-link nav-drop-btn' + (toolboxActive ? " active" : "") + '" href="' + BASE + 'toolbox.html" aria-haspopup="true"><span class="ndb-label"><span class="ndb-emoji" aria-hidden="true">🧰</span>Statistics Toolbox</span>' +
               '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></a>' +
             '<div class="nav-drop-panel">' + toolboxItems + '</div>' +
           '</div>' +
@@ -463,23 +472,26 @@
     });
   }
 
-  /* ---------- homepage toolbox strip (reads TOOLBOX, same as the nav) ----------
-     The homepage shows only the `star: true` tools plus a "see all" card —
-     the full grouped grid lives on toolbox.html. Keeps the homepage calm. */
+  /* ---------- homepage toolbox grid (reads TOOLBOX, same as the nav) ----------
+     P55: the homepage shows the FULL toolbox as a grouped grid — the same
+     groups as toolbox.html, with heading rows spanning the grid the way the
+     curriculum's track heads do. Nothing hides behind a "see all" card, so
+     a new TOOLBOX entry appears here automatically. */
   function renderToolbox() {
     var host = document.getElementById("toolbox-grid");
     if (!host) return;
-    host.innerHTML = TOOLBOX.filter(function (t) { return t.star; }).map(function (t) {
-      return '<a class="tool-card" href="' + BASE + t.url + '">' +
-        '<span class="tool-emoji" aria-hidden="true">' + t.emoji + '</span>' +
-        '<span class="tool-title">' + t.title + '</span>' +
-        '<span class="tool-desc">' + t.desc + '</span></a>';
-    }).join("") +
-      '<a class="tool-card tool-card-all" href="' + BASE + 'toolbox.html">' +
-        '<span class="tool-emoji" aria-hidden="true">🧰</span>' +
-        '<span class="tool-title">All ' + TOOLBOX.filter(function (t) { return t.group !== "read"; }).length +
-          ' tools & ' + TOOLBOX.filter(function (t) { return t.group === "read"; }).length + ' guides →</span>' +
-        '<span class="tool-desc">Choosers, calculators, long-form guides, flashcards, the quiz, your progress — the whole box</span></a>';
+    host.innerHTML = TOOLBOX_GROUPS.map(function (g) {
+      var cards = TOOLBOX.filter(function (t) { return t.group === g.id; });
+      if (!cards.length) return "";
+      return '<h3 class="tbx-head">' + g.title + '</h3>' +
+        '<p class="tbx-desc">' + g.sub + '</p>' +
+        cards.map(function (t) {
+          return '<a class="tool-card" href="' + BASE + t.url + '">' +
+            '<span class="tool-emoji" aria-hidden="true">' + t.emoji + '</span>' +
+            '<span class="tool-title">' + t.title + '</span>' +
+            '<span class="tool-desc">' + t.desc + '</span></a>';
+        }).join("");
+    }).join("");
   }
 
   /* ---------- resume banner (homepage) ---------- */

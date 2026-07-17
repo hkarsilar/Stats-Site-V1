@@ -26,7 +26,7 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v6";   /* P54: styles.css changed (in-prose link affordance) */
+const CACHE_VERSION = "sc-v7";   /* P55: site.js + styles.css changed (toolbox front door) */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location

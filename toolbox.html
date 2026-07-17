@@ -92,12 +92,9 @@
   <script>
   (function () {
     "use strict";
-    var GROUPS = [
-      { id: "guide",    title: "🧭 Decide & look up",   sub: "For when you know what you need but not what it's called — or the other way round." },
-      { id: "calc",     title: "🎛️ Calculate",          sub: "Exact numbers for your homework and write-ups — no appendix tables, no approximations." },
-      { id: "practice", title: "🎮 Explore & practice", sub: "Build intuition by playing, then prove to yourself it stuck." },
-      { id: "read",     title: "📚 Read the guides",    sub: "Long-form walkthroughs for the big moments — a whole thesis analysis, cryptic SPSS output, a messy survey export." }
-    ];
+    /* group titles + blurbs live in site.js beside TOOLBOX (window.TOOLBOX_GROUPS)
+       since P55 — the homepage renders the same grouped grid */
+    var GROUPS = window.TOOLBOX_GROUPS || [];
     var host = document.getElementById("tbx-groups");
     var TB = window.TOOLBOX || [];
     host.innerHTML = GROUPS.map(function (g) {
