@@ -34,10 +34,13 @@
   --secondary: #14b8a6;
   --secondary-light: #2dd4bf;
   --success: #22c55e;
-  /* in-prose link colour — indigo-600, not raw --primary: #6366f1 is only
-     4.47:1 on white and 4.08:1 on surface-2, so link TEXT needs the darker
-     step to clear WCAG AA 4.5:1 on every light surface. */
-  --link: #4f46e5;
+  /* in-prose link colour. Prose links are Wikipedia-style — coloured, no
+     underline at rest (underline on hover) — so colour alone carries the
+     "this is a link" signal, and it must clear TWO WCAG AA gates at once:
+     ≥4.5:1 vs every light surface (readability of the link text) AND ≥3:1
+     vs body text #0f172a (so the link is perceivable without the underline;
+     raw --primary #6366f1 is only ~2.9:1 vs body text). Indigo, brand-close. */
+  --link: #5850ec;
 
   /* surfaces (light) */
   --bg: #ffffff;
@@ -73,9 +76,10 @@ html[data-theme="dark"] {
   /* dark faint lightened to #94a3b8 (≥5.9:1 on every dark surface); the old
      #64748b was only ~3.2–3.9:1. See the light-mode note above. */
   --text-faint: #94a3b8;
-  /* dark prose links ride --primary-light (#818cf8): raw --primary is only
-     3.40–4.22:1 on dark surfaces; the light indigo clears 5.09:1 everywhere. */
-  --link: var(--primary-light);
+  /* dark prose link — same dual gate: ≥4.5:1 vs the dark bg/surface links sit
+     on AND ≥3:1 vs body text #e7ecf5 (--primary-light #818cf8 is only ~2.5:1
+     vs that near-white text). A touch deeper than --primary-light to win it. */
+  --link: #6f7bf2;
   --shadow: 0 1px 3px rgba(0, 0, 0, .4);
   --shadow-lg: 0 10px 30px -10px rgba(0, 0, 0, .6);
 }
@@ -98,27 +102,26 @@ body {
 
 a { color: inherit; text-decoration: none; }
 
-/* In-prose links get a visible treatment. The quiet base rule above is
-   right for chrome — nav, cards, sidebar, the lesson TOC, prev/next,
-   buttons — but it left body-copy links indistinguishable from plain
-   text. Scope: prose containers inside a .lesson article (every lesson,
-   guide, and tool page wraps its copy in one; the homepage About bio
-   carries its own copy of this look). Excluded: .btn (links dressed as
-   buttons) and the two link lists that live inside articles but are
-   navigation, not prose — the "On this page" .lesson-toc and datasets'
-   .ds-index jump chips. --link is tuned per-theme for AA contrast. */
+/* In-prose links follow the Wikipedia model: coloured but NOT bold and NOT
+   underlined at rest, so they don't interrupt a paragraph read at a calm
+   pace. The underline appears on hover (and the global focus ring on focus)
+   to confirm they're clickable. Bold in prose stays reserved for real
+   <strong> emphasis — the link rule never adds weight. Scope: prose
+   containers inside a .lesson article (every lesson, guide, and tool page
+   wraps its copy in one). Excluded: .btn (links dressed as buttons) and the
+   two in-article link lists that are navigation, not prose — the "On this
+   page" .lesson-toc and datasets' .ds-index jump chips. --link is tuned
+   per-theme to clear AA both vs the surface and vs the body text, since at
+   rest colour is the only cue (see the palette notes). Chrome elsewhere
+   (nav, cards, sidebar, prev/next, interactive-box CTAs) keeps its own,
+   heavier styling — this rule deliberately doesn't touch it. */
 .lesson :is(p, li, td, th, .callout, .faq-a) a:not(.btn, .lesson-toc a, .ds-index a) {
   color: var(--link);
-  font-weight: 600;
-  text-decoration: underline;
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 3px;
-  text-decoration-color: color-mix(in srgb, var(--link) 45%, transparent);
-  transition: text-decoration-color .15s, text-decoration-thickness .15s;
+  text-underline-offset: 2px;
+  transition: color .15s;
 }
 .lesson :is(p, li, td, th, .callout, .faq-a) a:not(.btn, .lesson-toc a, .ds-index a):hover {
-  text-decoration-color: var(--link);
-  text-decoration-thickness: 2px;
+  text-decoration: underline;
 }
 
 h1, h2, h3, h4 { line-height: 1.2; letter-spacing: -0.02em; }
@@ -470,15 +473,14 @@ li a:hover .sec-dot { border-color: var(--accent, var(--primary)); }
 }
 .about .bio { flex: 1; min-width: 16rem; }
 .about .bio p { color: var(--text-muted); }
-/* links in the bio should look like links (the model for the sitewide
-   in-prose treatment; --link keeps AA contrast in both themes) */
+/* bio links use the same calm in-prose treatment: coloured, no bold,
+   underline on hover only (--link keeps AA contrast in both themes) */
 .about .bio p a {
-  color: var(--link); font-weight: 600;
-  text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px;
-  text-decoration-color: color-mix(in srgb, var(--link) 45%, transparent);
-  transition: .15s;
+  color: var(--link);
+  text-underline-offset: 2px;
+  transition: color .15s;
 }
-.about .bio p a:hover { text-decoration-color: var(--link); }
+.about .bio p a:hover { text-decoration: underline; }
 .about-links { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.1rem; }
 .about-link {
   display: inline-flex; align-items: center; gap: .45rem;
@@ -717,7 +719,8 @@ body[data-course="writing"] { --course-accent: #84cc16; }
 .a11y-statement h3 { margin: 0 0 .4rem; font-size: 1.05rem; }
 .a11y-statement p { margin: 0 0 .5rem; color: var(--text-muted); font-size: .92rem; }
 .a11y-statement p:last-child { margin-bottom: 0; }
-.a11y-statement a { color: var(--link); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.a11y-statement a { color: var(--link); text-underline-offset: 2px; }
+.a11y-statement a:hover { text-decoration: underline; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -907,10 +910,7 @@ body[data-course="writing"] { --course-accent: #84cc16; }
   /* scrollable containers print full-width with no edge fade */
   .hscroll { overflow-x: visible; -webkit-mask-image: none !important; mask-image: none !important; }
 
-  /* the !important longhands keep the higher-specificity screen prose-link
-     rule from tinting or thickening underlines on paper: print links are
-     plain black underlined text, full stop. */
-  a { color: #000 !important; text-decoration: underline; text-decoration-color: currentColor !important; text-decoration-thickness: auto !important; }
+  a { color: #000 !important; text-decoration: underline; }
 
   /* --- the one printed adornment: a discreet per-page URL footer --- */
   .print-footer {
