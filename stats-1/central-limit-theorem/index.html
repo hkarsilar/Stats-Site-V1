@@ -79,7 +79,7 @@
           <div class="controls" style="margin:-.25rem 0 1rem">
             <div class="control" style="flex-direction:row;align-items:center;gap:.6rem">
               <button class="btn btn-primary btn-sm" id="draw-1">Draw 1 sample</button>
-              <button class="btn btn-ghost btn-sm" id="draw-many">Draw 50 (animated)</button>
+              <button class="btn btn-ghost btn-sm" id="draw-many">Draw 100 (animated)</button>
               <button class="btn btn-ghost btn-sm" id="reset">Reset</button>
             </div>
           </div>
@@ -176,6 +176,8 @@
     var animId = null;
 
     var css = function (name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); };
+    // mirrors VIZ.reducedMotion() (this lesson doesn't load viz.js)
+    function reducedMotion() { try { return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); } catch (e) { return false; } }
 
     /* ---- population samplers (return a value in [LO, HI]) ---- */
     function gauss(mu, sd) {
@@ -346,6 +348,7 @@
     }
     function drawMany(total) {
       if (animId) cancelAnimationFrame(animId);
+      if (reducedMotion()) { for (var k = 0; k < total; k++) drawOne(); renderAll(); return; }
       var added = 0, last = null;
       function step(ts) {
         if (last === null) last = ts;
@@ -379,7 +382,7 @@
       resetMeans();
     });
     document.getElementById("draw-1").addEventListener("click", function () { drawOne(); renderAll(); });
-    document.getElementById("draw-many").addEventListener("click", function () { drawMany(50); });
+    document.getElementById("draw-many").addEventListener("click", function () { drawMany(100); });
     document.getElementById("reset").addEventListener("click", resetMeans);
 
     window.addEventListener("resize", function () { sizeCanvases(); renderAll(); });

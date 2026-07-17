@@ -190,9 +190,10 @@
       else { var a = Math.abs(z); shadeRegion(a, HI, scale, baseY); shadeRegion(LO, -a, scale, baseY); }
       ctx.globalAlpha = 1;
 
-      // curve
+      // curve — plot at vx(v) (the SAME x-mapping the shaded fill, ticks and
+      // marker use) so the fill's top edge lands exactly on this outline
       ctx.strokeStyle = VIZ.css("--primary"); ctx.lineWidth = 2.5; ctx.beginPath();
-      for (var px = 0; px <= W; px += 1.5) { var v = LO + (px / W) * (HI - LO); var y = baseY - pdf(v) * scale; if (px === 0) ctx.moveTo(px, y); else ctx.lineTo(px, y); }
+      for (var px = 0; px <= W; px += 1.5) { var v = LO + (px / W) * (HI - LO); var y = baseY - pdf(v) * scale; if (px === 0) ctx.moveTo(vx(v), y); else ctx.lineTo(vx(v), y); }
       ctx.stroke();
 
       // observed-statistic marker
