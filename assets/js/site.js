@@ -355,7 +355,9 @@
       var items = TOOLBOX.filter(function (t) { return t.group === g.id; });
       if (!items.length) return null;
       return { n: items.length, html:
-        '<div class="ndp-group"><div class="ndp-ghead">' + g.title + '</div>' +
+        /* strip the leading emoji — the dropdown headers are text-only
+           (the homepage grid + toolbox.html keep the emoji versions) */
+        '<div class="ndp-group"><div class="ndp-ghead">' + g.title.replace(/^[^\w]+/, "") + '</div>' +
         items.map(function (t) {
           return '<a class="nav-drop-item ndi-compact' + act(t.key) + '" href="' + BASE + t.url + '">' +
             '<span class="nd-emoji">' + t.emoji + '</span><span class="nd-title">' + t.title + '</span></a>';

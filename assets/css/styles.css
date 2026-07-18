@@ -41,6 +41,12 @@
      vs body text #0f172a (so the link is perceivable without the underline;
      raw --primary #6366f1 is only ~2.9:1 vs body text). Indigo, brand-close. */
   --link: #5850ec;
+  /* green accent for the Toolbox dropdown group headers — deeper than the
+     bright --success #22c55e (which is only ~2.3:1 on white) so it clears
+     4.5:1 on the white dropdown panel; the dark theme swaps back to the
+     bright green, which passes easily on the dark surface. Tuned per-theme
+     exactly like --link. */
+  --group-head: #15803d;
 
   /* surfaces (light) */
   --bg: #ffffff;
@@ -80,6 +86,8 @@ html[data-theme="dark"] {
      on AND ≥3:1 vs body text #e7ecf5 (--primary-light #818cf8 is only ~2.5:1
      vs that near-white text). A touch deeper than --primary-light to win it. */
   --link: #6f7bf2;
+  /* bright green reads clearly on the dark dropdown surface (~6.5:1) */
+  --group-head: #22c55e;
   --shadow: 0 1px 3px rgba(0, 0, 0, .4);
   --shadow-lg: 0 10px 30px -10px rgba(0, 0, 0, .6);
 }
@@ -251,13 +259,14 @@ h1, h2, h3, h4 { line-height: 1.2; letter-spacing: -0.02em; }
 .ndp-col { display: flex; flex-direction: column; gap: .1rem; min-width: 13rem; }
 .ndp-group { display: flex; flex-direction: column; gap: .1rem; }
 .ndp-group + .ndp-group { margin-top: .5rem; padding-top: .45rem; border-top: 1px solid var(--border); }
-/* group headers in the accent colour so they separate the four groups at a
-   glance instead of dissolving into faint grey. --link (not --primary) is the
-   accent tuned per-theme to clear 4.5:1 on a surface — primary itself falls
-   just short in both themes at this small size. */
+/* group headers in the green accent so they separate the four groups at a
+   glance instead of dissolving into faint grey. --group-head is tuned
+   per-theme to clear 4.5:1 on the dropdown surface (the bright --success
+   green fails that on white). Text-only — the emoji is stripped in renderNav
+   so these read as clean section labels, not a second row of icons. */
 .ndp-ghead {
-  font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
-  color: var(--link); padding: .45rem .65rem .3rem; white-space: nowrap;
+  font-size: .82rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em;
+  color: var(--group-head); padding: .5rem .65rem .35rem; white-space: nowrap;
 }
 .ndi-compact { padding: .34rem .65rem; gap: .55rem; }
 .ndi-compact .nd-emoji { font-size: .95rem; }
