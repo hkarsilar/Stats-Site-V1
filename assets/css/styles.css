@@ -141,7 +141,7 @@ h1, h2, h3, h4 { line-height: 1.2; letter-spacing: -0.02em; }
   max-width: var(--maxw); margin: 0 auto; height: 100%; padding: 0 1.25rem;
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;
 }
-.brand { font-weight: 800; font-size: 1.2rem; letter-spacing: -.03em; }
+.brand { font-weight: 800; font-size: 1.42rem; letter-spacing: -.035em; }
 .brand .dot { color: var(--primary); }
 .nav-links { display: flex; align-items: center; gap: .35rem; }
 .nav-link {
@@ -250,10 +250,14 @@ h1, h2, h3, h4 { line-height: 1.2; letter-spacing: -0.02em; }
 }
 .ndp-col { display: flex; flex-direction: column; gap: .1rem; min-width: 13rem; }
 .ndp-group { display: flex; flex-direction: column; gap: .1rem; }
-.ndp-group + .ndp-group { margin-top: .55rem; }
+.ndp-group + .ndp-group { margin-top: .5rem; padding-top: .45rem; border-top: 1px solid var(--border); }
+/* group headers in the accent colour so they separate the four groups at a
+   glance instead of dissolving into faint grey. --link (not --primary) is the
+   accent tuned per-theme to clear 4.5:1 on a surface — primary itself falls
+   just short in both themes at this small size. */
 .ndp-ghead {
-  font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
-  color: var(--text-faint); padding: .5rem .65rem .2rem; white-space: nowrap;
+  font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
+  color: var(--link); padding: .45rem .65rem .3rem; white-space: nowrap;
 }
 .ndi-compact { padding: .34rem .65rem; gap: .55rem; }
 .ndi-compact .nd-emoji { font-size: .95rem; }
@@ -522,6 +526,16 @@ li a:hover .sec-dot { border-color: var(--accent, var(--primary)); }
 .lesson-wrap { max-width: var(--maxw); margin: 0 auto; display: flex; gap: 2.5rem; padding: 1.5rem 1.25rem 4rem; }
 .sidebar { width: 16rem; flex-shrink: 0; }
 .sidebar-sticky { position: sticky; top: calc(var(--nav-h) + 1rem); max-height: calc(100vh - var(--nav-h) - 2rem); overflow-y: auto; padding-right: .5rem; }
+/* track heading in the sidebar — same quiet treatment as the homepage's
+   .track-head (uppercase label + trailing rule), so "Statistics Core" and
+   "Research Toolkit" separate the course groups instead of one long list */
+.sidebar .sb-track-head {
+  display: flex; align-items: center; gap: .5rem;
+  font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+  color: var(--text-muted); margin: 1rem .35rem .45rem;
+}
+.sidebar .sb-track-head:first-child { margin-top: .1rem; }
+.sidebar .sb-track-head::after { content: ""; flex: 1; height: 1px; background: var(--border); }
 /* collapsible course groups — only the current course starts open.
    Each group carries its course accent in --sb-accent (set inline by
    site.js); mixing it with var(--text) keeps it readable in both themes. */

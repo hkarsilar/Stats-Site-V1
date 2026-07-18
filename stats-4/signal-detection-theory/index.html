@@ -64,7 +64,7 @@
 
           <div class="controls">
             <div class="control" style="flex:1;min-width:200px"><label>Sensitivity d′ <span class="val" id="sdt-d-val">1.50</span></label><input type="range" id="sdt-d" min="0" max="3" step="0.05" value="1.5" /></div>
-            <div class="control" style="flex:1;min-width:200px"><label>Criterion c <span class="val" id="sdt-c-val">0.00</span></label><input type="range" id="sdt-c" min="-1.5" max="1.5" step="0.05" value="0" /></div>
+            <div class="control" style="flex:1;min-width:200px"><label>Criterion c <span class="val" id="sdt-c-val">0.00</span></label><input type="range" id="sdt-c" min="-2.5" max="2.5" step="0.05" value="0" /></div>
             <div class="control"><button class="btn btn-primary btn-sm" id="sdt-sweep">▶ Sweep the criterion</button></div>
           </div>
 
@@ -344,7 +344,7 @@
     function setCFromEvent(e) {
       var rect = canvas.getBoundingClientRect();
       var lam = xv(e.clientX - rect.left);
-      c = Math.max(-1.5, Math.min(1.5, Math.round((lam - d / 2) / 0.05) * 0.05));
+      c = Math.max(-2.5, Math.min(2.5, Math.round((lam - d / 2) / 0.05) * 0.05));
       cIn.value = c; stopSweep(); update();
     }
     var dragging = false;
@@ -354,8 +354,8 @@
     canvas.addEventListener("pointercancel", function () { dragging = false; });
     canvas.addEventListener("keydown", function (e) {
       var step = e.shiftKey ? 0.25 : 0.05, moved = true;
-      if (e.key === "ArrowLeft") c = Math.max(-1.5, +(c - step).toFixed(2));
-      else if (e.key === "ArrowRight") c = Math.min(1.5, +(c + step).toFixed(2));
+      if (e.key === "ArrowLeft") c = Math.max(-2.5, +(c - step).toFixed(2));
+      else if (e.key === "ArrowRight") c = Math.min(2.5, +(c + step).toFixed(2));
       else moved = false;
       if (moved) { e.preventDefault(); cIn.value = c; stopSweep(); update(); }
     });

@@ -298,7 +298,7 @@
     { url: "guides/spss-output-to-apa/",             key: "spss-output-to-apa",             group: "read", emoji: "📄", title: "From SPSS output to APA results",  desc: "Annotated output for the five classic tests — and the exact sentence" },
     { url: "guides/choose-statistics-dissertation/", key: "choose-statistics-dissertation", group: "read", emoji: "🎓", title: "Choosing statistics for your dissertation", desc: "Three questions that pick your test — plus honest words on messy designs" },
     { url: "guides/clean-survey-data/",              key: "clean-survey-data",              group: "read", emoji: "🧹", title: "Clean your survey data, step by step", desc: "From raw export to analysis-ready, with a real dataset to follow along" },
-    { url: "teachers.html",                          key: "teachers",                       group: "read", emoji: "🎓", title: "For instructors",                     desc: "Use the site in your course: link, embed, print & assign — free" }
+    { url: "teachers.html",                          key: "teachers",                       group: "read", emoji: "🧑‍🏫", title: "For instructors",                     desc: "Use the site in your course: link, embed, print & assign — free" }
   ];
   /* the four toolbox groups — the homepage grid and toolbox.html render the
      same grouped layout, so the titles/blurbs live here beside TOOLBOX */
@@ -374,7 +374,7 @@
 
     nav.innerHTML =
       '<div class="nav-inner">' +
-        '<a class="brand" href="' + (BASE || "./") + '" style="display:inline-flex;align-items:center;gap:.45rem">' + capy(28) + 'Stats<span class="dot">Capybara</span></a>' +
+        '<a class="brand" href="' + (BASE || "./") + '" style="display:inline-flex;align-items:center;gap:.5rem">' + capy(36) + 'Stats<span class="dot">Capybara</span></a>' +
         '<nav class="nav-links" id="nav-links" aria-label="Primary">' +
           trackDrops +
           '<div class="nav-drop">' +
@@ -621,7 +621,7 @@
     var host = document.getElementById("sidebar");
     if (!host) return;
     var chev = '<svg class="chev" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>';
-    var html = window.CURRICULUM.map(function (c) {
+    function courseGroup(c) {
       var isCurrent = c.sections.some(function (s) { return s.slug === HERE; });
       var doneN = c.sections.filter(function (s) { return isDone(s.slug); }).length;
       var links = c.sections.map(function (s) {
@@ -644,7 +644,25 @@
         '</summary>' +
         '<div class="sb-links">' + links + '</div>' +
       '</details>';
-    }).join("");
+    }
+    /* group the courses by track, with a heading above each group (like the
+       homepage) — only when more than one track is populated, so a single-
+       track site stays a flat list. This is what separates Stats 4 from
+       Methods in the sidebar instead of one undivided run of courses. */
+    var tracks = (window.TRACKS && window.TRACKS.length) ? window.TRACKS : [{ id: "core", title: "" }];
+    var known = {};
+    tracks.forEach(function (t) { known[t.id] = 1; });
+    var groups = tracks.map(function (t) {
+      return { title: t.title, courses: window.CURRICULUM.filter(function (c) { return (c.track || "core") === t.id; }) };
+    }).filter(function (g) { return g.courses.length; });
+    var orphans = window.CURRICULUM.filter(function (c) { return !known[c.track || "core"]; });
+    if (orphans.length) groups.push({ title: "", courses: orphans });
+    var html = groups.length > 1
+      ? groups.map(function (g) {
+          return (g.title ? '<div class="sb-track-head">' + g.title + '</div>' : '') +
+            g.courses.map(courseGroup).join("");
+        }).join("")
+      : window.CURRICULUM.map(courseGroup).join("");
     host.innerHTML = '<div class="sidebar-sticky">' + html + '</div>';
   }
 
