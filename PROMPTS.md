@@ -1126,5 +1126,162 @@ Verify across page types (homepage, a core lesson, a toolkit lesson, a tool page
 
 ---
 
-*End of prompt library. When every box in ROADMAP.md is ticked: the site has 9 courses, ~97 interactive lessons, 20 tools, 4 guides, print/offline/a11y polish, prose that reads like a person, instructor-ready embeds, and a live SEO feedback loop. At that point the loops (P37–P39) plus the human checklist ARE the roadmap. Phases 12–13 (P49–P60) are live-review punch-lists layered on top — cherry-pick as time allows.*
+## Phase 14 — Depth & reach (P61–P68)
+
+Added 18 Jul 2026 after a full-site review (see ROADMAP's Phase 14 addendum). P1–P60 built the site out and rebuilt the front door; the growth surface has moved to three quieter axes: **reach** (`statscapybara.com/stats-1/` is currently a 404 — there is no course-level URL to put on a syllabus), **depth** (checks, quiz and flashcards all test *recognition*; nothing on the site makes a student produce a number by hand and shows the worked path), and **hardening** (audit.js verifies the site's wiring exhaustively but not one line of its math; external links are only hand-checked quarterly; one drag interactive still scrolls the page on touch). Model/effort legend as in Phase 12. **P61, P67 and P68 all edit `site.js` — run them one at a time. P64 needs P63.** Everything else is independent and cherry-pickable.
+
+### P61 — Course landing pages
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P61 (see ROADMAP.md). Run node tools/audit.js first.
+
+Give every course a real landing page at <course>/index.html — nine new pages. Today statscapybara.com/stats-1/ is a 404 (people trim URLs to the course level, and there is no per-course URL for a syllabus or a share), and the nav's course rows drop visitors into lesson 1.1 with zero orientation.
+
+PLATFORM (small, do it first): site.js's BASE is binary ("" at root, "../../" via body[data-section]/[data-guide]). Course pages sit at depth 1 — add a third marker, body[data-course-home="<slug>"], giving BASE "../". These pages get the shared chrome (nav, footer, theme, search, skip-link, SW) but NO sidebar / prev-next / progress-recording / quip. Nav active state: light the tab of the course's track.
+
+EACH PAGE: track-title eyebrow, h1 = course title + subtitle, then 2–3 short hand-written paragraphs — what you'll learn, who it's for, where it leads next (VOICE.md applies; prose-lint --strict stays clean; write each course's intro differently, not nine fills of one template). The lesson list renders at runtime from curriculum.js (never bake it): § numbers, titles, ✓ ticks from sc-progress, coming-soon dimmed, plus the per-course ring (window.SC.ring). A Start/Resume CTA (first lesson, or first unvisited if progress exists). A short curated "tools you'll use in this course" row (2–4 TOOLBOX/guide links chosen per course). An @media print treatment so the page prints as a clean one-page course syllabus (title, blurb, lesson list, URL) — an instructor handout for free.
+
+SEO per page: canonical + og:url = https://statscapybara.com/<course>/, og:type website, og:image = assets/og-<course>.png (the course cards finally get a page of their own to live on), unique 50–160-char description (audit dedupe applies), JSON-LD = Course (mirror that course's homepage ItemList entry — name "Title: Subtitle", description, educationalLevel, provider, free offer — keep the two consistent) + BreadcrumbList (Home → Course). Leave lesson BreadcrumbLists two-level (Home → Lesson) — retrofitting a course crumb across 97 heads is a separate decision, not this session.
+
+RETARGET the course entry points to the landing pages: the nav track-dropdown course rows (renderNav), the homepage course-card title, and the homepage ItemList JSON-LD course urls — then update audit check 7, which currently expects the ItemList url to be the course's first ready lesson. The track-tab links themselves (#track-core/#track-toolkit) stay as they are.
+
+INTEGRATION: sitemap.xml += 9; add the pages to tools/build-search-index.py (+ rerun) and SEARCH_PAGES (tag "Course") so search finds "Stats 2"; a new COURSE_PAGES check in audit.js modeled on the GUIDES check 3b (GA tag, canonical/og:url = true URL, og:image = that course's card and exists on disk, Course + BreadcrumbList JSON-LD parse with required fields, the data-course-home marker, links resolve, sitemap + search-index presence). No QUIPS entries (no sidebar surfaces them) — wire the audit so it doesn't demand one. Document the new page type + the three-state BASE in CLAUDE.md and grow the adding-a-COURSE checklist by one step.
+
+site.js is precached → BUMP CACHE_VERSION in sw.js. Verify all nine pages in light + dark + mobile AND on the subpath server (a new BASE depth is exactly what subpath hosting catches), the nav from a lesson AND from a course page, ring/ticks against real sc-progress, the print syllabus fits one page, audit 0 errors. Tick P61 in ROADMAP.md.
+```
+
+### P62 — Quiz v2: exam mode + a deeper bank
+
+**→ Extra Powerful · Ultra (multi-agent)**
+
+```
+StatsCapybara roadmap prompt P62 (see ROADMAP.md). Run node tools/audit.js first.
+
+Quiz v2 — turn quiz.html from a quick self-check into real exam rehearsal. Two halves, one session.
+
+1. DEEPEN THE BANK. Today: ~128 course-tagged questions (roughly one per lesson). Write ~70 more so every course reaches ~2 per lesson, weighted toward Stats 1–2 (aim for 3/lesson there — that's where exam pressure lives). Same shape { c, q, o[4], a, why }; each new question must test its topic at a DIFFERENT angle than the lesson's three checks.js questions (compare before writing — no near-duplicates); numeric answers verified via node -e + VIZ; the why strings follow VOICE.md. Mix formats: recall, interpretation, "a student concludes X — what went wrong?", read-the-output.
+
+2. EXAM MODE. An opt-in second mode on the start screen beside classic practice: choose scope (one course, several, or a whole track — picker generated from the curriculum as today), choose length (10/20/40), then a no-instant-feedback run (progress "7 of 20", answers locked in silently; an OPTIONAL count-up timer, off by default — this site does not do countdown panic). End screen: score, per-course breakdown, every missed question with its why and a link to the relevant lesson, and "retry just the ones I missed". Draw without replacement; shuffle options per draw (remap the answer index correctly). Print CSS so the results screen prints as a clean mock-exam report. Best exam scores → a new localStorage key sc-exam (document its schema in CLAUDE.md's localStorage inventory; if you surface it on progress.html, that page stays read-only).
+
+Classic mode stays exactly as it is. Calm throughout: no red-alert UI, no shame copy, capybara-kind finish states. Update the quiz TOOLBOX blurb and teachers.html's revision paragraph to mention exam mode; quiz.html's Quiz JSON-LD stays valid.
+
+Run as ULTRA (multi-agent): one agent writes the new questions; one independently fact-checks EVERY new answer (the correct option really correct, all three distractors really wrong, the why accurate); one builds exam mode and browser-verifies both modes end-to-end (classic regression-check included). Standard verification (audit, prose-lint on touched copy, search index rebuilt — quiz.html body text changed — light + dark + mobile, zero console errors). Tick P62 in ROADMAP.md.
+```
+
+### P63 — Worked problems library: problems.html + Stats 1–2 sets
+
+**→ Extra Powerful · Ultra (multi-agent)**
+
+```
+StatsCapybara roadmap prompt P63 (see ROADMAP.md). Run node tools/audit.js first.
+
+Build problems.html — "Practice Problems", the site's worked-examples library — and fill it for Stats 1 + Stats 2. The gap it closes: checks/quiz/flashcards all test recognition; nothing on the site makes a student PRODUCE a number with pencil and calculator and then shows the full worked path — the thing stats exams actually demand.
+
+FORMAT. A problem = a realistic mini-scenario with given values (n, means, SDs, counts — small enough to work by hand; vary the cover stories, not "a researcher collects data" twenty times), 1–3 sub-questions (compute, decide, interpret), a difficulty tag (warm-up / exam-level / stretch), then the worked solution in a closed <details>: every step on its own line — formula → plug-in → arithmetic → decision/interpretation sentence — with a link to the lesson § it comes from and, where natural, the tool that checks it (tables.html for criticals, descriptives/power/apa). EVERY number in every step verified via node -e + VIZ before it ships; record the verification one-liners in an HTML comment per problem. State rounding rules explicitly wherever rounding at a different step would change the reported answer.
+
+CONTENT: ~12 Stats 1 problems (level-of-measurement calls, mean/SD/z by hand, percentile from z, SE and the CLT, a confidence interval, a full one-sample t from summary numbers, effect size + a power lookup) and ~10 Stats 2 (independent + paired t, one-way ANOVA with a post-hoc decision, correlation incl. an r-vs-causation trap, regression prediction + a residual, chi-square, a which-nonparametric swap, an assumptions call). Grouped by course with a jump index; VOICE.md throughout.
+
+THE INSTRUCTOR FEATURE: two print buttons — "Print problems" (solutions suppressed regardless of open <details>) and "Print with solutions" (all solutions forced open) — via a body class + the existing print machinery; both versions print as clean handouts with the standard capybara/URL print footer. Cross-link from teachers.html (assignments section) and from lesson prose where a matching problem exists.
+
+INTEGRATION: full tool-page registration per CLAUDE.md (TOOLBOX group "practice", SEARCH_PAGES, QUIPS, build-search-index.py + rerun, sitemap.xml, ROOT_PAGES in audit.js, BreadcrumbList JSON-LD, full per-page SEO). Structure the page so P64 can append Stats 3–4 + toolkit sets without rework.
+
+Run as ULTRA (multi-agent): one agent writes problems + page; one independently re-derives every worked solution start to finish; one verifies audit / prose-lint / both print modes / browser in light + dark + mobile. Tick P63 in ROADMAP.md.
+```
+
+### P64 — Worked problems: Stats 3–4 + toolkit sets
+
+**→ Extra Powerful · Ultra (multi-agent)**
+
+```
+StatsCapybara roadmap prompt P64 (see ROADMAP.md; requires P63's problems.html). Run node tools/audit.js first.
+
+Extend problems.html with the advanced and toolkit sets — same format, verification bar, and print behaviour as the Stats 1–2 sets.
+
+1. Stats 3 (~8): multiple-regression coefficient interpretation (+ a standardized-vs-raw call), an ANCOVA adjusted-means read, logistic regression (log-odds → OR → predicted probability), a factorial interaction read from cell means, a mixed/RM design choice, a power-analysis setup (get the inputs right, power.html finishes it), a multicollinearity/VIF call, a missing-data strategy call.
+2. Stats 4 (~7): Bayes' rule by hand (the classic base-rate medical-test numbers), a Beta-posterior update, d′ + criterion from hit/false-alarm counts (agreeing with the SDT lesson's conventions), a PSE/JND read from a fitted logistic (agreeing with 4.11), a GLM family choice, a survival-curve read, a model-comparison (AIC) call.
+3. Research Toolkit "spot the problem" (~6, no arithmetic): a flawed design (find the confound), a sampling-bias scenario, a QRP to name, a data-cleaning error to catch, a misleading figure to critique, and an APA results sentence with three planted reporting errors to find (cross-check the planted errors against apa.html's rules so the corrected version really is correct).
+
+Where a solution leans on another lesson's convention (SDT, PSE, AIC), re-verify against THAT lesson's displayed values — the site must never disagree with itself. Update the jump index and any blurb that names the set count; rerun build-search-index.py.
+
+Run as ULTRA (multi-agent): builder / independent re-derivation of every number and every "spot the problem" answer key / audit + prose-lint + print + browser verification. Tick P64 in ROADMAP.md.
+```
+
+### P65 — Touch & small-screen ergonomics for the interactives
+
+**→ Powerful · Extra**
+
+```
+StatsCapybara roadmap prompt P65 (see ROADMAP.md). Run node tools/audit.js first.
+
+Touch-first ergonomics pass over the interactives. P47 fixed the mouse affordances (cursors, press states, range-input touch height); this is the finger counterpart — phone students are a big slice of the audience.
+
+1. touch-action sweep: inventory every canvas with a pointerdown/mousedown drag handler (lessons AND tool pages). A draggable canvas without touch-action: none (or pan-y where the drag is axis-locked) scrolls the page mid-drag on touch — known offender: ml/classification-metrics' threshold drag (its six sibling drag lessons already carry the guard). Fix every hit, then state the convention in CLAUDE.md next to the P47 cursor convention: a canvas that captures pointer drags declares touch-action.
+2. Finger-sized grab targets: drag hit-tests are tuned for a mouse. On coarse pointers (matchMedia pointer: coarse) widen the grab radius to roughly a finger pad (~24 CSS px) for the point-drag lessons (stats-1/describing-data, stats-2/correlation, stats-3/assumptions-of-regression), the k-means canvas, and the two criterion/threshold drags (stats-4/signal-detection-theory, ml/classification-metrics) — nearest-candidate-within-radius so crowded points still pick the closest. Mouse behaviour stays byte-identical.
+3. 360 px sweep: load the interactives and tool pages at worst-case narrow width; fix any .controls row, .seg, or .stat-row that overflows or wraps unusably — using the EXISTING patterns (flex-wrap, .hscroll, the P50 nowrap-pair trick), no bespoke per-page CSS beyond that.
+4. Hover-only affordances: anything revealed only on :hover needs a touch path (tap, or always-visible on coarse pointers). Inventory, fix what you find; note "none found" if clean.
+
+Verification: synthetic touch-type PointerEvents in the preview — validate the probe on an unfixed case FIRST so you know it detects the failure — plus computed touch-action checks, drag round-trips (mouse AND touch) returning identical readouts, and screenshots at 360 px for the layout fixes. styles.css is precached → BUMP CACHE_VERSION if it changes. Document the coarse-pointer conventions in CLAUDE.md. Tick P65 in ROADMAP.md.
+```
+
+### P66 — Guard scripts: math regression gate + external-link checker
+
+**→ Powerful · Extra**
+
+```
+StatsCapybara roadmap prompt P66 (see ROADMAP.md). Run node tools/audit.js first.
+
+Two zero-dependency guard scripts. audit.js checks the site's WIRING exhaustively but not one line of its MATH — the promise the whole brand rests on ("statistics must be exact") has no regression test — and external links are only hand-checked in quarterly P38 runs.
+
+1. tools/math-check.js — load viz.js under a minimal window/document shim and assert every statistical function against published values, exiting 1 on any miss beyond a stated tolerance:
+   - normCdf/normInv/erf: Φ(1) = .84134, Φ⁻¹(.975) = 1.959964, symmetry Φ(−z) = 1 − Φ(z);
+   - tInv/chiSqInv/fInv against table criticals (e.g. t.975,10 = 2.2281, χ².95,3 = 7.8147, F.95,3,20 = 3.0984 — cite each source value in a comment);
+   - tUpper/fUpper/chiSqUpper: the documented statcheck case t = 2.05, df = 28 → two-tailed .0498, plus quantile(cdf) round-trips across a grid;
+   - gammaln/gammp/betai identities (Γ(6) = 120; betai against a known incomplete-beta value);
+   - the noncentral trio via the G*Power anchors already in CLAUDE.md: d = 0.5 two-sample → 64/group, r = .3 → 84, f = .25 k = 3 → N = 159, w = .3 df = 1 → N = 88;
+   - pdf sanity: numeric integrals of tPdf/chiSqPdf/fPdf ≈ 1;
+   - the documented tool-page constants (effect-sizes d = 0.5 → r = .2425, OVL 80.26%, U₃ 69.15%; correlation Fisher-z r = .5, n = 30 → [.17, .73]).
+   Fast (<1 s), runs anywhere Node runs. Document in CLAUDE.md's Commands as REQUIRED whenever viz.js or any tool-page math changes (audit.js stays the universal gate; math-check is the math gate — don't fold one into the other).
+2. tools/extlinks.js — collect every external http(s) href across the site's HTML, de-dupe, fetch each with a browser User-Agent and a timeout, and report grouped: ok / bot-blocked-but-known-fine (ko-fi 403, LinkedIn 999 — carry the P38 allow-list) / genuinely broken. Network-dependent, so NEVER a commit gate — it's the quarterly P38 helper. Add a line to ROADMAP's P38 entry so future runs use it; document in CLAUDE.md's Commands.
+
+Then run both: math-check must pass clean on the current tree (if it catches a real discrepancy, fix the SITE, not the test — that's the point of building it); the extlinks report goes in the session summary. Negative-test both (perturb a constant / plant a dead link, confirm each screams, revert). Tick P66 in ROADMAP.md.
+```
+
+### P67 — Lesson state presets (instructor embeds that carry their configuration)
+
+**→ Extra Powerful · Extra**
+
+```
+StatsCapybara roadmap prompt P67 (see ROADMAP.md). Run node tools/audit.js first.
+
+Lesson state presets — let a URL preconfigure a lesson's interactive. The tool pages already do this (power.html ?sc=&es=, apa.html ?a=&v=, plan.html ?test=…); lessons don't, so an instructor can embed a lesson (?embed=1) but not the SPECIFIC configuration their slide is about ("CLT with n = 50", "SDT at d′ = 2 with a conservative criterion").
+
+1. Shared helper in site.js: window.SC.preset(map) — a lesson opts in by calling it at the END of its boot with a map of short query keys → appliers ({ n: "#n-range", shape: v => setShape(v) }): a selector value sets that input and dispatches "input"; a function gets the raw string. Rules the helper enforces: silently ignore absent/unknown/garbage params (never throw — a mangled URL must still load the default lesson); apply AFTER the lesson's own init so the frozen-noise law holds (a preset moves the same controls a hand would, it never reseeds); compose cleanly with ?embed=1.
+2. Wire ~10 flagship lessons, choosing controls that are stable and pedagogically worth presetting: central-limit-theorem (n), sampling-distributions (shape, n), hypothesis-testing-logic, simple-linear-regression, logistic-regression, bayesian-thinking (prior), psychometric-functions (family, shift), signal-detection-theory (d′, criterion), non-parametric-alternatives (tab), plus one of your choice. Document each lesson's accepted params in an HTML comment atop its inline script (the plan.html convention).
+3. Instructor surface: extend teachers.html's embed section with a preset example (an iframe snippet using ?embed=1&n=50, wired to SC.copied) and a short table of preset-enabled lessons + their params. Document the convention in CLAUDE.md so future lessons consider it.
+
+Verify per wired lesson: the preset lands (readouts match setting the control by hand), the round-trip law is intact, garbage params are harmless, embed + preset works in a REAL injected iframe, and the subpath server behaves. site.js is precached → BUMP CACHE_VERSION. Standard verification. Tick P67 in ROADMAP.md.
+```
+
+### P68 — Trust & polish touches
+
+**→ Powerful · Extra**
+
+```
+StatsCapybara roadmap prompt P68 (see ROADMAP.md). Run node tools/audit.js first.
+
+Four small independent trust/polish items, P47-style.
+
+1. Feedback path: a quiet "Spotted a mistake? Tell me" link in every footer (beside the P60 About link, rendered by site.js's footer machinery), a mailto: with the subject prefilled with the current page path so reports arrive locatable. VOICE.md wording, no exclamation mark. (mailto over a GitHub-issues link: the audience is students without GitHub accounts.) A site that invites corrections reads as one that expects to be held to its own standard.
+2. site.webmanifest shortcuts: 2–3 app shortcuts for installed-PWA users — Continue learning → progress.html, Statistics Toolbox → toolbox.html, Quiz → quiz.html. RELATIVE urls (the manifest's subpath-survival rule); icons optional.
+3. Section share-links: on lesson/guide h2[id] headings, a small copy-link button (SC.copied feedback, aria-label "Copy link to this section", hidden in @media print) — revealed on hover/focus with a fine pointer, always faintly visible on coarse pointers (hover-only affordances fail touch). Injected by site.js so every page gets it; zero layout shift when it appears (absolutely positioned gutter, not reflow).
+4. Cross-page transition (progressive enhancement, take-it-or-leave-it): CSS @view-transition { navigation: auto } for a calm same-origin cross-fade in supporting browsers, guarded by prefers-reduced-motion. Test it against the SW's controllerchange auto-reload and dark mode for flashes; if ANYTHING artifacts, drop this item and say so — it's optional, the other three aren't.
+
+site.js / styles.css / site.webmanifest are all precached → one CACHE_VERSION bump. Standard verification (audit, light + dark + mobile, keyboard focus on the new buttons, zero console errors); update CLAUDE.md's footer/manifest passages. Tick P68 in ROADMAP.md.
+```
+
+---
+
+*End of prompt library. When every box in ROADMAP.md is ticked: the site has 9 courses with linkable landing pages, ~97 interactive lessons, an exam mode and a worked-problems library alongside the 20+ tools and 4 guides, print/offline/a11y polish, prose that reads like a person, instructor-ready embeds that carry their configuration, math under regression test, and a live SEO feedback loop. At that point the loops (P37–P39) plus the human checklist ARE the roadmap. Phases 12–14 (P49–P68) are review-driven punch-lists layered on top — cherry-pick as time allows.*
 

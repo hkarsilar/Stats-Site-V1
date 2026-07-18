@@ -59,6 +59,7 @@ This file is the master plan. The copy-paste prompts that execute it live in **[
 | **11 — Feel & instructors** | P47–P48 | interaction-feel polish pass · For Instructors page + lesson embed mode + viz PNG export |
 | **12 — Requests & polish** | P49–P57 | lesson-interactive bug-fixes & control tweaks (Stats 1–4) · two dead toolkit interactives repaired · site-wide clickable-link affordance · Toolbox prominence + homepage declutter · "Capybara says" callout · new Psychometric Functions lesson |
 | **13 — Requests round 2** | P58–P60 | Signal Detection Theory lesson (Stats 4) · non-parametric per-test logic + tabbed playgrounds · front door v2 (track-based nav dropdowns, grouped Toolbox menu, resume banner into hero) |
+| **14 — Depth & reach** | P61–P68 | course landing pages · quiz exam mode + deeper bank · worked-problems library (Stats 1–2, then 3–4 + toolkit) · touch ergonomics · math regression gate + link checker · lesson presets for instructor embeds · trust touches |
 
 **Recommended order** (content and tools interleaved so the site visibly improves every week):
 
@@ -88,6 +89,18 @@ Phase 11 (P47–P48) is the product-side counterpart: an interaction-feel pass (
 Phase 12 (P49–P57) is a batch of hand-picked fixes and upgrades from real use (Hakan's 16 Jul 2026 review of the live site): a run of lesson-interactive bugs and control tweaks across Stats 1–4 (P49–P52), two dead toolkit interactives repaired (P53), and four higher-blast-radius items — making in-prose links actually look clickable everywhere (P54), giving the Statistics Toolbox the prominence its growth earned and un-collapsing it on the homepage (P55), turning the flat "Why it matters" box into a branded "Capybara says" moment (P56), and a new specialized lesson on fitting psychometric functions / the PSE for psychophysics supervision (P57). These are independent and cherry-pickable; the two site-wide front-of-house items (P54, P55) have the highest impact-per-effort. **Each prompt in PROMPTS.md carries a recommended model and effort** — model: **Powerful** (Claude Sonnet, for well-scoped single-area work) vs **Extra Powerful** (Claude Opus, for site-wide / new-lesson / judgment-heavy work); effort: **High** (one focused pass) · **Extra** (elevated reasoning; multiple changes or light diagnosis) · **Max** (maximum single-agent reasoning + verification; high blast radius) · **Ultra** (multi-agent deployment — parallel build + independent verification/review).
 
 Phase 13 (P58–P60) is the second requests round (Hakan's 17 Jul 2026 review). Two teaching-content upgrades: a **Signal Detection Theory** lesson appended to Stats 4 (the natural sibling of P57's psychometric functions, and the theory underneath the ML track's ROC lesson — the two must agree on AUC = Φ(d′/√2)), and a rebuild of Stats 2.6 so each non-parametric test gets its **logic explained and its own tabbed mini-playground** instead of a name-drop. Plus the front-door follow-through P55 started: **front door v2** — the nav reorganized around the homepage's own structure (Statistics Core / Research Toolkit / Statistics Toolbox, each a hover menu listing courses/grouped tools; the Curriculum and About tabs retired), the Toolbox dropdown grouped exactly like the toolbox page, the resume banner promoted into the hero with real presence, and the persona cards retired. Same model/effort legend as Phase 12. The two lesson prompts share registries (`curriculum.js`, `faq_data.py`, the search index) — run them one at a time.
+
+---
+
+## Phase 14 addendum (18 Jul 2026) — depth & reach
+
+P1–P60 built the site out, made it sound human, and rebuilt the front door. A full-site review on 18 Jul found the growth surface has moved to three quieter axes:
+
+- **Reach.** There is no course-level URL: `statscapybara.com/stats-1/` is a 404, the nav's course rows drop visitors into lesson 1.1 with no orientation, and there is nothing to put on a syllabus that says "this course" rather than "this lesson". Nine landing pages fix the 404s, give every course a shareable front door with its own OG card and Course JSON-LD, and print as a one-page syllabus (P61).
+- **Depth.** For an exam-driven audience the assessment layer is thin: the checks, the quiz (~128 questions, instant-feedback only) and the flashcards all test *recognition*. Nothing on the site makes a student produce a number by hand and then shows the full worked path — the thing exams actually demand. Exam mode plus a deeper bank (P62) and a two-stage worked-problems library with instructor print-without-solutions handouts (P63–P64) close that.
+- **Hardening.** `audit.js` checks the site's wiring exhaustively but not one line of its math — the core promise ("statistics must be exact") has no regression test; external links are only hand-checked in quarterly P38 runs; and one drag interactive (`ml/classification-metrics`) still scrolls the page mid-drag on touch, with grab targets sitewide tuned for a mouse, not a finger. P65 is the finger-first ergonomics pass; P66 ships the `math-check` and `extlinks` guard scripts.
+
+Plus the instructor multiplier P48 opened: preset lesson states so an embed can carry its exact configuration (P67), and a small trust round — a feedback link in the footer, PWA shortcuts, section share-links (P68). Same model/effort legend as Phase 12. **P61, P67 and P68 all edit `site.js` — run them one at a time; P64 needs P63.** Everything else is independent.
 
 ---
 
@@ -190,3 +203,11 @@ Tick these as sessions complete them (each prompt ends by updating this list).
 - [x] P58 · new lesson: Signal Detection Theory (Stats 4 §4.12 — d′/criterion/ROC playground) (Extra Powerful · Ultra)
 - [x] P59 · Stats 2.6 rebuild — per-test logic + tabbed playgrounds (Mann–Whitney, Wilcoxon, Kruskal–Wallis, Friedman) (Extra Powerful · Ultra)
 - [x] P60 · front door v2 — track-based nav dropdowns, grouped Toolbox menu, resume into hero, personas + Curriculum/About tabs retired (Extra Powerful · Max, then /code-review ultra)
+- [ ] P61 · course landing pages — 9 × `<course>/index.html`, BASE "../", entry points + ItemList retargeted (Extra Powerful · Max)
+- [ ] P62 · quiz v2 — exam mode + bank to ~200 questions (Extra Powerful · Ultra)
+- [ ] P63 · worked problems — problems.html + Stats 1–2 sets, print-without-solutions (Extra Powerful · Ultra)
+- [ ] P64 · worked problems — Stats 3–4 + toolkit "spot the problem" sets (Extra Powerful · Ultra)
+- [ ] P65 · touch & small-screen ergonomics — touch-action sweep, finger-sized grab targets, 360px sweep (Powerful · Extra)
+- [ ] P66 · guard scripts — tools/math-check.js gate + tools/extlinks.js for P38 (Powerful · Extra)
+- [ ] P67 · lesson state presets — SC.preset + ~10 flagship lessons + teachers.html docs (Extra Powerful · Extra)
+- [ ] P68 · trust & polish — feedback link, PWA shortcuts, section share-links, optional view transitions (Powerful · Extra)
