@@ -12,22 +12,22 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Non-Parametric Alternatives — StatsCapybara</title>
-  <meta name="description" content="Rank-based tests work on order, not raw values, so one wild outlier can't hijack them. Drag an outlier to see the t-test panic while Mann-Whitney stays calm." />
+  <meta name="description" content="Mann–Whitney, Wilcoxon, Kruskal–Wallis, Friedman: how each rank-based test actually works, and why one wild outlier can't sway the ranks or the p-value." />
   <link rel="canonical" href="https://statscapybara.com/stats-2/non-parametric-alternatives/" />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Non-Parametric Alternatives — StatsCapybara" />
-  <meta property="og:description" content="Rank-based tests work on order, not raw values, so one wild outlier can't hijack them. Drag an outlier to see the t-test panic while Mann-Whitney stays calm." />
+  <meta property="og:description" content="Mann–Whitney, Wilcoxon, Kruskal–Wallis, Friedman: how each rank-based test actually works, and why one wild outlier can't sway the ranks or the p-value." />
   <meta property="og:image" content="https://statscapybara.com/assets/og-stats-2.png" />
   <meta property="og:url" content="https://statscapybara.com/stats-2/non-parametric-alternatives/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Non-Parametric Alternatives — StatsCapybara" />
-  <meta name="twitter:description" content="Rank-based tests work on order, not raw values, so one wild outlier can't hijack them. Drag an outlier to see the t-test panic while Mann-Whitney stays calm." />
+  <meta name="twitter:description" content="Mann–Whitney, Wilcoxon, Kruskal–Wallis, Friedman: how each rank-based test actually works, and why one wild outlier can't sway the ranks or the p-value." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-2.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
-  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Non-Parametric Alternatives", "description": "Rank-based tests work on order, not raw values, so one wild outlier can't hijack them. Drag an outlier to see the t-test panic while Mann-Whitney stays calm.", "url": "https://statscapybara.com/stats-2/non-parametric-alternatives/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: Comparing Groups & Relationships", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Non-Parametric Alternatives", "item": "https://statscapybara.com/stats-2/non-parametric-alternatives/"}]}]
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Non-Parametric Alternatives", "description": "Mann–Whitney, Wilcoxon, Kruskal–Wallis, Friedman: how each rank-based test actually works, and why one wild outlier can't sway the ranks or the p-value.", "url": "https://statscapybara.com/stats-2/non-parametric-alternatives/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: Comparing Groups & Relationships", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Non-Parametric Alternatives", "item": "https://statscapybara.com/stats-2/non-parametric-alternatives/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
   {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Are non-parametric tests less powerful than parametric ones?", "acceptedAnswer": {"@type": "Answer", "text": "Only slightly, and only when the parametric assumptions actually hold: on truly normal data, the Mann–Whitney test has about 95% of the t-test's efficiency. When assumptions fail (heavy tails, skew, outliers), the ranking tests are often more powerful, because a single wild value can't inflate the noise term. It's a small premium for a lot of insurance."}}, {"@type": "Question", "name": "Should I use a t-test or Mann–Whitney for Likert-scale data?", "acceptedAnswer": {"@type": "Answer", "text": "For a single Likert item — ordinal, few distinct values — Mann–Whitney respects what the data actually is. For a multi-item scale score (summing 8 items into a 8–40 scale), treating it as approximately interval and using a t-test is common and generally defensible. Either way, look at the distributions first; ceiling effects and skew are what really cause trouble."}}, {"@type": "Question", "name": "Does the Mann–Whitney test compare medians?", "acceptedAnswer": {"@type": "Answer", "text": "Not exactly, despite the common shorthand. It tests whether values from one group tend to be larger than values from the other (stochastic dominance). Only under the extra assumption that both distributions have the same shape does that reduce to \"the medians differ.\" With very different shapes or spreads, the test can be significant even when the medians are equal."}}]}
@@ -47,7 +47,7 @@
         <p class="lede">When the <a href="../../stats-2/assumptions-and-when-they-break/">assumptions</a> behind a t-test or ANOVA don't hold (heavy skew, nasty outliers, tiny samples), you don't have to give up. <strong>Non-parametric tests</strong> throw away the raw numbers and work with their <em>ranks</em> instead. That one move makes them remarkably tough.</p>
 
         <h2>The trick: rank, don't measure</h2>
-        <p>Most parametric tests care about <em>how far apart</em> values are. Rank-based tests only care about <em>order</em> — who's bigger than whom. Replace the numbers <code>[2, 5, 9, 400]</code> with their ranks <code>[1, 2, 3, 4]</code> and that monstrous 400 becomes just "the biggest one." Its ability to distort the result evaporates. That's why non-parametric tests are so robust to outliers and skew.</p>
+        <p>Most parametric tests care about <em>how far apart</em> values are. Rank-based tests only care about <em>order</em>: who sits above whom. Replace the numbers <code>[2, 5, 9, 400]</code> with their ranks <code>[1, 2, 3, 4]</code> and that monstrous 400 becomes just "the biggest one." Its ability to distort the result evaporates. That robustness to outliers and skew is the whole appeal.</p>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="npviz">
@@ -72,24 +72,75 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <p>Notice the asymmetry. As the point rockets upward, it inflates group 2's mean <em>and</em> its variance at the same time, yanking the t-statistic around — sometimes the t-test even <em>loses</em> significance because the variance blew up. The Mann-Whitney test? The point was already the highest; making it higher changes no ranks, so its p-value holds rock-steady.</p>
+        <p>The asymmetry is worth pausing on. As the highlighted value rockets upward, it inflates group 2's mean <em>and</em> its variance at the same time, yanking the t-statistic around. Sometimes the t-test even <em>loses</em> significance, because the variance blew up faster than the means pulled apart. The Mann-Whitney test barely reacts: the value was already the highest, so making it higher changes no ranks, and its p-value holds rock-steady.</p>
 
-        <h2>The non-parametric toolkit</h2>
-        <p>For most parametric tests there's a rank-based counterpart:</p>
-        <ul>
-          <li><strong>Mann-Whitney U</strong> (a.k.a. Wilcoxon rank-sum) replaces the <a href="../../stats-1/independent-samples-t-test/">independent-samples t-test</a>.</li>
-          <li><strong>Wilcoxon signed-rank</strong> replaces the <a href="../../stats-1/one-sample-and-paired-t-tests/">paired t-test</a>.</li>
-          <li><strong>Kruskal-Wallis</strong> replaces <a href="../../stats-2/one-way-anova/">one-way ANOVA</a>.</li>
-          <li><strong>Spearman's ρ</strong> is a rank-based <a href="../../stats-2/correlation/">correlation</a>, robust to outliers and curved-but-monotonic relationships.</li>
-        </ul>
+        <h2>The logic behind each test</h2>
+        <p>Every rank-based test starts from the same instinct: swap the numbers for their order, then ask a question the order can answer. What changes from test to test is <em>which</em> order you build, and what you add up once you have it.</p>
+
+        <h3 id="mann-whitney">Mann–Whitney U: counting wins</h3>
+        <p>Pool both groups, sort everyone into a single line, and hand out ranks from lowest to highest. The statistic <em>U</em> counts wins: across every pairing of a group-1 value against a group-2 value, how often does one side come out on top? That count falls straight out of the rank sums, because a group's total rank tells you how high its members sit in the shared order. Divide the winning count by the number of pairings and you get the <strong>probability of superiority</strong>: the chance that a value drawn from one group beats a value drawn from the other. A lone extreme value can only ever be "the largest rank," so pushing it further out changes nothing.</p>
+
+        <h3 id="wilcoxon">Wilcoxon signed-rank: magnitudes with a sign</h3>
+        <p>For paired data, work with each person's difference score. Rank the <em>absolute</em> differences from smallest to largest, then re-attach the original signs. Adding up the ranks that carried a plus sign gives <em>W</em><sub>+</sub> (the minus ranks give <em>W</em><sub>−</sub>, and the two are locked together). A plain sign test would only count how many people improved; the signed-rank test also weights <em>how much</em> each one moved, so a big change pulls harder than a barely-there one. The magnitudes enter only through their rank order, which is why the person with the wildest swing contributes the top rank whether they gained 13 points or 130.</p>
+
+        <h3 id="kruskal-wallis">Kruskal–Wallis: ANOVA on the ranks</h3>
+        <p>Three or more independent groups reuse the same opening move: pool everyone, rank the whole pile, and total the ranks inside each group. If the groups were interchangeable, those rank totals should land roughly proportional to group size. The statistic <em>H</em> measures how far the observed totals stray from that even split, and under the null hypothesis it follows a chi-square distribution with <em>k</em> − 1 degrees of freedom. It is one-way ANOVA with ranks standing in for the raw scores.</p>
+
+        <h3 id="friedman">Friedman: ranking within each person</h3>
+        <p>Repeated measures rank <em>within</em> each person rather than across the whole sample. For every participant, rank their conditions from lowest to highest, so each row of the data turns into a small 1-2-3. Add those ranks down each column: if one condition genuinely tends to score highest, its column keeps collecting the top ranks. The statistic reads that imbalance and, like Kruskal–Wallis, compares it to a chi-square distribution with <em>k</em> − 1 degrees of freedom. Ranking inside each person is what cancels stable individual differences, the same trick the paired difference pulls for Wilcoxon.</p>
+
+        <p>Correlation has a rank-based version too. <strong>Spearman's ρ</strong> is just Pearson's <em>r</em> computed on the ranks, so it captures any steadily rising or falling relationship and shrugs off outliers. It lives alongside the other coefficients in the <a href="../../stats-2/correlation/">correlation lesson</a>.</p>
+
+        <!-- ============ TABBED RANK-LEDGER PLAYGROUND ============ -->
+        <div class="viz" id="rankviz">
+          <p class="viz-title">🎬 The rank ledger, test by test</p>
+          <p class="viz-sub">Pick a test. Watch the raw values collapse into evenly-spaced ranks, the statistic build from the rank sums, and the p-value fall out. Then nudge the ringed outlier: its rank can't move, so neither can the result.</p>
+
+          <div class="seg" id="rv-seg" role="group" aria-label="Choose a non-parametric test">
+            <button data-tab="mw" class="active">Mann–Whitney</button>
+            <button data-tab="wx">Wilcoxon</button>
+            <button data-tab="kw">Kruskal–Wallis</button>
+            <button data-tab="fr">Friedman</button>
+          </div>
+
+          <p class="viz-sub" id="rv-caption" style="margin-top:.6rem"></p>
+
+          <canvas id="rv-canvas" role="img" aria-label="Rank ledger for the selected non-parametric test: the raw values are shown on top, their ranks below, and the assembled statistic and p-value appear in the readout beneath the chart."></canvas>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:280px">
+              <label id="rv-nudge-label">Nudge the ringed outlier <span class="val" id="rv-nudge-val">…</span></label>
+              <input type="range" id="rv-nudge" min="37" max="90" step="1" value="40" style="width:100%" />
+            </div>
+          </div>
+
+          <div class="stat-row" id="rv-stats"></div>
+          <p class="viz-sub" id="rv-note" style="margin-top:.5rem;font-size:.82rem"></p>
+        </div>
+        <!-- ============ /TABBED RANK-LEDGER PLAYGROUND ============ -->
+
+        <h2>Which test replaces which</h2>
+        <p>Each rank-based test steps in for a specific parametric one when its assumptions give way:</p>
+        <table class="ref-table">
+          <thead>
+            <tr><th>Parametric test</th><th>Rank-based alternative</th><th>What gets ranked</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><a href="../../stats-1/independent-samples-t-test/">Independent-samples t-test</a></td><td><a href="#mann-whitney">Mann–Whitney U</a></td><td>the pooled values from both groups</td></tr>
+            <tr><td><a href="../../stats-1/one-sample-and-paired-t-tests/">Paired t-test</a></td><td><a href="#wilcoxon">Wilcoxon signed-rank</a></td><td>the absolute differences, with signs kept</td></tr>
+            <tr><td><a href="../../stats-2/one-way-anova/">One-way ANOVA</a></td><td><a href="#kruskal-wallis">Kruskal–Wallis (H)</a></td><td>the pooled values across all <em>k</em> groups</td></tr>
+            <tr><td><a href="../../stats-2/repeated-measures-anova/">Repeated-measures ANOVA</a></td><td><a href="#friedman">Friedman</a></td><td>the conditions, ranked within each person</td></tr>
+            <tr><td><a href="../../stats-2/correlation/">Pearson correlation (r)</a></td><td><a href="../../stats-2/correlation/">Spearman's ρ</a></td><td>each variable converted to ranks</td></tr>
+          </tbody>
+        </table>
 
         <h2>The trade-off</h2>
         <div class="callout key">
-          <p><strong>Robustness isn't free.</strong> When the data <em>are</em> well-behaved and normal, the parametric test has slightly more <a href="../../stats-1/effect-size-and-power/">power</a> — by discarding the magnitudes, rank tests leave a little information on the table. The rule of thumb: use parametric tests when assumptions hold, and reach for non-parametric ones when they clearly don't (small samples, heavy skew, ordinal data, or outliers you can't explain away).</p>
+          <p><strong>Robustness isn't free.</strong> When the data <em>are</em> well-behaved and normal, the parametric test has slightly more <a href="../../stats-1/effect-size-and-power/">power</a>. By discarding the magnitudes, rank tests leave a little information on the table. The rule of thumb: use parametric tests when assumptions hold, and reach for non-parametric ones when they clearly don't (small samples, heavy skew, ordinal data, or outliers you can't explain away).</p>
         </div>
 
         <div class="callout">
-          <p><strong>Why it matters:</strong> real data is messy — Likert scales, reaction times, income, anything with a few extreme values. Non-parametric tests give you a trustworthy answer exactly when the textbook assumptions fall apart. The one-page <a href="../../cheat-assumptions.html">assumption-checks cheat sheet</a> lists every parametric test's checks, and which rank-based swap rescues each one.</p>
+          <p><strong>Why it matters:</strong> real data is messy. Likert scales, reaction times, income, anything with a few extreme values. Non-parametric tests give you a trustworthy answer exactly when the textbook assumptions fall apart. The one-page <a href="../../cheat-assumptions.html">assumption-checks cheat sheet</a> lists every parametric test's checks, and which rank-based swap rescues each one.</p>
         </div>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
@@ -195,6 +246,303 @@
     window.addEventListener("resize", function () { fit(); draw(); });
     VIZ.onTheme(draw);
     fit(); update();
+  })();
+  </script>
+
+  <!-- ============ tabbed rank-ledger playground ============ -->
+  <script>
+  (function () {
+    "use strict";
+    /* ------------------------------------------------------------------
+       Independent re-derivation of every displayed statistic + p-value
+       (verified against R wilcox.test / kruskal.test / friedman.test and
+       scipy). Displayed p is the normal/χ² approximation with continuity
+       + tie corrections, stated honestly in the UI note.
+
+       MANN–WHITNEY  A=[11,14,16,18,22,25]  B=[20,27,30,33,36,40]
+         rank sums 23/55 · U=2 · μ=18 σ=6.245 · z_cc=2.482 → p≈.013
+         (R wilcox.test EXACT p=.009 — same verdict) · P(superiority)=34/36=.94
+       WILCOXON  before=[42,51,47,55,49,60,45] after=[49,56,46,66,57,73,54]
+         diffs=[7,5,-1,11,8,13,9] · W+=27 W-=1 · μ=14 σ=5.916 · z_cc=2.113 → p≈.035
+         (R wilcox.test EXACT signed-rank p=.031)
+       KRUSKAL–WALLIS  [[6,9,13,16],[11,15,19,22],[18,24,28,31]]
+         rank sums 13/25/40 · H=7.039 df=2 → p≈.030  (= R kruskal.test, χ² approx)
+       FRIEDMAN  rows 6×3 [[5,7,9],[4,6,8],[6,5,9],[3,7,6],[5,8,10],[4,6,7]]
+         col rank sums 7/12/17 · χ²_F=8.333 df=2 → p≈.016  (= R friedman.test)
+
+       Tie-correction paths (ties present) cross-checked:
+         MW  x=[1,2,2,3,4] y=[2,3,3,4,5] → U1=6.5 z_cc=1.182 p=.237 (= scipy asymptotic)
+         KW  [[1,2,2],[3,3,4],[4,5,5]] → H=6.822 C=.967 Hc=7.058 p=.029
+         Wilcoxon |d| ties [2,-2,3,3,5,-1] → W+=17.5 σ=4.743 z=1.476 p=.171
+         Friedman ties [[5,5,9],[4,6,6],[6,5,9]] → χ²=3.167 C=.833 χ²c=3.80 p=.150
+       Nudging any ringed outlier leaves every statistic and p unchanged.
+       ------------------------------------------------------------------ */
+
+    var canvas = document.getElementById("rv-canvas"), ctx, W = 0, H = 215;
+    var seg = document.getElementById("rv-seg"), slider = document.getElementById("rv-nudge");
+    var elVal = document.getElementById("rv-nudge-val"), elStats = document.getElementById("rv-stats");
+    var elCap = document.getElementById("rv-caption"), elNote = document.getElementById("rv-note");
+    var cc = VIZ.css;
+    var cur = "mw", anim = 1, animReq = null, animT0 = 0;
+    var nudge = { mw: 40, wx: 73, kw: 31, fr: 10 };
+
+    // ---------- rank + tie helpers (midranks) ----------
+    function ranks(vals) {
+      var idx = vals.map(function (v, i) { return { v: v, i: i }; });
+      idx.sort(function (a, b) { return a.v - b.v; });
+      var r = new Array(vals.length), i = 0;
+      while (i < idx.length) {
+        var j = i; while (j + 1 < idx.length && idx[j + 1].v === idx[i].v) j++;
+        var avg = (i + 1 + j + 1) / 2;
+        for (var k = i; k <= j; k++) r[idx[k].i] = avg;
+        i = j + 1;
+      }
+      return r;
+    }
+    function tieSum(vals) { var m = {}, s = 0; vals.forEach(function (v) { m[v] = (m[v] || 0) + 1; }); Object.keys(m).forEach(function (k) { var t = m[k]; s += t * t * t - t; }); return s; }
+    function fmtP(p) { return p < 0.001 ? "< .001" : "." + Math.round(p * 1000).toString().replace(/^(\d)$/, "00$1").replace(/^(\d\d)$/, "0$1"); }
+    function fmtProp(x) { return x >= 1 ? "1.00" : "." + Math.round(x * 100).toString().replace(/^(\d)$/, "0$1"); }
+
+    // ---------- compute functions (return stats + geometry) ----------
+    function computeMW(bLast) {
+      var A = [11, 14, 16, 18, 22, 25], B = [20, 27, 30, 33, 36, 40].slice(); B[5] = bLast;
+      var pooled = A.concat(B), R = ranks(pooled), nA = 6, nB = 6, N = 12;
+      var RA = 0; for (var i = 0; i < nA; i++) RA += R[i]; var RB = N * (N + 1) / 2 - RA;
+      var U1 = RA - nA * (nA + 1) / 2, U2 = nA * nB - U1, U = Math.min(U1, U2);
+      var mu = nA * nB / 2, sig = Math.sqrt(nA * nB / 12 * ((N + 1) - tieSum(pooled) / (N * (N - 1))));
+      var zcc = (Math.abs(U1 - mu) - 0.5) / sig, p = Math.min(2 * VIZ.normCdf(-zcc), 1);
+      var PS = Math.max(U1, U2) / (nA * nB);
+      var pts = []; for (i = 0; i < nA; i++) pts.push({ v: A[i], g: 0, rank: R[i], out: false });
+      for (i = 0; i < nB; i++) pts.push({ v: B[i], g: 1, rank: R[nA + i], out: i === nB - 1 });
+      return { kind: "line", pts: pts, colors: [cc("--secondary"), "#f97316"], names: ["control", "treatment"], lo: 8, hi: 95, N: N,
+        stats: [
+          { k: "rank sums (ctrl / tx)", v: RA + " / " + RB },
+          { k: "<em>U</em>", v: String(U) },
+          { k: "<em>z</em>", v: zcc.toFixed(2) },
+          { k: "<em>p</em> (two-tailed)", v: fmtP(p) },
+          { k: "P(superiority)", v: fmtProp(PS) },
+          { k: "verdict", v: p < 0.05 ? "significant" : "not significant", sig: p < 0.05 }
+        ] };
+    }
+    function computeWX(aLast) {
+      var before = [42, 51, 47, 55, 49, 60, 45], after = [49, 56, 46, 66, 57, 73, 54].slice(); after[5] = aLast;
+      var diffs = after.map(function (v, i) { return v - before[i]; });
+      var absd = diffs.map(Math.abs), R = ranks(absd), n = 7;
+      var Wp = 0; for (var i = 0; i < n; i++) if (diffs[i] > 0) Wp += R[i]; var Wm = n * (n + 1) / 2 - Wp;
+      var mu = n * (n + 1) / 4, sig = Math.sqrt((n * (n + 1) * (2 * n + 1) - tieSum(absd) / 2) / 24);
+      var zcc = (Math.abs(Wp - mu) - 0.5) / sig, p = Math.min(2 * VIZ.normCdf(-zcc), 1);
+      var mx = Math.max.apply(null, absd);
+      var pts = diffs.map(function (d, i) { return { diff: d, sign: d > 0 ? 1 : -1, rank: R[i], out: absd[i] === mx }; });
+      return { kind: "signed", pts: pts, n: n, dmin: -8, dmax: 86,
+        stats: [
+          { k: "signed-rank sums (W₊ / W₋)", v: Wp + " / " + Wm },
+          { k: "<em>z</em>", v: zcc.toFixed(2) },
+          { k: "<em>p</em> (two-tailed)", v: fmtP(p) },
+          { k: "verdict", v: p < 0.05 ? "significant" : "not significant", sig: p < 0.05 }
+        ] };
+    }
+    function computeKW(g3Last) {
+      var G = [[6, 9, 13, 16], [11, 15, 19, 22], [18, 24, 28, 31].slice()]; G[2][3] = g3Last;
+      var pooled = G[0].concat(G[1], G[2]), R = ranks(pooled), N = 12;
+      var off = 0, Rg = [0, 0, 0], H2 = 0;
+      for (var g = 0; g < 3; g++) { for (var i = 0; i < 4; i++) Rg[g] += R[off + i]; off += 4; H2 += Rg[g] * Rg[g] / 4; }
+      H2 = 12 / (N * (N + 1)) * H2 - 3 * (N + 1);
+      var C = 1 - tieSum(pooled) / (N * N * N - N), Hc = H2 / C, p = VIZ.chiSqUpper(Hc, 2);
+      var pts = []; off = 0;
+      for (g = 0; g < 3; g++) for (i = 0; i < 4; i++) { pts.push({ v: G[g][i], g: g, rank: R[off], out: g === 2 && i === 3 }); off++; }
+      return { kind: "line", pts: pts, colors: [cc("--secondary"), "#f97316", "#22c55e"], names: ["A", "B", "C"], lo: 3, hi: 95, N: N,
+        stats: [
+          { k: "rank sums (A / B / C)", v: Rg[0] + " / " + Rg[1] + " / " + Rg[2] },
+          { k: "<em>H</em>", v: Hc.toFixed(2) },
+          { k: "df", v: "2" },
+          { k: "<em>p</em> (χ² approx.)", v: fmtP(p) },
+          { k: "verdict", v: p < 0.05 ? "significant" : "not significant", sig: p < 0.05 }
+        ] };
+    }
+    function computeFR(s5c) {
+      var rows = [[5, 7, 9], [4, 6, 8], [6, 5, 9], [3, 7, 6], [5, 8, 10], [4, 6, 7]].map(function (r) { return r.slice(); });
+      rows[4][2] = s5c;
+      var n = 6, k = 3, Rj = [0, 0, 0], rmat = [], tc = 0;
+      for (var b = 0; b < n; b++) { var rr = ranks(rows[b]); rmat.push(rr); for (var j = 0; j < k; j++) Rj[j] += rr[j]; tc += tieSum(rows[b]); }
+      var chi = 12 / (n * k * (k + 1)) * (Rj[0] * Rj[0] + Rj[1] * Rj[1] + Rj[2] * Rj[2]) - 3 * n * (k + 1);
+      var C = 1 - tc / (n * (k * k * k - k)), chiC = chi / C, p = VIZ.chiSqUpper(chiC, 2);
+      return { kind: "grid", rows: rows, rmat: rmat, Rj: Rj, k: k, n: n, colors: [cc("--secondary"), "#f97316", "#22c55e"], out: [4, 2],
+        stats: [
+          { k: "rank sums (A / B / C)", v: Rj[0] + " / " + Rj[1] + " / " + Rj[2] },
+          { k: "χ²<sub>F</sub>", v: chiC.toFixed(2) },
+          { k: "df", v: "2" },
+          { k: "<em>p</em> (χ² approx.)", v: fmtP(p) },
+          { k: "verdict", v: p < 0.05 ? "significant" : "not significant", sig: p < 0.05 }
+        ] };
+    }
+    function compute() {
+      if (cur === "mw") return computeMW(nudge.mw);
+      if (cur === "wx") return computeWX(nudge.wx);
+      if (cur === "kw") return computeKW(nudge.kw);
+      return computeFR(nudge.fr);
+    }
+
+    // ---------- per-tab UI config ----------
+    var CFG = {
+      mw: { min: 37, max: 90, cap: "Reaction time (ms), control vs. treatment. Pool everyone, rank, and count the wins.", note: "p from the normal approximation with a continuity correction (matches R's wilcox.test with exact = FALSE). The exact test gives p = .009 — same call.", label: "Treatment's largest value" },
+      wx: { min: 73, max: 140, cap: "Memory score before vs. after training, one row per person. Rank the sizes of the changes, keep their signs.", note: "Normal approximation with a continuity correction. R's exact signed-rank test gives p = .031.", label: "Person 6's “after” score" },
+      kw: { min: 29, max: 90, cap: "Exam score across three teaching methods. Pool everyone, rank, and see whether the rank totals split evenly.", note: "The χ² approximation with a tie correction — exactly what R's kruskal.test reports.", label: "Group C's largest value" },
+      fr: { min: 9, max: 90, cap: "Three designs rated by the same six people. Rank the conditions inside each person's row.", note: "The χ² approximation with a tie correction — exactly what R's friedman.test reports.", label: "Subject 5, Design C" }
+    };
+
+    // ---------- drawing ----------
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function dot(x, y, col, ring) {
+      ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, ring ? 6 : 4.6, 0, 6.2832); ctx.fill();
+      if (ring) { ctx.strokeStyle = cc("--text"); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, y, 8.6, 0, 6.2832); ctx.stroke(); }
+    }
+    function legend(items) {
+      var lx = 24, ly = 14;
+      ctx.font = "600 11px Inter,system-ui,sans-serif"; ctx.textAlign = "left"; ctx.textBaseline = "middle";
+      items.forEach(function (it) {
+        ctx.fillStyle = it.c; ctx.beginPath(); ctx.arc(lx, ly, 4, 0, 6.2832); ctx.fill();
+        ctx.fillStyle = cc("--text-muted"); ctx.fillText(it.t, lx + 9, ly);
+        lx += 9 + ctx.measureText(it.t).width + 22;
+      });
+      ctx.textBaseline = "alphabetic";
+    }
+    function drawLine(d) {
+      var N = d.N, pad = 26, rpad = 34;
+      var yRaw = Math.round(H * 0.34), yAx = yRaw + 26, yRank = Math.round(H * 0.80);
+      var sx = function (v) { return pad + (v - d.lo) / (d.hi - d.lo) * (W - 2 * pad); };
+      var rx = function (rank) { return rpad + (rank - 1) / (N - 1) * (W - 2 * rpad); };
+      // raw axis
+      ctx.strokeStyle = cc("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(pad, yAx); ctx.lineTo(W - pad, yAx); ctx.stroke();
+      ctx.fillStyle = cc("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center";
+      for (var t = 20; t <= d.hi; t += 20) { if (t < d.lo) continue; var xt = sx(t); ctx.globalAlpha = 0.5; ctx.beginPath(); ctx.moveTo(xt, yAx - 3); ctx.lineTo(xt, yAx + 3); ctx.stroke(); ctx.globalAlpha = 1; ctx.fillText(t, xt, yAx + 14); }
+      // strip captions
+      ctx.fillStyle = cc("--text-muted"); ctx.textAlign = "left"; ctx.font = "600 10px Inter,system-ui,sans-serif";
+      ctx.fillText("raw values", pad, yRaw - 20); ctx.fillText("ranks", rpad, yRank - 18);
+      // dots + connectors
+      for (var i = 0; i < d.pts.length; i++) {
+        var p = d.pts[i], col = d.colors[p.g], xr = sx(p.v), xk = rx(p.rank), xa = xr + (xk - xr) * anim;
+        ctx.strokeStyle = col; ctx.globalAlpha = 0.22; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(xr, yRaw + 7); ctx.lineTo(xa, yRank - 7); ctx.stroke(); ctx.globalAlpha = 1;
+        dot(xr, yRaw, col, p.out); dot(xa, yRank, col, p.out);
+        ctx.fillStyle = cc("--text"); ctx.font = "600 10px ui-monospace,monospace"; ctx.textAlign = "center"; ctx.globalAlpha = anim;
+        ctx.fillText(p.rank, xa, yRank + 18); ctx.globalAlpha = 1;
+      }
+      legend(d.names.map(function (nm, i2) { return { t: nm, c: d.colors[i2] }; }));
+    }
+    function drawSigned(d) {
+      var n = d.n, pad = 26;
+      var yRaw = Math.round(H * 0.34), yAx = yRaw + 26, yRank = Math.round(H * 0.80);
+      var sx = function (v) { return pad + (v - d.dmin) / (d.dmax - d.dmin) * (W - 2 * pad); };
+      var x0 = sx(0), cx = W / 2, half = W / 2 - rpadClamp();
+      function rpadClamp() { return 40; }
+      var rankX = function (rank, sign) { return cx + sign * (rank / n) * half; };
+      // zero line
+      ctx.strokeStyle = cc("--border"); ctx.setLineDash([3, 3]); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(x0, yRaw - 18); ctx.lineTo(x0, yAx); ctx.stroke(); ctx.setLineDash([]);
+      ctx.beginPath(); ctx.moveTo(pad, yAx); ctx.lineTo(W - pad, yAx); ctx.stroke();
+      ctx.fillStyle = cc("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center";
+      ctx.fillText("0", x0, yAx + 14);
+      for (var t = -80; t <= 80; t += 20) { if (t === 0 || t < d.dmin || t > d.dmax) continue; var xt = sx(t); ctx.globalAlpha = 0.5; ctx.beginPath(); ctx.moveTo(xt, yAx - 3); ctx.lineTo(xt, yAx + 3); ctx.stroke(); ctx.globalAlpha = 1; ctx.fillText(t, xt, yAx + 14); }
+      ctx.strokeStyle = cc("--border"); ctx.beginPath(); ctx.moveTo(cx, yRank - 18); ctx.lineTo(cx, yRank + 20); ctx.stroke();
+      ctx.fillStyle = cc("--text-muted"); ctx.textAlign = "left"; ctx.font = "600 10px Inter,system-ui,sans-serif";
+      ctx.fillText("difference (after − before)", pad, yRaw - 20); ctx.fillText("signed ranks", pad, yRank - 18);
+      var pos = cc("--secondary"), neg = "#f97316";
+      for (var i = 0; i < d.pts.length; i++) {
+        var p = d.pts[i], col = p.sign > 0 ? pos : neg, xr = sx(p.diff), xk = rankX(p.rank, p.sign), xa = xr + (xk - xr) * anim;
+        ctx.strokeStyle = col; ctx.globalAlpha = 0.22; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(xr, yRaw + 7); ctx.lineTo(xa, yRank - 7); ctx.stroke(); ctx.globalAlpha = 1;
+        dot(xr, yRaw, col, p.out); dot(xa, yRank, col, p.out);
+        ctx.fillStyle = cc("--text"); ctx.font = "600 10px ui-monospace,monospace"; ctx.textAlign = "center"; ctx.globalAlpha = anim;
+        ctx.fillText((p.sign > 0 ? "+" : "−") + p.rank, xa, yRank + 18); ctx.globalAlpha = 1;
+      }
+      legend([{ t: "improved", c: pos }, { t: "declined", c: neg }]);
+    }
+    function drawGrid(d) {
+      var k = d.k, nR = d.n, padL = 10, padR = 10, top = 24, botRow = 26;
+      var colW = (W - padL - padR) / (k + 1), rowH = (H - top - botRow) / (nR + 0.4);
+      var names = ["Design A", "Design B", "Design C"];
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      // headers
+      ctx.font = "700 11px Inter,system-ui,sans-serif";
+      for (var j = 0; j < k; j++) { ctx.fillStyle = d.colors[j]; ctx.fillText(names[j], padL + colW * (j + 1) + colW / 2, top - 10); }
+      // rows
+      for (var r = 0; r < nR; r++) {
+        var cy = top + rowH * (r + 0.5);
+        ctx.fillStyle = cc("--text-muted"); ctx.font = "600 10px Inter,system-ui,sans-serif"; ctx.textAlign = "left";
+        ctx.fillText("S" + (r + 1), padL + 2, cy);
+        for (j = 0; j < k; j++) {
+          var cx = padL + colW * (j + 1), rank = d.rmat[r][j], isTop = rank === k, isOut = d.out[0] === r && d.out[1] === j;
+          if (isTop) { ctx.fillStyle = d.colors[j]; ctx.globalAlpha = 0.12 + 0.05 * anim; roundRect(cx + 4, cy - rowH * 0.42, colW - 8, rowH * 0.84, 6); ctx.fill(); ctx.globalAlpha = 1; }
+          ctx.fillStyle = cc("--text"); ctx.font = "600 12px Inter,system-ui,sans-serif"; ctx.textAlign = "left";
+          ctx.fillText(d.rows[r][j], cx + 12, cy);
+          // rank badge
+          var bx = cx + colW - 20, by = cy;
+          ctx.globalAlpha = anim; ctx.fillStyle = d.colors[j];
+          ctx.beginPath(); ctx.arc(bx, by, 8.5, 0, 6.2832); ctx.fill();
+          ctx.fillStyle = "#fff"; ctx.font = "700 10px ui-monospace,monospace"; ctx.textAlign = "center";
+          ctx.fillText(rank, bx, by + 0.5);
+          if (isOut) { ctx.globalAlpha = 1; ctx.strokeStyle = cc("--text"); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(bx, by, 11.5, 0, 6.2832); ctx.stroke(); }
+          ctx.globalAlpha = 1;
+        }
+      }
+      // rank-sum row
+      var sy = top + rowH * nR + 12;
+      ctx.strokeStyle = cc("--border"); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(padL, sy - rowH * 0.5 + 2); ctx.lineTo(W - padR, sy - rowH * 0.5 + 2); ctx.stroke();
+      ctx.fillStyle = cc("--text-muted"); ctx.font = "600 10px Inter,system-ui,sans-serif"; ctx.textAlign = "left";
+      ctx.fillText("rank sum", padL + 2, sy);
+      for (j = 0; j < k; j++) { ctx.fillStyle = d.colors[j]; ctx.font = "700 12px Inter,system-ui,sans-serif"; ctx.textAlign = "center"; ctx.fillText(d.Rj[j], padL + colW * (j + 1) + colW / 2, sy); }
+      ctx.textBaseline = "alphabetic";
+    }
+    function roundRect(x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+    var _d = null;
+    function draw() {
+      if (!ctx) return;
+      ctx.clearRect(0, 0, W, H);
+      if (!_d) return;
+      if (_d.kind === "line") drawLine(_d);
+      else if (_d.kind === "signed") drawSigned(_d);
+      else drawGrid(_d);
+    }
+
+    // ---------- state / animation ----------
+    function renderStats() {
+      elStats.innerHTML = _d.stats.map(function (s) {
+        var col = s.sig === true ? "#22c55e" : (s.sig === false ? cc("--text-muted") : "");
+        return '<div class="stat"><span class="k">' + s.k + '</span><span class="v"' + (col ? ' style="color:' + col + (s.k === "verdict" ? ";font-size:.95rem" : "") + '"' : "") + '>' + s.v + "</span></div>";
+      }).join("");
+    }
+    function refresh() { _d = compute(); renderStats(); draw(); }
+    function startAnim() {
+      if (VIZ.reducedMotion()) { anim = 1; refresh(); return; }
+      anim = 0; animT0 = performance.now();
+      if (animReq) cancelAnimationFrame(animReq);
+      refresh();
+      (function step() {
+        var t = (performance.now() - animT0) / 450; anim = t >= 1 ? 1 : 1 - Math.pow(1 - t, 3); draw();
+        if (t < 1) animReq = requestAnimationFrame(step);
+      })();
+    }
+    function setTab(tab) {
+      cur = tab;
+      Array.prototype.forEach.call(seg.querySelectorAll("button"), function (b) { b.classList.toggle("active", b.dataset.tab === tab); });
+      var c = CFG[tab];
+      slider.min = c.min; slider.max = c.max; slider.value = nudge[tab];
+      elVal.textContent = c.label + ": " + nudge[tab];
+      elCap.textContent = c.cap; elNote.textContent = c.note;
+      H = tab === "fr" ? 300 : 215; fit();
+      startAnim();
+    }
+
+    seg.addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) setTab(b.dataset.tab); });
+    slider.addEventListener("input", function () { nudge[cur] = +this.value; elVal.textContent = CFG[cur].label + ": " + nudge[cur]; anim = 1; refresh(); });
+    window.addEventListener("resize", VIZ.rafThrottle(function () { fit(); draw(); }));
+    if (window.ResizeObserver) new ResizeObserver(VIZ.rafThrottle(function () { fit(); draw(); })).observe(canvas);
+    VIZ.onTheme(function () { refresh(); });
+    // deep-link: #mann-whitney / #wilcoxon / #kruskal-wallis / #friedman pre-selects its tab
+    var HASH = { "#mann-whitney": "mw", "#wilcoxon": "wx", "#kruskal-wallis": "kw", "#friedman": "fr" };
+    setTab(HASH[location.hash] || "mw");
+    window.addEventListener("hashchange", function () { if (HASH[location.hash]) setTab(HASH[location.hash]); });
   })();
   </script>
 </body>
