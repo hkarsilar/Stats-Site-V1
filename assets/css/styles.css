@@ -179,8 +179,13 @@ h1, h2, h3, h4 { line-height: 1.2; letter-spacing: -0.02em; }
 .nav-drop-btn.active { border-color: color-mix(in srgb, var(--primary) 60%, transparent); }
 .ndb-label { display: inline-flex; align-items: center; gap: .4rem; }
 .ndb-emoji { font-size: .95em; line-height: 1; }
-.nav-drop-btn svg { transition: transform .15s; }
-.nav-drop:hover .nav-drop-btn svg, .nav-drop:focus-within .nav-drop-btn svg { transform: rotate(180deg); }
+/* P60: the two curriculum-track dropdowns ("Statistics Core", "Research
+   Toolkit") share the .nav-drop machinery but wear the plain .nav-link
+   look — only the Toolbox keeps its pill. */
+.nav-drop-tab { display: inline-flex; align-items: center; gap: .3rem; }
+.nav-drop-btn svg, .nav-drop-tab svg { transition: transform .15s; }
+.nav-drop:hover .nav-drop-btn svg, .nav-drop:focus-within .nav-drop-btn svg,
+.nav-drop:hover .nav-drop-tab svg, .nav-drop:focus-within .nav-drop-tab svg { transform: rotate(180deg); }
 /* invisible bridge so the pointer can cross the gap to the panel */
 .nav-drop::after { content: ""; position: absolute; top: 100%; left: 0; right: 0; height: .6rem; display: none; }
 .nav-drop:hover::after { display: block; }
@@ -230,6 +235,35 @@ h1, h2, h3, h4 { line-height: 1.2; letter-spacing: -0.02em; }
 .nav-drop-item .nd-text { display: flex; flex-direction: column; min-width: 0; }
 .nav-drop-item .nd-title { font-weight: 650; font-size: .88rem; color: var(--text); }
 .nav-drop-item .nd-desc { font-size: .74rem; color: var(--text-faint); line-height: 1.35; }
+/* course rows in the track dropdowns: an accent dot ties each course to its
+   homepage card (course accents are chrome-only, so this is their turf) */
+.nd-dot { width: .62rem; height: .62rem; border-radius: 50%; background: var(--accent, var(--primary)); flex-shrink: 0; margin: 0 .18rem; }
+
+/* the grouped Toolbox panel (P60): the same groups, titles, and order as
+   toolbox.html, as compact one-line rows in two columns of whole groups —
+   all ~24 tools visible at once, no scrolling on a 768px-tall viewport */
+.ndp-toolbox {
+  left: auto; right: 0; flex-direction: row; align-items: flex-start; gap: .35rem;
+  /* size to the widest row (nowrap titles) — the absolutely-positioned box
+     would otherwise shrink-to-fit and clip the long guide titles */
+  width: max-content; max-width: min(46rem, calc(100vw - 2rem));
+}
+.ndp-col { display: flex; flex-direction: column; gap: .1rem; min-width: 13rem; }
+.ndp-group { display: flex; flex-direction: column; gap: .1rem; }
+.ndp-group + .ndp-group { margin-top: .55rem; }
+.ndp-ghead {
+  font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--text-faint); padding: .5rem .65rem .2rem; white-space: nowrap;
+}
+.ndi-compact { padding: .34rem .65rem; gap: .55rem; }
+.ndi-compact .nd-emoji { font-size: .95rem; }
+.ndi-compact .nd-title { font-weight: 600; font-size: .85rem; white-space: nowrap; }
+
+/* Escape force-closes an open panel; cleared when pointer/focus leaves
+   (site.js). Placed after the :hover/:focus-within rules so it wins. */
+.nav-drop.closed .nav-drop-panel { display: none !important; }
+.nav-drop.closed::after { display: none !important; }
+.nav-drop.closed .nav-drop-btn svg, .nav-drop.closed .nav-drop-tab svg { transform: none; }
 
 /* ---------- search pill (more visible than a lone icon) ---------- */
 .nav-search-btn {
@@ -285,7 +319,7 @@ main { padding-top: var(--nav-h); }
    same. (Cards receive :active from links inside them, which is the point —
    the whole card presses.) Kept subtle on purpose; :focus-visible untouched. */
 .btn:active, .icon-btn:active, .nav-search-btn:active, .nav-link:active,
-.feature:active, .tool-card:active, .course-card:active, .persona .p-links a:active,
+.feature:active, .tool-card:active, .course-card:active,
 .quiz-pick:active, .wt-opt:active, .wt-crumb:active, .wt-back:active,
 .lesson-toc a:active, .about-link:active, .lesson-done:active, .print-btn:active,
 .tc-copy:active, .seg button:active, .ck-opt:not(:disabled):active, .viz-png-btn:active {
@@ -383,22 +417,6 @@ input[type="range"]:active::-moz-range-thumb { cursor: grabbing; }
 .feature h3 { margin: 0 0 .4rem; font-size: 1.1rem; }
 .feature p { margin: 0; color: var(--text-muted); font-size: .92rem; }
 
-/* "Start here" persona cards (homepage) — quiet guidance above the
-   curriculum grid, deliberately flatter than the course cards */
-.personas { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-.persona {
-  display: flex; flex-direction: column; gap: .3rem;
-  border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 1rem 1.15rem; background: var(--surface);
-}
-.persona .p-emoji { font-size: 1.25rem; line-height: 1; }
-.persona h3 { margin: .15rem 0 .05rem; font-size: .97rem; color: var(--text); }
-.persona p { margin: 0; font-size: .85rem; color: var(--text-muted); line-height: 1.5; }
-.persona .p-links { margin-top: auto; padding-top: .5rem; font-weight: 650; line-height: 1.7; }
-.persona .p-links a { color: var(--primary); }
-.persona .p-links a:hover { text-decoration: underline; text-underline-offset: 3px; }
-.persona .p-links .sep { color: var(--text-faint); font-weight: 400; }
-
 /* curriculum */
 .courses { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; align-items: start; }
 /* track heading inside the curriculum grid — spans the whole row, and
@@ -493,6 +511,10 @@ li a:hover .sec-dot { border-color: var(--accent, var(--primary)); }
 /* ---------- footer ---------- */
 .footer { border-top: 1px solid var(--border); padding: 2.5rem 0; color: var(--text-faint); font-size: .9rem; }
 .footer .container { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: center; }
+/* quiet About link (site.js injects it — the About tab left the nav in P60);
+   order slots it between the tagline (0) and the Ko-fi button (2) */
+.footer-about { color: var(--text-muted); font-weight: 600; order: 1; }
+.footer-about:hover { color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
 
 /* ============================================================
    LESSON LAYOUT
@@ -688,10 +710,12 @@ body[data-course="writing"] { --course-accent: #84cc16; }
   .icon-btn, .nav-search-btn { width: 44px; height: 44px; }
   .nav-search-btn { border-radius: 12px; }
 
-  /* in the mobile menu the Toolbox is a single link to the hub page —
-     the page itself lists every tool, so no need to flatten them here */
+  /* in the mobile menu all three dropdowns flatten to single links — the
+     track tabs to the homepage track anchors, the Toolbox to its hub page
+     (which lists every tool), so no hover panels on touch */
   .nav-drop-btn { padding: .7rem .75rem; font-size: 1rem; border-radius: 10px; width: 100%; justify-content: space-between; }
-  .nav-drop-btn svg { transform: rotate(-90deg) !important; }  /* "go there" chevron */
+  .nav-drop-tab { width: 100%; justify-content: space-between; }
+  .nav-drop-btn svg, .nav-drop-tab svg { transform: rotate(-90deg) !important; }  /* "go there" chevron */
   .nav-drop-panel { display: none !important; }
   .nav-drop::after { display: none !important; }
 }
@@ -797,6 +821,13 @@ body[data-course="writing"] { --course-accent: #84cc16; }
 .resume-bar .rb-text { font-size: .95rem; color: var(--text-muted); }
 .resume-bar .rb-text strong { color: var(--text); }
 .resume-bar .btn { margin-left: auto; }
+/* P60: on the homepage the banner sits in the hero, between the eyebrow and
+   the h1 — a real welcome-back, so the type scales up and it hugs its
+   content, centered. (The hero is text-align:center; the bar stays left-
+   aligned inside its own capsule.) */
+.resume-hero { width: fit-content; max-width: 100%; margin: .4rem auto 1.5rem; justify-content: center; text-align: left; box-shadow: var(--shadow); }
+.resume-hero .rb-text { font-size: 1.05rem; }
+.resume-hero .btn { margin-left: .35rem; }
 
 /* "mark complete" control in the lesson footer */
 .lesson-done {

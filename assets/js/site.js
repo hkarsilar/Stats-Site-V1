@@ -265,10 +265,14 @@
   }
 
   /* ---------- top nav ----------
-     The learning tools live under "Statistics Toolbox": hovering the nav
-     item drops the full menu, clicking it opens the dedicated hub page
-     (toolbox.html). TOOLBOX is the single source of truth — the dropdown,
-     the homepage grid, and the toolbox page all read it. */
+     P60: the nav mirrors the site's real shape — one dropdown per
+     curriculum track ("Statistics Core", "Research Toolkit", both built
+     from window.TRACKS + CURRICULUM) plus the "Statistics Toolbox" pill.
+     Hovering or keyboard-focusing an item drops its menu; clicking a track
+     tab goes to the homepage scrolled to that track (#track-<id>), clicking
+     the Toolbox pill opens toolbox.html. TOOLBOX is the single source of
+     truth — the dropdown, the homepage grid, and the toolbox page all
+     read it. */
   var TOOLBOX = [
     { url: "which-test.html",    key: "which-test",    group: "guide",    emoji: "🧭", title: "Which test should I use?", desc: "Answer a few questions, get the right test" },
     { url: "which-chart.html",   key: "which-chart",   group: "guide",    emoji: "📊", title: "Which chart should I use?", desc: "Pick the right chart for your data, mistakes and all" },
@@ -311,24 +315,72 @@
     if (!nav) return;
     var page = pageKey();
     var act = function (k) { return k === page ? " active" : ""; };
-    // lesson pages count as "Curriculum"
-    var curActive = (HERE || page === "home") ? " active" : "";
-    var toolboxActive = page === "toolbox" || TOOLBOX.some(function (t) { return t.key === page; });
-    var toolboxItems = TOOLBOX.map(function (t) {
-      return '<a class="nav-drop-item' + act(t.key) + '" href="' + BASE + t.url + '">' +
-        '<span class="nd-emoji">' + t.emoji + '</span><span class="nd-text"><span class="nd-title">' + t.title + '</span><span class="nd-desc">' + t.desc + '</span></span></a>';
+    var chev = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>';
+
+    // a lesson page lights the tab of ITS track (course → track via curriculum)
+    var hereCourse = HERE ? window.CURRICULUM.find(function (c) {
+      return c.sections.some(function (s) { return s.slug === HERE; });
+    }) : null;
+    var hereTrack = hereCourse ? (hereCourse.track || "core") : null;
+
+    /* one dropdown per populated track, listing its courses; each course row
+       links to the course's first ready lesson (the same entry URL as the
+       homepage ItemList JSON-LD), the tab itself to the homepage scrolled to
+       that track's heading (#track-<id>, rendered by renderCurriculum) */
+    var trackDrops = (window.TRACKS || []).map(function (t) {
+      var courses = window.CURRICULUM.filter(function (c) { return (c.track || "core") === t.id; });
+      if (!courses.length) return "";
+      var items = courses.map(function (c) {
+        var first = null;
+        for (var i = 0; i < c.sections.length && !first; i++) if (c.sections[i].ready) first = c.sections[i];
+        if (!first) return "";
+        var on = hereCourse && hereCourse.slug === c.slug ? " active" : "";
+        return '<a class="nav-drop-item' + on + '" href="' + BASE + c.slug + '/' + first.slug + '/">' +
+          '<span class="nd-dot" style="--accent:' + c.accent + '"></span>' +
+          '<span class="nd-text"><span class="nd-title">' + c.title + '</span><span class="nd-desc">' + c.subtitle + '</span></span></a>';
+      }).join("");
+      return '<div class="nav-drop">' +
+        '<a class="nav-link nav-drop-tab' + (hereTrack === t.id ? " active" : "") + '" href="' + (BASE || "./") + '#track-' + t.id +
+          '" aria-haspopup="true" aria-expanded="false">' + t.title.replace(/^The\s+/, "") + chev + '</a>' +
+        '<div class="nav-drop-panel">' + items + '</div>' +
+      '</div>';
     }).join("");
+
+    var toolboxActive = page === "toolbox" || TOOLBOX.some(function (t) { return t.key === page; });
+    /* the Toolbox panel groups its tools exactly like toolbox.html
+       (TOOLBOX_GROUPS order and titles), as compact one-line rows split
+       across two columns — whole groups only, order preserved — so all
+       tools stay visible on a 768px-tall viewport without scrolling */
+    var tGroups = TOOLBOX_GROUPS.map(function (g) {
+      var items = TOOLBOX.filter(function (t) { return t.group === g.id; });
+      if (!items.length) return null;
+      return { n: items.length, html:
+        '<div class="ndp-group"><div class="ndp-ghead">' + g.title + '</div>' +
+        items.map(function (t) {
+          return '<a class="nav-drop-item ndi-compact' + act(t.key) + '" href="' + BASE + t.url + '">' +
+            '<span class="nd-emoji">' + t.emoji + '</span><span class="nd-title">' + t.title + '</span></a>';
+        }).join("") + '</div>' };
+    }).filter(function (g) { return g; });
+    var totalW = 0, accW = 0, col1 = [], col2 = [];
+    tGroups.forEach(function (g) { totalW += g.n + 0.8; });
+    tGroups.forEach(function (g) {
+      if (accW < totalW / 2) { col1.push(g.html); accW += g.n + 0.8; }
+      else col2.push(g.html);
+    });
+    var toolboxPanel = '<div class="nav-drop-panel ndp-toolbox">' +
+      '<div class="ndp-col">' + col1.join("") + '</div>' +
+      (col2.length ? '<div class="ndp-col">' + col2.join("") + '</div>' : '') +
+    '</div>';
+
     nav.innerHTML =
       '<div class="nav-inner">' +
         '<a class="brand" href="' + (BASE || "./") + '" style="display:inline-flex;align-items:center;gap:.45rem">' + capy(28) + 'Stats<span class="dot">Capybara</span></a>' +
         '<nav class="nav-links" id="nav-links" aria-label="Primary">' +
-          '<a class="nav-link' + curActive + '" href="' + (BASE || "./") + '#curriculum">Curriculum</a>' +
-          '<div class="nav-drop" id="nav-drop">' +
-            '<a class="nav-link nav-drop-btn' + (toolboxActive ? " active" : "") + '" href="' + BASE + 'toolbox.html" aria-haspopup="true"><span class="ndb-label"><span class="ndb-emoji" aria-hidden="true">🧰</span>Statistics Toolbox</span>' +
-              '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></a>' +
-            '<div class="nav-drop-panel">' + toolboxItems + '</div>' +
+          trackDrops +
+          '<div class="nav-drop">' +
+            '<a class="nav-link nav-drop-btn' + (toolboxActive ? " active" : "") + '" href="' + BASE + 'toolbox.html" aria-haspopup="true" aria-expanded="false"><span class="ndb-label"><span class="ndb-emoji" aria-hidden="true">🧰</span>Statistics Toolbox</span>' + chev + '</a>' +
+            toolboxPanel +
           '</div>' +
-          '<a class="nav-link" href="' + (BASE || "./") + '#about">About</a>' +
         '</nav>' +
         '<div class="nav-actions">' +
           '<button id="nav-search" class="nav-search-btn" aria-label="Search lessons (press /)">' + iconSearch() + '<span class="ns-label">Search</span><kbd class="ns-kbd">/</kbd></button>' +
@@ -359,6 +411,39 @@
         tog.setAttribute("aria-expanded", "false");
         tog.focus();
       }
+    });
+
+    /* Dropdown state: opening/closing is CSS-driven (:hover / :focus-within,
+       shared by all three menus); JS mirrors that state onto aria-expanded
+       and adds the Escape hatch — Escape force-closes the open panel (the
+       .closed class wins over :hover/:focus-within in the CSS) and returns
+       focus to its tab. .closed clears as soon as the pointer or focus
+       leaves, so the menu opens normally next time. On mobile the panels
+       are suppressed entirely (plain links), so aria-expanded stays false. */
+    var mobileNav = window.matchMedia ? window.matchMedia("(max-width: 860px)") : null;
+    Array.prototype.forEach.call(nav.querySelectorAll(".nav-drop"), function (drop) {
+      var btn = drop.querySelector("[aria-haspopup]");
+      if (!btn) return;
+      function set(open) {
+        var flat = mobileNav && mobileNav.matches;   // no panel on mobile
+        btn.setAttribute("aria-expanded", open && !flat ? "true" : "false");
+      }
+      drop.addEventListener("mouseenter", function () { drop.classList.remove("closed"); set(true); });
+      drop.addEventListener("mouseleave", function () { drop.classList.remove("closed"); set(false); });
+      drop.addEventListener("focusin", function () { if (!drop.classList.contains("closed")) set(true); });
+      drop.addEventListener("focusout", function (e) {
+        if (!drop.contains(e.relatedTarget)) { drop.classList.remove("closed"); set(false); }
+      });
+      drop.addEventListener("keydown", function (e) {
+        if (e.key !== "Escape") return;
+        drop.classList.add("closed"); set(false); btn.focus();
+      });
+      // Escape also dismisses a hover-opened panel while focus sits elsewhere
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && !drop.contains(document.activeElement) && drop.matches(":hover")) {
+          drop.classList.add("closed"); set(false);
+        }
+      });
     });
   }
 
@@ -434,15 +519,18 @@
     var known = {};
     tracks.forEach(function (t) { known[t.id] = 1; });
     var groups = tracks.map(function (t) {
-      return { title: t.title, desc: t.desc, courses: window.CURRICULUM.filter(function (c) { return (c.track || "core") === t.id; }) };
+      return { id: t.id, title: t.title, desc: t.desc, courses: window.CURRICULUM.filter(function (c) { return (c.track || "core") === t.id; }) };
     }).filter(function (g) { return g.courses.length; });
     // any course on an unlisted track still shows, in a trailing untitled group
     var orphans = window.CURRICULUM.filter(function (c) { return !known[c.track || "core"]; });
     if (orphans.length) groups.push({ title: "", courses: orphans });
 
     if (groups.length > 1) {
+      /* h2 (the homepage's h1 is the hero title, and P60 removed the old
+         section h2 above the grid) with a stable id per track — the nav's
+         track tabs deep-link here as #track-<id> */
       host.innerHTML = groups.map(function (g) {
-        return (g.title ? '<h3 class="track-head">' + g.title + '</h3>' : '') +
+        return (g.title ? '<h2 class="track-head"' + (g.id ? ' id="track-' + g.id + '"' : '') + '>' + g.title + '</h2>' : '') +
           (g.title && g.desc ? '<p class="track-desc">' + g.desc + '</p>' : '') +
           g.courses.map(courseCard).join("");
       }).join("");
@@ -496,24 +584,28 @@
     }).join("");
   }
 
-  /* ---------- resume banner (homepage) ---------- */
+  /* ---------- resume banner (homepage hero) ----------
+     Returning visitors only (sc-last must exist): the banner renders in the
+     hero, between the eyebrow and the h1, as a proper welcome-back. site.js
+     runs synchronously at the end of <body>, so the injection lands before
+     first paint and the hero never jolts. If the last-visited lesson was
+     finished, it points at the next unexplored one instead. */
   function renderResume() {
+    var slot = document.getElementById("hero-resume");
     var grid = document.getElementById("curriculum-grid");
-    if (!grid) return;
+    if (!slot && !grid) return;
     var last = getLast();
-    if (!last || isDone(last.slug)) {
-      // if the very last lesson was finished, point at the next unexplored one instead
-      last = firstUnexplored() || last;
-      if (!last) return;
-    }
+    if (!last) return;                                        // first visit — no banner
+    if (isDone(last.slug)) last = firstUnexplored() || last;
     var bar = document.createElement("div");
-    bar.className = "resume-bar";
+    bar.className = "resume-bar" + (slot ? " resume-hero" : "");
     bar.innerHTML =
       capy(34) +
       '<span class="rb-text">Pick up where you left off — <strong>' + last.n + ' ' + last.title + '</strong></span>' +
       '<a class="btn btn-primary btn-sm" href="' + BASE + last.course + '/' + last.slug + '/">Resume →</a>' +
       '<a class="rb-progress" href="' + BASE + 'progress.html" style="font-size:.85rem;font-weight:650;color:var(--primary);text-decoration:none;white-space:nowrap">My progress →</a>';
-    grid.parentNode.insertBefore(bar, grid);
+    if (slot) slot.appendChild(bar);
+    else grid.parentNode.insertBefore(bar, grid);
   }
   function firstUnexplored() {
     var flat = window.CURRICULUM_FLAT;
@@ -1195,6 +1287,18 @@
     c.insertBefore(a, c.lastElementChild);
   }
 
+  /* a quiet About link in every footer — the About tab left the nav in P60;
+     the section itself still lives on the homepage (#about) */
+  function renderFooterAbout() {
+    var c = document.querySelector(".footer .container");
+    if (!c || c.querySelector(".footer-about")) return;
+    var a = document.createElement("a");
+    a.className = "footer-about";
+    a.href = (BASE || "./") + "#about";
+    a.textContent = "About";
+    c.appendChild(a);
+  }
+
   /* a small capybara next to the copyright line, on every page */
   function renderFooterCapy() {
     var c = document.querySelector(".footer .container");
@@ -1358,6 +1462,7 @@
     renderChecks();
     renderSoftware();
     renderKofi();
+    renderFooterAbout();
     renderFooterCapy();
     setupHScroll();
     injectVizExport();
