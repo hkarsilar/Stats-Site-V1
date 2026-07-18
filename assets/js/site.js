@@ -1447,6 +1447,21 @@
      breaker. Deferred to window "load" so it never competes with first paint. */
   function registerSW() {
     if (!("serviceWorker" in navigator)) return;
+    // Auto-apply updates: if a worker is ALREADY controlling this page, a later
+    // takeover means a new version activated (sw.js does skipWaiting + claim on
+    // a CACHE_VERSION bump). Reload once so the fresh CSS/JS apply on THIS visit
+    // instead of the next — no cache-clearing, no 2-load lag. Guards: only when
+    // a controller existed at load (a first-ever install must NOT reload), and a
+    // one-shot flag so it can never loop. Fully swallowed — never breaks a page.
+    try {
+      var hadController = !!navigator.serviceWorker.controller;
+      var reloading = false;
+      navigator.serviceWorker.addEventListener("controllerchange", function () {
+        if (!hadController || reloading) return;
+        reloading = true;
+        window.location.reload();
+      });
+    } catch (e) {}
     var go = function () {
       try { navigator.serviceWorker.register(BASE + "sw.js").catch(function () {}); }
       catch (e) {}

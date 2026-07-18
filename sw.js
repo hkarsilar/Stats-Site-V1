@@ -6,9 +6,15 @@
    Strategy:
      • App shell (CSS / shared JS / font / icons / offline page) is
        precached on install so the chrome always works offline.
-     • /assets/…  → CACHE-FIRST (styles, scripts, fonts, images are
-       effectively immutable at a given URL; a content change ships a
-       new deploy + a bumped CACHE_VERSION, which wipes the old cache).
+     • CSS / JS  → STALE-WHILE-REVALIDATE: the cached copy paints
+       instantly (fast, offline-safe) while a fresh copy is fetched in
+       the background and written to the cache — so a changed stylesheet
+       or script reaches the visitor on their NEXT navigation on its own,
+       with no cache-clearing and WITHOUT relying on a CACHE_VERSION bump.
+       Paired with the controllerchange auto-reload in site.js, a bumped
+       deploy applies within the SAME visit.
+     • Fonts / images / icons → CACHE-FIRST (immutable at a given URL;
+       revalidating them every load would just waste bandwidth).
      • HTML navigations → NETWORK-FIRST: an online reader always gets
        the freshest page; the cached copy is only a fallback for when
        the network is gone. Uncached pages fall back to offline.html.
@@ -18,15 +24,20 @@
    root (statscapybara.com/) or a project subpath (…/Stats-Site-V1/).
 
    ---- CACHE_VERSION bump policy ----
-   Bump CACHE_VERSION on every deploy that changes ANY precached shell
-   asset (styles.css, site.js, curriculum.js, viz.js, the font, an icon,
-   or offline.html). Bumping it renames the cache, so install repopulates
-   and activate deletes the previous cache. HTML is network-first, so a
-   bump is NOT required for prose/lesson edits — but it never hurts.
+   Bumping CACHE_VERSION renames the cache, so install repopulates and
+   activate deletes the previous cache, and the new worker's takeover
+   triggers site.js's one-shot auto-reload — so a bumped shell change
+   applies on the visitor's very next visit, same session. Since CSS/JS
+   are now stale-while-revalidate, a change to them ALSO propagates on its
+   own (next navigation) even if you forget to bump — so the bump is the
+   fast path, no longer the only path. Still bump on any precached shell
+   change (styles.css, site.js, curriculum.js, viz.js, the font, an icon,
+   or offline.html) to purge cleanly and apply within the same visit.
+   HTML is network-first, so a bump is NOT required for prose/lesson edits.
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v10";  /* P60: site.js + styles.css changed (front door v2 — track-based nav) */
+const CACHE_VERSION = "sc-v11";  /* SW update path: stale-while-revalidate for CSS/JS + auto-reload (site.js) */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location
@@ -96,7 +107,8 @@ function networkFirst(req) {
     );
 }
 
-/* Assets: serve from cache immediately, otherwise fetch (and cache) it. */
+/* Immutable assets (fonts/images/icons): serve from cache immediately,
+   otherwise fetch (and cache) it. */
 function cacheFirst(req) {
   return caches.match(req).then((hit) =>
     hit ||
@@ -104,6 +116,19 @@ function cacheFirst(req) {
       .then((res) => (cacheable(res) ? putCopy(req, res) : res))
       .catch(() => hit) // undefined → surfaces as a network error, which is correct offline
   );
+}
+
+/* CSS / JS: serve the cached copy immediately (fast, offline-safe) AND fetch a
+   fresh copy in the background to update the cache for next time — so a changed
+   stylesheet/script propagates on the visitor's next navigation with no cache
+   clearing and no reliance on a CACHE_VERSION bump. */
+function staleWhileRevalidate(req) {
+  return caches.match(req).then((hit) => {
+    const fetching = fetch(req)
+      .then((res) => (cacheable(res) ? putCopy(req, res) : res))
+      .catch(() => hit);      // offline → keep serving the cached copy
+    return hit || fetching;   // cache first if we have it, else wait on the network
+  });
 }
 
 self.addEventListener("fetch", (event) => {
@@ -116,5 +141,9 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(networkFirst(req));
     return;
   }
-  event.respondWith(cacheFirst(req));               // assets & other same-origin GETs
+  if (/\.(css|js)$/.test(url.pathname)) {           // shell scripts/styles → SWR
+    event.respondWith(staleWhileRevalidate(req));
+    return;
+  }
+  event.respondWith(cacheFirst(req));               // fonts, images, icons, manifest
 });
