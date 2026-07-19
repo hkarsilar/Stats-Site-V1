@@ -6,15 +6,20 @@
 (function () {
   "use strict";
 
-  /* ---------- base path ----------
+  /* ---------- base path (three states) ----------
      Lesson pages live two folders deep (/<course>/<slug>/), the homepage
      at the root. Long-form guides (guides/<slug>/) are also two deep and
      mark themselves with body[data-guide] instead of data-section, so they
      get lesson-depth links without being treated as curriculum lessons
-     (no sidebar, no progress tracking). Using relative links keeps the
-     whole site working no matter how deep it's hosted. */
+     (no sidebar, no progress tracking). Course landing pages (/<course>/,
+     P61) sit ONE folder deep and mark themselves with
+     body[data-course-home="<slug>"] — they get the shared chrome (nav,
+     footer, theme, search, skip link, SW) but no sidebar, prev/next,
+     progress recording, or quip. Using relative links keeps the whole
+     site working no matter how deep it's hosted. */
   var GUIDE = document.body ? document.body.getAttribute("data-guide") : null;
-  var BASE = (document.body && (document.body.getAttribute("data-section") || GUIDE)) ? "../../" : "";
+  var CHOME = document.body ? document.body.getAttribute("data-course-home") : null;
+  var BASE = (document.body && (document.body.getAttribute("data-section") || GUIDE)) ? "../../" : (CHOME ? "../" : "");
   var HERE = document.body ? document.body.getAttribute("data-section") : null;
 
   /* ---------- embed mode (?embed=1 on a lesson page) ----------
@@ -74,6 +79,7 @@
   function pageKey() {
     if (HERE) return HERE;
     if (GUIDE) return GUIDE;
+    if (CHOME) return CHOME;
     var m = /([^\/]+)\.html$/.exec(window.location.pathname);
     return m ? m[1] : "home";
   }
@@ -317,16 +323,17 @@
     var act = function (k) { return k === page ? " active" : ""; };
     var chev = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>';
 
-    // a lesson page lights the tab of ITS track (course → track via curriculum)
+    // a lesson OR course-landing page lights the tab of ITS track
+    // (course → track via curriculum)
     var hereCourse = HERE ? window.CURRICULUM.find(function (c) {
       return c.sections.some(function (s) { return s.slug === HERE; });
-    }) : null;
+    }) : (CHOME ? window.CURRICULUM.find(function (c) { return c.slug === CHOME; }) : null);
     var hereTrack = hereCourse ? (hereCourse.track || "core") : null;
 
     /* one dropdown per populated track, listing its courses; each course row
-       links to the course's first ready lesson (the same entry URL as the
-       homepage ItemList JSON-LD), the tab itself to the homepage scrolled to
-       that track's heading (#track-<id>, rendered by renderCurriculum) */
+       links to the course's landing page (<course>/ — the same entry URL as
+       the homepage ItemList JSON-LD), the tab itself to the homepage scrolled
+       to that track's heading (#track-<id>, rendered by renderCurriculum) */
     var trackDrops = (window.TRACKS || []).map(function (t) {
       var courses = window.CURRICULUM.filter(function (c) { return (c.track || "core") === t.id; });
       if (!courses.length) return "";
@@ -335,7 +342,7 @@
         for (var i = 0; i < c.sections.length && !first; i++) if (c.sections[i].ready) first = c.sections[i];
         if (!first) return "";
         var on = hereCourse && hereCourse.slug === c.slug ? " active" : "";
-        return '<a class="nav-drop-item' + on + '" href="' + BASE + c.slug + '/' + first.slug + '/">' +
+        return '<a class="nav-drop-item' + on + '" href="' + BASE + c.slug + '/">' +
           '<span class="nd-dot" style="--accent:' + c.accent + '"></span>' +
           '<span class="nd-text"><span class="nd-title">' + c.title + '</span><span class="nd-desc">' + c.subtitle + '</span></span></a>';
       }).join("");
@@ -502,7 +509,8 @@
     return (
       '<div class="course-card" style="--accent:' + c.accent + '">' +
         '<div class="ch">' + ring(frac, c.accent) +
-          '<span class="ch-text"><h3>' + c.title + '</h3><span>' + c.subtitle +
+          // the card title links to the course's landing page (P61)
+          '<span class="ch-text"><h3><a href="' + BASE + c.slug + '/">' + c.title + '</a></h3><span>' + c.subtitle +
             ' · ' + ready.length + ' lesson' + (ready.length === 1 ? '' : 's') + '</span></span>' +
         '</div>' +
         '<ul>' + items + '</ul>' +
@@ -613,6 +621,53 @@
     var flat = window.CURRICULUM_FLAT;
     for (var i = 0; i < flat.length; i++) { if (flat[i].ready && !isVisited(flat[i].slug)) return flat[i]; }
     return null;
+  }
+
+  /* ---------- course landing page (<course>/index.html, P61) ----------
+     The page's prose is hand-written HTML; everything stateful renders
+     here at runtime from curriculum.js + sc-progress, so the lesson list
+     can never drift: the per-course ring, a Start/Continue CTA (first
+     lesson, or the first unvisited one once there's progress), and the
+     full lesson list with § numbers, ✓ ticks, and dimmed coming-soons. */
+  function renderCourseHome() {
+    if (!CHOME) return;
+    var host = document.getElementById("course-home");
+    var c = window.CURRICULUM.find(function (x) { return x.slug === CHOME; });
+    if (!host || !c) return;
+    var ready = c.sections.filter(function (s) { return s.ready; });
+    if (!ready.length) return;
+    var visited = ready.filter(function (s) { return isVisited(s.slug); });
+    var doneN = ready.filter(function (s) { return isDone(s.slug); }).length;
+    var frac = visited.length / ready.length;
+
+    var next = null;
+    for (var i = 0; i < ready.length && !next; i++) if (!isVisited(ready[i].slug)) next = ready[i];
+    var started = visited.length > 0;
+    var target = started && next ? next : ready[0];
+    var label = !started ? "Start with " + target.n
+      : next ? "Continue with " + next.n
+      : "Revisit " + target.n;
+    var meta = started
+      ? visited.length + " of " + ready.length + " lessons explored" + (doneN ? " · " + doneN + " completed" : "")
+      : ready.length + " lessons · every one interactive";
+
+    var items = c.sections.map(function (s) {
+      if (!s.ready) {
+        return '<li class="chome-soon"><span class="sec-num">' + s.n + '</span>' +
+          '<span class="chome-t">' + s.title + '</span><span class="chome-soon-tag">soon</span></li>';
+      }
+      var state = isDone(s.slug) ? "done" : (isVisited(s.slug) ? "visited" : "");
+      return '<li><a class="' + state + '" href="' + BASE + c.slug + '/' + s.slug + '/">' +
+        '<span class="sec-num">' + s.n + '</span><span class="chome-t">' + s.title + '</span>' +
+        '<span class="sec-check" aria-hidden="true">✓</span></a></li>';
+    }).join("");
+
+    host.innerHTML =
+      '<div class="chome-status">' + ring(frac, c.accent) +
+        '<span class="chome-meta">' + meta + '</span>' +
+        '<a class="btn btn-primary btn-sm" href="' + BASE + c.slug + '/' + target.slug + '/">' + label + ' &rarr;</a>' +
+      '</div>' +
+      '<ol class="chome-list" aria-label="Lessons in this course">' + items + '</ol>';
   }
 
   /* ---------- lesson sidebar ----------
@@ -735,7 +790,7 @@
      Everything is reverted on afterprint. Also injects a discreet
      per-page footer carrying the lesson's clean URL. */
   function setupPrint() {
-    if (!HERE) return;
+    if (!HERE && !CHOME) return;   // course landing pages print as a syllabus (P61)
     // discreet printed footer with the lesson's clean canonical URL
     var canon = document.querySelector('link[rel="canonical"]');
     var url = ((canon && canon.href) || window.location.href)
@@ -1205,6 +1260,16 @@
     { title: "Statistics Glossary", url: "glossary.html", tag: "Reference", kw: "terms definitions dictionary" },
     { title: "Glossary Flashcards", url: "flashcards.html", tag: "Practice", kw: "flashcards spaced repetition leitner revise revision memorize memorise drill study cards terms definitions glossary due box" },
     { title: "My Progress", url: "progress.html", tag: "Practice", kw: "progress dashboard my progress rings completed lessons done remaining continue resume certificate certificates course completion percent tracking enrolled" },
+    /* course landing pages (<course>/index.html, P61) */
+    { title: "Stats 1: Foundations", url: "stats-1/", tag: "Course", kw: "stats 1 course foundations beginner start here overview syllabus descriptive statistics normal distribution z-scores probability sampling confidence intervals t-tests first course intro introduction" },
+    { title: "Stats 2: Comparing Groups & Relationships", url: "stats-2/", tag: "Course", kw: "stats 2 course overview syllabus anova post-hoc factorial repeated measures assumptions nonparametric chi-square correlation regression second course" },
+    { title: "Stats 3: Advanced Modeling", url: "stats-3/", tag: "Course", kw: "stats 3 course overview syllabus multiple regression ancova interactions mediation logistic factor analysis manova power advanced modeling third course" },
+    { title: "Stats 4: Modern & Advanced", url: "stats-4/", tag: "Course", kw: "stats 4 course overview syllabus bootstrap bayesian glm multilevel mixed models cross-validation causal dags survival missing data meta-analysis signal detection fourth course" },
+    { title: "Methods: Research Design", url: "methods/", tag: "Course", kw: "methods course overview syllabus research design hypotheses operationalization reliability validity experiments sampling surveys bias replication preregistration open science" },
+    { title: "Data: From Raw to Ready", url: "data/", tag: "Course", kw: "data course overview syllabus tidy data codebooks validation cleaning outliers transformations wide long merging reproducible workflows privacy wrangling" },
+    { title: "Ethics: Responsible Research", url: "ethics/", tag: "Course", kw: "ethics course overview syllabus research ethics consent irb deception debriefing privacy confidentiality questionable research practices plagiarism authorship ai fraud" },
+    { title: "ML & AI: Machine Learning for Researchers", url: "ml/", tag: "Course", kw: "machine learning course overview syllabus ml ai prediction train test regularization classification roc auc trees forests knn clustering pca neural networks llms" },
+    { title: "Writing: Reporting Your Research", url: "writing/", tag: "Course", kw: "writing course overview syllabus imrad apa reporting tables figures results discussion limitations abstracts titles checklist scientific writing paper thesis" },
     { title: "Analyze Your Thesis Data in JASP", url: "guides/analyze-thesis-data-jasp/", tag: "Guide", kw: "jasp guide tutorial thesis dissertation analyze data start to finish walkthrough import csv descriptives assumptions levene welch t-test run read output write up apa how to" },
     { title: "From SPSS Output to APA Results", url: "guides/spss-output-to-apa/", tag: "Guide", kw: "spss guide output apa results report write up sig 2-tailed .000 levene two rows t-test anova correlation chi-square regression tables how to read coefficients" },
     { title: "Choosing Statistics for Your Dissertation", url: "guides/choose-statistics-dissertation/", tag: "Guide", kw: "choose choosing statistics dissertation thesis which test analysis pick guide outcome predictor groups paired design likert messy real data decision" },
@@ -1488,6 +1553,7 @@
     renderCounts();
     renderToolbox();
     renderResume();
+    renderCourseHome();
     renderSidebar();
     renderLessonNav();
     renderLessonDone();

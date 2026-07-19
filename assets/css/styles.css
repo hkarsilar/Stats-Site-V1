@@ -118,17 +118,19 @@ a { color: inherit; text-decoration: none; }
    containers inside a .lesson article (every lesson, guide, and tool page
    wraps its copy in one). Excluded: .btn (links dressed as buttons) and the
    two in-article link lists that are navigation, not prose — the "On this
-   page" .lesson-toc and datasets' .ds-index jump chips. --link is tuned
+   page" .lesson-toc and datasets' .ds-index jump chips (and the course
+   landing pages' .chome-list lesson list, chrome in li-shaped clothing).
+   --link is tuned
    per-theme to clear AA both vs the surface and vs the body text, since at
    rest colour is the only cue (see the palette notes). Chrome elsewhere
    (nav, cards, sidebar, prev/next, interactive-box CTAs) keeps its own,
    heavier styling — this rule deliberately doesn't touch it. */
-.lesson :is(p, li, td, th, .callout, .faq-a) a:not(.btn, .lesson-toc a, .ds-index a) {
+.lesson :is(p, li, td, th, .callout, .faq-a) a:not(.btn, .lesson-toc a, .ds-index a, .chome-list a) {
   color: var(--link);
   text-underline-offset: 2px;
   transition: color .15s;
 }
-.lesson :is(p, li, td, th, .callout, .faq-a) a:not(.btn, .lesson-toc a, .ds-index a):hover {
+.lesson :is(p, li, td, th, .callout, .faq-a) a:not(.btn, .lesson-toc a, .ds-index a, .chome-list a):hover {
   text-decoration: underline;
 }
 
@@ -457,6 +459,10 @@ input[type="range"]:active::-moz-range-thumb { cursor: grabbing; }
   background: color-mix(in srgb, var(--accent, var(--primary)) 6%, transparent);
 }
 .course-card .ch h3 { margin: 0; font-size: 1.15rem; color: color-mix(in srgb, var(--accent, var(--primary)) 70%, var(--text)); }
+/* the card title links to the course landing page (P61) — same colour as
+   the plain heading it replaced, underline only on hover */
+.course-card .ch h3 a { color: inherit; text-decoration: none; }
+.course-card .ch h3 a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .course-card .ch span { font-size: .85rem; color: var(--text-faint); }
 .course-card ul { list-style: none; margin: 0; padding: .4rem 0; }
 .course-card li a {
@@ -629,6 +635,43 @@ body[data-course="writing"] { --course-accent: #84cc16; }
 .lesson-nav a.next { margin-left: auto; text-align: right; }
 .lesson-nav .lbl { display: block; font-size: .72rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: .06em; }
 .lesson-nav svg { width: 1.1rem; height: 1.1rem; flex-shrink: 0; }
+
+/* ============================================================
+   COURSE LANDING PAGES (<course>/index.html, P61)
+   The hand-written prose reuses the .lesson styles; everything below
+   is the runtime-rendered part (site.js renderCourseHome): the status
+   card (ring + Start/Continue CTA) and the lesson list. The accent
+   comes from body[data-course] like on lessons.
+   ============================================================ */
+.chome-status {
+  display: flex; align-items: center; flex-wrap: wrap; gap: .9rem 1.1rem;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); box-shadow: var(--shadow);
+  padding: .9rem 1.2rem; margin: 1.75rem 0 1.1rem;
+  --accent: var(--course-accent, var(--primary));
+}
+.chome-meta { flex: 1; min-width: 11rem; font-size: .92rem; color: var(--text-muted); }
+.chome-list {
+  list-style: none; margin: 0 0 2rem; padding: .35rem 0;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); box-shadow: var(--shadow);
+}
+.chome-list a, .chome-list .chome-soon {
+  display: flex; align-items: center; gap: .35rem;
+  padding: .52rem 1.1rem; font-size: .95rem;
+}
+.chome-list a { color: var(--text-muted); font-weight: 550; }
+.chome-list a:hover { background: var(--surface-2); color: var(--text); }
+.chome-list .sec-num { color: color-mix(in srgb, var(--course-accent, var(--primary)) 80%, var(--text)); }
+.chome-list a.done { color: var(--text-faint); }
+.chome-list a.done .sec-check { opacity: 1; }
+.chome-list .chome-soon { color: var(--text-faint); opacity: .65; }
+.chome-soon-tag { margin-left: auto; font-size: .68rem; color: var(--text-faint); }
+/* curated "tools you'll use in this course" row — hand-written .tool-cards */
+.chome-tools {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(13.5rem, 1fr));
+  gap: .8rem; margin: 1rem 0 1.75rem;
+}
 
 /* ============================================================
    INTERACTIVE VIZ COMPONENTS
@@ -936,6 +979,14 @@ body[data-course="writing"] { --course-accent: #84cc16; }
 
   /* --- reference pages (formulas / glossary): drop their live controls --- */
   .glossary-filter, #gloss-count, .btn { display: none !important; }
+
+  /* --- course landing pages print as a one-page syllabus (P61): the
+         hand-written blurb + the lesson list + the URL footer. Personal
+         state (ring, CTA, ticks) and the tools row stay on screen. --- */
+  .chome-status, .chome-tools, .chome-list .sec-check { display: none !important; }
+  .chome-list { box-shadow: none; margin-bottom: .8cm; }
+  .chome-list a, .chome-list .chome-soon { padding: .12cm .35cm; font-size: 10pt; }
+  .chome-list li { break-inside: avoid; }
 
   /* --- page setup --- */
   @page { margin: 1.6cm 1.6cm 1.9cm; }

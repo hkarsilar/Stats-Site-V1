@@ -203,7 +203,7 @@ Tick these as sessions complete them (each prompt ends by updating this list).
 - [x] P58 · new lesson: Signal Detection Theory (Stats 4 §4.12 — d′/criterion/ROC playground) (Extra Powerful · Ultra)
 - [x] P59 · Stats 2.6 rebuild — per-test logic + tabbed playgrounds (Mann–Whitney, Wilcoxon, Kruskal–Wallis, Friedman) (Extra Powerful · Ultra)
 - [x] P60 · front door v2 — track-based nav dropdowns, grouped Toolbox menu, resume into hero, personas + Curriculum/About tabs retired (Extra Powerful · Max, then /code-review ultra)
-- [ ] P61 · course landing pages — 9 × `<course>/index.html`, BASE "../", entry points + ItemList retargeted (Extra Powerful · Max)
+- [x] P61 · course landing pages — 9 × `<course>/index.html`, BASE "../", entry points + ItemList retargeted (Extra Powerful · Max)
 - [ ] P62 · quiz v2 — exam mode + bank to ~200 questions (Extra Powerful · Ultra)
 - [ ] P63 · worked problems — problems.html + Stats 1–2 sets, print-without-solutions (Extra Powerful · Ultra)
 - [ ] P64 · worked problems — Stats 3–4 + toolkit "spot the problem" sets (Extra Powerful · Ultra)

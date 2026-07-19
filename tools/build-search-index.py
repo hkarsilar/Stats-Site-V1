@@ -86,6 +86,12 @@ for fname, title in [
     p = ROOT / fname
     if p.exists():
         pages.append({"u": fname, "txt": page_text(p)})
+# course landing pages (<course>/index.html, P61) — indexed under their clean URL
+# so a search for "Stats 2" or "Writing course" finds the front door
+for slug in course_slugs():
+    p = ROOT / slug / "index.html"
+    if p.exists():
+        pages.append({"u": f"{slug}/", "txt": page_text(p)})
 # long-form guides (guides/<slug>/index.html) — indexed under their clean URL
 for slug in [
     "analyze-thesis-data-jasp",

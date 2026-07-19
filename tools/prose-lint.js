@@ -107,6 +107,7 @@ const ROOT_PAGES = ['index.html', 'quiz.html', 'glossary.html', 'toolbox.html', 
   'plan.html', 'tables.html', 'formulas.html', 'distributions.html', 'effect-sizes.html', 'descriptives.html', 'correlation.html', 'power.html', 'apa.html', 'datasets.html', 'flashcards.html', 'progress.html',
   'cheat-test-chooser.html', 'cheat-apa.html', 'cheat-assumptions.html'];
 const GUIDES = ['analyze-thesis-data-jasp', 'spss-output-to-apa', 'choose-statistics-dissertation', 'clean-survey-data'];
+/* course landing pages — <course>/index.html (P61); derived from the curriculum below */
 
 /* ============================================================
    Small helpers (same approach as tools/audit.js)
@@ -291,9 +292,12 @@ function scanPage(kind, label, file, slug) {
   };
 }
 
+const COURSE_PAGES = (win.CURRICULUM || []).map((c) => c.slug);
+
 const pages = [];
 for (const s of READY) pages.push(scanPage('lesson', `${s.course}/${s.slug}/`, path.join(ROOT, s.course, s.slug, 'index.html'), s.slug));
 for (const g of GUIDES) pages.push(scanPage('guide', `guides/${g}/`, path.join(ROOT, 'guides', g, 'index.html'), null));
+for (const c of COURSE_PAGES) pages.push(scanPage('course', `${c}/`, path.join(ROOT, c, 'index.html'), null));
 for (const f of ROOT_PAGES) pages.push(scanPage('root', f, path.join(ROOT, f), null));
 
 /* ============================================================
@@ -405,7 +409,7 @@ if (args[0] === '--strict') {
 }
 
 /* default: full report, worst first */
-console.log(`StatsCapybara prose lint — ${pages.length} pages (${READY.length} lessons, ${GUIDES.length} guides, ${ROOT_PAGES.length} root) · ${Object.values(FAQ_ANSWERS).reduce((n, a) => n + a.length, 0)} FAQ answers · ${descPages.length} meta descriptions`);
+console.log(`StatsCapybara prose lint — ${pages.length} pages (${READY.length} lessons, ${GUIDES.length} guides, ${COURSE_PAGES.length} course, ${ROOT_PAGES.length} root) · ${Object.values(FAQ_ANSWERS).reduce((n, a) => n + a.length, 0)} FAQ answers · ${descPages.length} meta descriptions`);
 console.log(`budgets: em-dash ≤ ${EMDASH_PAGE_MAX}/page + ≤ ${EMDASH_FAQ_MAX}/FAQ trio · banned constructions 0 · think ≤ ${THINK_SITE_MAX} sitewide · notice ≤ ${NOTICE_PAGE_MAX}/page · "and watch" ≤ ${ANDWATCH_SHARE_MAX * 100}% of descriptions`);
 console.log(line(96));
 console.log(HEADER);

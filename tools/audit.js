@@ -28,7 +28,11 @@
         404.html carries the GA tag only. Guide pages (guides/<slug>/,
         P34) get the same checks plus og:type article, exact canonical/
         og:url, Article + BreadcrumbList JSON-LD, the body[data-guide]
-        marker, and sitemap + search-index entries.
+        marker, and sitemap + search-index entries. Course landing pages
+        (<course>/, P61; CHECK 3c) get GA, exact canonical/og:url,
+        og:type website, og:image = that course's card (exists on disk),
+        Course + BreadcrumbList JSON-LD, the body[data-course-home]
+        marker, links, and sitemap + search-index entries — no QUIPS.
      4. All internal href/src links resolve on disk; no leading-slash paths.
      5. Search index — freshness (mtime) + every ready slug indexed.
      6. Homepage counts — the course/lesson totals in index.html match reality.
@@ -311,6 +315,9 @@ const ROOT_PAGES = ['index.html', 'quiz.html', 'glossary.html', 'toolbox.html', 
   'cheat-test-chooser.html', 'cheat-apa.html', 'cheat-assumptions.html'];
 /* long-form guides — guides/<slug>/index.html (P34); each is a body[data-guide] page */
 const GUIDES = ['analyze-thesis-data-jasp', 'spss-output-to-apa', 'choose-statistics-dissertation', 'clean-survey-data'];
+/* course landing pages — <course>/index.html (P61); each is a body[data-course-home] page.
+   Derived from the curriculum, so adding a course automatically expects its landing page. */
+const COURSE_PAGES = CURRICULUM.map((c) => c.slug);
 /* allowed non-lesson QUIPS keys: index→"home" plus each root page's basename, plus guide slugs */
 const rootKeys = new Set(['home', ...ROOT_PAGES.filter((f) => f !== 'index.html').map((f) => f.replace('.html', '')), ...GUIDES]);
 
@@ -512,8 +519,8 @@ for (const f of ROOT_PAGES) {
       if (!nm || +nm[1] !== ready.length) err(`${label} description should start "${ready.length} interactive lessons" (got "${item.description}")`);
       const track = (win.TRACKS || []).find((t) => t.id === (c.track || 'core'));
       if (track && !(item.description || '').includes(track.title)) err(`${label} description should name its track "${track.title}"`);
-      const wantUrl = `${BASE_URL}${c.slug}/${ready[0].slug}/`;
-      if (item.url !== wantUrl) err(`${label} url is ${item.url}, expected first lesson ${wantUrl}`);
+      const wantUrl = `${BASE_URL}${c.slug}/`;   // P61: the course landing page, not the first lesson
+      if (item.url !== wantUrl) err(`${label} url is ${item.url}, expected course landing page ${wantUrl}`);
       const wantLevel = expectedLevel(c.slug);
       if (wantLevel && item.educationalLevel !== wantLevel) err(`${label} educationalLevel is "${item.educationalLevel}", expected "${wantLevel}"`);
     });
@@ -562,6 +569,59 @@ for (const g of GUIDES) {
 }
 
 /* ============================================================
+   CHECK 3c — course landing pages (<course>/index.html, P61):
+   the same SEO rules as a root page plus og:type website, exact
+   canonical/og:url = the course's true URL, og:image = that course's
+   OG card (and it exists on disk), Course + BreadcrumbList JSON-LD,
+   the body[data-course-home] marker, and sitemap + search-index
+   entries. No QUIPS entry is required (these pages have no sidebar to
+   surface one) — nothing below asks for one.
+   ============================================================ */
+for (const slug of COURSE_PAGES) {
+  const file = path.join(ROOT, slug, 'index.html');
+  if (!fs.existsSync(file)) { err(`missing course landing page: ${slug}/index.html`); continue; }
+  const src = read(file), ms = metaTags(src);
+  const trueUrl = `${BASE_URL}${slug}/`;
+  if (gaCount(src) !== 2) err(`${slug}/ → expected exactly one GA tag (2 ${GA_ID} refs), found ${gaCount(src)}`);
+  const canon = canonicalOf(src);
+  if (canon !== trueUrl) err(`${slug}/ → canonical is ${canon || 'MISSING'}, expected ${trueUrl}`);
+  if (metaProp(ms, 'og:url') !== trueUrl) err(`${slug}/ → og:url is ${metaProp(ms, 'og:url') || 'MISSING'}, expected ${trueUrl}`);
+  if (metaProp(ms, 'og:type') !== 'website') err(`${slug}/ → og:type is "${metaProp(ms, 'og:type') || 'MISSING'}", expected "website"`);
+  const desc = metaName(ms, 'description');
+  if (!desc) err(`${slug}/ → missing meta description`);
+  else if (desc.length < 50 || desc.length > 160) warn(`${slug}/ → meta description is ${desc.length} chars (want 50–160)`);
+  // og:image / twitter:image = this course's OG card, and it exists on disk
+  const courseImg = `${BASE_URL}assets/og-${slug}.png`;
+  const ogImg = metaProp(ms, 'og:image');
+  const twImg = metaName(ms, 'twitter:image');
+  if (ogImg !== courseImg) err(`${slug}/ → og:image is ${ogImg || 'MISSING'}, expected ${courseImg}`);
+  if (twImg !== courseImg) err(`${slug}/ → twitter:image is ${twImg || 'MISSING'}, expected ${courseImg}`);
+  if (!siteAssetExists(courseImg)) err(`${slug}/ → og:image ${courseImg} does not resolve to a file on disk`);
+  // JSON-LD: Course + BreadcrumbList, both with required fields
+  const lds = jsonLd(src);
+  if (lds.some((b) => !b.ok)) err(`${slug}/ → a JSON-LD block does not parse`);
+  const cObjs = ldObjects(lds);
+  const cTypes = cObjs.map((o) => o['@type']);
+  if (!cTypes.includes('Course')) err(`${slug}/ → missing Course JSON-LD`);
+  if (!cTypes.includes('BreadcrumbList')) err(`${slug}/ → missing BreadcrumbList JSON-LD`);
+  checkLdFields(`${slug}/`, cObjs);                 // CHECK 7 — per-type required fields
+  // the Course block should mirror the homepage ItemList: name + landing-page url + level
+  const course = courseBySlug[slug], courseLd = cObjs.find((o) => o['@type'] === 'Course');
+  if (course && courseLd) {
+    const wantName = `${course.title}: ${course.subtitle}`;
+    if (courseLd.name !== wantName) err(`${slug}/ → Course JSON-LD name is "${courseLd.name}", expected "${wantName}"`);
+    if (courseLd.url !== trueUrl) err(`${slug}/ → Course JSON-LD url is ${courseLd.url}, expected ${trueUrl}`);
+    const wantLevel = expectedLevel(slug);
+    if (wantLevel && courseLd.educationalLevel !== wantLevel) err(`${slug}/ → Course JSON-LD educationalLevel is "${courseLd.educationalLevel}", expected "${wantLevel}"`);
+  }
+  metaHygiene(`${slug}/`, src, ms);                 // CHECK 8 — dedupe + title pattern
+  const body = (src.match(/<body\b[^>]*>/i) || [''])[0];
+  if (attrs(body)['data-course-home'] !== slug) err(`${slug}/ → body data-course-home is "${attrs(body)['data-course-home'] || 'MISSING'}", expected "${slug}"`);
+  if (!sitemapLocs.has(trueUrl)) err(`sitemap.xml missing ${slug}/`);
+  if (!(SEARCH_INDEX.pages || []).some((p) => p.u === `${slug}/`)) err(`search-index.js has no page entry for "${slug}/" — rerun tools/build-search-index.py`);
+}
+
+/* ============================================================
    CHECK 4 — internal links resolve (lessons + root pages; not 404)
    ============================================================ */
 for (const s of READY) {
@@ -574,6 +634,10 @@ for (const f of ROOT_PAGES) {
 }
 for (const g of GUIDES) {
   const file = path.join(ROOT, 'guides', g, 'index.html');
+  if (fs.existsSync(file)) checkLinks(file);
+}
+for (const slug of COURSE_PAGES) {
+  const file = path.join(ROOT, slug, 'index.html');
   if (fs.existsSync(file)) checkLinks(file);
 }
 
