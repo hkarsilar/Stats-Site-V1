@@ -37,7 +37,7 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v13";  /* P62: quiz exam mode — styles.css (.exam-* press states) + site.js (quiz blurb) changed */
+const CACHE_VERSION = "sc-v14";  /* P63: worked problems — site.js changed (TOOLBOX + SEARCH_PAGES + QUIPS entries for problems.html) */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location

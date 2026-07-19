@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Practice Problems — Worked Statistics Exam Questions — StatsCapybara</title>
+  <meta name="description" content="Statistics problems with fully worked solutions: z-scores, confidence intervals, t-tests, ANOVA, chi-square, correlation and regression, one step at a time." />
+  <link rel="canonical" href="https://statscapybara.com/problems.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Practice Problems — StatsCapybara" />
+  <meta property="og:description" content="Twenty-two exam-style statistics problems, each with a full worked solution: formula, numbers, arithmetic, and the sentence you would actually write." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/problems.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Practice Problems — StatsCapybara" />
+  <meta name="twitter:description" content="Twenty-two exam-style statistics problems, each with a full worked solution: formula, numbers, arithmetic, and the sentence you would actually write." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <style>
+    /* ---- jump index ---- */
+    .pb-index { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:.6rem; margin:1.3rem 0 2rem; padding:0; list-style:none; }
+    .pb-index a { display:block; padding:.6rem .8rem; border:1px solid var(--border); border-radius:10px; text-decoration:none; background:var(--surface); color:var(--text); }
+    .pb-index a:hover { border-color:var(--primary); }
+    .pb-index .t { font-weight:600; font-size:.92rem; }
+    .pb-index .m { color:var(--text-faint); font-size:.8rem; }
+
+    /* ---- print bar ---- */
+    .pb-printbar { display:flex; flex-wrap:wrap; gap:.5rem; align-items:center; margin:.9rem 0 .2rem; }
+    .pb-printbar .pb-hint { color:var(--text-faint); font-size:.83rem; }
+
+    /* ---- a course set ---- */
+    .pb-set { margin:2.6rem 0 0; }
+    .pb-set > h2 { scroll-margin-top:90px; padding-bottom:.35rem; border-bottom:2px solid var(--border); }
+    .pb-set-sub { color:var(--text-muted); font-size:.94rem; margin:.35rem 0 .2rem; }
+
+    /* ---- one problem ---- */
+    .pb-card { border:1px solid var(--border); border-radius:14px; padding:1rem 1.15rem 1.1rem; margin:1.25rem 0; background:var(--surface); }
+    .pb-head { display:flex; flex-wrap:wrap; gap:.5rem .7rem; align-items:baseline; justify-content:space-between; }
+    .pb-head h3 { margin:.1rem 0; font-size:1.05rem; scroll-margin-top:90px; }
+    .pb-num { color:var(--text-faint); font-weight:600; font-variant-numeric:tabular-nums; margin-right:.4rem; }
+    .pb-chip { font-size:.7rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; padding:.18rem .5rem; border-radius:999px; white-space:nowrap; border:1px solid; }
+    .pb-chip.warm    { color:#0f766e; border-color:#0f766e40; background:#0f766e14; }
+    .pb-chip.exam    { color:#4338ca; border-color:#4338ca40; background:#4338ca14; }
+    .pb-chip.stretch { color:#b45309; border-color:#b4530940; background:#b4530914; }
+    html[data-theme="dark"] .pb-chip.warm    { color:#5eead4; border-color:#5eead440; background:#5eead414; }
+    html[data-theme="dark"] .pb-chip.exam    { color:#a5b4fc; border-color:#a5b4fc40; background:#a5b4fc14; }
+    html[data-theme="dark"] .pb-chip.stretch { color:#fcd34d; border-color:#fcd34d40; background:#fcd34d14; }
+
+    .pb-scenario { margin:.55rem 0 .7rem; }
+    .pb-given { margin:.2rem 0 .85rem; padding:.55rem .85rem; border-left:3px solid var(--secondary); border-radius:0 8px 8px 0; background:var(--surface-2); font-size:.93rem; }
+    .pb-given ul { margin:.1rem 0 .1rem 1rem; padding:0; }
+    .pb-given li { margin:.2rem 0; }
+    .pb-given .lbl { display:block; font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; color:var(--text-faint); margin-bottom:.25rem; }
+    .pb-ask { margin:.2rem 0 .9rem 1.15rem; }
+    .pb-ask li { margin:.32rem 0; }
+
+    /* ---- worked solution ---- */
+    details.pb-sol { border:1px solid var(--border); border-left:3px solid #f97316; border-radius:0 10px 10px 0; padding:.55rem .9rem; background:var(--surface-2); }
+    details.pb-sol summary { cursor:pointer; font-weight:600; font-size:.92rem; }
+    details.pb-sol[open] summary { margin-bottom:.55rem; }
+    .pb-steps { margin:.2rem 0 .5rem; padding:0; list-style:none; counter-reset:pbs; }
+    .pb-steps > li { margin:.5rem 0; padding-left:1.75rem; position:relative; font-size:.93rem; }
+    .pb-steps > li::before { counter-increment:pbs; content:counter(pbs); position:absolute; left:0; top:.05rem; width:1.2rem; height:1.2rem; border-radius:50%; background:var(--bg-soft); border:1px solid var(--border); color:var(--text-faint); font-size:.68rem; font-weight:700; display:flex; align-items:center; justify-content:center; }
+    .pb-lbl { display:block; font-size:.7rem; text-transform:uppercase; letter-spacing:.05em; color:var(--text-faint); }
+    .pb-math { display:block; font-family:var(--mono); font-size:.9rem; line-height:1.65; overflow-wrap:anywhere; }
+    .pb-note { color:var(--text-muted); }
+    .pb-answer { margin:.7rem 0 .3rem; padding:.5rem .75rem; border-radius:8px; background:var(--bg-soft); border:1px solid var(--border); font-size:.93rem; }
+    .pb-round { margin:.5rem 0 .2rem; font-size:.85rem; color:var(--text-muted); }
+    .pb-ref { margin:.55rem 0 .1rem; font-size:.85rem; color:var(--text-faint); }
+    .pb-sol .ref-table { margin:.45rem 0 .6rem; font-size:.88rem; }
+
+    @media (max-width:560px) { .pb-card { padding:.85rem .9rem 1rem; } .pb-head { align-items:flex-start; } }
+
+    /* ============================================================
+       PRINT — two handout modes, driven by a body class set by the
+       two buttons: .pb-print-nosol hides every solution regardless
+       of which <details> the reader left open; .pb-print-sol prints
+       them all (the script force-opens them first).
+       ============================================================ */
+    @media print {
+      .pb-index, .pb-printbar, .pb-screen-only { display:none !important; }
+      body.pb-print-nosol details.pb-sol { display:none !important; }
+      .pb-card { break-inside:avoid; border-radius:0; box-shadow:none; }
+      .pb-set > h2 { break-before:auto; break-after:avoid; }
+      details.pb-sol { break-inside:auto; }
+      details.pb-sol summary { list-style:none; }
+      details.pb-sol summary::-webkit-details-marker { display:none; }
+      .pb-steps > li { break-inside:avoid; }
+      .pb-chip { border-color:#999 !important; color:#333 !important; background:transparent !important; }
+      .pb-given, .pb-answer { background:transparent !important; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Statistics Toolbox", "item": "https://statscapybara.com/toolbox.html" },
+      { "@type": "ListItem", "position": 3, "name": "Practice Problems", "item": "https://statscapybara.com/problems.html" }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="container narrow">
+      <article class="lesson" style="margin:0 auto">
+        <span class="lesson-eyebrow">Tools</span>
+        <h1>Practice Problems</h1>
+        <p class="lede">The quiz and the flashcards ask you to recognise a right answer. This page asks you to produce one. Every problem here gives you numbers small enough for a calculator and a sheet of paper, and every solution shows the whole path: the formula, the numbers going into it, the arithmetic, and the sentence you would actually write in a report.</p>
+
+        <div class="callout key">
+          <p><strong>How to use it:</strong> read the scenario, work the answer out on paper, and open the solution only afterwards. The value is in comparing your <em>working</em> to the steps, not your final number to an answer key. If a step loses you, the § link under each solution goes straight to the lesson it comes from.</p>
+        </div>
+
+        <div class="pb-printbar pb-screen-only">
+          <button class="btn btn-primary btn-sm" id="print-problems" type="button">🖨️ Print problems</button>
+          <button class="btn btn-sm" id="print-solutions" type="button">🖨️ Print with solutions</button>
+          <span class="pb-hint">For teachers: the first button suppresses every solution, whether or not it is open on screen.</span>
+        </div>
+
+        <ul class="pb-index">
+          <li><a href="#stats-1"><span class="t">📊 Stats 1 · Foundations</span><br><span class="m">12 problems · data types → t-tests</span></a></li>
+          <li><a href="#stats-2"><span class="t">🔗 Stats 2 · Groups &amp; relationships</span><br><span class="m">10 problems · ANOVA → regression</span></a></li>
+        </ul>
+
+        <!-- ==================================================================
+             STATS 1
+             ================================================================== -->
+        <section class="pb-set" id="stats-1-set">
+          <h2 id="stats-1">📊 Stats 1 · Foundations</h2>
+          <p class="pb-set-sub">Twelve problems tracking the <a href="stats-1/">Stats 1 syllabus</a>: what kind of data you have, how to describe it, how far a score sits from average, and how a sample mean turns into a confidence interval and then a <em>t</em>-test.</p>
+
+          <!-- ---------- 1.1 ----------
+               verify: no arithmetic; classification only.
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p1-1"><span class="pb-num">1</span>What the library actually measured</h3>
+              <span class="pb-chip warm">Warm-up</span>
+            </div>
+            <p class="pb-scenario">A city library logs eight things about every visitor who fills in the front-desk survey. The systems team wants a monthly report and has asked for "the average of each column".</p>
+            <div class="pb-given">
+              <span class="lbl">The eight columns</span>
+              <ul>
+                <li>Membership number (e.g. 40118)</li>
+                <li>Age in whole years</li>
+                <li>Postcode district (M14, M20, M21…)</li>
+                <li>Satisfaction, 1 = very dissatisfied to 5 = very satisfied</li>
+                <li>Books borrowed in the last year</li>
+                <li>Reading-room temperature in °C at the time of the visit</li>
+                <li>Branch (Central, Didsbury, Withington)</li>
+                <li>Position in the returns queue (1st, 2nd, 3rd…)</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Give the level of measurement for each column.</li>
+              <li>Which columns can be averaged without an argument?</li>
+              <li>The report comes back with a mean postcode district of 17.4. What has gone wrong?</li>
+              <li>Is a reported mean satisfaction of 3.8 defensible?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Classify each column</span>
+                  <table class="ref-table">
+                    <thead><tr><th>Column</th><th>Level</th><th>Why</th></tr></thead>
+                    <tbody>
+                      <tr><td>Membership number</td><td>Nominal</td><td>Numeric, but it is a name for a person, not a quantity</td></tr>
+                      <tr><td>Age in years</td><td>Ratio</td><td>Equal intervals and a real zero, so 40 is twice 20</td></tr>
+                      <tr><td>Postcode district</td><td>Nominal</td><td>A label with digits in it</td></tr>
+                      <tr><td>Satisfaction 1–5</td><td>Ordinal</td><td>Ordered, but the gap 1→2 need not equal 4→5</td></tr>
+                      <tr><td>Books borrowed</td><td>Ratio</td><td>A count; zero books means zero borrowing</td></tr>
+                      <tr><td>Temperature °C</td><td>Interval</td><td>Equal intervals, arbitrary zero: 20 °C is not twice as warm as 10 °C</td></tr>
+                      <tr><td>Branch</td><td>Nominal</td><td>Unordered categories</td></tr>
+                      <tr><td>Queue position</td><td>Ordinal</td><td>Ranks; the gap between 1st and 2nd is not a fixed quantity</td></tr>
+                    </tbody>
+                  </table>
+                </li>
+                <li><span class="pb-lbl">Which can be averaged</span>
+                  <span class="pb-note">Age, books borrowed and temperature. Interval and ratio data support addition and division, which is all a mean is.</span>
+                </li>
+                <li><span class="pb-lbl">The postcode mean</span>
+                  <span class="pb-note">The digits in M14 encode a place, not an amount. Averaging them produces a number that refers to nothing: there is no location "17.4", and moving from M14 to M20 is not "six units" of anything.</span>
+                </li>
+                <li><span class="pb-lbl">Mean satisfaction of 3.8</span>
+                  <span class="pb-note">Strictly, a mean assumes equal spacing, and Likert points are only ordered. In practice psychology and market research report Likert means constantly, and with five or more points and roughly symmetric responses the distortion is small. Report the median and the full response distribution alongside it, and the reader can judge for themselves.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Three of the eight columns are nominal, two are ranks, one is interval and two are ratio. Only age, books borrowed and temperature are safely averageable, and satisfaction is the one worth a footnote.</p>
+              <p class="pb-ref">From <a href="stats-1/types-of-data/">§1.2 Types of Data</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 1.2 ----------
+               verify: node -e 'const d=[12,14,15,16,17,19,21,25,41];const m=d.reduce((a,b)=>a+b)/9;
+                        const ss=d.reduce((a,b)=>a+(b-m)**2,0);console.log(m, d[4], ss, ss/8, Math.sqrt(ss/8), (180-41)/8)'
+                     → mean 20, median 17, SS 618, var 77.25, s 8.7892, trimmed mean 17.375
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p1-2"><span class="pb-num">2</span>The bakery's odd Saturday</h3>
+              <span class="pb-chip warm">Warm-up</span>
+            </div>
+            <p class="pb-scenario">A small bakery counts the sourdough loaves it sells each day for nine days. One of those days was the street festival.</p>
+            <div class="pb-given">
+              <span class="lbl">Loaves sold, nine days</span>
+              12, 14, 15, 16, 17, 19, 21, 25, 41
+            </div>
+            <ol class="pb-ask">
+              <li>Compute the mean and the median.</li>
+              <li>Compute the sample standard deviation.</li>
+              <li>Which of the two centres should the baker use to plan next Tuesday's flour order, and why?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Mean</span>
+                  <span class="pb-math">x̄ = Σx / n</span>
+                  <span class="pb-math">Σx = 12+14+15+16+17+19+21+25+41 = 180</span>
+                  <span class="pb-math">x̄ = 180 / 9 = 20.0 loaves</span>
+                </li>
+                <li><span class="pb-lbl">Median</span>
+                  <span class="pb-note">The values are already in order and <em>n</em> = 9 is odd, so the median is the 5th value.</span>
+                  <span class="pb-math">Median = 17 loaves</span>
+                </li>
+                <li><span class="pb-lbl">Deviations and their squares</span>
+                  <span class="pb-math">(x − x̄): −8, −6, −5, −4, −3, −1, 1, 5, 21</span>
+                  <span class="pb-math">(x − x̄)²: 64, 36, 25, 16, 9, 1, 1, 25, 441</span>
+                  <span class="pb-math">Σ(x − x̄)² = 618</span>
+                </li>
+                <li><span class="pb-lbl">Variance, then standard deviation</span>
+                  <span class="pb-math">s² = Σ(x − x̄)² / (n − 1) = 618 / 8 = 77.25</span>
+                  <span class="pb-math">s = √77.25 = 8.789 ≈ 8.79 loaves</span>
+                  <span class="pb-note">Divide by <em>n</em> − 1, not <em>n</em>: these nine days are a sample of the bakery's trading, not the whole of it.</span>
+                </li>
+                <li><span class="pb-lbl">Which centre to plan with</span>
+                  <span class="pb-note">The mean of 20 is dragged up by the single festival day. Drop that day and the mean of the remaining eight is 139 / 8 = 17.4, which lands right next to the median. For an ordinary Tuesday the median of 17 is the honest planning figure, and the festival day belongs in the plan as its own event.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Mean = 20.0, median = 17, <em>s</em> = 8.79 loaves. Order for about 17, and order extra for festival days separately.</p>
+              <p class="pb-round">Rounding: keep the full 8.7892 if the figure feeds another calculation, and round to 8.79 only when reporting.</p>
+              <p class="pb-ref">From <a href="stats-1/describing-data/">§1.3 Describing Data</a> · check it in the <a href="descriptives.html">Descriptives calculator</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 1.3 ----------
+               verify: (68-60)/10 = 0.8 ; (74-65)/12 = 0.75 ; T = 50+10z → 58 and 57.5
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p1-3"><span class="pb-num">3</span>Priya's two marks</h3>
+              <span class="pb-chip warm">Warm-up</span>
+            </div>
+            <p class="pb-scenario">Priya sat two papers that were marked on different scales by different examiners. She wants to know which one she actually did better on.</p>
+            <div class="pb-given">
+              <span class="lbl">Given</span>
+              <ul>
+                <li>Statistics: Priya scored 68. Cohort <em>M</em> = 60, <em>SD</em> = 10.</li>
+                <li>Research Methods: Priya scored 74. Cohort <em>M</em> = 65, <em>SD</em> = 12.</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Convert both marks to <em>z</em>-scores.</li>
+              <li>Which paper was her stronger performance relative to the cohort?</li>
+              <li>Express both as <em>T</em>-scores, where <em>T</em> = 50 + 10<em>z</em>.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Formula</span>
+                  <span class="pb-math">z = (x − μ) / σ</span>
+                </li>
+                <li><span class="pb-lbl">Statistics</span>
+                  <span class="pb-math">z = (68 − 60) / 10 = 8 / 10 = 0.80</span>
+                </li>
+                <li><span class="pb-lbl">Research Methods</span>
+                  <span class="pb-math">z = (74 − 65) / 12 = 9 / 12 = 0.75</span>
+                </li>
+                <li><span class="pb-lbl">Compare</span>
+                  <span class="pb-note">The raw marks say Methods (74 &gt; 68). The <em>z</em>-scores say Statistics, by a whisker: 0.80 SDs above her cohort against 0.75. The bigger raw mark came on the paper where everyone scored higher and the spread was wider.</span>
+                </li>
+                <li><span class="pb-lbl">T-scores</span>
+                  <span class="pb-math">T = 50 + 10z</span>
+                  <span class="pb-math">Statistics: 50 + 10(0.80) = 58.0</span>
+                  <span class="pb-math">Methods: 50 + 10(0.75) = 57.5</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Statistics <em>z</em> = 0.80 (<em>T</em> = 58.0), Methods <em>z</em> = 0.75 (<em>T</em> = 57.5). Her Statistics paper was marginally the stronger performance, and the raw marks pointed the other way.</p>
+              <p class="pb-ref">From <a href="stats-1/z-scores-and-the-normal-distribution/">§1.5 Z-Scores &amp; The Normal Distribution</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 1.4 ----------
+               verify: node -e 'V.normCdf(-1.5)=0.0668; V.normCdf(1.5)-V.normCdf(-1)=0.7745;
+                        V.normInv(0.95)=1.6449; 72+1.6449*8=85.16'
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p1-4"><span class="pb-num">4</span>Resting heart rate at the clinic</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A clinic's records show that resting heart rate in healthy adults is close to normally distributed with a mean of 72 bpm and a standard deviation of 8 bpm. The nurse wants three numbers for a screening protocol.</p>
+            <div class="pb-given">
+              <span class="lbl">Given</span>
+              μ = 72 bpm, σ = 8 bpm, distribution approximately normal
+            </div>
+            <ol class="pb-ask">
+              <li>What proportion of adults have a resting heart rate below 60 bpm?</li>
+              <li>What proportion fall between 64 and 84 bpm?</li>
+              <li>Above what rate do the highest 5% of adults sit? Round to a whole bpm.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Below 60 bpm: standardise</span>
+                  <span class="pb-math">z = (60 − 72) / 8 = −12 / 8 = −1.50</span>
+                  <span class="pb-math">P(Z &lt; −1.50) = .0668</span>
+                  <span class="pb-note">About 6.7% of adults, or roughly 1 in 15.</span>
+                </li>
+                <li><span class="pb-lbl">Between 64 and 84 bpm: two z-scores</span>
+                  <span class="pb-math">z₁ = (64 − 72) / 8 = −1.00</span>
+                  <span class="pb-math">z₂ = (84 − 72) / 8 = +1.50</span>
+                </li>
+                <li><span class="pb-lbl">Subtract the two cumulative areas</span>
+                  <span class="pb-math">P(−1.00 &lt; Z &lt; 1.50) = P(Z &lt; 1.50) − P(Z &lt; −1.00)</span>
+                  <span class="pb-math">= .9332 − .1587 = .7745</span>
+                  <span class="pb-note">About 77.5%.</span>
+                </li>
+                <li><span class="pb-lbl">The top 5%: go backwards from the area</span>
+                  <span class="pb-math">The cutoff leaves .95 below it, so z = 1.645</span>
+                  <span class="pb-math">x = μ + zσ = 72 + 1.645(8) = 72 + 13.16 = 85.16</span>
+                  <span class="pb-note">Round to 85 bpm for the protocol.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">6.7% below 60 bpm, 77.5% between 64 and 84 bpm, and the top 5% sit above roughly 85 bpm.</p>
+              <p class="pb-round">Rounding: 1.645 is the conventional two-decimal <em>z</em> for the 95th percentile (1.6449 exactly). Using 1.64 gives 85.12 and using 1.65 gives 85.20, so at whole-bpm precision the choice does not matter here. It would matter if the protocol were written to one decimal.</p>
+              <p class="pb-ref">From <a href="stats-1/z-scores-and-the-normal-distribution/">§1.5 Z-Scores &amp; The Normal Distribution</a> · check the areas in <a href="tables.html">Statistical Tables</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 1.5 ----------
+               verify: 70/200=.35 ; 48/100=.48 ; 48/200=.24 ; .35*.50=.175 ≠ .24
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p1-5"><span class="pb-num">5</span>Who cycles to work</h3>
+              <span class="pb-chip warm">Warm-up</span>
+            </div>
+            <p class="pb-scenario">A company surveys all 200 of its staff about commuting and cross-tabulates the answers by age band.</p>
+            <div class="pb-given">
+              <span class="lbl">Counts</span>
+              <table class="ref-table">
+                <thead><tr><th></th><th>Cycles</th><th>Does not</th><th>Total</th></tr></thead>
+                <tbody>
+                  <tr><td>Under 30</td><td>48</td><td>52</td><td>100</td></tr>
+                  <tr><td>30 or over</td><td>22</td><td>78</td><td>100</td></tr>
+                  <tr><td><strong>Total</strong></td><td><strong>70</strong></td><td><strong>130</strong></td><td><strong>200</strong></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <ol class="pb-ask">
+              <li>Pick one employee at random. What is P(cycles)?</li>
+              <li>What is P(cycles | under 30)?</li>
+              <li>What is P(under 30 and cycles)?</li>
+              <li>Are age band and cycling independent?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Marginal probability</span>
+                  <span class="pb-math">P(cycles) = 70 / 200 = .35</span>
+                </li>
+                <li><span class="pb-lbl">Conditional probability: the denominator shrinks</span>
+                  <span class="pb-math">P(cycles | under 30) = 48 / 100 = .48</span>
+                  <span class="pb-note">Conditioning on "under 30" throws away the other row, so the denominator is that row's total, not 200.</span>
+                </li>
+                <li><span class="pb-lbl">Joint probability</span>
+                  <span class="pb-math">P(under 30 and cycles) = 48 / 200 = .24</span>
+                </li>
+                <li><span class="pb-lbl">Independence check</span>
+                  <span class="pb-math">If independent: P(A and B) = P(A) × P(B)</span>
+                  <span class="pb-math">P(under 30) × P(cycles) = .50 × .35 = .175</span>
+                  <span class="pb-math">Observed joint = .24 ≠ .175</span>
+                </li>
+                <li><span class="pb-lbl">Read it the other way too</span>
+                  <span class="pb-note">P(cycles | under 30) = .48 against P(cycles) = .35. Knowing someone's age band changes the probability, which is exactly what dependence means.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">.35, .48, .24, and no: the two variables are dependent. Under-30s cycle at nearly twice the rate of over-30s (48% against 22%).</p>
+              <p class="pb-ref">From <a href="stats-1/probability-basics/">§1.6 Probability Basics</a> · test the dependence formally with a <a href="stats-2/chi-square-tests/">chi-square test</a> (Problem 19 below).</p>
+            </details>
+          </article>
+
+          <!-- ---------- 1.6 ----------
+               verify: 60/sqrt(25)=12 ; 60/sqrt(100)=6 ; (60/4)^2=225
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p1-6"><span class="pb-num">6</span>Sharpening the estimate</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A driving-simulator lab knows from years of testing that braking reaction times in its population have a standard deviation of 60 ms. A new study will estimate the population mean.</p>
+            <div class="pb-given">
+              <span class="lbl">Given</span>
+              σ = 60 ms (population SD, known)
+            </div>
+            <ol class="pb-ask">
+              <li>What is the standard error of the mean for a sample of 25 drivers?</li>
+              <li>The lab raises the sample to 100. What happens to the standard error?</li>
+              <li>How many drivers would be needed for a standard error of 4 ms?</li>
+              <li>In one sentence, what does the standard error describe that the SD does not?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Formula</span>
+                  <span class="pb-math">SE = σ / √n</span>
+                </li>
+                <li><span class="pb-lbl">n = 25</span>
+                  <span class="pb-math">SE = 60 / √25 = 60 / 5 = 12 ms</span>
+                </li>
+                <li><span class="pb-lbl">n = 100</span>
+                  <span class="pb-math">SE = 60 / √100 = 60 / 10 = 6 ms</span>
+                  <span class="pb-note">Four times the sample halves the standard error, because √4 = 2. Precision is bought with the square root, which is why the second hundred participants buy far less than the first hundred.</span>
+                </li>
+                <li><span class="pb-lbl">Solve for n</span>
+                  <span class="pb-math">4 = 60 / √n  →  √n = 60 / 4 = 15</span>
+                  <span class="pb-math">n = 15² = 225 drivers</span>
+                </li>
+                <li><span class="pb-lbl">SD against SE</span>
+                  <span class="pb-note">The SD describes how much individual drivers differ from each other, and it does not shrink when you collect more of them. The SE describes how much a <em>sample mean</em> would bounce around from study to study, and it shrinks as √<em>n</em> grows.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">SE = 12 ms at <em>n</em> = 25, 6 ms at <em>n</em> = 100, and 225 drivers are needed for an SE of 4 ms.</p>
+              <p class="pb-ref">From <a href="stats-1/sampling-distributions/">§1.7 Sampling Distributions</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 1.7 ----------
+               verify: SE=9/6=1.5 ; z=(30-28)/1.5=1.3333 ; 1-V.normCdf(1.3333)=0.0912
+                       V.normCdf(0.6667)-V.normCdf(-0.6667)=0.4950
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p1-7"><span class="pb-num">7</span>Thirty-six pizzas</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A pizza chain's delivery times have a mean of 28 minutes and a standard deviation of 9 minutes. The distribution is clearly right-skewed: most deliveries cluster near the mean, and a long tail of bad nights stretches out to over an hour. A regional manager samples 36 deliveries.</p>
+            <div class="pb-given">
+              <span class="lbl">Given</span>
+              μ = 28 min, σ = 9 min, right-skewed population, <em>n</em> = 36
+            </div>
+            <ol class="pb-ask">
+              <li>The population is skewed. Why can the manager still use the normal curve for the sample mean?</li>
+              <li>What is the probability the sample mean exceeds 30 minutes?</li>
+              <li>What is the probability it falls between 27 and 29 minutes?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Why normality applies here</span>
+                  <span class="pb-note">The central limit theorem is about the distribution of the <em>sample mean</em>, not about the raw deliveries. With <em>n</em> = 36 the sampling distribution of x̄ is close to normal even though individual delivery times are not. The skew has to be extreme, or <em>n</em> small, for this to fail.</span>
+                </li>
+                <li><span class="pb-lbl">Standard error</span>
+                  <span class="pb-math">SE = σ / √n = 9 / √36 = 9 / 6 = 1.5 min</span>
+                </li>
+                <li><span class="pb-lbl">P(x̄ &gt; 30) — standardise the mean, not a delivery</span>
+                  <span class="pb-math">z = (30 − 28) / 1.5 = 2 / 1.5 = 1.333</span>
+                  <span class="pb-math">P(Z &gt; 1.333) = 1 − .9088 = .0912</span>
+                </li>
+                <li><span class="pb-lbl">P(27 &lt; x̄ &lt; 29)</span>
+                  <span class="pb-math">z₁ = (27 − 28) / 1.5 = −0.667</span>
+                  <span class="pb-math">z₂ = (29 − 28) / 1.5 = +0.667</span>
+                  <span class="pb-math">P(−0.667 &lt; Z &lt; 0.667) = .7475 − .2525 = .4950</span>
+                </li>
+                <li><span class="pb-lbl">Sanity check</span>
+                  <span class="pb-note">A single delivery taking over 30 minutes is common. A mean of 36 deliveries doing so is not, at about 9%. Averaging is what kills the variability.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">The CLT covers the sample mean regardless of the skew. P(x̄ &gt; 30) = .091, and P(27 &lt; x̄ &lt; 29) = .495, so almost exactly half of such samples land within a minute of the true mean.</p>
+              <p class="pb-round">Rounding: carry <em>z</em> = 1.333, not 1.3. Rounding to 1.3 gives .0968 instead of .0912, an error of more than half a percentage point.</p>
+              <p class="pb-ref">From <a href="stats-1/central-limit-theorem/">§1.8 Central Limit Theorem</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 1.8 ----------
+               verify: V.tInv(.025,24)=2.0639 ; SE=0.3 ; margin=0.6192 ; CI 6.181..7.419
+                       V.tInv(.025,99)=1.9842 ; margin=0.2976 ; CI 6.502..7.098
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p1-8"><span class="pb-num">8</span>How much do first-years sleep?</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A student union surveys 25 randomly selected first-years about weeknight sleep. The sample averages 6.8 hours with a standard deviation of 1.5 hours. Sleep hours are roughly symmetric with no outliers.</p>
+            <div class="pb-given">
+              <span class="lbl">Given</span>
+              <em>n</em> = 25, x̄ = 6.8 h, <em>s</em> = 1.5 h
+            </div>
+            <ol class="pb-ask">
+              <li>Build a 95% confidence interval for the mean weeknight sleep of first-years.</li>
+              <li>Public health guidance recommends 8 hours. What does the interval say about that?</li>
+              <li>The union repeats the survey with 100 students and gets the same mean and SD. How does the interval change?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Formula: t, not z, because σ is unknown</span>
+                  <span class="pb-math">CI = x̄ ± t* × (s / √n),  df = n − 1</span>
+                </li>
+                <li><span class="pb-lbl">Standard error</span>
+                  <span class="pb-math">SE = 1.5 / √25 = 1.5 / 5 = 0.30 h</span>
+                </li>
+                <li><span class="pb-lbl">Critical value</span>
+                  <span class="pb-math">df = 25 − 1 = 24,  t*(.025, 24) = 2.064</span>
+                </li>
+                <li><span class="pb-lbl">Margin of error</span>
+                  <span class="pb-math">2.064 × 0.30 = 0.619 h</span>
+                </li>
+                <li><span class="pb-lbl">The interval</span>
+                  <span class="pb-math">6.8 ± 0.619 = [6.18, 7.42] hours</span>
+                </li>
+                <li><span class="pb-lbl">Against the 8-hour guidance</span>
+                  <span class="pb-note">8 sits well outside the interval, so 8 hours is not a plausible value for the population mean given this sample. Equivalently, a one-sample <em>t</em>-test against 8 would reject at α = .05. What the interval does <em>not</em> say is that 95% of first-years sleep between 6.18 and 7.42 hours: the interval is about the mean, not about individuals.</span>
+                </li>
+                <li><span class="pb-lbl">With n = 100</span>
+                  <span class="pb-math">SE = 1.5 / 10 = 0.15,  df = 99,  t* = 1.984</span>
+                  <span class="pb-math">margin = 1.984 × 0.15 = 0.298</span>
+                  <span class="pb-math">CI = [6.50, 7.10] hours</span>
+                  <span class="pb-note">Four times the sample gives an interval about half as wide, and <em>t</em>* also drifts down towards 1.96 as df grows.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">95% CI [6.18, 7.42] hours. First-years sleep less than the recommended 8 hours, and quadrupling the sample narrows the interval to [6.50, 7.10].</p>
+              <p class="pb-ref">From <a href="stats-1/confidence-intervals/">§1.9 Confidence Intervals</a> · look up <em>t</em>* in <a href="tables.html">Statistical Tables</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 1.9 ----------
+               verify: 20 tests × .05 = 1 expected false positive. No other arithmetic.
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p1-9"><span class="pb-num">9</span>What Marek thinks p means</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">An allotment society tests a seaweed feed on tomatoes. Twenty-four plots, twelve fed and twelve not, yield measured in kilograms. The write-up reports a mean difference of 0.42 kg, <em>t</em>(22) = 2.31, <em>p</em> = .030. Marek reads it and writes in the newsletter: "There is only a 3% chance the seaweed feed makes no difference."</p>
+            <ol class="pb-ask">
+              <li>State what <em>p</em> = .030 actually means here.</li>
+              <li>Marek's neighbour replies: "So there is a 97% chance the effect is real." Is that a different mistake?</li>
+              <li>At α = .05, what is the decision, and which error could it be?</li>
+              <li>The society repeats the trial on 8 plots and gets <em>p</em> = .21. Has it now shown the feed does nothing?</li>
+              <li>If twenty societies each ran an honest trial of a feed that truly does nothing, at α = .05, how many "significant" results would you expect to see published?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">What p actually is</span>
+                  <span class="pb-note">If the feed truly made no difference, 3% of trials run this way would produce a difference of at least 0.42 kg in one direction or the other. It is the probability of data this extreme <em>given</em> the null hypothesis, written P(data | H₀).</span>
+                </li>
+                <li><span class="pb-lbl">Marek's error</span>
+                  <span class="pb-note">He has flipped the conditional into P(H₀ | data). Those two are not interchangeable, and turning one into the other needs a prior probability that the test never supplies.</span>
+                </li>
+                <li><span class="pb-lbl">The neighbour's version</span>
+                  <span class="pb-note">Same inversion, wearing a hat. 1 − <em>p</em> is not the probability that the alternative is true, and it is not the probability the result replicates either.</span>
+                </li>
+                <li><span class="pb-lbl">The decision</span>
+                  <span class="pb-math">p = .030 &lt; α = .05  →  reject H₀</span>
+                  <span class="pb-note">If the feed genuinely does nothing, this rejection is a Type I error. Setting α = .05 caps that error rate at 5% over the long run; it says nothing about whether <em>this</em> particular result is the mistake.</span>
+                </li>
+                <li><span class="pb-lbl">The 8-plot repeat</span>
+                  <span class="pb-note">No. A non-significant result means the data are compatible with no effect, not that the effect is zero. With 8 plots the test has very little power, so a real effect of this size would be missed most of the time. Failing to detect it is a Type II error. Report the confidence interval: if it stretches from −0.3 to +1.1 kg, the study is simply too small to settle the question.</span>
+                </li>
+                <li><span class="pb-lbl">Twenty null trials</span>
+                  <span class="pb-math">Expected false positives = 20 × .05 = 1</span>
+                  <span class="pb-note">One society in twenty would find "significant" evidence for a feed that does nothing. If only the exciting result gets into the newsletter, the newsletter reports an effect that is not there.</span>
+                </li>
+              </ol>
+              <p class="pb-answer"><em>p</em> is P(data at least this extreme | H₀ true), so both Marek and his neighbour have inverted the conditional. The decision is to reject at α = .05, with Type I error as the risk. The 8-plot follow-up shows nothing either way, and one false positive per twenty null trials is the expected background rate.</p>
+              <p class="pb-ref">From <a href="stats-1/hypothesis-testing-logic/">§1.10 Hypothesis Testing Logic</a> and <a href="stats-1/effect-size-and-power/">§1.13 Effect Size &amp; Power</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 1.10 ----------
+               verify: SE=6.4/4=1.6 ; t=(61.5-65)/1.6=-2.1875 ; V.tInv(.025,15)=2.1314
+                       2*V.tUpper(2.1875,15)=0.0450 ; d=3.5/6.4=0.5469 ; CI 58.09..64.91
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p1-10"><span class="pb-num">10</span>Does the typing course deliver?</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A typing course advertises that its graduates average 65 words per minute. A consumer group tests 16 graduates chosen at random and records a mean of 61.5 wpm with a standard deviation of 6.4 wpm.</p>
+            <div class="pb-given">
+              <span class="lbl">Given</span>
+              μ₀ = 65 wpm (the claim), <em>n</em> = 16, x̄ = 61.5, <em>s</em> = 6.4, α = .05, two-tailed
+            </div>
+            <ol class="pb-ask">
+              <li>State the hypotheses.</li>
+              <li>Compute the test statistic and its degrees of freedom.</li>
+              <li>Make the decision against the critical value, and report the <em>p</em>-value.</li>
+              <li>Compute Cohen's <em>d</em> and write the result as you would in a report.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Hypotheses</span>
+                  <span class="pb-math">H₀: μ = 65   H₁: μ ≠ 65</span>
+                  <span class="pb-note">Two-tailed, because the consumer group would report the course being better than claimed as well as worse.</span>
+                </li>
+                <li><span class="pb-lbl">Standard error</span>
+                  <span class="pb-math">SE = s / √n = 6.4 / √16 = 6.4 / 4 = 1.60</span>
+                </li>
+                <li><span class="pb-lbl">Test statistic</span>
+                  <span class="pb-math">t = (x̄ − μ₀) / SE = (61.5 − 65) / 1.60</span>
+                  <span class="pb-math">t = −3.5 / 1.60 = −2.1875</span>
+                  <span class="pb-math">df = n − 1 = 15</span>
+                </li>
+                <li><span class="pb-lbl">Critical value</span>
+                  <span class="pb-math">t*(.025, 15) = 2.131</span>
+                  <span class="pb-math">|−2.1875| = 2.188 &gt; 2.131  →  reject H₀</span>
+                </li>
+                <li><span class="pb-lbl">p-value</span>
+                  <span class="pb-math">p = 2 × P(T₁₅ &gt; 2.1875) = .045</span>
+                </li>
+                <li><span class="pb-lbl">Effect size</span>
+                  <span class="pb-math">d = (x̄ − μ₀) / s = −3.5 / 6.4 = −0.55</span>
+                  <span class="pb-note">A medium shortfall of just over half a standard deviation.</span>
+                </li>
+                <li><span class="pb-lbl">Write-up</span>
+                  <span class="pb-note">Graduates typed more slowly than the advertised 65 wpm, <em>M</em> = 61.5, <em>SD</em> = 6.4, <em>t</em>(15) = −2.19, <em>p</em> = .045, <em>d</em> = −0.55, 95% CI [58.09, 64.91].</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Reject H₀. The 65 wpm claim is not supported, though at <em>p</em> = .045 with <em>n</em> = 16 the evidence is thin, and the confidence interval reaches almost up to 65.</p>
+              <p class="pb-round">Rounding matters here. Carry <em>t</em> = −2.1875 rather than rounding the standard error first; this test clears its critical value by 0.06, so an early round-off can flip the decision. Report <em>t</em> to two decimals and <em>p</em> to three.</p>
+              <p class="pb-ref">From <a href="stats-1/one-sample-and-paired-t-tests/">§1.11 One-Sample &amp; Paired t-Tests</a> · format the sentence with the <a href="apa.html">APA formatter</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 1.11 ----------
+               verify: D=[3,5,-1,4,6,2,0,7,3,1]; mean 3; SS 60; s_d=2.5820; SE=0.8165;
+                       t=3.6742; V.tInv(.025,9)=2.2622; p=2*V.tUpper(3.6742,9)=0.00512; d_z=1.1619
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p1-11"><span class="pb-num">11</span>Ten students, one mnemonic</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">Ten students learn a mnemonic technique. Each recalls a 20-item word list before training and a matched list afterwards. The difference scores (after − before) are recorded.</p>
+            <div class="pb-given">
+              <span class="lbl">Difference scores (after − before), n = 10</span>
+              3, 5, −1, 4, 6, 2, 0, 7, 3, 1
+            </div>
+            <ol class="pb-ask">
+              <li>Why is a paired test right here rather than an independent-samples test?</li>
+              <li>Compute the mean difference and its standard deviation.</li>
+              <li>Run the paired <em>t</em>-test at α = .05, two-tailed.</li>
+              <li>Report the effect size.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Why paired</span>
+                  <span class="pb-note">Each after-score is tied to a specific person's before-score. Subtracting within a person removes that person's baseline memory ability from the comparison, which is where most of the noise lives. An independent test would treat the twenty scores as twenty unrelated people and throw that advantage away.</span>
+                </li>
+                <li><span class="pb-lbl">Mean difference</span>
+                  <span class="pb-math">Σd = 3+5−1+4+6+2+0+7+3+1 = 30</span>
+                  <span class="pb-math">d̄ = 30 / 10 = 3.00 items</span>
+                </li>
+                <li><span class="pb-lbl">SD of the differences</span>
+                  <span class="pb-math">(d − d̄): 0, 2, −4, 1, 3, −1, −3, 4, 0, −2</span>
+                  <span class="pb-math">(d − d̄)²: 0, 4, 16, 1, 9, 1, 9, 16, 0, 4  →  Σ = 60</span>
+                  <span class="pb-math">s_d = √(60 / 9) = √6.667 = 2.582</span>
+                </li>
+                <li><span class="pb-lbl">Standard error and t</span>
+                  <span class="pb-math">SE = s_d / √n = 2.582 / √10 = 2.582 / 3.162 = 0.8165</span>
+                  <span class="pb-math">t = d̄ / SE = 3.00 / 0.8165 = 3.674</span>
+                  <span class="pb-math">df = n − 1 = 9</span>
+                </li>
+                <li><span class="pb-lbl">Decision</span>
+                  <span class="pb-math">t*(.025, 9) = 2.262</span>
+                  <span class="pb-math">3.674 &gt; 2.262  →  reject H₀</span>
+                  <span class="pb-math">p = 2 × P(T₉ &gt; 3.674) = .005</span>
+                </li>
+                <li><span class="pb-lbl">Effect size for a paired design</span>
+                  <span class="pb-math">d_z = d̄ / s_d = 3.00 / 2.582 = 1.16</span>
+                  <span class="pb-note">Large. Note that <em>d</em>_z is scaled by the SD of the <em>differences</em>, so it is not comparable with a between-groups <em>d</em> computed from raw score SDs. Say which one you used.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Recall improved by 3.00 items on average, <em>t</em>(9) = 3.67, <em>p</em> = .005, <em>d</em>_z = 1.16. With ten students and no control group, this shows the scores went up; it does not rule out practice or test-order effects.</p>
+              <p class="pb-ref">From <a href="stats-1/one-sample-and-paired-t-tests/">§1.11 One-Sample &amp; Paired t-Tests</a> · effect-size conversions in the <a href="effect-sizes.html">converter</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 1.12 ----------
+               verify: sp2=(11*64+11*81)/22=72.5 ; sp=8.5147 ; SE=8.5147*sqrt(1/6)=3.4761
+                       t=6.5/3.4761=1.8699 ; V.tInv(.025,22)=2.0739 ; p=0.0749 ; d=0.7634
+                       power(d=.7634,n=12/grp)=0.432 ; n/group for 80% power at the REPORTED d=0.76: 29 (power .8117; n=28 gives .7975). d=.5→64
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p1-12"><span class="pb-num">12</span>The study that could not see straight</h3>
+              <span class="pb-chip stretch">Stretch</span>
+            </div>
+            <p class="pb-scenario">Two ways of teaching fractions are compared in a small trial. Twelve children learn by manipulatives, twelve by worked examples, and all twenty-four sit the same end-of-topic test out of 100.</p>
+            <div class="pb-given">
+              <span class="lbl">Given</span>
+              <ul>
+                <li>Manipulatives: <em>n</em> = 12, <em>M</em> = 78.0, <em>s</em> = 8.0</li>
+                <li>Worked examples: <em>n</em> = 12, <em>M</em> = 71.5, <em>s</em> = 9.0</li>
+                <li>α = .05, two-tailed; variances judged similar enough to pool</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Run the independent-samples <em>t</em>-test.</li>
+              <li>Compute Cohen's <em>d</em>.</li>
+              <li>The researcher concludes "the two methods work equally well". Assess that.</li>
+              <li>How many children per group would an 80%-powered replication need?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Pooled variance</span>
+                  <span class="pb-math">s²_p = [(n₁−1)s₁² + (n₂−1)s₂²] / (n₁ + n₂ − 2)</span>
+                  <span class="pb-math">= [11(64) + 11(81)] / 22 = (704 + 891) / 22</span>
+                  <span class="pb-math">= 1595 / 22 = 72.50   →   s_p = √72.50 = 8.515</span>
+                </li>
+                <li><span class="pb-lbl">Standard error of the difference</span>
+                  <span class="pb-math">SE = s_p × √(1/n₁ + 1/n₂) = 8.515 × √(1/12 + 1/12)</span>
+                  <span class="pb-math">= 8.515 × √0.1667 = 8.515 × 0.4082 = 3.476</span>
+                </li>
+                <li><span class="pb-lbl">Test statistic</span>
+                  <span class="pb-math">t = (78.0 − 71.5) / 3.476 = 6.5 / 3.476 = 1.870</span>
+                  <span class="pb-math">df = 12 + 12 − 2 = 22</span>
+                </li>
+                <li><span class="pb-lbl">Decision</span>
+                  <span class="pb-math">t*(.025, 22) = 2.074</span>
+                  <span class="pb-math">1.870 &lt; 2.074  →  fail to reject H₀,  p = .075</span>
+                </li>
+                <li><span class="pb-lbl">Effect size</span>
+                  <span class="pb-math">d = (M₁ − M₂) / s_p = 6.5 / 8.515 = 0.76</span>
+                  <span class="pb-note">By Cohen's benchmarks that is medium-to-large, just short of the 0.80 mark, sitting inside a non-significant test.</span>
+                </li>
+                <li><span class="pb-lbl">Assess the conclusion</span>
+                  <span class="pb-note">"Equally well" is not supported. A non-significant result means the data do not rule out zero difference, and here the best estimate of the difference is 6.5 marks with <em>d</em> = 0.76. With 12 per group the study had about 43% power to detect an effect that size, so it was more likely to miss it than to find it. The honest sentence is that the trial was too small to decide.</span>
+                </li>
+                <li><span class="pb-lbl">Sample size for a replication</span>
+                  <span class="pb-math">Two-sample t, d = 0.76, α = .05, power = .80</span>
+                  <span class="pb-math">n = 29 per group (58 children total)</span>
+                  <span class="pb-note">28 per group falls just short at 79.8% power, which is why the answer rounds up rather than down. Planning for a medium <em>d</em> = 0.50 instead would need 64 per group. Powering a study on the effect size your own underpowered pilot produced is optimistic, because a pilot that reached significance has almost certainly overestimated the effect.</span>
+                </li>
+              </ol>
+              <p class="pb-answer"><em>t</em>(22) = 1.87, <em>p</em> = .075, <em>d</em> = 0.76. Not significant, not "no difference": a large point estimate measured with far too little precision. A replication needs at least 29 per group.</p>
+              <p class="pb-ref">From <a href="stats-1/independent-samples-t-test/">§1.12 Independent Samples t-Test</a> and <a href="stats-1/effect-size-and-power/">§1.13 Effect Size &amp; Power</a> · redo the sample size in the <a href="power.html">Power calculator</a>.</p>
+            </details>
+          </article>
+        </section>
+
+        <!-- ==================================================================
+             STATS 2
+             ================================================================== -->
+        <section class="pb-set" id="stats-2-set">
+          <h2 id="stats-2">🔗 Stats 2 · Groups &amp; relationships</h2>
+          <p class="pb-set-sub">Ten problems across the <a href="stats-2/">Stats 2 syllabus</a>: three or more groups, factorial designs, the assumptions that decide which test you are allowed to run, and the two ways of describing a straight-line relationship.</p>
+
+          <!-- ---------- 2.1 ----------
+               verify: groups [3,5,4,2,6],[4,7,6,5,8],[9,6,8,10,7]; means 4,6,8; grand 6
+                       SSb=40 SSw=30 SSt=70 ; MSb=20 MSw=2.5 F=8.00
+                       V.fInv(.05,2,12)=3.8853 ; V.fUpper(8,2,12)=0.00620 ; eta2=.5714 ; omega2=.4828
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p2-1"><span class="pb-num">13</span>Proofreading in three kinds of noise</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">Fifteen copy-editors are randomly assigned to proofread the same 2,000-word article in one of three sound conditions. The outcome is the number of planted errors they missed.</p>
+            <div class="pb-given">
+              <span class="lbl">Errors missed, n = 5 per condition</span>
+              <ul>
+                <li>Silence: 3, 5, 4, 2, 6</li>
+                <li>Instrumental music: 4, 7, 6, 5, 8</li>
+                <li>Café chatter: 9, 6, 8, 10, 7</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Build the full one-way ANOVA table.</li>
+              <li>Decide at α = .05.</li>
+              <li>Report η² and say what it means.</li>
+              <li>Why not run three <em>t</em>-tests instead?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Group means and the grand mean</span>
+                  <span class="pb-math">Silence:  Σ = 20,  M = 4</span>
+                  <span class="pb-math">Music:    Σ = 30,  M = 6</span>
+                  <span class="pb-math">Café:     Σ = 40,  M = 8</span>
+                  <span class="pb-math">Grand:    Σ = 90,  N = 15,  GM = 6</span>
+                </li>
+                <li><span class="pb-lbl">Between-groups sum of squares</span>
+                  <span class="pb-math">SS_B = Σ n_j (M_j − GM)²</span>
+                  <span class="pb-math">= 5(4−6)² + 5(6−6)² + 5(8−6)²</span>
+                  <span class="pb-math">= 5(4) + 5(0) + 5(4) = 40</span>
+                </li>
+                <li><span class="pb-lbl">Within-groups sum of squares</span>
+                  <span class="pb-math">Silence: (−1)²+(1)²+0²+(−2)²+(2)² = 10</span>
+                  <span class="pb-math">Music:   (−2)²+(1)²+0²+(−1)²+(2)² = 10</span>
+                  <span class="pb-math">Café:    (1)²+(−2)²+0²+(2)²+(−1)² = 10</span>
+                  <span class="pb-math">SS_W = 10 + 10 + 10 = 30</span>
+                  <span class="pb-note">The three groups happen to have identical spread, which is the homogeneity of variance an ANOVA wants.</span>
+                </li>
+                <li><span class="pb-lbl">The table</span>
+                  <table class="ref-table">
+                    <thead><tr><th>Source</th><th>SS</th><th>df</th><th>MS</th><th>F</th></tr></thead>
+                    <tbody>
+                      <tr><td>Between (condition)</td><td>40</td><td>2</td><td>20.00</td><td>8.00</td></tr>
+                      <tr><td>Within (error)</td><td>30</td><td>12</td><td>2.50</td><td></td></tr>
+                      <tr><td><strong>Total</strong></td><td><strong>70</strong></td><td><strong>14</strong></td><td></td><td></td></tr>
+                    </tbody>
+                  </table>
+                  <span class="pb-note">df_B = k − 1 = 2, df_W = N − k = 12, and SS_B + SS_W = SS_Total confirms the arithmetic.</span>
+                </li>
+                <li><span class="pb-lbl">Decision</span>
+                  <span class="pb-math">F(2, 12) = 8.00,  F*(.05, 2, 12) = 3.89</span>
+                  <span class="pb-math">8.00 &gt; 3.89  →  reject H₀,  p = .006</span>
+                </li>
+                <li><span class="pb-lbl">Effect size</span>
+                  <span class="pb-math">η² = SS_B / SS_Total = 40 / 70 = .571</span>
+                  <span class="pb-note">57% of the variance in errors missed is associated with the sound condition. η² is biased upward in small samples; ω² = .483 is the less flattering estimate.</span>
+                </li>
+                <li><span class="pb-lbl">Why not three t-tests</span>
+                  <span class="pb-note">Three pairwise tests at α = .05 push the chance of at least one false positive to about 14% rather than 5% (1 − .95³ = .143 if the three were independent; sharing the same data pulls it a little below that, but nowhere near back to .05). The ANOVA asks one question at one α, and the follow-up comparisons then get their own correction (Problem 14).</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Sound condition affected proofreading, <em>F</em>(2, 12) = 8.00, <em>p</em> = .006, η² = .57. The omnibus test says the three means are not all equal; it does not say which pairs differ.</p>
+              <p class="pb-ref">From <a href="stats-2/one-way-anova/">§2.1 One-Way ANOVA</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 2.2 ----------
+               verify: SE=sqrt(2.5*(1/5+1/5))=1.0 exactly
+                       Silence-Music t=2.00 p=.0687 ; Silence-Café t=4.00 p=.00176 ; Music-Café t=2.00 p=.0687
+                       Bonferroni α=.0167 ; Tukey q(.05,3,12)=3.773 (numerically verified) → HSD=3.77*sqrt(2.5/5)=2.666
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p2-2"><span class="pb-num">14</span>Which pairs actually differ?</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">The ANOVA in Problem 13 was significant. Now find out where the difference lives, using the same data.</p>
+            <div class="pb-given">
+              <span class="lbl">Carried over from Problem 13</span>
+              Means: silence 4, music 6, café 8 · <em>n</em> = 5 each · MS_W = 2.50, df_W = 12
+            </div>
+            <ol class="pb-ask">
+              <li>Compute the standard error for a pairwise comparison, and the three <em>t</em> statistics.</li>
+              <li>Apply a Bonferroni correction and decide each comparison.</li>
+              <li>Compute Tukey's HSD critical difference and check it agrees.</li>
+              <li>What did the correction cost?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Pairwise standard error: use MS_W, not just the two groups</span>
+                  <span class="pb-math">SE = √(MS_W × (1/n₁ + 1/n₂))</span>
+                  <span class="pb-math">= √(2.50 × (1/5 + 1/5)) = √(2.50 × 0.40) = √1.00 = 1.00</span>
+                  <span class="pb-note">Pooling all three groups' error gives df = 12 rather than the 8 a standalone pair would have.</span>
+                </li>
+                <li><span class="pb-lbl">The three comparisons</span>
+                  <table class="ref-table">
+                    <thead><tr><th>Comparison</th><th>Difference</th><th>t</th><th>p</th></tr></thead>
+                    <tbody>
+                      <tr><td>Silence vs music</td><td>2</td><td>2.00</td><td>.069</td></tr>
+                      <tr><td>Silence vs café</td><td>4</td><td>4.00</td><td>.002</td></tr>
+                      <tr><td>Music vs café</td><td>2</td><td>2.00</td><td>.069</td></tr>
+                    </tbody>
+                  </table>
+                  <span class="pb-math">Each t = difference / 1.00, evaluated on df = 12</span>
+                </li>
+                <li><span class="pb-lbl">Bonferroni</span>
+                  <span class="pb-math">α_adjusted = .05 / 3 = .0167</span>
+                  <span class="pb-math">Silence vs café: .002 &lt; .0167  →  significant</span>
+                  <span class="pb-math">The other two: .069 &gt; .0167  →  not significant</span>
+                </li>
+                <li><span class="pb-lbl">Tukey's HSD as a cross-check</span>
+                  <span class="pb-math">HSD = q*(.05, k = 3, df = 12) × √(MS_W / n)</span>
+                  <span class="pb-math">= 3.77 × √(2.50 / 5) = 3.77 × 0.707 = 2.67</span>
+                  <span class="pb-note">Any difference above 2.67 is significant. The 4-point silence-café gap clears it; the two 2-point gaps do not. Both methods reach the same verdict, with Tukey slightly less conservative, as it is built for exactly this set of all-pairs comparisons.</span>
+                </li>
+                <li><span class="pb-lbl">What the correction cost</span>
+                  <span class="pb-note">Uncorrected, silence vs music at <em>p</em> = .069 would still not have reached .05, so nothing was lost here. In general Bonferroni trades power for protection, and with many comparisons that trade gets expensive. Tukey and Holm both keep the family-wise error rate at .05 while giving some of that power back.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Only silence against café chatter survives correction (difference = 4 errors, <em>t</em>(12) = 4.00, <em>p</em> = .002). Music sits between the two and is not distinguishable from either at α = .05.</p>
+              <p class="pb-ref">From <a href="stats-2/post-hoc-tests/">§2.2 Post-Hoc Tests</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 2.3 ----------
+               verify: cell means 420/520/410/450 ; row 470,430 ; col 415,485 ; grand 450
+                       SS_caff=20*((20)^2+(20)^2)=16000 ; SS_sleep=20*((35)^2*2)=49000 ; SS_int=10*4*225=9000
+                       MSe=36000/36=1000 ; F=16.00/49.00/9.00 ; V.fInv(.05,1,36)=4.1132
+                       p: .000301 / <.001 / .0049 ; partial eta2 .308/.576/.200
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p2-3"><span class="pb-num">15</span>Caffeine, sleep, and the interaction</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">Forty volunteers are crossed on two factors: 200 mg caffeine or none, and a normal night's sleep or four hours. Each of the four cells holds ten people. The outcome is mean reaction time in milliseconds on a vigilance task.</p>
+            <div class="pb-given">
+              <span class="lbl">Cell means (ms), n = 10 per cell</span>
+              <table class="ref-table">
+                <thead><tr><th></th><th>Rested</th><th>Deprived</th><th>Row mean</th></tr></thead>
+                <tbody>
+                  <tr><td>No caffeine</td><td>420</td><td>520</td><td>470</td></tr>
+                  <tr><td>Caffeine</td><td>410</td><td>450</td><td>430</td></tr>
+                  <tr><td><strong>Column mean</strong></td><td><strong>415</strong></td><td><strong>485</strong></td><td><strong>450</strong></td></tr>
+                </tbody>
+              </table>
+              <span class="lbl" style="margin-top:.5rem">Sums of squares</span>
+              SS_caffeine = 16,000 · SS_sleep = 49,000 · SS_interaction = 9,000 · SS_error = 36,000
+            </div>
+            <ol class="pb-ask">
+              <li>Complete the ANOVA table: df, MS and <em>F</em> for all three effects.</li>
+              <li>Decide each effect at α = .05.</li>
+              <li>Compute the simple effect of caffeine in each sleep condition and interpret the interaction.</li>
+              <li>Report partial η² for each effect.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Degrees of freedom</span>
+                  <span class="pb-math">df_caffeine = 2 − 1 = 1    df_sleep = 2 − 1 = 1</span>
+                  <span class="pb-math">df_interaction = 1 × 1 = 1</span>
+                  <span class="pb-math">df_error = N − (number of cells) = 40 − 4 = 36</span>
+                </li>
+                <li><span class="pb-lbl">Error mean square</span>
+                  <span class="pb-math">MS_error = 36,000 / 36 = 1,000</span>
+                </li>
+                <li><span class="pb-lbl">The table</span>
+                  <table class="ref-table">
+                    <thead><tr><th>Source</th><th>SS</th><th>df</th><th>MS</th><th>F</th><th>p</th><th>partial η²</th></tr></thead>
+                    <tbody>
+                      <tr><td>Caffeine</td><td>16,000</td><td>1</td><td>16,000</td><td>16.00</td><td>&lt;.001</td><td>.308</td></tr>
+                      <tr><td>Sleep</td><td>49,000</td><td>1</td><td>49,000</td><td>49.00</td><td>&lt;.001</td><td>.576</td></tr>
+                      <tr><td>Caffeine × Sleep</td><td>9,000</td><td>1</td><td>9,000</td><td>9.00</td><td>.005</td><td>.200</td></tr>
+                      <tr><td>Error</td><td>36,000</td><td>36</td><td>1,000</td><td></td><td></td><td></td></tr>
+                    </tbody>
+                  </table>
+                  <span class="pb-math">partial η² = SS_effect / (SS_effect + SS_error)</span>
+                </li>
+                <li><span class="pb-lbl">Decisions</span>
+                  <span class="pb-math">F*(.05, 1, 36) = 4.11</span>
+                  <span class="pb-note">All three <em>F</em>s exceed 4.11, so both main effects and the interaction are significant.</span>
+                </li>
+                <li><span class="pb-lbl">Simple effects of caffeine</span>
+                  <span class="pb-math">Rested:   420 − 410 = 10 ms</span>
+                  <span class="pb-math">Deprived: 520 − 450 = 70 ms</span>
+                </li>
+                <li><span class="pb-lbl">Interpret the interaction</span>
+                  <span class="pb-note">Caffeine does something quite different depending on sleep. It buys a rested person 10 ms, which is close to nothing, and a sleep-deprived person 70 ms. Reporting the caffeine main effect on its own ("caffeine improved reaction time by 40 ms") would describe an average that applies to neither group well. With a significant interaction, lead with the simple effects and treat the main effects as background.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Both main effects and the interaction are significant. Sleep deprivation is the larger influence (partial η² = .58), and caffeine helps mainly when you are short of sleep: 70 ms recovered when deprived against 10 ms when rested.</p>
+              <p class="pb-ref">From <a href="stats-2/factorial-anova-two-way/">§2.3 Factorial ANOVA (Two-Way)</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 2.4 ----------
+               verify: MS_cond=84.5/2=42.25 ; MS_err=159.2/22=7.2364 ; F=5.839
+                       V.fUpper(5.839,2,22)=0.00925 ; GG df 1.42,15.62 ; V.fUpper(5.839,1.42,15.62)=0.01968
+                       partial eta2 = 84.5/243.7 = 0.3467 ; F*(.05,2,22)=3.443
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p2-4"><span class="pb-num">16</span>When Mauchly complains</h3>
+              <span class="pb-chip stretch">Stretch</span>
+            </div>
+            <p class="pb-scenario">Twelve typists each try three keyboard layouts in a counterbalanced order. The outcome is words per minute. The software prints a repeated-measures ANOVA and a sphericity test alongside it.</p>
+            <div class="pb-given">
+              <span class="lbl">Output</span>
+              <ul>
+                <li>SS_conditions = 84.5, SS_error = 159.2</li>
+                <li><em>n</em> = 12 participants, <em>k</em> = 3 conditions</li>
+                <li>Mauchly's <em>W</em> = .62, <em>p</em> = .03</li>
+                <li>Greenhouse–Geisser ε = .71</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Compute the uncorrected <em>F</em> and its degrees of freedom.</li>
+              <li>What does Mauchly's test say, and why does it matter?</li>
+              <li>Apply the Greenhouse–Geisser correction and re-decide.</li>
+              <li>Report partial η².</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Degrees of freedom</span>
+                  <span class="pb-math">df_conditions = k − 1 = 2</span>
+                  <span class="pb-math">df_error = (n − 1)(k − 1) = 11 × 2 = 22</span>
+                  <span class="pb-note">The error term is smaller than a between-subjects design's would be, because each typist serves as their own control.</span>
+                </li>
+                <li><span class="pb-lbl">Mean squares and F</span>
+                  <span class="pb-math">MS_conditions = 84.5 / 2 = 42.25</span>
+                  <span class="pb-math">MS_error = 159.2 / 22 = 7.236</span>
+                  <span class="pb-math">F = 42.25 / 7.236 = 5.84</span>
+                  <span class="pb-math">F*(.05, 2, 22) = 3.44  →  significant, p = .009</span>
+                </li>
+                <li><span class="pb-lbl">What Mauchly's test found</span>
+                  <span class="pb-note">Sphericity means the variances of the differences between every pair of conditions are equal. Mauchly's <em>p</em> = .03 rejects that assumption. When sphericity fails, the <em>F</em> ratio is positively biased: the real Type I error rate runs above the nominal 5%, so the uncorrected <em>p</em> of .009 is too generous.</span>
+                </li>
+                <li><span class="pb-lbl">Greenhouse–Geisser correction</span>
+                  <span class="pb-math">Multiply both df by ε = .71</span>
+                  <span class="pb-math">df_conditions = 2 × .71 = 1.42</span>
+                  <span class="pb-math">df_error = 22 × .71 = 15.62</span>
+                  <span class="pb-note"><em>F</em> itself is unchanged at 5.84; only the reference distribution moves, and it moves against you.</span>
+                </li>
+                <li><span class="pb-lbl">Re-decide</span>
+                  <span class="pb-math">F(1.42, 15.62) = 5.84,  p = .020</span>
+                  <span class="pb-note">Still below .05, so the conclusion survives. The <em>p</em>-value roughly doubled, which is what the correction costs. An uncorrected <em>p</em> near .04 would have flipped.</span>
+                </li>
+                <li><span class="pb-lbl">Effect size</span>
+                  <span class="pb-math">partial η² = 84.5 / (84.5 + 159.2) = 84.5 / 243.7 = .347</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Layout affected typing speed, <em>F</em>(1.42, 15.62) = 5.84, <em>p</em> = .020, partial η² = .35, with Greenhouse–Geisser applied because Mauchly's test rejected sphericity. Report the corrected df with decimals; they are meant to look like that.</p>
+              <p class="pb-ref">From <a href="stats-2/repeated-measures-anova/">§2.4 Repeated Measures ANOVA</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 2.5 ----------
+               verify: v1=3.1^2/15=0.64067 ; v2=6.9^2/45=1.058 ; SE=1.30333 ; t=1.3811
+                       df=(v1+v2)^2/((v1^2/14)+(v2^2/44))=52.69 ; p=0.1731 ; t*(.025,52.69)=2.006
+                       pooled s_p=6.1998 → Student t=0.9738, df=58, p=0.3342 ; variance ratio 4.95
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p2-5"><span class="pb-num">17</span>Two clinics, two very different spreads</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A service evaluation compares how many therapy sessions clients attend at two clinics. Clinic A is small and runs a fixed 12-session programme. Clinic B is large and open-ended, and its distribution is heavily right-skewed with a handful of clients attending forty or more sessions. Levene's test returns <em>p</em> = .004.</p>
+            <div class="pb-given">
+              <span class="lbl">Given</span>
+              <ul>
+                <li>Clinic A: <em>n</em> = 15, <em>M</em> = 8.2, <em>s</em> = 3.1</li>
+                <li>Clinic B: <em>n</em> = 45, <em>M</em> = 6.4, <em>s</em> = 6.9</li>
+                <li>Levene's test: <em>p</em> = .004</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Which assumption has failed, and what does Levene's <em>p</em> = .004 mean?</li>
+              <li>The <em>t</em>-test assumes normality. Of what, exactly?</li>
+              <li>Run Welch's <em>t</em>-test, including its degrees of freedom.</li>
+              <li>A colleague suggests Mann–Whitney instead. Argue both sides.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The failed assumption</span>
+                  <span class="pb-math">s²_B / s²_A = 47.61 / 9.61 = 4.95</span>
+                  <span class="pb-note">Clinic B's variance is roughly five times Clinic A's. Levene's <em>p</em> = .004 says a variance gap this large would be rare if the population variances were equal, so homogeneity of variance is rejected. Note that Levene's test is itself sensitive to sample size; with unequal <em>n</em> and a visible five-fold gap, the plot and the ratio agree with it here.</span>
+                </li>
+                <li><span class="pb-lbl">Normality of what</span>
+                  <span class="pb-note">Of the sampling distribution of each group mean, not of the raw session counts. With <em>n</em> = 45 the central limit theorem largely covers Clinic B despite the skew. Clinic A's <em>n</em> = 15 is the more fragile half, and it is the one with the tidier distribution.</span>
+                </li>
+                <li><span class="pb-lbl">Welch's t — no pooling</span>
+                  <span class="pb-math">SE = √(s₁²/n₁ + s₂²/n₂)</span>
+                  <span class="pb-math">s₁²/n₁ = 9.61 / 15 = 0.6407</span>
+                  <span class="pb-math">s₂²/n₂ = 47.61 / 45 = 1.0580</span>
+                  <span class="pb-math">SE = √1.6987 = 1.3033</span>
+                  <span class="pb-math">t = (8.2 − 6.4) / 1.3033 = 1.8 / 1.3033 = 1.381</span>
+                </li>
+                <li><span class="pb-lbl">Welch–Satterthwaite degrees of freedom</span>
+                  <span class="pb-math">df = (s₁²/n₁ + s₂²/n₂)² / [ (s₁²/n₁)²/(n₁−1) + (s₂²/n₂)²/(n₂−1) ]</span>
+                  <span class="pb-math">= (1.6987)² / [ 0.6407²/14 + 1.0580²/44 ]</span>
+                  <span class="pb-math">= 2.8855 / [ 0.029318 + 0.025442 ] = 2.8855 / 0.054760</span>
+                  <span class="pb-math">df = 52.69</span>
+                  <span class="pb-math">t*(.025, 52.69) = 2.006  →  1.381 &lt; 2.006, p = .173</span>
+                </li>
+                <li><span class="pb-lbl">What pooling would have done</span>
+                  <span class="pb-note">The pooled SD is 6.20, dominated by the larger, wider Clinic B. Student's <em>t</em> would give 0.97 on df = 58, <em>p</em> = .334. Both tests fail to reject, but they disagree substantially about how far apart the clinics are, which is why the choice has to be made before looking at which answer you prefer.</span>
+                </li>
+                <li><span class="pb-lbl">Welch or Mann–Whitney</span>
+                  <span class="pb-note">For Mann–Whitney: session counts are bounded below at zero and badly skewed, and the median is arguably the more meaningful summary for a service report. Against: Mann–Whitney tests stochastic dominance rather than means, and with unequal spreads its interpretation is no cleaner than Welch's. Welch handles unequal variances directly and keeps the outcome on its natural scale. Running one, reporting it, and saying why is better practice than running both and reporting the smaller <em>p</em>.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Homogeneity of variance fails. Welch's <em>t</em>(52.69) = 1.38, <em>p</em> = .173: the clinics do not differ detectably in sessions attended, and Welch is the defensible default whenever the variances are unequal.</p>
+              <p class="pb-ref">From <a href="stats-2/assumptions-and-when-they-break/">§2.5 Assumptions &amp; When They Break</a> · the <a href="cheat-assumptions.html">assumption-checks poster</a> lists the fix for each violation.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 2.6 ----------
+               verify: A=[12,15,18,22,31] ranks 3,5,7,9,10 → R_A=34 ; B ranks 1,2,4,6,8 → R_B=21 ; total 55 = 10*11/2
+                       U_A=34-15=19 ; U_B=21-15=6 ; U_A+U_B=25=n1*n2
+                       exact enumeration of C(10,5)=252 splits: P(Umin<=6)=.2222 ; P(Umin<=2)=.0317 ; P(Umin<=3)=.0556
+                       → U_crit(.05, 5,5, two-tailed) = 2 ; smallest attainable two-tailed p = .0079
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p2-6"><span class="pb-num">18</span>Five dogs each, no normality in sight</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">Two rescue shelters record days-to-adoption for five dogs each. The samples are far too small to judge normality, and one shelter has a dog that waited a month.</p>
+            <div class="pb-given">
+              <span class="lbl">Days to adoption</span>
+              <ul>
+                <li>Shelter A: 12, 15, 18, 22, 31</li>
+                <li>Shelter B: 9, 11, 14, 17, 20</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Rank all ten values and compute the rank sums.</li>
+              <li>Compute <em>U</em> for each group and check them against each other.</li>
+              <li>Decide at α = .05, two-tailed, given <em>U</em>* = 2.</li>
+              <li>What is the smallest <em>p</em>-value this design could ever produce?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Pool and rank, smallest first</span>
+                  <table class="ref-table">
+                    <thead><tr><th>Value</th><th>9</th><th>11</th><th>12</th><th>14</th><th>15</th><th>17</th><th>18</th><th>20</th><th>22</th><th>31</th></tr></thead>
+                    <tbody>
+                      <tr><td>Shelter</td><td>B</td><td>B</td><td>A</td><td>B</td><td>A</td><td>B</td><td>A</td><td>B</td><td>A</td><td>A</td></tr>
+                      <tr><td>Rank</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td></tr>
+                    </tbody>
+                  </table>
+                  <span class="pb-note">No ties, so no shared ranks to average.</span>
+                </li>
+                <li><span class="pb-lbl">Rank sums</span>
+                  <span class="pb-math">R_A = 3 + 5 + 7 + 9 + 10 = 34</span>
+                  <span class="pb-math">R_B = 1 + 2 + 4 + 6 + 8 = 21</span>
+                  <span class="pb-math">Check: 34 + 21 = 55 = N(N+1)/2 = 10(11)/2 ✓</span>
+                </li>
+                <li><span class="pb-lbl">Convert rank sums to U</span>
+                  <span class="pb-math">U = R − n(n+1)/2</span>
+                  <span class="pb-math">U_A = 34 − 5(6)/2 = 34 − 15 = 19</span>
+                  <span class="pb-math">U_B = 21 − 15 = 6</span>
+                  <span class="pb-math">Check: U_A + U_B = 25 = n_A × n_B ✓</span>
+                </li>
+                <li><span class="pb-lbl">Decision</span>
+                  <span class="pb-math">U = min(19, 6) = 6</span>
+                  <span class="pb-math">U*(.05, n₁ = n₂ = 5, two-tailed) = 2</span>
+                  <span class="pb-math">6 &gt; 2  →  fail to reject H₀</span>
+                  <span class="pb-note">Mann–Whitney is one of the few tests where you reject when the statistic is <em>small</em>. The exact two-tailed <em>p</em> here is .222.</span>
+                </li>
+                <li><span class="pb-lbl">The floor on p</span>
+                  <span class="pb-note">Five against five gives C(10,5) = 252 possible arrangements. Exactly one of them puts every Shelter B dog ahead of every Shelter A dog, and one puts the reverse, so the smallest attainable two-tailed <em>p</em> is 2/252 = .0079. The rejection region at α = .05 is U ≤ 2, which is four arrangements in each tail out of 126, so a design this small can only detect something close to complete separation.</span>
+                </li>
+              </ol>
+              <p class="pb-answer"><em>U</em> = 6, <em>p</em> = .222: no detectable difference in days to adoption. Shelter B looks faster in every summary you could compute, and with five dogs each the test cannot tell that apart from chance.</p>
+              <p class="pb-ref">From <a href="stats-2/non-parametric-alternatives/">§2.6 Non-Parametric Alternatives</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 2.7 ----------
+               verify: O=[[30,45,45],[30,15,15]] ; E row1 = 40 each, row2 = 20 each
+                       chi2 = 2.5+0.625+0.625+5+1.25+1.25 = 11.25 ; df=2
+                       V.chiSqInv(.05,2)=5.9915 ; V.chiSqUpper(11.25,2)=0.003607 ; V=sqrt(11.25/180)=0.25
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p2-7"><span class="pb-num">19</span>How first-years and finalists revise</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A department asks 180 students how they prefer to revise. It wants to know whether preference depends on year group.</p>
+            <div class="pb-given">
+              <span class="lbl">Observed counts</span>
+              <table class="ref-table">
+                <thead><tr><th></th><th>Alone</th><th>In pairs</th><th>In groups</th><th>Total</th></tr></thead>
+                <tbody>
+                  <tr><td>First year</td><td>30</td><td>45</td><td>45</td><td>120</td></tr>
+                  <tr><td>Final year</td><td>30</td><td>15</td><td>15</td><td>60</td></tr>
+                  <tr><td><strong>Total</strong></td><td><strong>60</strong></td><td><strong>60</strong></td><td><strong>60</strong></td><td><strong>180</strong></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <ol class="pb-ask">
+              <li>Compute the expected counts and check the assumption about them.</li>
+              <li>Compute χ² and its degrees of freedom.</li>
+              <li>Decide at α = .05.</li>
+              <li>Report Cramér's <em>V</em> and describe where the association actually sits.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Expected counts</span>
+                  <span class="pb-math">E = (row total × column total) / N</span>
+                  <span class="pb-math">First year:  120 × 60 / 180 = 40  (all three columns)</span>
+                  <span class="pb-math">Final year:   60 × 60 / 180 = 20  (all three columns)</span>
+                  <span class="pb-note">All expected counts are 20 or above, comfortably clear of the "at least 5" rule, so no correction or exact test is needed.</span>
+                </li>
+                <li><span class="pb-lbl">Cell contributions</span>
+                  <span class="pb-math">χ² = Σ (O − E)² / E</span>
+                  <span class="pb-math">(30−40)²/40 = 100/40 = 2.500</span>
+                  <span class="pb-math">(45−40)²/40 = 25/40 = 0.625   (twice)</span>
+                  <span class="pb-math">(30−20)²/20 = 100/20 = 5.000</span>
+                  <span class="pb-math">(15−20)²/20 = 25/20 = 1.250   (twice)</span>
+                </li>
+                <li><span class="pb-lbl">Total and df</span>
+                  <span class="pb-math">χ² = 2.500 + 0.625 + 0.625 + 5.000 + 1.250 + 1.250 = 11.25</span>
+                  <span class="pb-math">df = (rows − 1)(columns − 1) = (2 − 1)(3 − 1) = 2</span>
+                </li>
+                <li><span class="pb-lbl">Decision</span>
+                  <span class="pb-math">χ²*(.05, 2) = 5.99</span>
+                  <span class="pb-math">11.25 &gt; 5.99  →  reject H₀,  p = .004</span>
+                </li>
+                <li><span class="pb-lbl">Effect size</span>
+                  <span class="pb-math">Cramér's V = √( χ² / (N × min(r−1, c−1)) )</span>
+                  <span class="pb-math">= √( 11.25 / (180 × 1) ) = √0.0625 = .25</span>
+                  <span class="pb-note">A small-to-moderate association.</span>
+                </li>
+                <li><span class="pb-lbl">Where the association lives</span>
+                  <span class="pb-note">The single largest contribution is the final-year "alone" cell at 5.00, where 30 students chose solitary revision against 20 expected. Only a quarter of first-years revise alone, and three-quarters work with someone; among finalists it is half and half. Reading the biggest cell contributions is how you turn one significant χ² into a sentence about people.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Revision preference depends on year group, χ²(2, <em>N</em> = 180) = 11.25, <em>p</em> = .004, Cramér's <em>V</em> = .25. Final-years revise alone far more than first-years do.</p>
+              <p class="pb-ref">From <a href="stats-2/chi-square-tests/">§2.7 Chi-Square Tests</a> · check the critical value in <a href="tables.html">Statistical Tables</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 2.8 ----------
+               verify: X=[4,5,6,8,9,10] mean 7 ; Y=[3,5,4,5,7,6] mean 5
+                       Sxx=28 Syy=10 Sxy=14 ; r=14/sqrt(280)=0.8367 ; r^2=0.70
+                       t=r*sqrt(4)/sqrt(1-r^2)=3.0551 ; V.tInv(.025,4)=2.7764 ; p=2*V.tUpper(3.0551,4)=0.0378
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p2-8"><span class="pb-num">20</span>Sleep and next-day mood</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">Six volunteers keep a one-week diary. For each person the researcher records average nightly sleep in hours and average next-day mood on a 1–10 scale.</p>
+            <div class="pb-given">
+              <span class="lbl">Data, n = 6</span>
+              <table class="ref-table">
+                <thead><tr><th>Sleep (x)</th><th>4</th><th>5</th><th>6</th><th>8</th><th>9</th><th>10</th></tr></thead>
+                <tbody><tr><td>Mood (y)</td><td>3</td><td>5</td><td>4</td><td>5</td><td>7</td><td>6</td></tr></tbody>
+              </table>
+            </div>
+            <ol class="pb-ask">
+              <li>Compute Pearson's <em>r</em>.</li>
+              <li>Test it at α = .05, two-tailed.</li>
+              <li>Interpret <em>r</em>².</li>
+              <li>A magazine reports "sleep improves mood". Give two explanations of this correlation that do not involve sleep causing mood.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Means</span>
+                  <span class="pb-math">x̄ = 42 / 6 = 7.0    ȳ = 30 / 6 = 5.0</span>
+                </li>
+                <li><span class="pb-lbl">Deviations and cross-products</span>
+                  <table class="ref-table">
+                    <thead><tr><th>x</th><th>y</th><th>x−x̄</th><th>y−ȳ</th><th>(x−x̄)²</th><th>(y−ȳ)²</th><th>product</th></tr></thead>
+                    <tbody>
+                      <tr><td>4</td><td>3</td><td>−3</td><td>−2</td><td>9</td><td>4</td><td>6</td></tr>
+                      <tr><td>5</td><td>5</td><td>−2</td><td>0</td><td>4</td><td>0</td><td>0</td></tr>
+                      <tr><td>6</td><td>4</td><td>−1</td><td>−1</td><td>1</td><td>1</td><td>1</td></tr>
+                      <tr><td>8</td><td>5</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+                      <tr><td>9</td><td>7</td><td>2</td><td>2</td><td>4</td><td>4</td><td>4</td></tr>
+                      <tr><td>10</td><td>6</td><td>3</td><td>1</td><td>9</td><td>1</td><td>3</td></tr>
+                      <tr><td colspan="4"><strong>Sums</strong></td><td><strong>28</strong></td><td><strong>10</strong></td><td><strong>14</strong></td></tr>
+                    </tbody>
+                  </table>
+                </li>
+                <li><span class="pb-lbl">Pearson's r</span>
+                  <span class="pb-math">r = Σ(x−x̄)(y−ȳ) / √( Σ(x−x̄)² × Σ(y−ȳ)² )</span>
+                  <span class="pb-math">= 14 / √(28 × 10) = 14 / √280 = 14 / 16.733</span>
+                  <span class="pb-math">r = .837</span>
+                </li>
+                <li><span class="pb-lbl">Significance test</span>
+                  <span class="pb-math">t = r√(n−2) / √(1 − r²),  df = n − 2 = 4</span>
+                  <span class="pb-math">= .837 × √4 / √(1 − .70) = 1.673 / √0.30</span>
+                  <span class="pb-math">= 1.673 / 0.548 = 3.055</span>
+                  <span class="pb-math">t*(.025, 4) = 2.776  →  3.055 &gt; 2.776, reject H₀, p = .038</span>
+                  <span class="pb-note">Significant, but only just, and on six people. A correlation of .84 needs to be enormous to clear the bar at <em>n</em> = 6.</span>
+                </li>
+                <li><span class="pb-lbl">r²</span>
+                  <span class="pb-math">r² = .837² = .70</span>
+                  <span class="pb-note">70% of the variance in mood is shared with sleep in this sample. "Shared", not "caused by", and in a sample this small the estimate is very unstable.</span>
+                </li>
+                <li><span class="pb-lbl">Two non-causal readings</span>
+                  <span class="pb-note">Reverse direction: low mood disrupts sleep, which is well documented, so mood could be driving sleep rather than the other way round. Third variable: workload, pain, a new baby, or alcohol would each push sleep down and mood down at the same time, producing the correlation with no arrow between the two measured variables at all. Only random assignment to a sleep condition would separate these.</span>
+                </li>
+              </ol>
+              <p class="pb-answer"><em>r</em>(4) = .84, <em>p</em> = .038, <em>r</em>² = .70. Strong and significant in this sample, and entirely consistent with mood driving sleep or with something else driving both.</p>
+              <p class="pb-ref">From <a href="stats-2/correlation/">§2.8 Correlation</a> · try the <a href="correlation.html">correlation calculator</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 2.9 ----------
+               verify: same data as 2.8. b=Sxy/Sxx=14/28=0.5 ; a=5-0.5*7=1.5
+                       ŷ(7)=5.0 ; ŷ(6)=4.5 ; residual at x=6 = 4-4.5 = -0.5
+                       residuals: -0.5,1.0,-0.5,-0.5,1.0,-0.5 ; Σ=0 ; SS_res=3.0
+                       SS_reg=7 ; r²=7/10=.70 ✓ ; s_e=sqrt(3/4)=0.866 ; SE(b)=0.1637 ; t=3.0551 ✓ (matches 2.8)
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p2-9"><span class="pb-num">21</span>The same six people, as a line</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">Take the sleep-and-mood data from Problem 20 and fit a regression line predicting mood from sleep.</p>
+            <div class="pb-given">
+              <span class="lbl">Carried over from Problem 20</span>
+              x̄ = 7.0, ȳ = 5.0, Σ(x−x̄)² = 28, Σ(y−ȳ)² = 10, Σ(x−x̄)(y−ȳ) = 14
+            </div>
+            <ol class="pb-ask">
+              <li>Find the slope and intercept, and write the regression equation.</li>
+              <li>Interpret the slope in the units of the study.</li>
+              <li>Predict mood for someone sleeping 6 hours, and compute that person's residual.</li>
+              <li>The researcher predicts mood at 2 hours of sleep. Why should they not?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Slope</span>
+                  <span class="pb-math">b = Σ(x−x̄)(y−ȳ) / Σ(x−x̄)²</span>
+                  <span class="pb-math">= 14 / 28 = 0.50</span>
+                </li>
+                <li><span class="pb-lbl">Intercept: the line goes through (x̄, ȳ)</span>
+                  <span class="pb-math">a = ȳ − b·x̄ = 5.0 − 0.50(7.0) = 5.0 − 3.5 = 1.50</span>
+                  <span class="pb-math">ŷ = 1.50 + 0.50x</span>
+                </li>
+                <li><span class="pb-lbl">Interpret the slope</span>
+                  <span class="pb-note">Each extra hour of sleep is associated with half a point more mood on the 1–10 scale. The intercept of 1.50 is the predicted mood at zero hours of sleep, which is outside the data and not meaningful on its own.</span>
+                </li>
+                <li><span class="pb-lbl">Prediction and residual at x = 6</span>
+                  <span class="pb-math">ŷ = 1.50 + 0.50(6) = 4.50</span>
+                  <span class="pb-math">observed y = 4</span>
+                  <span class="pb-math">residual = y − ŷ = 4 − 4.50 = −0.50</span>
+                  <span class="pb-note">This person's mood was half a point below what their sleep predicted.</span>
+                </li>
+                <li><span class="pb-lbl">All six residuals, as a check</span>
+                  <span class="pb-math">−0.5, +1.0, −0.5, −0.5, +1.0, −0.5</span>
+                  <span class="pb-math">Σ residuals = 0 ✓  (always true for a least-squares fit with an intercept)</span>
+                  <span class="pb-math">SS_residual = 0.25 + 1 + 0.25 + 0.25 + 1 + 0.25 = 3.00</span>
+                </li>
+                <li><span class="pb-lbl">Tie it back to r²</span>
+                  <span class="pb-math">SS_total = 10,  SS_residual = 3.00,  SS_regression = 7.00</span>
+                  <span class="pb-math">r² = 7.00 / 10 = .70 ✓  matches Problem 20</span>
+                  <span class="pb-math">s_e = √(SS_residual / (n − 2)) = √(3/4) = 0.87</span>
+                </li>
+                <li><span class="pb-lbl">Why not predict at 2 hours</span>
+                  <span class="pb-note">The data run from 4 to 10 hours. Predicting at 2 assumes the straight line keeps going where nobody was measured, and there is no evidence in these six people that it does. Mood is bounded at 1, and the true relationship almost certainly bends at the extremes. Extrapolation is the most common way a correct regression produces a wrong number.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">ŷ = 1.50 + 0.50x. At 6 hours the model predicts 4.50, the person scored 4, so the residual is −0.50. The fit explains 70% of the variance in mood over the observed range of 4 to 10 hours, and says nothing about 2.</p>
+              <p class="pb-ref">From <a href="stats-2/simple-linear-regression/">§2.9 Simple Linear Regression</a> · fit it in the <a href="correlation.html">correlation &amp; regression calculator</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 2.10 ----------
+               verify: 4/n = 4/40 = 0.10 ; leverage cutoff 2(k+1)/n = 2*3/40 = 0.15 for k=2 predictors
+                       VIF = 1/(1-r²) : r=.92 → 1/(1-0.8464) = 6.51 ; r=.60 → 1.5625
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p2-10"><span class="pb-num">22</span>Reading the diagnostics before the coefficients</h3>
+              <span class="pb-chip stretch">Stretch</span>
+            </div>
+            <p class="pb-scenario">An estate agency fits a regression predicting house price from floor area and number of bedrooms, on 40 properties. Before interpreting anything, the analyst prints the diagnostics.</p>
+            <div class="pb-given">
+              <span class="lbl">Diagnostic output</span>
+              <ul>
+                <li><em>n</em> = 40, two predictors</li>
+                <li>Residuals against fitted values: a clear fan, narrow at low predicted prices and wide at high ones</li>
+                <li>Case 31: leverage <em>h</em> = 0.31, Cook's <em>D</em> = 0.68</li>
+                <li>Correlation between floor area and bedrooms: <em>r</em> = .92</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Name the problem the fan-shaped residual plot shows, and say what it damages.</li>
+              <li>Case 31: is its leverage unusual? Is its Cook's <em>D</em>?</li>
+              <li>Compute the VIF for the two predictors and interpret it.</li>
+              <li>What should the analyst do before reporting coefficients?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The fan</span>
+                  <span class="pb-note">Heteroscedasticity: residual variance grows with the fitted value, which is typical for prices. The coefficients stay unbiased, so the slope estimates are still fine on average. What breaks is everything built on the standard errors: the <em>t</em>-tests, the <em>p</em>-values and the confidence intervals are all wrong, usually too narrow at the top end.</span>
+                </li>
+                <li><span class="pb-lbl">Leverage</span>
+                  <span class="pb-math">Cutoff = 2(k + 1)/n = 2(2 + 1)/40 = 6/40 = 0.15</span>
+                  <span class="pb-math">h = 0.31, about twice the cutoff</span>
+                  <span class="pb-note">Case 31 sits far out on the predictors: a very large house, or an odd area-to-bedrooms combination. High leverage alone is not a crime, it only means the case has the <em>opportunity</em> to pull the line.</span>
+                </li>
+                <li><span class="pb-lbl">Cook's D</span>
+                  <span class="pb-math">Common cutoffs: D &gt; 1, or the stricter 4/n = 4/40 = 0.10</span>
+                  <span class="pb-math">D = 0.68  →  below 1, but nearly seven times 4/n</span>
+                  <span class="pb-note">High leverage plus a large Cook's <em>D</em> means this case is not merely unusual, it is actively moving the fitted coefficients. Refit without it and see how much the slopes shift.</span>
+                </li>
+                <li><span class="pb-lbl">Multicollinearity</span>
+                  <span class="pb-math">VIF = 1 / (1 − r²)</span>
+                  <span class="pb-math">= 1 / (1 − .92²) = 1 / (1 − .8464) = 1 / .1536 = 6.51</span>
+                  <span class="pb-note">Above the usual warning level of 5. Floor area and bedroom count carry nearly the same information, so the model cannot tell their contributions apart. The symptom to expect is a significant overall <em>F</em> with two unstable, possibly non-significant individual coefficients, one of which may even carry the wrong sign.</span>
+                </li>
+                <li><span class="pb-lbl">What to do, in order</span>
+                  <span class="pb-note">Investigate case 31 as a data point before deleting anything, since a genuine mansion is information rather than error, and report the fit with and without it if it matters. For the fan, model log(price) instead of price, or keep the model and use heteroscedasticity-robust standard errors. For the VIF, drop one predictor or combine the two into a single size measure, and be explicit that the model now answers a narrower question. Report the diagnostics you ran, including the ones that came back clean.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Three problems, three different fixes: heteroscedasticity invalidates the standard errors, case 31 has both the leverage and the influence to bend the line, and a VIF of 6.51 means the two predictors are nearly the same variable. None of them is a reason to abandon the model, and all three change what the coefficients mean.</p>
+              <p class="pb-ref">From <a href="stats-2/regression-diagnostics/">§2.10 Regression Diagnostics</a> and <a href="stats-3/assumptions-of-regression/">§3.8 Assumptions of Regression</a>.</p>
+            </details>
+          </article>
+        </section>
+
+        <div class="callout">
+          <p>Worked through these? Take a scored <a href="quiz.html">mock exam</a>, drill definitions with the <a href="flashcards.html">flashcards</a>, or move from pencil-and-paper numbers to real files with the <a href="datasets.html">practice datasets</a>. Teachers: <a href="teachers.html">using this site in a course</a> covers handouts, embeds and a fourteen-week map.</p>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <div class="print-footer">statscapybara.com/problems.html</div>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    /* Two print modes. "Print problems" hides every solution regardless of
+       what the reader has open on screen; "Print with solutions" force-opens
+       them all. Both revert on afterprint (with a timeout fallback for the
+       browsers that never fire it). */
+    (function () {
+      var opened = [], mode = null;
+
+      function begin(withSolutions) {
+        mode = withSolutions ? 'pb-print-sol' : 'pb-print-nosol';
+        document.body.classList.add(mode);
+        if (withSolutions) {
+          var closed = document.querySelectorAll('details.pb-sol:not([open])');
+          for (var i = 0; i < closed.length; i++) {
+            closed[i].setAttribute('open', '');
+            opened.push(closed[i]);
+          }
+        }
+        window.print();
+        setTimeout(end, 1500);          // fallback for browsers without afterprint
+      }
+
+      function end() {
+        if (!mode) return;
+        document.body.classList.remove(mode);
+        mode = null;
+        for (var i = 0; i < opened.length; i++) opened[i].removeAttribute('open');
+        opened = [];
+      }
+
+      window.addEventListener('afterprint', end);
+      document.getElementById('print-problems').addEventListener('click', function () { begin(false); });
+      document.getElementById('print-solutions').addEventListener('click', function () { begin(true); });
+    })();
+  </script>
+  <script src="assets/js/curriculum.js"></script>
+  <script src="assets/js/site.js"></script>
+</body>
+</html>

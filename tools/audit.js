@@ -311,7 +311,7 @@ CURRICULUM.forEach((c) => { courseBySlug[c.slug] = c; });
 
 /* root / tool pages (excluding the self-contained 404.html) */
 const ROOT_PAGES = ['index.html', 'quiz.html', 'glossary.html', 'toolbox.html', 'teachers.html', 'which-test.html', 'which-chart.html',
-  'plan.html', 'tables.html', 'formulas.html', 'distributions.html', 'effect-sizes.html', 'descriptives.html', 'correlation.html', 'power.html', 'apa.html', 'datasets.html', 'flashcards.html', 'progress.html',
+  'plan.html', 'tables.html', 'formulas.html', 'distributions.html', 'effect-sizes.html', 'descriptives.html', 'correlation.html', 'power.html', 'apa.html', 'problems.html', 'datasets.html', 'flashcards.html', 'progress.html',
   'cheat-test-chooser.html', 'cheat-apa.html', 'cheat-assumptions.html'];
 /* long-form guides — guides/<slug>/index.html (P34); each is a body[data-guide] page */
 const GUIDES = ['analyze-thesis-data-jasp', 'spss-output-to-apa', 'choose-statistics-dissertation', 'clean-survey-data'];

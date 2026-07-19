@@ -17,6 +17,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 MAX_CHARS = 4500
 
+# Per-page overrides of MAX_CHARS. problems.html (P63) is the one page whose
+# entire body IS the payload: someone searching "Mann-Whitney worked example"
+# needs to reach problem 18, and the default cap indexes only the first ~10%
+# of it. Full indexing costs ~40 KB on an index that is lazy-loaded only when
+# the search overlay opens. The headroom also covers P64's Stats 3-4 sets.
+PAGE_MAX_CHARS = {"problems.html": 120_000}
+
 
 def textify(fragment: str) -> str:
     """Strip tags/scripts and collapse whitespace to plain searchable text."""
@@ -33,10 +40,10 @@ def lesson_text(path: Path) -> str:
     return textify(m.group(1))[:MAX_CHARS] if m else ""
 
 
-def page_text(path: Path) -> str:
+def page_text(path: Path, limit: int = MAX_CHARS) -> str:
     src = path.read_text(encoding="utf-8")
     m = re.search(r"<main\b.*?>(.*?)</main>", src, re.S)
-    return textify(m.group(1))[:MAX_CHARS] if m else ""
+    return textify(m.group(1))[:limit] if m else ""
 
 
 def glossary_text(path: Path) -> str:
@@ -77,6 +84,7 @@ for fname, title in [
     ("descriptives.html", "Descriptives Calculator"),
     ("correlation.html", "Correlation & Regression Calculator"),
     ("apa.html", "APA Results Formatter"),
+    ("problems.html", "Practice Problems"),
     ("datasets.html", "Practice Datasets"),
     ("flashcards.html", "Glossary Flashcards"),
     ("quiz.html", "Course Quiz"),
@@ -86,7 +94,7 @@ for fname, title in [
 ]:
     p = ROOT / fname
     if p.exists():
-        pages.append({"u": fname, "txt": page_text(p)})
+        pages.append({"u": fname, "txt": page_text(p, PAGE_MAX_CHARS.get(fname, MAX_CHARS))})
 # course landing pages (<course>/index.html, P61) — indexed under their clean URL
 # so a search for "Stats 2" or "Writing course" finds the front door
 for slug in course_slugs():
