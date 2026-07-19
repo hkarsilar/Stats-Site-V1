@@ -37,7 +37,7 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v12";  /* SW update path: stale-while-revalidate for CSS/JS + auto-reload (site.js) */
+const CACHE_VERSION = "sc-v13";  /* P62: quiz exam mode — styles.css (.exam-* press states) + site.js (quiz blurb) changed */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location

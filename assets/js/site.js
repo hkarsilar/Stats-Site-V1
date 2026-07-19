@@ -297,7 +297,7 @@
     { url: "cheat-assumptions.html", key: "cheat-assumptions", group: "guide", emoji: "🔎", title: "Cheat sheet: assumptions",  desc: "Printable poster — what to check & the fix when it breaks" },
     { url: "glossary.html",      key: "glossary",      group: "guide",    emoji: "📖", title: "Glossary",                 desc: "Every stats term, defined without the jargon" },
     { url: "flashcards.html",    key: "flashcards",    group: "practice", emoji: "🃏", title: "Glossary flashcards",      desc: "Spaced-repetition drilling of every glossary term" },
-    { url: "quiz.html",          key: "quiz",          group: "practice", emoji: "✅", title: "Quiz",                     desc: "Test yourself across every course" },
+    { url: "quiz.html",          key: "quiz",          group: "practice", emoji: "✅", title: "Quiz",                     desc: "Instant-feedback practice, or a marked mock exam" },
     { url: "progress.html",      key: "progress",      group: "practice", emoji: "🌱", title: "My progress",              desc: "Your rings, what's left, and course certificates" },
     /* long-form guides — guides/<slug>/index.html, group "read" (P34) */
     { url: "guides/analyze-thesis-data-jasp/",       key: "analyze-thesis-data-jasp",       group: "read", emoji: "🧪", title: "Analyze your thesis data in JASP", desc: "Import → check → test → APA, the whole path in free software" },
@@ -1256,7 +1256,7 @@
     { title: "Correlation & Regression Calculator", url: "correlation.html", tag: "Tool", kw: "correlation regression pearson r spearman rho scatterplot scatter plot least squares line best fit slope intercept r squared residuals fisher z confidence interval anscombe quartet outlier leverage influence apa paste two columns x y" },
     { title: "APA Results Formatter", url: "apa.html", tag: "Tool", kw: "apa 7 format results sentence write up report t f chi-square correlation regression italics leading zero p value statcheck consistency copy" },
     { title: "Practice Datasets", url: "datasets.html", tag: "Practice", kw: "practice datasets csv download data sample example real t-test anova regression factorial likert reliability cronbach cleaning messy logistic exercises worked solutions" },
-    { title: "Course Quiz", url: "quiz.html", tag: "Practice", kw: "test yourself questions practice" },
+    { title: "Course Quiz", url: "quiz.html", tag: "Practice", kw: "test yourself questions practice mock exam revision" },
     { title: "Statistics Glossary", url: "glossary.html", tag: "Reference", kw: "terms definitions dictionary" },
     { title: "Glossary Flashcards", url: "flashcards.html", tag: "Practice", kw: "flashcards spaced repetition leitner revise revision memorize memorise drill study cards terms definitions glossary due box" },
     { title: "My Progress", url: "progress.html", tag: "Practice", kw: "progress dashboard my progress rings completed lessons done remaining continue resume certificate certificates course completion percent tracking enrolled" },

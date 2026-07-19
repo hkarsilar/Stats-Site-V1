@@ -204,7 +204,7 @@ Tick these as sessions complete them (each prompt ends by updating this list).
 - [x] P59 · Stats 2.6 rebuild — per-test logic + tabbed playgrounds (Mann–Whitney, Wilcoxon, Kruskal–Wallis, Friedman) (Extra Powerful · Ultra)
 - [x] P60 · front door v2 — track-based nav dropdowns, grouped Toolbox menu, resume into hero, personas + Curriculum/About tabs retired (Extra Powerful · Max, then /code-review ultra)
 - [x] P61 · course landing pages — 9 × `<course>/index.html`, BASE "../", entry points + ItemList retargeted (Extra Powerful · Max)
-- [ ] P62 · quiz v2 — exam mode + bank to ~200 questions (Extra Powerful · Ultra)
+- [x] P62 · quiz v2 — exam mode + bank 128 → 208 questions (≥2/lesson everywhere, Stats 1–2 weighted), `sc-exam` best scores, printable mock-exam report (Extra Powerful · Ultra)
 - [ ] P63 · worked problems — problems.html + Stats 1–2 sets, print-without-solutions (Extra Powerful · Ultra)
 - [ ] P64 · worked problems — Stats 3–4 + toolkit "spot the problem" sets (Extra Powerful · Ultra)
 - [ ] P65 · touch & small-screen ergonomics — touch-action sweep, finger-sized grab targets, 360px sweep (Powerful · Extra)
