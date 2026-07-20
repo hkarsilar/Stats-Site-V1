@@ -12,16 +12,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Practice Problems — Worked Statistics Exam Questions — StatsCapybara</title>
-  <meta name="description" content="Statistics problems with fully worked solutions: z-scores, confidence intervals, t-tests, ANOVA, chi-square, correlation and regression, one step at a time." />
+  <meta name="description" content="Forty-three statistics problems with fully worked solutions: z-scores, t-tests, ANOVA, regression, Bayes and survival analysis, one step at a time." />
   <link rel="canonical" href="https://statscapybara.com/problems.html" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Practice Problems — StatsCapybara" />
-  <meta property="og:description" content="Twenty-two exam-style statistics problems, each with a full worked solution: formula, numbers, arithmetic, and the sentence you would actually write." />
+  <meta property="og:description" content="Forty-three worked statistics problems, from z-scores to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
   <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
   <meta property="og:url" content="https://statscapybara.com/problems.html" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Practice Problems — StatsCapybara" />
-  <meta name="twitter:description" content="Twenty-two exam-style statistics problems, each with a full worked solution: formula, numbers, arithmetic, and the sentence you would actually write." />
+  <meta name="twitter:description" content="Forty-three worked statistics problems, from z-scores to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="assets/css/styles.css" />
@@ -135,6 +135,9 @@
         <ul class="pb-index">
           <li><a href="#stats-1"><span class="t">📊 Stats 1 · Foundations</span><br><span class="m">12 problems · data types → t-tests</span></a></li>
           <li><a href="#stats-2"><span class="t">🔗 Stats 2 · Groups &amp; relationships</span><br><span class="m">10 problems · ANOVA → regression</span></a></li>
+          <li><a href="#stats-3"><span class="t">📐 Stats 3 · Several predictors</span><br><span class="m">8 problems · multiple regression → missing data</span></a></li>
+          <li><a href="#stats-4"><span class="t">🎲 Stats 4 · Modern &amp; advanced</span><br><span class="m">7 problems · Bayes → model comparison</span></a></li>
+          <li><a href="#toolkit"><span class="t">🔍 Research Toolkit · Spot the problem</span><br><span class="m">6 problems · design, sampling, ethics, writing</span></a></li>
         </ul>
 
         <!-- ==================================================================
@@ -1415,6 +1418,1322 @@
               </ol>
               <p class="pb-answer">Three problems, three different fixes: heteroscedasticity invalidates the standard errors, case 31 has both the leverage and the influence to bend the line, and a VIF of 6.51 means the two predictors are nearly the same variable. None of them is a reason to abandon the model, and all three change what the coefficients mean.</p>
               <p class="pb-ref">From <a href="stats-2/regression-diagnostics/">§2.10 Regression Diagnostics</a> and <a href="stats-3/assumptions-of-regression/">§3.8 Assumptions of Regression</a>.</p>
+            </details>
+          </article>
+        </section>
+
+        <!-- ==================================================================
+             STATS 3
+             ================================================================== -->
+        <section class="pb-set" id="stats-3-set">
+          <h2 id="stats-3">📐 Stats 3 · Models with several predictors</h2>
+          <p class="pb-set-sub">Eight problems from the <a href="stats-3/">Stats 3 syllabus</a>. The arithmetic here is lighter than in Stats 1, and the judgement is heavier: reading a coefficient correctly, deciding what a model is allowed to claim, and noticing when the output is warning you about itself.</p>
+
+          <!-- ---------- 3.1 ----------
+               verify: node -e 'const SDy=12.4,SDs=4.0,SDsl=1.2,b1=1.30,b2=3.20;
+                        console.log(b1*SDs/SDy, b2*SDsl/SDy)'
+                     → β_study .4194, β_sleep .3097
+               implied r1y = β1 + .25β2 = .4968, r2y = .4145, R² = β1r1y + β2r2y = .3367 ≈ .34
+               adj R² = 1 − .66(119/117) = .3287; F = (.34/2)/(.66/117) = 30.14, p = 2.8e−11
+               SE_β = √(.66/(117×.9375)) = .0776 → SE_b1 = .2405, SE_b2 = .8016; t = 5.42, 4.00
+               b0 = 64 − 1.30(9.5) − 3.20(6.9) = 29.57; ŷ(10,7) = 64.97
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p3-1"><span class="pb-num">23</span>Two predictors, two scales</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A study of 120 first-year students regresses final exam score on weekly study hours and average nightly sleep. A journalist reads the output and writes that sleep matters two and a half times more than studying, because its coefficient is bigger.</p>
+            <div class="pb-given">
+              <span class="lbl">Regression output and descriptives</span>
+              <ul>
+                <li>Model: exam = 29.57 + 1.30(study hours) + 3.20(sleep hours)</li>
+                <li><em>SE</em> = 0.24 for study, 0.80 for sleep; both <em>p</em> &lt; .001, <em>df</em> = 117</li>
+                <li><em>R</em>² = .34, <em>F</em>(2, 117) = 30.14, <em>p</em> &lt; .001</li>
+                <li>Exam score: <em>M</em> = 64.0, <em>SD</em> = 12.4</li>
+                <li>Study hours: <em>M</em> = 9.5, <em>SD</em> = 4.0</li>
+                <li>Sleep hours: <em>M</em> = 6.9, <em>SD</em> = 1.2</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Put the study-hours coefficient into a sentence a non-statistician would understand.</li>
+              <li>Compute the standardized coefficients. Is the journalist right?</li>
+              <li>Predict the exam score for a student who studies 10 hours a week and sleeps 7 hours a night.</li>
+              <li>Compute adjusted <em>R</em>², and say why the intercept should not be interpreted.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Reading a raw coefficient</span>
+                  <span class="pb-note">Among students who sleep the same amount, each extra hour of weekly study is associated with 1.30 more exam points. The phrase doing the work is "who sleep the same amount": every coefficient in a multiple regression is the effect of its predictor with the others held fixed. Nothing here licenses the word <em>causes</em>, since nobody was assigned their study hours.</span>
+                </li>
+                <li><span class="pb-lbl">Standardizing</span>
+                  <span class="pb-math">β = b × (SD of the predictor) / (SD of the outcome)</span>
+                  <span class="pb-math">β<sub>study</sub> = 1.30 × 4.0 / 12.4 = 5.20 / 12.4 = .419</span>
+                  <span class="pb-math">β<sub>sleep</sub> = 3.20 × 1.2 / 12.4 = 3.84 / 12.4 = .310</span>
+                  <span class="pb-note">The journalist has it backwards. Study hours vary far more between students (<em>SD</em> = 4.0 hours) than sleep does (<em>SD</em> = 1.2 hours), so an hour of study is a much smaller step through the actual data than an hour of sleep. Once both are expressed in standard deviations, studying is the stronger predictor. Raw coefficients are only comparable when the predictors share a scale, and hours-per-week and hours-per-night do not.</span>
+                </li>
+                <li><span class="pb-lbl">A prediction</span>
+                  <span class="pb-math">ŷ = 29.57 + 1.30(10) + 3.20(7)</span>
+                  <span class="pb-math">= 29.57 + 13.00 + 22.40 = 64.97 ≈ 65.0 points</span>
+                  <span class="pb-note">Both values sit near the middle of their observed ranges, which is the only region where a prediction is safe.</span>
+                </li>
+                <li><span class="pb-lbl">Adjusted R² and the intercept</span>
+                  <span class="pb-math">adj <em>R</em>² = 1 − (1 − <em>R</em>²)(n − 1)/(n − k − 1)</span>
+                  <span class="pb-math">= 1 − (.66)(119/117) = 1 − .671 = .329 ≈ .33</span>
+                  <span class="pb-note">Barely below <em>R</em>², because two predictors is a cheap model at <em>n</em> = 120. The intercept of 29.57 is the predicted score for a student who studies zero hours a week and sleeps zero hours a night. No such student exists in the data, and the model has no information about that corner of the space, so the number is an artefact of where the plane happens to cross the axis.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">β<sub>study</sub> = .42 against β<sub>sleep</sub> = .31, so studying is the stronger predictor and the headline is wrong. Predicted score at 10 study hours and 7 sleep hours is 65.0, adjusted <em>R</em>² = .33.</p>
+              <p class="pb-ref">From <a href="stats-3/multiple-regression/">§3.1 Multiple Regression</a> · the same distinction shows up in <a href="effect-sizes.html">the effect-size converter</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 3.2 ----------
+               verify: adjusted mean = Ȳ − b(X̄ − X̄grand); X̄grand = 48.5
+                 int  61.4 − .62(3.5) = 59.23 ; ctrl 55.0 − .62(−3.5) = 57.17 ; diff 2.06
+                 cross-check 6.4 − .62(7.0) = 2.06
+                 implied within-group r = .62(10.5/9.0) = .7233 → MSE = 81(1 − .5232) = 38.62
+                 SE_adj = √(38.62(2/30 + 7²/(58×110.25))) = 1.694 → t = 1.216, F(1,57) = 1.48, p = .229
+                 naive t(58) = 6.4/√(81·2/30) = 2.754, p = .0078
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p3-2"><span class="pb-num">24</span>The reading programme that started ahead</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A school offers an after-school reading programme. Thirty children enrol and thirty comparable children do not, and everyone sits the same reading test before and after the term. The programme leader reports a 6.4-point advantage.</p>
+            <div class="pb-given">
+              <span class="lbl">Test scores, 30 per group</span>
+              <ul>
+                <li>Pretest: programme <em>M</em> = 52.0 (<em>SD</em> = 10.5), comparison <em>M</em> = 45.0 (<em>SD</em> = 10.5)</li>
+                <li>Posttest: programme <em>M</em> = 61.4 (<em>SD</em> = 9.0), comparison <em>M</em> = 55.0 (<em>SD</em> = 9.0)</li>
+                <li>Pooled within-group slope of posttest on pretest: <em>b</em> = 0.62</li>
+                <li>Independent <em>t</em>-test on posttest alone: <em>t</em>(58) = 2.75, <em>p</em> = .008</li>
+                <li>ANCOVA with pretest as covariate: <em>F</em>(1, 57) = 1.48, <em>p</em> = .229</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Compute each group's adjusted posttest mean.</li>
+              <li>How large is the adjusted effect, and why does it differ from 6.4?</li>
+              <li>The programme's newsletter says the course "raises reading scores by 6.4 points." Rewrite that sentence honestly.</li>
+              <li>Which ANCOVA assumption would you check first here, and what would you do if it failed?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The covariate's grand mean</span>
+                  <span class="pb-math">X̄ = (52.0 + 45.0) / 2 = 48.5</span>
+                  <span class="pb-note">Equal group sizes, so the simple average is the grand mean. ANCOVA compares the groups at this pretest value.</span>
+                </li>
+                <li><span class="pb-lbl">Adjusted means</span>
+                  <span class="pb-math">adjusted Ȳ<sub>j</sub> = Ȳ<sub>j</sub> − b(X̄<sub>j</sub> − X̄)</span>
+                  <span class="pb-math">programme: 61.4 − 0.62(52.0 − 48.5) = 61.4 − 2.17 = 59.23</span>
+                  <span class="pb-math">comparison: 55.0 − 0.62(45.0 − 48.5) = 55.0 + 2.17 = 57.17</span>
+                  <span class="pb-note">The programme group is slid down because it started 3.5 points above average, and the comparison group is slid up for the mirror-image reason.</span>
+                </li>
+                <li><span class="pb-lbl">The adjusted effect</span>
+                  <span class="pb-math">59.23 − 57.17 = 2.06 points</span>
+                  <span class="pb-math">shortcut: adjusted = raw − b × (covariate gap) = 6.4 − 0.62(7.0) = 6.4 − 4.34 = 2.06</span>
+                  <span class="pb-note">Of the 6.4-point advantage, 4.34 points were already there in September. What the term added, at least as far as this analysis can see, is 2.06 points, and <em>F</em>(1, 57) = 1.48, <em>p</em> = .229 says even that is within what chance produces at this sample size.</span>
+                </li>
+                <li><span class="pb-lbl">Rewriting the claim</span>
+                  <span class="pb-note">"Children in the programme finished 6.4 points ahead, but they also began the year 7.0 points ahead. Adjusting for the starting gap leaves a 2.06-point difference that is not statistically distinguishable from zero, <em>F</em>(1, 57) = 1.48, <em>p</em> = .229." Note also that families chose the programme, so even the adjusted figure is an observational comparison. Pretest score is the one baseline difference that was measured; motivation, home support and reading habits were not.</span>
+                </li>
+                <li><span class="pb-lbl">Homogeneity of regression slopes</span>
+                  <span class="pb-note">ANCOVA fits one slope to both groups and reports a single adjusted gap. That gap only exists if the pretest predicts the posttest equally in each group. Test it by adding the group × pretest interaction: if the interaction is significant, the lines are not parallel and there is no single number to report. You would then fit the interaction model and describe how the programme's effect changes across the pretest range, which is often the more interesting finding anyway.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Adjusted means 59.23 and 57.17, an adjusted difference of 2.06 points against a raw difference of 6.4. Two thirds of the headline gap was baseline imbalance, and what remains is not significant.</p>
+              <p class="pb-ref">From <a href="stats-3/ancova/">§3.4 ANCOVA</a> · the parallel-lines assumption belongs to <a href="stats-3/interactions-in-regression/">§3.5 Interactions</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 3.3 ----------
+               verify: node -e 'const B0=-2.8,B1=.45,p=x=>1/(1+Math.exp(-(B0+B1*x)));
+                        console.log(Math.exp(B1), Math.exp(5*B1), p(0),p(6),p(8),p(14),p(16), -B0/B1)'
+                     → OR 1.5683; OR(5h) 9.4877; p(0)=.0573; p(6)=.4750; p(8)=.6900;
+                       p(14)=.9707; p(16)=.9879; 50% at 6.222 h
+                       Δp 6→8 = .215 ; Δp 14→16 = .0172
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p3-3"><span class="pb-num">25</span>Three scales, one model</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A driving school fits a logistic regression predicting whether a learner passes the practical test on the first attempt, from the number of paid lessons taken beforehand.</p>
+            <div class="pb-given">
+              <span class="lbl">Fitted model</span>
+              logit(pass) = −2.80 + 0.45 × (lessons)
+              <ul>
+                <li>Lessons in the sample ranged from 2 to 30</li>
+                <li>Useful values: e<sup>0.45</sup> = 1.568, e<sup>2.25</sup> = 9.488, e<sup>0.10</sup> = 1.105, e<sup>−0.80</sup> = 0.449</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Give the odds ratio for one extra lesson, and for five extra lessons.</li>
+              <li>Compute the predicted pass probability at 6 lessons and at 8 lessons.</li>
+              <li>Now do the same at 14 and 16 lessons. Compare the two increases.</li>
+              <li>How many lessons put a learner at a coin-flip?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Odds ratios</span>
+                  <span class="pb-math">OR (1 lesson) = e<sup>b₁</sup> = e<sup>0.45</sup> = 1.57</span>
+                  <span class="pb-math">OR (5 lessons) = e<sup>5b₁</sup> = e<sup>2.25</sup> = 9.49</span>
+                  <span class="pb-note">Each lesson multiplies the odds of passing by about 1.57. Five lessons multiply them by 1.57<sup>5</sup>, which is 9.49, not by 5 × 1.57. Odds ratios compound.</span>
+                </li>
+                <li><span class="pb-lbl">Probabilities at 6 and 8 lessons</span>
+                  <span class="pb-math">P = 1 / (1 + e<sup>−(b₀ + b₁x)</sup>)</span>
+                  <span class="pb-math">x = 6: η = −2.80 + 2.70 = −0.10 → P = 1/(1 + 1.105) = .475</span>
+                  <span class="pb-math">x = 8: η = −2.80 + 3.60 = 0.80 → P = 1/(1 + 0.449) = .690</span>
+                  <span class="pb-math">increase = .690 − .475 = .215</span>
+                </li>
+                <li><span class="pb-lbl">Probabilities at 14 and 16 lessons</span>
+                  <span class="pb-math">x = 14: η = −2.80 + 6.30 = 3.50 → P = .971</span>
+                  <span class="pb-math">x = 16: η = −2.80 + 7.20 = 4.40 → P = .988</span>
+                  <span class="pb-math">increase = .988 − .971 = .017</span>
+                  <span class="pb-note">The same two-lesson step carries the same odds ratio in both places, e<sup>0.90</sup> = 2.46, and yet the probability moves 21.5 points in the middle of the curve and 1.7 points near the top. This is why a logistic model has no single "effect on probability". The odds ratio is constant everywhere; the probability change depends entirely on where you start.</span>
+                </li>
+                <li><span class="pb-lbl">The 50% point</span>
+                  <span class="pb-math">P = .50 when the log-odds = 0, so b₀ + b₁x = 0</span>
+                  <span class="pb-math">x = −b₀ / b₁ = 2.80 / 0.45 = 6.22 lessons</span>
+                  <span class="pb-note">Just over six lessons is where a learner becomes as likely to pass as to fail. The intercept alone answers a related question: at zero lessons the log-odds are −2.80, so P = .057, a 6% chance of passing untaught.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">OR = 1.57 per lesson and 9.49 per five lessons. The same two extra lessons raise the pass probability by .215 around the middle of the curve and by .017 near the top, and the coin-flip point is 6.22 lessons.</p>
+              <p class="pb-ref">From <a href="stats-3/logistic-regression/">§3.7 Logistic Regression</a> · the same curve reappears as a <a href="stats-4/psychometric-functions/">psychometric function</a> in §4.11.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 3.4 ----------
+               verify: cells IE 82, IH 68, DE 78, DH 52; n = 15/cell, MSE = 90, df error = 56
+                 grand 70; A marginals 75/65; B marginals 80/60
+                 SSA = 15·2·(5²+5²) = 1500 ; SSB = 15·2·(10²+10²) = 6000
+                 SSAB = 15·(3²×4) = 540 ; SSE = 90×56 = 5040
+                 F_A = 16.67 p = 1.43e−4 ; F_B = 66.67 p = 4.14e−11 ; F_AB = 6.00 p = .0175
+                 partial η² = .229 / .543 / .097
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p3-4"><span class="pb-num">26</span>The main effect that isn't the story</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">Sixty participants solve logic puzzles under one of four conditions in a 2 × 2 design: feedback arrives either immediately or after a delay, and the puzzles are either easy or hard. The abstract reports that immediate feedback improved accuracy by 10 percentage points.</p>
+            <div class="pb-given">
+              <span class="lbl">Cell means (% correct), 15 participants per cell</span>
+              <table class="ref-table">
+                <thead><tr><th></th><th>Easy</th><th>Hard</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Immediate feedback</strong></td><td>82</td><td>68</td></tr>
+                  <tr><td><strong>Delayed feedback</strong></td><td>78</td><td>52</td></tr>
+                </tbody>
+              </table>
+              <span class="lbl" style="margin-top:.5rem">From the ANOVA table</span>
+              <em>MS</em><sub>error</sub> = 90.0, <em>df</em><sub>error</sub> = 56
+            </div>
+            <ol class="pb-ask">
+              <li>Compute the marginal means and both main effects.</li>
+              <li>Compute the simple effect of feedback at each difficulty level.</li>
+              <li>Build the three <em>F</em>-ratios, given that <em>SS</em><sub>A</sub> = 1500, <em>SS</em><sub>B</sub> = 6000 and <em>SS</em><sub>A×B</sub> = 540.</li>
+              <li>Is the abstract's sentence defensible? Write a better one.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Marginal means</span>
+                  <span class="pb-math">immediate = (82 + 68)/2 = 75      delayed = (78 + 52)/2 = 65</span>
+                  <span class="pb-math">easy = (82 + 78)/2 = 80      hard = (68 + 52)/2 = 60</span>
+                  <span class="pb-math">grand mean = (82 + 68 + 78 + 52)/4 = 70</span>
+                  <span class="pb-note">Main effect of feedback = 75 − 65 = 10 points. Main effect of difficulty = 80 − 60 = 20 points.</span>
+                </li>
+                <li><span class="pb-lbl">Simple effects</span>
+                  <span class="pb-math">feedback effect on easy puzzles: 82 − 78 = 4 points</span>
+                  <span class="pb-math">feedback effect on hard puzzles: 68 − 52 = 16 points</span>
+                  <span class="pb-math">interaction contrast = 4 − 16 = −12 points</span>
+                  <span class="pb-note">The 10-point main effect is the average of a 4 and a 16. It describes neither condition.</span>
+                </li>
+                <li><span class="pb-lbl">The F-ratios</span>
+                  <span class="pb-math">F = MS<sub>effect</sub> / MS<sub>error</sub>, and each effect here has df = 1</span>
+                  <span class="pb-math">feedback: F(1, 56) = 1500 / 90 = 16.67, p &lt; .001</span>
+                  <span class="pb-math">difficulty: F(1, 56) = 6000 / 90 = 66.67, p &lt; .001</span>
+                  <span class="pb-math">interaction: F(1, 56) = 540 / 90 = 6.00, p = .017</span>
+                  <span class="pb-math">partial η² = SS<sub>effect</sub> / (SS<sub>effect</sub> + SS<sub>error</sub>), with SS<sub>error</sub> = 90 × 56 = 5040</span>
+                  <span class="pb-math">= .23 (feedback), .54 (difficulty), .10 (interaction)</span>
+                </li>
+                <li><span class="pb-lbl">Fixing the abstract</span>
+                  <span class="pb-note">The sentence is arithmetically true and practically misleading. A significant interaction means the feedback effect is not one number, so quoting the average as though it applied everywhere hides the finding. Something closer to the data: "Feedback timing interacted with difficulty, <em>F</em>(1, 56) = 6.00, <em>p</em> = .017, partial η² = .10. Immediate feedback helped very little on easy puzzles (4 points) and substantially on hard ones (16 points)." When an interaction is significant, describe the simple effects first and let the main effects sit in the table.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Both main effects and the interaction are significant, <em>F</em>s(1, 56) = 16.67, 66.67 and 6.00. Because the feedback benefit is 4 points on easy puzzles and 16 on hard ones, the abstract's single 10-point claim describes no condition in the study.</p>
+              <p class="pb-ref">From <a href="stats-2/factorial-anova-two-way/">§2.4 Factorial ANOVA</a> and <a href="stats-3/interactions-in-regression/">§3.5 Interactions in Regression</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 3.5 ----------
+               verify: 3! = 6 orders; Latin square with 3 conditions = 3 sequences
+                 Greenhouse–Geisser: df (2, 58) × ε = 0.72 → (1.44, 41.76)
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p3-5"><span class="pb-num">27</span>Between, within, or neither</h3>
+              <span class="pb-chip warm">Warm-up</span>
+            </div>
+            <p class="pb-scenario">A researcher wants to compare three interface designs on task completion time. She has budget for about 90 testing sessions and asks you whether to run 90 people through one design each, or 30 people through all three.</p>
+            <div class="pb-given">
+              <span class="lbl">What she has told you</span>
+              <ul>
+                <li>Task completion time in seconds, three designs</li>
+                <li>Individual differences in typing speed are large</li>
+                <li>Each session takes about 20 minutes per design</li>
+                <li>The task is the same puzzle type in all three designs</li>
+                <li>Her pilot analysis reported ε = 0.72 from a Greenhouse–Geisser correction</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Which design would you recommend, and which test does it call for?</li>
+              <li>What does the within-subjects version buy, and what does it cost?</li>
+              <li>How many possible presentation orders are there, and how would you handle them?</li>
+              <li>Her pilot mentioned sphericity. What is it, and what do you do with ε = 0.72?</li>
+              <li>When would you drop repeated-measures ANOVA for a mixed model?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The recommendation</span>
+                  <span class="pb-note">Within-subjects, analysed with a one-way repeated-measures ANOVA. Typing speed varies a lot between people and has nothing to do with the interfaces, so in a between-subjects design it lands in the error term and buries the effect. Having each person serve as their own control removes it before the test ever runs.</span>
+                </li>
+                <li><span class="pb-lbl">The trade</span>
+                  <span class="pb-note">What you gain is power: the same 90 sessions now compare designs within a person rather than across people, and the error term shrinks by whatever the individual differences were worth. What you pay for is order: someone on their third interface is faster because they have solved two puzzles already, and possibly more bored. Practice, fatigue and carryover are all real, and none of them exist in a between-subjects design.</span>
+                </li>
+                <li><span class="pb-lbl">Counting the orders</span>
+                  <span class="pb-math">3! = 3 × 2 × 1 = 6 possible orders</span>
+                  <span class="pb-note">With 30 participants you can run complete counterbalancing, five people per order, which balances practice effects across designs exactly. A Latin square using three sequences is the cheaper alternative when the number of conditions makes 6 impractical, and it balances first-order carryover rather than everything. Also vary the specific puzzles across designs so nobody sees the same problem twice.</span>
+                </li>
+                <li><span class="pb-lbl">Sphericity and ε</span>
+                  <span class="pb-note">Sphericity requires the variances of the differences between every pair of conditions to be equal. When it fails, the <em>F</em>-test's degrees of freedom are too generous and the <em>p</em>-value comes out too small. Greenhouse–Geisser multiplies both <em>df</em> by ε to compensate.</span>
+                  <span class="pb-math">uncorrected: F(2, 58)</span>
+                  <span class="pb-math">corrected: F(2 × 0.72, 58 × 0.72) = F(1.44, 41.76)</span>
+                  <span class="pb-note">Report the fractional degrees of freedom and name the correction. An ε of 0.72 is a meaningful departure, so with three conditions this is not optional.</span>
+                </li>
+                <li><span class="pb-lbl">When a mixed model wins</span>
+                  <span class="pb-note">Repeated-measures ANOVA needs a complete row for every participant, so one missing session throws that person out entirely. A mixed model keeps partial data, handles unequal numbers of trials per person, allows the covariance structure to be modelled rather than assumed, and extends to designs where the repeated factor is continuous. If sessions get cancelled or the design grows a second random factor such as stimulus items, switch.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Run it within-subjects with a repeated-measures ANOVA, counterbalance across all 6 orders with 5 participants each, and report the Greenhouse–Geisser corrected test as <em>F</em>(1.44, 41.76).</p>
+              <p class="pb-ref">From <a href="methods/between-vs-within-designs/">§1.5 Between vs Within Designs</a>, <a href="stats-2/repeated-measures-anova/">§2.5 Repeated Measures ANOVA</a> and <a href="stats-4/mixed-and-multilevel-models/">§4.5 Mixed Models</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 3.6 ----------
+               verify: node -e 'global.window={};require("./assets/js/viz.js");const V=window.VIZ;
+                        const pw=(f,k,N)=>{const d1=k-1,d2=N-k,l=f*f*N;return 1-V.ncfCdf(V.fInv(.05,d1,d2),d1,d2,l)};
+                        console.log(pw(.25,3,60), pw(.25,3,90), pw(.25,3,159))'
+                     → N=60 (20/grp) power .3744 ; N=90 (30/grp) .5396 ; N=159 (53/grp) .8049
+                     λ = f²N = .0625×159 = 9.94 ; smallest N reaching .80 is 158, so 159 for equal groups
+                     (matches plan.html's documented f=.25/k=3 → N=159)
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p3-6"><span class="pb-num">28</span>Getting the inputs right</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A master's student is planning a study comparing three teaching methods on an end-of-term test. Her draft methods section says: "Based on previous work we expect a medium effect. We will recruit 20 participants per group, which is standard in this literature."</p>
+            <div class="pb-given">
+              <span class="lbl">What she has decided so far</span>
+              <ul>
+                <li>Three independent groups, one test score per participant</li>
+                <li>Target power .80, α = .05, two-tailed</li>
+                <li>"Medium" effect, source unspecified</li>
+                <li>Planned <em>n</em> = 20 per group, 60 in total</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Which effect-size measure does this design need, and what is Cohen's medium value for it?</li>
+              <li>Roughly what power does her planned sample actually have?</li>
+              <li>What total sample would reach .80, and how would you check it?</li>
+              <li>She adds that if the result is null she will "report observed power". Talk her out of it.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The right effect size</span>
+                  <span class="pb-note">Three groups compared with a one-way ANOVA means Cohen's <em>f</em>, not <em>d</em>. Cohen's benchmarks for <em>f</em> are .10 small, .25 medium, .40 large. Writing "medium effect" without naming the metric is the first thing to fix, because <em>d</em> = 0.5 and <em>f</em> = 0.25 are different quantities that happen to share the label.</span>
+                </li>
+                <li><span class="pb-lbl">Power at the planned n</span>
+                  <span class="pb-math">noncentrality λ = f²N = 0.25² × 60 = 3.75</span>
+                  <span class="pb-math">df₁ = k − 1 = 2, df₂ = N − k = 57</span>
+                  <span class="pb-math">power ≈ .37</span>
+                  <span class="pb-note">If the effect she expects is really there, this design finds it about 37% of the time. She is more likely to end the year with an ambiguous null than with an answer, and a null from a study this size tells nobody anything.</span>
+                </li>
+                <li><span class="pb-lbl">The sample that works</span>
+                  <span class="pb-math">λ = 0.25² × 159 = 9.94, df₁ = 2, df₂ = 156 → power = .805</span>
+                  <span class="pb-note">159 in total, so 53 per group. Set the <a href="power.html">power calculator</a> to one-way ANOVA, <em>f</em> = 0.25, <em>k</em> = 3, α = .05, power = .80 and it returns the same figure. Two things to say in the write-up: "medium" is the weakest possible justification for an effect size, and the smallest effect that would actually change teaching practice is the better anchor. If prior studies are the source, discount them, because published effects run inflated.</span>
+                </li>
+                <li><span class="pb-lbl">Observed power</span>
+                  <span class="pb-note">Observed power is computed from the effect size she happens to obtain, which makes it a rearrangement of her own <em>p</em>-value rather than new information. A <em>p</em> just above .05 always yields observed power just under 50%, whatever the design. The question worth answering after a null result is different: what is the smallest effect this study could have detected with 80% power? Answer that from the design, before the data.</span>
+                </li>
+                <li><span class="pb-lbl">One more thing to warn her about</span>
+                  <span class="pb-note">She mentioned a possible follow-up with a second factor. Interactions typically need considerably more data than main effects of the same nominal size, because the interaction contrast is a difference of differences and its standard error is correspondingly larger. Power the study for the effect she most wants to detect, and if that is the interaction, plan the sample around it.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">She needs Cohen's <em>f</em> = 0.25, not <em>d</em>. At 20 per group her power is about .37; reaching .80 takes 159 participants, 53 per group. Observed power after the fact adds nothing.</p>
+              <p class="pb-ref">From <a href="stats-3/power-analysis-for-complex-designs/">§3.12 Power Analysis</a> · run the numbers in <a href="power.html">Power &amp; Sample Size</a> or sketch the whole design in <a href="plan.html">Plan My Analysis</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 3.7 ----------
+               verify: VIF = 1/(1 − R²ⱼ), tolerance = 1 − R²ⱼ
+                 .923 → tol .077, VIF 12.99 ; .887 → tol .113, VIF 8.85 ; .861 → tol .139, VIF 7.19
+                 model F = (.31/3)/(.69/146) = 21.87, p = 9.4e−12
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p3-7"><span class="pb-num">29</span>Significant model, significant nothing</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">An occupational psychologist regresses supervisor-rated job performance on three predictors in a sample of 150 employees. The model works. None of the predictors do, and one of them has the wrong sign.</p>
+            <div class="pb-given">
+              <span class="lbl">Output</span>
+              <ul>
+                <li>Overall model: <em>R</em>² = .31, <em>F</em>(3, 146) = 21.87, <em>p</em> &lt; .001</li>
+                <li>Age: <em>b</em> = 0.09, <em>p</em> = .38</li>
+                <li>Years of experience: <em>b</em> = −0.18, <em>p</em> = .21</li>
+                <li>Years since qualifying: <em>b</em> = 0.24, <em>p</em> = .09</li>
+              </ul>
+              <span class="lbl" style="margin-top:.5rem">Each predictor regressed on the other two</span>
+              <em>R</em>² = .923 (age), .887 (experience), .861 (years since qualifying)
+            </div>
+            <ol class="pb-ask">
+              <li>Compute the tolerance and VIF for each predictor.</li>
+              <li>Which cross the usual alarm thresholds?</li>
+              <li>Explain the significant <em>F</em> with no significant coefficients, and the negative sign on experience.</li>
+              <li>Give three possible fixes and say what each one costs.</li>
+              <li>Does any of this damage the model's predictions?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Tolerance and VIF</span>
+                  <span class="pb-math">tolerance = 1 − R²ⱼ      VIF = 1 / tolerance</span>
+                  <table class="ref-table">
+                    <thead><tr><th>Predictor</th><th><em>R</em>²ⱼ</th><th>Tolerance</th><th>VIF</th></tr></thead>
+                    <tbody>
+                      <tr><td>Age</td><td>.923</td><td>.077</td><td>12.99</td></tr>
+                      <tr><td>Years of experience</td><td>.887</td><td>.113</td><td>8.85</td></tr>
+                      <tr><td>Years since qualifying</td><td>.861</td><td>.139</td><td>7.19</td></tr>
+                    </tbody>
+                  </table>
+                </li>
+                <li><span class="pb-lbl">Reading the thresholds</span>
+                  <span class="pb-note">The common alarm level is VIF &gt; 5, with VIF &gt; 10 as the lenient version. All three predictors clear the strict threshold and age clears the lenient one. A tolerance of .077 says that only 7.7% of the variance in age is unique to age; the other 92.3% is already carried by the other two predictors.</span>
+                </li>
+                <li><span class="pb-lbl">Why the F and the t-tests disagree</span>
+                  <span class="pb-note">They are asking different questions. The <em>F</em>-test asks whether the three predictors <em>together</em> explain performance, and they clearly do: <em>R</em>² = .31. Each <em>t</em>-test asks whether one predictor adds anything <em>once the other two are in the model</em>, and since the three are nearly the same variable, none of them adds much on top of the others. This pattern is the textbook fingerprint of multicollinearity. The negative coefficient on experience is the same problem in a different costume: with predictors this entangled, the coefficient estimates become unstable, their standard errors inflate, and the fitted values can be reached by combinations that make no substantive sense. Do not interpret that minus sign as evidence that experience harms performance.</span>
+                </li>
+                <li><span class="pb-lbl">Three fixes and their costs</span>
+                  <span class="pb-note">Drop predictors and keep one: simplest, and it changes the question. The surviving coefficient is now the effect of that variable <em>plus</em> everything it stands in for, so name it honestly (say "career stage", not "age"). Combine them into a composite or a principal component: keeps all the information and buys interpretability problems, since a component score is no longer a thing anyone can act on. Regularize with ridge regression: stabilises the estimates by accepting a little bias, which is the right call when prediction matters more than individual coefficients. There is also a fourth option worth naming, which is to collect data where the predictors come apart, for instance including career changers whose age and experience diverge.</span>
+                </li>
+                <li><span class="pb-lbl">Predictions are fine</span>
+                  <span class="pb-note">Multicollinearity inflates the variance of the coefficient <em>estimates</em>, not the fitted values. Within the range of predictor combinations actually observed, this model predicts as well as its <em>R</em>² suggests. What it cannot do is tell you which of the three variables is responsible, and that is usually the question that prompted the study.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">VIFs of 12.99, 8.85 and 7.19, all above the usual alarm level of 5. The predictors are nearly the same variable, so the model as a whole is significant while no individual coefficient can be trusted, including its sign. Prediction survives; interpretation does not.</p>
+              <p class="pb-ref">From <a href="stats-3/multicollinearity-and-variable-selection/">§3.2 Multicollinearity</a> · compare with the diagnostics in <a href="stats-2/regression-diagnostics/">§2.10</a> and Problem 22 above.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 3.8 ----------
+               verify: dropout 18/90 = 20.0% intervention, 6/90 = 6.67% control, 24/180 = 13.3% overall
+                       no other arithmetic; mechanism reasoning follows stats-4/missing-data
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p3-8"><span class="pb-num">30</span>The twenty-four who did not come back</h3>
+              <span class="pb-chip stretch">Stretch</span>
+            </div>
+            <p class="pb-scenario">A twelve-week weight-management trial randomised 180 adults to an intervention or a control arm. Twenty-four never returned for the week-12 weigh-in. The analyst dropped them and reported the result.</p>
+            <div class="pb-given">
+              <span class="lbl">What the trial knows about the missing 24</span>
+              <ul>
+                <li>18 were in the intervention arm, 6 in the control arm (90 per arm at randomisation)</li>
+                <li>Baseline weight: dropouts <em>M</em> = 104.2 kg, completers <em>M</em> = 96.1 kg</li>
+                <li>Dropouts reported more side effects at the week-4 check-in</li>
+                <li>All 24 have baseline and week-4 weights recorded; only week 12 is missing</li>
+                <li>Complete-case result: intervention −5.8 kg, control −2.1 kg, <em>p</em> = .003</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Compute the dropout rate in each arm. Is the difference itself worth reporting?</li>
+              <li>Classify the missingness mechanism, and say what you cannot rule out.</li>
+              <li>In which direction is the complete-case estimate likely to be wrong?</li>
+              <li>Evaluate three quick fixes: mean imputation, last observation carried forward, and multiple imputation.</li>
+              <li>What should the paper report?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Dropout by arm</span>
+                  <span class="pb-math">intervention: 18 / 90 = 20.0%</span>
+                  <span class="pb-math">control: 6 / 90 = 6.7%</span>
+                  <span class="pb-math">overall: 24 / 180 = 13.3%</span>
+                  <span class="pb-note">Differential dropout is a finding, not a nuisance. Three times as many people left the intervention arm, and the week-4 side-effect reports suggest why. A trial where the treatment drives people out has learned something important about the treatment.</span>
+                </li>
+                <li><span class="pb-lbl">Naming the mechanism</span>
+                  <span class="pb-note">Not MCAR: missingness is clearly related to arm, to baseline weight and to week-4 side effects, all of which are observed. That is the MAR pattern, and it is the workable case, because the observed variables carry the information needed to correct for it. What you cannot rule out is MNAR: if people quit precisely because the scale was not moving, missingness depends on the unobserved week-12 weight itself, and no amount of cleverness with the observed data settles that. The distinction is untestable from the data. It is an assumption you argue for and then probe.</span>
+                </li>
+                <li><span class="pb-lbl">Direction of the bias</span>
+                  <span class="pb-note">Complete-case analysis keeps the people who stayed, and in the intervention arm those are disproportionately the ones for whom it was working and tolerable. The 20% who left were heavier at baseline and struggling with side effects. So the −5.8 kg is an estimate of what the treatment does <em>for people who can stick with it</em>, which flatters it relative to what it does for everyone offered it. The control arm loses far fewer people, so the comparison is unbalanced on top of being optimistic.</span>
+                </li>
+                <li><span class="pb-lbl">Three fixes, graded</span>
+                  <span class="pb-note">Mean imputation is the worst of the three. It inserts values with zero variability, shrinks the standard deviation, weakens every correlation, and leaves the software believing it has a full 180 cases, so the standard errors and <em>p</em>-values come out overconfident. Last observation carried forward is better than it looks in this specific trial, since carrying a week-4 weight forward in a study where weight is falling understates the intervention's benefit and is therefore conservative. It is still an assumption dressed up as data, it does not propagate any uncertainty, and regulators have moved away from it. Multiple imputation is the right tool: build the imputation model from baseline weight, arm, week-4 weight and side-effect reports, generate several completed datasets, analyse each, and pool. The extra uncertainty from the holes then flows honestly into the standard errors. A mixed model fitted to all timepoints reaches the same place under MAR and needs no imputation step at all.</span>
+                </li>
+                <li><span class="pb-lbl">What the paper should say</span>
+                  <span class="pb-note">How much was missing and from which arm; a comparison of dropouts and completers on every baseline variable available; the mechanism assumed and the reasoning behind it; the primary analysis under MAR, by multiple imputation or a mixed model; and a sensitivity analysis that asks what happens if the dropouts did badly, for instance assuming they returned to baseline weight. If the conclusion survives that, say so. If it does not, that is the result.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">20% dropout in the intervention arm against 6.7% in the control arm, related to observed variables, so MAR at best and possibly MNAR. Complete-case analysis keeps the people it worked for and overstates the benefit. Use multiple imputation or a mixed model, and report a sensitivity analysis alongside it.</p>
+              <p class="pb-ref">From <a href="stats-4/missing-data/">§4.9 Missing Data</a> · the reporting standard belongs to <a href="writing/writing-results/">§5.4 From Output to Results</a>.</p>
+            </details>
+          </article>
+        </section>
+
+
+        <!-- ==================================================================
+             STATS 4
+             ================================================================== -->
+        <section class="pb-set" id="stats-4-set">
+          <h2 id="stats-4">🎲 Stats 4 · Modern &amp; advanced</h2>
+          <p class="pb-set-sub">Seven problems from the <a href="stats-4/">Stats 4 syllabus</a>: updating a belief with Bayes' rule, pulling sensitivity apart from bias, reading a survival curve that never reaches zero, and choosing between models that all fit.</p>
+
+          <!-- ---------- 4.1 ----------
+               verify: node -e 'const pr=.008,se=.95,sp=.92;const pp=pr*se+(1-pr)*(1-sp);
+                        console.log(pp, pr*se/pp)'
+                     → P(+) = .08696 ; PPV = .087397
+                 per 100,000: 800 with, 760 TP; 99,200 without, 7,936 FP; 8,696 positives
+                 760/8696 = .087397 ✓
+                 LR+ = .95/.08 = 11.875 ; prior odds = .008/.992 = .0080645
+                 after 1 pos: odds .0957661 → p .087397 ; after 2: odds 1.137222 → p .532103
+                 NPV = (.992×.92)/(.008×.05 + .992×.92) = .91264/.91304 = .999562
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p4-1"><span class="pb-num">31</span>A very good test for a very rare disease</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A screening programme offers a blood test for a condition that affects 8 people in every 1,000. A patient tests positive and is told the test is "95% accurate". She would like to know what that means for her.</p>
+            <div class="pb-given">
+              <span class="lbl">Test characteristics</span>
+              <ul>
+                <li>Prevalence: 0.8% of the screened population</li>
+                <li>Sensitivity: 95% of people with the condition test positive</li>
+                <li>Specificity: 92% of people without it test negative</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Build the natural-frequency table for 100,000 screened people.</li>
+              <li>What is the probability she has the condition, given the positive result?</li>
+              <li>She takes a second, independent test and it is also positive. Now what?</li>
+              <li>What is the probability that someone who tests <em>negative</em> is genuinely clear?</li>
+              <li>Why does a 95% sensitivity feel so much more reassuring than the answer to question 2?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Natural frequencies, 100,000 people</span>
+                  <table class="ref-table">
+                    <thead><tr><th></th><th>Test positive</th><th>Test negative</th><th>Total</th></tr></thead>
+                    <tbody>
+                      <tr><td>Has the condition</td><td>760</td><td>40</td><td>800</td></tr>
+                      <tr><td>Does not have it</td><td>7,936</td><td>91,264</td><td>99,200</td></tr>
+                      <tr><td><strong>Total</strong></td><td><strong>8,696</strong></td><td><strong>91,304</strong></td><td>100,000</td></tr>
+                    </tbody>
+                  </table>
+                  <span class="pb-math">800 × .95 = 760 true positives</span>
+                  <span class="pb-math">99,200 × .08 = 7,936 false positives</span>
+                  <span class="pb-note">Counting people instead of manipulating probabilities is the single most reliable way to get this right, and it is how the answer becomes obvious rather than surprising.</span>
+                </li>
+                <li><span class="pb-lbl">The answer she wants</span>
+                  <span class="pb-math">P(condition | positive) = 760 / 8,696 = .0874</span>
+                  <span class="pb-note">About 9%. Of every 100 positive results the programme issues, roughly 91 are false alarms. The test has not failed; it is doing exactly what its specificity promises. The trouble is that 8% of a very large healthy group outnumbers 95% of a very small sick one.</span>
+                </li>
+                <li><span class="pb-lbl">A second positive</span>
+                  <span class="pb-math">posterior odds = prior odds × likelihood ratio</span>
+                  <span class="pb-math">LR⁺ = sensitivity / (1 − specificity) = .95 / .08 = 11.875</span>
+                  <span class="pb-math">prior odds = .008 / .992 = .00806</span>
+                  <span class="pb-math">after one positive: .00806 × 11.875 = .0958 → P = .0958/1.0958 = .0874 ✓</span>
+                  <span class="pb-math">after two positives: .0958 × 11.875 = 1.1372 → P = 1.1372/2.1372 = .532</span>
+                  <span class="pb-note">The first test moved her from 0.8% to 8.7%, and the second from 8.7% to 53%. Yesterday's posterior is today's prior, and the odds form makes the update a single multiplication. The word "independent" is carrying real weight here: if both tests share a systematic quirk, for instance both cross-reacting with the same protein, the second result adds far less than this calculation assumes.</span>
+                </li>
+                <li><span class="pb-lbl">A negative result</span>
+                  <span class="pb-math">P(clear | negative) = 91,264 / 91,304 = .9996</span>
+                  <span class="pb-note">99.96%. When the condition is rare, a negative result is extremely informative and a positive one barely is. Screening tests are usually built this way on purpose, because the positives get followed up and the negatives get sent home.</span>
+                </li>
+                <li><span class="pb-lbl">Why the intuition fails</span>
+                  <span class="pb-note">Sensitivity answers "if you are sick, will the test say so?" She is asking the reverse: "the test said so, am I sick?" Those two conditional probabilities are only equal when the base rate is 50%, and here it is 0.8%. Confusing them is base-rate neglect, and it is not a beginner's mistake. Doctors asked this exact question in studies of medical decision-making get it wrong at high rates too, until the numbers are presented as counts of people.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">A single positive leaves her at about 9%, two independent positives at 53%, and a negative result clears her with 99.96% probability. Nothing is wrong with the test; the base rate is doing the work.</p>
+              <p class="pb-ref">From <a href="stats-4/bayesian-thinking/">§4.2 Bayesian Thinking</a> · the same 2 × 2 is the <a href="ml/classification-metrics/">confusion matrix</a> in §4.4 of the ML course.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 4.2 ----------
+               verify: node -e 'global.window={};require("./assets/js/viz.js");const V=window.VIZ;
+                        const a=41,b=39;console.log(a/(a+b),(a-1)/(a+b-2),
+                        Math.sqrt(a*b/((a+b)**2*(a+b+1))), 1-V.betai(a,b,0.5))'
+                     → mean .5125 ; mode .512821 ; SD .055538 ; P(θ>.5) = .588928
+                 95% central CrI by bisection on betai: [.4036, .6208]
+                 normal approx: 1 − Φ((.5 − .5125)/.055538) = .589  (agrees to 3 dp)
+                 flat Beta(1,1) prior would give Beta(34,28), mean .5484 ; MLE 33/60 = .55
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p4-2"><span class="pb-num">32</span>Updating what last quarter told you</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A team redesigns the onboarding flow in an app. Last quarter's version had a completion rate they summarise as a Beta(8, 12) prior. The new flow goes out to 60 users and 33 of them finish onboarding.</p>
+            <div class="pb-given">
+              <span class="lbl">Prior, data, and two software outputs</span>
+              <ul>
+                <li>Prior: θ ~ Beta(8, 12)</li>
+                <li>Data: 33 completions out of 60 users</li>
+                <li>For a Beta(a, b): mean = a/(a+b), mode = (a−1)/(a+b−2), SD = √[ab / ((a+b)²(a+b+1))]</li>
+                <li>Software reports a 95% central credible interval of [.404, .621]</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Write down the posterior distribution.</li>
+              <li>Compute its mean, mode and standard deviation.</li>
+              <li>The observed completion rate is .55, but the posterior mean is lower. Why?</li>
+              <li>Approximate P(θ &gt; .50 | data), and write the credible interval as a sentence.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The update</span>
+                  <span class="pb-math">Beta(a, b) prior + k successes in n trials → Beta(a + k, b + n − k)</span>
+                  <span class="pb-math">= Beta(8 + 33, 12 + 27) = Beta(41, 39)</span>
+                  <span class="pb-note">The Beta is conjugate to the binomial, which is why the update is addition rather than integration. A Beta(a, b) prior is worth a + b − 2 pretend observations, so this one carried the weight of 18 previous users.</span>
+                </li>
+                <li><span class="pb-lbl">Summarising the posterior</span>
+                  <span class="pb-math">mean = 41 / 80 = .5125</span>
+                  <span class="pb-math">mode = 40 / 78 = .5128</span>
+                  <span class="pb-math">SD = √[(41 × 39) / (80² × 81)] = √(1599 / 518400) = √.003085 = .0555</span>
+                  <span class="pb-note">Mean and mode agree to three decimals because the posterior is nearly symmetric at these values. They part company when a or b is small.</span>
+                </li>
+                <li><span class="pb-lbl">Why .5125 and not .55</span>
+                  <span class="pb-note">The prior mean was 8/20 = .40, and the prior brought 18 pseudo-observations to a dataset of 60. The posterior lands between the two, pulled toward the prior in proportion to how much evidence each side carries. With a flat Beta(1, 1) prior instead, the posterior would be Beta(34, 28) with mean .548, essentially the raw .55. Which of those two answers is right depends on a question the arithmetic cannot settle: if last quarter's users really are informative about this quarter's, the shrinkage is information rather than distortion, and if they are not, that prior should not have been used.</span>
+                </li>
+                <li><span class="pb-lbl">P(θ &gt; .50) and the interval</span>
+                  <span class="pb-math">z = (.50 − .5125) / .0555 = −.225</span>
+                  <span class="pb-math">P(θ &gt; .50) ≈ 1 − Φ(−.225) = .589</span>
+                  <span class="pb-note">The exact posterior probability is .5889, so the normal approximation is safe here. About a 59% chance the new flow beats a coin flip, which is a much more honest summary than "33 out of 60 is over half". The interval in words: given the prior and these 60 users, there is a 95% probability that the true completion rate lies between .404 and .621. That sentence is legal for a credible interval and illegal for a <a href="stats-1/confidence-intervals/">confidence interval</a>, which is most of the reason people reach for Bayesian methods.</span>
+                </li>
+                <li><span class="pb-lbl">What to tell the team</span>
+                  <span class="pb-note">The interval spans .404 to .621, so the data do not yet distinguish a mild improvement from a mild regression. 60 users is not enough. Rerun the numbers after a few hundred and the interval will tighten around whatever is true.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Posterior Beta(41, 39): mean .5125, mode .5128, SD .0555. The prior's 18 pseudo-observations pull the estimate below the observed .55, and P(θ &gt; .50) is about .59.</p>
+              <p class="pb-ref">From <a href="stats-4/bayesian-estimation/">§4.3 Bayesian Estimation</a>, building on <a href="stats-4/bayesian-thinking/">§4.2</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 4.3 ----------
+               verify: node -e 'global.window={};require("./assets/js/viz.js");const V=window.VIZ;
+                        const f=(H,F)=>{const zH=V.normInv(H),zF=V.normInv(F);
+                        return [zH,zF,zH-zF,-(zH+zF)/2,Math.exp((-(zH+zF)/2)*(zH-zF)),V.normCdf((zH-zF)/Math.SQRT2)]};
+                        console.log(f(34/40,12/40)); console.log(f(38/40,20/40)); console.log(f(40.5/41,8.5/41))'
+                     A: z(H)=1.0364 z(FA)=−0.5244 d′=1.5608 c=−0.2560 β=0.6706 AUC=.8651
+                     C: z(H)=1.6449 z(FA)=0.0000 d′=1.6449 c=−0.8224 β=0.2585 AUC=.8776
+                     B (log-linear): z=2.2509 / −0.8158 d′=3.0667 c=−0.7176
+                     % correct: A (34+28)/80 = .775 ; C (38+20)/80 = .725
+                     LESSON CHECK — 15/20 hits, 4/20 FA → d′ = 1.5161, c = 0.0836, matching
+                     §4.12's displayed "d′ = 1.52, c = 0.08"; AUC identity Φ(1/√2) = .7603 and
+                     Φ(2/√2) = .9214 match the lesson's ".76 / .92"
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p4-3"><span class="pb-num">33</span>Who is the better witness?</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">In a recognition-memory experiment each participant studies 40 words, then sees those 40 mixed with 40 new ones and says "old" or "new" to each. Three participants produce very different response patterns.</p>
+            <div class="pb-given">
+              <span class="lbl">Counts out of 40 old and 40 new words</span>
+              <table class="ref-table">
+                <thead><tr><th>Participant</th><th>Hits</th><th>False alarms</th></tr></thead>
+                <tbody>
+                  <tr><td>A</td><td>34</td><td>12</td></tr>
+                  <tr><td>B</td><td>40</td><td>8</td></tr>
+                  <tr><td>C</td><td>38</td><td>20</td></tr>
+                </tbody>
+              </table>
+              <span class="lbl" style="margin-top:.5rem">z-values you will need</span>
+              z(.85) = 1.036, z(.30) = −0.524, z(.95) = 1.645, z(.50) = 0.000, z(.988) = 2.251, z(.207) = −0.816
+            </div>
+            <ol class="pb-ask">
+              <li>Compute <em>d′</em> and <em>c</em> for participant A. Is A liberal or conservative?</li>
+              <li>Compute β and the area under A's ROC curve.</li>
+              <li>Do the same for participant C, then compare both participants' percent correct.</li>
+              <li>Participant B recognised every old word. Why does the formula break, and what is the standard fix?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Participant A</span>
+                  <span class="pb-math">H = 34/40 = .85      FA = 12/40 = .30</span>
+                  <span class="pb-math">d′ = z(H) − z(FA) = 1.036 − (−0.524) = 1.56</span>
+                  <span class="pb-math">c = −[z(H) + z(FA)] / 2 = −[1.036 − 0.524] / 2 = −0.26</span>
+                  <span class="pb-note">A negative <em>c</em> is a liberal criterion: A says "old" more readily than a neutral observer would, which buys hits and pays for them in false alarms.</span>
+                </li>
+                <li><span class="pb-lbl">Bias as a likelihood ratio, and the ROC area</span>
+                  <span class="pb-math">β = e<sup>c·d′</sup> = e<sup>(−0.256)(1.561)</sup> = e<sup>−0.400</sup> = 0.67</span>
+                  <span class="pb-math">AUC = Φ(d′/√2) = Φ(1.561 / 1.414) = Φ(1.104) = .865</span>
+                  <span class="pb-note">β below 1 says the same thing as negative <em>c</em>: at A's criterion the evidence is not yet more likely under "old" than under "new", and A commits anyway. The AUC of .865 is the bias-free summary. It would be identical for an observer with A's sensitivity and any criterion whatsoever.</span>
+                </li>
+                <li><span class="pb-lbl">Participant C, and the percent-correct trap</span>
+                  <span class="pb-math">H = 38/40 = .95      FA = 20/40 = .50</span>
+                  <span class="pb-math">d′ = 1.645 − 0.000 = 1.64      c = −[1.645 + 0]/2 = −0.82</span>
+                  <span class="pb-math">A's percent correct = (34 + 28)/80 = .775</span>
+                  <span class="pb-math">C's percent correct = (38 + 20)/80 = .725</span>
+                  <span class="pb-note">C scores five points worse on percent correct and yet has slightly <em>higher</em> sensitivity, 1.64 against 1.56. The whole difference is strategy: C is far more liberal (c = −0.82) and pays for a near-perfect hit rate with 20 false alarms. Percent correct blends skill and strategy into one number and then hides which one moved. That is the argument for reporting <em>d′</em> and <em>c</em> separately, and it is why a memory drug that "improves recognition" means nothing until the false-alarm rate is on the table.</span>
+                </li>
+                <li><span class="pb-lbl">Participant B and the ceiling</span>
+                  <span class="pb-note">H = 40/40 = 1.00, and z(1) is infinite, so <em>d′</em> cannot be computed. The standard repair is the log-linear correction: add 0.5 to every cell count and 1 to every trial total, applied to every participant rather than only to the offending one.</span>
+                  <span class="pb-math">H = (40 + 0.5)/(40 + 1) = 40.5/41 = .988</span>
+                  <span class="pb-math">FA = (8 + 0.5)/41 = 8.5/41 = .207</span>
+                  <span class="pb-math">d′ = 2.251 − (−0.816) = 3.07      c = −[2.251 − 0.816]/2 = −0.72</span>
+                  <span class="pb-note">Applying the correction to everyone keeps the estimates comparable; correcting only the extreme participants would bias that person relative to the rest. Name whichever rule you used in the methods section, and treat a <em>d′</em> above 3 with some caution, because rates this close to the ceiling make the estimate fragile.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">A: <em>d′</em> = 1.56, <em>c</em> = −0.26, β = 0.67, AUC = .865. C: <em>d′</em> = 1.64 with a much more liberal <em>c</em> = −0.82, which is why C has the higher sensitivity and the lower percent correct. B needs the log-linear correction, giving <em>d′</em> = 3.07.</p>
+              <p class="pb-ref">From <a href="stats-4/signal-detection-theory/">§4.12 Signal Detection Theory</a> · the ROC half of it is <a href="ml/roc-curves-and-auc/">§4.5 in ML &amp; AI</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 4.4 ----------
+               verify: PSE = −b₀/b₁, JND = ln3/b₁  (the forms displayed in §4.11)
+                 baseline  b₀ = −3.60, b₁ = .0090 → PSE 400.000 ms, JND 122.068 ms, Weber .3052
+                   25% pt 277.932, 75% pt 522.068, half-span 122.068 ✓
+                 loud tone b₀ = −2.94, b₁ = .0084 → PSE 350.000 ms, JND 130.787 ms, Weber .3737
+                 ΔPSE = −50 ms ; ΔJND = +8.72 ms
+                 √(200 × 800) = 400 exactly, matching §4.11's geometric-mean remark
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p4-4"><span class="pb-num">34</span>Reading a psychometric function</h3>
+              <span class="pb-chip stretch">Stretch</span>
+            </div>
+            <p class="pb-scenario">In a temporal bisection task, listeners learn a short anchor of 200 ms and a long anchor of 800 ms, then judge probe tones as "short" or "long". A logistic regression of the "long" response on probe duration is fitted separately for quiet and loud probes.</p>
+            <div class="pb-given">
+              <span class="lbl">Fitted coefficients, probe duration in ms</span>
+              <table class="ref-table">
+                <thead><tr><th>Condition</th><th>b₀</th><th>b₁ (per ms)</th></tr></thead>
+                <tbody>
+                  <tr><td>Quiet probe (baseline)</td><td>−3.60</td><td>0.0090</td></tr>
+                  <tr><td>Loud probe</td><td>−2.94</td><td>0.0084</td></tr>
+                </tbody>
+              </table>
+              <span class="lbl" style="margin-top:.5rem">Useful forms</span>
+              PSE = −b₀ / b₁ &nbsp;·&nbsp; JND = ln 3 / b₁ &nbsp;·&nbsp; ln 3 = 1.0986
+            </div>
+            <ol class="pb-ask">
+              <li>Compute the PSE and JND in each condition.</li>
+              <li>Compute the Weber fraction for each.</li>
+              <li>Confirm the baseline JND by locating the 25% and 75% points directly.</li>
+              <li>Is this a shift, a slope change, or both? What does it mean psychologically?</li>
+              <li>The baseline PSE is not 500 ms. Should it be?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">PSE and JND</span>
+                  <span class="pb-math">quiet: PSE = 3.60 / 0.0090 = 400.0 ms</span>
+                  <span class="pb-math">quiet: JND = 1.0986 / 0.0090 = 122.1 ms</span>
+                  <span class="pb-math">loud:  PSE = 2.94 / 0.0084 = 350.0 ms</span>
+                  <span class="pb-math">loud:  JND = 1.0986 / 0.0084 = 130.8 ms</span>
+                  <span class="pb-note">The PSE is where the fitted curve crosses 50%, so it is the duration that feels exactly midway between the anchors. The JND is half the distance between the 25% and 75% points, which is the curve's steepness expressed in milliseconds.</span>
+                </li>
+                <li><span class="pb-lbl">Weber fractions</span>
+                  <span class="pb-math">quiet: 122.1 / 400.0 = .305</span>
+                  <span class="pb-math">loud:  130.8 / 350.0 = .374</span>
+                  <span class="pb-note">Dividing precision by the point it was measured at makes the two conditions comparable despite sitting at different places on the duration axis.</span>
+                </li>
+                <li><span class="pb-lbl">Checking the JND from the curve</span>
+                  <span class="pb-math">75% point: b₀ + b₁x = ln 3 → x = (1.0986 + 3.60)/0.0090 = 522.1 ms</span>
+                  <span class="pb-math">25% point: b₀ + b₁x = −ln 3 → x = (−1.0986 + 3.60)/0.0090 = 277.9 ms</span>
+                  <span class="pb-math">half the span = (522.1 − 277.9)/2 = 122.1 ms ✓</span>
+                  <span class="pb-note">The ln 3 shortcut comes straight from the logistic: at 75% the odds are 3 to 1, so the linear predictor equals ln 3.</span>
+                </li>
+                <li><span class="pb-lbl">Shift or slope</span>
+                  <span class="pb-note">Mostly a shift. The PSE drops by 50 ms while the JND rises by only 8.7 ms, so the curve slid left without flattening much. Louder probes are judged longer, which is a bias in perceived duration rather than a loss of timing precision. Had the JND doubled with the PSE unmoved, the finding would have been the opposite kind: the same subjective midpoint, measured with a noisier instrument. In a regression this dissociation is two terms. The condition main effect tests the shift, and the condition × duration interaction tests the slope change.</span>
+                </li>
+                <li><span class="pb-lbl">400 rather than 500</span>
+                  <span class="pb-note">500 ms is the arithmetic midpoint of 200 and 800. 400 ms is their geometric mean, √(200 × 800), and bisection points landing near the geometric mean is one of the standard findings in timing research. It suggests the internal scale for duration is compressive, so the subjective middle sits below the arithmetic one. Getting 400 here is a signature, not an error.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Quiet: PSE 400.0 ms, JND 122.1 ms, Weber .305. Loud: PSE 350.0 ms, JND 130.8 ms, Weber .374. A 50 ms leftward shift with almost no change in slope, so louder tones feel longer without being harder to time.</p>
+              <p class="pb-ref">From <a href="stats-4/psychometric-functions/">§4.11 Psychometric Functions</a> · the fitting machinery is <a href="stats-3/logistic-regression/">§3.7 Logistic Regression</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 4.5 ----------
+               verify: e^0.92 = 2.5093 ; e^−0.51 = 0.6005 ; e^0.41 = 1.5068
+                 2.5093 × 0.6005 = 1.5068 ✓ ; reduction 1 − .6005 = 39.95% ≈ 40%
+                 overdispersion ratio 412.6 / 178 = 2.318
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p4-5"><span class="pb-num">35</span>Pick the family before you fit</h3>
+              <span class="pb-chip warm">Warm-up</span>
+            </div>
+            <p class="pb-scenario">A hospital analytics team has five questions and one statistician. Each outcome needs a GLM family and a link before anyone touches the data.</p>
+            <div class="pb-given">
+              <span class="lbl">The five outcomes</span>
+              <ul>
+                <li><strong>a.</strong> Number of migraine attacks per patient per month, with many zeros</li>
+                <li><strong>b.</strong> Whether a patient was readmitted within 30 days</li>
+                <li><strong>c.</strong> Total cost of an admission in euros, strictly positive and heavily right-skewed</li>
+                <li><strong>d.</strong> Number of items recalled out of a fixed list of 20 on a cognitive screen</li>
+                <li><strong>e.</strong> Systolic blood pressure in mmHg, roughly symmetric</li>
+              </ul>
+              <span class="lbl" style="margin-top:.5rem">Output from the model fitted to (a)</span>
+              b₀ = 0.92, b₁ (drug vs placebo) = −0.51; residual deviance 412.6 on 178 <em>df</em>. Useful values: e<sup>0.92</sup> = 2.509, e<sup>−0.51</sup> = 0.601, e<sup>0.41</sup> = 1.507.
+            </div>
+            <ol class="pb-ask">
+              <li>Give the family and link for each of the five outcomes.</li>
+              <li>For each, say what exponentiating a coefficient gives you.</li>
+              <li>Interpret b₁ from the migraine model, and give both group rates.</li>
+              <li>Check that model for overdispersion, and say what to do about it.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Families and links</span>
+                  <table class="ref-table">
+                    <thead><tr><th>Outcome</th><th>Family · link</th><th>e<sup>b</sup> means</th></tr></thead>
+                    <tbody>
+                      <tr><td>a. Attacks per month</td><td>Poisson · log (negative binomial if overdispersed)</td><td>Rate ratio</td></tr>
+                      <tr><td>b. Readmitted yes/no</td><td>Binomial · logit</td><td>Odds ratio</td></tr>
+                      <tr><td>c. Cost in euros</td><td>Gamma · log</td><td>Multiplicative change in mean cost</td></tr>
+                      <tr><td>d. Recalled out of 20</td><td>Binomial · logit, as successes out of 20</td><td>Odds ratio per item</td></tr>
+                      <tr><td>e. Blood pressure</td><td>Gaussian · identity (ordinary regression)</td><td>Nothing; read <em>b</em> directly</td></tr>
+                    </tbody>
+                  </table>
+                  <span class="pb-note">Two are worth pausing on. Outcome (d) looks like a count but has a known ceiling of 20, which makes it a binomial proportion rather than a Poisson count; modelling the raw proportion with ordinary regression would happily predict recall of 23 items. Outcome (c) is the classic case for Gamma: costs cannot go negative, and their variance grows with their mean, which is exactly the mean-variance relationship Gamma encodes.</span>
+                </li>
+                <li><span class="pb-lbl">Interpreting the drug coefficient</span>
+                  <span class="pb-math">rate ratio = e<sup>b₁</sup> = e<sup>−0.51</sup> = 0.60</span>
+                  <span class="pb-math">placebo rate = e<sup>b₀</sup> = e<sup>0.92</sup> = 2.51 attacks per month</span>
+                  <span class="pb-math">drug rate = e<sup>b₀ + b₁</sup> = e<sup>0.41</sup> = 1.51 attacks per month</span>
+                  <span class="pb-math">check: 2.51 × 0.60 = 1.51 ✓</span>
+                  <span class="pb-note">The drug multiplies the attack rate by 0.60, a reduction of about 40%. Coefficients are additive on the log scale and multiplicative on the count scale, which is the same pattern as odds ratios in logistic regression.</span>
+                </li>
+                <li><span class="pb-lbl">Overdispersion</span>
+                  <span class="pb-math">deviance / df = 412.6 / 178 = 2.32</span>
+                  <span class="pb-note">A Poisson model assumes variance equals mean, which puts this ratio near 1. At 2.32 the counts vary more than twice as much as Poisson allows, and the consequence is standard errors that are too small and <em>p</em>-values that are too impressive. Migraine counts cluster within people, so this is the expected outcome rather than a surprise. Refit as a negative binomial, which adds its own dispersion parameter, or use quasi-Poisson to rescale the standard errors. The point estimate of the rate ratio will barely move; the confidence interval around it will widen, correctly.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Poisson-log, binomial-logit, Gamma-log, binomial-logit again, and plain Gaussian. The drug cuts the attack rate from 2.51 to 1.51 per month, a rate ratio of 0.60, but a deviance-to-<em>df</em> ratio of 2.32 means the Poisson standard errors are not trustworthy until the model is refitted as negative binomial.</p>
+              <p class="pb-ref">From <a href="stats-4/generalized-linear-models/">§4.4 Generalized Linear Models</a> · the logit branch is <a href="stats-3/logistic-regression/">§3.7</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 4.6 ----------
+               verify: node -e (see the KM loop in the P64 session log)
+                 times 3, 5+, 7, 9, 9, 12+, 14, 18+, 20, 24+
+                 t=3  n=10 d=1 → S = .9
+                 t=7  n=8  d=1 → S = .9 × .875 = .7875
+                 t=9  n=7  d=2 → S = .7875 × 5/7 = .5625
+                 t=14 n=4  d=1 → S = .5625 × .75 = .421875
+                 t=20 n=2  d=1 → S = .421875 × .5 = .2109375 = 27/128 exactly
+                 median = 14 (first t with S ≤ .50)
+                 naive mean of all 10 times = 121/10 = 12.1 ; events only = 62/6 = 10.33
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p4-6"><span class="pb-num">36</span>The curve that never reaches zero</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">Ten patients enter a two-year follow-up study after treatment. The outcome is time to relapse in months. A plus sign marks a patient who was still relapse-free when the study or their participation ended.</p>
+            <div class="pb-given">
+              <span class="lbl">Time to relapse, months (+ = censored)</span>
+              3, 5+, 7, 9, 9, 12+, 14, 18+, 20, 24+
+            </div>
+            <ol class="pb-ask">
+              <li>Build the Kaplan–Meier table: event times, number at risk, events, and S(t).</li>
+              <li>Estimate S(12) and S(15).</li>
+              <li>What is the median survival time?</li>
+              <li>Two colleagues suggest averaging the times instead. Compute both of their averages and say what is wrong with each.</li>
+              <li>Why does the curve stop at a positive value?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The Kaplan–Meier table</span>
+                  <span class="pb-math">S(t) = Π (1 − dⱼ / nⱼ) over all event times up to t</span>
+                  <table class="ref-table">
+                    <thead><tr><th><em>t</em></th><th>At risk</th><th>Events</th><th>1 − d/n</th><th>S(t)</th></tr></thead>
+                    <tbody>
+                      <tr><td>3</td><td>10</td><td>1</td><td>.900</td><td>.9000</td></tr>
+                      <tr><td>5+</td><td>9</td><td>0</td><td>censored</td><td>.9000</td></tr>
+                      <tr><td>7</td><td>8</td><td>1</td><td>.875</td><td>.7875</td></tr>
+                      <tr><td>9</td><td>7</td><td>2</td><td>.714</td><td>.5625</td></tr>
+                      <tr><td>12+</td><td>5</td><td>0</td><td>censored</td><td>.5625</td></tr>
+                      <tr><td>14</td><td>4</td><td>1</td><td>.750</td><td>.4219</td></tr>
+                      <tr><td>18+</td><td>3</td><td>0</td><td>censored</td><td>.4219</td></tr>
+                      <tr><td>20</td><td>2</td><td>1</td><td>.500</td><td>.2109</td></tr>
+                      <tr><td>24+</td><td>1</td><td>0</td><td>censored</td><td>.2109</td></tr>
+                    </tbody>
+                  </table>
+                  <span class="pb-note">Two things drive the whole table. Censored patients count in the at-risk column right up to the moment they leave, and then simply drop out of it. The at-risk number falls by both events and censorings, which is why only 4 people are at risk at month 14 even though 6 have not yet relapsed on paper.</span>
+                </li>
+                <li><span class="pb-lbl">Two readings off the curve</span>
+                  <span class="pb-math">S(12) = .5625      S(15) = .4219</span>
+                  <span class="pb-note">Nothing happens at month 12 except a censoring, so the curve is flat across it and S(12) is still the value set at month 9. The staircase only steps down at event times.</span>
+                </li>
+                <li><span class="pb-lbl">Median survival</span>
+                  <span class="pb-note">The median is the first time at which S(t) drops to .50 or below. At month 9 the curve is at .5625, still above half. At month 14 it reaches .4219. Median survival = <strong>14 months</strong>. Read it off the vertical axis at 0.5 and drop to the horizontal one; do not average the observed times.</span>
+                </li>
+                <li><span class="pb-lbl">The two bad averages</span>
+                  <span class="pb-math">all ten times: (3+5+7+9+9+12+14+18+20+24)/10 = 121/10 = 12.1 months</span>
+                  <span class="pb-math">events only: (3+7+9+9+14+20)/6 = 62/6 = 10.3 months</span>
+                  <span class="pb-note">The first treats every censored time as though the patient relapsed at that moment, which understates survival, since we only know they lasted <em>at least</em> that long. The second is worse: throwing out censored cases deletes precisely the people who were doing well, so it drops from 12.1 to 10.3 and moves further from the truth. The Kaplan–Meier median of 14 months is above both, because it is the only one of the three that uses the censored patients' partial information instead of destroying it.</span>
+                </li>
+                <li><span class="pb-lbl">Why it stops at .2109</span>
+                  <span class="pb-note">The longest observation, at 24 months, is censored. The curve has no information about what happens after that point, so it simply stops rather than pretending everyone eventually relapses. Estimates from the flat tail of a survival curve rest on very few people, which is why a curve that ends with 1 or 2 patients at risk should be read with the confidence band, not the line.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">S steps to .9000, .7875, .5625, .4219 and .2109, giving a median survival of 14 months and S(12) = .5625, S(15) = .4219. Both naive averages (12.1 and 10.3 months) understate survival, and the curve ends at .2109 because the last patient was censored.</p>
+              <p class="pb-ref">From <a href="stats-4/survival-analysis/">§4.8 Survival Analysis</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 4.7 ----------
+               verify: AIC = −2lnL + 2k ; BIC = −2lnL + k·ln n ; ln(120) = 4.787492
+                 M1 k=3 lnL=−455.2 → AIC 916.4, BIC 924.76
+                 M2 k=4 lnL=−449.8 → AIC 907.6, BIC 918.75   (best on both)
+                 M3 k=5 lnL=−449.1 → AIC 908.2, BIC 922.14
+                 M4 k=8 lnL=−447.3 → AIC 910.6, BIC 932.90
+                 ΔAIC = 8.8 / 0 / 0.6 / 3.0 ; Akaike weights .006 / .506 / .375 / .113
+                 evidence ratio M2:M3 = exp(0.3) = 1.35 ; M2:M1 = exp(4.4) = 81.45
+                 LRT M3 vs M2: χ² = 2(0.7) = 1.4, df = 1, p = .237
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p4-7"><span class="pb-num">37</span>Four models, one dataset</h3>
+              <span class="pb-chip stretch">Stretch</span>
+            </div>
+            <p class="pb-scenario">Working with the same 120 students from Problem 23, an analyst fits four nested models of exam performance and asks which one to report. The most complex model has the best log-likelihood, and she suspects that is not the end of the argument.</p>
+            <div class="pb-given">
+              <span class="lbl">Model fits, n = 120</span>
+              <table class="ref-table">
+                <thead><tr><th>Model</th><th>Predictors</th><th><em>k</em></th><th>ln <em>L</em></th></tr></thead>
+                <tbody>
+                  <tr><td>M1</td><td>study</td><td>3</td><td>−455.2</td></tr>
+                  <tr><td>M2</td><td>study + sleep</td><td>4</td><td>−449.8</td></tr>
+                  <tr><td>M3</td><td>study + sleep + motivation</td><td>5</td><td>−449.1</td></tr>
+                  <tr><td>M4</td><td>M3 plus all two-way interactions</td><td>8</td><td>−447.3</td></tr>
+                </tbody>
+              </table>
+              <span class="lbl" style="margin-top:.5rem">Formulas and constants</span>
+              AIC = −2 ln <em>L</em> + 2<em>k</em> &nbsp;·&nbsp; BIC = −2 ln <em>L</em> + <em>k</em> ln <em>n</em> &nbsp;·&nbsp; ln 120 = 4.787 &nbsp;·&nbsp; e<sup>−0.3</sup> = 0.741, e<sup>−1.5</sup> = 0.223, e<sup>−4.4</sup> = 0.012, e<sup>4.4</sup> = 81.5
+            </div>
+            <ol class="pb-ask">
+              <li>Compute AIC for all four models and rank them.</li>
+              <li>Compute ΔAIC and interpret the spread with the usual rules of thumb.</li>
+              <li>Compute the Akaike weights for M2 and M3, and the evidence ratio between them.</li>
+              <li>M3 adds one parameter to M2. Run the likelihood-ratio test.</li>
+              <li>M4 fits best. Why does it lose? And would BIC agree with AIC here?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">AIC for each model</span>
+                  <span class="pb-math">M1: −2(−455.2) + 2(3) = 910.4 + 6 = 916.4</span>
+                  <span class="pb-math">M2: −2(−449.8) + 2(4) = 899.6 + 8 = 907.6</span>
+                  <span class="pb-math">M3: −2(−449.1) + 2(5) = 898.2 + 10 = 908.2</span>
+                  <span class="pb-math">M4: −2(−447.3) + 2(8) = 894.6 + 16 = 910.6</span>
+                  <span class="pb-note">Ranking, best first: M2, M3, M4, M1. Lower is better, and the numbers themselves mean nothing in isolation. Only differences between models fitted to the same data are interpretable.</span>
+                </li>
+                <li><span class="pb-lbl">ΔAIC</span>
+                  <span class="pb-math">ΔM2 = 0.0   ΔM3 = 0.6   ΔM4 = 3.0   ΔM1 = 8.8</span>
+                  <span class="pb-note">The common reading: Δ under about 2 means the models are effectively indistinguishable, 4 to 7 means considerably less support, and above 10 means essentially none. So M2 and M3 are tied, M4 is trailing but not dead, and M1 is clearly out. The honest summary is that this dataset cannot separate M2 from M3.</span>
+                </li>
+                <li><span class="pb-lbl">Akaike weights and the evidence ratio</span>
+                  <span class="pb-math">relative likelihood = e<sup>−Δ/2</sup></span>
+                  <span class="pb-math">M1: e<sup>−4.4</sup> = 0.012   M2: e<sup>0</sup> = 1.000   M3: e<sup>−0.3</sup> = 0.741   M4: e<sup>−1.5</sup> = 0.223</span>
+                  <span class="pb-math">sum = 1.976</span>
+                  <span class="pb-math">w(M2) = 1.000/1.976 = .506      w(M3) = 0.741/1.976 = .375</span>
+                  <span class="pb-math">evidence ratio = .506/.375 = 1.35 = e<sup>0.3</sup></span>
+                  <span class="pb-note">M2 is 1.35 times better supported than M3. That is close to nothing. For comparison, M2 over M1 is e<sup>4.4</sup> = 81 times better supported, which is what a real difference looks like.</span>
+                </li>
+                <li><span class="pb-lbl">The nested test</span>
+                  <span class="pb-math">χ² = 2(ln L₃ − ln L₂) = 2(−449.1 + 449.8) = 2(0.7) = 1.4</span>
+                  <span class="pb-math">df = 5 − 4 = 1, p = .24</span>
+                  <span class="pb-note">Motivation does not earn its parameter. The likelihood-ratio test and AIC agree, which is what usually happens with one extra parameter, since AIC charges 2 and the χ² critical value at df = 1 is 3.84. They can disagree in either direction as models grow.</span>
+                </li>
+                <li><span class="pb-lbl">Why the best fit loses, and what BIC says</span>
+                  <span class="pb-math">BIC: M1 924.8   M2 918.7   M3 922.1   M4 932.9</span>
+                  <span class="pb-note">M4's log-likelihood is the highest because adding parameters can never make in-sample fit worse; setting a new coefficient to zero is always available, so the fit can only improve or stay put. AIC charges 2 per parameter for exactly this reason, and M4's four extra parameters bought only 2.5 units of log-likelihood, which is not enough. BIC picks M2 as well and does so more decisively, because its penalty of ln 120 = 4.79 per parameter is more than twice AIC's. Agreement between the two is reassuring; the interesting case is when they disagree, which usually means a moderately sized effect is on the edge of paying for itself. What would actually settle M2 against M3 is not another criterion but new data, or cross-validation on the data at hand.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">AIC = 916.4, 907.6, 908.2 and 910.6, so M2 wins with M3 only ΔAIC = 0.6 behind, an evidence ratio of 1.35 that settles nothing. The likelihood-ratio test agrees that motivation is not worth its parameter (χ²(1) = 1.4, <em>p</em> = .24), and BIC picks M2 more decisively.</p>
+              <p class="pb-ref">From <a href="stats-3/model-comparison/">§3.9 Model Comparison</a> · the held-out version is <a href="stats-4/cross-validation-and-overfitting/">§4.6 Cross-Validation</a>.</p>
+            </details>
+          </article>
+        </section>
+
+
+        <!-- ==================================================================
+             RESEARCH TOOLKIT — "spot the problem"
+             ================================================================== -->
+        <section class="pb-set" id="toolkit-set">
+          <h2 id="toolkit">🔍 Research Toolkit · Spot the problem</h2>
+          <p class="pb-set-sub">Six problems with almost no arithmetic in them. Each one hands you a study, a figure or a sentence that looks perfectly respectable, and asks what is wrong with it. These are the questions that separate someone who can run a test from someone you would trust with a dataset, and they draw on <a href="methods/">Methods</a>, <a href="data/">Data</a>, <a href="ethics/">Ethics</a> and <a href="writing/">Writing</a>.</p>
+
+          <!-- ---------- 5.1 ----------
+               verify: no arithmetic; design critique only.
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p5-1"><span class="pb-num">38</span>The module that raises exam scores</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A university builds an optional online tutorial module for its introductory statistics course. Usage is tracked automatically. At the end of term the learning-technology team compares final exam marks and issues a press release.</p>
+            <div class="pb-given">
+              <span class="lbl">What they report</span>
+              <ul>
+                <li>Students who used the module: <em>M</em> = 71.0 (<em>n</em> = 104)</li>
+                <li>Students who did not: <em>M</em> = 62.0 (<em>n</em> = 96)</li>
+                <li><em>t</em>(198) = 4.10, <em>p</em> &lt; .001, <em>d</em> = 0.58</li>
+                <li>Headline: "New online module raises exam scores by nine points"</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>The statistics are computed correctly. What is the problem?</li>
+              <li>Name three specific variables that could produce this result with a module that does nothing.</li>
+              <li>The team offers to rerun the analysis controlling for prior GPA. Does that fix it?</li>
+              <li>Design the study that would actually answer the question.</li>
+              <li>Rewrite the headline.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Self-selection</span>
+                  <span class="pb-note">Nobody assigned anyone to anything. Students decided for themselves whether to use the module, so the two groups differ in whatever made them decide, and the module is only one candidate explanation for the nine-point gap. The <em>t</em>-test is valid as a description of two groups that already existed. It is the word "raises" that has no support, because a comparison of self-selected groups cannot distinguish an effect of the treatment from a difference between the people who chose it.</span>
+                </li>
+                <li><span class="pb-lbl">Three plausible confounds</span>
+                  <span class="pb-note">Prior mathematical preparation: students who already find statistics tractable are more likely to engage with extra material and more likely to score well. Conscientiousness: the trait that produces module use also produces lecture attendance, problem sets and revision. Available time: students working long hours in paid jobs have less of everything, including both module use and study time. Each of these causes both the exposure and the outcome, which is the definition of a confound.</span>
+                </li>
+                <li><span class="pb-lbl">Does controlling for GPA fix it?</span>
+                  <span class="pb-note">It helps and it does not fix it. Adjusting for prior GPA removes the part of the gap explained by measured prior ability, which is real progress, and the adjusted estimate will almost certainly be smaller than nine points. What remains is everything that predicts both usage and outcome but was never measured: motivation this term, hours available, whether a friend recommended the module. Statistical adjustment can only remove confounding you have data on. This is where the language of <a href="stats-4/causal-dags-and-confounding/">causal diagrams</a> earns its keep, because drawing the assumed structure makes visible which variables you would need and which you actually have.</span>
+                </li>
+                <li><span class="pb-lbl">The study that would settle it</span>
+                  <span class="pb-note">Randomise access. Give the module to a random half of the cohort and withhold it from the other half for the term, or stagger the rollout so every student eventually gets it but the order is random, which is usually easier to get past an ethics committee and a students' union. Pre-register the primary outcome and the analysis. Analyse by assigned group rather than by actual usage, because the moment you analyse by who chose to log in, self-selection is back. If randomisation is genuinely impossible, a regression-discontinuity or difference-in-differences design around a rollout date beats a naive comparison.</span>
+                </li>
+                <li><span class="pb-lbl">An honest headline</span>
+                  <span class="pb-note">"Students who chose to use the new module scored nine points higher, though they may have differed before the term began." Longer, duller, and true. The internal version should add that a randomised rollout next year would answer the question properly.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Self-selection. The groups were formed by student choice, so the nine-point gap confounds the module with prior ability, conscientiousness and available time. Controlling for GPA shrinks the estimate without licensing causal language; only random assignment does that.</p>
+              <p class="pb-ref">From <a href="methods/experimental-design-and-randomization/">§1.4 Experiments &amp; Random Assignment</a> and <a href="methods/quasi-experiments/">§1.6 Quasi-Experiments</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 5.2 ----------
+               verify: no arithmetic; the ±1.5% MoE is quoted to be criticised, not computed.
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p5-2"><span class="pb-num">39</span>Four thousand responses and no answer</h3>
+              <span class="pb-chip warm">Warm-up</span>
+            </div>
+            <p class="pb-scenario">A city council is deciding whether to pedestrianise the main square. It posts a survey link on the council website and its social media accounts, leaves it open for six weeks, and reports the result to the planning committee.</p>
+            <div class="pb-given">
+              <span class="lbl">The report to committee</span>
+              <ul>
+                <li>4,300 responses received</li>
+                <li>78% in favour of pedestrianisation</li>
+                <li>"Margin of error ±1.5%"</li>
+                <li>Conclusion: "Over three quarters of residents support the scheme"</li>
+                <li>City population: about 260,000 adults</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Who could actually end up in this sample, and who could not?</li>
+              <li>Does 4,300 responses make the estimate trustworthy?</li>
+              <li>What is wrong with quoting a margin of error here?</li>
+              <li>Name one more threat specific to open online surveys.</li>
+              <li>What should the council have done, and is the survey worthless?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The frame and the volunteers</span>
+                  <span class="pb-note">Two filters run before anyone answers. Coverage: only people who visit the council website or follow its social accounts ever see the link, which excludes residents without reliable internet, those who do not follow local government, and anyone whose news comes through other channels. Self-selection: of the people who saw it, the ones who answered are those who cared enough to click, and strong feelings on both sides drive response far more than mild ones. Organised campaigns on either side can mobilise supporters through a single post. The realised sample is people who saw the link and chose to respond, which is not the adult population of the city.</span>
+                </li>
+                <li><span class="pb-lbl">Why 4,300 does not help</span>
+                  <span class="pb-note">Sample size fixes variance, not bias. A convenience sample's estimate is centred in the wrong place, and collecting more of the same kind of response tightens the cloud around that wrong centre. 4,300 self-selected responses give a more precise wrong answer than 430 would. The only cure for bias is a better sampling method.</span>
+                </li>
+                <li><span class="pb-lbl">The margin of error</span>
+                  <span class="pb-note">The ±1.5% figure is the most misleading number in the report. That formula assumes a probability sample in which every resident had a known, non-zero chance of selection, and here nobody was selected at all; people arrived. Quoting it attaches the authority of survey statistics to a number that has none of its properties. It describes sampling error alone, and sampling error is not this survey's problem.</span>
+                </li>
+                <li><span class="pb-lbl">One more threat</span>
+                  <span class="pb-note">Nothing stops one person responding repeatedly, or a campaign asking supporters to. An open link with no authentication has no way to enforce one response per resident, and no way to confirm that respondents live in the city at all.</span>
+                </li>
+                <li><span class="pb-lbl">What to do, and what the survey is worth</span>
+                  <span class="pb-note">For an estimate: draw a probability sample from the electoral register, stratify by neighbourhood and age band so every part of the city is represented, follow up non-responders more than once, and report the response rate alongside the result. That design supports both the percentage and its margin of error. The open survey is not worthless, though. As a consultation it surfaces arguments, local knowledge and objections the council would not otherwise hear. It should be reported as what it is: 4,300 people chose to tell us this, with no claim about the other 255,700.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">A self-selected sample drawn from an incomplete frame. The 78% describes people who saw the link and chose to respond, the sample size makes that no more trustworthy, and the ±1.5% margin of error is meaningless because the formula assumes probability sampling that never happened.</p>
+              <p class="pb-ref">From <a href="methods/sampling-methods/">§1.8 Sampling Methods</a> and <a href="methods/survey-and-questionnaire-design/">§1.9 Designing Surveys</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 5.3 ----------
+               verify: df consistency of the planted excerpt — 60 recruited − 7 excluded + 30 added
+                 = 83 participants; one-way ANOVA with 2 groups → df error = 83 − 2 = 81, so the
+                 quoted F(1, 81) is internally consistent and is NOT one of the errors.
+                 Prevalence figures quoted are §3.5's (John, Loewenstein & Prelec, 2012).
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p5-3"><span class="pb-num">40</span>Four questionable practices in one paragraph</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">You are reviewing a manuscript for a journal. The methods and results read as follows. Nothing in it is fabricated, and every number is real. It should still not be published in this form.</p>
+            <div class="pb-given">
+              <span class="lbl">The submitted excerpt</span>
+              <p style="margin:.3rem 0">"We recruited 60 participants. After inspecting the data we excluded 7 participants whose scores fell more than 2 <em>SD</em> from the mean, as their responses were clearly unrepresentative. Because the effect was not significant at that point, we collected a further 30 participants and re-ran the analysis, which then reached significance. Participants completed measures of mood, arousal, sustained attention and reaction time. As predicted, the drug improved reaction time, <em>F</em>(1, 81) = 4.62, <em>p</em> = .034, η² = .05."</p>
+            </div>
+            <ol class="pb-ask">
+              <li>Identify four distinct questionable research practices in this paragraph.</li>
+              <li>For each one, state the fix.</li>
+              <li>Are the degrees of freedom consistent with the recruitment described?</li>
+              <li>None of this is fraud. Why does it matter more than fraud does?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Post-hoc exclusion</span>
+                  <span class="pb-note">"After inspecting the data we excluded 7 participants" is an outlier rule chosen after seeing what it would do, and a 2 <em>SD</em> cutoff is lenient enough to remove roughly 5% of a normal distribution by construction. Calling the excluded responses "clearly unrepresentative" is a judgement made with knowledge of the result. <strong>Fix:</strong> specify the exclusion rule before data collection, apply it blind to condition, and report the analysis both with and without exclusions.</span>
+                </li>
+                <li><span class="pb-lbl">Optional stopping</span>
+                  <span class="pb-note">"Because the effect was not significant, we collected a further 30 participants" is the textbook definition of data-dependent stopping. Every additional look is another chance for the <em>p</em>-value to wander below .05, and this practice alone can push a nominal 5% false-positive rate toward 20% or more. <strong>Fix:</strong> fix the sample size in advance from a power analysis, or use a pre-planned sequential design with corrected thresholds, which is a legitimate and sometimes required approach. What is not legitimate is deciding after each look.</span>
+                </li>
+                <li><span class="pb-lbl">Selective reporting of outcomes</span>
+                  <span class="pb-note">Four measures were collected and one is reported. The reader has no way to know whether reaction time was the planned primary outcome or the one that survived four attempts. <strong>Fix:</strong> report every measure collected, nominate a primary outcome in advance, and correct for multiplicity across the rest or label them exploratory.</span>
+                </li>
+                <li><span class="pb-lbl">HARKing</span>
+                  <span class="pb-note">"As predicted" cannot be assessed by anyone, and given the three practices above there is good reason to doubt it. Presenting a finding located by exploration as a prediction converts a hypothesis-generating result into apparent confirmation. <strong>Fix:</strong> separate confirmatory from exploratory sections explicitly, and let a preregistration carry the claim about what was predicted.</span>
+                </li>
+                <li><span class="pb-lbl">The degrees of freedom</span>
+                  <span class="pb-math">60 recruited − 7 excluded + 30 added = 83 participants</span>
+                  <span class="pb-math">two groups, so df<sub>error</sub> = 83 − 2 = 81 ✓</span>
+                  <span class="pb-note">The arithmetic is fine. Every number in the paragraph is internally consistent, which is exactly why this manuscript would pass a statistical-consistency screen and still be untrustworthy. The problem is the path taken to those numbers, and no recomputation can detect it.</span>
+                </li>
+                <li><span class="pb-lbl">Why this outranks fraud</span>
+                  <span class="pb-note">Fabrication is rare, with under 1% of surveyed researchers admitting it, and it is unambiguous when caught. These practices are common: in a survey of more than 2,000 psychologists, around 63% admitted failing to report all dependent measures and about 56% admitted deciding whether to collect more data after checking significance. They also feel like reasonable judgement calls at the time, which is why they persist. Rare deliberate fraud damages a few papers; widespread grey-zone flexibility fills the literature with effects that evaporate on replication, and that is the mechanism behind the replication crisis.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Post-hoc outlier exclusion, optional stopping, selective reporting of one outcome out of four, and HARKing. The degrees of freedom check out perfectly, which is the point: consistent numbers are no defence against a flexible analysis path.</p>
+              <p class="pb-ref">From <a href="ethics/questionable-research-practices/">§3.5 Questionable Research Practices</a>, <a href="methods/the-replication-crisis/">§1.11 The Replication Crisis</a> and <a href="methods/preregistration-and-open-science/">§1.12 Preregistration</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 5.4 ----------
+               verify: sentinel arithmetic — reported mean age 33.2 over n = 240 including three
+                 999 codes. Sum = 240 × 33.2 = 7968. Removing 3 × 999 = 2997 leaves 4971 over
+                 237 people → true mean 20.97 ≈ 21.0, so the sentinels inflated it by 12.2 years.
+                 Back-check: (237 × 20.97 + 2997)/240 = 33.20 ✓
+                 Reverse-scoring a 1–7 item is 8 − x (min + max − x), not −1 × x.
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p5-4"><span class="pb-num">41</span>The cleaning log that broke the data</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A research assistant hands you a cleaned dataset for a two-wave wellbeing study and, to their considerable credit, an actual log of what they did to it. Reading the log is faster than discovering each problem later.</p>
+            <div class="pb-given">
+              <span class="lbl">The cleaning log, verbatim</span>
+              <ul>
+                <li><strong>a.</strong> "Deleted 14 rows that had a blank cell anywhere."</li>
+                <li><strong>b.</strong> "Replaced remaining blanks in the wellbeing items with 0 so the scale total would compute."</li>
+                <li><strong>c.</strong> "Three participants entered 999 for age. Left them in rather than lose cases. Mean age is 33.2 (<em>n</em> = 240)."</li>
+                <li><strong>d.</strong> "Reverse-scored items 3, 7 and 11 by multiplying by −1." (all items are 1–7 Likert)</li>
+                <li><strong>e.</strong> "Removed 6 participants with the lowest wellbeing scores, who looked like non-serious responders."</li>
+                <li><strong>f.</strong> "Merged wave 1 and wave 2 on participant initials."</li>
+                <li><strong>g.</strong> "Saved the cleaned file over the original."</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Which steps are defensible and which are errors?</li>
+              <li>Give the correct version of steps (b) and (d).</li>
+              <li>Using step (c), work out the true mean age.</li>
+              <li>Which single step is the most serious, and why?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Step-by-step verdict</span>
+                  <table class="ref-table">
+                    <thead><tr><th>Step</th><th>Verdict</th><th>Why</th></tr></thead>
+                    <tbody>
+                      <tr><td>a. Listwise deletion</td><td>Defensible, needs justification</td><td>Fine if the data are plausibly MCAR and the loss is small, but it must be reported and it contradicts step (b)</td></tr>
+                      <tr><td>b. Blanks → 0</td><td>Error</td><td>0 is not a valid response on a 1–7 scale</td></tr>
+                      <tr><td>c. 999 left in</td><td>Error</td><td>999 is a missing-value code, not an age</td></tr>
+                      <tr><td>d. Reverse by ×(−1)</td><td>Error</td><td>Produces −1 to −7, destroying the scale</td></tr>
+                      <tr><td>e. Dropped lowest scorers</td><td>Serious error</td><td>Selection on the outcome variable</td></tr>
+                      <tr><td>f. Merged on initials</td><td>Error</td><td>Collides, breaks on name changes, and is identifying</td></tr>
+                      <tr><td>g. Overwrote the raw file</td><td>Serious error</td><td>The original data no longer exists</td></tr>
+                    </tbody>
+                  </table>
+                </li>
+                <li><span class="pb-lbl">Fixing (b) and (d)</span>
+                  <span class="pb-note">For (b), leave missing values missing and decide an item-level rule instead: compute the scale when at least 80% of its items were answered, prorating from the items that were, and set it to missing otherwise. Filling with 0 invents the most extreme response available and drags every affected participant's total toward the floor.</span>
+                  <span class="pb-math">correct reverse-scoring: x' = (min + max) − x = 8 − x</span>
+                  <span class="pb-math">so 1 → 7, 2 → 6, 4 → 4, 7 → 1</span>
+                  <span class="pb-note">Multiplying by −1 gives a range of −1 to −7, which is not the reversed scale, and it corrupts every scale total that includes those three items without producing a single value that looks obviously wrong. Recompute the reversed items from the raw file, which is a problem given step (g).</span>
+                </li>
+                <li><span class="pb-lbl">The true mean age</span>
+                  <span class="pb-math">total of all 240 ages = 240 × 33.2 = 7,968</span>
+                  <span class="pb-math">the three sentinels contribute 3 × 999 = 2,997</span>
+                  <span class="pb-math">remaining total = 7,968 − 2,997 = 4,971</span>
+                  <span class="pb-math">true mean = 4,971 / 237 = 21.0 years</span>
+                  <span class="pb-note">Three cells inflated the reported mean by 12.2 years in a sample of 240. This is what missing-value sentinels do when a pipeline treats them as data, and it is why the first step of any cleaning workflow is to check every variable's minimum and maximum against its plausible range.</span>
+                </li>
+                <li><span class="pb-lbl">The most serious step</span>
+                  <span class="pb-note">Step (e), with step (g) close behind. Removing the six lowest wellbeing scores is not cleaning; it is deleting cases on the basis of the outcome variable, which changes the mean by construction and does so in a direction the researcher can see while doing it. If non-serious responding is a genuine concern, screen for it with something independent of the outcome: attention-check items, implausibly fast completion times, straight-lining down a column. Step (g) is a different kind of damage. Raw data should be read-only and every transformation should live in a script, so that the cleaned file can always be regenerated and any mistake in this log can be undone. As things stand, none of these errors can be reversed.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Five clear errors: 0 for missing on a 1–7 scale, a 999 sentinel treated as an age (which inflated the mean from 21.0 to 33.2), reverse-scoring by −1 instead of 8 − x, dropping the lowest scorers, and merging on initials. Overwriting the raw file is what makes all of them permanent.</p>
+              <p class="pb-ref">From <a href="data/data-cleaning-workflow/">§2.4 The Cleaning Workflow</a>, <a href="data/outliers-in-practice/">§2.5 Outliers</a> and <a href="data/reproducible-workflows/">§2.9 Reproducible Workflows</a> · the worked version is the <a href="guides/clean-survey-data/">survey-cleaning guide</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 5.5 ----------
+               verify: node -e 'global.window={};require("./assets/js/viz.js");const V=window.VIZ;
+                        const mA=7.35,sA=1.42,nA=41,mB=7.62,sB=1.38,nB=38;
+                        const sp2=((nA-1)*sA*sA+(nB-1)*sB*sB)/(nA+nB-2);
+                        const se=Math.sqrt(sp2*(1/nA+1/nB)),t=(mB-mA)/se;
+                        console.log(t, 2*V.tUpper(t,77), (mB-mA)/Math.sqrt(sp2))'
+                     → diff 0.27 ; pooled s = 1.4009 ; SE = 0.3155 ; t(77) = 0.86, p = .395 ; d = 0.19
+                     relative change = 0.27/7.35 = 3.67%
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p5-5"><span class="pb-num">42</span>The figure that made 0.27 look enormous</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A retail consultancy sends its client a one-page summary of a store-layout trial. The figure is the whole page, and you have been asked whether the client should spend two million on the rollout.</p>
+            <div class="pb-given">
+              <span class="lbl">Figure 2, as submitted</span>
+              <ul>
+                <li>Bar chart, two bars, drawn with 3-D perspective</li>
+                <li><em>y</em>-axis runs from 7.2 to 7.8; satisfaction is measured on a 1–10 scale</li>
+                <li>Layout A bar at 7.35, Layout B bar at 7.62</li>
+                <li>No error bars anywhere on the figure</li>
+                <li>A red arrow between the bars, labelled "+27% improvement"</li>
+                <li>Caption: "Figure 2. Layout B clearly outperforms Layout A."</li>
+              </ul>
+              <span class="lbl" style="margin-top:.5rem">From the appendix</span>
+              Layout A: <em>M</em> = 7.35, <em>SD</em> = 1.42, <em>n</em> = 41 · Layout B: <em>M</em> = 7.62, <em>SD</em> = 1.38, <em>n</em> = 38
+            </div>
+            <ol class="pb-ask">
+              <li>List everything wrong with the figure.</li>
+              <li>Where does "+27%" come from, and what is the honest number?</li>
+              <li>Using the appendix, is the difference distinguishable from zero?</li>
+              <li>Describe the figure you would send instead.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The catalogue of problems</span>
+                  <span class="pb-note">The truncated axis is the big one: starting at 7.2 instead of 0 turns a 0.27-point gap into a bar nearly three times the height of its neighbour, since A occupies 25% of the plot area and B occupies 70%. Bars encode value by length, so a bar chart with a truncated axis is misreporting its own data. Beyond that: no uncertainty is shown, so a reader cannot tell a solid difference from noise; the 3-D perspective distorts the apparent heights and adds nothing; two bars summarise 79 people and hide every distribution; and the caption asserts a conclusion ("clearly outperforms") that the figure does not establish and, as question 3 shows, is wrong.</span>
+                </li>
+                <li><span class="pb-lbl">Where the 27% came from</span>
+                  <span class="pb-math">7.62 − 7.35 = 0.27 points</span>
+                  <span class="pb-math">relative change = 0.27 / 7.35 = 3.7%</span>
+                  <span class="pb-note">Someone read the difference of 0.27 as "27%". The actual relative increase in the mean is 3.7%, and even that is a shaky thing to report, because a 1–10 satisfaction scale has no meaningful zero, so percentage changes on it depend on an arbitrary origin. The honest statement is the difference itself: Layout B scored 0.27 points higher on a 10-point scale.</span>
+                </li>
+                <li><span class="pb-lbl">Is it distinguishable from zero?</span>
+                  <span class="pb-math">s²<sub>pooled</sub> = [40(1.42²) + 37(1.38²)] / 77 = (80.66 + 70.46)/77 = 1.963</span>
+                  <span class="pb-math">s<sub>pooled</sub> = 1.401</span>
+                  <span class="pb-math">SE = 1.401 × √(1/41 + 1/38) = 1.401 × .2252 = 0.3155</span>
+                  <span class="pb-math">t(77) = 0.27 / 0.3155 = 0.86, p = .39</span>
+                  <span class="pb-math">d = 0.27 / 1.401 = 0.19</span>
+                  <span class="pb-note">No. A difference this size arises about 39% of the time when the two layouts are identical. The figure's entire visual argument rests on a difference the data cannot distinguish from nothing, and the two-million rollout has no evidence behind it. With <em>d</em> = 0.19, detecting an effect this small with 80% power would need over 400 stores per layout rather than 40.</span>
+                </li>
+                <li><span class="pb-lbl">The figure to send instead</span>
+                  <span class="pb-note">Plot the individual store scores as two columns of points, jittered so they do not overlap, with the group mean marked and a 95% confidence interval drawn around it. Run the <em>y</em>-axis across the full 1 to 10 scale, or across a clearly labelled subrange with the truncation stated in the caption. Drop the third dimension. Make the caption descriptive: "Figure 2. Mean customer satisfaction by store layout, with 95% confidence intervals. Individual stores shown as points; <em>n</em> = 41 and 38." Then let the overlapping intervals say what they say. A figure whose job is to persuade is not a figure, and if the recommendation is to keep testing, the figure should make that obvious at a glance.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Truncated axis, no error bars, gratuitous 3-D, a conclusion in the caption, and a "+27%" that is really a 0.27-point difference (3.7% in relative terms). The difference is not distinguishable from zero, <em>t</em>(77) = 0.86, <em>p</em> = .39, <em>d</em> = 0.19, so the rollout rests on nothing.</p>
+              <p class="pb-ref">From <a href="writing/tables-and-figures/">§5.3 Tables &amp; Figures That Don't Lie</a> · check the size of the effect in <a href="effect-sizes.html">the effect-size converter</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 5.6 ----------
+               verify: every number in the sentence is statcheck-clean, so the ONLY errors are
+                 the three formatting ones. node -e (see the P64 session log):
+                 t: n = 30/group, diff = 78.4 − 74.1 = 4.3, SE = √((8.6² + 8.9²)/30) = 2.2596
+                    → t(58) = 1.903, two-tailed p = .0620 ✓ (reported .062)
+                 d: s_pooled = √((8.6² + 8.9²)/2) = 8.7513 → d = 4.3/8.7513 = 0.491 ✓ (reported 0.49)
+                 r: r = .34, n = 60 → df = 58, t = .34√(58/(1−.1156)) = 2.7534, p = .0079 ✓ (reported .008)
+                 The three planted errors are formatting only, each a distinct apa.html rule:
+                   (1) leading zero on p          (2) missing zero on d       (3) df = n, not n − 2
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p5-6"><span class="pb-num">43</span>Three things wrong with one sentence</h3>
+              <span class="pb-chip warm">Warm-up</span>
+            </div>
+            <p class="pb-scenario">A results paragraph comes back from a co-author. The analysis is sound and every number was computed correctly, but the sentence breaks exactly three APA 7 formatting rules. Find them, then write the version that goes in the paper.</p>
+            <div class="pb-given">
+              <span class="lbl">The study</span>
+              Sixty participants, 30 per group, completed a puzzle task under immediate or delayed feedback. Accuracy and total practice time were recorded for all 60.
+              <span class="lbl" style="margin-top:.6rem">The sentence as written</span>
+              <p style="margin:.3rem 0">"Participants receiving immediate feedback (<em>M</em> = 78.4, <em>SD</em> = 8.6) were more accurate than those receiving delayed feedback (<em>M</em> = 74.1, <em>SD</em> = 8.9), <em>t</em>(58) = 1.90, <em>p</em> = 0.062, <em>d</em> = .49. Accuracy correlated with practice time, <em>r</em>(60) = .34, <em>p</em> = .008."</p>
+            </div>
+            <ol class="pb-ask">
+              <li>Find the three formatting errors and name the rule behind each.</li>
+              <li>Write the corrected sentence.</li>
+              <li>Confirm that the numbers themselves are consistent.</li>
+              <li>Your supervisor circles something else in the sentence that is not a formatting error. What?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Error 1: a leading zero on p</span>
+                  <span class="pb-math">written: p = 0.062      correct: p = .062</span>
+                  <span class="pb-note">Drop the leading zero from any statistic that cannot exceed 1 in magnitude: <em>p</em>, <em>r</em>, <em>R</em>², η², β and Cramér's <em>V</em>. A probability of 0.062 is never going to be 1.062, so the zero carries no information.</span>
+                </li>
+                <li><span class="pb-lbl">Error 2: a missing zero on d</span>
+                  <span class="pb-math">written: d = .49      correct: d = 0.49</span>
+                  <span class="pb-note">The mirror image of the first rule, and the one people miss because they over-apply the first. Cohen's <em>d</em> can comfortably exceed 1, so it keeps its leading zero. The same goes for <em>t</em>, <em>F</em>, <em>M</em> and <em>SD</em>. The test is not "is it a decimal" but "can this quantity exceed 1".</span>
+                </li>
+                <li><span class="pb-lbl">Error 3: the wrong df on the correlation</span>
+                  <span class="pb-math">written: r(60) = .34      correct: r(58) = .34</span>
+                  <span class="pb-note">The number in parentheses after <em>r</em> is degrees of freedom, not sample size, and for a correlation that is <em>n</em> − 2. With 60 participants the value is 58. Writing <em>r</em>(60) tells a careful reader you had 62 people, which contradicts the methods section. The <em>t</em>-test in the same sentence has it right, and the two matching by coincidence here is a good reminder to check rather than pattern-match.</span>
+                </li>
+                <li><span class="pb-lbl">The corrected sentence</span>
+                  <span class="pb-note">"Participants receiving immediate feedback (<em>M</em> = 78.4, <em>SD</em> = 8.6) scored higher on accuracy than those receiving delayed feedback (<em>M</em> = 74.1, <em>SD</em> = 8.9), though the difference was not statistically significant, <em>t</em>(58) = 1.90, <em>p</em> = .062, <em>d</em> = 0.49. Accuracy correlated with practice time, <em>r</em>(58) = .34, <em>p</em> = .008."</span>
+                </li>
+                <li><span class="pb-lbl">Checking the numbers</span>
+                  <span class="pb-math">SE = √[(8.6² + 8.9²)/30] = √(153.17/30) = 2.26</span>
+                  <span class="pb-math">t = (78.4 − 74.1)/2.26 = 1.90 ✓, two-tailed p = .062 ✓</span>
+                  <span class="pb-math">s<sub>pooled</sub> = √[(8.6² + 8.9²)/2] = 8.75, so d = 4.3/8.75 = 0.49 ✓</span>
+                  <span class="pb-math">for r = .34 with df = 58: t = .34√(58/(1 − .34²)) = 2.75, p = .008 ✓</span>
+                  <span class="pb-note">Everything reconciles, which is what the consistency check in the <a href="apa.html">APA formatter</a> does automatically. Formatting errors and arithmetic errors are separate species, and a sentence can have either without the other.</span>
+                </li>
+                <li><span class="pb-lbl">What the supervisor circled</span>
+                  <span class="pb-note">"Were more accurate" states a difference at <em>p</em> = .062. That is not a formatting error; it is a claim the test does not support. The correction above replaces it with a description of the observed means plus an explicit statement that the difference was not significant, which is the honest form. Resist both temptations here: do not write "approached significance", and do not pretend the 4.3-point gap was not observed. Report the estimate, report that it is compatible with no difference at this sample size, and let the confidence interval carry the uncertainty.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Leading zero on <em>p</em> (should be .062), missing leading zero on <em>d</em> (should be 0.49), and <em>r</em>(60) where the degrees of freedom are <em>n</em> − 2 = 58. The numbers themselves all reconcile; the fourth problem, calling <em>p</em> = .062 a difference, is a writing error rather than a formatting one.</p>
+              <p class="pb-ref">From <a href="writing/reporting-statistics-apa/">§5.2 Reporting Statistics in APA Style</a> and <a href="writing/nonsignificant-results/">§5.5 Non-Significant Results</a> · the rules are on the <a href="cheat-apa.html">APA cheat sheet</a> and applied by the <a href="apa.html">APA formatter</a>.</p>
             </details>
           </article>
         </section>

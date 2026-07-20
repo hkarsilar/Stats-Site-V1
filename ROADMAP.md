@@ -206,7 +206,7 @@ Tick these as sessions complete them (each prompt ends by updating this list).
 - [x] P61 · course landing pages — 9 × `<course>/index.html`, BASE "../", entry points + ItemList retargeted (Extra Powerful · Max)
 - [x] P62 · quiz v2 — exam mode + bank 128 → 208 questions (≥2/lesson everywhere, Stats 1–2 weighted), `sc-exam` best scores, printable mock-exam report (Extra Powerful · Ultra)
 - [x] P63 · worked problems — problems.html + Stats 1–2 sets (22 problems), print-without-solutions (Extra Powerful · Ultra)
-- [ ] P64 · worked problems — Stats 3–4 + toolkit "spot the problem" sets (Extra Powerful · Ultra)
+- [x] P64 · worked problems — Stats 3–4 + toolkit "spot the problem" sets (43 problems total) (Extra Powerful · Ultra)
 - [ ] P65 · touch & small-screen ergonomics — touch-action sweep, finger-sized grab targets, 360px sweep (Powerful · Extra)
 - [ ] P66 · guard scripts — tools/math-check.js gate + tools/extlinks.js for P38 (Powerful · Extra)
 - [ ] P67 · lesson state presets — SC.preset + ~10 flagship lessons + teachers.html docs (Extra Powerful · Extra)
