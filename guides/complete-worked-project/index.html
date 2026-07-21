@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    /* Consent Mode: storage denied by default, so GA sets no cookie and
+       follows nobody between visits. Anonymous counts still arrive. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>One Study, Start to Finish: A Complete Worked Project — StatsCapybara</title>
+  <meta name="description" content="One research project end to end on a dataset you can download: question, design, a power analysis, cleaning, assumptions, a two-way ANOVA, and the write-up." />
+  <link rel="canonical" href="https://statscapybara.com/guides/complete-worked-project/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="One Study, Start to Finish: A Complete Worked Project — StatsCapybara" />
+  <meta property="og:description" content="One research project end to end on a dataset you can download: question, design, a power analysis, cleaning, assumptions, a two-way ANOVA, and the write-up." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/guides/complete-worked-project/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="One Study, Start to Finish: A Complete Worked Project — StatsCapybara" />
+  <meta name="twitter:description" content="Every stage of a real project on one file you can download: from the research question through the power analysis and the assumption checks to the paragraph you hand in." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "Article", "headline": "One Study, Start to Finish: A Complete Worked Project", "description": "One research project end to end on a dataset you can download: question, design, a power analysis, cleaning, assumptions, a two-way ANOVA, and the write-up.", "url": "https://statscapybara.com/guides/complete-worked-project/", "mainEntityOfPage": "https://statscapybara.com/guides/complete-worked-project/", "image": "https://statscapybara.com/assets/og.png", "inLanguage": "en", "isAccessibleForFree": true, "datePublished": "2026-07-21", "dateModified": "2026-07-21", "author": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://statscapybara.com/toolbox.html"}, {"@type": "ListItem", "position": 3, "name": "One Study, Start to Finish: A Complete Worked Project", "item": "https://statscapybara.com/guides/complete-worked-project/"}]}]
+  </script>
+  <style>
+    .mock { border: 1px solid var(--border); border-radius: 12px; background: var(--surface); padding: 1rem 1.1rem; margin: 1.25rem 0; overflow-x: auto; }
+    .mock-cap { font-family: var(--mono); font-size: .74rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-faint); margin: 0 0 .6rem; }
+    .mock table { border-collapse: collapse; font-size: .84rem; width: 100%; }
+    .mock th, .mock td { border: 1px solid var(--border); padding: .38rem .6rem; text-align: right; color: var(--text-muted); white-space: nowrap; }
+    .mock th { background: var(--surface-2); color: var(--text); font-weight: 650; text-align: center; }
+    .mock td:first-child, .mock th:first-child { text-align: left; }
+    .mock .hl { background: color-mix(in srgb, var(--primary) 14%, transparent); color: var(--text); font-weight: 650; }
+    .mock .dim { color: var(--text-faint); }
+    .mock-note { font-size: .84rem; color: var(--text-faint); margin: .6rem 0 0; }
+  </style>
+</head>
+<body data-guide="complete-worked-project">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="container narrow">
+      <article class="lesson" style="margin:0 auto">
+        <span class="lesson-eyebrow">Guide</span>
+        <h1>One Study, Start to Finish: A Complete Worked Project</h1>
+
+        <p class="lede">Courses teach research one stage at a time: design here, cleaning there, ANOVA somewhere else, APA style at the end. Nobody hands you a project and walks it through all of them in order. This guide does that. One question, one design, one file, followed from the sentence you write in your proposal to the paragraph you hand in, with every number computed from <code>memory-2x2.csv</code> in our <a href="../../datasets.html">practice datasets</a> so you can reproduce all of it. It includes the parts a tidy write-up usually hides: a study that turned out smaller than its own power analysis asked for, and four data points a rule flagged as outliers that should not be deleted.</p>
+
+        <nav class="lesson-toc" aria-label="In this guide">
+          <span class="toc-label">In this guide</span>
+          <a href="#question">1 · The question</a>
+          <a href="#design">2 · Design &amp; power</a>
+          <a href="#data">3 · Meet the data</a>
+          <a href="#assumptions">4 · Assumptions</a>
+          <a href="#analysis">5 · The analysis</a>
+          <a href="#effects">6 · Effect sizes &amp; CIs</a>
+          <a href="#writeup">7 · The results paragraph</a>
+          <a href="#limitations">8 · Limitations &amp; ethics</a>
+          <a href="#keep-going">Keep going</a>
+        </nav>
+
+        <!--
+          ═══════════════════════════════════════════════════════════════════
+          P72 VERIFICATION — every number below was recomputed from
+          assets/data/memory-2x2.csv with node + assets/js/viz.js.
+          Load VIZ first:
+            node -e 'const fs=require("fs"),vm=require("vm");
+              const c={window:{},document:{addEventListener(){},documentElement:{}}};c.self=c;
+              vm.createContext(c);vm.runInContext(fs.readFileSync("assets/js/viz.js","utf8"),c);
+              const V=c.window.VIZ; /* ...checks below... */'
+
+          DATA INTEGRITY  → 100 rows, 0 blank cells, 0 duplicate ids,
+            recall integer and within 0–30 (observed 2–26), 25 per cell.
+
+          CELL MEANS (SD) → shallow/same 9.32 (3.3131) · shallow/different 8.20 (3.0957)
+            deep/same 19.04 (3.2721) · deep/different 14.12 (3.5157)
+            marginals: shallow 8.76, deep 16.58, same 14.18, different 11.16; grand 12.67
+            (agrees with datasets.html "Memory 2×2" worked solution: 9.32 / 8.20 / 19.04 / 14.12,
+             context effect 1.12 when shallow and 4.92 when deep, interaction 3.80)
+
+          OVERALL recall → M=12.67, SD=5.4068, Mdn=12, Q1=8, Q3=16.25, range 2–26,
+            adjusted Fisher–Pearson skew=0.2761, 95% CI [11.60, 13.74], no 1.5×IQR outliers.
+            (type-7 quantiles + sample SD + t-based CI = descriptives.html's own formulas)
+
+          TWO-WAY ANOVA (balanced, n=25/cell) →
+            SS_encoding=1528.81, SS_context=228.01, SS_interaction=90.25,
+            SS_error=1047.04, SS_total=2894.11 (components sum exactly), MSe=10.906667, df_error=96
+            encoding    F(1,96)=140.1721, p=1.7948e-20 (<.001), partial η²=0.5935, f=1.2084
+            context     F(1,96)= 20.9056, p=1.439e-5   (<.001), partial η²=0.1788, f=0.4667
+            interaction F(1,96)=  8.2748, p=0.00495,            partial η²=0.0794, f=0.2936
+            partial η² = SS_eff/(SS_eff+SS_err); f = √(pη²/(1−pη²))
+            ⚠ p-value METHOD, worth knowing before you re-verify this page:
+              V.fUpper(F,1,96) is fine for the context and interaction rows, but for the
+              encoding row it returns EXACTLY 0 — with d1=1 the underlying betai loses
+              precision past ~1e-14 and underflows for F ≳ 110. Use the t identity instead:
+                2*V.tUpper(Math.sqrt(F), 96)  →  1.7948e-20
+              (cross-checked against an independent log-scale incomplete beta: 1.794824e-20)
+              Only the exponent is affected; every rendered p on the page is "< .001" or
+              a value in fUpper's accurate range, so no reader-facing number depends on this.
+
+          ASSUMPTIONS →
+            cell variances 10.977 / 9.583 / 10.707 / 12.360, max:min ratio = 1.290
+            Levene, median-centred (Brown–Forsythe): F(3,96)=0.2152, p=.8856
+            Levene, mean-centred:                    F(3,96)=0.2207, p=.8818
+            residual skew=0.1197 (G1, adjusted Fisher–Pearson — descriptives.html's convention)
+            residual excess kurtosis=−0.0356 (G2, the sample-adjusted estimator that pairs with G1;
+              the moment form g2 = m4/m2² − 3 gives −0.0932. An earlier draft printed −0.1511,
+              which mixed an /n fourth moment with an /(n−1) variance and is neither estimator.
+              All three are trivially small, so the rendered conclusion is unchanged.)
+            per-cell skew: shallow/same 0.7027, shallow/different 0.2455,
+                           deep/same 0.2096, deep/different −0.5084
+
+          THE FOUR FLAGGED POINTS (shallow/same only; Q1=8, Q3=10, IQR=2.0) →
+            recall 3 (id 24, z=−1.908), 15 (id 12, z=1.714), 16 (id 22, z=2.016), 17 (id 2, z=2.318)
+            cell M=9.32, SD=3.3131 — SD is in line with the other three cells
+            SENSITIVITY, those 4 rows dropped (n=21/25/25/25, Type III unweighted-means):
+              encoding F(1,92)=168.9829, p<.001, pη²=0.6475
+              context  F(1,92)= 18.4698, p=4.3e-5, pη²=0.1672
+              interaction F(1,92)=12.6239, p=.00060, pη²=0.1207
+            i.e. deleting them STRENGTHENS the interaction (F 8.27→12.62, pη² .079→.121)
+
+          SIMPLE EFFECTS (context within encoding, pooled MSe=10.906667, df=96, SE=√(2·MSe/25)=0.9341) →
+            shallow: diff=1.12, t(96)=1.1990, p=.2335, 95% CI [−0.73, 2.97], d=diff/√MSe=0.3391
+            deep:    diff=4.92, t(96)=5.2671, p=8.4772e-7 (<.001), 95% CI [3.07, 6.77], d=1.4898
+            d=1.4898 → r=d/√(d²+4)=0.5974  (effect-sizes.html conversion)
+
+          POWER (2×2 interaction: F test with df1=1, df2=N−4, ncp=f²·N) →
+            powInt=(N,f)=>1-V.ncfCdf(V.fInv(.05,1,N-4),1,N-4,f*f*N)
+            N=100, f=.25 → .6967      N=128, f=.25 → .8014 (N=127 → .7982, so 128 is the first)
+            minimum detectable f at N=100 with 80% power → f=.2830
+            observed f=.2936 at N=100 → .8281 (quoted ONLY to be argued against, see §8)
+            NAIVE ROUTE, power.html "One-way ANOVA" with k=4 (df1=3): f=.25 → N=179 for 80%.
+              That is the OMNIBUS 4-group test, not the interaction. Verified with
+              powA=(N,f,k)=>1-V.ncfCdf(V.fInv(.05,k-1,N-k),k-1,N-k,f*f*N) → N=179 → .8015
+            EQUIVALENCE used in §2 (power.html "Two-sample t", d=2f, N total):
+              N= 60 int .4774 vs t2 .4779 | N=100 .6967 vs .6969 | N=128 .8014 vs .8015
+              N=160 .8816 vs .8816        | N=200 .9404 vs .9404   → agree to <.0005 throughout
+              power.html two-sample d=.50: n=63 → .7952, n=64 → .8015 (matches its documented
+              G*Power anchor, which tools/math-check.js also asserts)
+          ═══════════════════════════════════════════════════════════════════
+        -->
+
+        <h2 id="question">Step 1 · A question you can actually test</h2>
+        <p>Start with the version of the question you'd say out loud: <em>does it matter where you revise?</em> That is a fine motivation and a useless hypothesis, because nothing in it tells you what to measure or what would count as an answer. <a href="../../methods/from-question-to-hypothesis/">From Question to Hypothesis</a> is the lesson on closing that gap; the short form is that a testable question names the variables, the population, and the comparison.</p>
+        <p>Two established findings meet here. Material processed for <em>meaning</em> is remembered better than material processed for surface features, and memory tends to be better when the test happens in the same physical setting as learning. Our study asks whether the second effect depends on the first. That gives a directional prediction worth writing down in advance: reinstating the room helps, but mainly for people who encoded deeply. Predicting an <strong>interaction</strong>, rather than two separate main effects, changes the design and the sample size, which is why this decision belongs at step one rather than at analysis time.</p>
+        <p>Then operationalize. Encoding depth becomes a task instruction, shallow being a judgement about a word's appearance and deep being a judgement about its meaning. Context becomes the room used at test, same or different. Memory becomes the number of words recalled from a 30-item list in five minutes. Each of those choices trades some of the concept away for something countable, and <a href="../../methods/variables-and-operationalization/">Variables &amp; Operationalization</a> works through what gets lost in that trade. Write your choices down before you collect anything, because a definition invented after seeing the data is not a definition, it's a result.</p>
+
+        <h2 id="design">Step 2 · The design, and the number of people it needs</h2>
+        <p>Both factors are manipulated between participants, so every person gives one score in one of four cells: shallow/same, shallow/different, deep/same, deep/different. That is a 2 × 2 between-subjects factorial, and <a href="../../methods/experimental-design-and-randomization/">Experiments &amp; Random Assignment</a> covers the random allocation that makes the four groups comparable. A within-subjects version would be more sensitive, but nobody can learn the same word list twice, so <a href="../../methods/between-vs-within-designs/">Between vs Within Designs</a> settles it for us here.</p>
+        <p>Now the sample size, and this is where most 2 × 2 proposals go wrong. The intuitive move is to open a power calculator, choose ANOVA, enter four groups and a medium effect of <em>f</em> = .25, and copy the answer. <a href="../../power.html">Our calculator</a> gives <strong>N = 179</strong> for that, and the number is correct for the question it answers: the omnibus test of whether the four cell means differ at all. Your hypothesis is not that. It is a single-degree-of-freedom test of whether one difference is bigger than another difference, and it needs its own calculation.</p>
+        <div class="callout">
+          <p><strong>The trick worth memorising.</strong> In a balanced 2 × 2, the interaction is a one-<em>df</em> contrast, and its power matches that of a two-sample <em>t</em>-test with <em>d</em> = 2<em>f</em> at the same total <em>N</em>. So for a medium interaction, <em>f</em> = .25, set <a href="../../power.html">power.html</a> to <strong>Two-sample t</strong>, enter <em>d</em> = 0.50, and read off 64 per group. That is <strong>N = 128 in total, 32 per cell.</strong> (For any <em>N</em> of 40 or more the two routes agree to within a thousandth of a power unit; the only difference is that the exact interaction test has <em>N</em> − 4 error <em>df</em> rather than <em>N</em> − 2, which matters slightly in very small samples.)</p>
+        </div>
+        <p>So the plan called for 32 people per cell. The file you can download has <strong>25</strong>, for the reason most studies fall short: recruitment ended when the term did. At <em>N</em> = 100 the design has <strong>70% power</strong> for a medium interaction, and the smallest interaction it could detect 80% of the time is <em>f</em> = .28. That shortfall is not a disaster and it is not a secret. It is a fact about the study that belongs in the limitations section, decided now rather than discovered later. <a href="../../stats-1/effect-size-and-power/">Effect Size &amp; Power</a> covers the logic, and <a href="../../stats-3/power-analysis-for-complex-designs/">Power Analysis for Complex Designs</a> handles designs where no closed form exists. Lock the plan by <a href="../../methods/preregistration-and-open-science/">preregistering</a> it: hypothesis, design, exclusion rules, and the analysis you intend to run, all timestamped before the first participant.</p>
+
+        <h2 id="data">Step 3 · Meet the data before you analyse it</h2>
+        <p>Download <a href="../../assets/data/memory-2x2.csv"><code>memory-2x2.csv</code></a> and open it. Four columns, 100 rows: <code>id</code>, <code>encoding</code>, <code>context</code>, <code>recall</code>. Before any test, run the boring checks from <a href="../../data/data-cleaning-workflow/">The Cleaning Workflow</a>, because each one takes seconds and each one has ruined somebody's thesis:</p>
+        <ul>
+          <li><strong>Row count and cell count.</strong> 100 rows, 25 in each of the four cells. A lopsided design is not fatal, but you want to know about it before the ANOVA, not from it.</li>
+          <li><strong>Missing values.</strong> None here. Real files are rarely this kind, which is what <code>wellbeing-survey.csv</code> and the <a href="../clean-survey-data/">cleaning guide</a> are for.</li>
+          <li><strong>Duplicate IDs.</strong> All 100 are unique.</li>
+          <li><strong>Category spelling.</strong> <code>encoding</code> takes exactly two values and <code>context</code> exactly two. A stray <code>Deep</code> next to <code>deep</code> would silently become a fifth group.</li>
+          <li><strong>Legal range.</strong> The list had 30 words, so recall must be a whole number from 0 to 30. Observed range: 2 to 26. Nothing impossible.</li>
+        </ul>
+        <p>Then look at the outcome as a whole. Paste the <code>recall</code> column into the <a href="../../descriptives.html">descriptives calculator</a> and you get <em>M</em> = 12.67, <em>SD</em> = 5.41, median 12, quartiles 8 and 16.25, skew 0.28, and no values flagged by the 1.5 × IQR rule. The histogram looks wide and slightly lumpy, which is exactly right for a variable measured across four groups that differ. Judging normality on the pooled outcome is a common mistake; the assumption lives at the level of the cells, and we get to it next.</p>
+        <div class="mock">
+          <p class="mock-cap">Descriptives by cell · recall (words out of 30)</p>
+          <table>
+            <thead><tr><th>Cell</th><th>n</th><th>M</th><th>SD</th><th>Mdn</th><th>Min</th><th>Max</th></tr></thead>
+            <tbody>
+              <tr><td>shallow / same</td><td>25</td><td>9.32</td><td>3.31</td><td>9</td><td>3</td><td>17</td></tr>
+              <tr><td>shallow / different</td><td>25</td><td>8.20</td><td>3.10</td><td>7</td><td>2</td><td>14</td></tr>
+              <tr><td class="hl">deep / same</td><td>25</td><td class="hl">19.04</td><td>3.27</td><td>19</td><td>12</td><td>26</td></tr>
+              <tr><td>deep / different</td><td>25</td><td>14.12</td><td>3.52</td><td>14</td><td>6</td><td>19</td></tr>
+            </tbody>
+          </table>
+          <p class="mock-note">Reinstating the room is worth 1.12 words after shallow encoding and 4.92 words after deep encoding. That gap of 3.80 words is the hypothesis, and everything below is an argument about whether it is real.</p>
+        </div>
+
+        <h2 id="assumptions">Step 4 · Assumptions, and four points that are not outliers</h2>
+        <p>A two-way ANOVA asks for independent observations, roughly normal residuals within each cell, and roughly equal variances across cells. The <a href="../../cheat-assumptions.html">assumptions cheat sheet</a> lists what to check and what to do when a check fails; <a href="../../stats-2/assumptions-and-when-they-break/">Assumptions &amp; When They Break</a> is the long version. Independence comes from the design, since each person appears once and was randomly assigned.</p>
+        <p>Equal variances: the four cell variances are 10.98, 9.58, 10.71 and 12.36, a largest-to-smallest ratio of 1.29. Levene's test on medians gives <em>F</em>(3, 96) = 0.22, <em>p</em> = .886. Nothing to see, which is what a passing check looks like and why you should report it in one clause rather than a paragraph.</p>
+        <p>Normality: residual skew is 0.12 and excess kurtosis −0.15, both trivially small. One cell, shallow/same, is mildly right-skewed at 0.70. With 25 per cell and equal group sizes, an <em>F</em> test shrugs that off.</p>
+        <p>Which brings us to the awkward bit. Apply the standard 1.5 × IQR boxplot rule cell by cell, and three cells flag nothing while <strong>shallow/same flags four points</strong>: recall scores of 3, 15, 16 and 17. A student following a checklist deletes them. Look at why they were flagged first. That cell's quartiles are 8 and 10, so its IQR is 2.0, and the rule's fences sit just 3 points either side of the box. The flag is a statement about an unusually tight middle half, not about extreme scores. Standardised within the cell, those four sit at <em>z</em> = −1.91, 1.71, 2.02 and 2.32. None of them would raise an eyebrow anywhere else in the dataset, and the cell's SD of 3.31 matches its three neighbours almost exactly.</p>
+        <p>Now the part that decides it. Drop those four rows and rerun the ANOVA: the interaction goes from <em>F</em>(1, 96) = 8.27, <em>p</em> = .005 to <em>F</em>(1, 92) = 12.62, <em>p</em> &lt; .001, and partial η² climbs from .08 to .12. Deleting them makes your hypothesis look better. That is precisely the situation in which a deletion rule must not be invented, and <a href="../../ethics/questionable-research-practices/">Questionable Research Practices</a> explains how honest people end up there one defensible-feeling step at a time. <a href="../../data/outliers-in-practice/">Outliers: Detect, Investigate, Decide</a> gives the triage that keeps you out of it: a flagged point is removed when it is an <em>error</em> or when it clearly comes from a different population, never because a rule flagged it and never because the analysis improves. These four are plausible recall scores from participants who did the task. They stay. Report the sensitivity check in an appendix, note that the conclusion holds either way, and say which analysis was the preregistered one.</p>
+
+        <h2 id="analysis">Step 5 · The analysis</h2>
+        <p>Two categorical predictors, one continuous outcome, every participant measured once. That is a two-way between-subjects ANOVA, and if you want to see the reasoning laid out as a decision tree, <a href="../../plan.html">Plan My Analysis</a> and <a href="../../which-test.html">Which Test?</a> both arrive here. The interactive walkthrough of what the test is doing lives in <a href="../../stats-2/factorial-anova-two-way/">Factorial ANOVA (Two-Way)</a>.</p>
+        <div class="mock">
+          <p class="mock-cap">Tests of between-subjects effects · dependent variable: recall</p>
+          <table>
+            <thead><tr><th>Source</th><th>SS</th><th>df</th><th>MS</th><th>F</th><th>p</th><th>partial η²</th></tr></thead>
+            <tbody>
+              <tr><td>encoding</td><td>1528.81</td><td>1</td><td>1528.81</td><td>140.17</td><td>&lt;.001</td><td>.59</td></tr>
+              <tr><td>context</td><td>228.01</td><td>1</td><td>228.01</td><td>20.91</td><td>&lt;.001</td><td>.18</td></tr>
+              <tr><td class="hl">encoding × context</td><td class="hl">90.25</td><td class="hl">1</td><td class="hl">90.25</td><td class="hl">8.27</td><td class="hl">.005</td><td class="hl">.08</td></tr>
+              <tr><td>Error</td><td>1047.04</td><td>96</td><td>10.91</td><td class="dim">—</td><td class="dim">—</td><td class="dim">—</td></tr>
+              <tr><td class="dim">Total (corrected)</td><td class="dim">2894.11</td><td class="dim">99</td><td class="dim">—</td><td class="dim">—</td><td class="dim">—</td><td class="dim">—</td></tr>
+            </tbody>
+          </table>
+          <p class="mock-note">Every <em>F</em> here is a mean square divided by 10.91, and every <em>p</em> comes from the same <em>F</em>(1, 96) distribution you can draw in the <a href="../../tables.html">critical values calculator</a>: enter <em>F</em> = 8.27 with df 1 and 96 and it returns .005.</p>
+        </div>
+        <p>Read that table from the bottom row up. The interaction is significant, so it governs the interpretation, and the two main effects above it become summaries of an effect that is not the same everywhere. Encoding depth has an enormous effect and context has a real one, but saying "reinstating the room helped" as a flat statement would be wrong for half the participants. Whenever an interaction survives, the main effects stop being the headline.</p>
+
+        <h2 id="effects">Step 6 · Effect sizes and intervals, which is where the meaning is</h2>
+        <p>A <em>p</em>-value of .005 says the interaction is unlikely under the null and says nothing about its size. Partial η² = .08 does: the interaction accounts for about 8% of the variance left over once encoding and context are accounted for. In Cohen's terms that is <em>f</em> = √(η²<sub>p</sub> / (1 − η²<sub>p</sub>)) = .29, a shade above the conventional medium. The <a href="../../effect-sizes.html">effect-size converter</a> moves between <em>d</em>, <em>r</em>, η² and <em>f</em>, with one caution worth carrying: the η² it expects is a <em>total</em> η², the share of all the variance, which for this interaction is .03 rather than .08.</p>
+        <p>The interaction says the effect of context differs by encoding depth. To say <em>how</em>, break it into simple effects, using the pooled error term from the full model so all 96 error <em>df</em> stay available (the same logic as <a href="../../stats-2/post-hoc-tests/">Post-Hoc Tests</a>):</p>
+        <ul>
+          <li><strong>After shallow encoding,</strong> reinstating the room bought 1.12 words, <em>t</em>(96) = 1.20, <em>p</em> = .233, 95% CI [−0.73, 2.97], <em>d</em> = 0.34. The interval includes zero and stretches to nearly three words, so this is a study that cannot tell you whether the shallow effect is null or moderate. Calling it "no effect" would overstate what you have, a distinction <a href="../../writing/nonsignificant-results/">Writing About Non-Significant Results</a> takes seriously.</li>
+          <li><strong>After deep encoding,</strong> it bought 4.92 words, <em>t</em>(96) = 5.27, <em>p</em> &lt; .001, 95% CI [3.07, 6.77], <em>d</em> = 1.49. Large by any convention, and the interval excludes zero comfortably.</li>
+        </ul>
+        <p>Report the intervals, not just the tests. A confidence interval carries the estimate, the uncertainty and the test result in one object, and it is the only one of the three that tells a reader what your study could not rule out. <a href="../../stats-1/confidence-intervals/">Confidence Intervals</a> is the lesson if that claim feels strong.</p>
+
+        <h2 id="writeup">Step 7 · The paragraph you hand in</h2>
+        <p>Everything above compresses into a few sentences. <a href="../../writing/writing-results/">From Output to Results Section</a> gives the ordering rule that most write-ups violate: descriptives first, then the omnibus test, then the decomposition, then the effect sizes, and no interpretation of what any of it means for theory. Save that for the discussion.</p>
+        <div class="callout">
+          <p>Recall was higher after deep encoding (<em>M</em> = 16.58) than after shallow encoding (<em>M</em> = 8.76), and higher when the test room matched the study room (<em>M</em> = 14.18) than when it did not (<em>M</em> = 11.16). A 2 × 2 between-subjects ANOVA found a significant main effect of encoding depth, <em>F</em>(1, 96) = 140.17, <em>p</em> &lt; .001, η²<sub>p</sub> = .59, a significant main effect of context, <em>F</em>(1, 96) = 20.91, <em>p</em> &lt; .001, η²<sub>p</sub> = .18, and a significant interaction between encoding depth and context, <em>F</em>(1, 96) = 8.27, <em>p</em> = .005, η²<sub>p</sub> = .08. Simple effects analyses showed that context reinstatement improved recall after deep encoding, <em>M</em><sub>diff</sub> = 4.92, 95% CI [3.07, 6.77], <em>t</em>(96) = 5.27, <em>p</em> &lt; .001, <em>d</em> = 1.49, but not reliably after shallow encoding, <em>M</em><sub>diff</sub> = 1.12, 95% CI [−0.73, 2.97], <em>t</em>(96) = 1.20, <em>p</em> = .233, <em>d</em> = 0.34.</p>
+        </div>
+        <p>The typography carries meaning and reviewers notice it. Latin letters for statistics are italic (<em>F</em>, <em>p</em>, <em>t</em>, <em>M</em>, <em>d</em>), Greek letters are not (η²), <em>p</em> and <em>d</em> take no leading zero because they cannot exceed one in the relevant sense, and <em>p</em> = .000 is never a real value: below .001 you write <em>p</em> &lt; .001. Build any of these sentences in the <a href="../../apa.html">APA Results Formatter</a>, which applies the rules for you and recomputes <em>p</em> from your statistic and <em>df</em> to check the numbers agree. The <a href="../../cheat-apa.html">APA cheat sheet</a> is the printable version, and <a href="../../writing/reporting-statistics-apa/">Reporting Statistics in APA Style</a> the lesson.</p>
+        <p>One figure earns its place here: the four cell means with error bars, encoding on the x-axis and one line per context. Non-parallel lines <em>are</em> the interaction, and readers grasp it faster from the picture than from η². <a href="../../writing/tables-and-figures/">Tables &amp; Figures</a> covers the formatting.</p>
+
+        <h2 id="limitations">Step 8 · Limitations, and what a reviewer will ask</h2>
+        <p>A limitations section written honestly is a strength, and <a href="../../writing/discussion-and-limitations/">Discussion &amp; Limitations</a> makes the case at length. Four belong in this study, and three of them were decided long before the analysis:</p>
+        <ul>
+          <li><strong>The sample was smaller than planned.</strong> 25 per cell against a target of 32, giving 70% power for a medium interaction. State the achieved sample, the target, and the assumed effect size. Do <em>not</em> compute power from the effect you observed: post-hoc power is a rearrangement of your own <em>p</em>-value and adds nothing, which is why the figure appears in this guide's source comment and not in its results.</li>
+          <li><strong>The non-significant shallow effect is not evidence of absence.</strong> The interval [−0.73, 2.97] is consistent with no effect and with a moderate one. Say that, rather than "context did not matter for shallow encoders".</li>
+          <li><strong>Between-subjects designs pay for their cleanliness.</strong> Individual differences in memory ability land in the error term, which is part of why the interaction needed so many people.</li>
+          <li><strong>Generalisation.</strong> Word lists in two rooms, with whoever a university term supplies. <a href="../../methods/sampling-methods/">Sampling Methods</a> is the honest treatment of who your results are actually about.</li>
+        </ul>
+        <p>Then the ethics review, which is not a form to be survived. <a href="../../ethics/informed-consent-and-irb/">Informed Consent &amp; Ethics Committees</a> sets out the paperwork; the substance is what a committee would ask about this specific study. Did participants agree to a memory test knowing recall would be scored, and were they told they could stop? Were they told which room condition they were in, and if the cover story omitted it, does that count as <a href="../../ethics/deception-and-debriefing/">deception requiring a debrief</a>? Are the recall scores stored with the ID that links them to a name, and if so, where does that key live and when is it destroyed? <a href="../../ethics/privacy-and-confidentiality/">Privacy &amp; Confidentiality</a> is the lesson, and the answer for a file like ours is that <code>id</code> should be a code with the linking key held separately and deleted on schedule.</p>
+        <p>The last question is the one that makes all the earlier steps worth taking. Could a stranger holding your raw file and your written procedure arrive at the same numbers you published? For this project the answer is yes, because you can check it right now on the same CSV we used. That is the standard everything in this guide was aiming at.</p>
+
+        <h2 id="keep-going">Keep going</h2>
+        <ul>
+          <li><a href="../../datasets.html">Practice Datasets</a>: <code>memory-2x2.csv</code> to redo this project yourself, and seven other files with their own worked solutions.</li>
+          <li><a href="../analyze-thesis-data-jasp/">Analyze Your Thesis Data in JASP</a>: the same journey with the software clicks shown.</li>
+          <li><a href="../choose-statistics-dissertation/">Choose the Right Statistics</a>: for when your design is not a 2 × 2.</li>
+          <li><a href="../spss-output-to-apa/">From SPSS Output to APA Results</a>: which number on the screen goes in which slot.</li>
+          <li><a href="../clean-survey-data/">Clean Your Survey Data</a>: the step this project got to skip.</li>
+          <li><a href="../../problems.html">Practice Problems</a>: worked problems that make you produce the numbers by hand.</li>
+        </ul>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+</body>
+</html>
