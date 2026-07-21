@@ -1415,7 +1415,7 @@
   /* ============================================================
      SEARCH OVERLAY
      ============================================================ */
-  var searchEl = null, searchInput = null, searchResults = null, searchIdx = 0, searchMatches = [], searchOpener = null;
+  var searchEl = null, searchInput = null, searchResults = null, searchDef = null, searchIdx = 0, searchMatches = [], searchOpener = null;
   function buildSearch() {
     if (searchEl) return;
     searchEl = document.createElement("div");
@@ -1424,12 +1424,14 @@
     searchEl.innerHTML =
       '<div class="search-panel" role="dialog" aria-modal="true" aria-label="Search lessons">' +
         '<input type="text" id="search-input" placeholder="Search lessons…" autocomplete="off" aria-label="Search lessons" />' +
+        '<div class="search-def" id="search-def" hidden></div>' +
         '<ul class="search-results" id="search-results"></ul>' +
         '<div class="search-hint"><span><kbd>↑</kbd><kbd>↓</kbd> navigate</span><span><kbd>↵</kbd> open</span><span><kbd>esc</kbd> close</span></div>' +
       '</div>';
     document.body.appendChild(searchEl);
     searchInput = searchEl.querySelector("#search-input");
     searchResults = searchEl.querySelector("#search-results");
+    searchDef = searchEl.querySelector("#search-def");
     searchEl.addEventListener("click", function (e) { if (e.target === searchEl) closeSearch(); });
     searchInput.addEventListener("input", runSearch);
     // list-navigation keys only make sense while typing in the input
@@ -1443,7 +1445,10 @@
     searchEl.addEventListener("keydown", function (e) {
       if (e.key === "Escape") { e.preventDefault(); closeSearch(); return; }
       if (e.key !== "Tab") return;
-      var focusable = [searchInput].concat(Array.prototype.slice.call(searchResults.querySelectorAll("a")));
+      /* DOM order, so the trap runs input → definition-card links → results;
+         querying the whole panel (not just the list) is what keeps the P71
+         glossary card reachable by keyboard */
+      var focusable = Array.prototype.slice.call(searchEl.querySelectorAll("input, a[href]"));
       if (!focusable.length) return;
       var first = focusable[0], last = focusable[focusable.length - 1];
       if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
@@ -1462,8 +1467,22 @@
     s.onload = function () { if (searchEl && searchEl.classList.contains("open")) runSearch(); };
     document.body.appendChild(s);
   }
+  /* glossary terms (assets/js/glossary-data.js) — same lazy deal as the
+     index, so "what is power" can be answered in the overlay (P71). It's
+     ~60 KB and glossary.html/flashcards.html already load it, hence the
+     window.GLOSSARY guard. */
+  var glossRequested = false;
+  function loadGlossary() {
+    if (glossRequested || window.GLOSSARY) return;
+    glossRequested = true;
+    var s = document.createElement("script");
+    s.src = BASE + "assets/js/glossary-data.js";
+    s.async = true;
+    s.onload = function () { if (searchEl && searchEl.classList.contains("open")) runSearch(); };
+    document.body.appendChild(s);
+  }
   function openSearch() {
-    buildSearch(); loadSearchIndex();
+    buildSearch(); loadSearchIndex(); loadGlossary();
     searchOpener = (document.activeElement && document.activeElement !== document.body) ? document.activeElement : null;
     searchEl.classList.add("open"); searchInput.value = ""; runSearch(); searchInput.focus();
     // that the overlay was opened, and from what kind of page. Never the
@@ -1518,65 +1537,305 @@
     { title: "Privacy", url: "privacy.html", tag: "Reference", kw: "privacy policy data collection analytics google cookie cookies tracking localstorage local storage progress stored device gdpr ads advertising accounts anonymous page views ko-fi what is collected delete reset children classroom" },
     { title: "For Instructors", url: "teachers.html", tag: "Guide", kw: "instructors teachers professors teaching course syllabus lms canvas moodle blackboard embed iframe classroom handouts posters assignments datasets reproducible semester week by week map free license link to us lecturer educator" }
   ];
-  function escHtml(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
-  /* a short excerpt around the first occurrence of q, with the match <mark>ed */
-  function snippetFor(txt, q) {
-    var at = txt.toLowerCase().indexOf(q);
-    if (at < 0) return null;
-    var from = Math.max(0, at - 36), to = Math.min(txt.length, at + q.length + 72);
+  function escHtml(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+  /* ---------- forgiving matching (P71) ----------
+     Statistics students type "hetroscedasticity", "post hoc", "chisquare".
+     Three cheap normalisations carry most of it, and one bounded
+     edit-distance check carries the rest:
+       norm()    lowercase, strip diacritics, hyphens/underscores → spaces
+       squash()  norm minus every separator, so "chi-square" === "chisquare"
+       flexRe()  a regex over the SQUASHED query allowing at most one
+                 separator between characters, which is what lets a single
+                 pass over the 620 KB index match every spacing variant at
+                 once. Measured FASTER than the old toLowerCase().indexOf()
+                 it replaces (~1–2 ms vs ~2–3 ms for the whole corpus),
+                 because that one re-allocated every lesson's text on every
+                 keystroke; no debounce is needed.
+     Typo tolerance is deliberately TITLE/TERM-only. Fuzzing the full text
+     would cost more and return worse results, and a title match is the
+     payoff a misspelling actually needs. */
+  var RE_DIA = /[\u0300-\u036f]/g, RE_SEP = /[-\u2010-\u2015_\/]+/g;
+  function norm(s) {
+    s = String(s == null ? "" : s).toLowerCase();
+    if (s.normalize) s = s.normalize("NFD").replace(RE_DIA, "");
+    return s.replace(RE_SEP, " ").replace(/\s+/g, " ").trim();
+  }
+  function squash(s) { return norm(s).replace(/[^a-z0-9]+/g, ""); }
+  function toks(s) {
+    var t = norm(s).split(" "), o = [];
+    for (var i = 0; i < t.length; i++) if (t[i]) o.push(t[i]);
+    return o;
+  }
+  function tailEq(a, i, b, j) {
+    while (i < a.length && j < b.length) { if (a.charCodeAt(i) !== b.charCodeAt(j)) return false; i++; j++; }
+    return i === a.length && j === b.length;
+  }
+  /* Damerau-Levenshtein distance ≤ 1 — one insert, delete, substitution or
+     adjacent transposition. Walk the common prefix, then compare tails; no
+     matrix, no allocation. Transpositions are in because "teh"/"hte" is the
+     typo students actually make. */
+  function within1(a, b) {
+    if (a === b) return true;
+    var la = a.length, lb = b.length, d = la - lb;
+    if (d > 1 || d < -1) return false;
+    var i = 0;
+    while (i < la && i < lb && a.charCodeAt(i) === b.charCodeAt(i)) i++;
+    if (la === lb) {
+      if (tailEq(a, i + 1, b, i + 1)) return true;
+      return a.charCodeAt(i) === b.charCodeAt(i + 1) && a.charCodeAt(i + 1) === b.charCodeAt(i) &&
+             tailEq(a, i + 2, b, i + 2);
+    }
+    return la > lb ? tailEq(a, i + 1, b, i) : tailEq(a, i, b, i + 1);
+  }
+  /* bounded Levenshtein — only ever run over the ~140 titles, and only when
+     nothing matched at all, so a plain two-row matrix is cheap enough */
+  function editDist(a, b, max) {
+    var la = a.length, lb = b.length, i, j;
+    if (la - lb > max || lb - la > max) return max + 1;
+    var prev = [], cur = [];
+    for (j = 0; j <= lb; j++) prev[j] = j;
+    for (i = 1; i <= la; i++) {
+      cur[0] = i;
+      var best = i;
+      for (j = 1; j <= lb; j++) {
+        var c = a.charCodeAt(i - 1) === b.charCodeAt(j - 1) ? 0 : 1;
+        cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + c);
+        if (cur[j] < best) best = cur[j];
+      }
+      if (best > max) return max + 1;
+      for (j = 0; j <= lb; j++) prev[j] = cur[j];
+    }
+    return prev[lb];
+  }
+  /* newlines are excluded from the separator class on purpose: the index has
+     none today, and allowing them would let one match straddle two sentences */
+  function flexRe(qs) {
+    if (!qs) return null;
+    var p = [];
+    for (var i = 0; i < qs.length; i++) p.push(qs.charAt(i).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+    return new RegExp(p.join("[ \\t\\-\\u2010-\\u2015]?"), "i");
+  }
+  /* normalised haystacks, memoised — every title/keyword string on the site
+     is normalised once per session, not once per keystroke */
+  var HAY = Object.create(null);
+  function hayFor(str) {
+    var h = HAY[str];
+    if (!h) h = HAY[str] = { n: norm(str), s: squash(str), t: toks(str) };
+    return h;
+  }
+  /* 0 = no match; higher = better. Typo tolerance needs 4+ characters on BOTH
+     sides, so short tokens like "z", "sd" or "f" can't fuzzily match half the
+     site (without that guard "t" matches every one-letter token there is). */
+  function scoreOne(Q, str) {
+    if (!Q.n) return 1;
+    var h = hayFor(str);
+    if (h.n.indexOf(Q.n) === 0) return 100;
+    if (h.n.indexOf(Q.n) >= 0) return 80;
+    if (Q.s && h.s.indexOf(Q.s) >= 0) return 60;
+    if (!Q.t.length) return 0;
+    var fuzzy = false;
+    for (var i = 0; i < Q.t.length; i++) {
+      var qt = Q.t[i], hit = false;
+      for (var j = 0; j < h.t.length; j++) {
+        var ht = h.t[j];
+        if (ht.indexOf(qt) === 0) { hit = true; break; }
+        if (qt.length >= 4 && ht.length >= 4 && within1(qt, ht)) { hit = true; fuzzy = true; break; }
+      }
+      if (!hit) return 0;
+    }
+    return fuzzy ? 40 : 55;
+  }
+  /* A course-title or keyword hit is weaker evidence than the page's own
+     title, so it is SCALED rather than hard-capped. Scaling is what keeps
+     the ordering sane at both ends: an exact keyword (80 → 44) still beats a
+     guessed spelling in a title (40), but a fuzzy keyword (40 → 22) no
+     longer outranks the lesson actually named after the word — which is why
+     "corelation" put three cheat sheets above the Correlation lesson. */
+  function aside(sc) { return sc ? Math.round(sc * 0.55) : 0; }
+  function scoreLesson(Q, s) {
+    var best = scoreOne(Q, s.title);
+    if (Q.n && s.n.indexOf(Q.n) >= 0) best = Math.max(best, 90);
+    return Math.max(best, aside(scoreOne(Q, s.courseTitle)));
+  }
+  function scorePage(Q, p) {
+    return Math.max(scoreOne(Q, p.title), aside(scoreOne(Q, p.kw)));
+  }
+
+  /* ---------- glossary instant answers (P71) ---------- */
+  /* must stay byte-identical to glossary.html's own slugify, or the deep link
+     lands on nothing */
+  function glossSlug(s) { return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
+  /* "what is power" and "define power" are both asking for one term — strip
+     the asking, keep the term */
+  var RE_ASK = /^(?:what(?:'|’)?s|what is|what are|whats|define|definition of|meaning of|explain|the)\s+/;
+  function askTerm(n) {
+    var t = n.replace(/\?+\s*$/, "").trim();
+    for (var i = 0; i < 3 && RE_ASK.test(t); i++) t = t.replace(RE_ASK, "");
+    return t.trim();
+  }
+  function glossFind(Q) {
+    var G = window.GLOSSARY;
+    if (!G || !Q.n) return null;
+    var q = askTerm(Q.n), qs = q.replace(/[^a-z0-9]+/g, "");
+    if (qs.length < 3) return null;
+    var one = q.indexOf(" ") < 0, best = null, bestSc = 0;
+    for (var i = 0; i < G.length; i++) {
+      var g = G[i], full = hayFor(g.t), sc = 0;
+      /* the glossary writes "Power (statistical)" and "Alpha (significance
+         level)" — the headword before the parenthesis is what a student types */
+      var head = hayFor(String(g.t).replace(/\s*\(.*$/, ""));
+      if (head.n === q || head.s === qs) sc = 100;
+      else if (full.n === q || full.s === qs) sc = 95;
+      else if (qs.length >= 4 && (within1(qs, head.s) || within1(qs, full.s))) sc = 70;
+      /* a one-word query naming a multi-word term: nobody types "bonferroni
+         correction", they type "bonferoni" and expect the term back */
+      else if (one && qs.length >= 4 && head.t.length > 1 && within1(qs, head.t[0])) sc = 65;
+      if (sc > bestSc) { bestSc = sc; best = g; }
+    }
+    return bestSc ? best : null;
+  }
+  function showDef(g) {
+    if (!searchDef) return;
+    if (!g) { searchDef.hidden = true; searchDef.innerHTML = ""; return; }
+    var links = "";
+    if (g.s) links += '<a href="' + BASE + g.s + '/">Read it in ' + escHtml(g.l || "the lesson") + ' →</a>';
+    links += '<a href="' + BASE + 'glossary.html#' + glossSlug(g.t) + '">See it in the glossary →</a>';
+    searchDef.innerHTML =
+      '<div class="sd-head"><span class="sd-term">' + escHtml(g.t) + '</span><span class="sd-tag">Definition</span></div>' +
+      '<p class="sd-def">' + escHtml(g.d) + '</p>' +
+      '<div class="sd-links">' + links + '</div>';
+    searchDef.hidden = false;
+  }
+
+  /* a short excerpt around the first match, with the matched run <mark>ed —
+     the regex (not the raw query) decides the range, so a "chisquare" query
+     highlights the "chi-square" it actually found */
+  function snippetFor(txt, re) {
+    var m = re.exec(txt);
+    if (!m) return null;
+    var at = m.index, len = m[0].length;
+    var from = Math.max(0, at - 36), to = Math.min(txt.length, at + len + 72);
     return (from > 0 ? "…" : "") +
-      escHtml(txt.slice(from, at)) + "<mark>" + escHtml(txt.slice(at, at + q.length)) + "</mark>" +
-      escHtml(txt.slice(at + q.length, to)) + (to < txt.length ? "…" : "");
+      escHtml(txt.slice(from, at)) + "<mark>" + escHtml(txt.slice(at, at + len)) + "</mark>" +
+      escHtml(txt.slice(at + len, to)) + (to < txt.length ? "…" : "");
+  }
+  /* the nearest few titles by edit distance — the "did you mean…" rescue when
+     nothing matched at all */
+  function nearest(Q, flat, limit) {
+    if (!Q.s || Q.s.length < 4) return [];
+    var max = Q.s.length <= 6 ? 2 : 3, out = [];
+    function consider(it, str) {
+      var h = hayFor(str), d = editDist(Q.s, h.s, max);
+      for (var i = 0; i < h.t.length; i++) {
+        if (h.t[i].length < 3) continue;
+        var t = editDist(Q.s, h.t[i], max);
+        if (t < d) d = t;
+      }
+      if (d <= max) out.push({ d: d, it: it });
+    }
+    SEARCH_PAGES.forEach(function (p) { consider({ page: true, title: p.title, url: p.url, tag: p.tag }, p.title); });
+    flat.forEach(function (s) { consider(s, s.title); });
+    out.sort(function (a, b) { return a.d - b.d; });
+    return out.slice(0, limit).map(function (r) { return r.it; });
+  }
+  function rowHtml(s, i) {
+    var href = s.page ? BASE + s.url : BASE + s.course + "/" + s.slug + "/";
+    return '<li><a class="' + (i === 0 ? "active" : "") + '" href="' + href + '">' +
+      '<span class="n">' + (s.page ? "→" : s.n) + '</span><span>' + s.title +
+      (s.snip ? '<small class="snip">' + s.snip + '</small>' : '') + '</span>' +
+      '<span class="course-tag">' + (s.page ? s.tag : s.courseTitle) + '</span></a></li>';
+  }
+  function titlePass(Q, flat) {
+    if (!Q.n) {
+      return SEARCH_PAGES.map(function (p) { return { page: true, title: p.title, url: p.url, tag: p.tag }; })
+        .concat(flat);
+    }
+    var scored = [];
+    SEARCH_PAGES.forEach(function (p, i) {
+      var sc = scorePage(Q, p);
+      if (sc) scored.push({ sc: sc, ord: i, it: { page: true, title: p.title, url: p.url, tag: p.tag } });
+    });
+    flat.forEach(function (s, i) {
+      var sc = scoreLesson(Q, s);
+      if (sc) scored.push({ sc: sc, ord: 1000 + i, it: s });
+    });
+    scored.sort(function (a, b) { return b.sc - a.sc || a.ord - b.ord; });
+    return scored.map(function (r) { return r.it; });
   }
   function runSearch() {
-    var q = searchInput.value.trim().toLowerCase();
+    var raw = searchInput.value.trim();
+    var Q = { n: norm(raw), s: squash(raw), t: toks(raw) };
     var flat = window.CURRICULUM_FLAT.filter(function (s) { return s.ready; });
-    var lessons = flat.filter(function (s) {
-      return !q || (s.title.toLowerCase().indexOf(q) >= 0 || s.n.indexOf(q) >= 0 || s.courseTitle.toLowerCase().indexOf(q) >= 0);
-    });
-    var pages = SEARCH_PAGES.filter(function (p) {
-      return !q || p.title.toLowerCase().indexOf(q) >= 0 || p.kw.indexOf(q) >= 0;
-    }).map(function (p) { return { page: true, title: p.title, url: p.url, tag: p.tag }; });
+
+    showDef(glossFind(Q));
+
+    /* title pass, ranked: an exact prefix beats a substring beats a spacing
+       variant beats a typo. Ties keep the old order (pages, then lessons). */
+    var top = titlePass(Q, flat);
+    /* "what is power" asks about one word, but the asking words match no
+       title, so the literal query returns nothing. When a question form came
+       back empty, run it again on the term alone. */
+    var stripped = askTerm(Q.n);
+    if (!top.length && stripped && stripped !== Q.n) {
+      Q = { n: stripped, s: squash(stripped), t: toks(stripped) };
+      top = titlePass(Q, flat);
+    }
 
     /* full-text pass: lessons/pages whose BODY mentions the query but whose
        title didn't already match — shown below title matches, with a snippet */
-    var deep = [];
-    if (q.length >= 3 && window.SEARCH_INDEX) {
-      var seen = {};
-      lessons.forEach(function (s) { seen[s.slug] = 1; });
-      pages.forEach(function (p) { seen[p.url] = 1; });
+    var deep = [], re = Q.s.length >= 3 ? flexRe(Q.s) : null;
+    if (re && window.SEARCH_INDEX) {
+      var seen = Object.create(null);
+      top.forEach(function (s) { seen[s.page ? s.url : s.slug] = 1; });
       flat.forEach(function (s) {
         if (seen[s.slug]) return;
         var txt = window.SEARCH_INDEX.lessons[s.slug];
         if (!txt) return;
-        var sn = snippetFor(txt, q);
+        var sn = snippetFor(txt, re);
         if (sn) deep.push({ course: s.course, slug: s.slug, n: s.n, title: s.title, courseTitle: s.courseTitle, snip: sn });
       });
       (window.SEARCH_INDEX.pages || []).forEach(function (p) {
         if (seen[p.u]) return;
         var meta = null;
         for (var i = 0; i < SEARCH_PAGES.length; i++) if (SEARCH_PAGES[i].url === p.u) meta = SEARCH_PAGES[i];
-        var sn = snippetFor(p.txt, q);
-        if (meta && sn) deep.push({ page: true, title: meta.title, url: meta.url, tag: meta.tag, snip: sn });
+        var sn = meta ? snippetFor(p.txt, re) : null;
+        if (sn) deep.push({ page: true, title: meta.title, url: meta.url, tag: meta.tag, snip: sn });
       });
     }
 
-    searchMatches = pages.concat(lessons).concat(deep).slice(0, 40);
+    searchMatches = top.concat(deep).slice(0, 40);
     searchIdx = 0;
+
     if (!searchMatches.length) {
-      searchResults.innerHTML = '<li class="search-empty">' + capy(30) +
-        '<span>No matches for “' + escHtml(q) + '” — the capybara looked everywhere. Try a shorter word?</span></li>';
+      /* a dead end should still hand the reader somewhere to go */
+      var sugg = nearest(Q, flat, 3), html = "";
+      if (sugg.length) {
+        html = '<li class="search-note">Nothing matched “' + escHtml(raw) + '”. Did you mean:</li>' +
+               sugg.map(rowHtml).join("");
+        searchMatches = sugg;
+      } else {
+        html = '<li class="search-empty">' + capy(30) + '<span>' +
+          (searchDef && !searchDef.hidden
+            ? 'That term is defined above, but no page title or lesson mentions “' + escHtml(raw) + '”.'
+            : 'Nothing on the site mentions “' + escHtml(raw) + '”. The capybara checked twice.') +
+          ' Try fewer words, or start from one of these.</span></li>';
+      }
+      searchResults.innerHTML = html +
+        '<li class="search-elsewhere"><a href="' + BASE + 'glossary.html">Browse the glossary</a>' +
+        '<a href="' + BASE + 'toolbox.html">Browse the toolbox</a></li>';
+      wireRows();
       return;
     }
-    searchResults.innerHTML = searchMatches.map(function (s, i) {
-      var href = s.page ? BASE + s.url : BASE + s.course + "/" + s.slug + "/";
-      return '<li><a class="' + (i === 0 ? "active" : "") + '" href="' + href + '">' +
-        '<span class="n">' + (s.page ? "→" : s.n) + '</span><span>' + s.title +
-        (s.snip ? '<small class="snip">' + s.snip + '</small>' : '') + '</span>' +
-        '<span class="course-tag">' + (s.page ? s.tag : s.courseTitle) + '</span></a></li>';
-    }).join("");
+
+    searchResults.innerHTML = searchMatches.map(rowHtml).join("");
+    wireRows();
+  }
+  /* only the anchors that ARE searchMatches get hover-select; the trailing
+     "browse instead" links sit past the end of the array on purpose */
+  function wireRows() {
     Array.prototype.forEach.call(searchResults.querySelectorAll("a"), function (a, i) {
-      a.addEventListener("mousemove", function () { setActive(i); });
+      if (i < searchMatches.length) a.addEventListener("mousemove", function () { setActive(i); });
     });
   }
   function setActive(i) {

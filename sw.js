@@ -37,7 +37,7 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v21";  /* P70: anonymous interaction events (SC.track) in site.js */
+const CACHE_VERSION = "sc-v22";  /* P71: search v2 (typo tolerance, glossary answers) in site.js + styles.css */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location
