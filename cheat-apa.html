@@ -42,7 +42,7 @@
     .poster-eyebrow { font-size:.7rem; text-transform:uppercase; letter-spacing:.12em; color:var(--pa); font-weight:700; }
     .poster-head h1 { font-size:1.5rem; margin:.12rem 0 0; line-height:1.12; }
     .poster-head p { margin:.2rem 0 0; color:var(--text-muted); font-size:.9rem; }
-    .poster-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:1.15rem 1.6rem; }
+    .poster-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(330px,100%),1fr)); gap:1.15rem 1.6rem; }
     .pcard { break-inside:avoid; }
     .pcard h2 { font-size:.82rem; text-transform:uppercase; letter-spacing:.05em; color:var(--pa); margin:0 0 .4rem; border-bottom:1px solid var(--border); padding-bottom:.25rem; }
     .ptable { width:100%; border-collapse:collapse; font-size:.83rem; }
@@ -65,6 +65,9 @@
     .pcallout em { font-style:italic; }
     .poster-foot { display:flex; align-items:center; justify-content:space-between; gap:.6rem; margin-top:1.2rem; padding-top:.65rem; border-top:1px solid var(--border); font-size:.74rem; color:var(--text-faint); }
     .poster-foot .pf-left { display:flex; align-items:center; gap:.4rem; }
+    /* On a phone the nowrap test names hold the table wider than the screen.
+       Screen-only — the print block below keeps the one-line poster layout. */
+    @media screen and (max-width: 560px) { .ptable td.t { white-space:normal; } }
 
     @media print {
       @page { size: auto; margin: 9mm; }

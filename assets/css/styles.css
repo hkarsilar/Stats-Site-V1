@@ -707,11 +707,21 @@ body[data-course="writing"] { --course-accent: #84cc16; }
 
 .controls { display: flex; flex-wrap: wrap; gap: .9rem 1.25rem; align-items: flex-end; margin-bottom: 1rem; }
 .control { display: flex; flex-direction: column; gap: .3rem; }
+/* A .control holding a tab strip must be allowed to shrink past that strip's
+   natural width — otherwise min-width:auto pins it to the full row of tabs and
+   the .viz pushes a narrow phone sideways. The .seg then scrolls inside it. */
+.control:has(.seg) { min-width: 0; }
 .control label { font-size: .78rem; color: var(--text-muted); font-weight: 600; }
 .control .val { font-family: var(--mono); color: var(--primary); }
 .control input[type="range"] { width: 11rem; accent-color: var(--primary); }
-.seg { display: inline-flex; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-.seg button { padding: .4rem .8rem; font-size: .82rem; font-weight: 600; background: var(--surface); color: var(--text-muted); border: none; cursor: pointer; transition: .12s; }
+/* Narrow-screen behaviour, generalising apa.html's #ana-seg pattern: a seg
+   with several tabs can be wider than a 360px phone, and it clips, so the
+   last tab would simply vanish. max-width keeps it from pushing the page
+   sideways and overflow-x:auto lets it scroll inside itself instead.
+   (The rows that hold one — .sw-head/.tc-head — wrap, so the seg drops to
+   its own full-width line rather than being squeezed.) */
+.seg { display: inline-flex; min-width: 0; max-width: 100%; border: 1px solid var(--border); border-radius: 10px; overflow-x: auto; overflow-y: hidden; }
+.seg button { padding: .4rem .8rem; font-size: .82rem; font-weight: 600; white-space: nowrap; background: var(--surface); color: var(--text-muted); border: none; cursor: pointer; transition: .12s; }
 .seg button + button { border-left: 1px solid var(--border); }
 .seg button.active { background: var(--primary); color: #fff; }
 
@@ -1131,6 +1141,8 @@ body.embed-mode .lesson { max-width: none; margin: 0 auto; }
   color: var(--primary); font-weight: 700; opacity: 0; transition: .13s;
 }
 .wt-opt:hover::after { opacity: 1; }
+/* No hover on a finger — show the "this is tappable" arrow permanently there. */
+@media (pointer: coarse) { .wt-opt::after { opacity: 1; } }
 .wt-opt:hover { border-color: var(--primary); transform: translateY(-1px); box-shadow: var(--shadow); }
 /* the cheat-sheet map: test names are real links to their lessons */
 .wt-map td a { color: var(--primary); font-weight: 600; }
@@ -1265,7 +1277,7 @@ details[open]::details-content { block-size: auto; }
   border: 1px solid var(--border); border-radius: var(--radius);
   background: var(--surface); box-shadow: var(--shadow); margin: 2.5rem 0 0; overflow: hidden;
 }
-.tc-head { display: flex; align-items: center; gap: .8rem; padding: .55rem .9rem; border-bottom: 1px solid var(--border); }
+.tc-head { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem; padding: .55rem .9rem; border-bottom: 1px solid var(--border); }
 .tc-title { font-weight: 700; font-size: .9rem; }
 .tc-copy {
   margin-left: auto; cursor: pointer; font: inherit; font-size: .78rem; font-weight: 600;
@@ -1288,7 +1300,7 @@ details[open]::details-content { block-size: auto; }
   border: 1px solid var(--border); border-radius: var(--radius);
   background: var(--surface); box-shadow: var(--shadow); margin: 2.5rem 0 0; overflow: hidden;
 }
-.sw-head { display: flex; align-items: center; justify-content: space-between; gap: .8rem; padding: .55rem .9rem .55rem 1.1rem; border-bottom: 1px solid var(--border); }
+.sw-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .8rem; padding: .55rem .9rem .55rem 1.1rem; border-bottom: 1px solid var(--border); }
 .sw-title { font-weight: 700; font-size: .9rem; }
 .sw-steps { margin: 0; padding: .9rem 1.1rem .9rem 2.3rem; font-size: .9rem; color: var(--text-muted); }
 .sw-steps li { margin: .35rem 0; line-height: 1.55; }

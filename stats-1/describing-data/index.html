@@ -129,6 +129,9 @@
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
   <script src="../../assets/js/curriculum.js"></script>
   <script src="../../assets/js/site.js"></script>
+  <!-- This early lesson keeps its own local fit(); viz.js is loaded for the
+       shared coarse-pointer grab radius (already in the precached shell). -->
+  <script src="../../assets/js/viz.js"></script>
 
   <!-- ============ Describing-data visualization ============ -->
   <script>
@@ -198,7 +201,7 @@
     function render() { draw(); stats(); }
 
     function nearest(px) {
-      var best = -1, bd = 16;
+      var best = -1, bd = VIZ.grabRadius(16);   // finger-sized on touch, 16 on a mouse
       for (var i = 0; i < pts.length; i++) { var d = Math.abs(valToPx(pts[i]) - px); if (d < bd) { bd = d; best = i; } }
       return best;
     }

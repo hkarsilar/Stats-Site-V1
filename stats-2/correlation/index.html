@@ -272,7 +272,7 @@
     }
 
     function nearest(mx, my) {
-      var best = -1, bd = 16;
+      var best = -1, bd = VIZ.grabRadius(16);   // finger-sized on touch, 16 on a mouse
       for (var i = 0; i < pts.length; i++) { var d = Math.hypot(vx(pts[i].x) - mx, vy(pts[i].y) - my); if (d < bd) { bd = d; best = i; } }
       return best;
     }

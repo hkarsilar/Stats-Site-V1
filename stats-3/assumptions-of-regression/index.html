@@ -174,7 +174,7 @@
       else { inf.textContent = "no — line barely moves"; inf.style.color = "#22c55e"; }
     }
 
-    function near(e) { return Math.hypot(vx(drag.x) - e.offsetX, vy(drag.y) - e.offsetY) < 18; }
+    function near(e) { return Math.hypot(vx(drag.x) - e.offsetX, vy(drag.y) - e.offsetY) < VIZ.grabRadius(18); }   // finger-sized on touch, 18 on a mouse
     canvas.addEventListener("pointerdown", function (e) { if (near(e)) { dragging = true; try { canvas.setPointerCapture(e.pointerId); } catch (err) {} canvas.style.cursor = "grabbing"; } });
     canvas.addEventListener("pointermove", function (e) {
       if (!dragging) return;

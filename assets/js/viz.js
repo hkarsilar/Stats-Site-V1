@@ -20,6 +20,24 @@ window.VIZ = (function () {
     catch (e) { return false; }
   }
 
+  /* True when the primary pointer is a finger rather than a mouse. Read live
+     (not cached at boot) so a hybrid laptop-with-touchscreen and the browser's
+     device emulation both get the right answer. */
+  function coarsePointer() {
+    try { return !!(window.matchMedia && window.matchMedia("(pointer: coarse)").matches); }
+    catch (e) { return false; }
+  }
+
+  /* Grab radius for a canvas drag hit-test, in CSS pixels. Hit-tests tuned by
+     eye are mouse-sized (14–18px); a finger pad needs ~24px to land reliably.
+     Call this at pointerdown — on a mouse it returns `base` unchanged, so
+     mouse behaviour stays exactly as it was. Callers that compare SQUARED
+     distances should square the result. */
+  var GRAB_TOUCH = 24;
+  function grabRadius(base) {
+    return coarsePointer() ? Math.max(base, GRAB_TOUCH) : base;
+  }
+
   // Coalesce bursty callbacks (resize + ResizeObserver both fire on a window
   // resize) into at most one call per animation frame — avoids the double
   // redraw and keeps resizing smooth. Returns a wrapped fn; call it freely.
@@ -246,5 +264,5 @@ window.VIZ = (function () {
     return negdel ? 1 - tnc : tnc;
   }
 
-  return { css: css, reducedMotion: reducedMotion, rafThrottle: rafThrottle, fit: fit, randn: randn, gauss: gauss, erf: erf, normCdf: normCdf, normPdf: normPdf, normInv: normInv, mean: mean, sd: sd, onTheme: onTheme, gammaln: gammaln, gammp: gammp, betai: betai, fUpper: fUpper, chiSqUpper: chiSqUpper, tUpper: tUpper, tPdf: tPdf, chiSqPdf: chiSqPdf, fPdf: fPdf, tInv: tInv, chiSqInv: chiSqInv, fInv: fInv, nctCdf: nctCdf, ncx2Cdf: ncx2Cdf, ncfCdf: ncfCdf };
+  return { css: css, reducedMotion: reducedMotion, coarsePointer: coarsePointer, grabRadius: grabRadius, rafThrottle: rafThrottle, fit: fit, randn: randn, gauss: gauss, erf: erf, normCdf: normCdf, normPdf: normPdf, normInv: normInv, mean: mean, sd: sd, onTheme: onTheme, gammaln: gammaln, gammp: gammp, betai: betai, fUpper: fUpper, chiSqUpper: chiSqUpper, tUpper: tUpper, tPdf: tPdf, chiSqPdf: chiSqPdf, fPdf: fPdf, tInv: tInv, chiSqInv: chiSqInv, fInv: fInv, nctCdf: nctCdf, ncx2Cdf: ncx2Cdf, ncfCdf: ncfCdf };
 })();

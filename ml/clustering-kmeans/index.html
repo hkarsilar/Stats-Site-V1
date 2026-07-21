@@ -292,7 +292,8 @@
     var drag = -1;
     function evtPt(ev) { var r = canvas.getBoundingClientRect(); return [ev.clientX - r.left, ev.clientY - r.top]; }
     canvas.addEventListener("pointerdown", function (ev) {
-      var g = scatterGeom(), m = evtPt(ev), best = -1, bd = 196;   // 14px grab radius²
+      var R = VIZ.grabRadius(14);                                  // 14px on a mouse, finger-sized on touch
+      var g = scatterGeom(), m = evtPt(ev), best = -1, bd = R * R;  // compared against squared distances
       for (var i = 0; i < P.length; i++) { var pp = toPx(g, P[i]); var dd = (pp[0] - m[0]) * (pp[0] - m[0]) + (pp[1] - m[1]) * (pp[1] - m[1]); if (dd < bd) { bd = dd; best = i; } }
       if (best >= 0) { drag = best; stopTimer(); canvas.setPointerCapture(ev.pointerId); canvas.style.cursor = "grabbing"; ev.preventDefault(); }
     });

@@ -90,7 +90,7 @@
             </div>
           </div>
 
-          <canvas id="cm-canvas"></canvas>
+          <canvas id="cm-canvas" style="touch-action:none;cursor:ew-resize"></canvas>
 
           <!-- confusion matrix -->
           <div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:.3rem;margin-top:.9rem;font-size:.82rem">
@@ -282,10 +282,10 @@
       document.getElementById("thr-range").value = thr;
       update();
     }
-    canvas.addEventListener("pointerdown", function (e) { dragging = true; canvas.setPointerCapture(e.pointerId); setThrFromEvent(e); });
+    canvas.addEventListener("pointerdown", function (e) { dragging = true; try { canvas.setPointerCapture(e.pointerId); } catch (err) {} setThrFromEvent(e); });
     canvas.addEventListener("pointermove", function (e) { if (dragging) setThrFromEvent(e); });
     canvas.addEventListener("pointerup", function () { dragging = false; });
-    canvas.style.touchAction = "none"; canvas.style.cursor = "ew-resize";
+    canvas.addEventListener("pointercancel", function () { dragging = false; });
 
     document.getElementById("thr-range").addEventListener("input", function () { thr = +this.value; update(); });
     document.getElementById("sep-range").addEventListener("input", function () { d = +this.value; update(); });
