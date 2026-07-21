@@ -15,11 +15,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Privacy — StatsCapybara</title>
-  <meta name="description" content="What StatsCapybara collects and what it doesn't: anonymous page counts, no analytics cookie, no accounts, no ads, and progress that stays in your browser." />
+  <meta name="description" content="What StatsCapybara collects and what it doesn't: anonymous page and feature counts, no analytics cookie, no accounts, no ads, progress that stays put." />
   <link rel="canonical" href="https://statscapybara.com/privacy.html" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Privacy — StatsCapybara" />
-  <meta property="og:description" content="A plain-language account of the data StatsCapybara sees: anonymous page counts with no cookie, no accounts, no ads, and study progress that never leaves your browser." />
+  <meta property="og:description" content="A plain-language account of the data StatsCapybara sees: anonymous page and feature counts with no cookie, no accounts, no ads, and study progress that never leaves your browser." />
   <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
   <meta property="og:url" content="https://statscapybara.com/privacy.html" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -48,16 +48,25 @@
       <article class="lesson" style="margin:0 auto">
         <span class="lesson-eyebrow">Privacy</span>
         <h1>What this site knows about you</h1>
-        <p class="lede">Almost nothing, and this page says exactly what. No accounts, no sign-up, no email capture, no ads. Your study progress lives on your own device and is never uploaded. The only thing leaving your browser is an anonymous count of which pages get opened.</p>
+        <p class="lede">Almost nothing, and this page says exactly what. No accounts, no sign-up, no email capture, no ads. Your study progress lives on your own device and is never uploaded. What leaves your browser is an anonymous count of which pages get opened, and an anonymous note when one of ten features is used.</p>
 
         <div class="callout key">
-          <p><strong>The short version.</strong> StatsCapybara counts page views anonymously with Google Analytics, sets no analytics cookie, and stores everything about <em>you</em> (progress, quiz scores, flashcards, theme) in your own browser. There is nothing to log into and nothing to delete from a server, because there is no account.</p>
+          <p><strong>The short version.</strong> StatsCapybara counts page views anonymously with Google Analytics, notes anonymously when a feature such as search or the quiz is used, sets no analytics cookie, and stores everything about <em>you</em> (progress, quiz scores, flashcards, theme) in your own browser. There is nothing to log into and nothing to delete from a server, because there is no account.</p>
         </div>
 
         <h2>What is collected</h2>
-        <p>One thing: an anonymous page view when you open a page. That is the whole list.</p>
+        <p>Two things: an anonymous page view when you open a page, and an anonymous note when one of ten features is used. That is the whole list.</p>
         <p>It arrives through Google Analytics 4, and the tag on every page is configured with <a href="https://developers.google.com/tag-platform/security/concepts/consent-mode">Consent Mode</a> set to deny storage by default. In practice that means Google sets no <code>_ga</code> cookie and nothing persists in your browser to recognise you on a later visit. Each view is counted; you are not followed from one to the next. Advertising storage and personalisation are denied outright.</p>
         <p>What the counts are for is unglamorous. They tell me which lessons people actually read, which tools get opened, and which pages are broken enough that everyone leaves. That decides what gets rewritten next. Nobody is profiled and nothing is sold, because there is no advertising business here to sell it to.</p>
+        <p>The ten feature notes exist for the same reason. A page view cannot tell me whether anyone has ever finished a mock exam, printed a lesson, or embedded one in a slide, so features I spent weeks on could serve nobody at all while I kept maintaining them. Each note carries the event name and, at most, a coarse label:</p>
+        <ul>
+          <li>The search box was opened. <strong>Never what you typed into it.</strong></li>
+          <li>A practice quiz or a mock exam was finished, with its course scope, its length, and a band of 0 to 49, 50 to 79, or 80 to 100 percent. <strong>Never your actual score.</strong></li>
+          <li>A worked solution was opened on the <a href="problems.html">practice problems</a> page, with the course it belongs to.</li>
+          <li>A visualisation was downloaded as a PNG, or a page was printed, or a lesson was loaded in embed mode. Each says only which kind of page it happened on.</li>
+          <li>The "Spotted a mistake" footer link was clicked, the site was installed as an app, or a course certificate was downloaded. The certificate note carries the course. <strong>Never the name you typed on it.</strong></li>
+        </ul>
+        <p>There is no identifier attached to any of this beyond what the page view already has, which is nothing that persists. Two notes from the same person in the same minute cannot be told apart from two notes by two people.</p>
         <p>Analytics does see what any web server sees: the page address, the referring page, a rough country-level location derived from your IP address (Google does not report the address itself to me), and the kind of browser and device you use. I see those only as totals in a dashboard, never row by row for a person.</p>
 
         <h2>What never leaves your browser</h2>
@@ -80,7 +89,7 @@
         <h2>What the site contacts</h2>
         <p>Two outside services, both narrow:</p>
         <ul>
-          <li><strong>Google Analytics</strong> (<code>googletagmanager.com</code>). Receives the anonymous page view described above. It can see your IP address in transit, as any server you connect to can, and uses it to work out an approximate country before discarding it.</li>
+          <li><strong>Google Analytics</strong> (<code>googletagmanager.com</code>). Receives the anonymous page views and feature notes described above. It can see your IP address in transit, as any server you connect to can, and uses it to work out an approximate country before discarding it.</li>
           <li><strong>Ko-fi</strong> (<code>storage.ko-fi.com</code>). The support button in the footer is an image loaded from Ko-fi's server, so Ko-fi sees the request for that image and the IP address it came from. Clicking through to donate takes you to Ko-fi, where their privacy policy applies and mine stops.</li>
         </ul>
         <p>That is the complete list. No fonts, scripts, stylesheets, or trackers load from anywhere else: everything else on this site is served from statscapybara.com, which is why the site keeps working after you go offline.</p>

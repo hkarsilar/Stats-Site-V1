@@ -481,6 +481,11 @@
       a.href = cv.toDataURL("image/png");
       a.download = "statscapybara-" + (currentCourse ? currentCourse.slug : "course") + "-certificate.png";
       document.body.appendChild(a); a.click(); a.remove();
+      // P70: which courses get finished all the way to a certificate. The
+      // course slug only — the typed name never leaves this page.
+      if (window.SC && SC.track) {
+        SC.track("cert_downloaded", { course: currentCourse ? currentCourse.slug : "unknown" });
+      }
     });
 
     var printArea = document.getElementById("pr-print-area");

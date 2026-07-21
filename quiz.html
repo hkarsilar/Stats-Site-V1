@@ -629,6 +629,15 @@
         pct >= 0.7 ? "Strong work. Skim the ones you missed and you're solid." :
         pct >= 0.4 ? "Good start — revisit a few lessons and run it again." :
         "Plenty to explore — head back to the lessons and give it another go.";
+      // P70: a completed practice run. Scope + length + a coarse band —
+      // never the exact score. Fired through the shared layer (site.js owns
+      // every gtag call on this site); if site.js has not landed, nothing
+      // happens and the quiz is unaffected.
+      if (window.SC && SC.track) {
+        SC.track("quiz_practice_finished", {
+          scope: activeSet, length: quiz.length, score_bucket: SC.scoreBucket(score, quiz.length)
+        });
+      }
     }
 
     el("next").addEventListener("click", function () {
@@ -801,6 +810,15 @@
       var prev = sig ? readExam()[sig] : null;
       var isBest = sig ? saveBest(sig, correct, exam.length) : false;
       renderExamResults(correct, exam.length, by, missed, prev, isBest);
+      // P70: a completed mock exam. The scope SIGNATURE (the same string
+      // sc-exam is keyed by, "retry" for a missed-questions rerun), the
+      // paper length, and a coarse band — an exact percentage on a known
+      // scope is close to a fingerprint, and the loops only need the shape.
+      if (window.SC && SC.track) {
+        SC.track("exam_finished", {
+          scope: sig || "retry", length: exam.length, score_bucket: SC.scoreBucket(correct, exam.length)
+        });
+      }
       el("exam-stage").style.display = "none";
       el("exam-results").style.display = "block";
       el("exam-results").scrollIntoView({ behavior: smoothly(), block: "start" });

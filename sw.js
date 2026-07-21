@@ -37,7 +37,7 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v20";  /* P69: privacy page, GA consent mode, footer Privacy link */
+const CACHE_VERSION = "sc-v21";  /* P70: anonymous interaction events (SC.track) in site.js */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location

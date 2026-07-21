@@ -2789,6 +2789,25 @@
       window.addEventListener('afterprint', end);
       document.getElementById('print-problems').addEventListener('click', function () { begin(false); });
       document.getElementById('print-solutions').addEventListener('click', function () { begin(true); });
+
+      /* P70: which SETS students actually reach for the worked solution in —
+         the course only, never which problem or how long they held out. Fired
+         through the shared layer (site.js owns every gtag call here).
+         Two things it deliberately ignores: the burst of toggles that
+         "Print with solutions" causes (guarded by `mode`), and a reader
+         opening the same solution twice (`seen`). */
+      var seen = {};
+      document.addEventListener('toggle', function (e) {
+        var d = e.target;
+        if (mode || !d.open || !d.classList || !d.classList.contains('pb-sol')) return;
+        var card = d.closest('.pb-card'), set = d.closest('.pb-set');
+        var key = (card && card.querySelector('h3') && card.querySelector('h3').id) || '';
+        if (key && seen[key]) return;
+        if (key) seen[key] = 1;
+        if (window.SC && SC.track) {
+          SC.track('problem_solution_opened', { course: set ? set.id.replace(/-set$/, '') : 'unknown' });
+        }
+      }, true);                          // capture: `toggle` does not bubble
     })();
   </script>
   <script src="assets/js/curriculum.js"></script>

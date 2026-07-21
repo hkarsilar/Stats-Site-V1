@@ -34,6 +34,17 @@
     return m ? decodeURIComponent(m[1].replace(/\+/g, " ")) : null;
   }
   var EMBED = !!HERE && qparam("embed") === "1";
+  /* Did this URL carry lesson preset params (P67)? Everything that is not
+     one of the two reserved keys counts. Answered from the URL alone, so it
+     is knowable before the lesson's own boot calls SC.preset(). */
+  function hasPresetParams() {
+    var s = window.location.search.replace(/^\?/, "");
+    if (!s) return false;
+    return s.split("&").some(function (pair) {
+      var k = pair.split("=")[0];
+      return k && k !== "embed" && k !== "q";
+    });
+  }
 
   /* respect the OS "reduce motion" setting for JS-driven scrolls/animations
      (CSS transitions are already handled in styles.css) */
@@ -82,6 +93,49 @@
     if (CHOME) return CHOME;
     var m = /([^\/]+)\.html$/.exec(window.location.pathname);
     return m ? m[1] : "home";
+  }
+  /* what KIND of page this is — the one param most events carry, so the
+     maintenance loops can ask "is PNG export a lesson thing or a tool
+     thing?" without a per-page allow-list */
+  function pageType() {
+    if (HERE) return "lesson";
+    if (GUIDE) return "guide";
+    if (CHOME) return "course";
+    return pageKey() === "home" ? "home" : "tool";
+  }
+
+  /* ---------- anonymous interaction events (P70) ----------
+     GA recorded page views and nothing else, so the recurring maintenance
+     loops (P37/P39) had no way to tell a feature nobody uses from one
+     everybody does. This adds a SMALL set of anonymous events through the
+     gtag already in every page's head.
+
+     Four rules, and they are the whole design:
+       1. The shared layer is the ONLY caller. Lessons and tool pages never
+          touch gtag; they call window.SC.track, which is this function.
+       2. No PII, no free text, no new identifiers. Never a search query,
+          never a typed name, never an exact score — buckets instead.
+       3. Fire and forget. Everything is wrapped the way registerSW() is,
+          so a blocked or missing gtag can never break a feature. An
+          adblocked visitor gets the whole site, minus the counting.
+       4. Params stay few and shared (page_type above all), because a GA4
+          custom parameter is only useful once it is registered as a
+          custom dimension, and that is a per-param cost.
+
+     The event list lives in CLAUDE.md; adding a feature means deciding,
+     deliberately, whether it earns an event. Most do not. */
+  function track(name, params) {
+    try {
+      if (typeof window.gtag !== "function") return;
+      window.gtag("event", name, params || {});
+    } catch (e) { /* analytics must never be load-bearing */ }
+  }
+  /* coarse score buckets — an exact score is a fingerprint, a bucket is a
+     signal. Same three bands everywhere they appear. */
+  function scoreBucket(correct, total) {
+    if (!total) return "0-49";
+    var p = (correct / total) * 100;
+    return p >= 80 ? "80-100" : p >= 50 ? "50-79" : "0-49";
   }
 
   /* ---------- capybara quips ----------
@@ -601,8 +655,10 @@
 
   /* expose the ring + mascot so a standalone page (progress.html) can reuse the
      exact same drawing instead of duplicating it — the copy feedback so
-     tool pages share one "Copied!" pattern, and preset() for lesson URLs */
-  window.SC = { ring: ring, capy: capy, copied: flashCopied, preset: preset };
+     tool pages share one "Copied!" pattern, preset() for lesson URLs, and
+     track()/scoreBucket() so the three tool pages that own an event fire it
+     through the shared layer instead of reaching for gtag themselves */
+  window.SC = { ring: ring, capy: capy, copied: flashCopied, preset: preset, track: track, scoreBucket: scoreBucket };
 
   /* ---------- homepage curriculum grid ---------- */
   function courseCard(c) {
@@ -1030,6 +1086,9 @@
       btn.addEventListener("click", function () {
         var canvas = biggestCanvas(viz);
         if (canvas) exportCanvasPng(canvas, "statscapybara-" + slug + "-" + idx + ".png");
+        // GA already knows WHICH page this is; page_type says whether the
+        // export button earns its keep on lessons, tools, or both
+        track("viz_png_export", { page_type: pageType() });
       });
       var title = viz.querySelector(".viz-title");
       if (title) {
@@ -1407,6 +1466,9 @@
     buildSearch(); loadSearchIndex();
     searchOpener = (document.activeElement && document.activeElement !== document.body) ? document.activeElement : null;
     searchEl.classList.add("open"); searchInput.value = ""; runSearch(); searchInput.focus();
+    // that the overlay was opened, and from what kind of page. Never the
+    // query — what a student types while stuck is theirs, not analytics.
+    track("search_used", { page_type: pageType() });
   }
   function closeSearch() {
     if (!searchEl) return;
@@ -1587,6 +1649,9 @@
     a.href = "mailto:" + FEEDBACK_TO +
       "?subject=" + encodeURIComponent("StatsCapybara correction: " + pagePath());
     a.textContent = "Spotted a mistake? Tell me";
+    // the click, not the mail — whether anyone reaches for the correction
+    // route at all is the thing worth knowing
+    a.addEventListener("click", function () { track("feedback_click", { page_type: pageType() }); });
     c.appendChild(a);
   }
 
@@ -1754,6 +1819,35 @@
     else window.addEventListener("load", go, { once: true });
   }
 
+  /* ---------- print + install events (P70) ----------
+     Print is instrumented at the window, not on the buttons: a reader who
+     hits Ctrl-P counts exactly as much as one who clicks "Print this
+     lesson", and this way every page type is covered without touching the
+     four pages that own a print button. The `active` guard is the same one
+     setupPrint() uses — Safari drives off the media query rather than
+     before/afterprint, and a browser doing both must still count once. */
+  function trackPrint() {
+    var active = false;
+    function before() {
+      if (active) return; active = true;
+      track("print_used", { page_type: pageType() });
+    }
+    function after() { active = false; }
+    window.addEventListener("beforeprint", before);
+    window.addEventListener("afterprint", after);
+    if (window.matchMedia) {
+      try {
+        window.matchMedia("print").addEventListener("change", function (e) { e.matches ? before() : after(); });
+      } catch (_) { /* older Safari — before/afterprint covers the rest */ }
+    }
+  }
+  /* the PWA actually being installed, which nothing else can tell us:
+     a standalone launch looks like an ordinary page view */
+  function trackInstall() {
+    try { window.addEventListener("appinstalled", function () { track("pwa_installed", {}); }); }
+    catch (e) {}
+  }
+
   /* ---------- go ---------- */
   function init() {
     injectHead();
@@ -1765,6 +1859,12 @@
       injectVizExport();
       renderEmbedFooter();
       registerSW();
+      trackPrint();
+      // an embedded pageload, and whether the URL also carried a preset —
+      // i.e. whether instructors configure the widget or just drop it in.
+      // Read from the URL rather than from preset(), which runs later (at
+      // the end of the lesson's own boot) and only on lessons that opt in.
+      track("lesson_embed_view", { with_preset: hasPresetParams() });
       return;
     }
     renderNav();
@@ -1792,6 +1892,8 @@
     wireSearchShortcuts();
     wireLessonKeys();
     registerSW();
+    trackPrint();
+    trackInstall();
     // ?q=… deep link (also the target of the sitewide SearchAction schema);
     // a bare "?q=" (no term — the 404 page's search link) just opens the box
     var qm = /[?&]q=([^&]*)/.exec(window.location.search);
