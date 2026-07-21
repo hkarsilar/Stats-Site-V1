@@ -22,7 +22,7 @@ MAX_CHARS = 4500
 # "Mann-Whitney worked example" needs to reach problem 18, and the default cap
 # indexes only the first ~10% of it. glossary.html: same reasoning — reaching
 # one specific term is the whole point of a glossary, and the old MAX_CHARS * 2
-# cap stopped at term 64 of 253 (source order), so most of the deck was
+# cap stopped at term 69 of 252 (source order), so most of the deck was
 # silently unsearchable. Both are cheap: full indexing costs ~40 KB and ~7 KB
 # on an index that is lazy-loaded only when the search overlay opens. The
 # headroom also covers P64's Stats 3-4 problem sets and future glossary growth.
@@ -58,8 +58,10 @@ def glossary_text(path: Path, limit: int = MAX_CHARS) -> str:
     through textify(): definitions legitimately contain "p < .05" and "p > .05",
     and textify's <[^>]+> tag-strip treats everything from a "<" to the next ">"
     as one tag. On a deck holding 5 "<", 1 ">" and zero real tags that was a
-    single 36 k-char match that silently ate 69% of the glossary. Plain text
-    needs only whitespace collapsing."""
+    single 36 k-char match that silently ate 69% of the glossary. Collapsing
+    whitespace is all the normalising plain text needs; html.unescape is a
+    no-op on today's data and a safety net if a definition ever uses an
+    entity."""
     src = path.read_text(encoding="utf-8")
     terms = re.findall(r'\{ t: "((?:[^"\\]|\\.)*)", d: "((?:[^"\\]|\\.)*)"', src)
     joined = " ".join(f"{t}: {d}" for t, d in terms)
