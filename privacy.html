@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    /* Consent Mode: storage denied by default, so GA sets no cookie and
+       follows nobody between visits. Anonymous counts still arrive. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Privacy — StatsCapybara</title>
+  <meta name="description" content="What StatsCapybara collects and what it doesn't: anonymous page counts, no analytics cookie, no accounts, no ads, and progress that stays in your browser." />
+  <link rel="canonical" href="https://statscapybara.com/privacy.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Privacy — StatsCapybara" />
+  <meta property="og:description" content="A plain-language account of the data StatsCapybara sees: anonymous page counts with no cookie, no accounts, no ads, and study progress that never leaves your browser." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/privacy.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Privacy — StatsCapybara" />
+  <meta name="twitter:description" content="Anonymous page counts, no analytics cookie, no accounts, no ads, and progress that stays on your own device." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Privacy", "item": "https://statscapybara.com/privacy.html" }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="container narrow">
+      <article class="lesson" style="margin:0 auto">
+        <span class="lesson-eyebrow">Privacy</span>
+        <h1>What this site knows about you</h1>
+        <p class="lede">Almost nothing, and this page says exactly what. No accounts, no sign-up, no email capture, no ads. Your study progress lives on your own device and is never uploaded. The only thing leaving your browser is an anonymous count of which pages get opened.</p>
+
+        <div class="callout key">
+          <p><strong>The short version.</strong> StatsCapybara counts page views anonymously with Google Analytics, sets no analytics cookie, and stores everything about <em>you</em> (progress, quiz scores, flashcards, theme) in your own browser. There is nothing to log into and nothing to delete from a server, because there is no account.</p>
+        </div>
+
+        <h2>What is collected</h2>
+        <p>One thing: an anonymous page view when you open a page. That is the whole list.</p>
+        <p>It arrives through Google Analytics 4, and the tag on every page is configured with <a href="https://developers.google.com/tag-platform/security/concepts/consent-mode">Consent Mode</a> set to deny storage by default. In practice that means Google sets no <code>_ga</code> cookie and nothing persists in your browser to recognise you on a later visit. Each view is counted; you are not followed from one to the next. Advertising storage and personalisation are denied outright.</p>
+        <p>What the counts are for is unglamorous. They tell me which lessons people actually read, which tools get opened, and which pages are broken enough that everyone leaves. That decides what gets rewritten next. Nobody is profiled and nothing is sold, because there is no advertising business here to sell it to.</p>
+        <p>Analytics does see what any web server sees: the page address, the referring page, a rough country-level location derived from your IP address (Google does not report the address itself to me), and the kind of browser and device you use. I see those only as totals in a dashboard, never row by row for a person.</p>
+
+        <h2>What never leaves your browser</h2>
+        <p>The features that feel personal are all client-side. They use <code>localStorage</code>, a small store that belongs to your browser on this one device, and nothing in it is transmitted anywhere:</p>
+        <table class="ref-table">
+          <thead><tr><th>Key</th><th>What it holds</th></tr></thead>
+          <tbody>
+            <tr><td><code>sc-progress</code></td><td>Which lessons you have visited or marked complete, with a date.</td></tr>
+            <tr><td><code>sc-last</code></td><td>The last lesson you opened, so the homepage can offer to resume it.</td></tr>
+            <tr><td><code>sc-checks</code></td><td>Your best score on each lesson's three check questions.</td></tr>
+            <tr><td><code>sc-exam</code></td><td>Your best mock-exam result for each quiz scope.</td></tr>
+            <tr><td><code>sc-cards</code></td><td>Which flashcard box each glossary term sits in, and when it is next due.</td></tr>
+            <tr><td><code>sc-name</code></td><td>The name you typed on a course certificate, so you need not retype it.</td></tr>
+            <tr><td><code>theme</code></td><td>Light or dark.</td></tr>
+          </tbody>
+        </table>
+        <p>Because this lives on the device, it is genuinely device-local: finish six lessons on a laptop and your phone will show none of it. That is a real limitation, and it is the price of not asking you to make an account. It also means your progress is yours to destroy. Clearing site data for statscapybara.com in your browser settings wipes every key above, immediately and permanently, and the tools offer their own reset buttons for a lighter version of the same thing.</p>
+        <p>The pages that let you paste your own numbers, like the <a href="descriptives.html">descriptives</a> and <a href="correlation.html">correlation</a> calculators, compute in your browser. Your data is never uploaded, not even briefly. You can watch this yourself by pasting a column with the network disconnected; the answers still appear.</p>
+
+        <h2>What the site contacts</h2>
+        <p>Two outside services, both narrow:</p>
+        <ul>
+          <li><strong>Google Analytics</strong> (<code>googletagmanager.com</code>). Receives the anonymous page view described above. It can see your IP address in transit, as any server you connect to can, and uses it to work out an approximate country before discarding it.</li>
+          <li><strong>Ko-fi</strong> (<code>storage.ko-fi.com</code>). The support button in the footer is an image loaded from Ko-fi's server, so Ko-fi sees the request for that image and the IP address it came from. Clicking through to donate takes you to Ko-fi, where their privacy policy applies and mine stops.</li>
+        </ul>
+        <p>That is the complete list. No fonts, scripts, stylesheets, or trackers load from anywhere else: everything else on this site is served from statscapybara.com, which is why the site keeps working after you go offline.</p>
+
+        <h2>Things that will not happen</h2>
+        <ul>
+          <li><strong>No ads, ever.</strong> Not a banner, not a sponsored lesson, not an affiliate link dressed as a recommendation.</li>
+          <li><strong>No accounts.</strong> Nothing to sign up for, so there is no password of yours to lose and no mailing list to escape.</li>
+          <li><strong>No selling or sharing.</strong> There is no data of yours to sell, and there will not be.</li>
+          <li><strong>No dark patterns.</strong> No popups begging for an email before you can read a lesson.</li>
+        </ul>
+        <p>The site is free and stays free. If you want to support it, the Ko-fi button in the footer is the only ask, and ignoring it costs you nothing.</p>
+
+        <h2>Children and classrooms</h2>
+        <p>The site collects no personal information from anyone, which includes students under 13. It is used in university courses and can be assigned without a data-processing agreement, because there is no student data to process. Instructors may find the <a href="teachers.html">instructor page</a> useful on that point.</p>
+
+        <h2>Questions or corrections</h2>
+        <p>Write to me. The <strong>Spotted a mistake? Tell me</strong> link at the bottom of every page opens an email with that page's address already filled in, and it is the right route for a privacy question too. If something on this page is wrong or has gone stale, I would rather hear it than have it sit here.</p>
+        <p class="muted" style="margin-top:2rem;font-size:.9rem">Last updated 21 July 2026. StatsCapybara is made by Hakan Karsilar and hosted on GitHub Pages, which serves the files and keeps its own server logs.</p>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="assets/js/curriculum.js"></script>
+  <script src="assets/js/site.js"></script>
+</body>
+</html>

@@ -37,7 +37,7 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v19";  /* P69: ML into Core (§5.x), Ethics last, collapsible glossary + A–Z bar */
+const CACHE_VERSION = "sc-v20";  /* P69: privacy page, GA consent mode, footer Privacy link */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location

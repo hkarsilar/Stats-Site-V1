@@ -91,6 +91,7 @@ for fname, title in [
     ("progress.html", "My Progress"),
     ("toolbox.html", "Statistics Toolbox"),
     ("teachers.html", "For Instructors"),
+    ("privacy.html", "Privacy"),
 ]:
     p = ROOT / fname
     if p.exists():

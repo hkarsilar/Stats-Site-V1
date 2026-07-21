@@ -6,6 +6,9 @@
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
+    /* Consent Mode: storage denied by default, so GA sets no cookie and
+       follows nobody between visits. Anonymous counts still arrive. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
     gtag('js', new Date());
     gtag('config', 'G-80HCM6EZVN');
   </script>
@@ -21,7 +24,7 @@
   <meta property="og:url" content="https://statscapybara.com/teachers.html" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="For Instructors — StatsCapybara" />
-  <meta name="twitter:description" content="Deep-link lessons, embed live visualizations, and assign reproducible datasets. Free forever, no accounts, no tracking." />
+  <meta name="twitter:description" content="Deep-link lessons, embed live visualizations, and assign reproducible datasets. Free forever, no accounts, no student data collected." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="assets/css/styles.css" />
@@ -54,7 +57,8 @@
 
         <h2>What your students see</h2>
         <p>No accounts. No login wall. No email capture. A student opens a lesson and starts reading and playing with it in the same second. That is the whole experience, and it is deliberate.</p>
-        <p>Progress lives only in the student's own browser. Finished lessons fade back in the lists, courses grow a completion ring, and the homepage offers to resume where they left off, all from <code>localStorage</code> on their machine. Nothing is sent to a server, so there is nothing for you to administer and nothing for them to worry about. Clearing browser data resets it; using a different device starts fresh. It is a study aid, not a gradebook.</p>
+        <p>Progress lives only in the student's own browser. Finished lessons fade back in the lists, courses grow a completion ring, and the homepage offers to resume where they left off, all from <code>localStorage</code> on their machine. None of it is sent anywhere, so there is nothing for you to administer and nothing for them to worry about. Clearing browser data resets it; using a different device starts fresh. It is a study aid, not a gradebook.</p>
+        <p>The site does count page views anonymously with Google Analytics, configured to set no cookie, which is how I learn which lessons get read. No student is identified and no coursework data exists to collect, so assigning StatsCapybara needs no data-processing paperwork. The <a href="privacy.html">privacy page</a> spells all of it out.</p>
         <p>The site works offline once visited, prints cleanly, and reads well on a phone, so it fits however your students actually study.</p>
 
         <h2>Link lessons from your syllabus or LMS</h2>

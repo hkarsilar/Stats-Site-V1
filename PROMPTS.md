@@ -1283,5 +1283,79 @@ site.js / styles.css / site.webmanifest are all precached → one CACHE_VERSION 
 
 ---
 
-*End of prompt library. When every box in ROADMAP.md is ticked: the site has 9 courses with linkable landing pages, ~97 interactive lessons, an exam mode and a worked-problems library alongside the 20+ tools and 4 guides, print/offline/a11y polish, prose that reads like a person, instructor-ready embeds that carry their configuration, math under regression test, and a live SEO feedback loop. At that point the loops (P37–P39) plus the human checklist ARE the roadmap. Phases 12–14 (P49–P68) are review-driven punch-lists layered on top — cherry-pick as time allows.*
+## Phase 15 — Footing (P69–P72)
+
+Added 21 Jul 2026 after the post-P68 review. The feature surface is complete — audit, math-check and prose-lint all pass clean, and no course/tool/guide gap worth building remains. What the review DID find: the site runs analytics it never discloses (and `teachers.html`'s twitter description still promises "no tracking"), the maintenance loops are blind beyond page views, search is exact-substring-only in a field full of hard-to-spell words, the public README still says "51 lessons across 5 courses" (reality: 97 across 9), and the vision statement — *the entire journey of a research student* — has every stop built but no page that walks it once. Four prompts, then the roadmap IS the loops (P37–P39) plus the human checklist. Model/effort legend as in Phase 12. **Run P69 before P70 (P70 updates P69's page); P69/P70/P71 all edit `site.js` — one at a time. P72 is independent.**
+
+### P69 — Privacy page, honest claims, README
+
+**→ Extra Powerful · Extra**
+
+```
+StatsCapybara roadmap prompt P69 (see ROADMAP.md). Run node tools/audit.js first.
+
+Trust footing. The site runs GA4 on every page yet discloses it nowhere — and teachers.html's twitter:description promises "no tracking", which analytics makes untrue. Fix the claims AND earn them.
+
+1. privacy.html — a calm, honest, plain-language page (VOICE.md; no legalese template): what IS collected (GA4 page views today; write the section so P70 can add its events in one sentence), what NEVER leaves the browser (the full localStorage inventory — sc-progress / sc-checks / sc-last / sc-cards / sc-exam / sc-name + the theme — say plainly that progress is device-local and how to wipe it), the two external services a page may contact (Google Analytics, the Ko-fi button image) and what they can see, no accounts, no ads ever, and the footer feedback mailto as the contact route. Short enough to actually read.
+2. Make GA quieter where it costs nothing: evaluate a Consent-Mode-style config (e.g. denying analytics_storage so no cookie is set while anonymous page counts still arrive) against the single-GA-tag-per-page rule. If it works, ship it and say so on privacy.html; if it degrades the data the loops need, keep the default and DISCLOSE it plainly. Decide, do one, document which and why in the session summary.
+3. Claims sweep: grep the whole site for "no tracking" / "no accounts" / similar promises (known offender: teachers.html's twitter:description) and reword every claim to what is true — no accounts, progress stays in the browser, anonymous page-view counting only. The sweep must come back clean at the end.
+4. Footer: a quiet Privacy link joining the About + feedback links (site.js footer machinery — third quiet link, same styling family, same order logic).
+5. README.md rewrite — it still says "51 lessons across 5 courses"; the repo is public and instructors DO look. Match reality (9 courses, 97 lessons, the tools/guides/posters, the no-build architecture in two sentences, statscapybara.com + the feedback path). Keep it short; it will go stale again, so prefer wording that ages well over exact counts where possible.
+
+Integration: privacy.html registered like a root page — audit ROOT_PAGES (adapt the BreadcrumbList expectation to Home → Privacy rather than pretending it's a toolbox tool; a QUIPS key since ROOT_PAGES demands one), sitemap.xml, build-search-index.py list + rerun, SEARCH_PAGES so searching "privacy" finds it — but NOT in TOOLBOX (it is not a tool). site.js is precached → BUMP CACHE_VERSION. Standard verification. Tick P69 in ROADMAP.md.
+```
+
+### P70 — Interaction events for the maintenance loops
+
+**→ Powerful · Extra**
+
+```
+StatsCapybara roadmap prompt P70 (see ROADMAP.md; run AFTER P69 so the privacy page exists to update). Run node tools/audit.js first.
+
+Give the maintenance loops real signal. GA today records page views only, so P37/P39 decisions about what to refresh or build next are guesses about which features are even used. Add a SMALL set of anonymous interaction events through the existing gtag — site.js is the only place that fires them; lessons and tools never call gtag directly.
+
+The set (~10, taste-checked — fewer is fine, more is not): search_used (overlay opened; NEVER the query text), exam_finished (scope signature + length + a pct bucket like 0–49/50–79/80–100 — not exact scores), quiz_practice_finished, problem_solution_opened (course only), viz_png_export, lesson_embed_view (an embed=1 pageload, with a with_preset flag), print_used (page type), feedback_click, pwa_installed (the appinstalled event), cert_downloaded (course).
+
+Rules: no PII, no free text, no identifiers beyond what GA already has; fire-and-forget wrapped so a blocked GA can never break a feature (the registerSW() error-swallowing pattern); events fire from the shared layer only. Update privacy.html's "what is collected" section with one honest sentence naming the events (P69 wrote it to be extended). Document the event list in CLAUDE.md so future features add events consistently — or deliberately don't.
+
+Verify every event in the preview via the network log (collect requests carrying the right event name + params), then verify the adblock case: stub gtag out and click through every instrumented surface — zero console errors, zero broken features. site.js is precached → BUMP CACHE_VERSION. Standard verification. Tick P70 in ROADMAP.md.
+```
+
+### P71 — Search v2: typo tolerance, glossary answers, kind dead ends
+
+**→ Powerful · Extra**
+
+```
+StatsCapybara roadmap prompt P71 (see ROADMAP.md). Run node tools/audit.js first.
+
+Search v2. The overlay does exact substring matching over titles + full text — but statistics students type "hetroscedasticity", "p val", "anova post hoc". Three upgrades, all inside the existing overlay (keep: the lazy index load, the focus-trapped aria-modal dialog, the ?q= deep link, the homepage SearchAction schema):
+
+1. Forgiving matching: normalize case/diacritics/hyphens/spaces on both sides ("post hoc" ↔ "post-hoc", "chisquare" ↔ "chi-square"), plus edit-distance-1 typo tolerance on title/term TOKENS — typo-tolerant title matching is the payoff; full-text can stay exact. The index is ~450 KB and every keystroke re-queries: measure that responsiveness doesn't degrade (keep per-keystroke work bounded; debounce if needed).
+2. Glossary instant answers: on overlay open, lazy-load glossary-data.js alongside the search index; when the query matches a glossary term (exact or distance-1), render a definition card ABOVE the results — the term, its definition, a link to its lesson and to the glossary — so "what is power" gets answered in place, not just linked.
+3. Zero-result honesty: instead of an empty list, offer the nearest 3 title matches as "did you mean…" plus quiet links to the glossary and toolbox; if nothing is even near, say so kindly (VOICE.md — warm, not cutesy).
+
+Verify against a written case list: 5 real typos, 3 spacing/hyphen variants, 3 glossary questions, 2 nonsense strings — each behaving as designed, in light + dark + mobile + keyboard-only (the focus trap and Escape still hold; the definition card is reachable by keyboard). site.js is precached → BUMP CACHE_VERSION. Standard verification. Tick P71 in ROADMAP.md.
+```
+
+### P72 — The capstone guide: one study, the whole journey
+
+**→ Extra Powerful · Ultra (multi-agent)**
+
+```
+StatsCapybara roadmap prompt P72 (see ROADMAP.md). Run node tools/audit.js first.
+
+The keystone guide. ROADMAP's vision line is "the entire journey of a research student: design the study → collect and clean the data → run the right analysis → report it properly → do it all ethically." Every stop exists; no page walks the whole journey once. Write guides/complete-worked-project/ (~2,500 words, the fifth and flagship guide): one study carried end-to-end on a shipped practice dataset.
+
+The arc, each stage linking its lesson §s and tools at the moment you'd actually reach for them: a real research question → operationalization (Methods) → design choice + a power analysis (power.html — state the planned n honestly against the dataset's actual n) → data checks and cleaning on the CSV (descriptives.html) → assumptions (the cheat-assumptions poster) → the analysis (tables.html / the relevant lesson) → effect size + CI (effect-sizes.html) → the APA results paragraph (apa.html-verified, correct typography) → limitations and what an ethics reviewer would ask (Ethics/Writing). Work on ONE dataset from assets/data/ — sleep-experiment.csv is the strongest but already stars in the JASP guide, so prefer a different CSV (the 2×2 factorial, correlation, or logistic file) so the two guides don't retell one story; pick whichever supports the richest honest arc, including at least one imperfect moment (a borderline assumption, an underpowered wish, an outlier decision) handled the way a good supervisor would.
+
+EVERY number recomputed from the shipped file (node -e + VIZ; record the verification one-liners in an HTML comment — the problems.html convention). Where the guide's numbers touch other pages using the same CSV (datasets.html worked solutions, any problems.html problem), re-verify agreement — the site never disagrees with itself.
+
+Standard guide integration (CLAUDE.md "Adding a guide", all 6 registrations) + cross-links where they're natural: plan.html's plan card ("see a full worked project"), teachers.html (it IS the semester-project template), the four existing guides' keep-going footers, and 2–3 course landing pages' "where it leads" prose. VOICE.md; prose-lint --strict stays clean. Guide HTML is network-first → no CACHE_VERSION bump unless site.js changed for cross-links (then bump).
+
+Run as ULTRA (multi-agent): one agent writes the guide; one independently recomputes every number from the CSV and checks every cross-page agreement; one runs audit + prose-lint + link/browser verification. Tick P72 in ROADMAP.md.
+```
+
+---
+
+*End of prompt library — genuinely, this time. After P72 the site is built: 9 courses with landing pages, 97 interactive lessons, an exam mode, a 43-problem worked-problems library, 20+ tools, 5 guides, 3 posters, print/offline/a11y polish, prose that reads like a person, instructor embeds that carry their configuration, math under regression test, honest analytics honestly disclosed, and forgiving search. From there the roadmap IS the loops — P37 (waiting on a Search Console export), P38 quarterly (its next run should sweep the P61–P68 surfaces), P39 refresh — plus the human-only checklist, which is now the growth engine: distribution, not construction. Phases 12–15 (P49–P72) were review-driven punch-lists; anything proposed beyond them should have to argue its way past "the site doesn't need it".*
 

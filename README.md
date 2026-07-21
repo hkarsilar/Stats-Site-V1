@@ -1,60 +1,81 @@
 # StatsCapybara
 
-A free, interactive statistics course for people with no stats background —
-built for visual learners. 51 lessons across 5 courses (Stats 1–4 plus Methods,
-the first of a planned Research Toolkit), each pairing a written explanation with
-a hands-on canvas visualization. Plain static HTML/CSS/JS, no build step, hosted
-on GitHub Pages at **[statscapybara.com](https://statscapybara.com/)**.
+A free, interactive statistics course for people with no stats background,
+built for visual learners. Every lesson pairs a written explanation with a
+hands-on canvas visualization you can actually move. Live at
+**[statscapybara.com](https://statscapybara.com/)**.
 
-## How it's structured
+Nine courses across two tracks — **The Statistics Core** (Stats 1–4 plus
+Machine Learning & AI) and **The Research Toolkit** (Methods, Data, Writing,
+Ethics) — alongside a shelf of tools: calculators for power, effect sizes,
+descriptives and correlation; exact z/t/χ²/F tables; "which test?" and "which
+chart?" choosers; an APA results formatter; practice problems, datasets,
+flashcards and a quiet quiz; printable one-page posters; and long-form guides
+for thesis students. The current counts live in
+[`assets/js/curriculum.js`](assets/js/curriculum.js) and on the homepage.
+
+Free, no sign-up, no ads. Progress is stored in your own browser and nothing
+is uploaded; see [privacy.html](privacy.html) for the full account.
+
+## Architecture in two sentences
+
+It is a plain static multi-page site: vanilla HTML, CSS and JS with **no build
+step, no framework, no bundler, and no npm dependencies**, deployed as-is by
+GitHub Pages from `main`. `assets/js/curriculum.js` is the single source of
+truth for courses and lessons, and the homepage grid, every sidebar, the
+search overlay, and the prev/next links are all generated from it.
 
 ```
 index.html                  Homepage (hero demo + curriculum grid)
-quiz.html                   Per-course quizzes with instant feedback
-which-test.html             "Which test should I use?" interactive decision tree
-tables.html                 Exact z/t/χ²/F p-value & critical-value calculators
-formulas.html               Printable formula sheet for all four courses
-distributions.html          Interactive distribution playground (9 distributions)
-glossary.html               Searchable glossary, terms linked to lessons
-404.html                    Shown for any unknown URL (self-contained)
+<course>/index.html         Course landing page (nine of them)
+<course>/<topic>/index.html One folder per lesson → clean URL + refresh-proof
+guides/<slug>/index.html    Long-form walkthroughs for thesis students
+*.html                      Tool pages (calculators, choosers, posters, quiz…)
+privacy.html                What is and isn't collected
 assets/css/styles.css       The whole design system (light + dark)
 assets/js/curriculum.js     Single source of truth — every course & section
-assets/js/site.js           Shared chrome: nav, sidebar, search, progress, prev/next
+assets/js/site.js           Shared chrome: nav, sidebar, search, progress, print
 assets/js/viz.js            Shared math/canvas helpers (exact special functions)
-assets/js/snippets.js       "Try it in R / Python" snippets, keyed by lesson slug
-assets/js/checks.js         "Check your understanding" questions, keyed by lesson slug
-assets/js/software.js       SPSS/JASP steps + APA write-up, keyed by lesson slug
-stats-1/<topic>/index.html  One folder per lesson → clean URL + refresh-proof
-methods/<topic>/index.html  Research Toolkit course (Methods; more courses planned)
-tools/                      Build/QA scripts: audit.js, inject-faqs.py, build-search-index.py
-CLAUDE.md ROADMAP.md PROMPTS.md   Dev guide, roadmap & session prompts (in-repo, synced across machines)
-.claude/launch.json         Local preview-server config (repo-relative paths)
+assets/js/{checks,software,snippets,glossary-data}.js   Per-lesson content, keyed by slug
+sw.js offline.html          Service worker — the site works offline once visited
+tools/                      Build/QA scripts (see below)
+CLAUDE.md VOICE.md ROADMAP.md PROMPTS.md    Dev guide, editorial rules, roadmap, session prompts
 ```
 
-> Dev docs (`CLAUDE.md`, `ROADMAP.md`, `PROMPTS.md`) and `.claude/` live in the repo
-> so they sync across machines via GitHub Desktop. Because `.nojekyll` is set, they're
-> served verbatim by GitHub Pages but are unlinked and excluded from `sitemap.xml`.
+Dev docs and `.claude/` live in the repo so they sync across machines. Because
+`.nojekyll` is set they are served verbatim by GitHub Pages, but they are
+unlinked and excluded from `sitemap.xml`.
 
-To **add or rename a lesson**, edit `assets/js/curriculum.js` (set `ready: true`
-once the page exists). The homepage grid, every sidebar, the search overlay,
-and the prev/next links all read from that one file. Then update the per-page
-SEO tags (including the JSON-LD block), `sitemap.xml`, the glossary, the quiz
-bank, `snippets.js`, and `checks.js`.
+## Working on it
 
-## Preview locally
+Only **Node** is needed to preview and check the site; the two content
+generators are Python 3.
 
-All paths are **relative**, so the site works from any base — but lessons live
-in subfolders, so use a tiny local server rather than double-clicking files:
-
-```
-python -m http.server 8099
+```bash
+node tools/serve.js 8097     # local preview at http://localhost:8097/
+node tools/audit.js          # site health check — required before every commit
+node tools/math-check.js     # statistical regression gate — required if viz.js changes
+node tools/prose-lint.js     # voice/prose budgets (editorial, not a build gate)
 ```
 
-Then visit http://localhost:8099/ (run it from inside this folder).
+`tools/audit.js` cross-checks the whole site against `curriculum.js`: per-lesson
+coverage, SEO tags, JSON-LD, internal links, search-index freshness, and more.
+It exits non-zero on any error.
 
-## Publish / update (GitHub Desktop)
+To **add or rename a lesson**, edit `assets/js/curriculum.js` (set
+`ready: true` once the page exists), then follow the integration checklist in
+[`CLAUDE.md`](CLAUDE.md) — per-page SEO, `sitemap.xml`, glossary, quiz bank,
+checks, snippets, FAQs, and a rebuild of the search index.
 
-Make changes → **Commit** → **Push**. GitHub Pages serves the `main` branch
-from the repo root and the live site updates in under a minute. The custom
-domain is set by the `CNAME` file (statscapybara.com) plus DNS `A`/`CNAME`
-records pointing at GitHub Pages, with **Enforce HTTPS** on.
+## Deploying
+
+Commit and push to `main`; GitHub Pages serves the repo root and the live site
+updates in under a minute. `CNAME` sets the custom domain. If a deploy changes
+a precached shell asset (`styles.css`, `site.js`, `curriculum.js`, `viz.js`,
+the font, an icon, or `offline.html`), bump `CACHE_VERSION` in `sw.js`.
+
+## Found a mistake?
+
+Corrections are genuinely welcome, especially statistical ones. Open an issue,
+or use the **Spotted a mistake? Tell me** link at the foot of any page on the
+site, which fills in the page address for you.

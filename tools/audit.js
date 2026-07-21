@@ -315,7 +315,10 @@ CURRICULUM.forEach((c) => { courseBySlug[c.slug] = c; });
 /* root / tool pages (excluding the self-contained 404.html) */
 const ROOT_PAGES = ['index.html', 'quiz.html', 'glossary.html', 'toolbox.html', 'teachers.html', 'which-test.html', 'which-chart.html',
   'plan.html', 'tables.html', 'formulas.html', 'distributions.html', 'effect-sizes.html', 'descriptives.html', 'correlation.html', 'power.html', 'apa.html', 'problems.html', 'datasets.html', 'flashcards.html', 'progress.html',
-  'cheat-test-chooser.html', 'cheat-apa.html', 'cheat-assumptions.html'];
+  'cheat-test-chooser.html', 'cheat-apa.html', 'cheat-assumptions.html', 'privacy.html'];
+/* root pages whose BreadcrumbList is NOT Home → Statistics Toolbox → Tool.
+   privacy.html (P69) is a site page, not a tool, so its trail is two levels. */
+const NON_TOOL_ROOT = new Set(['privacy.html']);
 /* long-form guides — guides/<slug>/index.html (P34); each is a body[data-guide] page */
 const GUIDES = ['analyze-thesis-data-jasp', 'spss-output-to-apa', 'choose-statistics-dissertation', 'clean-survey-data'];
 /* course landing pages — <course>/index.html (P61); each is a body[data-course-home] page.
@@ -483,7 +486,9 @@ for (const f of ROOT_PAGES) {
   const objs = ldObjects(lds);
   checkLdFields(f, objs);
   const types = objs.map((o) => o['@type']);
-  if (f !== 'index.html' && !types.includes('BreadcrumbList')) err(`${f} → missing BreadcrumbList JSON-LD (Home → Statistics Toolbox → Tool)`);
+  if (f !== 'index.html' && !types.includes('BreadcrumbList')) {
+    err(`${f} → missing BreadcrumbList JSON-LD (${NON_TOOL_ROOT.has(f) ? 'Home → Page' : 'Home → Statistics Toolbox → Tool'})`);
+  }
   if (f === 'quiz.html' && !types.includes('Quiz')) err(`${f} → missing Quiz JSON-LD`);
 
   // CHECK 8 — description dedupe + title pattern

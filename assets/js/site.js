@@ -203,6 +203,7 @@
     /* Root pages */
     "home": "No rush — capybaras never cram.",
     "toolbox": "A capybara's toolbox: warm water, good snacks, zero deadlines. Yours has calculators too.",
+    "privacy": "The capybara keeps no file on you. It counts how many visitors came to the water, never which one you were.",
     "which-test": "Lost? The capybara also can't pick a pool. That's literally why this page exists.",
     "which-chart": "A pie chart of the capybara's day would be one giant slice labelled 'napping.' Even then, it says, use a bar.",
     "plan": "The capybara writes the whole plan before the data arrive — test, sample size, and how it'll report it. Then, and only then, it naps.",
@@ -1451,6 +1452,8 @@
     { title: "From SPSS Output to APA Results", url: "guides/spss-output-to-apa/", tag: "Guide", kw: "spss guide output apa results report write up sig 2-tailed .000 levene two rows t-test anova correlation chi-square regression tables how to read coefficients" },
     { title: "Choosing Statistics for Your Dissertation", url: "guides/choose-statistics-dissertation/", tag: "Guide", kw: "choose choosing statistics dissertation thesis which test analysis pick guide outcome predictor groups paired design likert messy real data decision" },
     { title: "Clean Your Survey Data, Step by Step", url: "guides/clean-survey-data/", tag: "Guide", kw: "clean cleaning survey data guide questionnaire likert reverse code coding missing values composite score reliability cronbach alpha screening exclusions step by step raw export" },
+    /* not a tool, so deliberately absent from TOOLBOX — but searchable (P69) */
+    { title: "Privacy", url: "privacy.html", tag: "Reference", kw: "privacy policy data collection analytics google cookie cookies tracking localstorage local storage progress stored device gdpr ads advertising accounts anonymous page views ko-fi what is collected delete reset children classroom" },
     { title: "For Instructors", url: "teachers.html", tag: "Guide", kw: "instructors teachers professors teaching course syllabus lms canvas moodle blackboard embed iframe classroom handouts posters assignments datasets reproducible semester week by week map free license link to us lecturer educator" }
   ];
   function escHtml(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
@@ -1584,6 +1587,19 @@
     a.href = "mailto:" + FEEDBACK_TO +
       "?subject=" + encodeURIComponent("StatsCapybara correction: " + pagePath());
     a.textContent = "Spotted a mistake? Tell me";
+    c.appendChild(a);
+  }
+
+  /* a quiet Privacy link in every footer (P69) — the site runs analytics, so
+     the page saying so has to be reachable from anywhere, not buried. Same
+     quiet family as the feedback link; it is a reference, not a destination. */
+  function renderFooterPrivacy() {
+    var c = document.querySelector(".footer .container");
+    if (!c || c.querySelector(".footer-privacy")) return;
+    var a = document.createElement("a");
+    a.className = "footer-privacy";
+    a.href = BASE + "privacy.html";
+    a.textContent = "Privacy";
     c.appendChild(a);
   }
 
@@ -1769,6 +1785,7 @@
     renderKofi();
     renderFooterAbout();
     renderFooterFeedback();
+    renderFooterPrivacy();
     renderFooterCapy();
     setupHScroll();
     injectVizExport();
