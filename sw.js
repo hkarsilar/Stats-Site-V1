@@ -37,7 +37,7 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v17";  /* P67: lesson state presets — site.js gained SC.preset() */
+const CACHE_VERSION = "sc-v18";  /* P68: footer feedback link, section share-links, manifest shortcuts */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location

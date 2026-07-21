@@ -472,17 +472,24 @@
      block here, plus the APA / descriptives / correlation tools): same
      wording, same 1.4s revert, green .copied tint, and aria-live polite
      so screen readers hear the confirmation. Call AFTER the clipboard
-     write resolves. */
+     write resolves.
+
+     Icon-only buttons (the P68 section share-links) can't have their label
+     swapped for the word — the swap would eat the icon and change the
+     button's width. Those carry a `data-copy-flash` slot instead: a
+     visually-hidden live region that takes the wording, while the .copied
+     class does the visible work (green check). Text buttons are unchanged. */
   function flashCopied(btn) {
     if (!btn) return;
-    if (!btn.getAttribute("aria-live")) btn.setAttribute("aria-live", "polite");
-    if (!btn.__copyLabel) btn.__copyLabel = btn.textContent;
+    var host = btn.querySelector("[data-copy-flash]") || btn;
+    if (!host.getAttribute("aria-live")) host.setAttribute("aria-live", "polite");
+    if (host.__copyLabel === undefined) host.__copyLabel = host.textContent;
     btn.classList.add("copied");
-    btn.textContent = "Copied!";
+    host.textContent = "Copied!";
     clearTimeout(btn.__copyT);
     btn.__copyT = setTimeout(function () {
       btn.classList.remove("copied");
-      btn.textContent = btn.__copyLabel;
+      host.textContent = host.__copyLabel;
     }, 1400);
   }
 
@@ -1041,6 +1048,26 @@
     });
   }
 
+  /* ---------- section ids ----------
+     Give every h2 in an article a stable slug id, so both the mini-TOC and
+     the P68 share-links have something to point at. Hand-written ids (the
+     guides write their own) win; the rest are slugified from the heading
+     text. Dedupe checks EVERY id already on the page, not just the other
+     headings, so a heading can never silently steal an existing anchor. */
+  function ensureH2Ids(art) {
+    var hs = art.querySelectorAll("h2"), taken = {};
+    Array.prototype.forEach.call(document.querySelectorAll("[id]"), function (el) {
+      if (el.tagName !== "H2") taken[el.id] = 1;
+    });
+    Array.prototype.forEach.call(hs, function (h) {
+      if (h.id) { taken[h.id] = 1; return; }
+      var id = h.textContent.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "section";
+      while (taken[id]) id += "-x";
+      taken[id] = 1; h.id = id;
+    });
+    return hs;
+  }
+
   /* ---------- "On this page" mini-TOC (longer lessons only) ---------- */
   function renderTOC() {
     if (!HERE) return;
@@ -1048,12 +1075,8 @@
     if (!art) return;
     var hs = art.querySelectorAll("h2");
     if (hs.length < 4) return;
-    var used = {};
-    var items = Array.prototype.map.call(hs, function (h) {
-      var id = h.id || h.textContent.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-      while (used[id]) id += "-x";
-      used[id] = 1; h.id = id;
-      return '<a href="#' + id + '">' + h.textContent + '</a>';
+    var items = Array.prototype.map.call(ensureH2Ids(art), function (h) {
+      return '<a href="#' + h.id + '">' + h.textContent + '</a>';
     }).join("");
     var box = document.createElement("nav");
     box.className = "lesson-toc";
@@ -1061,6 +1084,52 @@
     box.innerHTML = '<span class="toc-label">On this page</span>' + items;
     var lede = art.querySelector(".lede");
     if (lede) lede.parentNode.insertBefore(box, lede.nextSibling);
+  }
+
+  /* ---------- section share-links (P68) ----------
+     A small copy-link button on every h2 of a lesson or guide, so a lecturer
+     can hand out "the bit about pooled variance" rather than the whole page.
+     Injected here, so all 100-odd pages get it without editing one of them.
+
+     Three constraints shape it:
+       • Zero layout shift. The button is in flow from the start and only its
+         OPACITY changes, so nothing moves when it appears. The "Copied!"
+         wording goes to a visually-hidden slot (see flashCopied) and the
+         visible confirmation is an icon swap inside the same box — a widening
+         text label would shove the heading around.
+       • No hover-only affordance (the P65 touch rule): invisible until hover
+         or focus on a fine pointer, permanently half-lit on a coarse one.
+         Both cases live in styles.css.
+       • No clipboard, no button — there's nothing for it to do. */
+  var LINK_ICON =
+    '<svg class="h2link-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">' +
+      '<path d="M9.7 13.6a4.4 4.4 0 0 0 6.7.5l2.6-2.6a4.4 4.4 0 0 0-6.2-6.2l-1.5 1.5"/>' +
+      '<path d="M14.3 10.4a4.4 4.4 0 0 0-6.7-.5L5 12.5a4.4 4.4 0 0 0 6.2 6.2l1.5-1.5"/>' +
+    '</svg>' +
+    '<svg class="h2link-ok" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<path d="M4.5 12.5 9.5 17.5 19.5 6.5"/>' +
+    '</svg>' +
+    '<span class="h2link-flash" data-copy-flash></span>';
+
+  function renderSectionLinks() {
+    if (!HERE && !document.body.getAttribute("data-guide")) return;
+    var art = document.querySelector(".lesson");
+    if (!art || !navigator.clipboard) return;
+    Array.prototype.forEach.call(ensureH2Ids(art), function (h) {
+      if (h.querySelector(".h2link")) return;
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "h2link";
+      b.setAttribute("aria-label", "Copy link to this section");
+      b.innerHTML = LINK_ICON;
+      b.addEventListener("click", function () {
+        var url = window.location.origin + window.location.pathname + "#" + h.id;
+        try {
+          navigator.clipboard.writeText(url).then(function () { flashCopied(b); }, function () {});
+        } catch (e) {}
+      });
+      h.appendChild(b);
+    });
   }
 
   /* ---------- "Try it yourself" R / Python snippets ----------
@@ -1492,6 +1561,32 @@
     c.appendChild(a);
   }
 
+  /* ---------- "Spotted a mistake?" (every page, P68) ----------
+     A site that invites corrections reads as one that expects to be held to
+     its own standard. mailto: rather than a GitHub issues link on purpose —
+     the audience is students, most of whom have no GitHub account. The
+     subject carries the page's own path so a report arrives locatable
+     ("which page?" is otherwise the first reply every time). The path comes
+     from the canonical link when there is one, so it's the clean public URL
+     regardless of where the page is being served from. */
+  var FEEDBACK_TO = "hkarsilar@gmail.com";
+  function pagePath() {
+    var can = document.querySelector('link[rel="canonical"]');
+    var href = (can && can.getAttribute("href")) || window.location.href;
+    try { return new URL(href, window.location.href).pathname || "/"; }
+    catch (e) { return window.location.pathname || "/"; }
+  }
+  function renderFooterFeedback() {
+    var c = document.querySelector(".footer .container");
+    if (!c || c.querySelector(".footer-feedback")) return;
+    var a = document.createElement("a");
+    a.className = "footer-feedback";
+    a.href = "mailto:" + FEEDBACK_TO +
+      "?subject=" + encodeURIComponent("StatsCapybara correction: " + pagePath());
+    a.textContent = "Spotted a mistake? Tell me";
+    c.appendChild(a);
+  }
+
   /* a small capybara next to the copyright line, on every page */
   function renderFooterCapy() {
     var c = document.querySelector(".footer .container");
@@ -1667,11 +1762,13 @@
     renderLessonDone();
     setupPrint();
     renderTOC();
+    renderSectionLinks();   // after renderTOC: the TOC reads heading text
     renderTryCode();
     renderChecks();
     renderSoftware();
     renderKofi();
     renderFooterAbout();
+    renderFooterFeedback();
     renderFooterCapy();
     setupHScroll();
     injectVizExport();

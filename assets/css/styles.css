@@ -338,7 +338,7 @@ main { padding-top: var(--nav-h); }
 .quiz-pick:active, .wt-opt:active, .wt-crumb:active, .wt-back:active,
 .lesson-toc a:active, .about-link:active, .lesson-done:active, .print-btn:active,
 .tc-copy:active, .seg button:active, .ck-opt:not(:disabled):active, .viz-png-btn:active,
-.exam-opt:active, .exam-check:active {
+.exam-opt:active, .exam-check:active, .h2link:active {
   transform: translateY(0) scale(.985);
   transition-duration: .07s;
 }
@@ -535,6 +535,10 @@ li a:hover .sec-dot { border-color: var(--accent, var(--primary)); }
    order slots it between the tagline (0) and the Ko-fi button (2) */
 .footer-about { color: var(--text-muted); font-weight: 600; order: 1; }
 .footer-about:hover { color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
+/* "Spotted a mistake? Tell me" — quieter than About (it's an invitation, not
+   a destination), same row, injected by site.js's renderFooterFeedback() */
+.footer-feedback { color: var(--text-faint); order: 1; }
+.footer-feedback:hover { color: var(--text-muted); text-decoration: underline; text-underline-offset: 3px; }
 
 /* ============================================================
    LESSON LAYOUT
@@ -613,6 +617,55 @@ body[data-course="writing"] { --course-accent: #84cc16; }
 .lesson h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); margin: .25rem 0 1.5rem; }
 .lesson h2 { font-size: 1.5rem; margin: 2.5rem 0 .75rem; }
 .lesson h3 { font-size: 1.15rem; margin: 1.75rem 0 .5rem; }
+
+/* --- section share-links (P68) -------------------------------------------
+   A copy-link button injected into every lesson / guide h2 by site.js's
+   renderSectionLinks(). It sits IN FLOW and occupies its box from first
+   paint — only opacity changes — so revealing it shifts nothing. The
+   confirmation is an icon swap inside the same fixed box (a "Copied!" label
+   would widen the button and push the heading); the wording goes to the
+   visually-hidden .h2link-flash live region for screen readers instead.
+   Default state is half-lit, and the hover-reveal is scoped to fine
+   pointers — a touch device must never be shown a hover-only control. */
+.h2link {
+  display: inline-flex; align-items: center; justify-content: center;
+  position: relative;
+  width: 1.55rem; height: 1.55rem; margin-left: .3rem; vertical-align: middle;
+  padding: 0; border: 0; background: none; cursor: pointer; border-radius: 7px;
+  color: var(--text-faint); opacity: .45; transition: opacity .15s, color .15s;
+}
+.h2link:hover { color: var(--primary); opacity: 1; }
+/* :focus, not just :focus-visible — a control that HAS focus must be visible,
+   whether or not the browser decided to draw its focus ring */
+.h2link:focus { opacity: 1; }
+.h2link.copied { opacity: 1; color: var(--group-head); }   /* the AA-safe green */
+.h2link .h2link-ok { display: none; }
+.h2link.copied .h2link-ico { display: none; }
+.h2link.copied .h2link-ok { display: block; }
+/* the live region carries the "Copied!" wording without occupying any space */
+.h2link-flash {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
+@media (hover: hover) and (pointer: fine) {
+  .h2link { opacity: 0; }
+  .lesson h2:hover .h2link, .h2link:focus, .h2link.copied { opacity: 1; }
+}
+/* a finger needs ~44px; grow the HIT area, not the box, so the heading
+   line stays the same height on a phone as it is on a laptop */
+@media (pointer: coarse) {
+  .h2link::before { content: ""; position: absolute; inset: -.55rem; }
+}
+/* In a narrow column a heading often fills its last line exactly, and an
+   in-flow button then wraps to a line of its own — 29px of blank under the
+   heading. Below 700px the button moves into a permanent right gutter
+   instead: the padding is always reserved (so still no layout shift) and an
+   absolutely positioned button can't wrap. Wide screens keep the button
+   beside the text, where the column is roomy and it reads better. */
+@media (max-width: 700px) {
+  .lesson h2 { position: relative; padding-right: 1.95rem; }
+  .h2link { position: absolute; right: 0; top: .12rem; margin-left: 0; }
+}
 .lesson p { color: var(--text-muted); }
 .lesson .lede { font-size: 1.15rem; color: var(--text); }
 .lesson ul, .lesson ol { color: var(--text-muted); }
@@ -832,6 +885,19 @@ body[data-course="writing"] { --course-accent: #84cc16; }
   }
 }
 
+/* P68 considered a cross-document view transition here —
+   `@media not (prefers-reduced-motion: reduce) { @view-transition {
+   navigation: auto } }` — for a calm same-origin cross-fade. It was built and
+   then removed, NOT because it misbehaved but because it could not be
+   checked: the preview pane runs its document with visibilityState "hidden",
+   and Chrome skips view transitions for hidden documents, so not one frame of
+   the transition was observable. The item was explicitly optional and
+   conditional on verifying no artifacts (notably against site.js's
+   controllerchange auto-reload, which reloads the page mid-visit after a
+   CACHE_VERSION bump, and against the pre-paint dark-theme script). Shipping
+   an unverifiable visual change to every page of the site is the wrong trade.
+   Revisit if a browser that paints becomes available for verification. */
+
 /* ============================================================
    SEARCH OVERLAY (⌘/Ctrl-K or "/")
    ============================================================ */
@@ -976,7 +1042,7 @@ body[data-course="writing"] { --course-accent: #84cc16; }
   /* --- site chrome + personal-state / navigation UI --- */
   .nav, .nav-toggle, .nav-actions, .sidebar, .sb-capy, .lesson-nav, .footer,
   .kofi, .skip-link, .search-overlay, .resume-bar, .lesson-progress-head,
-  .lesson-done, .print-btn, .hero-cta, .lesson-toc, .tc-copy { display: none !important; }
+  .lesson-done, .print-btn, .hero-cta, .lesson-toc, .tc-copy, .h2link { display: none !important; }
 
   /* --- interactive-only injected blocks (the APA + R/Python blocks stay;
          they're reference material worth keeping on a handout) --- */
