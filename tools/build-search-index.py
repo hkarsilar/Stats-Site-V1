@@ -17,12 +17,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 MAX_CHARS = 4500
 
-# Per-page overrides of MAX_CHARS. problems.html (P63) is the one page whose
-# entire body IS the payload: someone searching "Mann-Whitney worked example"
-# needs to reach problem 18, and the default cap indexes only the first ~10%
-# of it. Full indexing costs ~40 KB on an index that is lazy-loaded only when
-# the search overlay opens. The headroom also covers P64's Stats 3-4 sets.
-PAGE_MAX_CHARS = {"problems.html": 120_000}
+# Per-page overrides of MAX_CHARS, for the pages whose entire body IS the
+# payload rather than prose you skim. problems.html (P63): someone searching
+# "Mann-Whitney worked example" needs to reach problem 18, and the default cap
+# indexes only the first ~10% of it. glossary.html: same reasoning — reaching
+# one specific term is the whole point of a glossary, and the old MAX_CHARS * 2
+# cap stopped at term 64 of 253 (source order), so most of the deck was
+# silently unsearchable. Both are cheap: full indexing costs ~40 KB and ~7 KB
+# on an index that is lazy-loaded only when the search overlay opens. The
+# headroom also covers P64's Stats 3-4 problem sets and future glossary growth.
+PAGE_MAX_CHARS = {"problems.html": 120_000, "glossary.html": 120_000}
 
 
 def textify(fragment: str) -> str:
@@ -46,13 +50,20 @@ def page_text(path: Path, limit: int = MAX_CHARS) -> str:
     return textify(m.group(1))[:limit] if m else ""
 
 
-def glossary_text(path: Path) -> str:
+def glossary_text(path: Path, limit: int = MAX_CHARS) -> str:
     """Glossary terms live in a JS array (assets/js/glossary-data.js,
-    window.GLOSSARY) — pull the term + definition strings."""
+    window.GLOSSARY) — pull the term + definition strings.
+
+    These are plain-text JS strings, NOT HTML, so they deliberately do NOT go
+    through textify(): definitions legitimately contain "p < .05" and "p > .05",
+    and textify's <[^>]+> tag-strip treats everything from a "<" to the next ">"
+    as one tag. On a deck holding 5 "<", 1 ">" and zero real tags that was a
+    single 36 k-char match that silently ate 69% of the glossary. Plain text
+    needs only whitespace collapsing."""
     src = path.read_text(encoding="utf-8")
     terms = re.findall(r'\{ t: "((?:[^"\\]|\\.)*)", d: "((?:[^"\\]|\\.)*)"', src)
     joined = " ".join(f"{t}: {d}" for t, d in terms)
-    return textify(joined)[:MAX_CHARS * 2]
+    return re.sub(r"\s+", " ", html.unescape(joined)).strip()[:limit]
 
 
 def course_slugs() -> list:
@@ -116,7 +127,7 @@ for slug in [
 # glossary terms now live in assets/js/glossary-data.js; index them under glossary.html
 gl = ROOT / "assets/js/glossary-data.js"
 if gl.exists():
-    pages.append({"u": "glossary.html", "txt": glossary_text(gl)})
+    pages.append({"u": "glossary.html", "txt": glossary_text(gl, PAGE_MAX_CHARS.get("glossary.html", MAX_CHARS))})
 
 out = (
     "/* ============================================================\n"
