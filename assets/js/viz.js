@@ -112,20 +112,32 @@ window.VIZ = (function () {
     for (var j = 0; j < 6; j++) { y++; ser += cof[j] / y; }
     return -tmp + Math.log(2.5066282746310005 * ser / x);
   }
-  function gammp(a, x) {
-    if (x <= 0 || a <= 0) return 0;
-    if (x < a + 1) {
-      var ap = a, sum = 1 / a, del = sum;
-      for (var n = 0; n < 300; n++) { ap++; del *= x / ap; sum += del; if (Math.abs(del) < Math.abs(sum) * 1e-13) break; }
-      return sum * Math.exp(-x + a * Math.log(x) - gammaln(a));
-    }
+  /* NR's two branches, split out so the UPPER tail can be returned DIRECTLY.
+     `1 - gammp(a, x)` cancels catastrophically once the upper tail falls below
+     ~1e-16 and reaches exactly 0 — yet gcf below already computes that upper
+     tail, so gammq hands it back untouched instead of reconstructing it by
+     subtraction. gammp keeps the identical arithmetic it always had. */
+  function gser(a, x) {   // lower tail P(a,x), series — used for x < a+1
+    var ap = a, sum = 1 / a, del = sum;
+    for (var n = 0; n < 300; n++) { ap++; del *= x / ap; sum += del; if (Math.abs(del) < Math.abs(sum) * 1e-13) break; }
+    return sum * Math.exp(-x + a * Math.log(x) - gammaln(a));
+  }
+  function gcf(a, x) {    // upper tail Q(a,x), continued fraction — used for x >= a+1
     var FPMIN = 1e-300, b = x + 1 - a, c = 1 / FPMIN, d = 1 / b, h = d;
     for (var i = 1; i <= 300; i++) {
       var an = -i * (i - a); b += 2; d = an * d + b; if (Math.abs(d) < FPMIN) d = FPMIN;
       c = b + an / c; if (Math.abs(c) < FPMIN) c = FPMIN; d = 1 / d; var dl = d * c; h *= dl;
       if (Math.abs(dl - 1) < 1e-13) break;
     }
-    return 1 - Math.exp(-x + a * Math.log(x) - gammaln(a)) * h;
+    return Math.exp(-x + a * Math.log(x) - gammaln(a)) * h;
+  }
+  function gammp(a, x) {  // regularised lower incomplete gamma P(a,x)
+    if (x <= 0 || a <= 0) return 0;
+    return x < a + 1 ? gser(a, x) : 1 - gcf(a, x);
+  }
+  function gammq(a, x) {  // regularised UPPER incomplete gamma Q(a,x) — exact in the far tail
+    if (a <= 0 || x <= 0) return 1;
+    return x < a + 1 ? 1 - gser(a, x) : gcf(a, x);
   }
   function betacf(a, b, x) {
     var FPMIN = 1e-300, qab = a + b, qap = a + 1, qam = a - 1, c = 1, d = 1 - qab * x / qap;
@@ -139,14 +151,35 @@ window.VIZ = (function () {
     }
     return h;
   }
+  function betaBt(a, b, x) {
+    return Math.exp(gammaln(a + b) - gammaln(a) - gammaln(b) + a * Math.log(x) + b * Math.log(1 - x));
+  }
   function betai(a, b, x) {
     if (x <= 0) return 0; if (x >= 1) return 1;
-    var bt = Math.exp(gammaln(a + b) - gammaln(a) - gammaln(b) + a * Math.log(x) + b * Math.log(1 - x));
+    var bt = betaBt(a, b, x);
     return x < (a + 1) / (a + b + 2) ? bt * betacf(a, b, x) / a : 1 - bt * betacf(b, a, 1 - x) / b;
   }
+  /* 1 − I_x(a,b), with the branches SWAPPED relative to betai: whichever side is
+     small is the one computed directly, so neither tail is ever reconstructed by
+     subtracting a number close to 1. This is what stops a far-tail F p-value
+     from collapsing to exactly 0. */
+  function betaiUpper(a, b, x) {
+    if (x <= 0) return 1; if (x >= 1) return 0;
+    var bt = betaBt(a, b, x);
+    return x < (a + 1) / (a + b + 2) ? 1 - bt * betacf(a, b, x) / a : bt * betacf(b, a, 1 - x) / b;
+  }
+  /* Upper tail of the standard normal, exact where `1 − normCdf(z)` is not.
+     erf above is A&S 7.1.26, accurate to ~1.5e-7 ABSOLUTE — fine near the centre,
+     meaningless in a tail whose true value is far smaller, and exactly 0 for
+     z ≥ 9. Q(z) = ½·erfc(z/√2) = ½·Q(½, z²/2) rides the incomplete gamma
+     instead: ~5e-14 RELATIVE out to z ≈ 37. Prefer this over `1 - normCdf(z)`
+     anywhere a small p-value is displayed. (normCdf itself is unchanged — no
+     improvement to it could help, since `1 − Q` rounds to exactly 1.0 in
+     float64 for z ≳ 8.3 regardless of how accurate Q is.) */
+  function normQ(z) { return z < 0 ? 1 - normQ(-z) : 0.5 * gammq(0.5, z * z / 2); }
   // upper-tail p-values
-  function fUpper(f, d1, d2) { return f <= 0 ? 1 : 1 - betai(d1 / 2, d2 / 2, d1 * f / (d1 * f + d2)); }
-  function chiSqUpper(x, k) { return x <= 0 ? 1 : 1 - gammp(k / 2, x / 2); }
+  function fUpper(f, d1, d2) { return f <= 0 ? 1 : betaiUpper(d1 / 2, d2 / 2, d1 * f / (d1 * f + d2)); }
+  function chiSqUpper(x, k) { return x <= 0 ? 1 : gammq(k / 2, x / 2); }
   function tUpper(t, v) {
     var p = 0.5 * betai(v / 2, 0.5, v / (v + t * t));
     return t >= 0 ? p : 1 - p;
@@ -264,5 +297,5 @@ window.VIZ = (function () {
     return negdel ? 1 - tnc : tnc;
   }
 
-  return { css: css, reducedMotion: reducedMotion, coarsePointer: coarsePointer, grabRadius: grabRadius, rafThrottle: rafThrottle, fit: fit, randn: randn, gauss: gauss, erf: erf, normCdf: normCdf, normPdf: normPdf, normInv: normInv, mean: mean, sd: sd, onTheme: onTheme, gammaln: gammaln, gammp: gammp, betai: betai, fUpper: fUpper, chiSqUpper: chiSqUpper, tUpper: tUpper, tPdf: tPdf, chiSqPdf: chiSqPdf, fPdf: fPdf, tInv: tInv, chiSqInv: chiSqInv, fInv: fInv, nctCdf: nctCdf, ncx2Cdf: ncx2Cdf, ncfCdf: ncfCdf };
+  return { css: css, reducedMotion: reducedMotion, coarsePointer: coarsePointer, grabRadius: grabRadius, rafThrottle: rafThrottle, fit: fit, randn: randn, gauss: gauss, erf: erf, normCdf: normCdf, normQ: normQ, normPdf: normPdf, normInv: normInv, mean: mean, sd: sd, onTheme: onTheme, gammaln: gammaln, gammp: gammp, gammq: gammq, betai: betai, betaiUpper: betaiUpper, fUpper: fUpper, chiSqUpper: chiSqUpper, tUpper: tUpper, tPdf: tPdf, chiSqPdf: chiSqPdf, fPdf: fPdf, tInv: tInv, chiSqInv: chiSqInv, fInv: fInv, nctCdf: nctCdf, ncx2Cdf: ncx2Cdf, ncfCdf: ncfCdf };
 })();
