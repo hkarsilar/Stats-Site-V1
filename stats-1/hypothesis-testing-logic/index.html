@@ -143,7 +143,13 @@
   <script src="../../assets/js/site.js"></script>
   <script src="../../assets/js/viz.js"></script>
 
-  <!-- ============ p-value visualization ============ -->
+  <!-- ============ p-value visualization ============
+       URL presets (P67):
+         ?z=<-4…4>            observed statistic (written as z, not slider units)
+         ?tail=two|right|left  which tail(s) the p-value covers
+         ?alpha=.10|.05|.01    decision threshold
+       e.g.  ?embed=1&z=1.96&tail=two&alpha=.05  →  the borderline-decision slide
+  -->
   <script>
   (function () {
     "use strict";
@@ -222,6 +228,15 @@
     VIZ.onTheme(draw);
 
     fit(); update();
+
+    /* URL preset, applied last (see the head comment). z is scaled because
+       the slider carries hundredths, while instructors — and the readout —
+       write the statistic itself. */
+    if (window.SC && SC.preset) SC.preset({
+      z: { el: "#z-range", scale: 100 },
+      tail: "#tail-seg",
+      alpha: "#alpha-seg"
+    });
   })();
   </script>
 </body>

@@ -163,7 +163,12 @@
   <script src="../../assets/js/curriculum.js"></script>
   <script src="../../assets/js/site.js"></script>
 
-  <!-- ============ Central Limit Theorem visualization ============ -->
+  <!-- ============ Central Limit Theorem visualization ============
+       URL presets (P67 — so a slide can embed one specific configuration):
+         ?n=<1–50>            sample size
+         ?pop=skewed|uniform|bimodal   population shape
+       e.g.  ?embed=1&n=50&pop=skewed  →  the "n = 50 fixes even a skew" slide
+  -->
   <script>
   (function () {
     "use strict";
@@ -394,6 +399,10 @@
     rebuildPopData();
     sizeCanvases();
     renderAll();
+
+    /* URL preset, applied last: it moves the same controls a hand would,
+       so the frozen-noise pools are never reseeded (see the head comment) */
+    if (window.SC && SC.preset) SC.preset({ n: "#n-range", pop: "#pop-seg" });
   })();
   </script>
 </body>

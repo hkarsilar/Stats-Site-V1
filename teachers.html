@@ -46,7 +46,7 @@
       <article class="lesson" style="margin:0 auto">
         <span class="lesson-eyebrow">For instructors</span>
         <h1>Teach with StatsCapybara</h1>
-        <p class="lede">Ninety-five interactive lessons and a shelf of tools, free and open to anyone. If you teach statistics or research methods, everything here is yours to use in a course: link it, embed it, print it, and assign from it. This page shows how.</p>
+        <p class="lede">Ninety-seven interactive lessons and a shelf of tools, free and open to anyone. If you teach statistics or research methods, everything here is yours to use in a course: link it, embed it, print it, and assign from it. This page shows how.</p>
 
         <div class="callout key">
           <p><strong>One link is a semester of students.</strong> Drop a lesson URL into your syllabus or LMS and your class gets a visual explanation plus a hands-on visualization, with nothing to install and no sign-up. You never have to point them anywhere but the exact page they need.</p>
@@ -99,6 +99,83 @@
   title="Central Limit Theorem — StatsCapybara"&gt;&lt;/iframe&gt;</pre>
         </div>
         <p>The widget carries a small footer linking back to the full lesson, which opens in the top window rather than inside your frame. The lesson's canonical URL still points at the full page, so an embed never competes with the real lesson in search.</p>
+
+        <h3>Embed a specific setting, not just a lesson</h3>
+        <p>A plain embed opens at the lesson's default configuration, which is rarely the one your slide is about. Several lessons accept extra parameters in the URL, so the widget arrives already set the way you want it: the central limit theorem at <em>n</em>&nbsp;=&nbsp;50, a correlation of exactly .30, a signal-detection observer with a conservative criterion. Add them alongside <code>?embed=1</code>, in any order.</p>
+        <div class="try-code" style="margin:1rem 0">
+          <div class="tc-head"><span class="tc-title">Embed code with a preset</span><button class="tc-copy" id="preset-copy" type="button">Copy</button></div>
+          <pre id="preset-snippet">&lt;iframe
+  src="https://statscapybara.com/stats-1/central-limit-theorem/?embed=1&amp;n=50&amp;pop=skewed"
+  width="100%" height="640" loading="lazy"
+  style="border:1px solid #e2e8f0;border-radius:14px"
+  title="Central Limit Theorem at n = 50 — StatsCapybara"&gt;&lt;/iframe&gt;</pre>
+        </div>
+        <p>The same parameters work on the full lesson page too, so you can put a configured link straight in your slides or notes without embedding anything. Anything the lesson does not recognise is ignored, and a typo just loads the ordinary default; nothing breaks in front of a class.</p>
+        <div class="hscroll">
+        <table class="ref-table">
+          <thead><tr><th>Lesson</th><th>Parameters</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><a href="stats-1/sampling-distributions/">Sampling Distributions</a></td>
+              <td><code>shape</code> skewed·uniform·bimodal · <code>n</code> 2–50 · <code>stat</code> mean·median</td>
+              <td><code>?shape=skewed&amp;stat=median</code></td>
+            </tr>
+            <tr>
+              <td><a href="stats-1/central-limit-theorem/">Central Limit Theorem</a></td>
+              <td><code>n</code> 1–50 · <code>pop</code> skewed·uniform·bimodal</td>
+              <td><code>?n=50&amp;pop=skewed</code></td>
+            </tr>
+            <tr>
+              <td><a href="stats-1/confidence-intervals/">Confidence Intervals</a></td>
+              <td><code>n</code> 5–100 · <code>level</code> 90·95·99</td>
+              <td><code>?n=10&amp;level=99</code></td>
+            </tr>
+            <tr>
+              <td><a href="stats-1/hypothesis-testing-logic/">Hypothesis Testing Logic</a></td>
+              <td><code>z</code> −4–4 · <code>tail</code> two·right·left · <code>alpha</code> .10·.05·.01</td>
+              <td><code>?z=1.96&amp;tail=two</code></td>
+            </tr>
+            <tr>
+              <td><a href="stats-2/correlation/">Correlation</a></td>
+              <td><code>r</code> −1–1 · <code>line</code> 1·0 · <code>ellipse</code> 1·0</td>
+              <td><code>?r=0.3&amp;ellipse=1</code></td>
+            </tr>
+            <tr>
+              <td><a href="stats-2/simple-linear-regression/">Simple Linear Regression</a></td>
+              <td><code>b0</code> 0–10 · <code>b1</code> −1.5–2 · <code>mode</code> lines·squares</td>
+              <td><code>?b1=0&amp;mode=squares</code></td>
+            </tr>
+            <tr>
+              <td><a href="stats-2/non-parametric-alternatives/">Non-Parametric Alternatives</a></td>
+              <td><code>outlier</code> 40–100 · <code>tab</code> mw·wx·kw·fr</td>
+              <td><code>?outlier=100&amp;tab=mw</code></td>
+            </tr>
+            <tr>
+              <td><a href="stats-3/logistic-regression/">Logistic Regression</a></td>
+              <td><code>x0</code> 20–80 · <code>b1</code> 0.02–0.50</td>
+              <td><code>?x0=50&amp;b1=0.5</code></td>
+            </tr>
+            <tr>
+              <td><a href="stats-4/bayesian-thinking/">Bayesian Thinking</a></td>
+              <td><code>prior</code> 0.05–0.95 · <code>conf</code> 2–80 · <code>n</code> 0–200 · <code>obs</code> 0–1</td>
+              <td><code>?prior=0.5&amp;conf=60&amp;obs=0.8</code></td>
+            </tr>
+            <tr>
+              <td><a href="stats-4/psychometric-functions/">Psychometric Functions</a></td>
+              <td><code>family</code> logistic·gauss·weibull · <code>compare</code> on·off · <code>trials</code> 10–200 · <code>sigma</code> 40–160 · <code>shift</code> −150–150 · <code>mult</code> 0.5–2</td>
+              <td><code>?family=weibull&amp;trials=200</code></td>
+            </tr>
+            <tr>
+              <td><a href="stats-4/signal-detection-theory/">Signal Detection Theory</a></td>
+              <td><code>d</code> 0–3 · <code>c</code> −2.5–2.5</td>
+              <td><code>?d=2&amp;c=0.75</code></td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <p>Values outside a listed range are pulled back to the nearest one the control can actually reach, and a value between two slider steps snaps to the nearer step. What you get is always a state a student could have reached by hand.</p>
+        <p>One thing to expect: a preset fixes the <em>setting</em>, not the sample. On lessons that simulate data, every visit draws a fresh random sample, so a scatter set to <em>r</em>&nbsp;=&nbsp;.30 will look a little different each time you open the slide and the observed coefficient will wobble around the target. That is the sampling variability the lesson is teaching, and it is worth pointing at rather than hiding.</p>
+
         <div class="callout">
           <p><strong>Want a still image instead?</strong> On any lesson or calculator, a small <strong>PNG&nbsp;↓</strong> button next to each visualization downloads it at 2× resolution, in whatever theme you are viewing. Handy for slides and printed exams.</p>
         </div>
@@ -149,21 +226,24 @@
   <script>
   (function () {
     "use strict";
-    var btn = document.getElementById("embed-copy");
-    var pre = document.getElementById("embed-snippet");
-    if (!btn || !pre) return;
-    btn.addEventListener("click", function () {
-      var text = pre.textContent;
-      var done = function () { if (window.SC && window.SC.copied) window.SC.copied(btn); };
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(done).catch(done);
-      } else {
-        try {
-          var ta = document.createElement("textarea");
-          ta.value = text; document.body.appendChild(ta); ta.select();
-          document.execCommand("copy"); document.body.removeChild(ta); done();
-        } catch (e) {}
-      }
+    /* the plain embed snippet and the preset one copy identically */
+    [["embed-copy", "embed-snippet"], ["preset-copy", "preset-snippet"]].forEach(function (pair) {
+      var btn = document.getElementById(pair[0]);
+      var pre = document.getElementById(pair[1]);
+      if (!btn || !pre) return;
+      btn.addEventListener("click", function () {
+        var text = pre.textContent;
+        var done = function () { if (window.SC && window.SC.copied) window.SC.copied(btn); };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done).catch(done);
+        } else {
+          try {
+            var ta = document.createElement("textarea");
+            ta.value = text; document.body.appendChild(ta); ta.select();
+            document.execCommand("copy"); document.body.removeChild(ta); done();
+          } catch (e) {}
+        }
+      });
     });
   })();
   </script>

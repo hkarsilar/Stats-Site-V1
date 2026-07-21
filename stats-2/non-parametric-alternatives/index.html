@@ -175,7 +175,10 @@
   <script src="../../assets/js/site.js"></script>
   <script src="../../assets/js/viz.js"></script>
 
-  <!-- ============ rank-robustness visualization ============ -->
+  <!-- ============ rank-robustness visualization ============
+       URL preset (P67):  ?outlier=<40–100>  where the stray score sits
+       e.g.  ?embed=1&outlier=100  →  "one extreme score breaks t, ranks shrug"
+  -->
   <script>
   (function () {
     "use strict";
@@ -246,10 +249,19 @@
     window.addEventListener("resize", function () { fit(); draw(); });
     VIZ.onTheme(draw);
     fit(); update();
+
+    /* URL preset, applied last (see the head comment) */
+    if (window.SC && SC.preset) SC.preset({ outlier: "#out-range" });
   })();
   </script>
 
-  <!-- ============ tabbed rank-ledger playground ============ -->
+  <!-- ============ tabbed rank-ledger playground ============
+       URL preset (P67):  ?tab=mw|wx|kw|fr  which test the ledger shows
+       (the existing #mann-whitney / #wilcoxon / #kruskal-wallis / #friedman
+       hash links still work; an explicit ?tab wins, since it is the one an
+       instructor put in the embed URL)
+       e.g.  ?embed=1&tab=kw  →  the Kruskal–Wallis ledger
+  -->
   <script>
   (function () {
     "use strict";
@@ -543,6 +555,9 @@
     var HASH = { "#mann-whitney": "mw", "#wilcoxon": "wx", "#kruskal-wallis": "kw", "#friedman": "fr" };
     setTab(HASH[location.hash] || "mw");
     window.addEventListener("hashchange", function () { if (HASH[location.hash]) setTab(HASH[location.hash]); });
+
+    /* URL preset, applied last (see the head comment) */
+    if (window.SC && SC.preset) SC.preset({ tab: "#rv-seg" });
   })();
   </script>
 </body>

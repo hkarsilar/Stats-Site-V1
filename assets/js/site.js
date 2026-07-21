@@ -486,10 +486,115 @@
     }, 1400);
   }
 
+  /* ---------- lesson state presets (P67) ----------
+     Lets a URL preconfigure a lesson's interactive, so an instructor can
+     embed not just a lesson but the SPECIFIC configuration their slide is
+     about ("CLT with n = 50", "SDT at d′ = 2 with a conservative criterion").
+     The tool pages have done this for a while (power.html ?sc=&es=,
+     apa.html ?a=&v=, plan.html ?test=…); this is the lesson equivalent.
+
+     A lesson opts in by calling SC.preset(map) at the END of its boot, with
+     a map of short query keys to appliers:
+
+       SC.preset({ n: "#n-range", pop: "#pop-seg", r: { el: "#rho-range", scale: 100 } });
+
+     Four applier forms:
+       • a selector for a form control  — sets its value and dispatches
+         "input" + "change", i.e. exactly what moving the slider by hand does;
+       • a selector for a .seg strip    — clicks the button whose data-*
+         value matches (numeric values compare numerically, so ?alpha=.05
+         finds data-a="0.05"); clicking runs the lesson's own handler, so
+         there is no second code path to keep in step;
+       • { el: selector, scale: n }     — the same, for the common case of a
+         slider that carries hundredths of the value the lesson PRINTS (a
+         criterion slider in units of 100, a percentage slider behind a
+         proportion readout). The URL speaks the printed units — ?r=0.3,
+         ?z=1.96 — and the helper scales, clamps and snaps to the input's own
+         min/max/step, so a lesson never restates those bounds in JS;
+       • a function                     — gets the raw string, for anything
+         that isn't a control.
+
+     Three rules the helper enforces:
+       1. Absent, unknown or garbage params are silently ignored — a mangled
+          URL must still load the plain default lesson, so every applier runs
+          inside its own try/catch and nothing here ever throws.
+       2. It is called after the lesson's own init, so the frozen-noise law
+          holds: a preset moves the controls a hand would move, it never
+          reseeds the data.
+       3. It composes with ?embed=1 (which site.js handles separately) — the
+          two are independent query params.
+
+     Reserved keys a lesson must NOT use: "embed" and "q" (search deep link). */
+  function numeric(s) {
+    var v = parseFloat(s);
+    return (isFinite(v) && /^[-+]?(\d+\.?\d*|\.\d+)([eE][-+]?\d+)?$/.test(String(s).trim())) ? v : null;
+  }
+  function applyControl(el, raw, scale) {
+    var t = (el.type || "").toLowerCase();
+    if (t === "checkbox" || t === "radio") {
+      var on = /^(1|true|on|yes)$/i.test(raw);
+      if (t === "radio" && !on) return;      // "turn a radio off" is meaningless
+      el.checked = t === "radio" ? true : on;
+    } else if (t === "range" || t === "number") {
+      var v = numeric(raw);
+      if (v === null) return;                // garbage number: leave the default
+      v *= (scale || 1);
+      var lo = numeric(el.min), hi = numeric(el.max), st = numeric(el.step);
+      // snap to the control's own grid, then clamp — the same states a hand
+      // can reach, and identical in every browser (value sanitisation isn't)
+      if (st !== null && st > 0) {
+        var base = (lo !== null) ? lo : 0;
+        v = base + Math.round((v - base) / st) * st;
+      }
+      if (lo !== null) v = Math.max(lo, v);
+      if (hi !== null) v = Math.min(hi, v);
+      el.value = String(parseFloat(v.toFixed(10)));   // shed float dust (1.96*100)
+    } else if (el.tagName === "SELECT") {
+      var ok = Array.prototype.some.call(el.options, function (o) { return o.value === raw; });
+      if (!ok) return;                       // unknown option: leave the default
+      el.value = raw;
+    } else {
+      el.value = raw;
+    }
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+    el.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+  function applySeg(box, raw) {
+    var want = numeric(raw), btns = box.querySelectorAll("button");
+    for (var i = 0; i < btns.length; i++) {
+      var d = btns[i].dataset;
+      for (var k in d) {
+        if (!Object.prototype.hasOwnProperty.call(d, k)) continue;
+        var got = numeric(d[k]);
+        var hit = (want !== null && got !== null) ? want === got
+                : String(d[k]).toLowerCase() === String(raw).trim().toLowerCase();
+        if (hit) { btns[i].click(); return; }   // the lesson's own handler runs
+      }
+    }
+  }
+  function preset(map) {
+    if (!map || typeof map !== "object") return;
+    if (!window.location.search) return;
+    Object.keys(map).forEach(function (key) {
+      try {
+        var raw = qparam(key);
+        if (raw === null || raw === "") return;
+        var applier = map[key], sel = applier, scale = 1;
+        if (typeof applier === "function") { applier(raw); return; }
+        if (applier && typeof applier === "object") { sel = applier.el; scale = applier.scale || 1; }
+        if (typeof sel !== "string") return;
+        var el = document.querySelector(sel);
+        if (!el) return;
+        if (el.tagName === "INPUT" || el.tagName === "SELECT" || el.tagName === "TEXTAREA") applyControl(el, raw, scale);
+        else applySeg(el, raw);
+      } catch (e) { /* one bad param never breaks the lesson */ }
+    });
+  }
+
   /* expose the ring + mascot so a standalone page (progress.html) can reuse the
-     exact same drawing instead of duplicating it — and the copy feedback so
-     tool pages share one "Copied!" pattern */
-  window.SC = { ring: ring, capy: capy, copied: flashCopied };
+     exact same drawing instead of duplicating it — the copy feedback so
+     tool pages share one "Copied!" pattern, and preset() for lesson URLs */
+  window.SC = { ring: ring, capy: capy, copied: flashCopied, preset: preset };
 
   /* ---------- homepage curriculum grid ---------- */
   function courseCard(c) {

@@ -173,7 +173,12 @@
   <script src="../../assets/js/site.js"></script>
   <script src="../../assets/js/viz.js"></script>
 
-  <!-- ============ Signal-detection visualization ============ -->
+  <!-- ============ Signal-detection visualization ============
+       URL presets (P67):
+         ?d=<0–3>       sensitivity d′
+         ?c=<-2.5–2.5>  criterion c (negative = liberal, positive = conservative)
+       e.g.  ?embed=1&d=2&c=0.75  →  "sensitive observer, conservative criterion"
+  -->
   <script>
   (function () {
     "use strict";
@@ -389,6 +394,9 @@
     if (window.ResizeObserver) { new ResizeObserver(refit).observe(canvas); new ResizeObserver(refit).observe(roc); }
     VIZ.onTheme(update);
     fitCv(); update();
+
+    /* URL preset, applied last (see the head comment) */
+    if (window.SC && SC.preset) SC.preset({ d: "#sdt-d", c: "#sdt-c" });
 
     /* ================= Be the detector ================= */
     var DG_D = 1.5, DG_N = 20;

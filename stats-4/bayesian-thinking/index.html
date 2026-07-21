@@ -125,7 +125,15 @@
   <script src="../../assets/js/site.js"></script>
   <script src="../../assets/js/viz.js"></script>
 
-  <!-- ============ Bayesian updating visualization ============ -->
+  <!-- ============ Bayesian updating visualization ============
+       URL presets (P67):
+         ?prior=<0.05–0.95>  where the prior sits (a proportion, as printed)
+         ?conf=<2–80>        prior confidence (higher = tighter prior)
+         ?n=<0–200>          trials collected
+         ?obs=<0–1>          observed rate of success (a proportion)
+       e.g.  ?embed=1&prior=0.5&conf=60&n=20&obs=0.7
+             →  "a confident prior barely moves on twenty trials"
+  -->
   <script>
   (function () {
     "use strict";
@@ -184,6 +192,16 @@
     window.addEventListener("resize", function () { fit(); update(); });
     VIZ.onTheme(update);
     fit(); update();
+
+    /* URL preset, applied last (see the head comment). prior and obs are
+       scaled because their sliders carry percentage points while the
+       readouts — and instructors — speak in proportions. */
+    if (window.SC && SC.preset) SC.preset({
+      prior: { el: "#pm-range", scale: 100 },
+      conf: "#ps-range",
+      n: "#n-range",
+      obs: { el: "#obs-range", scale: 100 }
+    });
   })();
   </script>
 </body>

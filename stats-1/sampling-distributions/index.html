@@ -140,7 +140,13 @@
   <script src="../../assets/js/curriculum.js"></script>
   <script src="../../assets/js/site.js"></script>
 
-  <!-- ============ Sampling-distribution visualization ============ -->
+  <!-- ============ Sampling-distribution visualization ============
+       URL presets (P67):
+         ?shape=skewed|uniform|bimodal   population shape
+         ?n=<2–50>                       sample size
+         ?stat=mean|median               which estimate is collected
+       e.g.  ?embed=1&shape=skewed&stat=median&n=25
+  -->
   <script>
   (function () {
     "use strict";
@@ -241,6 +247,9 @@
     new MutationObserver(render).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
     size(); render();
+
+    /* URL preset, applied last (see the head comment) */
+    if (window.SC && SC.preset) SC.preset({ shape: "#pop-seg", n: "#n-range", stat: "#stat-seg" });
   })();
   </script>
 </body>

@@ -140,7 +140,13 @@
   <script src="../../assets/js/site.js"></script>
   <script src="../../assets/js/viz.js"></script>
 
-  <!-- ============ Regression visualization ============ -->
+  <!-- ============ Regression visualization ============
+       URL presets (P67):
+         ?b0=<0–10>        intercept
+         ?b1=<-1.5–2>      slope
+         ?mode=lines|squares   residuals drawn as lines or as squared errors
+       e.g.  ?embed=1&mode=squares&b1=0  →  "what least squares is minimising"
+  -->
   <script>
   (function () {
     "use strict";
@@ -252,6 +258,10 @@
     VIZ.onTheme(draw);
 
     fit(); newData(); best = ols(); update();
+
+    /* URL preset, applied last: it moves the sliders, it never regenerates
+       the scatter, so the frozen-noise law holds (see the head comment) */
+    if (window.SC && SC.preset) SC.preset({ b0: "#b0-range", b1: "#b1-range", mode: "#mode-seg" });
   })();
   </script>
 </body>

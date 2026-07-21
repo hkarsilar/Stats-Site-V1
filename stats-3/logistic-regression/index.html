@@ -129,7 +129,12 @@
   <script src="../../assets/js/site.js"></script>
   <script src="../../assets/js/viz.js"></script>
 
-  <!-- ============ logistic-regression visualization ============ -->
+  <!-- ============ logistic-regression visualization ============
+       URL presets (P67):
+         ?x0=<20–80>       midpoint, where P = 50%
+         ?b1=<0.02–0.50>   steepness, written as the lesson prints it
+       e.g.  ?embed=1&x0=50&b1=0.5  →  the near-step-function slide
+  -->
   <script>
   (function () {
     "use strict";
@@ -182,6 +187,13 @@
     window.addEventListener("resize", function () { fit(); update(); });
     VIZ.onTheme(update);
     fit(); gen();
+
+    /* URL preset, applied last (see the head comment). b1 is scaled because
+       the slider carries hundredths of the printed value. */
+    if (window.SC && SC.preset) SC.preset({
+      x0: "#x0-range",
+      b1: { el: "#b1-range", scale: 100 }
+    });
   })();
   </script>
 </body>

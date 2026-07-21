@@ -135,7 +135,12 @@
   <script src="../../assets/js/curriculum.js"></script>
   <script src="../../assets/js/site.js"></script>
 
-  <!-- ============ Confidence-interval visualization ============ -->
+  <!-- ============ Confidence-interval visualization ============
+       URL presets (P67):
+         ?n=<5–100>          sample size
+         ?level=90|95|99     confidence level
+       e.g.  ?embed=1&level=99&n=10  →  "wider level, wider intervals"
+  -->
   <script>
   (function () {
     "use strict";
@@ -214,6 +219,9 @@
     new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
     fit(); render();
+
+    /* URL preset, applied last (see the head comment) */
+    if (window.SC && SC.preset) SC.preset({ n: "#n-range", level: "#lvl-seg" });
   })();
   </script>
 </body>

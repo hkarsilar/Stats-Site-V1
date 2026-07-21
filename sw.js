@@ -37,7 +37,7 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v16";  /* P65: touch ergonomics — viz.js gained grabRadius/coarsePointer, styles.css gained the coarse-pointer rules */
+const CACHE_VERSION = "sc-v17";  /* P67: lesson state presets — site.js gained SC.preset() */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location

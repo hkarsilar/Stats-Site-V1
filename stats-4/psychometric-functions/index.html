@@ -153,7 +153,17 @@
   <script src="../../assets/js/site.js"></script>
   <script src="../../assets/js/viz.js"></script>
 
-  <!-- ============ Psychometric-function visualization ============ -->
+  <!-- ============ Psychometric-function visualization ============
+       URL presets (P67):
+         ?family=logistic|gauss|weibull  curve family
+         ?compare=on|off                 one condition or two
+         ?trials=<10–200>                trials per level
+         ?sigma=<40–160>                 observer noise σ, in ms
+         ?shift=<-150–150>               PSE shift of the manipulation, in ms
+         ?mult=<0.5–2>                   noise multiplier of the manipulation
+       e.g.  ?embed=1&family=weibull&compare=off&trials=200
+             →  "what a clean threshold estimate looks like"
+  -->
   <script>
   (function () {
     "use strict";
@@ -369,6 +379,13 @@
     window.addEventListener("resize", VIZ.rafThrottle(function () { fitCv(); update(); }));
     VIZ.onTheme(update);
     fitCv(); seed(); update();
+
+    /* URL preset, applied last: it moves controls, never calls seed(), so the
+       same simulated observer stays on screen (see the head comment) */
+    if (window.SC && SC.preset) SC.preset({
+      family: "#pf-fam-seg", compare: "#pf-cmp-seg",
+      trials: "#pf-n", sigma: "#pf-sigma", shift: "#pf-shift", mult: "#pf-mult"
+    });
   })();
   </script>
 </body>
