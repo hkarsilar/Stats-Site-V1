@@ -108,6 +108,7 @@ for slug in [
     "spss-output-to-apa",
     "choose-statistics-dissertation",
     "clean-survey-data",
+    "complete-worked-project",
 ]:
     p = ROOT / "guides" / slug / "index.html"
     if p.exists():

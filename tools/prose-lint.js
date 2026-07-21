@@ -106,7 +106,7 @@ const AND_WATCH = /\band\s+watch\b/i;
 const ROOT_PAGES = ['index.html', 'quiz.html', 'glossary.html', 'toolbox.html', 'teachers.html', 'which-test.html', 'which-chart.html',
   'plan.html', 'tables.html', 'formulas.html', 'distributions.html', 'effect-sizes.html', 'descriptives.html', 'correlation.html', 'power.html', 'apa.html', 'problems.html', 'datasets.html', 'flashcards.html', 'progress.html',
   'cheat-test-chooser.html', 'cheat-apa.html', 'cheat-assumptions.html', 'privacy.html'];
-const GUIDES =['analyze-thesis-data-jasp', 'spss-output-to-apa', 'choose-statistics-dissertation', 'clean-survey-data'];
+const GUIDES =['analyze-thesis-data-jasp', 'spss-output-to-apa', 'choose-statistics-dissertation', 'clean-survey-data', 'complete-worked-project'];
 /* course landing pages — <course>/index.html (P61); derived from the curriculum below */
 
 /* ============================================================

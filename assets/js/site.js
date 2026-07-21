@@ -254,6 +254,7 @@
     "spss-output-to-apa": "SPSS prints eleven numbers; your sentence needs five. The capybara knows which five — and it has never once copied 'Sig. = .000'.",
     "choose-statistics-dissertation": "One outcome, two groups, nobody measured twice — the capybara names the test before its tea cools. Not memory; just asking three questions in order.",
     "clean-survey-data": "The capybara cleans data the way it grooms: gently, in a fixed order, and never losing the raw coat underneath.",
+    "complete-worked-project": "One question, one file, one paragraph at the end. The capybara has walked this path enough times to know that nothing in the middle is optional.",
     /* Root pages */
     "home": "No rush — capybaras never cram.",
     "toolbox": "A capybara's toolbox: warm water, good snacks, zero deadlines. Yours has calculators too.",
@@ -361,7 +362,8 @@
     { url: "guides/spss-output-to-apa/",             key: "spss-output-to-apa",             group: "read", emoji: "📄", title: "From SPSS output to APA results",  desc: "Annotated output for the five classic tests — and the exact sentence" },
     { url: "guides/choose-statistics-dissertation/", key: "choose-statistics-dissertation", group: "read", emoji: "🎓", title: "Choosing statistics for your dissertation", desc: "Three questions that pick your test — plus honest words on messy designs" },
     { url: "guides/clean-survey-data/",              key: "clean-survey-data",              group: "read", emoji: "🧹", title: "Clean your survey data, step by step", desc: "From raw export to analysis-ready, with a real dataset to follow along" },
-    { url: "teachers.html",                          key: "teachers",                       group: "read", emoji: "🧑‍🏫", title: "For instructors",                     desc: "Use the site in your course: link, embed, print & assign — free" }
+    { url: "guides/complete-worked-project/",        key: "complete-worked-project",        group: "read", emoji: "🧭", title: "One study, start to finish",           desc: "A whole project on one file: question, power, analysis, APA, limitations" },
+    { url: "teachers.html",                        key: "teachers",                       group: "read", emoji: "🧑‍🏫", title: "For instructors",                     desc: "Use the site in your course: link, embed, print & assign — free" }
   ];
   /* the four toolbox groups — the homepage grid and toolbox.html render the
      same grouped layout, so the titles/blurbs live here beside TOOLBOX */
@@ -1533,6 +1535,7 @@
     { title: "From SPSS Output to APA Results", url: "guides/spss-output-to-apa/", tag: "Guide", kw: "spss guide output apa results report write up sig 2-tailed .000 levene two rows t-test anova correlation chi-square regression tables how to read coefficients" },
     { title: "Choosing Statistics for Your Dissertation", url: "guides/choose-statistics-dissertation/", tag: "Guide", kw: "choose choosing statistics dissertation thesis which test analysis pick guide outcome predictor groups paired design likert messy real data decision" },
     { title: "Clean Your Survey Data, Step by Step", url: "guides/clean-survey-data/", tag: "Guide", kw: "clean cleaning survey data guide questionnaire likert reverse code coding missing values composite score reliability cronbach alpha screening exclusions step by step raw export" },
+    { title: "One Study, Start to Finish: A Complete Worked Project", url: "guides/complete-worked-project/", tag: "Guide", kw: "complete worked project example whole study start to finish end to end research journey capstone guide research question operationalization design power analysis sample size cleaning assumptions two-way factorial anova interaction simple effects effect size confidence interval apa results paragraph limitations ethics reproducible memory 2x2 dissertation thesis" },
     /* not a tool, so deliberately absent from TOOLBOX — but searchable (P69) */
     { title: "Privacy", url: "privacy.html", tag: "Reference", kw: "privacy policy data collection analytics google cookie cookies tracking localstorage local storage progress stored device gdpr ads advertising accounts anonymous page views ko-fi what is collected delete reset children classroom" },
     { title: "For Instructors", url: "teachers.html", tag: "Guide", kw: "instructors teachers professors teaching course syllabus lms canvas moodle blackboard embed iframe classroom handouts posters assignments datasets reproducible semester week by week map free license link to us lecturer educator" }

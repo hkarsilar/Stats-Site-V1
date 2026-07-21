@@ -37,7 +37,7 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v22";  /* P71: search v2 (typo tolerance, glossary answers) in site.js + styles.css */
+const CACHE_VERSION = "sc-v23";  /* P72: capstone guide registered in site.js (TOOLBOX, SEARCH_PAGES, QUIPS) */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location
