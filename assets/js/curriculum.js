@@ -17,9 +17,9 @@
    as a one-liner under the heading. */
 window.TRACKS = [
   { id: "core",    title: "The Statistics Core",
-    desc: "The analysis itself — from describing your first dataset to Bayesian, causal, and multilevel models." },
+    desc: "The analysis itself — from describing your first dataset to Bayesian and multilevel models, and on into machine learning." },
   { id: "toolkit", title: "The Research Toolkit",
-    desc: "Everything around the analysis — designing studies, wrangling data, research ethics, machine learning, and writing it all up." }
+    desc: "Everything around the analysis — designing studies, wrangling data, writing it all up, and doing it ethically." }
 ];
 
 window.CURRICULUM = [
@@ -107,6 +107,27 @@ window.CURRICULUM = [
     ]
   },
   {
+    slug: "ml",
+    title: "ML & AI",
+    subtitle: "Machine Learning for Researchers",
+    accent: "#a855f7",
+    track: "core",
+    sections: [
+      { n: "5.1", slug: "prediction-vs-explanation",           title: "Prediction vs Explanation", ready: true },
+      { n: "5.2", slug: "train-test-split-and-generalization", title: "Train/Test Splits & Generalization", ready: true },
+      { n: "5.3", slug: "regularization-ridge-and-lasso",       title: "Regularization: Ridge & Lasso", ready: true },
+      { n: "5.4", slug: "classification-metrics",              title: "Classification Metrics & the Accuracy Trap", ready: true },
+      { n: "5.5", slug: "roc-curves-and-auc",                  title: "ROC Curves & AUC", ready: true },
+      { n: "5.6", slug: "decision-trees",                      title: "Decision Trees", ready: true },
+      { n: "5.7", slug: "random-forests-and-ensembles",       title: "Random Forests & Ensembles", ready: true },
+      { n: "5.8", slug: "knn-and-distance",                   title: "k-NN & Why Distance Gets Weird", ready: true },
+      { n: "5.9", slug: "clustering-kmeans",                  title: "Clustering & k-Means", ready: true },
+      { n: "5.10",slug: "dimensionality-reduction",           title: "Dimensionality Reduction", ready: true },
+      { n: "5.11",slug: "neural-networks-intuition",          title: "Neural Networks: The Intuition", ready: true },
+      { n: "5.12",slug: "llms-and-ai-in-research",            title: "LLMs & AI in Your Research Workflow", ready: true }
+    ]
+  },
+  {
     slug: "methods",
     title: "Methods",
     subtitle: "Research Design",
@@ -147,58 +168,37 @@ window.CURRICULUM = [
     ]
   },
   {
-    slug: "ethics",
-    title: "Ethics",
-    subtitle: "Responsible Research",
-    accent: "#64748b",
-    track: "toolkit",
-    sections: [
-      { n: "3.1", slug: "why-research-ethics",          title: "Why Research Ethics Exists", ready: true },
-      { n: "3.2", slug: "informed-consent-and-irb",     title: "Informed Consent & Ethics Committees", ready: true },
-      { n: "3.3", slug: "deception-and-debriefing",     title: "Deception & Debriefing", ready: true },
-      { n: "3.4", slug: "privacy-and-confidentiality",  title: "Privacy & Confidentiality", ready: true },
-      { n: "3.5", slug: "questionable-research-practices", title: "Questionable Research Practices", ready: true },
-      { n: "3.6", slug: "plagiarism-authorship-and-citation", title: "Plagiarism, Authorship & Citation", ready: true },
-      { n: "3.7", slug: "ai-in-research-ethics",           title: "Using AI Tools Ethically", ready: true },
-      { n: "3.8", slug: "fraud-and-self-correction",       title: "Fraud & How Science Self-Corrects", ready: true }
-    ]
-  },
-  {
-    slug: "ml",
-    title: "ML & AI",
-    subtitle: "Machine Learning for Researchers",
-    accent: "#a855f7",
-    track: "toolkit",
-    sections: [
-      { n: "4.1", slug: "prediction-vs-explanation",           title: "Prediction vs Explanation", ready: true },
-      { n: "4.2", slug: "train-test-split-and-generalization", title: "Train/Test Splits & Generalization", ready: true },
-      { n: "4.3", slug: "regularization-ridge-and-lasso",       title: "Regularization: Ridge & Lasso", ready: true },
-      { n: "4.4", slug: "classification-metrics",              title: "Classification Metrics & the Accuracy Trap", ready: true },
-      { n: "4.5", slug: "roc-curves-and-auc",                  title: "ROC Curves & AUC", ready: true },
-      { n: "4.6", slug: "decision-trees",                      title: "Decision Trees", ready: true },
-      { n: "4.7", slug: "random-forests-and-ensembles",       title: "Random Forests & Ensembles", ready: true },
-      { n: "4.8", slug: "knn-and-distance",                   title: "k-NN & Why Distance Gets Weird", ready: true },
-      { n: "4.9", slug: "clustering-kmeans",                  title: "Clustering & k-Means", ready: true },
-      { n: "4.10",slug: "dimensionality-reduction",           title: "Dimensionality Reduction", ready: true },
-      { n: "4.11",slug: "neural-networks-intuition",          title: "Neural Networks: The Intuition", ready: true },
-      { n: "4.12",slug: "llms-and-ai-in-research",            title: "LLMs & AI in Your Research Workflow", ready: true }
-    ]
-  },
-  {
     slug: "writing",
     title: "Writing",
     subtitle: "Reporting Your Research",
     accent: "#84cc16",
     track: "toolkit",
     sections: [
-      { n: "5.1", slug: "imrad-structure",           title: "The IMRaD Structure", ready: true },
-      { n: "5.2", slug: "reporting-statistics-apa",   title: "Reporting Statistics in APA Style", ready: true },
-      { n: "5.3", slug: "tables-and-figures",         title: "Tables & Figures That Don't Lie", ready: true },
-      { n: "5.4", slug: "writing-results",            title: "From Output to Results Section", ready: true },
-      { n: "5.5", slug: "nonsignificant-results",     title: "Writing About Non-Significant Results", ready: true },
-      { n: "5.6", slug: "discussion-and-limitations", title: "Discussion & Limitations", ready: true },
-      { n: "5.7", slug: "abstracts-and-titles",       title: "Abstracts & Titles", ready: true },
-      { n: "5.8", slug: "final-checklist",            title: "The Final Checklist", ready: true }
+      { n: "3.1", slug: "imrad-structure",           title: "The IMRaD Structure", ready: true },
+      { n: "3.2", slug: "reporting-statistics-apa",   title: "Reporting Statistics in APA Style", ready: true },
+      { n: "3.3", slug: "tables-and-figures",         title: "Tables & Figures That Don't Lie", ready: true },
+      { n: "3.4", slug: "writing-results",            title: "From Output to Results Section", ready: true },
+      { n: "3.5", slug: "nonsignificant-results",     title: "Writing About Non-Significant Results", ready: true },
+      { n: "3.6", slug: "discussion-and-limitations", title: "Discussion & Limitations", ready: true },
+      { n: "3.7", slug: "abstracts-and-titles",       title: "Abstracts & Titles", ready: true },
+      { n: "3.8", slug: "final-checklist",            title: "The Final Checklist", ready: true }
+    ]
+  },
+  {
+    slug: "ethics",
+    title: "Ethics",
+    subtitle: "Responsible Research",
+    accent: "#64748b",
+    track: "toolkit",
+    sections: [
+      { n: "4.1", slug: "why-research-ethics",          title: "Why Research Ethics Exists", ready: true },
+      { n: "4.2", slug: "informed-consent-and-irb",     title: "Informed Consent & Ethics Committees", ready: true },
+      { n: "4.3", slug: "deception-and-debriefing",     title: "Deception & Debriefing", ready: true },
+      { n: "4.4", slug: "privacy-and-confidentiality",  title: "Privacy & Confidentiality", ready: true },
+      { n: "4.5", slug: "questionable-research-practices", title: "Questionable Research Practices", ready: true },
+      { n: "4.6", slug: "plagiarism-authorship-and-citation", title: "Plagiarism, Authorship & Citation", ready: true },
+      { n: "4.7", slug: "ai-in-research-ethics",           title: "Using AI Tools Ethically", ready: true },
+      { n: "4.8", slug: "fraud-and-self-correction",       title: "Fraud & How Science Self-Corrects", ready: true }
     ]
   }
 ];

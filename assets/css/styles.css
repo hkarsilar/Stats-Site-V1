@@ -1005,16 +1005,64 @@ body[data-course="writing"] { --course-accent: #84cc16; }
   border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--text);
 }
 .glossary-filter:focus { outline: none; border-color: var(--primary); }
-.gloss-list { display: grid; gap: .85rem; }
+.gloss-list { display: grid; gap: .5rem; }
+
+/* Each term is a collapsed <details>: the list reads as a scannable index of
+   terms, and a definition opens only when asked for. The reveal animation
+   comes free from the sitewide details::details-content rule. */
 .gloss-item {
   border: 1px solid var(--border); border-left: 3px solid var(--primary);
-  border-radius: 12px; padding: .9rem 1.15rem; background: var(--surface); box-shadow: var(--shadow);
+  border-radius: 12px; background: var(--surface); box-shadow: var(--shadow);
+  overflow: hidden;
 }
-.gloss-item h3 { margin: 0 0 .25rem; font-size: 1.05rem; }
-.gloss-item p { margin: 0; color: var(--text-muted); font-size: .93rem; }
+.gloss-item > summary {
+  display: flex; align-items: center; justify-content: space-between; gap: .8rem;
+  cursor: pointer; list-style: none; user-select: none;
+  padding: .7rem 1rem .7rem 1.15rem; font-weight: 650; font-size: 1rem;
+  color: var(--text); transition: background .12s;
+}
+.gloss-item > summary::-webkit-details-marker { display: none; }
+.gloss-item > summary::after {
+  content: "▾"; flex-shrink: 0; color: var(--text-faint);
+  font-size: .8rem; transition: transform .18s;
+}
+.gloss-item[open] > summary::after { transform: rotate(180deg); }
+.gloss-item > summary:hover { background: color-mix(in srgb, var(--primary) 7%, transparent); }
+.gloss-item[open] > summary { border-bottom: 1px solid var(--border); }
+.gloss-def { padding: .75rem 1.15rem .85rem; margin: 0; color: var(--text-muted); font-size: .93rem; line-height: 1.6; }
 .gloss-item .gloss-link { font-size: .78rem; font-weight: 600; color: var(--primary); }
-.gloss-letter { font-family: var(--mono); font-size: .8rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: .08em; margin: 1.5rem 0 .35rem; }
+.gloss-letter {
+  font-family: var(--mono); font-size: .8rem; color: var(--text-faint);
+  text-transform: uppercase; letter-spacing: .08em; margin: 1.5rem 0 .35rem;
+  scroll-margin-top: calc(var(--nav-h) + 3.6rem);   /* clear the sticky A–Z bar */
+}
 .gloss-empty { color: var(--text-faint); padding: 1rem 0; }
+
+/* A–Z jump bar — sticks under the nav so it stays reachable down a long list.
+   Letters with no matching term stay in place but go inert, so the row never
+   reflows as the filter narrows the list. */
+.gloss-alpha {
+  position: sticky; top: var(--nav-h); z-index: 5;
+  display: flex; gap: .14rem;
+  padding: .5rem 0 .55rem; margin: 0 0 1rem;
+  background: var(--bg); border-bottom: 1px solid var(--border);
+}
+/* 27 keys at 1.4rem + gap ≈ 665px, so the row stays on ONE line inside the
+   narrow container; below 700px it scrolls inside itself instead of wrapping
+   (a wrapped bar puts a lone "Z" on its own line and shifts the list). */
+.gloss-alpha a {
+  display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
+  min-width: 1.4rem; padding: .22rem .2rem; border-radius: 7px;
+  font-family: var(--mono); font-size: .78rem; font-weight: 600;
+  color: var(--primary); text-decoration: none; transition: .12s;
+}
+.gloss-alpha a:hover { background: color-mix(in srgb, var(--primary) 14%, transparent); }
+.gloss-alpha .gloss-alpha-off { color: var(--text-faint); opacity: .45; pointer-events: none; }
+.gloss-tools { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; margin: 0 0 1rem; }
+@media (max-width: 700px) {
+  .gloss-alpha { overflow-x: auto; }
+  .gloss-alpha a { min-width: 1.5rem; }   /* comfortable finger target while scrolling */
+}
 
 /* ============================================================
    PRINT — turn any lesson (and the formulas / glossary reference
@@ -1054,8 +1102,14 @@ body[data-course="writing"] { --course-accent: #84cc16; }
   .viz .controls, .viz .seg, .viz button, .viz input, .viz select,
   .viz-png-btn, .viz-exportbar, .try-code .seg { display: none !important; }
 
-  /* --- reference pages (formulas / glossary): drop their live controls --- */
-  .glossary-filter, #gloss-count, .btn { display: none !important; }
+  /* --- reference pages (formulas / glossary): drop their live controls.
+         The glossary's terms are collapsed <details>; glossary.html opens
+         them all on beforeprint, so the sheet carries every definition. --- */
+  .glossary-filter, #gloss-count, .btn, .gloss-alpha, .gloss-tools { display: none !important; }
+  .gloss-item > summary::after { display: none; }      /* no ▾ marker once forced open */
+  .gloss-item > summary { padding-bottom: .2rem; }
+  .gloss-item[open] > summary { border-bottom: none; }
+  .gloss-def { padding-top: 0; }
 
   /* --- course landing pages print as a one-page syllabus (P61): the
          hand-written blurb + the lesson list + the URL footer. Personal

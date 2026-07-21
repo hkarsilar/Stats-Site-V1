@@ -46,14 +46,17 @@
       <article class="lesson" style="margin:0 auto">
         <span class="lesson-eyebrow">Reference</span>
         <h1>Statistics Glossary</h1>
-        <p class="lede">Every key term in the course, in plain language. Start typing to filter, and click a term's link to jump to the lesson where you can see it in action.</p>
+        <p class="lede">Every key term in the course, in plain language. Start typing to filter, jump to a letter with the A–Z bar, then click a term to open its definition.</p>
 
-        <p style="display:flex;gap:.75rem;flex-wrap:wrap;margin:0 0 1rem">
+        <div class="gloss-tools">
           <button class="btn btn-primary btn-sm" id="print-btn" type="button">🖨️ Print / save as PDF</button>
-        </p>
+          <button class="btn btn-ghost btn-sm" id="gloss-toggle-all" type="button" aria-expanded="false">Expand all</button>
+        </div>
 
         <input type="text" id="gloss-filter" class="glossary-filter" placeholder="Filter terms… (e.g. p-value, variance, prior)" autocomplete="off" aria-label="Filter glossary terms" />
-        <p id="gloss-count" style="font-size:.82rem;color:var(--text-faint);margin:-.75rem 0 1.25rem"></p>
+        <p id="gloss-count" style="font-size:.82rem;color:var(--text-faint);margin:-.75rem 0 .5rem"></p>
+
+        <nav class="gloss-alpha" id="gloss-alpha" aria-label="Jump to letter"></nav>
 
         <div id="gloss-host"></div>
       </article>
@@ -80,7 +83,29 @@
     var host = document.getElementById("gloss-host");
     var countEl = document.getElementById("gloss-count");
     var filter = document.getElementById("gloss-filter");
+    var alphaEl = document.getElementById("gloss-alpha");
+    var toggleAll = document.getElementById("gloss-toggle-all");
+    var allOpen = false;          // "Expand all" state, kept across re-renders
+
     function slugify(s) { return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
+    // "1.5 × IQR rule" and anything else not starting with a letter buckets under "#"
+    function bucket(t) { var c = t[0].toUpperCase(); return /[A-Z]/.test(c) ? c : "#"; }
+    function bucketId(k) { return "gloss-L-" + (k === "#" ? "num" : k); }
+
+    var KEYS = ["#"].concat("ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""));
+
+    /* The A–Z bar is built once and never reflows: letters with no match go
+       inert rather than disappearing, so the row stays a stable target. */
+    function buildAlpha() {
+      alphaEl.innerHTML = KEYS.map(function (k) {
+        return '<a href="#' + bucketId(k) + '" data-k="' + k + '">' + k + '</a>';
+      }).join("");
+    }
+    function markAlpha(present) {
+      Array.prototype.forEach.call(alphaEl.children, function (a) {
+        a.classList.toggle("gloss-alpha-off", !present[a.dataset.k]);
+      });
+    }
 
     function render(q) {
       q = (q || "").trim().toLowerCase();
@@ -89,25 +114,61 @@
       }).sort(function (a, b) { return a.t.localeCompare(b.t); });
 
       countEl.textContent = matches.length + " of " + TERMS.length + " terms";
+      // a live filter already means "show me this" — don't make them click twice
+      var openNow = allOpen || !!q;
+
+      var present = {};
+      matches.forEach(function (x) { present[bucket(x.t)] = true; });
+      markAlpha(present);
+
       if (!matches.length) { host.innerHTML = '<p class="gloss-empty">No terms match “' + q + '”. Try a shorter word.</p>'; return; }
 
       var html = "", letter = "";
       matches.forEach(function (x) {
-        var first = x.t[0].toUpperCase();
-        if (first !== letter) { letter = first; html += '<div class="gloss-letter">' + letter + '</div>'; }
+        var k = bucket(x.t);
+        if (k !== letter) { letter = k; html += '<div class="gloss-letter" id="' + bucketId(k) + '">' + k + '</div>'; }
         var link = x.s ? ' <a class="gloss-link" href="' + x.s + '/">' + (x.l || "See lesson") + ' →</a>' : "";
-        html += '<div class="gloss-item" id="' + slugify(x.t) + '"><h3>' + x.t + '</h3><p>' + x.d + link + '</p></div>';
+        html += '<details class="gloss-item" id="' + slugify(x.t) + '"' + (openNow ? " open" : "") +
+                '><summary>' + x.t + '</summary><p class="gloss-def">' + x.d + link + '</p></details>';
       });
       host.innerHTML = '<div class="gloss-list">' + html + '</div>';
     }
 
+    function setAll(open) {
+      Array.prototype.forEach.call(host.querySelectorAll("details.gloss-item"), function (d) { d.open = open; });
+    }
+    function syncToggleLabel() {
+      toggleAll.textContent = allOpen ? "Collapse all" : "Expand all";
+      toggleAll.setAttribute("aria-expanded", String(allOpen));
+    }
+
     filter.addEventListener("input", function () { render(filter.value); });
+    toggleAll.addEventListener("click", function () {
+      allOpen = !allOpen; setAll(allOpen); syncToggleLabel();
+    });
     document.getElementById("print-btn").addEventListener("click", function () { window.print(); });
+
+    /* Print the whole glossary, not a list of headwords: open every term for
+       the sheet and put the reader's own expand/collapse state back after. */
+    var printOpened = [];
+    window.addEventListener("beforeprint", function () {
+      printOpened = Array.prototype.filter.call(
+        host.querySelectorAll("details.gloss-item"), function (d) { return !d.open; });
+      printOpened.forEach(function (d) { d.open = true; });
+    });
+    window.addEventListener("afterprint", function () {
+      printOpened.forEach(function (d) { d.open = false; });
+      printOpened = [];
+    });
+
+    buildAlpha();
+    syncToggleLabel();
     render("");
-    // support deep links like glossary.html#p-value
+
+    // support deep links like glossary.html#p-value — open the term, don't just scroll past it
     if (location.hash) {
       var el = document.getElementById(location.hash.slice(1));
-      if (el) el.scrollIntoView();
+      if (el) { if (el.tagName === "DETAILS") el.open = true; el.scrollIntoView(); }
     }
   })();
   </script>
