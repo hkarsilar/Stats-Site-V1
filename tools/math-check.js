@@ -72,6 +72,18 @@ function eq(label, got, want, tol, src) {
   failures.push({ section, label, got, want, tol, err, src });
 }
 
+/* got ≈ want to within a RELATIVE tolerance.
+   Use this — never eq() — for any quantity whose true value can be far below
+   eq()'s absolute tolerance, i.e. every far-tail p-value. An absolute tolerance
+   cannot tell 1.1e-19 from a collapse to exactly 0: both are "within 5e-5 of
+   the truth". That blind spot is precisely how a tail returning 0 survived
+   218 assertions. */
+function rel(label, got, want, tol, src) {
+  const err = want === 0 ? Math.abs(got) : Math.abs(got - want) / Math.abs(want);
+  if (Number.isFinite(got) && err <= tol) { passed++; return; }
+  failures.push({ section, label, got, want, tol, err, src, relative: true });
+}
+
 /* exact integer/boolean expectations (sample sizes, identities) */
 function is(label, got, want, src) {
   if (got === want) { passed++; return; }
@@ -182,6 +194,72 @@ for (const alpha of [0.001, 0.01, 0.025, 0.05, 0.1, 0.25, 0.4]) {
     eq(`χ² round-trip α=${alpha} df=${df}`, V.chiSqUpper(V.chiSqInv(alpha, df), df), alpha, 1e-9, 'round-trip');
     eq(`F round-trip α=${alpha} d1=${df} d2=20`, V.fUpper(V.fInv(alpha, df, 20), df, 20), alpha, 1e-9, 'round-trip');
   }
+}
+
+/* ============================================================
+   3b — the FAR tail: relative accuracy, not absolute
+   ============================================================
+   Every assertion here uses rel(), not eq(). eq()'s absolute tolerance is
+   structurally blind to this whole class of bug: a tail whose true value is
+   1.13e-19 passes `eq(…, 5e-5)` when the code returns exactly 0.
+
+   Reference: the Mills-ratio continued fraction
+     Q(z) = φ(z) / (z + 1/(z + 2/(z + 3/(z + …))))
+   which converges fast for large z and is fully independent of viz.js's
+   incomplete-gamma route, so agreement between the two is real evidence. */
+head('far tail (relative accuracy)');
+
+function normQcf(z) {           // independent reference for Q(z), large z
+  let cf = 0;
+  for (let k = 400; k >= 1; k--) cf = k / (z + cf);
+  return Math.exp(-z * z / 2) / Math.sqrt(2 * Math.PI) / (z + cf);
+}
+
+// Published values (Abramowitz & Stegun 26.1, 7 sf).
+rel('normQ(5)', V.normQ(5), 2.866516e-7, 1e-6, 'A&S 26.1 normal tail');
+rel('normQ(6)', V.normQ(6), 9.865876e-10, 1e-6, 'A&S 26.1 normal tail');
+
+// Against the independent continued fraction, out to where the double
+// underflows (~z = 38). z ≥ 9 is where the old `1 - normCdf(z)` returned 0.
+for (const z of [3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20, 30, 37]) {
+  rel(`normQ(${z}) vs Mills CF`, V.normQ(z), normQcf(z), 1e-11, 'Mills-ratio continued fraction');
+}
+
+// The far tail must be strictly positive — the actual regression being guarded.
+for (const z of [9, 10, 15, 20, 30, 37]) {
+  is(`normQ(${z}) > 0 (not collapsed to zero)`, V.normQ(z) > 0, true, 'must not underflow to 0');
+}
+
+// Centre and symmetry must survive the tail routing.
+rel('normQ(0) = .5', V.normQ(0), 0.5, 1e-15, 'exact');
+rel('normQ(1.959964) = .025', V.normQ(1.959964), 0.025, 1e-6, 'definition of z.975');
+for (const z of [0.5, 1, 2, 3, 5, 8]) {
+  rel(`normQ(−${z}) = 1 − normQ(${z})`, V.normQ(-z), 1 - V.normQ(z), 1e-14, 'symmetry');
+}
+
+// χ²(1) and F(1,v) reduce to the normal / t tails — cross-family checks that
+// pin chiSqUpper and fUpper in the range where `1 - lowerTail` used to cancel
+// to exactly 0. These are the assertions the old code could not have passed.
+for (const x of [10, 50, 100, 200, 400]) {
+  rel(`chiSqUpper(${x}, 1) = 2·Q(√${x})`, V.chiSqUpper(x, 1), 2 * normQcf(Math.sqrt(x)), 1e-11, 'χ²(1) = Z² identity');
+}
+for (const [f, v] of [[100, 10], [400, 20], [1000, 50], [5000, 100]]) {
+  rel(`fUpper(${f}, 1, ${v}) = 2·tUpper(√${f}, ${v})`, V.fUpper(f, 1, v), 2 * V.tUpper(Math.sqrt(f), v), 1e-10, 'F(1,v) = t² identity');
+}
+for (const [x, k] of [[100, 1], [200, 1], [300, 4], [400, 10]]) {
+  is(`chiSqUpper(${x}, ${k}) > 0 (not collapsed to zero)`, V.chiSqUpper(x, k) > 0, true, 'must not underflow to 0');
+}
+for (const [f, d1, d2] of [[1000, 1, 50], [5000, 1, 100], [500, 3, 40]]) {
+  is(`fUpper(${f}, ${d1}, ${d2}) > 0 (not collapsed to zero)`, V.fUpper(f, d1, d2) > 0, true, 'must not underflow to 0');
+}
+
+// gammq / betaiUpper are exact complements wherever the complement is
+// representable — this is what lets them be used interchangeably mid-range.
+for (const [a, x] of [[0.5, 1], [2, 3], [5, 4], [10, 12]]) {
+  rel(`gammq(${a},${x}) = 1 − gammp(${a},${x})`, V.gammq(a, x), 1 - V.gammp(a, x), 1e-12, 'complement identity');
+}
+for (const [a, b, x] of [[2, 3, 0.4], [0.5, 0.5, 0.3], [5, 2, 0.7]]) {
+  rel(`betaiUpper(${a},${b},${x}) = 1 − betai(…)`, V.betaiUpper(a, b, x), 1 - V.betai(a, b, x), 1e-12, 'complement identity');
 }
 
 /* ============================================================
@@ -369,8 +447,8 @@ if (failures.length) {
     if (f.section !== last) { console.log(`\n  [${f.section}]`); last = f.section; }
     console.log(`  • ${f.label}`);
     console.log(`      got  ${f.got}`);
-    console.log(`      want ${f.want}  (± ${f.tol}, source: ${f.src})`);
-    if (Number.isFinite(f.err)) console.log(`      off by ${f.err.toExponential(3)}`);
+    console.log(`      want ${f.want}  (${f.relative ? 'rel. ≤' : '±'} ${f.tol}, source: ${f.src})`);
+    if (Number.isFinite(f.err)) console.log(`      off by ${f.err.toExponential(3)}${f.relative ? ' (relative)' : ''}`);
   }
 }
 

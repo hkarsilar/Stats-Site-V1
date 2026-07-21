@@ -156,7 +156,11 @@
     }
     function upper(x) {
       var d = dfs();
-      if (dist === "z") return 1 - V.normCdf(x);
+      // normQ, not 1 - normCdf: the latter is built on an approximation with
+      // ~1.5e-7 ABSOLUTE accuracy, so it renders a wrong 3rd significant figure
+      // from z ≈ 6 and exactly 0 from z ≈ 9. This page prints p in scientific
+      // notation, so that error is visible.
+      if (dist === "z") return V.normQ(x);
       if (dist === "t") return V.tUpper(x, d[0]);
       if (dist === "chi2") return V.chiSqUpper(x, d[0]);
       return V.fUpper(x, d[0], d[1]);

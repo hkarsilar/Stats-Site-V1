@@ -37,7 +37,7 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v22";  /* P71: search v2 (typo tolerance, glossary answers) in site.js + styles.css */
+const CACHE_VERSION = "sc-v23";  /* far-tail p-values: normQ + non-cancelling chiSqUpper/fUpper in viz.js */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location
