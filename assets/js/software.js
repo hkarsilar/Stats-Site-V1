@@ -606,20 +606,20 @@ window.SOFTWARE = {
     spss: [
       '<strong>Transform → Compute Variable…</strong> to build a transformed or composite column.',
       'Log transform: set <em>Target Variable</em> to e.g. <code>income_log</code> and the <em>Numeric Expression</em> to <code>LN(income + 1)</code> (the +1 keeps zeros legal). Square root: <code>SQRT(x)</code>.',
-      'z-standardise the easy way: <strong>Analyze → Descriptive Statistics → Descriptives…</strong>, tick <em>Save standardized values as variables</em> — SPSS writes a <code>Zx</code> column.',
+      'z-standardize the easy way: <strong>Analyze → Descriptive Statistics → Descriptives…</strong>, tick <em>Save standardized values as variables</em> — SPSS writes a <code>Zx</code> column.',
       'Reverse-code an item: <strong>Transform → Recode into Different Variables…</strong> (or Compute <code>6 - q3</code> on a 1–5 scale). Recode into a <em>different</em> variable so the original survives.',
       'Composite: <strong>Transform → Compute Variable…</strong> with <code>MEAN(q1, q2, q3, q4, q5)</code> (MEAN skips missing items; a plain sum does not).'
     ],
     jasp: [
       'Click the <strong>+</strong> at the far right of the data view to add a <em>Computed Column</em>.',
-      'Choose the R-style entry and type the expression: <code>log(income + 1)</code>, <code>sqrt(x)</code>, or <code>(x - mean(x)) / sd(x)</code> to z-standardise.',
+      'Choose the R-style entry and type the expression: <code>log(income + 1)</code>, <code>sqrt(x)</code>, or <code>(x - mean(x)) / sd(x)</code> to z-standardize.',
       'Reverse-code with <code>6 - q3</code> (1–5 scale); build a composite with <code>(q1 + q2 + q3 + q4 + q5) / 5</code> after every item points the same way.',
       'The new column is instantly available to any analysis — no need to leave JASP.'
     ],
     apa: '<p>Because household income was strongly positively skewed (skewness = 2.0), it was log-transformed (natural log) before analysis; means are reported on the original scale as geometric means. The five well-being items (one reverse-coded) were averaged into a composite (Cronbach’s α = .84).</p>',
     tips: [
-      'Always state the transformation you used and the scale you analysed on, then back-transform your summaries for the reader (the mean of the logs → the <em>geometric</em> mean).',
-      'z-standardising changes units, never shape — it does <strong>not</strong> fix skew or normality. Use a log or root for that.',
+      'Always state the transformation you used and the scale you analyzed on, then back-transform your summaries for the reader (the mean of the logs → the <em>geometric</em> mean).',
+      'z-standardizing changes units, never shape — it does <strong>not</strong> fix skew or normality. Use a log or root for that.',
       'Reverse-code before computing a composite, or the reversed items cancel the rest and deflate the scale. Recompute reliability afterwards to confirm.'
     ]
   }

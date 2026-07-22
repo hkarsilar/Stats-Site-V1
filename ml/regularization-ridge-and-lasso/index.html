@@ -95,9 +95,9 @@
         <ul>
           <li><strong>Lasso</strong> when you want a sparse, interpretable model or suspect many predictors are irrelevant — it picks a subset for you. Caveat: among a group of correlated predictors it tends to keep one somewhat arbitrarily and zero the rest.</li>
           <li><strong>Ridge</strong> when you believe most predictors matter a little, or when they're highly correlated and you'd rather share the coefficient than have lasso choose one at random.</li>
-          <li><strong>Elastic net</strong> when you can't decide — it blends the two penalties, getting lasso's selection while handling correlated groups gracefully. It's the pragmatic default in modern predictive modelling.</li>
+          <li><strong>Elastic net</strong> when you can't decide — it blends the two penalties, getting lasso's selection while handling correlated groups gracefully. It's the pragmatic default in modern predictive modeling.</li>
         </ul>
-        <p>All three are still linear models: the coefficients remain the familiar "change in <em>y</em> per unit of <em>x</em>," just shrunk. That makes regularization the friendliest possible on-ramp from the regression you know to the predictive modelling of the rest of this course.</p>
+        <p>All three are still linear models: the coefficients remain the familiar "change in <em>y</em> per unit of <em>x</em>," just shrunk. That makes regularization the friendliest possible on-ramp from the regression you know to the predictive modeling of the rest of this course.</p>
 
         <div class="callout">
           <p><strong>Why it matters:</strong> unpenalized regression overfits whenever predictors are many or correlated, inventing large coefficients for noise. Ridge and lasso trade a little bias for much less variance (shrinking, and in lasso's case deleting, the coefficients your data can't actually support), and cross-validation tells you exactly how hard to shrink.</p>
@@ -234,7 +234,7 @@
       // best-lambda marker (both panels)
       ctx.strokeStyle = VIZ.css("--success"); ctx.setLineDash([4, 4]); ctx.lineWidth = 1.4;
       ctx.beginPath(); ctx.moveTo(xAt(opt), t0); ctx.lineTo(xAt(opt), H - 22); ctx.stroke(); ctx.setLineDash([]);
-      // coefficient lines: noise (grey) first, then signal (indigo) on top
+      // coefficient lines: noise (gray) first, then signal (indigo) on top
       function coefLine(j, color, wid) {
         ctx.strokeStyle = color; ctx.lineWidth = wid; ctx.beginPath();
         for (var gi = 0; gi <= GN; gi++) { var v = path[gi][j]; if (gi === 0) ctx.moveTo(xAt(gi), yc(v)); else ctx.lineTo(xAt(gi), yc(v)); }

@@ -12,7 +12,7 @@
        rootDir  default "." (the repo root). Pass ".." to simulate
                 GitHub-Pages subpath hosting at /Stats-Site-V1/.
 
-   Behaviour mirrors `python -m http.server`: a directory request
+   Behavior mirrors `python -m http.server`: a directory request
    serves its index.html, and a directory without a trailing slash
    301-redirects to add one (so lessons' ../../ relative links
    resolve exactly as they do on GitHub Pages).

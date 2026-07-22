@@ -56,7 +56,7 @@
           <li><strong>The garden of forking paths.</strong> Even without conscious fishing, the many defensible choices a researcher <em>would</em> have made for whatever the data happened to show inflate the false-positive rate. You don't have to run every path; it's enough that the path you chose depended on the data.</li>
           <li><strong>Publication bias.</strong> Journals prefer significant, novel results, so the file drawer fills with null findings that never see daylight. The published record is a biased sample of what was actually found, the same asymmetry a <a href="../../stats-4/meta-analysis/">meta-analysis funnel plot</a> is designed to expose.</li>
           <li><strong>Low power.</strong> Underpowered studies not only miss real effects, they make the significant results they <em>do</em> produce more likely to be flukes and to badly overestimate the true effect size (link this to <a href="../../stats-1/effect-size-and-power/">effect size &amp; power</a>).</li>
-          <li><strong>HARKing</strong> — <em>Hypothesising After the Results are Known</em>: presenting a pattern you found by exploration as though you'd predicted it all along, which turns a chance blip into a "confirmed" theory.</li>
+          <li><strong>HARKing</strong> — <em>Hypothesizing After the Results are Known</em>: presenting a pattern you found by exploration as though you'd predicted it all along, which turns a chance blip into a "confirmed" theory.</li>
         </ul>
 
         <h2>Play the garden of forking paths</h2>
@@ -95,7 +95,7 @@
         <p>It's tempting to read all this as "science is broken." The opposite is truer. The replication crisis was <em>discovered</em>, quantified, and acted on by scientists policing their own field, the self-correction that distinguishes science from dogma. The response has been concrete and constructive: <a href="../../methods/preregistration-and-open-science/">preregistration</a> to nail down the analysis in advance, bigger and better-powered samples, open data and materials, registered reports that accept a study on its design before the results exist, and a new norm of valuing a solid null over a flashy fluke. The fixes are the subject of the next lesson.</p>
 
         <div class="callout key">
-          <p><strong>Researcher degrees of freedom.</strong> The umbrella term for every small, defensible choice you make while analysing data: exclusions, transformations, which covariates, which of several measures, when to stop collecting. Each is individually reasonable; collectively they are the raw material of the garden. The antidote isn't to make no choices, it's to make them (and declare them) <em>before</em> the data can whisper which one gives you the answer you want.</p>
+          <p><strong>Researcher degrees of freedom.</strong> The umbrella term for every small, defensible choice you make while analyzing data: exclusions, transformations, which covariates, which of several measures, when to stop collecting. Each is individually reasonable; collectively they are the raw material of the garden. The antidote isn't to make no choices, it's to make them (and declare them) <em>before</em> the data can whisper which one gives you the answer you want.</p>
         </div>
 
         <div class="callout">
@@ -180,7 +180,7 @@
       { key: "dv",      label: "Outcome measure",  a: "Recall score",   b: "Recognition score" },
       { key: "trim",    label: "Outliers",         a: "Keep everyone",  b: "Trim |z| > 2" },
       { key: "adjust",  label: "Covariate",        a: "Unadjusted",     b: "Adjust for age" },
-      { key: "engaged", label: "Who to analyse",   a: "All participants", b: "“Engaged” only" }
+      { key: "engaged", label: "Who to analyze",   a: "All participants", b: "“Engaged” only" }
     ];
     // Pre-committed (preregistered) path = all first options.
     var PREREG = { dv: 0, trim: 0, adjust: 0, engaged: 0 };
@@ -216,7 +216,7 @@
         var slope = den === 0 ? 0 : num / den;
         use = use.map(function (u) { return { g: u.g, y: u.y - slope * (u.age - ma) }; });
       }
-      if (p.trim) {                                      // drop |z| > 2 on the analysed outcome
+      if (p.trim) {                                      // drop |z| > 2 on the analyzed outcome
         var ys = use.map(function (u) { return u.y; });
         var m = avg(ys), s = sdSample(ys);
         use = use.filter(function (u) { return s === 0 ? true : Math.abs((u.y - m) / s) <= 2; });
@@ -327,7 +327,7 @@
         verdictEl.innerHTML = "Nothing here. Another fork looks defensible— shall we keep looking?";
       }
 
-      // garden colouring for THIS dataset
+      // garden coloring for THIS dataset
       var sigCount = 0;
       cells.forEach(function (cell) {
         var pp = analyze(data, cell._combo);

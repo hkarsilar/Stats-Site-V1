@@ -140,7 +140,7 @@
     var canvas = document.getElementById("t-canvas"), ctx, W = 0, H = 220;
 
     function pdfUn(t) { return Math.pow(1 + t * t / df, -(df + 1) / 2); }
-    // numeric half-integral (0..inf) of the unnormalised pdf → normalisation
+    // numeric half-integral (0..inf) of the unnormalised pdf → normalization
     function halfArea() { var s = 0, step = 0.004; for (var x = step / 2; x < 14; x += step) s += pdfUn(x) * step; return s; }
     function tDensity(t, H2) { return pdfUn(t) / (2 * H2); }
     function critical(H2) {

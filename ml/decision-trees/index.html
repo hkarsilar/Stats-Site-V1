@@ -50,7 +50,7 @@
         <p class="lede">Most models hand you coefficients or scores. A decision tree hands you something rarer: a flowchart you can read aloud. "Is the applicant's income above €40k? If yes, is their debt below 30%? Then approve." That transparency is its superpower — and the way it can grow itself into memorizing noise is its cautionary tale. Both are visible in a single picture.</p>
 
         <h2>Twenty questions, but for data</h2>
-        <p>A decision tree classifies by asking a sequence of yes/no questions, each about a single feature: <em>is x&#8321; &lt; 5?</em>, then <em>is x&#8322; &gt; 12?</em>, and so on. Each question <strong>splits</strong> the data into two groups; the tree then asks a fresh question inside each group, and repeats. This is <strong>recursive splitting</strong>: the same "find the best split" step applied again and again to smaller and smaller subsets, carving the feature space into axis-aligned rectangles, each finally labelled with a class.</p>
+        <p>A decision tree classifies by asking a sequence of yes/no questions, each about a single feature: <em>is x&#8321; &lt; 5?</em>, then <em>is x&#8322; &gt; 12?</em>, and so on. Each question <strong>splits</strong> the data into two groups; the tree then asks a fresh question inside each group, and repeats. This is <strong>recursive splitting</strong>: the same "find the best split" step applied again and again to smaller and smaller subsets, carving the feature space into axis-aligned rectangles, each finally labeled with a class.</p>
 
         <h2>Which split? The one that purifies</h2>
         <p>At every step the tree tries all possible split points and keeps the one that makes the two resulting groups as <strong>pure</strong> as possible — ideally one group nearly all class A, the other nearly all class B. Purity is measured by <strong>Gini impurity</strong>: for a group, it's the chance you'd mislabel a random member if you guessed labels in proportion to the group's mix. A group that's 50/50 is maximally impure (Gini = 0.5); a group that's all one class is perfectly pure (Gini = 0). The tree greedily chooses whichever split drops the (size-weighted) impurity the most. "Greedily" matters: it grabs the best split available <em>right now</em>, never reconsidering, which is what makes trees fast, and also a little short-sighted.</p>
@@ -214,7 +214,7 @@
       }
       ctx.globalAlpha = 1;
       ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.strokeRect(g.x0, g.y0, g.size, g.size);
-      // training points, coloured by TRUE class
+      // training points, colored by TRUE class
       for (var i = 0; i < tr.X.length; i++) {
         var px = g.x0 + tr.X[i][0] * g.size, py = g.y0 + (1 - tr.X[i][1]) * g.size;
         ctx.fillStyle = tr.Y[i] === 1 ? orange : indigo;

@@ -90,7 +90,7 @@
           <div class="controls">
             <div class="control seg" role="group" aria-label="Outlier handling">
               <button class="btn btn-sm seg-btn is-on" data-mode="keep" type="button">Keep it</button>
-              <button class="btn btn-sm seg-btn" data-mode="wins" type="button">Winsorise</button>
+              <button class="btn btn-sm seg-btn" data-mode="wins" type="button">Winsorize</button>
               <button class="btn btn-sm seg-btn" data-mode="excl" type="button">Exclude &amp; report</button>
             </div>
           </div>
@@ -319,7 +319,7 @@
       pEl.style.color = sig ? "#22c55e" : "#ef4444";
       var note = {
         keep: "With the 24,000 ms value kept, the treatment mean is dragged to " + r.mb.toFixed(0) + " ms and the SD explodes. The real effect is buried — the test says <em>nothing happened</em>.",
-        wins: "Winsorising caps the extreme at the next-highest value (580 ms). Less aggressive than deletion, it keeps the row while removing its leverage — the effect returns.",
+        wins: "Winsorizing caps the extreme at the next-highest value (580 ms). Less aggressive than deletion, it keeps the row while removing its leverage — the effect returns.",
         excl: "Dropping the invalid trial (documented: participant left the room) reveals the true, large effect the study was designed to find. Report that this one value was excluded."
       }[mode];
       document.getElementById("ol-note").innerHTML = note;

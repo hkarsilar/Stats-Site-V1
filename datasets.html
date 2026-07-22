@@ -75,7 +75,7 @@
       <article class="lesson" style="margin:0 auto">
         <span class="lesson-eyebrow">Tools</span>
         <h1>Practice Datasets</h1>
-        <p class="lede">Reading about a t-test is not the same as running one. These eight small, realistic CSV files each come with a story, three suggested exercises, and a worked solution with the real numbers, so you can practise every analysis on data that behaves like the messy, interesting real thing.</p>
+        <p class="lede">Reading about a t-test is not the same as running one. These eight small, realistic CSV files each come with a story, three suggested exercises, and a worked solution with the real numbers, so you can practice every analysis on data that behaves like the messy, interesting real thing.</p>
 
         <div class="callout key">
           <p><strong>How to use them:</strong> download a CSV, open it in SPSS, JASP, R, Python, or even the <a href="descriptives.html">Descriptives calculator</a> right here, and try the exercises. Peek at the worked solution only after you've had a go. The numbers there are computed from the exact file you downloaded, so they'll match if you did it right.</p>
@@ -229,7 +229,7 @@
             <h2 id="wellbeing"><span class="ds-emoji">🙂</span>Wellbeing survey</h2>
             <a class="btn btn-primary btn-sm dl-btn" download href="assets/data/wellbeing-survey.csv">⬇ wellbeing-survey.csv · 120 rows</a>
           </div>
-          <p class="ds-story">An 8-item wellbeing questionnaire (each item 1–5). Two items are negatively worded and must be reverse-coded before scoring: <code>q3</code> and <code>q6</code>. A few cells are blank (real surveys have missing data). Practise reverse-coding, building a composite, and checking the scale's reliability.</p>
+          <p class="ds-story">An 8-item wellbeing questionnaire (each item 1–5). Two items are negatively worded and must be reverse-coded before scoring: <code>q3</code> and <code>q6</code>. A few cells are blank (real surveys have missing data). Practice reverse-coding, building a composite, and checking the scale's reliability.</p>
           <table class="ref-table ds-vars">
             <thead><tr><th>Variable</th><th>Type</th><th>Description</th></tr></thead>
             <tbody>
@@ -260,14 +260,14 @@
             <h2 id="clinic"><span class="ds-emoji">🩺</span>Messy clinic intake</h2>
             <a class="btn btn-primary btn-sm dl-btn" download href="assets/data/messy-clinic.csv">⬇ messy-clinic.csv · 52 rows</a>
           </div>
-          <p class="ds-story">A deliberately dirty clinic intake sheet, built for the <a href="data/tidy-data/">Data course</a>. It hides duplicates, impossible values, a unit mix-up, inconsistent category spellings, and three different date formats. Your job is to find every problem <em>before</em> you analyse anything, and to never edit the raw file, only a cleaning script.</p>
+          <p class="ds-story">A deliberately dirty clinic intake sheet, built for the <a href="data/tidy-data/">Data course</a>. It hides duplicates, impossible values, a unit mix-up, inconsistent category spellings, and three different date formats. Your job is to find every problem <em>before</em> you analyze anything, and to never edit the raw file, only a cleaning script.</p>
           <table class="ref-table ds-vars">
             <thead><tr><th>Variable</th><th>Type</th><th>Description</th></tr></thead>
             <tbody>
               <tr><td>patient_id</td><td>ID</td><td>P001–P050 (with two duplicated rows)</td></tr>
               <tr><td>age</td><td>count</td><td>years (one value is impossible)</td></tr>
               <tr><td>sex</td><td>categorical</td><td>eight different spellings of two categories</td></tr>
-              <tr><td>height_cm</td><td>continuous</td><td>cm (one row is in metres, another impossible)</td></tr>
+              <tr><td>height_cm</td><td>continuous</td><td>cm (one row is in meters, another impossible)</td></tr>
               <tr><td>weight_kg</td><td>continuous</td><td>kg (one is negative)</td></tr>
               <tr><td>systolic_bp</td><td>count</td><td>mmHg (one is zero)</td></tr>
               <tr><td>visit_date</td><td>date</td><td>three inconsistent formats</td></tr>
@@ -276,7 +276,7 @@
           <p class="ds-try-h">Try these</p>
           <ol class="ds-try">
             <li>Find and <a href="data/data-entry-and-validation/">document every data-quality problem</a>. How many can you spot before reading the solution?</li>
-            <li>Build a <a href="data/data-cleaning-workflow/">reproducible cleaning workflow</a>: de-duplicate, standardise <code>sex</code>, fix the units, parse the dates.</li>
+            <li>Build a <a href="data/data-cleaning-workflow/">reproducible cleaning workflow</a>: de-duplicate, standardize <code>sex</code>, fix the units, parse the dates.</li>
             <li>Write the <a href="data/data-entry-and-validation/">validation rules</a> (allowed ranges, allowed categories) that would have caught each error at entry.</li>
           </ol>
           <details class="ds-sol">
@@ -284,7 +284,7 @@
             <ul>
               <li><strong>Duplicates:</strong> P004 is an exact duplicate row; P016 appears twice with a slightly different weight (near-duplicate).</li>
               <li><strong>Impossible values:</strong> age 511 (P007, a typo for 51), systolic_bp 0 (P020), weight −78 kg (P031, a sign error), height 400 cm (P042).</li>
-              <li><strong>Unit mix-up:</strong> P013's height is 1.72 — that's metres, not cm.</li>
+              <li><strong>Unit mix-up:</strong> P013's height is 1.72 — that's meters, not cm.</li>
               <li><strong>Inconsistent categories:</strong> <code>sex</code> is spelled eight ways: <code>Male</code>/<code>M</code>/<code>male</code>/<code>&nbsp;Male&nbsp;</code> vs <code>Female</code>/<code>F</code>/<code>female</code>/<code>f</code>/<code>&nbsp;&nbsp;female</code> (mind the whitespace).</li>
               <li><strong>Date formats:</strong> mostly ISO (<code>2025-06-08</code>), but <code>07/04/2025</code> (P034) and <code>April 12 2025</code> (P039) sneak in.</li>
               <li><strong>After cleaning:</strong> 50 unique patients remain (two duplicate rows removed); the impossible values are then fixed or flagged, not silently deleted.</li>
@@ -298,7 +298,7 @@
             <h2 id="training"><span class="ds-emoji">🏋️</span>Strength training</h2>
             <a class="btn btn-primary btn-sm dl-btn" download href="assets/data/training-longitudinal.csv">⬇ training-longitudinal.csv · 60 rows</a>
           </div>
-          <p class="ds-story">Sixty athletes were measured on a strength lift (1RM, kg) at weeks 0, 6, and 12, split between a training program and a control group. The data is in <strong>wide</strong> format (one row per athlete, one column per timepoint), perfect for practising reshaping <em>and</em> repeated-measures analysis.</p>
+          <p class="ds-story">Sixty athletes were measured on a strength lift (1RM, kg) at weeks 0, 6, and 12, split between a training program and a control group. The data is in <strong>wide</strong> format (one row per athlete, one column per timepoint), perfect for practicing reshaping <em>and</em> repeated-measures analysis.</p>
           <table class="ref-table ds-vars">
             <thead><tr><th>Variable</th><th>Type</th><th>Description</th></tr></thead>
             <tbody>
@@ -338,7 +338,7 @@
             <tbody>
               <tr><td>applicant_id</td><td>ID</td><td>A001–A160, one row per applicant</td></tr>
               <tr><td>gpa</td><td>continuous</td><td>undergraduate GPA, 2.0–4.0</td></tr>
-              <tr><td>gre_score</td><td>count</td><td>standardised test score (~260–340)</td></tr>
+              <tr><td>gre_score</td><td>count</td><td>standardized test score (~260–340)</td></tr>
               <tr><td>research</td><td>binary</td><td>1 = has research experience, 0 = none</td></tr>
               <tr><td>admitted</td><td>binary</td><td>1 = admitted, 0 = rejected (the outcome)</td></tr>
             </tbody>

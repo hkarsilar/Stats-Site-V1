@@ -50,7 +50,7 @@
         <p class="lede">You already know how to fit a regression. Machine learning uses the very same math, but often for a different <em>purpose</em>, and that change of purpose reshapes what counts as a "good" model. Getting this distinction straight is the single most useful idea for a stats student stepping into ML: it tells you which tools to reach for and which mistakes to fear.</p>
 
         <h2>Two questions, two cultures</h2>
-        <p>In 2001 the statistician Leo Breiman described "two cultures" of modelling, and the split still organizes the whole field. Everything comes down to which question you're actually asking:</p>
+        <p>In 2001 the statistician Leo Breiman described "two cultures" of modeling, and the split still organizes the whole field. Everything comes down to which question you're actually asking:</p>
         <ul>
           <li><strong>Explanation (inference).</strong> <em>Which variables matter, how much, and how sure are we?</em> You want interpretable coefficients, standard errors, p-values, confidence intervals — a model you can put in a sentence and defend. This is the world of your stats courses: <a href="../../stats-2/simple-linear-regression/">regression</a>, <a href="../../stats-1/hypothesis-testing-logic/">hypothesis tests</a>, effect sizes.</li>
           <li><strong>Prediction.</strong> <em>Given a new case, what's my best guess — and how wrong will I be?</em> You care about error on data the model hasn't seen. Whatever machinery minimizes that error is fair game, interpretable or not. This is the world of ML: cross-validation, held-out test sets, "whatever works."</li>
@@ -58,7 +58,7 @@
         <p>Neither culture is superior; they answer different questions. A drug trial needs <em>explanation</em>: the size and certainty of the effect, so a regulator can decide. A spam filter needs <em>prediction</em> — it doesn't matter <em>why</em> an email is spam, only that the label is right on tomorrow's inbox.</p>
 
         <h2>The same model, two different jobs</h2>
-        <p>The catch that trips people up: the exact same linear model can serve either master. Fit a straight line and you can report its slope with a confidence interval (explanation), or use it to predict new points and measure the error (prediction). The model is identical. What differs is <strong>how you judge it</strong>, and that judgement pushes you toward different models when you're allowed to choose the complexity.</p>
+        <p>The catch that trips people up: the exact same linear model can serve either master. Fit a straight line and you can report its slope with a confidence interval (explanation), or use it to predict new points and measure the error (prediction). The model is identical. What differs is <strong>how you judge it</strong>, and that judgment pushes you toward different models when you're allowed to choose the complexity.</p>
         <p>Explanation prizes <strong>parsimony</strong>: every extra term is another coefficient you must interpret, defend, and worry about. Prediction prizes <strong>generalization</strong>: an extra term is welcome the moment it lowers error on new data, however murky its meaning. Watch those two pressures pull in different directions on one dataset.</p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -207,7 +207,7 @@
       predBest = 0; for (var d2 = 1; d2 <= DMAX; d2++) if (cvR[d2] < cvR[predBest]) predBest = d2;
       explBest = 0; for (var d3 = 1; d3 <= DMAX; d3++) if (cvR[d3] + GAMMA * d3 < cvR[explBest] + GAMMA * explBest) explBest = d3;
     }
-    /* reseed, but favour samples where the two goals actually disagree (the generic case) */
+    /* reseed, but favor samples where the two goals actually disagree (the generic case) */
     function reseed() {
       for (var tries = 0; tries < 8; tries++) { build(seed); seed += 1; if (explBest < predBest) break; }
     }

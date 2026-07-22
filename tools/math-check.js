@@ -230,7 +230,7 @@ for (const z of [9, 10, 15, 20, 30, 37]) {
   is(`normQ(${z}) > 0 (not collapsed to zero)`, V.normQ(z) > 0, true, 'must not underflow to 0');
 }
 
-// Centre and symmetry must survive the tail routing.
+// Center and symmetry must survive the tail routing.
 rel('normQ(0) = .5', V.normQ(0), 0.5, 1e-15, 'exact');
 rel('normQ(1.959964) = .025', V.normQ(1.959964), 0.025, 1e-6, 'definition of z.975');
 for (const z of [0.5, 1, 2, 3, 5, 8]) {

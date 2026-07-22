@@ -63,8 +63,8 @@
         <ul>
           <li><strong>Metadata living in the data.</strong> A title banner, a blank spacer row, a "totals" row mixed in with real observations.</li>
           <li><strong>Two variables in one column.</strong> <code>Ann (Year 2)</code> packs identity <em>and</em> year of study into a single cell.</li>
-          <li><strong>Colour as data.</strong> A red-shaded cell that secretly means "resit". No program can compute on a fill colour, and neither can future-you.</li>
-          <li><strong>One variable spread across many columns.</strong> <code>Quiz 1</code>, <code>Quiz 2</code>, <code>Final</code> are three columns of the <em>same</em> variable (a score). This "wide" layout is friendly to read and painful to analyse.</li>
+          <li><strong>Color as data.</strong> A red-shaded cell that secretly means "resit". No program can compute on a fill color, and neither can future-you.</li>
+          <li><strong>One variable spread across many columns.</strong> <code>Quiz 1</code>, <code>Quiz 2</code>, <code>Final</code> are three columns of the <em>same</em> variable (a score). This "wide" layout is friendly to read and painful to analyze.</li>
         </ul>
 
         <p>Below is a gloriously messy grade sheet with all four. Fix them one at a time and watch it morph into tidy form.</p>
@@ -176,8 +176,8 @@
         note: "Split “Ann (Year 2)” into a Student column and a Year column. One column = one variable." },
       { chip: "One variable across many columns",
         note: "Stacked Quiz 1 / Quiz 2 / Final into an Assessment column and a Score column — wide became long. Each row is now one student × one assessment." },
-      { chip: "Colour used as data",
-        note: "Turned the red “resit” shading into an explicit Resit column. A fill colour can't be computed on; a Yes/No value can." }
+      { chip: "Color used as data",
+        note: "Turned the red “resit” shading into an explicit Resit column. A fill color can't be computed on; a Yes/No value can." }
     ];
 
     var step = 0; // 0..4 = number of sins fixed
@@ -192,7 +192,7 @@
     function render() {
       var split = step >= 2;    // student/year split
       var long  = step >= 3;    // wide -> long
-      var resitCol = step >= 4; // colour -> explicit column
+      var resitCol = step >= 4; // color -> explicit column
       var showRed = !resitCol;  // red shading still present until fixed
 
       // banner (only before it's removed)
@@ -231,7 +231,7 @@
       html += "</tbody></table>";
       gridEl.innerHTML = html;
 
-      legendEl.textContent = showRed ? "🔴 red cell = resit (colour used as data — a hidden variable)" :
+      legendEl.textContent = showRed ? "🔴 red cell = resit (color used as data — a hidden variable)" :
         (step >= 4 ? "✔ tidy: every column is a variable, every row is one observation, every cell one value." : "");
 
       // sins

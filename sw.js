@@ -37,7 +37,7 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v23";  /* far-tail p-values: normQ + non-cancelling chiSqUpper/fUpper in viz.js */
+const CACHE_VERSION = "sc-v24";  /* British→American spelling sweep touched styles.css / site.js / viz.js */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location

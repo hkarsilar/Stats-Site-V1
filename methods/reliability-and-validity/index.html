@@ -83,7 +83,7 @@
         <p><strong>Reliability</strong> comes in a few forms, depending on <em>what</em> you check for consistency across:</p>
         <ul>
           <li><strong>Test–retest:</strong> same people, same test, two occasions: do the scores agree?</li>
-          <li><strong>Inter-rater:</strong> two observers scoring the same behaviour — do they match?</li>
+          <li><strong>Inter-rater:</strong> two observers scoring the same behavior — do they match?</li>
           <li><strong>Internal consistency:</strong> do the items <em>within</em> a scale hang together, as if measuring one thing? This is what <strong>Cronbach's α</strong> quantifies.</li>
         </ul>
         <p><strong>Validity</strong> also has types: <strong>face</strong> (does it look right?), <strong>construct</strong> (does it really tap the intended idea?), <strong>internal</strong> (can we trust the causal claim, which is what <a href="../../methods/variables-and-operationalization/">confound control</a> protects), and <strong>external</strong> (does it generalize beyond the study?).</p>
@@ -195,7 +195,7 @@
 
       // map sliders → scatter + bias
       var scatter = R * (0.015 + 0.5 * (1 - rel / 100));      // high reliability → tight
-      var bias = R * 0.62 * (1 - val / 100);                  // high validity → centred
+      var bias = R * 0.62 * (1 - val / 100);                  // high validity → centered
       var bx = bias * 0.72, by = bias * 0.69;                 // fixed diagonal offset
 
       // darts (frozen: same pool, only transformed)
@@ -208,7 +208,7 @@
       pts.forEach(function (p) {
         ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, 6.2832); ctx.fill();
       });
-      // group centre (where the darts cluster) as a hollow ring
+      // group center (where the darts cluster) as a hollow ring
       var mx = sumx / N, my = sumy / N;
       ctx.strokeStyle = "#f97316"; ctx.lineWidth = 2; ctx.setLineDash([3, 3]);
       ctx.beginPath(); ctx.arc(mx, my, 8, 0, 6.2832); ctx.stroke(); ctx.setLineDash([]);
@@ -221,7 +221,7 @@
       var hiR = rel >= 50, hiV = val >= 50, txt, col;
       if (hiR && hiV) { txt = "Reliable AND valid — consistent and on target"; col = "#22c55e"; }
       else if (hiR && !hiV) { txt = "Reliable but NOT valid — consistently wrong"; col = "#ef4444"; }
-      else if (!hiR && hiV) { txt = "Valid on average but NOT reliable — centred yet scattered"; col = "#f59e0b"; }
+      else if (!hiR && hiV) { txt = "Valid on average but NOT reliable — centered yet scattered"; col = "#f59e0b"; }
       else { txt = "Neither — scattered and off target"; col = "#ef4444"; }
       d.textContent = txt; d.style.color = col;
       draw();

@@ -13,7 +13,7 @@ window.VIZ = (function () {
   /* True when the visitor has asked their OS for reduced motion. Lessons with
      "draw-many" animation loops (sample-by-sample builds, ROC sweeps, k-means
      steps) should check this and jump straight to the final frame instead of
-     animating. CSS transitions/animations are already neutralised by the
+     animating. CSS transitions/animations are already neutralized by the
      prefers-reduced-motion block in styles.css — this covers JS-driven ones. */
   function reducedMotion() {
     try { return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); }
@@ -31,7 +31,7 @@ window.VIZ = (function () {
   /* Grab radius for a canvas drag hit-test, in CSS pixels. Hit-tests tuned by
      eye are mouse-sized (14–18px); a finger pad needs ~24px to land reliably.
      Call this at pointerdown — on a mouse it returns `base` unchanged, so
-     mouse behaviour stays exactly as it was. Callers that compare SQUARED
+     mouse behavior stays exactly as it was. Callers that compare SQUARED
      distances should square the result. */
   var GRAB_TOUCH = 24;
   function grabRadius(base) {
@@ -104,7 +104,7 @@ window.VIZ = (function () {
   }
 
   /* ---- special functions for exact F / chi-square p-values ----
-     (Lanczos log-gamma, regularised incomplete gamma & beta) */
+     (Lanczos log-gamma, regularized incomplete gamma & beta) */
   function gammaln(xx) {
     var cof = [76.18009172947146, -86.50532032941677, 24.01409824083091, -1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5];
     var x = xx, y = xx, tmp = x + 5.5; tmp -= (x + 0.5) * Math.log(tmp);
@@ -131,11 +131,11 @@ window.VIZ = (function () {
     }
     return Math.exp(-x + a * Math.log(x) - gammaln(a)) * h;
   }
-  function gammp(a, x) {  // regularised lower incomplete gamma P(a,x)
+  function gammp(a, x) {  // regularized lower incomplete gamma P(a,x)
     if (x <= 0 || a <= 0) return 0;
     return x < a + 1 ? gser(a, x) : 1 - gcf(a, x);
   }
-  function gammq(a, x) {  // regularised UPPER incomplete gamma Q(a,x) — exact in the far tail
+  function gammq(a, x) {  // regularized UPPER incomplete gamma Q(a,x) — exact in the far tail
     if (a <= 0 || x <= 0) return 1;
     return x < a + 1 ? 1 - gser(a, x) : gcf(a, x);
   }
@@ -169,7 +169,7 @@ window.VIZ = (function () {
     return x < (a + 1) / (a + b + 2) ? 1 - bt * betacf(a, b, x) / a : bt * betacf(b, a, 1 - x) / b;
   }
   /* Upper tail of the standard normal, exact where `1 − normCdf(z)` is not.
-     erf above is A&S 7.1.26, accurate to ~1.5e-7 ABSOLUTE — fine near the centre,
+     erf above is A&S 7.1.26, accurate to ~1.5e-7 ABSOLUTE — fine near the center,
      meaningless in a tail whose true value is far smaller, and exactly 0 for
      z ≥ 9. Q(z) = ½·erfc(z/√2) = ½·Q(½, z²/2) rides the incomplete gamma
      instead: ~5e-14 RELATIVE out to z ≈ 37. Prefer this over `1 - normCdf(z)`

@@ -75,12 +75,12 @@
           <thead><tr><th>Your goal</th><th style="font-family:inherit">Data type</th><th>Reach for</th></tr></thead>
           <tbody>
             <tr><td>See one variable's shape</td><td>One quantitative</td><td>Histogram</td></tr>
-            <tr><td>Compare centre &amp; spread across groups</td><td>Quantitative × categorical</td><td>Box plot(s)</td></tr>
+            <tr><td>Compare center &amp; spread across groups</td><td>Quantitative × categorical</td><td>Box plot(s)</td></tr>
             <tr><td>Compare one value per category</td><td>Quantitative × categorical (few)</td><td>Bar chart</td></tr>
             <tr><td>Rank many categories / long labels</td><td>Quantitative × categorical (many)</td><td>Horizontal bar chart</td></tr>
             <tr><td>Compare across two categorical splits</td><td>Quantitative × two categorical</td><td>Grouped / stacked bar</td></tr>
             <tr><td>See how two numbers relate</td><td>Two quantitative</td><td>Scatter plot</td></tr>
-            <tr><td>Summarise or predict a relationship</td><td>Two quantitative</td><td>Scatter + trend line</td></tr>
+            <tr><td>Summarize or predict a relationship</td><td>Two quantitative</td><td>Scatter + trend line</td></tr>
             <tr><td>Show change over time</td><td>Quantitative × time</td><td>Line chart</td></tr>
             <tr><td>Show association of two categories</td><td>Two categorical</td><td>Heatmap / mosaic</td></tr>
             <tr><td>Show parts of a whole</td><td>Categorical proportions</td><td>Stacked bar (not a pie)</td></tr>
@@ -116,8 +116,8 @@
         { label: "The precise numbers, meant to be read exactly", desc: "Your reader needs exact values", leaf: "table" }
       ]},
       dist: { q: "Whose distribution are you showing?", opts: [
-        { label: "One numeric variable", desc: "See its shape — centre, skew, gaps, extra peaks", leaf: "histogram" },
-        { label: "The same measure across several groups", desc: "Compare centre and spread side by side", leaf: "boxplot" }
+        { label: "One numeric variable", desc: "See its shape — center, skew, gaps, extra peaks", leaf: "histogram" },
+        { label: "The same measure across several groups", desc: "Compare center and spread side by side", leaf: "boxplot" }
       ]},
       comp: { q: "What are you comparing across the categories?", opts: [
         { label: "One value per category", desc: "A mean, total or count", next: "comp1" },
@@ -133,7 +133,7 @@
         { label: "Both categorical", leaf: "heatmap" },
         { label: "One numeric, one categorical", desc: "that's a group comparison in disguise", next: "comp" }
       ]},
-      rel_num: { q: "Do you just want to see the link, or summarise it too?", opts: [
+      rel_num: { q: "Do you just want to see the link, or summarize it too?", opts: [
         { label: "See whether — and how — they move together, and spot outliers", leaf: "scatter" },
         { label: "Also fit a trend line or predict one from the other", leaf: "scatter_trend" }
       ]},
@@ -152,19 +152,19 @@
     var LEAVES = {
       histogram: {
         name: "Histogram",
-        why: "Showing the distribution of one numeric variable — its centre, spread, skew, gaps and any second peak. The go-to first look at a single measurement.",
+        why: "Showing the distribution of one numeric variable — its center, spread, skew, gaps and any second peak. The go-to first look at a single measurement.",
         mistake: "Too few or too many bins hides the real shape — try a couple of bin widths. And don't confuse it with a bar chart: histogram bars touch (a continuous axis), bar-chart bars have gaps (separate categories).",
         alt: "A density plot or dot plot for small samples; box plots to compare the distribution across several groups."
       },
       boxplot: {
         name: "Box plot(s)",
-        why: "Comparing the centre and spread of a numeric variable across two or more groups at a glance — median, quartiles and outliers, lined up side by side.",
+        why: "Comparing the center and spread of a numeric variable across two or more groups at a glance — median, quartiles and outliers, lined up side by side.",
         mistake: "A box plot hides the shape: bimodal or clustered data can look identical to smooth data. Overlay the raw points (or use a violin plot) when each group is small.",
         alt: "A histogram for a single group; a violin or strip plot when you also want to see the shape."
       },
       bar: {
         name: "Bar chart",
-        why: "Comparing a single value — a mean, total or count — across a handful of clearly-labelled categories. Length is the easiest visual quantity to compare accurately.",
+        why: "Comparing a single value — a mean, total or count — across a handful of clearly-labeled categories. Length is the easiest visual quantity to compare accurately.",
         mistake: "Truncating the y-axis so it doesn't start at zero exaggerates the differences; bars encode length, so the baseline must be zero. Add error bars (and say what they show) when the bar is a mean.",
         alt: "A dot or lollipop plot for many categories; box plots when you have each group's full distribution, not just one number."
       },
@@ -172,7 +172,7 @@
         name: "Horizontal bar chart",
         why: "Comparing or ranking a value across many categories, or when the labels are long — turning the bars sideways gives the text room and makes a ranking easy to read top-to-bottom.",
         mistake: "Leaving the bars in arbitrary order. Unless the categories have a natural order (age bands, months), sort by value so the ranking is the message.",
-        alt: "A vertical bar chart for a few short-labelled categories."
+        alt: "A vertical bar chart for a few short-labeled categories."
       },
       grouped: {
         name: "Grouped or stacked bar",
@@ -184,11 +184,11 @@
         name: "Scatter plot",
         why: "Showing how two numeric variables relate — the direction, strength, curvature, clusters and outliers of the cloud. Always the first thing to draw for two quantities.",
         mistake: "Overplotting: with thousands of points the cloud turns into a solid blob. Use transparency, smaller dots or a 2-D density/hexbin. And never trust a correlation number without looking at the scatter (remember Anscombe's quartet).",
-        alt: "Add a trend line to summarise or predict; a heatmap or hexbin plot for very large samples."
+        alt: "Add a trend line to summarize or predict; a heatmap or hexbin plot for very large samples."
       },
       scatter_trend: {
         name: "Scatter plot with a trend line",
-        why: "The relationship of two numeric variables when you also want to summarise it or predict one from the other — the fitted line, and its slope, drawn on top of the raw cloud.",
+        why: "The relationship of two numeric variables when you also want to summarize it or predict one from the other — the fitted line, and its slope, drawn on top of the raw cloud.",
         mistake: "Drawing the line far beyond the data (extrapolation), or fitting a straight line to an obviously curved cloud. Let the points, not the line, have the final say.",
         alt: "A plain scatter when the trend isn't the point; a line chart when the x-axis is time rather than a second measurement."
       },
@@ -200,8 +200,8 @@
       },
       heatmap: {
         name: "Heatmap / mosaic plot",
-        why: "Showing the association between two categorical variables — colour (heatmap) or tile area (mosaic) reveals which combinations are over- or under-represented in a contingency table.",
-        mistake: "A rainbow colour scale invents structure that isn't there and fails colour-blind readers. Use a single-hue sequential scale, and label cells with the counts so exact values are still readable.",
+        why: "Showing the association between two categorical variables — color (heatmap) or tile area (mosaic) reveals which combinations are over- or under-represented in a contingency table.",
+        mistake: "A rainbow color scale invents structure that isn't there and fails color-blind readers. Use a single-hue sequential scale, and label cells with the counts so exact values are still readable.",
         alt: "A grouped or stacked bar for just a few categories; a table when the exact counts matter most."
       },
       pie_resist: {

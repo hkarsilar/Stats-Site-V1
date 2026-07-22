@@ -59,7 +59,7 @@
         <h2>The golden rule and the split</h2>
         <p>A flexible model can memorize its training data almost perfectly and still be useless on the next case — that's <a href="../../stats-4/cross-validation-and-overfitting/">overfitting</a>. To get an honest estimate of how well a model <em>generalizes</em>, you hold data back:</p>
         <ul>
-          <li><strong>Training set:</strong> the model learns here (fits coefficients, grows trees, picks neighbours).</li>
+          <li><strong>Training set:</strong> the model learns here (fits coefficients, grows trees, picks neighbors).</li>
           <li><strong>Test set:</strong> locked in a drawer until the very end, opened <em>once</em> to report honest performance. If you peek and adjust, it's no longer a test set.</li>
         </ul>
         <p>A typical split is 70–80% train, the rest test. For classification, <strong>stratify</strong> the split so each side keeps the same class proportions — otherwise a rare class can vanish from one side by chance. And when you need to compare or tune models, carve a <em>validation</em> set (or use <a href="../../stats-4/cross-validation-and-overfitting/">cross-validation</a>) out of the training data, so the test set stays pristine.</p>
@@ -71,7 +71,7 @@
           <li><strong>The same subjects on both sides.</strong> Duplicate rows, or multiple measurements from one person landing in both train and test, let the model recognize individuals it "already met" — inflating the score without any real skill.</li>
           <li><strong>Tuning on the test set.</strong> Trying many models / thresholds / settings and reporting the one that scored best on the test set turns your test set into a training set for your choices. You've optimized against the exam.</li>
         </ol>
-        <p>Below is a real (if tiny) predictive pipeline: a <a href="../../ml/regularization-ridge-and-lasso/">k-nearest-neighbours</a> classifier on data where only a couple of features carry weak signal and the rest are noise. Flip the leaks on and watch the pipeline's <em>reported</em> accuracy pull away from its <em>true</em> accuracy on fresh cases.</p>
+        <p>Below is a real (if tiny) predictive pipeline: a <a href="../../ml/regularization-ridge-and-lasso/">k-nearest-neighbors</a> classifier on data where only a couple of features carry weak signal and the rest are noise. Flip the leaks on and watch the pipeline's <em>reported</em> accuracy pull away from its <em>true</em> accuracy on fresh cases.</p>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="leakviz">

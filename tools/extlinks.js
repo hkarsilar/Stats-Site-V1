@@ -21,7 +21,7 @@
    statscapybara.com links are skipped — audit.js owns those.
 
    Bot-blocking: several hosts serve a non-200 to anything that isn't a real
-   browser. Those are catalogued in ALLOW below with the status they are
+   browser. Those are cataloged in ALLOW below with the status they are
    known to return and a note on how it was verified by hand, so a genuine
    404 never hides inside a familiar-looking failure. Re-verify an ALLOW
    entry in a real browser during each P38 run rather than trusting it

@@ -235,7 +235,7 @@
     "roc-curves-and-auc": "The capybara doesn't pick one threshold — it tries them all and plots the whole curve. Top-left corner good, diagonal is a coin flip.",
     "decision-trees": "Split, split, split until every leaf is one happy capybara. Grow too deep and the tree just memorizes the pond — test day is a rude surprise.",
     "random-forests-and-ensembles": "One capybara's opinion is jumpy; a whole raft of them, each shown slightly different reeds, votes remarkably wisely. Bag, randomize, average — the noise cancels out.",
-    "knn-and-distance": "The capybara asks its nearest neighbours and copies them. Scale your axes first — and in 100 dimensions everyone is equally far away and equally unhelpful.",
+    "knn-and-distance": "The capybara asks its nearest neighbors and copies them. Scale your axes first — and in 100 dimensions everyone is equally far away and equally unhelpful.",
     "clustering-kmeans": "No labels? The capybara sorts the pond into k piles by proximity. Lovely on round blobs, hilariously confident on two moons. Clusters are hypotheses, not facts.",
     "dimensionality-reduction": "Two hundred variables won't fit on a lily pad. PCA squashes them flat and honestly; t-SNE untangles them beautifully but fibs about distances. Squash to measure, unfold to look.",
     "neural-networks-intuition": "A neuron is just the logistic regression the capybara already knows, wearing a lab coat. Stack a few, roll downhill, and straight lines learn to bend around XOR.",
@@ -260,7 +260,7 @@
     "toolbox": "A capybara's toolbox: warm water, good snacks, zero deadlines. Yours has calculators too.",
     "privacy": "The capybara keeps no file on you. It counts how many visitors came to the water, never which one you were.",
     "which-test": "Lost? The capybara also can't pick a pool. That's literally why this page exists.",
-    "which-chart": "A pie chart of the capybara's day would be one giant slice labelled 'napping.' Even then, it says, use a bar.",
+    "which-chart": "A pie chart of the capybara's day would be one giant slice labeled 'napping.' Even then, it says, use a bar.",
     "plan": "The capybara writes the whole plan before the data arrive — test, sample size, and how it'll report it. Then, and only then, it naps.",
     "tables": "Capybaras have memorized exactly zero critical values. That's what this page is for.",
     "formulas": "Print it, laminate it, take it into the bath. The capybara approves.",
@@ -1041,7 +1041,7 @@
      theme is captured as-is (the canvas background is painted underneath so
      dark-mode exports aren't transparent). Decorative canvases outside a
      .viz (the homepage hero) are never touched; the button is hidden in
-     print. Keyboard-operable and aria-labelled (it's a real <button>). */
+     print. Keyboard-operable and aria-labeled (it's a real <button>). */
   function biggestCanvas(viz) {
     var cs = viz.querySelectorAll("canvas"), best = null, bestArea = -1;
     for (var i = 0; i < cs.length; i++) {
@@ -1519,7 +1519,7 @@
     { title: "Practice Datasets", url: "datasets.html", tag: "Practice", kw: "practice datasets csv download data sample example real t-test anova regression factorial likert reliability cronbach cleaning messy logistic exercises worked solutions" },
     { title: "Course Quiz", url: "quiz.html", tag: "Practice", kw: "test yourself questions practice mock exam revision" },
     { title: "Statistics Glossary", url: "glossary.html", tag: "Reference", kw: "terms definitions dictionary" },
-    { title: "Glossary Flashcards", url: "flashcards.html", tag: "Practice", kw: "flashcards spaced repetition leitner revise revision memorize memorise drill study cards terms definitions glossary due box" },
+    { title: "Glossary Flashcards", url: "flashcards.html", tag: "Practice", kw: "flashcards spaced repetition leitner revise revision memorize memorize drill study cards terms definitions glossary due box" },
     { title: "My Progress", url: "progress.html", tag: "Practice", kw: "progress dashboard my progress rings completed lessons done remaining continue resume certificate certificates course completion percent tracking enrolled" },
     /* course landing pages (<course>/index.html, P61) */
     { title: "Stats 1: Foundations", url: "stats-1/", tag: "Course", kw: "stats 1 course foundations beginner start here overview syllabus descriptive statistics normal distribution z-scores probability sampling confidence intervals t-tests first course intro introduction" },
@@ -1544,7 +1544,7 @@
 
   /* ---------- forgiving matching (P71) ----------
      Statistics students type "hetroscedasticity", "post hoc", "chisquare".
-     Three cheap normalisations carry most of it, and one bounded
+     Three cheap normalizations carry most of it, and one bounded
      edit-distance check carries the rest:
        norm()    lowercase, strip diacritics, hyphens/underscores → spaces
        squash()  norm minus every separator, so "chi-square" === "chisquare"
@@ -1619,8 +1619,8 @@
     for (var i = 0; i < qs.length; i++) p.push(qs.charAt(i).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
     return new RegExp(p.join("[ \\t\\-\\u2010-\\u2015]?"), "i");
   }
-  /* normalised haystacks, memoised — every title/keyword string on the site
-     is normalised once per session, not once per keystroke */
+  /* normalized haystacks, memoised — every title/keyword string on the site
+     is normalized once per session, not once per keystroke */
   var HAY = Object.create(null);
   function hayFor(str) {
     var h = HAY[str];

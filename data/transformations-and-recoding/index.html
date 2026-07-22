@@ -113,7 +113,7 @@
         </div>
 
         <div class="callout">
-          <p><strong>Why it matters:</strong> the right transform can turn a violated assumption into a satisfied one and stop a handful of <a href="../outliers-in-practice/">extreme values</a> from steering the result, all while keeping every observation. Do it <em>in a script</em>, on the <a href="../data-cleaning-workflow/">clean data</a>, so the step is documented and reversible; always report the scale you analysed on and back-transform your summaries for the reader. And resist the median split: it's the one "transformation" that only ever loses.</p>
+          <p><strong>Why it matters:</strong> the right transform can turn a violated assumption into a satisfied one and stop a handful of <a href="../outliers-in-practice/">extreme values</a> from steering the result, all while keeping every observation. Do it <em>in a script</em>, on the <a href="../data-cleaning-workflow/">clean data</a>, so the step is documented and reversible; always report the scale you analyzed on and back-transform your summaries for the reader. And resist the median split: it's the one "transformation" that only ever loses.</p>
         </div>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
@@ -248,7 +248,7 @@
         raw:  "Strong right skew: a long tail of high incomes pulls the arithmetic mean ($" + am.toFixed(0) + "k) well above the typical value. Assumptions of normality are in trouble here.",
         sqrt: "The square root pulls the tail in part-way — skew drops but often isn't fully gone. A reasonable choice for counts; milder than the log.",
         log:  "The log nearly symmetrises it. The mean of the logs back-transforms to the <em>geometric</em> mean, $" + gm.toFixed(0) + "k — below the arithmetic mean $" + am.toFixed(0) + "k. Report both and state the scale you tested on.",
-        z:    "Identical shape to Raw — same skew, same Q–Q curve. z-scoring only re-centres to 0 and re-scales to SD = 1; it makes variables <em>comparable</em>, it does not make them normal."
+        z:    "Identical shape to Raw — same skew, same Q–Q curve. z-scoring only re-centers to 0 and re-scales to SD = 1; it makes variables <em>comparable</em>, it does not make them normal."
       }[mode];
       document.getElementById("tg-note").innerHTML = note;
       var ctr = {

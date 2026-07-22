@@ -259,7 +259,7 @@
     };
 
     /* ---------- test plans ---------- */
-    /* sc: power scenario (null = needs specialised power tools).  es: preset key.
+    /* sc: power scenario (null = needs specialized power tools).  es: preset key.
        apa: {a,v} → apa.html deep link. slug: query-param name. */
     var LEAVES = {
       indep_t: { slug: "ttest-ind", name: "Independent-samples t-test", why: "Two unrelated groups, one numeric outcome — the Welch version (most software's default) compares their means without assuming equal variances.",
@@ -271,7 +271,7 @@
           "Unequal variances are fine — use Welch's <em>t</em> (it's the default in JASP, R and SPSS).",
           "Badly skewed or ordinal in a small sample? Switch to the <a href=\"stats-2/non-parametric-alternatives/#mann-whitney\">Mann–Whitney U</a>."
         ] },
-      paired_t: { slug: "ttest-paired", name: "Paired-samples t-test", why: "Same people measured twice — analyse each person's difference score, so stable individual differences cancel out and you gain power.",
+      paired_t: { slug: "ttest-paired", name: "Paired-samples t-test", why: "Same people measured twice — analyze each person's difference score, so stable individual differences cancel out and you gain power.",
         lesson: "stats-1/one-sample-and-paired-t-tests", label: "One-Sample & Paired t-Tests", sc: "t1", es: "dz", apa: { a: "t", v: "paired" },
         apaSkel: "A paired-samples " + em("t") + "-test compared " + ph("[outcome]") + " at " + ph("[time 1]") + " (" + em("M") + " = " + ph("__") + ", " + em("SD") + " = " + ph("__") + ") and " + ph("[time 2]") + " (" + em("M") + " = " + ph("__") + ", " + em("SD") + " = " + ph("__") + "), " + em("t") + "(" + ph("__") + ") = " + ph("__") + ", " + em("p") + " = " + ph("__") + ", " + em("d") + "<sub>z</sub> = " + ph("__") + ".",
         assump: [
@@ -364,7 +364,7 @@
         ], specialN: "Logistic-regression power hinges on the outcome's base rate and how many predictors you fit — simulate it, or use G*Power. The rule of thumb is <strong>~10 events (of the rarer outcome) per predictor</strong>." },
       count: { slug: "count", name: "Poisson / negative-binomial regression", why: "A generalized linear model with a log link keeps count predictions positive; switch to negative binomial when the counts are overdispersed.",
         lesson: "stats-4/generalized-linear-models", label: "Generalized Linear Models", sc: null, es: null, apa: null,
-        apaSkel: "A Poisson regression modelled " + ph("[count outcome]") + " as a function of " + ph("[predictors]") + ". " + ph("[Predictor]") + " was associated with the rate, incidence-rate ratio = " + ph("__") + ", 95% CI [" + ph("__") + ", " + ph("__") + "], " + em("p") + " = " + ph("__") + ".",
+        apaSkel: "A Poisson regression modeled " + ph("[count outcome]") + " as a function of " + ph("[predictors]") + ". " + ph("[Predictor]") + " was associated with the rate, incidence-rate ratio = " + ph("__") + ", 95% CI [" + ph("__") + ", " + ph("__") + "], " + em("p") + " = " + ph("__") + ".",
         assump: [
           "Counts are independent; for plain Poisson, the mean ≈ the variance.",
           "Overdispersed (variance ≫ mean)? Use <strong>negative binomial</strong> regression.",
@@ -519,7 +519,7 @@
             esControl(leaf) +
             '<div class="plan-n" id="plan-n-out"></div></div>'
         : '<div class="plan-sec"><h4>Sample size</h4>' +
-            '<p class="es-note" style="margin:0">' + (leaf.specialN || "This design needs specialised power software.") + '</p></div>';
+            '<p class="es-note" style="margin:0">' + (leaf.specialN || "This design needs specialized power software.") + '</p></div>';
 
       var links = [];
       links.push('<a class="btn btn-primary btn-sm" href="' + leaf.lesson + '/">Open the lesson: ' + leaf.label + ' →</a>');
