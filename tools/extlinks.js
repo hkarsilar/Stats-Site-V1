@@ -45,10 +45,10 @@ const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (
 /* Hosts that block non-browser clients. status = what they return to this
    script; verified = when the URL was last confirmed fine in a real browser. */
 const ALLOW = [
-  { host: 'ko-fi.com', status: [403], why: 'Cloudflare bot check; the button and page work in a browser', verified: 'P38, 11 Jul 2026' },
-  { host: 'storage.ko-fi.com', status: [403], why: 'same Cloudflare rule as ko-fi.com; the button image itself returns 200', verified: 'P38, 11 Jul 2026' },
-  { host: 'www.linkedin.com', status: [999], why: 'LinkedIn answers 999 to every non-browser request; profile verified by hand', verified: 'P38, 11 Jul 2026' },
-  { host: 'linkedin.com', status: [999], why: 'as www.linkedin.com', verified: 'P38, 11 Jul 2026' },
+  { host: 'ko-fi.com', status: [403], why: 'Cloudflare bot check; the button and page work in a browser', verified: 'P38, 23 Jul 2026 — page loaded in-browser, Tip button + statscapybara.com link present' },
+  { host: 'storage.ko-fi.com', status: [403], why: 'same Cloudflare rule as ko-fi.com; the button image itself returns 200', verified: 'P38, 23 Jul 2026 — button image still 200 to this script' },
+  { host: 'www.linkedin.com', status: [999], why: 'LinkedIn answers 999 to every non-browser request; the vanity URL resolves but a logged-out browser hits the auth wall, so the render needs a signed-in check', verified: 'P38, 23 Jul 2026 — URL resolved (no 404); auth wall, so confirm the profile itself while signed in' },
+  { host: 'linkedin.com', status: [999], why: 'as www.linkedin.com', verified: 'P38, 23 Jul 2026' },
 ];
 
 const allowFor = (u) => {
