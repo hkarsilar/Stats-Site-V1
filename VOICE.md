@@ -21,6 +21,7 @@ Background: the site's first draft was written by one AI in one style in two wee
 9. **"quietly" as an intensifier: zero.** ("quietly does the heavy lifting", "quietly assumes…") The lint counts *every* "quietly", so reword literal uses too — "silently", "without warning", or just cut it.
 10. **"Notice how / Notice that": ≤ 1 per page.** Pointing at your own chart once is teaching; three times is a tour guide.
 11. **Meta descriptions built on "…and watch…": ≤ 15% of pages.** It was a good formula; forty copies of it is a fingerprint.
+12. **British spellings: zero.** The site is American English throughout (`behavior`, `color`, `center`, `analyze`, `standardize`, `modeling`, `artifact`, `gray`). Four separate refresh runs each found another survivor of a hand-written find-replace, so the inventory now lives in `BRIT_SPELLINGS` in `prose-lint.js` and is checked rather than remembered. Two things stay deliberately *out* of that list and should not be added: **`analyses`**, which is also the American plural of *analysis* (a substring sweep once turned it into "analyzes" seven times), and **`enrolled`/`enrolling`/`programmed`/`analogue`**, which are already correct American forms. Code literals are out of scope by construction — the linter reads rendered prose, so `color = "grey"` inside a ggplot snippet is left alone.
 
 ## SOFT RULES (judgment — no linter, but they're the actual work)
 

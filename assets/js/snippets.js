@@ -64,8 +64,8 @@ window.SNIPPETS = {
     py: 'import numpy as np\nfrom scipy import stats\nrng = np.random.default_rng()\na, b, c = (rng.normal(m, 8, 20) for m in (70, 75, 80))\nF, p = stats.f_oneway(a, b, c)\nprint(F, p)'
   },
   "post-hoc-tests": {
-    r: 'fit <- aov(score ~ group, data = df)   # df from the ANOVA lesson\nTukeyHSD(fit)                          # all pairs, error rate controlled\npairwise.t.test(df$score, df$group, p.adjust.method = "bonferroni")',
-    py: 'from statsmodels.stats.multicomp import pairwise_tukeyhsd\nimport numpy as np\nscores = np.concatenate([a, b, c])       # from the ANOVA lesson\ngroups = ["A"]*20 + ["B"]*20 + ["C"]*20\nprint(pairwise_tukeyhsd(scores, groups))'
+    r: 'fit <- aov(score ~ group, data = df)   # df from the ANOVA lesson\nTukeyHSD(fit)                          # all pairs, error rate controlled\npairwise.t.test(df$score, df$group, p.adjust.method = "bonferroni")\np.adjust(pvals, method = "BH")         # false discovery rate instead',
+    py: 'from statsmodels.stats.multicomp import pairwise_tukeyhsd\nfrom statsmodels.stats.multitest import multipletests\nimport numpy as np\nscores = np.concatenate([a, b, c])       # from the ANOVA lesson\ngroups = ["A"]*20 + ["B"]*20 + ["C"]*20\nprint(pairwise_tukeyhsd(scores, groups))\nprint(multipletests(pvals, method="fdr_bh")[1])   # BH-adjusted p-values'
   },
   "factorial-anova-two-way": {
     r: 'fit <- aov(score ~ drug * therapy, data = df)\nsummary(fit)          # two main effects + the interaction\ninteraction.plot(df$drug, df$therapy, df$score)',
@@ -77,7 +77,7 @@ window.SNIPPETS = {
   },
   "assumptions-and-when-they-break": {
     r: 'shapiro.test(residuals(fit))       # normality of residuals\ncar::leveneTest(score ~ group, df)  # equal variances\n# robust fallback if variances differ:\noneway.test(score ~ group, data = df)   # Welch ANOVA',
-    py: 'from scipy import stats\nprint(stats.shapiro(resid))          # normality\nprint(stats.levene(a, b, c))         # equal variances\n# Welch fallback for unequal variances:\nprint(stats.f_oneway(a, b, c))       # + pingouin.welch_anova for Welch'
+    py: 'import pingouin as pg   # pip install pingouin\nfrom scipy import stats\nprint(stats.shapiro(resid))          # normality of residuals\nprint(stats.levene(a, b, c))         # equal variances\n# Welch fallback if they differ (scipy.f_oneway assumes equal variances):\nprint(pg.welch_anova(data=df, dv="score", between="group"))'
   },
   "non-parametric-alternatives": {
     r: 'wilcox.test(drug, ctrl)             # Mann-Whitney U (2 groups)\nkruskal.test(score ~ group, df)     # Kruskal-Wallis (3+ groups)\nwilcox.test(before, after, paired = TRUE)   # signed-rank',
@@ -96,8 +96,8 @@ window.SNIPPETS = {
     py: 'import statsmodels.formula.api as smf\nfit = smf.ols("score ~ hours", data=df).fit()\nprint(fit.summary())    # slope, intercept, R-squared'
   },
   "regression-diagnostics": {
-    r: 'fit <- lm(score ~ hours, data = df)\npar(mfrow = c(2, 2)); plot(fit)   # residuals, Q-Q, leverage in one go\ncar::ncvTest(fit)                 # formal heteroscedasticity test',
-    py: 'import matplotlib.pyplot as plt\nimport statsmodels.api as sm\nfig = plt.figure(figsize=(8, 5))\nplt.scatter(fit.fittedvalues, fit.resid); plt.axhline(0)\nplt.show()\nprint(sm.stats.diagnostic.het_breuschpagan(fit.resid,\n      fit.model.exog))   # heteroscedasticity test'
+    r: 'fit <- lm(score ~ hours, data = df)\npar(mfrow = c(2, 2)); plot(fit)   # residuals, Q-Q, leverage in one go\ncar::ncvTest(fit)                 # formal heteroscedasticity test\ncar::durbinWatsonTest(fit)        # independence: ~2 means no autocorrelation',
+    py: 'import matplotlib.pyplot as plt\nimport statsmodels.api as sm\nimport statsmodels.formula.api as smf\nfrom statsmodels.stats.stattools import durbin_watson\nfit = smf.ols("score ~ hours", data=df).fit()\nplt.scatter(fit.fittedvalues, fit.resid); plt.axhline(0)\nplt.show()\nprint(sm.stats.diagnostic.het_breuschpagan(fit.resid,\n      fit.model.exog))   # heteroscedasticity test\nprint(durbin_watson(fit.resid))   # independence: ~2 means no autocorrelation'
   },
   /* ---------------- Stats 3 ---------------- */
   "multiple-regression": {

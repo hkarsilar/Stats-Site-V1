@@ -49,6 +49,63 @@ const THINK_SITE_MAX = 3;         // rule 8 — "Think of it as" sitewide
 const NOTICE_PAGE_MAX = 1;        // rule 10 — "Notice how/that" per page
 const ANDWATCH_SHARE_MAX = 0.15;  // rule 11 — "…and watch…" meta descriptions
 
+/* VOICE.md rule 12 — the site is American English. Four separate P39 refresh
+   runs have each found another British form the previous word-list sweep
+   missed (artefact/enrol, honour/cancelling/unravelled, flavour), so this is
+   an explicit inventory rather than a morphological rule: -ise/-our/-re
+   patterns cannot be generalised safely. Two forms are DELIBERATELY absent
+   and must stay absent:
+     • "analyses" — identical to the American plural of "analysis" (a
+       substring sweep once rewrote it to "analyzes" seven times);
+     • "enrolled"/"enrolling" — already correct American forms (only the bare
+       "enrol"/"enrols" differ), likewise "programmed" and "analogue".
+   Code literals are out of scope by construction: this linter reads rendered
+   prose only, so snippets.js's ggplot/matplotlib color="grey" is untouched. */
+const BRIT_SPELLINGS = [
+  // -our
+  'behaviour', 'behaviours', 'behavioural', 'behaviourally', 'behaviourism', 'behaviourist',
+  'colour', 'colours', 'coloured', 'colouring', 'colourful',
+  'favour', 'favours', 'favoured', 'favouring', 'favourable', 'favourably', 'favourite', 'favourites',
+  'honour', 'honours', 'honoured', 'honouring', 'honourable',
+  'labour', 'labours', 'laboured', 'labouring',
+  'neighbour', 'neighbours', 'neighbouring', 'neighbourhood',
+  'flavour', 'flavours', 'flavoured', 'humour', 'humoured', 'rumour', 'rumours',
+  'odour', 'odours', 'vapour', 'vapours', 'endeavour', 'endeavours', 'harbour', 'harbours',
+  // -re
+  'centre', 'centres', 'centred', 'centring', 'metre', 'metres', 'litre', 'litres',
+  'fibre', 'fibres', 'theatre', 'theatres', 'calibre', 'sombre', 'spectre', 'lustre',
+  // -yse (the American form is always -yze, so these are unambiguous)
+  'analyse', 'analysed', 'analysing', 'catalyse', 'catalysed', 'paralyse', 'paralysed', 'hydrolyse',
+  // -ise / -isation (only stems with no American -ise reading)
+  'organise', 'organised', 'organising', 'organisation', 'organisations', 'organisational',
+  'standardise', 'standardised', 'standardising', 'standardisation',
+  'summarise', 'summarised', 'summarising', 'recognise', 'recognised', 'recognising',
+  'minimise', 'minimised', 'minimising', 'maximise', 'maximised', 'maximising',
+  'generalise', 'generalised', 'generalising', 'generalisation', 'generalisations',
+  'normalise', 'normalised', 'normalising', 'normalisation',
+  'randomise', 'randomised', 'randomising', 'randomisation',
+  'categorise', 'categorised', 'categorising', 'categorisation',
+  'visualise', 'visualised', 'visualising', 'visualisation', 'visualisations',
+  'emphasise', 'emphasised', 'emphasising', 'hypothesise', 'hypothesised', 'hypothesising',
+  'prioritise', 'prioritised', 'characterise', 'characterised', 'characterising',
+  'specialise', 'specialised', 'utilise', 'utilised', 'utilising',
+  'realise', 'realised', 'realising', 'penalise', 'penalised', 'formalise', 'formalised',
+  'operationalise', 'operationalised', 'operationalising', 'operationalisation',
+  'criticise', 'criticised', 'criticising', 'apologise', 'apologised',
+  'memorise', 'memorised', 'familiarise', 'familiarised', 'optimise', 'optimised', 'optimising',
+  'initialise', 'initialised', 'digitise', 'digitised', 'itemise', 'modernise',
+  // doubled consonants
+  'cancelling', 'cancelled', 'labelling', 'labelled', 'modelling', 'modelled',
+  'travelling', 'travelled', 'signalling', 'signalled', 'fuelled', 'totalled',
+  'marvelled', 'unravelling', 'unravelled', 'levelling', 'levelled',
+  // -ence / -ce nouns and misc
+  'defence', 'offence', 'licence', 'licences', 'pretence', 'practise', 'practised', 'practising',
+  'artefact', 'artefacts', 'artefactual', 'enrol', 'enrols',
+  'grey', 'greyed', 'sceptic', 'sceptics', 'sceptical', 'sceptically', 'scepticism',
+  'judgement', 'judgements', 'ageing', 'programme', 'programmes',
+  'manoeuvre', 'manoeuvres', 'moustache', 'plough', 'storey', 'storeys', 'tyre', 'tyres',
+];
+
 /* budget: 0 = banned outright (sitewide zero); 'site' / 'page' budgets are
    enforced in strictCheck() below. Regexes are heuristics tuned against the
    real corpus — they're the measuring stick, not a grammar. */
@@ -90,6 +147,11 @@ const PATTERNS = [
     id: 'notice', col: 'notice', budget: 'page', // ≤ NOTICE_PAGE_MAX per page
     label: `"Notice how/that" (≤ ${NOTICE_PAGE_MAX} per page)`,
     res: [/\bnotice\s+(?:how|that)\b/gi],
+  },
+  {
+    id: 'britspell', col: 'brit', budget: 0,
+    label: `British spellings (the site is American English)`,
+    res: [new RegExp('\\b(?:' + BRIT_SPELLINGS.join('|') + ')\\b', 'gi')],
   },
 ];
 
@@ -285,7 +347,7 @@ function scanPage(kind, label, file, slug) {
     kind, label, file, slug, words, dashes, faqDashes, counts, hits, verdicts, desc,
     rate: words ? (dashes * 1000) / words : 0,
     andWatch: !!(desc && AND_WATCH.test(desc)),
-    // heuristic worst-first ranking: hard-budget overages + every banned-flavour hit
+    // heuristic worst-first ranking: hard-budget overages + every banned-flavor hit
     score: Math.max(0, dashes - EMDASH_PAGE_MAX) + Math.max(0, faqDashes - EMDASH_FAQ_MAX)
       + banned + counts['think-of'] + Math.max(0, counts.notice - NOTICE_PAGE_MAX) + verdicts.length,
     banned,

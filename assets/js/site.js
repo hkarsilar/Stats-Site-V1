@@ -156,7 +156,7 @@
     "hypothesis-testing-logic": "Null hypothesis: the capybara is unbothered. Honestly? Hard to reject.",
     "one-sample-and-paired-t-tests": "Same capybara, before and after the spa. Measure the difference — that's a paired design.",
     "independent-samples-t-test": "Two unrelated capybara squads, one pool, no shared history. That's independent samples.",
-    "effect-size-and-power": "The capybara's chill isn't just significant. The effect size is massive.",
+    "effect-size-and-power": "Power is how many capybaras you must count before anyone believes they're calm.",
     /* Stats 2 */
     "one-way-anova": "Three capybara herds walk into a pool. ANOVA asks: same vibe, or nah?",
     "post-hoc-tests": "Run 20 comparisons and something turns 'significant'. Even the capybara is suspicious.",
@@ -167,7 +167,7 @@
     "chi-square-tests": "Counting capybaras by category since 1900. Pearson would have loved a hot spring.",
     "correlation": "Snacks up, chill up. Correlated? Sure. Causal? The capybara declines to comment.",
     "simple-linear-regression": "Drawing one straight line through a cloud of chaos and calling it a model — and being right.",
-    "regression-diagnostics": "Even capybaras check the mirror. Residual plots are your model's mirror.",
+    "regression-diagnostics": "The line always looks confident. The capybara reads what it left behind.",
     /* Stats 3 */
     "multiple-regression": "One predictor is a snack. Five predictors is a buffet. Pace yourself.",
     "multicollinearity-and-variable-selection": "Two predictors sharing one trench coat and pretending to be different variables. That's multicollinearity.",
@@ -179,7 +179,7 @@
     "assumptions-of-regression": "Linear, independent, equal-variance, roughly normal. The capybara checks all four before it relaxes.",
     "model-comparison": "Two models enter, one AIC leaves. The capybara bets on the simpler one.",
     "factor-analysis-pca": "43 personality questions, one latent trait: chill. PCA knew it all along.",
-    "manova": "Why test one outcome when you can test four at once and still control your error rate? That's MANOVA.",
+    "manova": "Four outcomes, one verdict. The capybara declines to be interviewed one question at a time.",
     "power-analysis-for-complex-designs": "The capybara saw the effect clearly. Your n = 12 did not.",
     /* Stats 4 */
     "bootstrap-and-resampling": "Resample your own data 10,000 times. Capybaras call this self-care.",
@@ -244,7 +244,7 @@
     "imrad-structure": "Why it looked, how it looked, what it saw, what it means — the capybara tells every study the same four-part way. Put each sentence in its room and the paper reads itself.",
     "reporting-statistics-apa": "Italic t, upright η², and no little zero before the dot. The capybara reports its p-value cleanly — and would never, ever write p = .000.",
     "tables-and-figures": "Chop the axis at 45 and the capybara's three-point lead looks like a landslide. Start the bar at zero and let a small effect look small — that's information too.",
-    "writing-results": "What it tested, how big, how sure — the capybara says each result in one tidy past-tense sentence, then bites its tongue. 'What it means' waits its turn in the Discussion.",
+    "writing-results": "The capybara reports the number and stops. Opinions wait for the Discussion.",
     "nonsignificant-results": "p = .08 is not 'a trend toward a nap.' The capybara reads the interval instead — wide means 'who knows yet,' tight-and-near-zero means 'genuinely nothing here.'",
     "discussion-and-limitations": "The capybara found a correlation, so it writes 'was associated with,' never 'causes.' Match the verb to the design and your claims outlive the ones that oversold.",
     "abstracts-and-titles": "The capybara writes the abstract last, in five tidy moves, and puts the actual number in the result. Its titles say what it found — searchable beats clever when a reader is looking for exactly you.",

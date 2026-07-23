@@ -114,8 +114,8 @@ FAQS_12 = {
 "independent-samples-t-test": [
  ("What is the difference between Student's t-test and Welch's t-test?",
   "Student's version assumes both groups have equal population variances and pools them; Welch's version drops that assumption and adjusts the degrees of freedom instead. Welch's costs almost nothing when variances are equal and protects you when they're not — which is why many statisticians (and R's default <code>t.test</code>) recommend Welch as the routine choice."),
- ("Do my two groups need to be the same size?",
-  "The test handles unequal ns fine. Unequal group sizes do make the equal-variance assumption more consequential (the pooled test misbehaves when the smaller group also has the bigger variance), which is another argument for defaulting to Welch. For a fixed total sample, though, power is maximized when groups are equal."),
+ ("My two groups are men and women, not randomly assigned. Does the t-test still work?",
+  "The arithmetic is identical, and that is exactly the trap. A t-test compares two means; whether the difference it finds licenses a causal claim is settled by how people ended up in the groups, not by the test. Randomly assigned groups start out differing only by chance, so a gap afterwards points at what you did to them. Groups you found rather than made differ in all the ways that made them separate groups in the first place, and any of those can be doing the work. Run the test, describe the result as a group difference rather than an effect, and see <a href=\"../../methods/quasi-experiments/\">quasi-experiments</a> and <a href=\"../../stats-4/causal-dags-and-confounding/\">causal DAGs</a> for what can still be recovered when randomization was never available."),
  ("How many participants do I need for a t-test?",
   "It depends entirely on the effect size you're trying to detect: with α = .05 and 80% power (two-tailed), a large effect (d = 0.8) needs about 26 per group, a medium one (d = 0.5) about 64, and a small one (d = 0.2) nearly 400. Run the numbers in the <a href=\"../../stats-1/effect-size-and-power/\">power playground</a> before collecting data."),
 ],
@@ -125,8 +125,8 @@ FAQS_12 = {
   "Cohen's benchmarks (d ≈ 0.2 small, 0.5 medium, 0.8 large) are rough field-wide defaults, not laws. What counts as meaningful depends on context: d = 0.2 on mortality is enormous; d = 0.5 on a novel lab task may be routine. Compare against typical effects in your literature, and translate d into overlap or percentile terms with the <a href=\"../../effect-sizes.html\">effect-size converter</a> to build intuition."),
  ("What does 80% power mean?",
   "If the true effect is exactly the size you assumed, a study with 80% power has an 80% chance of returning a significant result — and a 20% chance of missing it (β = 0.20). It's a property of the design, chosen before data collection: the conventional compromise between missing real effects and the cost of ever-larger samples."),
- ("Can a result be statistically significant but practically meaningless?",
-  "Yes. With a big enough sample, even a trivial difference (d = 0.02) reaches p < .05, because significance mixes effect size with sample size. The reverse also happens: a large effect in a small study can miss significance. That's precisely why journals require effect sizes alongside p-values: one answers \"is it real?\", the other \"does it matter?\""),
+ ("I found a significant effect with a small sample. Doesn't that make it more impressive?",
+  "It usually makes the estimate less trustworthy, and the reason is worth seeing in numbers. Take a real effect of d = 0.30 and run it with twenty people per group: that study has about a 15% chance of reaching significance at all, and across the runs that do reach it, the average observed d is 0.82, nearly three times the truth. A small sample clears the significance bar only when the noise happens to push in the helpful direction, so the estimates that survive are the exaggerated ones. That is why one significant small study is a reason to look again rather than a reason to believe a large effect, and why <a href=\"../../stats-4/meta-analysis/\">meta-analyses</a> treat published effects as inflated until shown otherwise."),
 ],
 
 # ---------------- STATS 2 ----------------
@@ -143,8 +143,8 @@ FAQS_12 = {
 "post-hoc-tests": [
  ("Which post-hoc test should I use?",
   "For all pairwise comparisons after a standard ANOVA, <strong>Tukey's HSD</strong> is the purpose-built choice. If you're only making a few pre-planned comparisons, <strong>Bonferroni</strong> (or better, <strong>Holm</strong>) is simple and valid. When group variances are clearly unequal, use <strong>Games–Howell</strong>, which doesn't assume homogeneity. The common thread: every option pays for extra comparisons with a stricter per-test bar."),
- ("What is the family-wise error rate?",
-  "The probability of making <em>at least one</em> false-positive across a whole family of tests. One test at α = .05 keeps it at 5%, but ten independent tests push it toward 1 − 0.95¹⁰ ≈ 40%. Corrections like Bonferroni, Holm, and Tukey shrink each test's α so the family as a whole stays at 5%."),
+ ("Do I have to correct for every test in my whole paper?",
+  "No, and nobody does. A correction protects a <em>family</em> of tests, and defining the family is a judgment you make and then state, not something the software decides. The workable convention is that a family is a set of tests bearing on one question: all pairwise comparisons within one ANOVA, or the several outcomes you would treat as interchangeable evidence for a single claim. Tests answering genuinely separate questions belong to separate families. The rule that keeps this honest is the one on timing: decide the boundaries when you plan the analysis, because a family redrawn after seeing which p-values landed where is just <a href=\"../../ethics/questionable-research-practices/\">p-hacking</a> with extra arithmetic."),
  ("Do I need a significant ANOVA before running post-hoc tests?",
   "Tradition says yes, and it's a sensible discipline against fishing. Strictly, though, tests like Tukey's HSD control the family-wise error on their own — they don't need the omnibus F as a gatekeeper, and the two can occasionally disagree (a significant Tukey pair under a non-significant F, or vice versa). Follow your field's convention, but know the protection comes from the correction, not the F."),
 ],
@@ -170,8 +170,8 @@ FAQS_12 = {
 "assumptions-and-when-they-break": [
  ("How do I check if my data is normally distributed?",
   "Look, don't just test: a Q-Q plot (points hugging the diagonal = normal) plus a histogram tells you more than any p-value. Formal tests like Shapiro–Wilk have a trap: in large samples they flag trivial, harmless deviations, and in small samples they miss serious ones — exactly backwards from what you need. Learn the Q-Q signatures in the playground above and trust your eyes."),
- ("What should I do if my data isn't normal?",
-  "First ask whether it matters: with decent sample sizes the CLT makes t-tests and ANOVA quite robust to mild non-normality. If it's serious (heavy skew, wild outliers, small n), the standard escalation is: transform (a log often tames right-skew), switch to a robust variant (Welch, trimmed means), or go <a href=\"../../stats-2/non-parametric-alternatives/\">non-parametric</a>."),
+ ("Can I let the assumption test decide which test I run?",
+  "It is the obvious move, and it changes what your α means without telling you. Running Levene's test and then picking Student's or Welch's t on the result is a two-stage procedure, and the false-positive rate belongs to the procedure as a whole, not to whichever test you land on. Simulated at 200,000 samples with unequal groups (n = 45 and 15) whose smaller group has the larger variance, always pooling gives a 15.2% false-positive rate at a nominal 5%; Welch alone gives 4.9%; letting Levene choose gives 5.7%. Better than pooling blindly, still not the 5% it advertises. The cleaner habit is to decide from the design before the data arrives and <a href=\"../../methods/preregistration-and-open-science/\">write the choice down</a>, which also spares you a decision you would otherwise be making with the answer already in view."),
  ("Which statistical assumption matters most?",
   "Independence, without question. Mild non-normality is usually forgiven by the CLT, and unequal variances have Welch-style fixes — but treating correlated observations (repeated measures, students in the same classroom) as independent silently shrinks your standard errors and manufactures significance. No correction rescues it afterward; it's fixed by design or by models built for structure, like <a href=\"../../stats-4/mixed-and-multilevel-models/\">multilevel models</a>."),
 ],
@@ -213,8 +213,8 @@ FAQS_12 = {
 ],
 
 "regression-diagnostics": [
- ("What should a good residual plot look like?",
-  "Nothing — a structureless, horizontal band of points scattered evenly around zero, like static. Any visible pattern is the model confessing: a curve means the relationship isn't linear, a funnel means non-constant variance, a lone distant point means an observation with outsized pull. \"Boring\" is the goal."),
+ ("How do I know whether a pattern in my residual plot is real or just noise?",
+  "Ask what randomness actually looks like at your sample size, because it looks patterned far more often than people expect. With thirty points, clumps and gentle curves show up constantly in data generated from a perfectly linear model, and a reader hunting for structure will find some. The cheap calibration trick is a lineup: simulate several residual plots from a model where the assumptions hold by construction, shuffle your real plot in among them, and see whether you can pick yours out. If you can't, whatever worried you sits inside the range of ordinary noise. That is the lineup protocol of Buja and colleagues (2009), and running it informally two or three times will retrain your eye better than any threshold."),
  ("What is heteroscedasticity in simple terms?",
   "Residual spread that changes across the range of predictions — typically a funnel: tight errors for small fitted values, wide ones for large (income data does this constantly). The slope estimate stays unbiased, but its standard errors and p-values become unreliable. Fixes: transform y (log is the usual medicine), or use robust (heteroscedasticity-consistent) standard errors."),
  ("Should I delete outliers from my regression?",
@@ -274,8 +274,8 @@ FAQS_34 = {
 "mediation-and-indirect-effects": [
  ("What is the difference between a mediator and a moderator?",
   "A mediator is a <em>mechanism</em>: X causes M, which causes Y — stress harms sleep, which harms health (an arrow chain, tested with <em>indirect effects</em>). A moderator changes the <em>strength</em> of an effect: the training works for novices but not experts (an \"it depends,\" tested with <a href=\"../../stats-3/interactions-in-regression/\">interaction terms</a>). Mediation answers \"how does it work?\"; moderation answers \"for whom / when?\""),
- ("Why is bootstrapping used to test mediation?",
-  "The indirect effect is a product, a × b, and products of normal-ish estimates are themselves skewed — the old Sobel test pretends otherwise and loses power. <a href=\"../../stats-4/bootstrap-and-resampling/\">Bootstrapping</a> resamples the data thousands of times, computes a×b in each, and reads the confidence interval straight off that skewed distribution. If the interval excludes zero, the indirect effect is supported."),
+ ("How many participants does a mediation analysis need?",
+  "Many more than the study you were probably picturing. Because the indirect effect is a <em>product</em>, both paths have to be estimated well, so the sample is set by the weaker of the two. Simulating the percentile bootstrap on standardized data: two medium paths (a = b = .39) reach 80% power at about 70 to 80 people, while two small paths (a = b = .14) need roughly 550. For comparison, detecting a single correlation of .14 on its own takes about 400, so the product costs you more than either of its halves. The practical consequence is that mediation added to an existing study as a bonus analysis is usually underpowered, and a null indirect effect from 60 participants tells you very little."),
  ("Can mediation analysis prove causation?",
   "It quantifies a pattern <em>consistent with</em> your proposed causal chain, nothing stronger: the statistics can't verify the arrows' directions, and reversed or confounded models often fit equally well. The causal weight rests on design (temporal ordering, experiments, longitudinal data) and theory. Cross-sectional mediation, where X, M, and Y are measured simultaneously, deserves particular skepticism."),
 ],
@@ -283,8 +283,8 @@ FAQS_34 = {
 "logistic-regression": [
  ("How do I interpret an odds ratio?",
   "It's the multiplier on the odds for each one-unit increase in the predictor. OR = 1.5 means each extra unit multiplies the odds of the outcome by 1.5 (+50%); OR = 0.8 shrinks them by 20%; OR = 1 means no effect. Two cautions: \"odds\" are p/(1−p), not probability — and an impressive-sounding OR can mean a tiny absolute change when the baseline risk is low."),
- ("Why can't I just use linear regression for a yes/no outcome?",
-  "A straight line happily predicts \"probabilities\" of −0.3 or 1.4, which are nonsense; and a binary outcome violates the constant-variance and normal-error assumptions that make linear regression's inference valid. The logistic curve fixes all of it at once: predictions squeezed into (0, 1), with a model fit by maximum likelihood on the scale where the relationship really is linear — log-odds."),
+ ("Why is my odds ratio in the millions, with a confidence interval to match?",
+  "Your data is almost certainly <strong>separated</strong>: some predictor (or combination of them) splits the outcome perfectly, so every case above a cut-off is a 1 and every case below is a 0. No finite coefficient fits that best, because a steeper curve always fits it better than the last one. The estimate simply runs off toward infinity until the software gives up and prints wherever it stopped. Fitting eight perfectly split points by hand, the slope passes an odds ratio of 4 million by iteration 10 and the algorithm loses its footing entirely by iteration 20. It is a signal, not a failure: a predictor that good is usually a proxy for the outcome, a category with no cases in one cell, or a sample too small to have any overlap. The standard remedies are to merge the sparse categories, drop the offending predictor, or fit a penalized model (Firth logistic regression) that keeps the estimate finite."),
  ("What is the difference between odds and probability?",
   "Probability is successes ÷ all attempts; odds are successes ÷ failures. A 75% probability is odds of 3 (three successes per failure). They diverge most in the middle of the range (p = .5 is odds = 1) and converge for rare events — p = .01 is odds ≈ .0101, which is why odds ratios approximate risk ratios only when the outcome is uncommon."),
 ],
@@ -317,8 +317,8 @@ FAQS_34 = {
 ],
 
 "manova": [
- ("When should I use MANOVA instead of separate ANOVAs?",
-  "When your outcomes form a conceptually related set (anxiety + depression + stress) and you want one honest verdict about the <em>profile</em>. MANOVA controls the family-wise error a pile of ANOVAs would inflate, and it can detect coordinated patterns (small opposite shifts in correlated outcomes) that every univariate test misses. Unrelated outcomes, though, just dilute each other; don't stuff the model."),
+ ("Does a significant MANOVA protect my follow-up ANOVAs from multiple testing?",
+  "It doesn't, and the belief that it does is one of the most durable habits in the multivariate literature. The idea borrows from the omnibus F in ANOVA: pass the overall test, and you have earned the right to look closer. The borrowing fails here because the multivariate test and the univariate ones ask different questions of different quantities, so clearing the first says nothing about the false-positive rate of the several tests that follow. Correct those on their own terms, with <a href=\"../../stats-2/post-hoc-tests/\">Bonferroni or an FDR procedure</a> across the outcomes. The logic breaks in the other direction too: MANOVA can be significant when no single outcome is, which is what the ✨ demo above is built to show."),
  ("Should I report Wilks' lambda or Pillai's trace?",
   "Wilks' Λ is the traditional default and what most textbooks tabulate. Pillai's trace is the most robust when assumptions wobble (unequal covariance matrices, unequal group sizes), so many methodologists recommend it outright. With two groups they (and Hotelling's T²) agree exactly; when they disagree materially with 3+ groups, that itself hints at assumption trouble, and Pillai is the safer citation."),
  ("What should I do after a significant MANOVA?",
@@ -348,8 +348,8 @@ FAQS_34 = {
 "bayesian-thinking": [
  ("What is the main difference between Bayesian and frequentist statistics?",
   "What \"probability\" means. Frequentists treat parameters as fixed unknowns and put probability on <em>data procedures</em> (\"5% of such intervals miss\"); Bayesians put probability on <em>parameter values themselves</em>, as degrees of belief updated by evidence (\"the rate is 95% likely between .55 and .72\"). The Bayesian version answers the question people naturally ask — at the price of specifying a prior."),
- ("How do I choose a prior?",
-  "Match it to your honest knowledge. Know little? A flat or weakly-informative prior lets the data dominate (and typically lands near the frequentist answer). Know a lot — previous studies, physical limits? Encoding it is the whole point, especially when data is scarce. Two guardrails: be transparent about the choice, and run a sensitivity check — if reasonable priors give conflicting conclusions, your data is speaking too softly."),
+ ("How strong is my prior, in units of data?",
+  "For a proportion there is an exact answer, and the playground above is built on it. A Beta(α, β) prior updates to Beta(α + successes, β + failures), so the prior enters the arithmetic as though you had already run α + β trials of which α succeeded. That total is precisely what the \"prior confidence\" slider sets. At its default of 6, twenty real trials outvote your belief better than three to one, and a posterior mean of .65 sits almost on top of an observed .70. Push it to 80 and the same twenty trials barely move anything. Two habits follow: state the prior in the paper as the number of pseudo-observations it is worth, and refit under a couple of defensible alternatives, because a conclusion that survives only one prior is a conclusion about the prior."),
  ("What is a Bayes factor?",
   "The evidence ratio between two hypotheses: how much more probable the observed data is under H₁ than under H₀. BF = 10 means the data favors H₁ ten-to-one; BF = 1 means the data can't tell them apart. It's the Bayesian counterpart to significance testing, with two perks p-values lack: it can quantify evidence <em>for</em> a null, and it doesn't inflate with optional stopping."),
 ],
@@ -450,8 +450,8 @@ FAQS_METHODS = {
 # ---------------- METHODS — Research Design ----------------
 
 "from-question-to-hypothesis": [
- ("What's the difference between a hypothesis and a prediction?",
-  "A <strong>hypothesis</strong> is a general proposed relationship between constructs — \"background music affects learning.\" A <strong>prediction</strong> is the specific, observable consequence you'd expect in a particular study if the hypothesis were true — \"first-year students will recall fewer words with lyrical music than in silence.\" The hypothesis is the idea; the prediction is what you commit to <em>before</em> running the study, pinned to a population, concrete measures, and a direction."),
+ ("My hypothesis has three parts. Is that one hypothesis or three?",
+  "Count the tests, not the sentences. \"Music lowers recall, slows reading, and raises reported stress\" is three predictions sharing a subject: each will get its own statistical test, its own chance of a false positive, and its own line in your results. Packing them into one sentence doesn't merge them. Decide in advance which ones are the confirmatory tests you are willing to be judged on, write that down in your <a href=\"../../methods/preregistration-and-open-science/\">preregistration</a>, and correct across that set the way <a href=\"../../stats-2/post-hoc-tests/\">multiple-comparison corrections</a> describe. A compound prediction is perfectly good science; it turns bad when it stays vague about which part had to survive."),
  ("What makes a hypothesis falsifiable?",
   "There has to be some possible result that would count as evidence <em>against</em> it. \"Music changes recall\" is falsifiable: a clear no-difference result contradicts it. \"Music affects people somehow\" is not, because any outcome at all can be squeezed to fit, so it can never be wrong and therefore never informative. Falsifiability, following Popper, is the line between a scientific claim and an empty one."),
  ("Should I use a one-tailed or a two-tailed hypothesis?",

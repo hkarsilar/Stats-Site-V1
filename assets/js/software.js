@@ -109,7 +109,8 @@ window.SOFTWARE = {
     apa: '<p>The omnibus ANOVA was significant, <em>F</em>(3, 116) = 7.21, <em>p</em> &lt; .001, η² = .16. Tukey’s HSD comparisons showed the drug group improved more than placebo, <em>M</em><sub>diff</sub> = 5.2, 95% CI [1.4, 9.0], <em>p</em> = .003, and than waitlist, <em>M</em><sub>diff</sub> = 6.0, 95% CI [2.1, 9.9], <em>p</em> &lt; .001; the two control groups did not differ, <em>p</em> = .84.</p>',
     tips: [
       'Always name the correction method ("Tukey-corrected", "Bonferroni-adjusted") — a bare p-value from multiple comparisons is meaningless.',
-      'Write <em>p</em> &lt; .001 only when p is genuinely below .001; otherwise give the exact value to 2–3 decimals (<em>p</em> = .003).'
+      'Write <em>p</em> &lt; .001 only when p is genuinely below .001; otherwise give the exact value to 2–3 decimals (<em>p</em> = .003).',
+      'Both post-hoc dialogs are built around family-wise methods (Tukey, Bonferroni, Holm, Šidák, Games-Howell). For a false-discovery-rate correction across a list of p-values, apply Benjamini–Hochberg yourself — one line in R or Python, in the snippet below.'
     ]
   },
   "factorial-anova-two-way": {
@@ -149,6 +150,26 @@ window.SOFTWARE = {
     tips: [
       'The corrected (fractional) dfs — <em>F</em>(1.56, 45.2) — tell the reader a sphericity correction was applied; also name it and give ε.',
       'χ² and ε are Greek, so no italics; <em>F</em>, <em>p</em>, and <em>M</em> are Latin, so italics.'
+    ]
+  },
+  "assumptions-and-when-they-break": {
+    spss: [
+      'For Q-Q plots: <strong>Analyze → Descriptive Statistics → Explore…</strong>, outcome into <em>Dependent List</em> and (for a group comparison) the grouping variable into <em>Factor List</em>.',
+      '<em>Plots…</em>: tick <strong>Normality plots with tests</strong> for a Q-Q plot per group plus Shapiro-Wilk, and choose <em>Spread vs Level with Levene Test</em> for the variance check.',
+      'For equal variances inside the test itself: <strong>One-Way ANOVA → Options…</strong> → <em>Homogeneity of variance test</em>. In the Independent-Samples T Test the equivalent option is opt-in from SPSS 31 (it used to print automatically).',
+      'For a regression, the assumption to check is a residual plot, not the raw outcome: <strong>Regression → Linear → Plots…</strong>, put <em>*ZRESID</em> on Y and <em>*ZPRED</em> on X, and tick <em>Normal probability plot</em>.'
+    ],
+    jasp: [
+      'Inside <strong>T-Tests → Independent Samples T-Test</strong>, open <em>Assumption Checks</em> and tick <em>Normality</em> and <em>Equality of variances</em>.',
+      'Inside <strong>ANOVA → ANOVA</strong>, open <em>Assumption Checks</em> and tick <em>Homogeneity tests</em> and <em>Q-Q plot of residuals</em> — one plot of the residuals replaces one plot per group.',
+      'For a look before you test anything: <strong>Descriptives → Plots</strong> gives Q-Q plots and distribution plots side by side.',
+      'In <strong>Regression → Linear Regression → Plots</strong>, tick <em>Residuals vs. predicted</em> and <em>Q-Q plot standardized residuals</em>.'
+    ],
+    apa: '<p>Assumptions were checked before analysis. Q-Q plots of the residuals showed no marked departure from normality, and Levene’s test indicated unequal variances, <em>F</em>(1, 58) = 8.42, <em>p</em> = .005, so Welch’s correction was applied throughout.</p>',
+    tips: [
+      'Report the assumption check only when it changed what you did, or when a reader would otherwise wonder. A paragraph reciting four non-significant tests is noise.',
+      'For ANOVA and regression it is the <strong>residuals</strong> that carry the normality assumption, not the raw outcome and never the predictors.',
+      'Levene’s and Shapiro-Wilk both scale with <em>n</em>: near-certain to flag a harmless wobble in a large sample, near-powerless in a small one. The plot is the better evidence, and it is what belongs in a supplement.'
     ]
   },
   "non-parametric-alternatives": {
@@ -244,7 +265,9 @@ window.SOFTWARE = {
     ],
     apa: '<p>Inspection of residual plots showed no evidence of nonlinearity or heteroscedasticity; standardized residuals were approximately normal (all |<em>z</em>| &lt; 3), and no case was unduly influential (all Cook’s <em>D</em> &lt; 0.25). Diagnostics are reported narratively like this in the Results, before the model estimates.</p>',
     tips: [
-      'One or two sentences confirming the checks (and what you did about violations) is standard — plots themselves usually go to supplementary materials.'
+      'One or two sentences confirming the checks (and what you did about violations) is standard — plots themselves usually go to supplementary materials.',
+      'SPSS’s Linear Regression dialog has no heteroscedasticity-consistent (robust) standard-error option, which catches out people who read the usual advice and go looking for the checkbox. The practical SPSS routes are the <em>Bootstrap…</em> button in the same dialog or an add-on macro; in R and Python the correction is one argument (<code>sandwich</code>/<code>car</code> in R, <code>cov_type="HC3"</code> in statsmodels).',
+      'The Durbin-Watson statistic in the <em>Statistics…</em> box only tests independence against <em>order</em>. It says nothing about clustering (several rows per participant, per class, per clinic), which needs a model that knows about the grouping.'
     ]
   },
 
@@ -371,7 +394,9 @@ window.SOFTWARE = {
     ],
     apa: '<p>Each additional study hour increased the odds of passing, <em>b</em> = 0.85, <em>SE</em> = 0.21, Wald χ²(1) = 16.40, <em>p</em> &lt; .001, <em>OR</em> = 2.34, 95% CI [1.55, 3.53]. The full model outperformed the null, χ²(2) = 28.7, <em>p</em> &lt; .001, Nagelkerke <em>R</em>² = .29.</p>',
     tips: [
-      'Readers think in odds ratios, not logits — always report <em>OR</em> with its CI (an OR is significant when its CI excludes 1, not 0).'
+      'Readers think in odds ratios, not logits — always report <em>OR</em> with its CI (an OR is significant when its CI excludes 1, not 0).',
+      'An Exp(B) in the thousands with a CI running from near-0 to near-infinity means <strong>separation</strong>, not a spectacular predictor: some variable splits the outcome perfectly and the estimate has run off to infinity. Look for a category with an empty cell, merge sparse levels, or fit a penalized (Firth) model.',
+      'The Wald test each row prints is the least trustworthy part of the output when a coefficient is large. For a predictor worth arguing about, refit without it and compare models by likelihood ratio (SPSS: enter it in its own block; JASP: the model-comparison table).'
     ]
   },
   "model-comparison": {
@@ -425,7 +450,7 @@ window.SOFTWARE = {
     ],
     apa: '<p>Therapy condition affected the symptom profile, Pillai’s trace = 0.24, <em>F</em>(2, 77) = 12.10, <em>p</em> &lt; .001, η<sub>p</sub>² = .24. Bonferroni-corrected follow-up ANOVAs (α = .025) showed an effect on anxiety, <em>F</em>(1, 78) = 8.91, <em>p</em> = .004, but not depression, <em>F</em>(1, 78) = 3.10, <em>p</em> = .082.</p>',
     tips: [
-      'Name the multivariate statistic you used (Pillai’s trace or Wilks’ Λ) and give its F conversion with both dfs.',
+      'Name the multivariate statistic you used (Pillai’s trace or Wilks’ Λ), give its F conversion with both dfs, and put the multivariate partial η² next to it — a table of multivariate p-values with no effect size is as incomplete here as anywhere else.',
       'Report the follow-up strategy and its correction — a significant MANOVA alone doesn’t say which outcomes moved.'
     ]
   },
