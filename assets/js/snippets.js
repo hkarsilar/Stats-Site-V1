@@ -145,7 +145,7 @@ window.SNIPPETS = {
     py: 'from statsmodels.multivariate.manova import MANOVA\nm = MANOVA.from_formula("anxiety + depression ~ group", data=df)\nprint(m.mv_test())   # Wilks, Pillai, Hotelling-Lawley, Roy\n# MANCOVA: "anxiety + depression ~ group + pretest"',
   },
   "power-analysis-for-complex-designs": {
-    r: 'library(pwr)\npwr.anova.test(k = 3, f = 0.25, power = 0.80)   # one-way ANOVA\n# for mixed/complex designs, simulate instead:\nlibrary(simr)   # power by simulation for lmer models',
+    r: 'library(pwr)\npwr.anova.test(k = 3, f = 0.25, power = 0.80)   # one-way ANOVA; n is PER GROUP (~53)\n# for mixed/complex designs, simulate instead:\nlibrary(simr)   # power by simulation for lmer models',
     py: 'from statsmodels.stats.power import FTestAnovaPower\nn = FTestAnovaPower().solve_power(effect_size=0.25,\n                                  k_groups=3, power=0.80,\n                                  alpha=0.05)\nprint(n)   # total N; complex designs -> simulate'
   },
   /* ---------------- Stats 4 ---------------- */

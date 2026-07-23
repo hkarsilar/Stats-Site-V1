@@ -85,7 +85,7 @@ function loadWindow(files) {
 }
 
 /* Slice a balanced {…} or […] starting at src[start] (which must be the
-   opening bracket), honouring '…' "…" `…` strings and \ escapes. */
+   opening bracket), honoring '…' "…" `…` strings and \ escapes. */
 function sliceBalanced(src, start) {
   const open = src[start], close = open === '{' ? '}' : ']';
   let depth = 0, str = null, esc = false;

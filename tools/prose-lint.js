@@ -120,7 +120,7 @@ function loadWindow(files) {
   return sandbox.window;
 }
 
-/* Slice a balanced […] starting at src[start], honouring quotes + \ escapes. */
+/* Slice a balanced […] starting at src[start], honoring quotes + \ escapes. */
 function sliceBalanced(src, start) {
   const open = src[start], close = open === '{' ? '}' : ']';
   let depth = 0, str = null, esc = false;

@@ -37,7 +37,7 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v25";  /* P39 second run: two QUIPS rewritten in site.js */
+const CACHE_VERSION = "sc-v26";  /* P39 seventh run: two Ethics QUIPS tightened in site.js */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location

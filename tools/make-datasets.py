@@ -102,7 +102,7 @@ def one_way_anova(groups):
 
 
 def cronbach_alpha(rows):
-    """rows = list of item-vectors (complete cases). Standardised-item alpha
+    """rows = list of item-vectors (complete cases). Standardized-item alpha
     is NOT used; this is raw-score alpha = k/(k-1) (1 - Σ var_i / var_total)."""
     k = len(rows[0])
     item_cols = list(zip(*rows))
@@ -113,7 +113,7 @@ def cronbach_alpha(rows):
 
 def logistic_fit(X, y, iters=6000, lr=0.3):
     """Tiny dependency-free logistic regression via gradient ascent on the
-    log-likelihood, with predictors standardised for stability then the
+    log-likelihood, with predictors standardized for stability then the
     coefficients mapped back to the original scale. Returns b0 + list of bk."""
     p = len(X[0])
     mu = [mean([row[j] for row in X]) for j in range(p)]
@@ -135,7 +135,7 @@ def logistic_fit(X, y, iters=6000, lr=0.3):
         b0 += lr * g0 / n
         for j in range(p):
             b[j] += lr * g[j] / n
-    # map standardised coefficients back to the raw predictor scale
+    # map standardized coefficients back to the raw predictor scale
     raw = [b[j] / sg[j] for j in range(p)]
     raw0 = b0 - sum(b[j] * mu[j] / sg[j] for j in range(p))
     return raw0, raw

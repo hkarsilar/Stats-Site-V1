@@ -124,7 +124,7 @@ def load_courses():
     return courses
 
 
-# ------------------------------------------------------------------ colour
+# ------------------------------------------------------------------ color
 
 def hex_to_rgb(h):
     h = h.lstrip("#")
@@ -205,7 +205,7 @@ def wrap(draw, text, font, max_w):
 
 
 def draw_capybara(draw, cx, cy, height):
-    """Port of site.js capy() (viewBox 0 0 64 60) to canvas coords, centred on
+    """Port of site.js capy() (viewBox 0 0 64 60) to canvas coords, centered on
     (cx, cy) at the given pixel height. Cream palette; dark eyes/nostrils."""
     scale = height / 60.0
     ox = cx - 32 * scale
