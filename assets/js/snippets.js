@@ -84,7 +84,7 @@ window.SNIPPETS = {
     py: 'from scipy import stats\nprint(stats.mannwhitneyu(drug, ctrl))     # 2 independent groups\nprint(stats.kruskal(a, b, c))             # 3+ groups\nprint(stats.wilcoxon(before, after))      # paired'
   },
   "chi-square-tests": {
-    r: 'tab <- matrix(c(30, 10,\n                20, 40), nrow = 2, byrow = TRUE)\nchisq.test(tab)            # association between two categoricals\nchisq.test(tab)$expected   # the counts H0 predicted',
+    r: 'tab <- matrix(c(30, 10,\n                20, 40), nrow = 2, byrow = TRUE)\nchisq.test(tab)            # association between two categoricals\nchisq.test(tab)$expected   # the counts H0 predicted\nchisq.test(tab)$stdres     # adjusted residuals: |z| > 2 marks the cell',
     py: 'import numpy as np\nfrom scipy import stats\ntab = np.array([[30, 10], [20, 40]])\nchi2, p, dof, expected = stats.chi2_contingency(tab)\nprint(chi2, p)\nprint(expected)   # the counts H0 predicted'
   },
   "correlation": {
@@ -134,7 +134,7 @@ window.SNIPPETS = {
   },
   "model-comparison": {
     r: 'm1 <- lm(score ~ hours, df)\nm2 <- lm(score ~ hours + sleep, df)\nanova(m1, m2)       # F-test for nested models\nAIC(m1, m2); BIC(m1, m2)   # penalized fit, lower = better',
-    py: 'import statsmodels.formula.api as smf\nm1 = smf.ols("score ~ hours", data=df).fit()\nm2 = smf.ols("score ~ hours + sleep", data=df).fit()\nprint(m1.compare_f_test(m2))     # wait: call on the LARGER model\nprint(m1.aic, m2.aic)            # lower = better'
+    py: 'import statsmodels.formula.api as smf\nm1 = smf.ols("score ~ hours", data=df).fit()\nm2 = smf.ols("score ~ hours + sleep", data=df).fit()\nprint(m2.compare_f_test(m1))     # call it on the LARGER model, pass the smaller\nprint(m1.aic, m2.aic)            # lower = better'
   },
   "factor-analysis-pca": {
     r: 'pc <- prcomp(df_items, scale. = TRUE)\nsummary(pc); plot(pc, type = "l")     # scree plot\nlibrary(psych)\nfa(df_items, nfactors = 2, rotate = "oblimin")   # proper EFA',
@@ -186,7 +186,7 @@ window.SNIPPETS = {
     py: 'from sklearn.experimental import enable_iterative_imputer\nfrom sklearn.impute import IterativeImputer\nimport pandas as pd\nimp = IterativeImputer(sample_posterior=True, random_state=0)\ndf_imp = pd.DataFrame(imp.fit_transform(df), columns=df.columns)\n# proper pooled inference: run several imputations and combine'
   },
   "meta-analysis": {
-    r: 'library(metafor)\nres <- rma(yi = d, sei = se, data = studies)  # DerSimonian-Laird family\nsummary(res)      # pooled effect, tau^2, I^2, Q\nforest(res)       # the forest plot\nfunnel(res)       # eyeball publication bias',
+    r: 'library(metafor)\nres <- rma(yi = d, sei = se, data = studies)  # random effects, REML by default\nsummary(res)      # pooled effect, tau^2, I^2, Q\nforest(res)       # the forest plot\nfunnel(res)       # eyeball publication bias',
     py: 'from statsmodels.stats.meta_analysis import combine_effects\nres = combine_effects(studies["d"], studies["se"]**2)\nprint(res.summary_frame())   # fixed + random effects, I^2'
   },
   "psychometric-functions": {

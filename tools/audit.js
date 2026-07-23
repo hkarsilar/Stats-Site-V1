@@ -246,6 +246,24 @@ function staticLinks(src) {
   return out;
 }
 
+/* Ids declared statically in a file, cached. Only static ids count: a
+   JS-injected anchor (see JS_IDS) can't be seen here. */
+const idCache = new Map();
+function staticIds(file) {
+  if (!idCache.has(file)) {
+    const src = read(file) || '';
+    idCache.set(file, new Set([...src.matchAll(/\sid\s*=\s*"([^"]+)"/g)].map(m => m[1])));
+  }
+  return idCache.get(file);
+}
+
+/* Anchors that exist only after site.js runs, so a static scan can't see them.
+   Keep this list short — each entry is a promise that some script injects it. */
+const JS_IDS = new Set([
+  'run-it',        // site.js injects the SPSS/JASP box (plan.html deep-links it)
+  'main-content',  // site.js injectA11y()
+]);
+
 function checkLinks(file) {
   const dir = path.dirname(file);
   for (const href of staticLinks(read(file))) {
@@ -257,7 +275,14 @@ function checkLinks(file) {
     if (!clean) continue;
     let target = path.resolve(dir, clean);
     if (clean.endsWith('/')) target = path.join(target, 'index.html');
-    if (!fs.existsSync(target)) err(`${rel(file)} → broken link: ${href}`);
+    if (!fs.existsSync(target)) { err(`${rel(file)} → broken link: ${href}`); continue; }
+    /* …and if it carries a #fragment, that anchor must exist in the target.
+       Nothing else checks this, so a typo'd `problems.html#p2-99` would just
+       silently drop the reader at the top of the page. */
+    const frag = href.includes('#') ? href.split('#').slice(1).join('#') : '';
+    if (frag && !JS_IDS.has(frag) && target.endsWith('.html') && !staticIds(target).has(frag)) {
+      err(`${rel(file)} → link to a missing anchor: ${href}`);
+    }
   }
 }
 

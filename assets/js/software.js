@@ -400,7 +400,7 @@ window.SOFTWARE = {
     ],
     jasp: [
       '<strong>Factor → Exploratory Factor Analysis</strong> (or <em>Principal Component Analysis</em>).',
-      'Choose the number of factors by <em>Eigenvalues &gt; 1</em>, <em>scree plot</em>, or best: <em>parallel analysis</em> (JASP’s default).',
+      'Choose the number of factors by <em>Eigenvalues &gt; 1</em>, <em>scree plot</em>, or best: <em>parallel analysis</em>, offered in the same dropdown.',
       'Set <em>Rotation</em> to oblique (<em>oblimin</em>) unless you have reason to force independence.',
       'Tick <em>KMO test</em> and <em>Bartlett’s test</em> under Assumption Checks.'
     ],
