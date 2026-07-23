@@ -38,7 +38,7 @@ window.SOFTWARE = {
     spss: [
       '<strong>Analyze → Compare Means → Independent-Samples T Test…</strong> (in SPSS 29+ the submenu is named <em>Compare Means and Proportions</em>).',
       'Move the outcome into <em>Test Variable(s)</em> and the group variable into <em>Grouping Variable</em>; click <em>Define Groups…</em> and enter the two codes.',
-      'Tick <em>Estimate effect sizes</em> for Cohen’s d.',
+      'Tick <em>Estimate effect sizes</em> for Cohen’s d. <strong>In SPSS 31+ also tick the homogeneity-of-variance option</strong> in the same dialog: Levene’s test used to print automatically and is now opt-in.',
       'Output shows two rows: check Levene’s test first — if it’s significant (unequal variances), read the <em>Equal variances not assumed</em> (Welch) row. Many statisticians recommend simply always using that row.'
     ],
     jasp: [
@@ -172,7 +172,7 @@ window.SOFTWARE = {
   },
   "chi-square-tests": {
     spss: [
-      '<strong>Analyze → Descriptive Statistics → Crosstabs…</strong>',
+      '<strong>Analyze → Descriptive Statistics → Crosstabs…</strong> (SPSS 31+ also offers a direct <strong>Analyze → Descriptive Statistics → Chi-Square</strong> dialog; Crosstabs is still the route that gives you the table of counts to interpret).',
       'One variable into <em>Row(s)</em>, the other into <em>Column(s)</em>.',
       '<em>Statistics…</em>: tick <em>Chi-square</em> and <em>Phi and Cramér’s V</em>.',
       '<em>Cells…</em>: tick <em>Expected</em> counts (check none are below 5) and <em>Column</em> percentages for interpretation.',
@@ -340,7 +340,7 @@ window.SOFTWARE = {
   },
   "mediation-and-indirect-effects": {
     spss: [
-      'Install Hayes’s free <strong>PROCESS</strong> macro (processmacro.org); it appears under <strong>Analyze → Regression → PROCESS</strong>.',
+      'Install Hayes’s free <strong>PROCESS</strong> macro (processmacro.org); it appears under <strong>Analyze → Regression → PROCESS</strong>. <strong>SPSS 32+ also ships a native <em>Analyze → Mediation Analysis</em></strong>, so check that menu before installing anything; PROCESS remains the reference implementation most published papers cite.',
       'Choose <em>Model 4</em> (simple mediation); assign X, Y, and M.',
       'Set bootstrap samples to 5,000 (or more) — inference uses the bootstrap CI of the indirect effect.',
       'Read: paths a and b, the indirect effect (ab) with its CI, and the direct effect c′.'

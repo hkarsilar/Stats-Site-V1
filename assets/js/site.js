@@ -248,13 +248,13 @@
     "nonsignificant-results": "p = .08 is not 'a trend toward a nap.' The capybara reads the interval instead — wide means 'who knows yet,' tight-and-near-zero means 'genuinely nothing here.'",
     "discussion-and-limitations": "The capybara found a correlation, so it writes 'was associated with,' never 'causes.' Match the verb to the design and your claims outlive the ones that oversold.",
     "abstracts-and-titles": "The capybara writes the abstract last, in five tidy moves, and puts the actual number in the result. Its titles say what it found — searchable beats clever when a reader is looking for exactly you.",
-    "final-checklist": "The capybara rereads its own paper as a grumpy grader: does every number match, does each df fit the n, is every figure and citation accounted for? Cheap mistakes, caught before they cost marks.",
+    "final-checklist": "The capybara rereads its own paper pretending to hate it. Finds four numbers that disagree. Works every time.",
     /* Guides */
     "analyze-thesis-data-jasp": "The capybara's first thesis analysis felt enormous too. Then it clicked Descriptives, breathed, and did the next step. There is always just a next step.",
     "spss-output-to-apa": "SPSS prints eleven numbers; your sentence needs five. The capybara knows which five — and it has never once copied 'Sig. = .000'.",
     "choose-statistics-dissertation": "One outcome, two groups, nobody measured twice — the capybara names the test before its tea cools. Not memory; just asking three questions in order.",
     "clean-survey-data": "The capybara cleans data the way it grooms: gently, in a fixed order, and never losing the raw coat underneath.",
-    "complete-worked-project": "One question, one file, one paragraph at the end. The capybara has walked this path enough times to know that nothing in the middle is optional.",
+    "complete-worked-project": "One question, one dataset, no skipping ahead to the p-value. The capybara has tried skipping ahead. It does not work.",
     /* Root pages */
     "home": "No rush — capybaras never cram.",
     "toolbox": "A capybara's toolbox: warm water, good snacks, zero deadlines. Yours has calculators too.",

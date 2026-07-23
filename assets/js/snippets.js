@@ -159,7 +159,7 @@ window.SNIPPETS = {
   },
   "bayesian-estimation": {
     r: 'library(rstanarm)   # install.packages("rstanarm")\nfit <- stan_glm(score ~ hours, data = df, refresh = 0)\nposterior_interval(fit, prob = 0.95)   # credible intervals\nplot(fit, "areas")',
-    py: 'import pymc as pm   # pip install pymc\nwith pm.Model():\n    a = pm.Normal("a", 0, 10); b = pm.Normal("b", 0, 10)\n    s = pm.HalfNormal("s", 10)\n    pm.Normal("y", a + b * df.hours, s, observed=df.score)\n    idata = pm.sample()\nprint(pm.summary(idata))   # posterior + credible intervals'
+    py: 'import pymc as pm, arviz as az   # pip install pymc (arviz comes with it)\nwith pm.Model():\n    a = pm.Normal("a", 0, 10); b = pm.Normal("b", 0, 10)\n    s = pm.HalfNormal("s", 10)\n    pm.Normal("y", a + b * df.hours, s, observed=df.score)\n    idata = pm.sample()\nprint(az.summary(idata))   # posterior + credible intervals'
   },
   "generalized-linear-models": {
     r: '# count outcome -> Poisson GLM with a log link\nfit <- glm(citations ~ years + field, data = df,\n           family = poisson)\nsummary(fit)\nexp(coef(fit))   # multiplicative effects on the expected count',

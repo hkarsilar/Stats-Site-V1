@@ -139,17 +139,26 @@
     "use strict";
     var scen = "good", pts = [], fit0 = 0, fit1 = 0, r2 = 0;
     var DMIN = 0, DMAX = 10;
+    var NPTS = 40, xs = [], zs = [];
     var sc, rc;
+
+    // Frozen noise: seed() draws the x and standard-normal pools once; gen() only
+    // re-maps them for the chosen scenario. So flipping Healthy → Funnel → Healthy
+    // returns the identical cloud and the identical R², and the reader can tell the
+    // scenario apart from a new sample. Only "New sample" reseeds.
+    function seed() {
+      xs = []; zs = [];
+      for (var i = 0; i < NPTS; i++) { xs.push(0.4 + Math.random() * 9.2); zs.push(VIZ.randn()); }
+    }
 
     function gen() {
       pts = [];
-      var npts = 40;
-      for (var i = 0; i < npts; i++) {
-        var x = 0.4 + Math.random() * 9.2, y;
-        if (scen === "good") y = 2 + 0.7 * x + VIZ.gauss(0, 0.9);
-        else if (scen === "curve") y = 1 + 0.18 * (x - 5) * (x - 5) + VIZ.gauss(0, 0.7);
-        else if (scen === "funnel") y = 2 + 0.7 * x + VIZ.gauss(0, 0.25 + 0.32 * x);
-        else y = 2 + 0.7 * x + VIZ.gauss(0, 0.8);
+      for (var i = 0; i < NPTS; i++) {
+        var x = xs[i], z = zs[i], y;
+        if (scen === "good") y = 2 + 0.7 * x + 0.9 * z;
+        else if (scen === "curve") y = 1 + 0.18 * (x - 5) * (x - 5) + 0.7 * z;
+        else if (scen === "funnel") y = 2 + 0.7 * x + (0.25 + 0.32 * x) * z;
+        else y = 2 + 0.7 * x + 0.8 * z;
         pts.push({ x: x, y: y });
       }
       if (scen === "outlier") pts.push({ x: 9.3, y: 1.0 });   // high-leverage point pulling the line down
@@ -201,10 +210,10 @@
     }
 
     document.getElementById("scen-seg").addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; scen = b.dataset.s; Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x.dataset.s === scen); }); gen(); });
-    document.getElementById("resample").addEventListener("click", gen);
+    document.getElementById("resample").addEventListener("click", function () { seed(); gen(); });
     window.addEventListener("resize", function () { fitc(); update(); });
     VIZ.onTheme(update);
-    fitc(); gen();
+    fitc(); seed(); gen();
   })();
   </script>
 </body>
