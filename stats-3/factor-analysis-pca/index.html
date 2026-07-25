@@ -85,6 +85,11 @@
           <p>They look similar but answer different questions. <strong>PCA</strong> is descriptive: it repackages the variance into uncorrelated components, no model assumed. <strong>Factor analysis</strong> is a model: it assumes real, unobserved <em>latent factors</em> (like "extraversion") that <em>cause</em> the observed responses, and separates shared variance from each variable's unique noise. Use PCA to compress; use factor analysis to argue that a hidden trait exists.</p>
         </div>
 
+        <h2>Is the matrix worth factoring at all?</h2>
+        <p>Before any of this, software asks whether your variables are correlated enough to have shared structure to find. Two screens come as standard, and both are worth understanding rather than ticking.</p>
+        <p><strong>KMO</strong> (the Kaiser-Meyer-Olkin measure of sampling adequacy) compares the ordinary correlations between your variables with their <em>partial</em> correlations, the ones left after every other variable has been held constant. Shared structure means the plain correlations survive that adjustment and KMO climbs toward 1; variables that only correlate in unrelated pairs push it down. Kaiser's labels run from marvelous above .90 through middling in the .70s to unacceptable below .50, and .60 is the usual working floor. A clean two-factor dataset scores around .91; pure noise scores about .50.</p>
+        <p><strong>Bartlett's test of sphericity</strong> asks a much weaker question: could your correlation matrix have come from variables that are all mutually uncorrelated? Treat a significant result as a formality rather than an achievement. With 20 variables and 100 people, true correlations of just .10 already give <em>p</em> = .00005, and at 300 people the same tiny correlations give <em>p</em> below 10⁻¹⁶. A non-significant Bartlett means stop; a significant one means almost nothing on its own, so read KMO and the scree plot for the real answer.</p>
+
         <h2>Reading the result</h2>
         <p>Each component has <strong>loadings</strong>: how strongly each original variable contributes to it. You interpret a component by looking at which variables load heavily on it: if questions about parties, talking, and meeting strangers all load on one factor, you might name it "sociability." Naming factors is part science, part art.</p>
 

@@ -101,8 +101,8 @@ window.SNIPPETS = {
   },
   /* ---------------- Stats 3 ---------------- */
   "multiple-regression": {
-    r: 'fit <- lm(score ~ hours + sleep + anxiety, data = df)\nsummary(fit)   # each slope = effect holding the others constant\nconfint(fit)',
-    py: 'import statsmodels.formula.api as smf\nfit = smf.ols("score ~ hours + sleep + anxiety", data=df).fit()\nprint(fit.summary())   # each slope: all else equal'
+    r: 'fit <- lm(score ~ hours + sleep + anxiety, data = df)\nsummary(fit)   # each slope = effect holding the others constant\nconfint(fit)\n# standardized coefficients (beta): same numbers as z-scoring first\npreds <- c("hours", "sleep", "anxiety")\ncoef(fit)[preds] * sapply(df[preds], sd) / sd(df$score)',
+    py: 'import statsmodels.formula.api as smf\nfit = smf.ols("score ~ hours + sleep + anxiety", data=df).fit()\nprint(fit.summary())   # each slope: all else equal\n# standardized coefficients (beta): same numbers as z-scoring first\npreds = ["hours", "sleep", "anxiety"]\nprint(fit.params[preds] * df[preds].std() / df["score"].std())'
   },
   "multicollinearity-and-variable-selection": {
     r: 'car::vif(fit)          # VIF > 5-10 = trouble\nstep(fit)              # stepwise by AIC (use with care!)',
@@ -113,8 +113,8 @@ window.SNIPPETS = {
     py: 'import statsmodels.formula.api as smf\nfit = smf.ols("score ~ C(group)", data=df).fit()\nprint(fit.params)   # each coefficient vs the reference level\nfit2 = smf.ols(\'score ~ C(group, Treatment(reference="B"))\',\n               data=df).fit()'
   },
   "ancova": {
-    r: 'fit <- lm(post ~ group + pretest, data = df)   # ANCOVA = ANOVA + covariate\nsummary(fit)          # the group coefficient IS the adjusted difference\ncar::Anova(fit, type = 3)                      # classic ANCOVA table\n# check homogeneity of slopes first:\nanova(lm(post ~ group * pretest, data = df))   # interaction should be n.s.',
-    py: 'import statsmodels.formula.api as smf\nimport statsmodels.api as sm\nfit = smf.ols("post ~ C(group) + pretest", data=df).fit()\nprint(sm.stats.anova_lm(fit, typ=3))\n# homogeneity of slopes: the interaction should be n.s.\nslopes = smf.ols("post ~ C(group) * pretest", data=df).fit()\nprint(sm.stats.anova_lm(slopes, typ=3))'
+    r: 'fit <- lm(post ~ group + pretest, data = df)   # ANCOVA = ANOVA + covariate\nsummary(fit)          # the group coefficient IS the adjusted difference\na <- car::Anova(fit, type = 3)                 # classic ANCOVA table\na["group", "Sum Sq"] / (a["group", "Sum Sq"] + a["Residuals", "Sum Sq"])  # partial eta squared\n# check homogeneity of slopes first:\nanova(lm(post ~ group * pretest, data = df))   # interaction should be n.s.',
+    py: 'import statsmodels.formula.api as smf\nimport statsmodels.api as sm\nfit = smf.ols("post ~ C(group) + pretest", data=df).fit()\ntbl = sm.stats.anova_lm(fit, typ=3)\nprint(tbl)\nss = tbl["sum_sq"]\nprint(ss["C(group)"] / (ss["C(group)"] + ss["Residual"]))   # partial eta squared\n# homogeneity of slopes: the interaction should be n.s.\nslopes = smf.ols("post ~ C(group) * pretest", data=df).fit()\nprint(sm.stats.anova_lm(slopes, typ=3))'
   },
   "interactions-in-regression": {
     r: 'fit <- lm(score ~ hours * anxiety, data = df)  # main effects + product\nsummary(fit)\n# center predictors first to make main effects interpretable:\ndf$hours_c <- scale(df$hours, scale = FALSE)',
@@ -178,8 +178,8 @@ window.SNIPPETS = {
     py: 'import statsmodels.formula.api as smf\nnaive = smf.ols("y ~ x", data=df).fit()\nadjusted = smf.ols("y ~ x + z", data=df).fit()\nprint(naive.params["x"], adjusted.params["x"])\n# DAG tooling: pip install dowhy (or draw it at dagitty.net)'
   },
   "survival-analysis": {
-    r: 'library(survival)\nfit <- survfit(Surv(time, event) ~ group, data = df)\nplot(fit, col = 1:2)                 # Kaplan-Meier curves\nsurvdiff(Surv(time, event) ~ group, data = df)   # log-rank test\ncoxph(Surv(time, event) ~ group + age, data = df)  # adjusted HRs',
-    py: 'from lifelines import KaplanMeierFitter\nfrom lifelines.statistics import logrank_test\nkm = KaplanMeierFitter()\nfor g, sub in df.groupby("group"):\n    km.fit(sub.time, sub.event, label=g).plot_survival_function()\na, b = [s for _, s in df.groupby("group")]\nprint(logrank_test(a.time, b.time, a.event, b.event).p_value)'
+    r: 'library(survival)\nfit <- survfit(Surv(time, event) ~ group, data = df)\nplot(fit, col = 1:2)                 # Kaplan-Meier curves\nsurvdiff(Surv(time, event) ~ group, data = df)   # log-rank test\ncx <- coxph(Surv(time, event) ~ group + age, data = df)  # adjusted HRs\ncox.zph(cx)   # proportional hazards: a SMALL p is evidence against it',
+    py: 'import pandas as pd\nfrom lifelines import KaplanMeierFitter, CoxPHFitter\nfrom lifelines.statistics import logrank_test\nkm = KaplanMeierFitter()\nfor g, sub in df.groupby("group"):\n    km.fit(sub.time, sub.event, label=g).plot_survival_function()\na, b = [s for _, s in df.groupby("group")]\nprint(logrank_test(a.time, b.time, a.event, b.event).p_value)\n# Cox wants numeric covariates, so code the group first\ncxdf = df[["time", "event", "age"]].assign(grp=pd.factorize(df.group)[0])\ncx = CoxPHFitter().fit(cxdf, "time", "event")\ncx.check_assumptions(cxdf)   # proportional hazards, from Schoenfeld residuals'
   },
   "missing-data": {
     r: 'library(mice)   # multiple imputation, the modern default\nimp  <- mice(df, m = 20, printFlag = FALSE)\nfits <- with(imp, lm(score ~ hours + sleep))\npool(fits)      # estimates + SEs that honestly include the holes\nmd.pattern(df)  # visualize where the holes are',
@@ -256,7 +256,7 @@ window.SNIPPETS = {
     py: 'import numpy as np\ndf["income_log"] = np.log1p(df["income"])                 # log(x+1): skew + zeros\ndf["rt_z"] = (df["rt"] - df["rt"].mean()) / df["rt"].std(ddof=1)   # z-standardise\nrev = ["q3", "q5"]                                        # reverse-worded 1-5 items\ndf[rev] = 6 - df[rev]                                     # flip so all point one way\nitems = ["q1", "q2", "q3", "q4", "q5"]\ndf["wellbeing"] = df[items].mean(axis=1)                  # composite score'
   },
   "wide-vs-long-data": {
-    r: 'library(tidyr)\n# WIDE -> LONG: collapse the timepoint columns into a key + value column\nlong <- pivot_longer(wide, cols = c(T1, T2, T3),\n                     names_to = "time", values_to = "score")\n# LONG -> WIDE: spread the key column back out, one column per level\nwide2 <- pivot_wider(long, names_from = "time", values_from = "score")\nidentical(wide, wide2)   # TRUE -> the reshape is lossless when keys are unique',
+    r: 'library(tidyr)\n# WIDE -> LONG: collapse the timepoint columns into a key + value column\nlong <- pivot_longer(wide, cols = c(T1, T2, T3),\n                     names_to = "time", values_to = "score")\n# LONG -> WIDE: spread the key column back out, one column per level\nwide2 <- pivot_wider(long, names_from = "time", values_from = "score")\n# TRUE -> the reshape is lossless when keys are unique.  (identical() would say\n# FALSE on a plain data.frame: pivoting returns a tibble, which is not a defect.)\nall.equal(as.data.frame(wide), as.data.frame(wide2))',
     py: 'import pandas as pd\n# WIDE -> LONG: melt the timepoint columns into name/value columns\nlong = wide.melt(id_vars="name", value_vars=["T1", "T2", "T3"],\n                 var_name="time", value_name="score")\n# LONG -> WIDE: pivot the key column back out to one column per level\nwide2 = long.pivot(index="name", columns="time", values="score").reset_index()'
   },
   "merging-datasets": {

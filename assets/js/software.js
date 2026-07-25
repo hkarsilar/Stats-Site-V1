@@ -288,7 +288,8 @@ window.SOFTWARE = {
     apa: '<p>The model predicted job satisfaction, <em>R</em>² = .34, adjusted <em>R</em>² = .32, <em>F</em>(3, 116) = 20.10, <em>p</em> &lt; .001. Autonomy, <em>b</em> = 0.42, <em>SE</em> = 0.09, β = .38, <em>p</em> &lt; .001, and pay, <em>b</em> = 0.18, <em>SE</em> = 0.07, β = .21, <em>p</em> = .012, were unique predictors; weekly hours were not, <em>b</em> = −0.05, <em>SE</em> = 0.06, β = −.07, <em>p</em> = .40.</p>',
     tips: [
       'Report the overall model (<em>R</em>², <em>F</em>) first, then the coefficients — a full coefficient table is usually clearer than prose for 3+ predictors.',
-      'Say explicitly that coefficients are adjusted effects ("controlling for the other predictors").'
+      'Say explicitly that coefficients are adjusted effects ("controlling for the other predictors").',
+      'SPSS prints the standardized β in the <em>Coefficients</em> table without being asked, under <em>Standardized Coefficients</em>. Anywhere that doesn’t, z-score every variable and refit: the raw slopes come back as the βs.'
     ]
   },
   "multicollinearity-and-variable-selection": {
@@ -341,7 +342,8 @@ window.SOFTWARE = {
     apa: '<p>After adjusting for pretest scores, the training effect remained significant, <em>F</em>(1, 57) = 6.84, <em>p</em> = .011, η<sub>p</sub>² = .11. Adjusted means were 74.2 (<em>SE</em> = 1.1) for training and 70.3 (<em>SE</em> = 1.1) for control. The homogeneity-of-slopes assumption held, <em>F</em>(1, 56) = 0.42, <em>p</em> = .52.</p>',
     tips: [
       'Report <em>adjusted</em> means (with SEs), not raw means — they’re what ANCOVA compares.',
-      'Reporting the slopes-homogeneity check briefly reassures reviewers you tested the key assumption.'
+      'Reporting the slopes-homogeneity check briefly reassures reviewers you tested the key assumption.',
+      'The effect size both programs hand you is labeled <em>Partial Eta Squared</em>. Because the covariate’s variance has already left the denominator, it is not the same quantity as an unadjusted η² and the two should never share a column in a table.'
     ]
   },
   "interactions-in-regression": {
@@ -544,7 +546,8 @@ window.SOFTWARE = {
       'Time variable into <em>Time</em>; the event indicator into <em>Status</em> (define which value = event).',
       'Group into <em>Factor</em>; under <em>Compare Factor…</em> tick <em>Log rank</em>.',
       '<em>Options…</em>: tick <em>Survival plots</em> and the median survival table.',
-      'For adjusted comparisons, use <strong>Analyze → Survival → Cox Regression</strong> and report hazard ratios (Exp(B)).'
+      'For adjusted comparisons, use <strong>Analyze → Survival → Cox Regression</strong> and report hazard ratios (Exp(B)).',
+      'Check proportional hazards before you trust that ratio: in Cox Regression, <em>Plots…</em> → <em>Log minus log</em> should give roughly parallel curves. <strong>Analyze → Survival → Cox w/ Time-Dependent Covariate…</strong> is the formal version.'
     ],
     jasp: [
       'Enable the <strong>Survival</strong> module (+ button).',
@@ -553,7 +556,8 @@ window.SOFTWARE = {
     ],
     apa: '<p>Median survival was 14 months, 95% CI [11, 19], in the treatment arm versus 8 months, 95% CI [6, 11], under control; the curves differed by log-rank test, χ²(1) = 8.42, <em>p</em> = .004. In a Cox model, the control arm’s hazard was higher, <em>HR</em> = 1.83, 95% CI [1.21, 2.77].</p>',
     tips: [
-      'Report median survival per group with CIs, the log-rank result, and (if you ran Cox) the hazard ratio — and always state the censoring rate.'
+      'Report median survival per group with CIs, the log-rank result, and (if you ran Cox) the hazard ratio — and always state the censoring rate.',
+      'If a median never arrives because the curve stays above 50%, write "not reached" rather than the largest observed time, and quote a landmark survival rate (12- or 24-month) instead.'
     ]
   },
   "missing-data": {
