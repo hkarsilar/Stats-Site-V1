@@ -92,8 +92,8 @@ window.SNIPPETS = {
     py: 'from scipy import stats\nr, p = stats.pearsonr(x, y)\nprint(r, p)\nprint(stats.spearmanr(x, y))   # rank-based alternative\nimport pingouin as pg\nprint(pg.partial_corr(data=df, x="x", y="y", covar="z"))   # holding z constant'
   },
   "simple-linear-regression": {
-    r: 'fit <- lm(score ~ hours, data = df)\nsummary(fit)         # slope, intercept, R-squared\nplot(df$hours, df$score); abline(fit, col = "red")',
-    py: 'import statsmodels.formula.api as smf\nfit = smf.ols("score ~ hours", data=df).fit()\nprint(fit.summary())    # slope, intercept, R-squared'
+    r: 'fit <- lm(score ~ hours, data = df)\nsummary(fit)         # slope, intercept, R-squared\nconfint(fit)         # the interval APA asks for, alongside each b\nplot(df$hours, df$score); abline(fit, col = "red")',
+    py: 'import statsmodels.formula.api as smf\nfit = smf.ols("score ~ hours", data=df).fit()\nprint(fit.summary())    # slope, intercept, R-squared\nprint(fit.conf_int())   # the interval APA asks for, alongside each b'
   },
   "regression-diagnostics": {
     r: 'fit <- lm(score ~ hours, data = df)\npar(mfrow = c(2, 2)); plot(fit)   # residuals, Q-Q, leverage in one go\ncar::ncvTest(fit)                 # formal heteroscedasticity test\ncar::durbinWatsonTest(fit)        # independence: ~2 means no autocorrelation',

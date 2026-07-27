@@ -241,8 +241,8 @@
     "neural-networks-intuition": "A neuron is just the logistic regression the capybara already knows, wearing a lab coat. Stack a few, roll downhill, and straight lines learn to bend around XOR.",
     "llms-and-ai-in-research": "The capybara's chatbot writes with total confidence and occasional total fiction. Your name goes on both.",
     /* Writing */
-    "imrad-structure": "Why it looked, how it looked, what it saw, what it means — the capybara tells every study the same four-part way. Put each sentence in its room and the paper reads itself.",
-    "reporting-statistics-apa": "Italic t, upright η², and no little zero before the dot. The capybara reports its p-value cleanly — and would never, ever write p = .000.",
+    "imrad-structure": "Why it looked, how it looked, what it saw, what it means. Put each sentence in its own room and the paper reads itself.",
+    "reporting-statistics-apa": "Italic t, upright η², no little zero before the dot, and the interval in square brackets. The capybara has never once written p = .000.",
     "tables-and-figures": "Chop the axis at 45 and the capybara's three-point lead looks like a landslide. Same three points, taller lie.",
     "writing-results": "The capybara reports the number and stops. Opinions wait for the Discussion.",
     "nonsignificant-results": "p = .08 is not 'a trend toward a nap.' The capybara reads the interval instead — wide means 'who knows yet,' tight-and-near-zero means 'genuinely nothing here.'",

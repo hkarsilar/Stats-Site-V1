@@ -55,10 +55,10 @@
         <h2>The k-means loop</h2>
         <p>k-means needs one thing from you up front: <em>k</em>, the number of clusters. Then it repeats two steps until nothing changes:</p>
         <ol>
-          <li><strong>Assign.</strong> Attach every point to the nearest cluster center (centroid), by straight-line distance.</li>
+          <li><strong>Assign.</strong> Attach every point to the nearest cluster center (centroid), by <a href="../knn-and-distance/">straight-line distance</a>.</li>
           <li><strong>Update.</strong> Move each centroid to the mean position of the points now assigned to it.</li>
         </ol>
-        <p>Assign, update, assign, update. Each round can only lower the total within-cluster spread, so it always converges, usually in a handful of iterations. Step through it below and watch the centroids drift into place, dragging their colors with them. (You can also grab any point and move it, or reseed the starting centroids to see how much the result depends on where you began.)</p>
+        <p>Assign, update, assign, update. Each round can only lower the total <a href="../../stats-2/one-way-anova/">within-cluster spread</a>, so it always converges, usually in a handful of iterations. Step through it below and watch the centroids drift into place, dragging their colors with them. (You can also grab any point and move it, or reseed the starting centroids to see how much the result depends on where you began.)</p>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="kmviz">
@@ -90,10 +90,10 @@
 
         <h2>Where k-means goes wrong</h2>
         <p>Because it assigns by straight-line distance to a center, k-means can only draw <strong>straight boundaries</strong> and only find <strong>convex, roughly spherical, similarly-sized</strong> clusters. Feed it two interlocking crescents and it slices them down the middle (geometrically sensible, structurally nonsense) because no pair of centers can wrap a curve. It's also sensitive to <strong>initialization</strong>: a bad set of starting centroids can converge to a poor local solution, which is why <strong>k-means++</strong> (spreading the initial centers apart) and several random restarts are standard. Reseed the centroids on the moons and you'll see different wrong answers, each one delivered with total confidence.</p>
-        <p>That confidence is the real lesson. k-means <em>always</em> returns exactly <em>k</em> clusters, even from pure noise, so a clustering is never proof that groups exist. <strong>Clusters are hypotheses, not facts</strong> — validate them by stability, silhouette, and whether they mean anything and replicate.</p>
+        <p>That confidence is the real lesson. k-means <em>always</em> returns exactly <em>k</em> clusters, even from pure noise, so a clustering is never proof that groups exist. <strong>Clusters are hypotheses, not facts</strong> — validate them by <a href="../../stats-4/cross-validation-and-overfitting/">stability</a>, silhouette, and whether they mean anything and replicate.</p>
 
         <div class="callout">
-          <p><strong>Why it matters:</strong> k-means is the fastest route to a first map of unlabelled data — segments, profiles, structure you didn't know to look for. But it bakes in assumptions (spherical clusters, a <em>k</em> you chose, an initialization that matters) and it never abstains. Choose <em>k</em> with the elbow, silhouette, <em>and</em> domain knowledge; when clusters are elongated or interlocking, reach for density-based or spectral methods; and always treat the groups it hands you as a hypothesis to test, not a discovery to announce.</p>
+          <p><strong>Why it matters:</strong> k-means is the fastest route to a first map of unlabeled data — segments, profiles, structure you didn't know to look for. But it bakes in assumptions (spherical clusters, a <em>k</em> you chose, an initialization that matters) and it never abstains. Choose <em>k</em> with the elbow, silhouette, <em>and</em> domain knowledge; when clusters are elongated or interlocking, reach for density-based or spectral methods; and always treat the groups it hands you as a hypothesis to test, not a discovery to announce.</p>
         </div>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->

@@ -85,7 +85,7 @@ window.SOFTWARE = {
     jasp: [
       '<strong>ANOVA → ANOVA</strong>.',
       'Outcome into <em>Dependent Variable</em>, group into <em>Fixed Factors</em>.',
-      'Open <em>Additional Options</em> → tick <em>Estimates of effect size</em> (η², ω²).',
+      'Open <em>Additional Options</em> → tick <em>Estimates of effect size</em> (η², ω²), and tick <em>Confidence intervals</em> beside them: JASP builds the interval on the effect size, which most packages leave you to compute yourself.',
       '<em>Post Hoc Tests</em>: move the factor across and tick <em>Tukey</em>.',
       '<em>Assumption Checks</em>: tick <em>Homogeneity tests</em> and <em>Q-Q plot of residuals</em>.'
     ],
@@ -247,7 +247,7 @@ window.SOFTWARE = {
       'Under <em>Statistics</em>, tick <em>Estimates</em>, <em>Confidence intervals</em>, and <em>R squared change</em>.',
       'Under <em>Plots</em>, tick <em>Residuals vs. predicted</em> and the <em>Q-Q plot</em>.'
     ],
-    apa: '<p>Hours of study predicted exam scores, <em>b</em> = 2.31, <em>SE</em> = 0.57, β = .50, <em>t</em>(48) = 4.05, <em>p</em> &lt; .001. The model explained a quarter of the variance, <em>R</em>² = .25, <em>F</em>(1, 48) = 16.40, <em>p</em> &lt; .001.</p>',
+    apa: '<p>Hours of study predicted exam scores, <em>b</em> = 2.31, <em>SE</em> = 0.57, 95% CI [1.16, 3.46], β = .50, <em>t</em>(48) = 4.05, <em>p</em> &lt; .001. The model explained a quarter of the variance, <em>R</em>² = .25, <em>F</em>(1, 48) = 16.40, <em>p</em> &lt; .001.</p>',
     tips: [
       'Give both the unstandardized slope <em>b</em> (real units — "2.31 points per hour") and the standardized β.',
       'β here is Greek (no italics); <em>b</em>, <em>SE</em>, <em>t</em>, <em>R</em>² are Latin (italics).',

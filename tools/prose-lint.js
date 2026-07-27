@@ -89,62 +89,104 @@ const THINK_SITE_MAX = 3;         // rule 8 — "Think of it as" sitewide
 const NOTICE_PAGE_MAX = 1;        // rule 10 — "Notice how/that" per page
 const ANDWATCH_SHARE_MAX = 0.15;  // rule 11 — "…and watch…" meta descriptions
 
-/* VOICE.md rule 12 — the site is American English. Four separate P39 refresh
-   runs have each found another British form the previous word-list sweep
-   missed (artefact/enrol, honour/cancelling/unravelled, flavour), so this is
-   an explicit inventory rather than a morphological rule: -ise/-our/-re
-   patterns cannot be generalised safely. Two forms are DELIBERATELY absent
-   and must stay absent:
+/* VOICE.md rule 12 — the site is American English.
+   ------------------------------------------------------------------
+   HOW THIS RULE IS MATCHED, AND WHY IT CHANGED (P39 run 16).
+   Runs 9–15 used a hand-written inventory of British forms. It failed
+   four separate times, each time on a word nobody had thought to list:
+   run 9 found modelling/flavours/unravelling after four hand sweeps,
+   run 14 found "capitalisation", run 16 found "editorialise",
+   "parenthesised" and "unlabelled" — the last of which the inventory
+   DID contain as "labelled" and still missed, because \b does not fire
+   inside a prefixed word.
+   The inventory had the polarity backwards. The words that legitimately
+   end in -ise/-our are a small CLOSED class (surprise, exercise, four,
+   hour); the words that should end in -ize/-or are OPEN — any author can
+   coin "editorialize". So the two open classes are now matched
+   GENERATIVELY and their exceptions allow-listed, while the classes that
+   genuinely cannot be generalised (-re, doubled consonants, the -ce
+   nouns, misc) keep an inventory. Inventory entries of 6+ characters
+   also match as a SUFFIX, so unlabelled/kilometres/epicentre are caught
+   without listing every prefix.
+   Two forms stay DELIBERATELY allowed and must stay allowed:
      • "analyses" — identical to the American plural of "analysis" (a
        substring sweep once rewrote it to "analyzes" seven times);
-     • "enrolled"/"enrolling" — already correct American forms (only the bare
-       "enrol"/"enrols" differ), likewise "programmed" and "analogue".
-   Code literals are out of scope by construction: this linter reads rendered
-   prose only, so snippets.js's ggplot/matplotlib color="grey" is untouched. */
+     • "enrolled"/"enrolling" — already correct American forms (only the
+       bare "enrol"/"enrols" differ), likewise "programmed"/"analogue".
+   Code literals are out of scope by construction: this linter reads
+   rendered prose, so snippets.js's ggplot color="grey" is untouched. */
+
+/* Words that really do end in -ise in American English. Closed class. */
+const ISE_OK = [
+  'advertise', 'advise', 'anise', 'apprise', 'arise', 'chastise', 'circumcise', 'comprise',
+  'compromise', 'concise', 'demise', 'despise', 'devise', 'disfranchise', 'enfranchise',
+  'enterprise', 'excise', 'exercise', 'expertise', 'franchise', 'highrise', 'improvise',
+  'incise', 'merchandise', 'moonrise', 'mortise', 'paradise', 'precise', 'premise', 'promise',
+  'reprise', 'revise', 'rise', 'sunrise', 'supervise', 'surmise', 'surprise', 'televise',
+  'treatise', 'valise',
+];
+/* Words that really do end in -our. Closed class. */
+const OUR_OK = [
+  'amour', 'contour', 'detour', 'devour', 'dour', 'flour', 'four', 'glamour', 'hour', 'our',
+  'paramour', 'pompadour', 'pour', 'scour', 'sour', 'tour', 'tourism', 'tourist', 'troubadour',
+  'velour', 'your',
+];
+/* "analyses" is also the American plural of "analysis" — see the note above. */
+const YSE_OK = ['analyses'];
+
+/* base → the inflected forms that must also be allowed */
+const inflect = (w) => {
+  const out = [w, w + 's'];
+  if (w.endsWith('e')) out.push(w + 'd', w.slice(0, -1) + 'ing', w + 'ment', w + 'ments', w + 'r', w + 'rs');
+  else out.push(w + 'ed', w + 'ing', w + 'ly', w + 'ism', w + 'ist', w + 'ists', w + 'hood', w + 'hoods');
+  return out;
+};
+/* An allowed word stays allowed under an ordinary derivational prefix
+   (unsupervised, repromise), but a prefix is NOT free-form: matching the
+   allow list as a bare suffix would excuse "categorise", which ends in
+   "rise". */
+const PRE = '(?:un|re|pre|non|over|under|mis|co|inter|counter|super|sub|dis|out|self|im|in|en|de)?';
+const ALLOW = [
+  ...[...ISE_OK, ...OUR_OK, ...YSE_OK].flatMap(inflect).map((w) => PRE + w),
+  /* -aise/-oise/-uise never spell a British -ize verb (raise, noise, cruise,
+     disguise, turquoise), and -wise is an open English suffix this site uses
+     constantly (listwise, pairwise, stepwise). Inflections included, since
+     "raises" and "raising" are the forms that actually appear. */
+  '[A-Za-z]*(?:ais|ois|uis|wis)(?:e|es|ed|ing|er|ers)',
+];
+const ALLOW_RE = '(?!(?:' + ALLOW.join('|') + ')(?![A-Za-z]))';
+
+/* The two open classes, matched by shape rather than by memory.
+   -iser/-isers are deliberately NOT in the -ise suffix set: "Kaiser",
+   "adviser", "miser" and "riser" are all legitimate, and no British -iser
+   noun has ever appeared on this site. Add one to the inventory if it does. */
+const BRIT_GENERATIVE =
+  '(?<![A-Za-z])' + ALLOW_RE + '(?:' +
+    '[A-Za-z]*(?:is|ys)(?:e|es|ed|ing|ation|ations)' +                 // -ise / -yse / -isation
+    '|[A-Za-z]*our(?:s|ed|ing|ite|ites|ful|fully|less|able|ably|al|ally|ism|ist|ists|hood|hoods|ly)?' +
+  ')(?![A-Za-z])';
+
+/* The classes that cannot be generalised: -re, doubled consonants, -ce
+   nouns, and one-offs. Entries of 6+ chars also match as a suffix. */
 const BRIT_SPELLINGS = [
-  // -our
-  'behaviour', 'behaviours', 'behavioural', 'behaviourally', 'behaviourism', 'behaviourist',
-  'colour', 'colours', 'coloured', 'colouring', 'colourful',
-  'favour', 'favours', 'favoured', 'favouring', 'favourable', 'favourably', 'favourite', 'favourites',
-  'honour', 'honours', 'honoured', 'honouring', 'honourable',
-  'labour', 'labours', 'laboured', 'labouring',
-  'neighbour', 'neighbours', 'neighbouring', 'neighbourhood',
-  'flavour', 'flavours', 'flavoured', 'humour', 'humoured', 'rumour', 'rumours',
-  'odour', 'odours', 'vapour', 'vapours', 'endeavour', 'endeavours', 'harbour', 'harbours',
   // -re
   'centre', 'centres', 'centred', 'centring', 'metre', 'metres', 'litre', 'litres',
   'fibre', 'fibres', 'theatre', 'theatres', 'calibre', 'sombre', 'spectre', 'lustre',
-  // -yse (the American form is always -yze, so these are unambiguous)
-  'analyse', 'analysed', 'analysing', 'catalyse', 'catalysed', 'paralyse', 'paralysed', 'hydrolyse',
-  // -ise / -isation (only stems with no American -ise reading)
-  'organise', 'organised', 'organising', 'organisation', 'organisations', 'organisational',
-  'standardise', 'standardised', 'standardising', 'standardisation',
-  'summarise', 'summarised', 'summarising', 'recognise', 'recognised', 'recognising',
-  'minimise', 'minimised', 'minimising', 'maximise', 'maximised', 'maximising',
-  'generalise', 'generalised', 'generalising', 'generalisation', 'generalisations',
-  'normalise', 'normalised', 'normalising', 'normalisation',
-  'randomise', 'randomised', 'randomising', 'randomisation',
-  'categorise', 'categorised', 'categorising', 'categorisation',
-  'visualise', 'visualised', 'visualising', 'visualisation', 'visualisations',
-  'emphasise', 'emphasised', 'emphasising', 'hypothesise', 'hypothesised', 'hypothesising',
-  'prioritise', 'prioritised', 'characterise', 'characterised', 'characterising',
-  'specialise', 'specialised', 'utilise', 'utilised', 'utilising',
-  'realise', 'realised', 'realising', 'penalise', 'penalised', 'formalise', 'formalised',
-  'operationalise', 'operationalised', 'operationalising', 'operationalisation',
-  'criticise', 'criticised', 'criticising', 'apologise', 'apologised',
-  'memorise', 'memorised', 'familiarise', 'familiarised', 'optimise', 'optimised', 'optimising',
-  'initialise', 'initialised', 'digitise', 'digitised', 'itemise', 'modernise',
   // doubled consonants
   'cancelling', 'cancelled', 'labelling', 'labelled', 'modelling', 'modelled',
   'travelling', 'travelled', 'signalling', 'signalled', 'fuelled', 'totalled',
   'marvelled', 'unravelling', 'unravelled', 'levelling', 'levelled',
   // -ence / -ce nouns and misc
-  'defence', 'offence', 'licence', 'licences', 'pretence', 'practise', 'practised', 'practising',
+  'defence', 'offence', 'licence', 'licences', 'pretence',
   'artefact', 'artefacts', 'artefactual', 'enrol', 'enrols',
   'grey', 'greyed', 'sceptic', 'sceptics', 'sceptical', 'sceptically', 'scepticism',
   'judgement', 'judgements', 'ageing', 'programme', 'programmes',
   'manoeuvre', 'manoeuvres', 'moustache', 'plough', 'storey', 'storeys', 'tyre', 'tyres',
 ];
+const BRIT_LONG = BRIT_SPELLINGS.filter((w) => w.length >= 6);
+const BRIT_SHORT = BRIT_SPELLINGS.filter((w) => w.length < 6);
+const BRIT_INVENTORY =
+  '(?<![A-Za-z])(?:[A-Za-z]*(?:' + BRIT_LONG.join('|') + ')|(?:' + BRIT_SHORT.join('|') + '))(?![A-Za-z])';
 
 /* budget: 0 = banned outright (sitewide zero); 'site' / 'page' budgets are
    enforced in strictCheck() below. Regexes are heuristics tuned against the
@@ -191,7 +233,7 @@ const PATTERNS = [
   {
     id: 'britspell', col: 'brit', budget: 0,
     label: `British spellings (the site is American English)`,
-    res: [new RegExp('\\b(?:' + BRIT_SPELLINGS.join('|') + ')\\b', 'gi')],
+    res: [new RegExp(BRIT_INVENTORY, 'gi'), new RegExp(BRIT_GENERATIVE, 'gi')],
   },
 ];
 
@@ -411,8 +453,10 @@ const stripTags = (s) => decodeEntities(String(s).replace(/<[^>]+>/g, ' ')).repl
 /* Rule 12 on LETTER boundaries rather than \b, because these strings
    are code-shaped: \bstandardise\b never fires inside
    standardise_group (_ is a word character), which is precisely how
-   the run-14 defect stayed invisible. Same inventory, wider hinge. */
-const BRIT_LETTER_BOUNDED = new RegExp('(?<![A-Za-z])(?:' + BRIT_SPELLINGS.join('|') + ')(?![A-Za-z])', 'gi');
+   the run-14 defect stayed invisible. Both halves of rule 12 (the
+   generative classes and the inventory) are already letter-bounded
+   since run 16, so this surface reuses them unchanged. */
+const BRIT_LETTER_BOUNDED = new RegExp('(?:' + BRIT_INVENTORY + ')|(?:' + BRIT_GENERATIVE + ')', 'gi');
 
 /* A page's own <script> blocks: no src=, and never the JSON-LD. */
 function inlineScriptBlocks(html) {
