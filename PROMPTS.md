@@ -716,20 +716,42 @@ Deliver a short health report (what was checked, what was fixed, what's deferred
 
 ### P39 — Content refresh loop (recurring)
 
+**Rewritten 27 Jul 2026, after 13 runs.** The original seven items were written before the loop had ever run; thirteen runs showed which of them earn their place and which had gone stale. Four changes, each from evidence in the tracker notes. **(a) Selection.** "5 least-recently-touched (git log per file)" is now self-polluting — thirteen P39 commits dominate the dates, and run 13 spent real effort reconstructing which lessons had ever been subjects. That census now lives in **ROADMAP.md's subject ledger**; the prompt reads it instead of re-deriving it. **(b) The absence grep is promoted to step 1.** Invented in run 8 and used in every run since, it has produced the best content on the site (restriction of range, regression to the mean, Cohen's κ, tolerance, Bartlett/KMO, listwise/pairwise, Schoenfeld residuals, information gain, cost-complexity pruning, a confidence interval on a test score) — and it was never in the prompt at all. **(c) Cross-pollination is obsolete as written**: there is no "newest course/tool" after P72, and runs 11–13 quietly reinterpreted it as orphan-clearing. After run 13 exactly one page is left at zero inbound links, so the item now names a measured question with a stated fallback. **(d) The backlog item was dead** (no Backlog section exists, P37 is still unrun) and became the most valuable item by accident: three consecutive runs turned it into a permanent checker (`audit.js` CHECK 9, the eponym scan, the JS-prose lint). That is now the instruction, not the improvisation. Two verification steps that caught real defects are promoted out of the notes and into the numbered list — searching the rebuilt index for the terms the run just added (which found, in run 13, that 27% of the site's lesson prose was unsearchable), and reading the diff back against VOICE.md (seven consecutive runs wrote a banned construction and caught it only this way). Model **Extra Powerful**, effort **Max**: the loop is judgment-heavy, touches shared registries, and its whole value is in what a careful reader notices.
+
 ```
 StatsCapybara roadmap prompt P39 (see ROADMAP.md) — RECURRING; run me a few times a year.
 
-Keep the content alive without bloating it:
-1. Pick the 5 least-recently-touched lessons (git log per file). For each: re-read critically — is anything dated, unclear, or missing a cross-link to a course/tool added since it was written? Make surgical improvements only.
-2. FAQ freshness: for those lessons, consider one BETTER question that real students ask (swap, don't stack — keep exactly 3; edit tools/faq_data.py, rerun inject + search index).
-3. software.js drift: verify 3–4 SPSS/JASP walkthroughs against current menu reality (JASP moves fast); update steps/version notes.
-4. Snippets drift: spot-check R/Python snippets still run clean on current package APIs (tidyverse/pingouin churn); fix deprecations.
-5. Cross-pollination: newest course/tool gets inbound links — find the 5 most natural older-lesson spots that should reference it and add one-line links (resist over-linking).
-6. Quips: refresh any that have worn thin. Keep the bar high — one good line beats three mediocre ones.
-7. If ROADMAP.md has a Backlog section (from P37), pick ONE small item and clear it.
+Keep the content alive without bloating it. Read ROADMAP.md's P39 SUBJECT LEDGER and the last two run notes first, then VOICE.md.
 
-Standard verification. Add a dated note under P39 in ROADMAP.md's tracker.
+1. Pick 5 subjects from the ledger's "never yet a subject" list — prefer a coherent thread (one course's spine, or one concept running across courses) over a scattered five; break ties toward the least-recently-touched. Re-read each critically: dated, unclear, over-promising, or missing a cross-link to something built since it was written? Surgical improvements only.
+
+2. Hunt absences BEFORE writing anything. The richest defect on this site is a term it USES and never TEACHES: grep each candidate term across tool pages, guides, problems.html, quiz.html, the injected blocks (checks/software/snippets) and all 97 lessons. Zero teaching hits on a term the site reports, tests or tells readers to tick is a gap worth a section. Confirm every absence with the grep — never assume one.
+
+3. Verify every number you publish before you publish it. node -e with VIZ for anything distributional; R is installed (4.5.2, with car/survival/rpart/tidyr/dplyr — no scientific Python) so run the R lines you add. Simulate claims that sound like folklore rather than repeating them. Record the verification in the run note.
+
+4. FAQ freshness: swap on merit, not on quota. Read a lesson's three against all 291 (tools/faq_data.py) — replace any that restates its own lesson's h2 or duplicates another page's answer, and leave three strong ones alone (run 12 correctly swapped none on one lesson and two on another). Keep exactly 3 per lesson; rerun inject-faqs.py + build-search-index.py.
+
+5. software.js drift: verify 3–4 walkthroughs you haven't checked in the last three runs (rotate — most subjects have no entry). Check the CURRENT SPSS/JASP release notes for renames rather than trusting memory, and record the versions checked in the note.
+
+6. Snippets drift: spot-check R/Python snippets against current package APIs; fix deprecations; run every R line you touch.
+
+7. Link health, measured: count inbound lesson links to every tool, guide and poster, and outbound prose links per lesson. Clear the worst orphan with ~5 natural placements (resist over-linking). When nothing sits at 0 inbound, switch to the next question: lessons with 0–1 outbound links, and dead-end lessons that never point forward.
+
+8. Quips: refresh any that have worn thin. The recurring defect is a second clause that only restates the first. One good line beats three mediocre ones.
+
+9. Backlog: if ROADMAP.md has a Backlog section (from P37), clear ONE small item. If it does not, BUILD A CHECKER instead — turn the class of defect this run found by hand into something a future run cannot miss, and prove it by reintroducing the defect and watching it fire. Keep it out of audit.js unless it is genuinely build health.
+
+Verification (all of it, in this order):
+  node tools/audit.js · node tools/math-check.js · node tools/prose-lint.js --strict
+  syntax-check every changed page's inline scripts + JSON-LD, all shared JS, and faq_data.py
+  rebuild the search index, THEN search it for every term this run added — a MISS means either the word or the indexing is wrong, and run 13 found a 27%-of-prose truncation bug this way
+  browser pass over every changed page at 1200px and 375px: expected strings present, 0 console errors, 0 leading-slash links, 0 horizontal scroll, new link targets 200, dark mode
+  read the whole diff back against VOICE.md before committing — the linter cannot see prose you are about to write
+  bump CACHE_VERSION in sw.js if any precached shell asset changed
+Add a dated note under P39 in ROADMAP.md's tracker, and UPDATE THE SUBJECT LEDGER LINE.
 ```
+
+**Where the loop ends, and what lap 2 is.** Lap 1 finishes when the ledger empties (≈7 runs after run 13). It is not the end of the loop, but it is the end of *this* loop's job: after every lesson has had one critical re-read, the absence-grep well is largely dry and re-reading in staleness order stops paying. Lap 2 should be a different pass over the same pages, driven by whatever P37 finally supplies (real Search-Console queries: which lessons people reach and bounce from) and by the two standing observations no run has cleared — **24 of 291 FAQ questions open with "What is the difference between X and Y?" and 59 with "What is", a template no linter measures**, and `apa.html` emits no confidence interval while the lessons now teach that APA 7 asks for one. Until then, keep running lap 1: run 13 was the thirteenth pass and still found a defect affecting a quarter of the site's prose, so the yield has not fallen off.
 
 ---
 
