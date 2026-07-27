@@ -39,7 +39,8 @@ window.SOFTWARE = {
       '<strong>Analyze → Compare Means → Independent-Samples T Test…</strong> (in SPSS 29+ the submenu is named <em>Compare Means and Proportions</em>).',
       'Move the outcome into <em>Test Variable(s)</em> and the group variable into <em>Grouping Variable</em>; click <em>Define Groups…</em> and enter the two codes.',
       'Tick <em>Estimate effect sizes</em> for Cohen’s d. <strong>In SPSS 31+ also tick the homogeneity-of-variance option</strong> in the same dialog: Levene’s test used to print automatically and is now opt-in.',
-      'Output shows two rows: check Levene’s test first — if it’s significant (unequal variances), read the <em>Equal variances not assumed</em> (Welch) row. Many statisticians recommend simply always using that row.'
+      'Output shows two rows: check Levene’s test first — if it’s significant (unequal variances), read the <em>Equal variances not assumed</em> (Welch) row. Many statisticians recommend simply always using that row.',
+      'Scroll right in that same table for <em>Mean Difference</em> and the <em>95% Confidence Interval of the Difference</em>. That interval is the one APA asks you to report beside the effect size.'
     ],
     jasp: [
       '<strong>T-Tests → Independent Samples T-Test</strong>.',
@@ -585,7 +586,7 @@ window.SOFTWARE = {
       'Funnel plot and Egger’s test live under <em>Publication bias</em>.'
     ],
     jasp: [
-      'Enable the <strong>Meta-Analysis</strong> module.',
+      'Enable the <strong>Meta-Analysis</strong> module from the <strong>+</strong> menu at the top right. Since JASP 0.96 that list is served from an online module library, so modules install and update without waiting for a new JASP release.',
       '<strong>Classical Meta-Analysis</strong>: supply each study’s effect size and SE; choose <em>Random effects (REML)</em>.',
       'Tick the forest plot, funnel plot, and heterogeneity statistics — JASP’s meta module is excellent and free (it wraps R’s <em>metafor</em>).'
     ],

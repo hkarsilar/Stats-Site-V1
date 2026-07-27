@@ -65,7 +65,7 @@ window.CHECKS = {
   "independent-samples-t-test": [
     { q: "An independent-samples t-test is appropriate when comparing…", o: ["one group at two times", "two separate, unrelated groups", "three or more groups", "two categorical variables"], a: 1, why: "Independent = different people in each group, e.g. treatment vs. control." },
     { q: "The denominator of the independent t statistic measures…", o: ["the difference between the means", "the pooled effect size", "how much a mean difference this size would vary by chance", "the sample size"], a: 2, why: "t = (difference between means) / (standard error of that difference) — signal over noise." },
-    { q: "When the two groups have clearly unequal variances, a safer choice is…", o: ["a paired t-test", "Welch's t-test", "a chi-square test", "a larger alpha"], a: 1, why: "Welch's version doesn't pool the variances and adjusts the df — it's robust to unequal spread (and many stats programs default to it)." }
+    { q: "When the two groups have clearly unequal variances, a safer choice is…", o: ["a paired t-test", "Welch's t-test", "a chi-square test", "a larger alpha"], a: 1, why: "Welch's version doesn't pool the variances, and it adjusts the df to match, which makes it robust to unequal spread (and many stats programs default to it)." }
   ],
   "effect-size-and-power": [
     { q: "Cohen's d = 0.5 means the two group means differ by…", o: ["0.5 points", "half a standard deviation", "50%", "0.5 standard errors"], a: 1, why: "d expresses the gap in SD units, so it's comparable across studies and measures." },

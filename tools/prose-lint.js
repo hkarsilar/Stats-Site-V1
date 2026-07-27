@@ -24,10 +24,27 @@
    entities decoded. A lesson's baked-in FAQ block is excluded from
    its page text (the FAQ answers are linted separately from their
    single source of truth, tools/faq_data.py, under their own
-   budget). JS-injected strings (checks.js "why"s, software.js
-   tips, snippets.js comments, QUIPS) are outside this script's
-   scope — P46 applies VOICE.md to those by hand, and quips are
-   exempt brand voice anyway.
+   budget).
+
+   THE JS SURFACES (P39 run 13). The strings site.js injects into
+   lessons are prose a reader reads, and until this they were the
+   one prose surface nothing measured: three consecutive refresh
+   runs found a British spelling in a software.js tip or a checks.js
+   "why" only by reading the diff back. Four sources are scanned
+   here — checks.js (question, options, why), software.js (SPSS and
+   JASP steps, the APA sentence, tips), the # comments inside
+   snippets.js (the code around them is out of scope by the same
+   rule that leaves ggplot's colour = "grey" alone), and site.js's
+   QUIPS. What --strict enforces differs by surface on purpose:
+     • checks.js + software.js — the full budget-0 rule set. This is
+       ordinary site prose that happens to live in a .js file.
+     • snippets.js comments + QUIPS — rule 12 (British spellings)
+       only. A code comment is a terse annotation, not paragraph
+       prose, and CLAUDE.md holds quips to be exempt brand voice;
+       spelling is neither judgment nor voice, so it applies to all.
+   Em-dashes are reported for these surfaces and not gated: the
+   em-dash budget in VOICE.md is per PAGE, and none of these are
+   pages.
    ============================================================ */
 
 'use strict';
@@ -356,6 +373,101 @@ function scanPage(kind, label, file, slug) {
 
 const COURSE_PAGES = (win.CURRICULUM || []).map((c) => c.slug);
 
+/* ============================================================
+   JS-injected prose (see the header note) — four surfaces, two
+   strictness levels. Each entry: { file, strict: 'all' | 'spell',
+   items: [{ key, text }] }.
+   ============================================================ */
+
+const stripTags = (s) => decodeEntities(String(s).replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
+
+function jsSurfaces() {
+  const out = [];
+  const inj = loadWindow([
+    path.join(ROOT, 'assets/js/checks.js'),
+    path.join(ROOT, 'assets/js/software.js'),
+    path.join(ROOT, 'assets/js/snippets.js'),
+  ]);
+
+  const checks = [];
+  for (const [slug, qs] of Object.entries(inj.CHECKS || {})) {
+    qs.forEach((q, i) => {
+      checks.push({ key: `${slug} · Q${i + 1}`, text: stripTags(q.q) });
+      (q.o || []).forEach((o, j) => checks.push({ key: `${slug} · Q${i + 1} option ${j + 1}`, text: stripTags(o) }));
+      checks.push({ key: `${slug} · Q${i + 1} why`, text: stripTags(q.why) });
+    });
+  }
+  out.push({ file: 'assets/js/checks.js', strict: 'all', items: checks });
+
+  const software = [];
+  for (const [slug, e] of Object.entries(inj.SOFTWARE || {})) {
+    (e.spss || []).forEach((s, i) => software.push({ key: `${slug} · SPSS ${i + 1}`, text: stripTags(s) }));
+    (e.jasp || []).forEach((s, i) => software.push({ key: `${slug} · JASP ${i + 1}`, text: stripTags(s) }));
+    if (e.apa) software.push({ key: `${slug} · APA sentence`, text: stripTags(e.apa) });
+    (e.tips || []).forEach((t, i) => software.push({ key: `${slug} · tip ${i + 1}`, text: stripTags(t) }));
+  }
+  out.push({ file: 'assets/js/software.js', strict: 'all', items: software });
+
+  /* Only the # comments: the code itself is out of scope, exactly as
+     ggplot's colour = "grey" is in the page-prose scanner. Verified
+     that no snippet uses '#' for anything but a comment. */
+  const comments = [];
+  for (const [slug, e] of Object.entries(inj.SNIPPETS || {})) {
+    for (const lang of Object.keys(e)) {
+      String(e[lang]).split('\n').forEach((lineText, i) => {
+        const at = lineText.indexOf('#');
+        if (at < 0) return;
+        const c = lineText.slice(at + 1).trim();
+        if (c) comments.push({ key: `${slug} · ${lang} line ${i + 1}`, text: c });
+      });
+    }
+  }
+  out.push({ file: 'assets/js/snippets.js (comments)', strict: 'spell', items: comments });
+
+  /* QUIPS lives inside site.js, which needs a DOM to run — slice the
+     object literal out and evaluate just that. */
+  const siteSrc = read(path.join(ROOT, 'assets/js/site.js'));
+  const quips = [];
+  for (const [name, marker] of [['QUIPS', 'var QUIPS = {'], ['QUIP_POOL', 'var QUIP_POOL = [']]) {
+    const at = siteSrc.indexOf(marker);
+    if (at < 0) continue;
+    const lit = sliceBalanced(siteSrc, siteSrc.indexOf(marker.endsWith('{') ? '{' : '[', at));
+    if (!lit) continue;
+    const val = vm.runInNewContext('(' + lit + ')');
+    const entries = Array.isArray(val) ? val.map((t, i) => [`${name} ${i + 1}`, t]) : Object.entries(val);
+    for (const [k, t] of entries) quips.push({ key: k, text: stripTags(t) });
+  }
+  out.push({ file: 'assets/js/site.js (QUIPS)', strict: 'spell', items: quips });
+
+  for (const s of out) {
+    s.hits = [];
+    s.dashes = 0;
+    for (const it of s.items) {
+      s.dashes += countDashes(it.text);
+      for (const h of findHits(it.text, it.key)) s.hits.push(h);
+    }
+    s.counts = {};
+    for (const p of PATTERNS) s.counts[p.id] = s.hits.filter((h) => h.pattern === p.id).length;
+  }
+  return out;
+}
+
+const JS_SURFACES = jsSurfaces();
+
+/* A surface's strict failures: every banned pattern, or spelling only. */
+function jsStrictFails() {
+  const fails = [];
+  for (const s of JS_SURFACES) {
+    const rules = PATTERNS.filter((p) => p.budget === 0 && (s.strict === 'all' || p.id === 'britspell'));
+    for (const p of rules) {
+      for (const h of s.hits.filter((x) => x.pattern === p.id)) {
+        fails.push(`${s.file} — ${h.source}: banned ${p.id} ${h.snippet}`);
+      }
+    }
+  }
+  return fails;
+}
+
 const pages = [];
 for (const s of READY) pages.push(scanPage('lesson', `${s.course}/${s.slug}/`, path.join(ROOT, s.course, s.slug, 'index.html'), s.slug));
 for (const g of GUIDES) pages.push(scanPage('guide', `guides/${g}/`, path.join(ROOT, 'guides', g, 'index.html'), null));
@@ -394,6 +506,7 @@ function strictCheck() {
     fails.push(`sitewide — ${totalByPattern['think-of']}× "Think of it as" (budget ${THINK_SITE_MAX} sitewide)`);
   if (andWatchShare > ANDWATCH_SHARE_MAX)
     fails.push(`sitewide — ${andWatchPages.length}/${descPages.length} meta descriptions (${(andWatchShare * 100).toFixed(0)}%) use "…and watch…" (budget ${ANDWATCH_SHARE_MAX * 100}%)`);
+  fails.push(...jsStrictFails());
   return fails;
 }
 
@@ -427,6 +540,16 @@ function printSitewide() {
   }
   console.log(`  "…and watch…" meta descriptions: ${andWatchPages.length}/${descPages.length} = ${(andWatchShare * 100).toFixed(1)}% (budget ≤ ${ANDWATCH_SHARE_MAX * 100}%)`);
 
+  console.log('\nJS-INJECTED PROSE (not pages, so no em-dash budget — see the header note)');
+  console.log(line(96));
+  console.log(pad('surface', 40) + rpad('strings', 9) + rpad('em—', 6) + rpad('banned', 8) + rpad('enforced', 10));
+  for (const s of JS_SURFACES) {
+    const rules = PATTERNS.filter((p) => p.budget === 0 && (s.strict === 'all' || p.id === 'britspell'));
+    const banned = rules.reduce((n, p) => n + s.counts[p.id], 0);
+    console.log(pad(s.file, 40) + rpad(s.items.length, 9) + rpad(s.dashes, 6) + rpad(banned, 8)
+      + rpad(s.strict === 'all' ? 'all rules' : 'spelling', 10));
+  }
+
   const worst = [...pages].sort((a, b) => b.score - a.score || b.dashes - a.dashes).slice(0, 10);
   console.log('\nWORST 10 PAGES');
   console.log(line(96));
@@ -437,6 +560,21 @@ function printSitewide() {
 const args = process.argv.slice(2);
 
 if (args[0] === '--page') {
+  /* a JS surface can be inspected the same way: --page assets/js/software.js */
+  const surface = JS_SURFACES.find((s) => s.file.split(' ')[0] === (args[1] || '').replace(/^\.\//, ''));
+  if (surface) {
+    console.log(`${surface.file} — ${surface.items.length} strings · ${surface.dashes} em-dashes (not budgeted) · --strict enforces `
+      + (surface.strict === 'all' ? 'every budget-0 rule' : 'British spellings only'));
+    if (!surface.hits.length) console.log('\nno pattern hits.');
+    for (const p of PATTERNS) {
+      const hits = surface.hits.filter((h) => h.pattern === p.id);
+      if (!hits.length) continue;
+      const gated = surface.strict === 'all' || p.id === 'britspell';
+      console.log(`\n${p.label} — ${hits.length}×${gated ? '' : ' (reported, not gated on this surface)'}`);
+      for (const h of hits) console.log(`  [${h.source}] ${h.snippet}`);
+    }
+    process.exit(0);
+  }
   const want = (args[1] || '').replace(/^\.\//, '').replace(/\/?(index\.html)?$/, '');
   const pg = pages.find((p) => p.label.replace(/\/$/, '') === want || p.label === args[1]);
   if (!pg) { console.error(`prose-lint: no such page "${args[1]}" (expected e.g. stats-1/central-limit-theorem or tables.html)`); process.exit(2); }

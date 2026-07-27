@@ -229,7 +229,7 @@
     "fraud-and-self-correction": "Real ponds are murky; the capybara distrusts water that's suspiciously clear. It reports the numbers it truly measured, and lets others check them.",
     /* ML & AI — for the stats student who knows regression */
     "prediction-vs-explanation": "The capybara can explain *why* it's chill, or *predict* how chill it'll be tomorrow — but it fits a different model for each. Two questions, two answers.",
-    "train-test-split-and-generalization": "The capybara never grades itself on ponds it already memorized. Fresh water, honest score — peeking at the test set just fools the capybara.",
+    "train-test-split-and-generalization": "The capybara never grades itself on a pond it has already memorized. Fresh water, honest score.",
     "regularization-ridge-and-lasso": "Too many predictors, too little data? The capybara shrinks the loud coefficients and quietly evicts the freeloaders. Lasso sets them to exactly zero.",
     "classification-metrics": "\"99% accurate at spotting rare capybaras!\" — says the model that labels everything 'not a capybara'. Ask it about recall and watch it squirm.",
     "roc-curves-and-auc": "The capybara doesn't pick one threshold — it tries them all and plots the whole curve. Top-left corner good, diagonal is a coin flip.",
@@ -239,11 +239,11 @@
     "clustering-kmeans": "No labels? The capybara sorts the pond into k piles by proximity. Lovely on round blobs, hilariously confident on two moons. Clusters are hypotheses, not facts.",
     "dimensionality-reduction": "Two hundred variables won't fit on a lily pad. PCA squashes them flat and honestly; t-SNE untangles them beautifully but fibs about distances. Squash to measure, unfold to look.",
     "neural-networks-intuition": "A neuron is just the logistic regression the capybara already knows, wearing a lab coat. Stack a few, roll downhill, and straight lines learn to bend around XOR.",
-    "llms-and-ai-in-research": "The capybara's chatbot writes with total confidence and occasional total fiction. Fluent isn't true — verify every fact, number, and citation, because your name is on it.",
+    "llms-and-ai-in-research": "The capybara's chatbot writes with total confidence and occasional total fiction. Your name goes on both.",
     /* Writing */
     "imrad-structure": "Why it looked, how it looked, what it saw, what it means — the capybara tells every study the same four-part way. Put each sentence in its room and the paper reads itself.",
     "reporting-statistics-apa": "Italic t, upright η², and no little zero before the dot. The capybara reports its p-value cleanly — and would never, ever write p = .000.",
-    "tables-and-figures": "Chop the axis at 45 and the capybara's three-point lead looks like a landslide. Start the bar at zero and let a small effect look small — that's information too.",
+    "tables-and-figures": "Chop the axis at 45 and the capybara's three-point lead looks like a landslide. Same three points, taller lie.",
     "writing-results": "The capybara reports the number and stops. Opinions wait for the Discussion.",
     "nonsignificant-results": "p = .08 is not 'a trend toward a nap.' The capybara reads the interval instead — wide means 'who knows yet,' tight-and-near-zero means 'genuinely nothing here.'",
     "discussion-and-limitations": "The capybara found a correlation, so it writes 'was associated with,' never 'causes.' Match the verb to the design and your claims outlive the ones that oversold.",

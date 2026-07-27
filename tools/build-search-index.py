@@ -28,6 +28,17 @@ MAX_CHARS = 4500
 # headroom also covers P64's Stats 3-4 problem sets and future glossary growth.
 PAGE_MAX_CHARS = {"problems.html": 120_000, "glossary.html": 120_000}
 
+# Lessons get their own, much larger cap (P39 run 13). The 4,500-char default
+# was truncating 87 of the 97 lessons, dropping 27% of the site's lesson prose
+# — and because a lesson's "Common questions" block sits at the END of the
+# article, the cut fell almost exactly on the FAQ answers, which are baked into
+# the HTML precisely so they can be found. The site's own search could not find
+# a single one of them. Same reasoning as the two overrides above, same cost
+# shape: the index is lazy-loaded only when the search overlay opens, and the
+# per-keystroke scan is a single regex pass whose cost is linear and measured
+# in low milliseconds. 12,000 clears the longest lesson (10.4k) with headroom.
+LESSON_MAX_CHARS = 12_000
+
 
 def textify(fragment: str) -> str:
     """Strip tags/scripts and collapse whitespace to plain searchable text."""
@@ -41,7 +52,7 @@ def textify(fragment: str) -> str:
 def lesson_text(path: Path) -> str:
     src = path.read_text(encoding="utf-8")
     m = re.search(r"<article class=\"lesson\">(.*?)</article>", src, re.S)
-    return textify(m.group(1))[:MAX_CHARS] if m else ""
+    return textify(m.group(1))[:LESSON_MAX_CHARS] if m else ""
 
 
 def page_text(path: Path, limit: int = MAX_CHARS) -> str:
