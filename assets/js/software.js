@@ -390,7 +390,8 @@ window.SOFTWARE = {
       '<strong>Analyze → Regression → Binary Logistic…</strong>',
       'Outcome into <em>Dependent</em>; predictors into <em>Covariates</em>; declare categorical ones via the <em>Categorical…</em> button.',
       '<em>Options…</em>: tick <em>CI for exp(B)</em> — exp(B) is the odds ratio.',
-      'Read: <em>Omnibus Tests</em> (model χ²), <em>Model Summary</em> (Nagelkerke R²), <em>Variables in the Equation</em> (B, Wald, Exp(B)).'
+      'Read: <em>Omnibus Tests</em> (model χ²), <em>Model Summary</em> (Nagelkerke R²), <em>Variables in the Equation</em> (B, Wald, Exp(B)).',
+      'The <em>Classification Table</em> SPSS prints by default uses a fixed cut value of .500; change it under <em>Options… → Classification cutoff</em> if a different operating point suits your problem.'
     ],
     jasp: [
       '<strong>Regression → Logistic Regression</strong>.',
@@ -402,7 +403,8 @@ window.SOFTWARE = {
     tips: [
       'Readers think in odds ratios, not logits — always report <em>OR</em> with its CI (an OR is significant when its CI excludes 1, not 0).',
       'An Exp(B) in the thousands with a CI running from near-0 to near-infinity means <strong>separation</strong>, not a spectacular predictor: some variable splits the outcome perfectly and the estimate has run off to infinity. Look for a category with an empty cell, merge sparse levels, or fit a penalized (Firth) model.',
-      'The Wald test each row prints is the least trustworthy part of the output when a coefficient is large. For a predictor worth arguing about, refit without it and compare models by likelihood ratio (SPSS: enter it in its own block; JASP: the model-comparison table).'
+      'The Wald test each row prints is the least trustworthy part of the output when a coefficient is large. For a predictor worth arguing about, refit without it and compare models by likelihood ratio (SPSS: enter it in its own block; JASP: the model-comparison table).',
+      'The <em>Overall Percentage</em> in that classification table is plain accuracy at a .500 cutoff, so on a rare outcome it flatters the model badly. Report the four cells and the metrics that match your costs instead; §5.4 works through why.'
     ]
   },
   "model-comparison": {

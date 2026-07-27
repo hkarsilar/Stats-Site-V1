@@ -37,9 +37,11 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v33";  /* P39 fourteenth run: two QUIPS + HS_SELECTOR in site.js, .lesson pre in styles.css
-                                    (v32 was consumed by an intermediate state during that run — never reuse a string
-                                     across two byte-contents of a precached asset, even a preview-only one) */
+const CACHE_VERSION = "sc-v34";  /* P39 fifteenth run: three QUIPS rewritten in site.js (precached). styles.css,
+                                    curriculum.js and viz.js are untouched this run, so site.js is the only shell
+                                    asset whose bytes changed. (v32 was consumed by an intermediate state during
+                                    run 14 — never reuse a string across two byte-contents of a precached asset,
+                                    even a preview-only one.) */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location
