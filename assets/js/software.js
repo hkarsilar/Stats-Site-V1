@@ -146,7 +146,7 @@ window.SOFTWARE = {
       '<em>Assumption Checks</em>: tick <em>Sphericity tests</em> and, under corrections, <em>Greenhouse-Geisser</em> — JASP prints corrected and uncorrected rows side by side.',
       'Tick <em>Estimates of effect size</em>; post-hocs live in <em>Post Hoc Tests</em> with Bonferroni/Holm options.'
     ],
-    apa: '<p>Mauchly’s test indicated a sphericity violation, χ²(2) = 9.4, <em>p</em> = .009, so Greenhouse–Geisser-corrected values are reported (ε = .78). Recall differed across the three delays, <em>F</em>(1.56, 45.2) = 8.75, <em>p</em> = .002, η<sub>p</sub>² = .23. Bonferroni-corrected comparisons showed forgetting from immediate to one week, <em>M</em><sub>diff</sub> = 9.1, <em>p</em> = .001.</p>',
+    apa: '<p>Mauchly’s test indicated a sphericity violation, χ²(2) = 9.4, <em>p</em> = .009, so Greenhouse–Geisser-corrected values are reported (ε = .78). Recall differed across the three delays, <em>F</em>(1.56, 45.2) = 8.75, <em>p</em> = .001, η<sub>p</sub>² = .23. Bonferroni-corrected comparisons showed forgetting from immediate to one week, <em>M</em><sub>diff</sub> = 9.1, <em>p</em> = .001.</p>',
     tips: [
       'The corrected (fractional) dfs — <em>F</em>(1.56, 45.2) — tell the reader a sphericity correction was applied; also name it and give ε.',
       'χ² and ε are Greek, so no italics; <em>F</em>, <em>p</em>, and <em>M</em> are Latin, so italics.'
@@ -228,7 +228,8 @@ window.SOFTWARE = {
     apa: '<p>Study hours were positively correlated with exam scores, <em>r</em>(58) = .42, 95% CI [.19, .61], <em>p</em> &lt; .001. Where assumptions failed we report Spearman’s rank correlation, <em>r</em><sub>s</sub>(58) = .39, <em>p</em> = .002.</p>',
     tips: [
       'The df for a correlation is <em>N</em> − 2.',
-      '<em>r</em> can’t exceed 1, so no leading zero: <em>r</em> = .42. Pair it with its CI; a lone <em>r</em> with a p-value hides the uncertainty.'
+      '<em>r</em> can’t exceed 1, so no leading zero: <em>r</em> = .42. Pair it with its CI; a lone <em>r</em> with a p-value hides the uncertainty.',
+      'Before calling an <em>r</em> small, check the two things that shrink it for reasons unrelated to the relationship: whether the sample covers only part of the range, and how reliable both measures are. Say so in the write-up when either applies.'
     ]
   },
   "simple-linear-regression": {
@@ -245,10 +246,11 @@ window.SOFTWARE = {
       'Under <em>Statistics</em>, tick <em>Estimates</em>, <em>Confidence intervals</em>, and <em>R squared change</em>.',
       'Under <em>Plots</em>, tick <em>Residuals vs. predicted</em> and the <em>Q-Q plot</em>.'
     ],
-    apa: '<p>Hours of study predicted exam scores, <em>b</em> = 2.31, <em>SE</em> = 0.57, β = .45, <em>t</em>(48) = 4.05, <em>p</em> &lt; .001. The model explained a fifth of the variance, <em>R</em>² = .21, <em>F</em>(1, 48) = 16.40, <em>p</em> &lt; .001.</p>',
+    apa: '<p>Hours of study predicted exam scores, <em>b</em> = 2.31, <em>SE</em> = 0.57, β = .50, <em>t</em>(48) = 4.05, <em>p</em> &lt; .001. The model explained a quarter of the variance, <em>R</em>² = .25, <em>F</em>(1, 48) = 16.40, <em>p</em> &lt; .001.</p>',
     tips: [
       'Give both the unstandardized slope <em>b</em> (real units — "2.31 points per hour") and the standardized β.',
-      'β here is Greek (no italics); <em>b</em>, <em>SE</em>, <em>t</em>, <em>R</em>² are Latin (italics).'
+      'β here is Greek (no italics); <em>b</em>, <em>SE</em>, <em>t</em>, <em>R</em>² are Latin (italics).',
+      'With a single predictor, β <em>is</em> the correlation and <em>R</em>² is β squared, so the Beta column should match the <em>r</em> you get from Correlate → Bivariate. If those two disagree, one of the analyses is not running on the sample you think it is.'
     ]
   },
   "regression-diagnostics": {
@@ -306,7 +308,8 @@ window.SOFTWARE = {
     ],
     apa: '<p>Collinearity was acceptable across predictors (all VIFs ≤ 2.3, all tolerances ≥ .43), so all three predictors were retained in the final model.</p>',
     tips: [
-      'A single sentence reporting the largest VIF (or "all VIFs below X") is the convention; VIF is an abbreviation, not a statistic symbol, so it isn’t italicized.'
+      'A single sentence reporting the largest VIF (or "all VIFs below X") is the convention; VIF is an abbreviation, not a statistic symbol, so it isn’t italicized.',
+      'Tolerance and VIF carry the same information (tolerance = 1 / VIF), so report one, not both. VIF is the usual choice in write-ups; tolerance reads more naturally as a share, since .08 says only 8% of that predictor is its own.'
     ]
   },
   "categorical-predictors-and-dummy-coding": {
@@ -617,18 +620,21 @@ window.SOFTWARE = {
       'Set <em>Model</em> to <em>Alpha</em>.',
       'Click <em>Statistics…</em> and tick <em>Scale if item deleted</em> and <em>Inter-Item Correlations</em>.',
       'Read <em>Cronbach’s Alpha</em> in the Reliability Statistics table; scan the <em>Cronbach’s Alpha if Item Deleted</em> column for items dragging the scale down.',
-      'SPSS 28+ can also compute <em>McDonald’s ω</em> here: set <em>Model</em> to <em>Omega</em> and run the analysis again.'
+      'SPSS 28+ can also compute <em>McDonald’s ω</em> here: set <em>Model</em> to <em>Omega</em> and run the analysis again.',
+      'For rater agreement instead of item consistency, use <strong>Analyze → Descriptive Statistics → Crosstabs…</strong> with one rater in Rows and the other in Columns, then <em>Statistics… → Kappa</em>. The two rating variables must use the <em>same</em> category codes, or the square table Kappa needs will not be built.'
     ],
     jasp: [
       '<strong>Reliability → Unidimensional Reliability</strong> (the classical option).',
       'Drag the scale’s items into <em>Variables</em>; under <em>Reverse-Scaled Items</em>, move any negatively worded ones across.',
       'Tick <em>Cronbach’s α</em>, and under <em>Individual Items</em> tick <em>α (if item dropped)</em> and the <em>item-rest correlation</em>.',
-      'JASP also reports <em>McDonald’s ω</em> — a modern alternative many methodologists now prefer over α.'
+      'JASP also reports <em>McDonald’s ω</em> — a modern alternative many methodologists now prefer over α.',
+      'Rater agreement lives beside it under <strong>Reliability → Inter-Rater Reliability</strong>: Cohen’s κ for two raters, Fleiss’ κ for more, and the ICC when the ratings are continuous.'
     ],
     apa: '<p>Internal consistency was acceptable: the 10-item Perceived Stress Scale had a Cronbach’s α of .82 in this sample, 95% CI [.78, .86]. One reverse-worded item was recoded before scoring, and all item–rest correlations exceeded .30.</p>',
     tips: [
       'α is a Greek letter, so it is <strong>not</strong> italicized (unlike Latin symbols such as <em>M</em>, <em>SD</em>, <em>r</em>). Report it with no leading zero: α = .82, not 0.82.',
-      'Reliability is a property of scores in <em>your</em> sample, not a fixed trait of the questionnaire — report it for your own data rather than citing the manual.'
+      'Reliability is a property of scores in <em>your</em> sample, not a fixed trait of the questionnaire — report it for your own data rather than citing the manual.',
+      'κ is Greek, so it stays upright and takes no leading zero: κ = .80. Report the percentage agreement and how common each category was alongside it, because a rare category inflates chance agreement and drags κ down on its own.'
     ]
   },
   "transformations-and-recoding": {

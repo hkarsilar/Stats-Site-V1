@@ -95,7 +95,7 @@
           <p><strong>1. Correlation only sees straight lines.</strong> A perfect U-shape (y = x²) can have <em>r</em> ≈ 0 even though the variables are perfectly related. Low <em>r</em> means "no <em>linear</em> trend," not "no relationship." Always look at the scatter.</p>
         </div>
         <div class="callout key">
-          <p><strong>2. Correlation is not causation.</strong> Ice-cream sales and drowning deaths rise together (both driven by hot weather). A strong <em>r</em> tells you two things move together — never <em>why</em>.</p>
+          <p><strong>2. Correlation is not causation.</strong> Ice-cream sales and drowning deaths rise together (both driven by hot weather). A strong <em>r</em> tells you two things move together — never <em>why</em>. If you can measure the lurking variable, a <strong>partial correlation</strong> asks the question again with that variable held constant, which is the same "holding the others constant" idea that <a href="../../stats-3/multiple-regression/">multiple regression</a> generalizes. Hold temperature constant and the ice-cream link collapses; the ones that survive are the interesting ones.</p>
         </div>
         <div class="callout key">
           <p><strong>3. A single outlier can fake — or hide — a correlation.</strong> Drag one point far away in the playground and watch <em>r</em> lurch. Real analyses always check whether one stray point is doing all the work.</p>
@@ -132,10 +132,20 @@
 
         <p>Every dataset above reports r = 0.82 and the exact same line — yet only the first is the tidy linear relationship that number implies. The second is a smooth curve, the third is a perfect line derailed by one outlier, and the fourth has no trend at all until a single far-flung point invents one. Summary statistics are a compression; the scatter is the truth.</p>
 
+        <h2>Two reasons r comes out too small</h2>
+        <p>A weak correlation sometimes means the relationship is weak. Two duller explanations come first, and both make an honest relationship look smaller than it is.</p>
+        <p><strong>Restriction of range.</strong> Correlation feeds on spread, so looking at only part of the range starves it. Suppose an admissions test correlates .60 with later grades across all applicants. Compute that correlation inside the students you actually admitted, the top quarter of the test distribution, and .60 shows up as roughly .35; in the top 10% it falls to about .30. Nothing about the underlying relationship changed. You removed the variation that made it visible. This is why selective samples (admitted students, hired employees, patients sick enough to be referred) return correlations that look disappointing, and why a validity study run inside the selected group understates the very test that did the selecting.</p>
+        <p><strong>Unreliable measures.</strong> Every measurement carries noise, and noise correlates with nothing. The shrinkage this causes has a name, <strong>attenuation</strong>. If your two variables have <a href="../../methods/reliability-and-validity/">reliabilities</a> r<sub>xx</sub> and r<sub>yy</sub>, the correlation you observe is the true one shrunk by a factor of √(r<sub>xx</sub> · r<sub>yy</sub>). Two questionnaires at a respectable α = .70 apiece turn a true correlation of .60 into an observed .42. The same arithmetic sets a ceiling: with those instruments, even a perfect underlying relationship could not report above .70.</p>
+        <div class="callout key">
+          <p>Before writing "the variables were only weakly related," check both. Did you compute <em>r</em> inside a selected slice of the range, and how reliable were the measures? A .30 from a restricted sample with noisy instruments is compatible with a substantial relationship in the population.</p>
+        </div>
+
         <div class="callout">
           <p><strong>Why it matters:</strong> correlation is the first measure of "do these two move together?" — and it's the direct stepping stone to <a href="../../stats-2/simple-linear-regression/">regression</a>, which turns that relationship into a predictive line.</p>
           <p style="margin-top:.6rem">Got two columns of your own? Paste them into the <a href="../../correlation.html">Correlation &amp; Regression Calculator</a> for a live scatterplot, <em>r</em> with its <em>p</em>-value and 95% CI, Spearman's ρ, and an outlier-robustness check.</p>
         </div>
+
+        <p class="pb-xref">Want a real cloud to try this on? <a href="../../datasets.html#screen">screen-time.csv</a> holds 60 people, one influential point, and the worked answer for what <em>r</em> does when you drop it.</p>
 
         <p class="pb-xref"><a href="../../problems.html#p2-8">Problem 20 of the practice problems</a> computes <em>r</em> from six pairs of numbers by hand, then asks what besides causation could have produced it.</p>
 

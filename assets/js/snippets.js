@@ -88,8 +88,8 @@ window.SNIPPETS = {
     py: 'import numpy as np\nfrom scipy import stats\ntab = np.array([[30, 10], [20, 40]])\nchi2, p, dof, expected = stats.chi2_contingency(tab)\nprint(chi2, p)\nprint(expected)   # the counts H0 predicted'
   },
   "correlation": {
-    r: 'cor(x, y)                  # Pearson r\ncor.test(x, y)             # r with CI and p-value\ncor.test(x, y, method = "spearman")   # rank-based, robust to curves',
-    py: 'from scipy import stats\nr, p = stats.pearsonr(x, y)\nprint(r, p)\nprint(stats.spearmanr(x, y))   # rank-based alternative'
+    r: 'cor(x, y)                  # Pearson r\ncor.test(x, y)             # r with CI and p-value\ncor.test(x, y, method = "spearman")   # rank-based, robust to curves\n# partial correlation: correlate what is left after removing z from both\ncor(resid(lm(x ~ z)), resid(lm(y ~ z)))',
+    py: 'from scipy import stats\nr, p = stats.pearsonr(x, y)\nprint(r, p)\nprint(stats.spearmanr(x, y))   # rank-based alternative\nimport pingouin as pg\nprint(pg.partial_corr(data=df, x="x", y="y", covar="z"))   # holding z constant'
   },
   "simple-linear-regression": {
     r: 'fit <- lm(score ~ hours, data = df)\nsummary(fit)         # slope, intercept, R-squared\nplot(df$hours, df$score); abline(fit, col = "red")',
@@ -105,7 +105,7 @@ window.SNIPPETS = {
     py: 'import statsmodels.formula.api as smf\nfit = smf.ols("score ~ hours + sleep + anxiety", data=df).fit()\nprint(fit.summary())   # each slope: all else equal\n# standardized coefficients (beta): same numbers as z-scoring first\npreds = ["hours", "sleep", "anxiety"]\nprint(fit.params[preds] * df[preds].std() / df["score"].std())'
   },
   "multicollinearity-and-variable-selection": {
-    r: 'car::vif(fit)          # VIF > 5-10 = trouble\nstep(fit)              # stepwise by AIC (use with care!)',
+    r: 'car::vif(fit)          # VIF > 5-10 = trouble\n1 / car::vif(fit)      # the same thing as tolerance (< .20 / < .10)\nstep(fit)              # stepwise by AIC (use with care!)',
     py: 'from statsmodels.stats.outliers_influence import variance_inflation_factor\nX = fit.model.exog\nfor i, name in enumerate(fit.model.exog_names):\n    print(name, variance_inflation_factor(X, i))'
   },
   "categorical-predictors-and-dummy-coding": {
@@ -208,8 +208,8 @@ window.SNIPPETS = {
     py: 'import pandas as pd\nfrom scipy.stats import zscore\nstress = df[["cortisol", "hrv", "self_report"]].apply(zscore)  # standardize each\ndf["stress_index"] = stress.mean(axis=1)                      # composite measure'
   },
   "reliability-and-validity": {
-    r: 'library(psych)\n# items: rows = people, cols = the scale items\nalpha(items)$total$std.alpha   # standardized Cronbach alpha\ncor(time1_total, time2_total)  # test-retest reliability',
-    py: 'import pingouin as pg\n# items: one column per scale item\npg.cronbach_alpha(data=items)   # -> (alpha, 95% CI)'
+    r: 'library(psych)\n# items: rows = people, cols = the scale items\nalpha(items)$total$std.alpha   # standardized Cronbach alpha\ncor(time1_total, time2_total)  # test-retest reliability\n# inter-rater agreement, base R: Cohen kappa from the 2-rater table\ntab <- table(rater1, rater2)\npo <- sum(diag(tab)) / sum(tab)\npe <- sum(rowSums(tab) * colSums(tab)) / sum(tab)^2\n(po - pe) / (1 - pe)            # report po alongside it',
+    py: 'import pingouin as pg\n# items: one column per scale item\npg.cronbach_alpha(data=items)   # -> (alpha, 95% CI)\nfrom sklearn.metrics import cohen_kappa_score\nprint(cohen_kappa_score(rater1, rater2))   # inter-rater agreement'
   },
   "experimental-design-and-randomization": {
     r: 'set.seed(1)\nn <- nrow(df)\ndf$group <- sample(rep(c("control", "treat"), length.out = n))  # randomize -> ~balanced\naggregate(cbind(age, motivation) ~ group, df, mean)              # check covariate balance',

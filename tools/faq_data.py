@@ -204,8 +204,8 @@ FAQS_12 = {
 ],
 
 "simple-linear-regression": [
- ("What does R² mean in plain English?",
-  "The share of the outcome's variation the line accounts for. R² = 0.70 means 70% of the ups and downs in y are tracked by x through the fitted line; the remaining 30% is scatter the model can't explain. In simple regression it's literally the correlation squared — r = .5 gives R² = .25."),
+ ("How do I know whether my slope is statistically significant?",
+  "Divide the slope by its own standard error: t = b / SE, tested against df = n − 2. A slope of b = 2.31 with SE = 0.57 in a sample of 50 gives t(48) = 4.05, p &lt; .001, so the software prints it as significant. Two facts make this easy to sanity-check. Squaring that t gives the model's F (4.05² = 16.4), and testing the slope is the same test as asking whether r differs from 0, so both p-values match exactly. Report the CI alongside it, here [1.16, 3.46], because \"significant\" only says the interval misses zero, not that the slope is large enough to care about."),
  ("What is the difference between correlation and regression?",
   "Correlation gives one symmetric number describing how tightly two variables co-move — no direction, no units. Regression fits an equation (ŷ = b₀ + b₁x) for <em>predicting</em> y from x, with a slope in real units (\"each extra study hour buys 2.3 exam points\"). Correlation describes; regression predicts."),
  ("Can I use my regression line to predict beyond my data's range?",
@@ -238,8 +238,8 @@ FAQS_34 = {
 "multicollinearity-and-variable-selection": [
  ("What VIF value indicates a problem?",
   "Common alarm thresholds are VIF > 5 (cautious) or VIF > 10 (lenient) — VIF = 5 means that predictor's coefficient variance is inflated 5-fold because other predictors largely explain it. Treat these as smoke detectors, not verdicts: a high VIF between a predictor and its own squared term is normal, while VIF 4 between two conceptually distinct predictors might still deserve thought."),
- ("Does multicollinearity affect my model's predictions?",
-  "Barely — that's the key reassurance. Correlated predictors destabilize the <em>individual coefficients</em> (who gets credit), not the joint prediction (how much credit there is in total). If your goal is forecasting y, you can often live with it; if your goal is interpreting \"the effect of x₁ holding x₂ fixed,\" that's exactly what multicollinearity poisons."),
+ ("Every pairwise correlation is below .6. Am I safe from multicollinearity?",
+  "No. Scanning the correlation matrix catches only two-variable overlap, and collinearity is a many-variable problem: a predictor can be almost perfectly predicted by a <em>combination</em> of the others while correlating modestly with each one. Take four predictors where the fourth is roughly the sum of the first three. Every pairwise correlation sits at about .55, which looks harmless, yet the fourth predictor's VIF is 13 and its tolerance is .08. This is the reason VIF exists as a separate diagnostic: it regresses each predictor on <em>all</em> the others at once, which is the question the correlation matrix never asks."),
  ("Why is stepwise regression frowned upon?",
   "Because it runs many hidden tests and keeps whatever chanced below .05: the surviving p-values are biased low, R² is inflated, and small data perturbations produce entirely different \"final\" models. It also can't use what it doesn't know — theory. Choose predictors from domain knowledge, and if you need automatic selection for prediction, use penalized methods like the lasso with cross-validation."),
 ],
@@ -472,8 +472,8 @@ FAQS_METHODS = {
   "The folk rule is α ≥ .70 for research use and ≥ .80 for higher-stakes decisions, but it's a convention, not a law. Counter-intuitively, a very high α (≥ .90) can signal <em>redundant</em>, near-duplicate items rather than a better scale. α also grows with the number of items and depends on your sample, so report it for your own data, and remember it measures internal consistency, not <a href=\"../../methods/variables-and-operationalization/\">whether you measured the right thing</a>."),
  ("Can a measure be reliable but not valid?",
   "Absolutely, and it's the most dangerous case. A bathroom scale that always reads 3 kg heavy is perfectly reliable (it's consistent) yet completely invalid (it's systematically wrong). Reliability is <em>necessary</em> for validity — a measure that can't even agree with itself can't be accurate — but it never <em>guarantees</em> it. A precise, repeatable number can still be measuring the wrong thing."),
- ("What's the difference between reliability and validity?",
-  "<strong>Reliability</strong> is consistency: the same answer under the same conditions, whether across time (test–retest), across raters (inter-rater), or across a scale's items (internal consistency). <strong>Validity</strong> is accuracy: whether the measure actually captures the construct you intend. On the dartboard picture, reliability is how tightly the darts cluster together; validity is whether that cluster sits on the bullseye."),
+ ("What counts as a good Cohen's kappa (κ)?",
+  "The usual yardstick is Landis and Koch's: .21–.40 fair, .41–.60 moderate, .61–.80 substantial, above .80 almost perfect, with most journals wanting to see .60 or better for coded data. Those bands are a convention someone proposed in 1977, not a result, so read them loosely. What matters more is how common each category was, because κ is scored against chance agreement: two coders who agree on 90 of 100 clips earn κ = .80 when the two labels are used equally often, but only κ = .44 when one label covers 85 of the clips. Same raters, same 90%, half the credit. Report the raw agreement and the base rates so a reader can tell which situation they are in."),
 ],
 
 "experimental-design-and-randomization": [
@@ -680,8 +680,8 @@ FAQS_ETHICS = {
 "deception-and-debriefing": [
  ("When is deception allowed in a research study?",
   "Only when three conditions hold at the same time: there is no reasonable non-deceptive way to answer the question, the deception exposes participants to no more than minimal risk and to nothing they would reasonably resent, and everyone is fully debriefed afterwards with the option to withdraw their data. Miss any one (an honest design would have worked, the deception causes real distress, or there is no proper debrief) and it is not justified. Deception is also meant to be a last resort, cleared in advance by an ethics committee, not a default way to dodge <a href=\"../../methods/bias-and-blinding/\">demand characteristics</a>."),
- ("What should a debriefing include?",
-  "A genuine debrief does four things: it reveals and explains any deception (what was misrepresented, and why it was scientifically necessary); it corrects any false beliefs the study may have created, so nobody leaves thinking, say, that rigged 'failure' feedback was real; it offers the right to withdraw their data now that they know the truth; and it checks on wellbeing and provides a contact for later concerns. The aim is that participants leave no worse off (and ideally better informed) than when they arrived. 'The study's over, thanks for coming' is not a debrief."),
+ ("Is not telling participants my hypothesis the same as deception?",
+  "Usually not. Ethics codes separate <em>incomplete disclosure</em>, where you withhold the specific prediction but describe the task and the general purpose honestly, from <em>deception</em>, where something is actively misrepresented: a false cover story, a confederate posing as a participant, rigged feedback. Withholding the hypothesis is standard practice and is what blinding requires; almost every study does it. The line is crossed when a participant would later say they were told something untrue. Ethics committees still want incomplete disclosure named in the application, and it is good practice to close the loop at the end by stating the hypothesis, even where no debrief is formally owed."),
  ("Can I use deception in my student project?",
   "You can, but you almost certainly shouldn't need to, and you cannot do it on your own say-so. Any deception must be justified in your ethics application and approved before you start — and reviewers will first ask whether an honest design, an indirect measure, or simply not disclosing the specific hypothesis would answer your question just as well. If deception really is necessary, it has to be minimal-risk and paired with a written debriefing plan and a data-withdrawal option. For most student studies the honest route is available, faster to get approved, and avoids the trust cost entirely — so reach for deception last."),
 ],

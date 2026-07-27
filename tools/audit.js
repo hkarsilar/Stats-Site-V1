@@ -708,6 +708,91 @@ for (const lm of idx.matchAll(/(\d+)\s+(?:interactive |hands-on )?lessons/gi))
   if (+lm[1] !== lessonCount) err(`index.html says "${lm[1]} … lessons" but curriculum has ${lessonCount} ready lessons`);
 
 /* ============================================================
+   CHECK 9 — APA statistic/p consistency (P39 run 12)
+
+   The site publishes worked APA sentences in two places: the `apa`
+   string of every software.js entry, and the .apa-quote blockquotes
+   baked into lessons and guides. Nothing ever checked that the p in
+   those sentences matches the statistic printed beside it — and one
+   did not (simple-linear-regression reported R² = .21 and β = .45
+   against a b/SE that gives t = 4.05, i.e. R² = .25). This is the
+   statcheck test `apa.html` already offers readers, turned on the
+   site's own content.
+
+   Deliberately conservative: a statistic is paired with a p only when
+   the p follows it directly, in the same clause and within 80 chars,
+   so a later Tukey/simple-effects p is never mispaired. Anything it
+   cannot parse confidently is skipped rather than guessed at.
+   ============================================================ */
+{
+  const V = loadWindow([JS('viz.js')]).VIZ;
+  if (!V || !V.tUpper) err('CHECK 9: could not load VIZ from viz.js');
+  else {
+    const clean = (x) => x
+      .replace(/<[^>]*>/g, '')
+      .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&')
+      .replace(/&nbsp;/g, ' ').replace(/[   ]/g, ' ')
+      .replace(/\s+/g, ' ');
+    const toNum = (x) => parseFloat(String(x).replace(/[−–]/g, '-'));
+    const STAT = /\b(t|F|z|r|rs|χ²|χ2)\s*\(\s*([^)]*?)\s*\)\s*=\s*([−–-]?\d[\d.]*)/g;
+    const PVAL = /\bp\s*(=|<|>)\s*([\d.]+)/g;
+
+    let pairs = 0;
+    const scan = (label, raw) => {
+      const s2 = clean(raw), stats = [], ps = [];
+      let m;
+      STAT.lastIndex = 0;
+      while ((m = STAT.exec(s2))) stats.push({ i: m.index, end: STAT.lastIndex, stat: m[1], df: m[2], val: toNum(m[3]), txt: m[0] });
+      PVAL.lastIndex = 0;
+      while ((m = PVAL.exec(s2))) ps.push({ i: m.index, rel: m[1], p: toNum(m[2]), dec: (String(m[2]).split('.')[1] || '').length, txt: m[0] });
+      for (let k = 0; k < stats.length; k++) {
+        const st = stats[k];
+        const stop = stats[k + 1] ? stats[k + 1].i : s2.length;
+        const pp = ps.find((q) => q.i > st.end && q.i < stop);
+        if (!pp) continue;
+        const between = s2.slice(st.end, pp.i);
+        /* same clause, close by — otherwise we cannot be sure the p is this statistic's */
+        if (between.length > 80 || /;/.test(between) || /\.\s+[A-Z(]/.test(between)) continue;
+        const df = st.df.split(',').map((x) => x.trim()).filter((x) => !/^N\b/i.test(x)).map(toNum);
+        if (df.some((d) => !isFinite(d) || d <= 0)) continue;
+        const v = Math.abs(st.val);
+        let p = null;
+        try {
+          if (st.stat === 't') p = 2 * V.tUpper(v, df[0]);
+          else if (st.stat === 'F') p = df.length > 1 ? V.fUpper(v, df[0], df[1]) : null;
+          else if (st.stat === 'z') p = 2 * V.normQ(v);
+          else if (st.stat === 'χ²' || st.stat === 'χ2') p = V.chiSqUpper(v, df[0]);
+          else if ((st.stat === 'r' || st.stat === 'rs') && v < 1) p = 2 * V.tUpper(v * Math.sqrt(df[0] / (1 - v * v)), df[0]);
+        } catch (e) { p = null; }
+        if (p === null || !isFinite(p)) continue;
+        pairs++;
+        const ok = pp.rel === '<' ? p < pp.p
+          : pp.rel === '>' ? p > pp.p
+            : Math.abs(p - pp.p) <= 0.5 * Math.pow(10, -pp.dec) + 1e-12;
+        if (!ok) err(`APA inconsistency in ${label}: "${st.txt}, ${pp.txt}" — recomputed p = ${p < 1e-4 ? p.toExponential(2) : p.toFixed(4)}`);
+      }
+    };
+
+    for (const [slug, e] of Object.entries(SOFTWARE)) if (e && e.apa) scan(`software.js "${slug}"`, e.apa);
+    const walkHtml = (dir, acc) => {
+      for (const f of fs.readdirSync(dir)) {
+        if (f.startsWith('.') || f === 'node_modules') continue;
+        const q = path.join(dir, f);
+        if (fs.statSync(q).isDirectory()) walkHtml(q, acc);
+        else if (f.endsWith('.html')) acc.push(q);
+      }
+      return acc;
+    };
+    for (const f of walkHtml(ROOT, [])) {
+      const src = read(f);
+      for (const m of src.matchAll(/<blockquote[^>]*class="[^"]*apa-quote[^"]*"[^>]*>([\s\S]*?)<\/blockquote>/g))
+        scan(`${rel(f)} [apa-quote]`, m[1]);
+    }
+    info(`APA statistic/p consistency: ${pairs} pairs checked across software.js + .apa-quote blocks`);
+  }
+}
+
+/* ============================================================
    CHECK 8 — meta-description dedupe (titles are checked per page
    by metaHygiene as the loops above run)
    ============================================================ */

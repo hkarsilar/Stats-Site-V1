@@ -166,11 +166,11 @@
     "non-parametric-alternatives": "Weird data? Rank it. Capybaras don't judge distributions either.",
     "chi-square-tests": "Counting capybaras by category since 1900. Pearson would have loved a hot spring.",
     "correlation": "Snacks up, chill up. Correlated? Sure. Causal? The capybara declines to comment.",
-    "simple-linear-regression": "Drawing one straight line through a cloud of chaos and calling it a model — and being right.",
+    "simple-linear-regression": "A capybara's approach to a messy scatterplot: pick the line that regrets the least.",
     "regression-diagnostics": "The line always looks confident. The capybara reads what it left behind.",
     /* Stats 3 */
     "multiple-regression": "One predictor is a snack. Five predictors is a buffet. Pace yourself.",
-    "multicollinearity-and-variable-selection": "Two predictors sharing one trench coat and pretending to be different variables. That's multicollinearity.",
+    "multicollinearity-and-variable-selection": "Two predictors sharing one trench coat and pretending to be different variables.",
     "categorical-predictors-and-dummy-coding": "Dummy coding is not an insult. It's just capybara = 1, not-capybara = 0.",
     "ancova": "ANCOVA is just ANOVA that remembered to control for the vibes.",
     "interactions-in-regression": "Sometimes the effect of snacks depends on the pool. That's an interaction. Keep up.",
