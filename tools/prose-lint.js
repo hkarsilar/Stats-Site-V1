@@ -26,10 +26,10 @@
    single source of truth, tools/faq_data.py, under their own
    budget).
 
-   THE JS SURFACES (P39 run 13). The strings site.js injects into
-   lessons are prose a reader reads, and until this they were the
-   one prose surface nothing measured: three consecutive refresh
-   runs found a British spelling in a software.js tip or a checks.js
+   THE SHARED JS SURFACES (P39 run 13). The strings site.js injects
+   into lessons are prose a reader reads, and nothing measured them
+   until this: three consecutive refresh runs found a British spelling
+   in a software.js tip or a checks.js
    "why" only by reading the diff back. Four sources are scanned
    here — checks.js (question, options, why), software.js (SPSS and
    JASP steps, the APA sentence, tips), the # comments inside
@@ -45,6 +45,29 @@
    Em-dashes are reported for these surfaces and not gated: the
    em-dash budget in VOICE.md is per PAGE, and none of these are
    pages.
+
+   INLINE-SCRIPT STRINGS (P39 run 14). Run 13 closed the four SHARED
+   js surfaces and left the biggest one open: every page's own inline
+   <script>. A lesson's interactive prints verdicts, chart labels,
+   log lines and interpretation sentences straight to the reader, and
+   quiz.html's 208-question BANK lives there too — none of it reaches
+   extractProse(), which strips <script> before it counts a word. The
+   run-14 defect was a cleaning-log line reading standardise_group()
+   under a checkbox labeled "Standardize categories": visible on the
+   page, invisible to every check the site had.
+
+   Two design notes, both learned by testing the checker against the
+   unfixed tree BEFORE trusting it:
+     • The spelling scan reads EVERY string literal; the prose-like
+       filter gates only the reported patterns. The first attempt
+       filtered first and missed the very defect it was written for,
+       because "standardise_group()  — mapped " carries one real word.
+     • It matches on LETTER boundaries, not \b. \bstandardise\b does
+       not fire inside standardise_group, since _ is a word character,
+       and snake_case is exactly the shape these strings take.
+   Enforcement is rule 12 only, for the reason snippet comments are:
+   a chart axis label is not paragraph prose. Everything else here is
+   reported, not gated.
    ============================================================ */
 
 'use strict';
@@ -374,12 +397,99 @@ function scanPage(kind, label, file, slug) {
 const COURSE_PAGES = (win.CURRICULUM || []).map((c) => c.slug);
 
 /* ============================================================
-   JS-injected prose (see the header note) — four surfaces, two
+   JS-injected prose (see the header note) — five surfaces, two
    strictness levels. Each entry: { file, strict: 'all' | 'spell',
    items: [{ key, text }] }.
    ============================================================ */
 
 const stripTags = (s) => decodeEntities(String(s).replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
+
+/* ------------------------------------------------------------------
+   Inline-script strings (P39 run 14) — see the header note.
+   ------------------------------------------------------------------ */
+
+/* Rule 12 on LETTER boundaries rather than \b, because these strings
+   are code-shaped: \bstandardise\b never fires inside
+   standardise_group (_ is a word character), which is precisely how
+   the run-14 defect stayed invisible. Same inventory, wider hinge. */
+const BRIT_LETTER_BOUNDED = new RegExp('(?<![A-Za-z])(?:' + BRIT_SPELLINGS.join('|') + ')(?![A-Za-z])', 'gi');
+
+/* A page's own <script> blocks: no src=, and never the JSON-LD. */
+function inlineScriptBlocks(html) {
+  const out = [];
+  for (const m of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
+    const attrs = m[1] || '';
+    if (/\bsrc\s*=/i.test(attrs)) continue;
+    if (/type\s*=\s*["']application\/ld\+json/i.test(attrs)) continue;
+    out.push(m[2]);
+  }
+  return out;
+}
+
+/* Every string literal in a block of JS, quotes and \ escapes honored,
+   // and /* comments skipped so their contents aren't read as code. */
+function stringLiterals(src) {
+  const out = [];
+  let i = 0;
+  while (i < src.length) {
+    const ch = src[i];
+    if (ch === '/' && src[i + 1] === '/') { while (i < src.length && src[i] !== '\n') i++; continue; }
+    if (ch === '/' && src[i + 1] === '*') { i = src.indexOf('*/', i); if (i < 0) break; i += 2; continue; }
+    if (ch === '"' || ch === "'" || ch === '`') {
+      const q = ch;
+      let j = i + 1, buf = '';
+      while (j < src.length) {
+        if (src[j] === '\\') { buf += src[j + 1] === 'n' ? ' ' : src[j + 1]; j += 2; continue; }
+        if (src[j] === q) break;
+        buf += src[j];
+        j++;
+      }
+      out.push(buf);
+      i = j + 1;
+      continue;
+    }
+    i++;
+  }
+  return out;
+}
+
+/* Would a reader recognize this literal as a sentence rather than a
+   selector, a colour, a URL or an id? Used ONLY to decide what the
+   non-spelling patterns are reported against — see the header note. */
+const NOT_PROSE = /[{;]|^\s*[.#][A-Za-z-]+|^[a-z-]+\s*:\s*\S+$|^\d|^#[0-9a-f]{3,8}$/i;
+function proseLike(s) {
+  const t = stripTags(s).replace(/\s+/g, ' ').trim();
+  if (t.length < 12) return null;
+  if (/^https?:|^\.\.?\//.test(t)) return null;
+  if (NOT_PROSE.test(t)) return null;
+  if (!/[a-z]{3}/.test(t)) return null;
+  const words = t.split(' ').filter((w) => /^[A-Za-z][A-Za-z'’-]{2,}$/.test(w));
+  return words.length >= 3 ? t : null;
+}
+
+function inlineScriptStrings() {
+  const files = [
+    ...READY.map((s) => `${s.course}/${s.slug}/index.html`),
+    ...GUIDES.map((g) => `guides/${g}/index.html`),
+    ...COURSE_PAGES.map((c) => `${c}/index.html`),
+    ...ROOT_PAGES,
+  ];
+  const items = [];
+  for (const p of files) {
+    const file = path.join(ROOT, p);
+    if (!fs.existsSync(file)) continue;
+    for (const src of inlineScriptBlocks(read(file))) {
+      for (const lit of stringLiterals(src)) {
+        const flat = stripTags(lit).replace(/\s+/g, ' ').trim();
+        if (!flat) continue;
+        /* spellText is scanned for rule 12 always; text carries the
+           prose-like subset the other patterns are measured on. */
+        items.push({ key: p, text: proseLike(lit) || '', spellText: flat });
+      }
+    }
+  }
+  return items;
+}
 
 function jsSurfaces() {
   const out = [];
@@ -439,12 +549,36 @@ function jsSurfaces() {
   }
   out.push({ file: 'assets/js/site.js (QUIPS)', strict: 'spell', items: quips });
 
+  /* one token before the space, so --page inline-scripts inspects it. */
+  out.push({ file: 'inline-scripts (every page)', strict: 'spell', items: inlineScriptStrings(), spellAll: true });
+
   for (const s of out) {
     s.hits = [];
     s.dashes = 0;
     for (const it of s.items) {
       s.dashes += countDashes(it.text);
-      for (const h of findHits(it.text, it.key)) s.hits.push(h);
+      for (const h of findHits(it.text, it.key)) {
+        /* on a spellAll surface the raw scan below owns rule 12
+           outright, so drop the \b hits here rather than count the
+           same word twice. */
+        if (s.spellAll && h.pattern === 'britspell') continue;
+        s.hits.push(h);
+      }
+      /* spellAll surfaces re-scan the RAW literal for rule 12, on
+         letter boundaries — see the header note: filtering to prose
+         first, or trusting \b, each hides a snake_case spelling. */
+      if (s.spellAll && it.spellText) {
+        const t = it.spellText;
+        for (const m of t.matchAll(BRIT_LETTER_BOUNDED)) {
+          const from = Math.max(0, m.index - 30);
+          const to = Math.min(t.length, m.index + m[0].length + 30);
+          s.hits.push({
+            pattern: 'britspell',
+            source: it.key,
+            snippet: `…${t.slice(from, m.index)}»${m[0]}«${t.slice(m.index + m[0].length, to)}…`,
+          });
+        }
+      }
     }
     s.counts = {};
     for (const p of PATTERNS) s.counts[p.id] = s.hits.filter((h) => h.pattern === p.id).length;

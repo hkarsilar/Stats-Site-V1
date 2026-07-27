@@ -649,13 +649,14 @@ window.SOFTWARE = {
     jasp: [
       'Click the <strong>+</strong> at the far right of the data view to add a <em>Computed Column</em>.',
       'Choose the R-style entry and type the expression: <code>log(income + 1)</code>, <code>sqrt(x)</code>, or <code>(x - mean(x)) / sd(x)</code> to z-standardize.',
-      'Reverse-code with <code>6 - q3</code> (1–5 scale); build a composite with <code>(q1 + q2 + q3 + q4 + q5) / 5</code> after every item points the same way.',
+      'Reverse-code with <code>6 - q3</code> (1–5 scale). For the composite, use the row-wise function <code>rowMeanNaRm(q1, q2, q3, q4, q5)</code> once every item points the same way — writing <code>(q1 + q2 + q3 + q4 + q5) / 5</code> returns a blank for anyone who skipped a single item.',
       'The new column is instantly available to any analysis — no need to leave JASP.'
     ],
     apa: '<p>Because household income was strongly positively skewed (skewness = 2.0), it was log-transformed (natural log) before analysis; means are reported on the original scale as geometric means. The five well-being items (one reverse-coded) were averaged into a composite (Cronbach’s α = .84).</p>',
     tips: [
       'Always state the transformation you used and the scale you analyzed on, then back-transform your summaries for the reader (the mean of the logs → the <em>geometric</em> mean).',
       'z-standardizing changes units, never shape — it does <strong>not</strong> fix skew or normality. Use a log or root for that.',
+      'If Box–Cox hands you λ̂ = 0.41, report the rung you actually used (√<em>x</em>) rather than the estimate. The interval around λ̂ is usually half a unit wide or more, so a transform quoted to two decimals claims a precision the method does not have.',
       'Reverse-code before computing a composite, or the reversed items cancel the rest and deflate the scale. Recompute reliability afterwards to confirm.'
     ]
   }

@@ -213,9 +213,9 @@
     "data-entry-and-validation": "A capybara weighing 512 kg? The validation rule says no. The capybara says please.",
     "data-cleaning-workflow": "The capybara never edits the raw pond. It writes a script, keeps the mud, and hands you a spotless lake.",
     "outliers-in-practice": "One capybara is four times the size of the rest. Before evicting it, the capybara asks: typo, different pond, or just a very large capybara?",
-    "transformations-and-recoding": "The capybara took the log of its income and finally slept soundly. A median split it refused — why throw away half the pond?",
+    "transformations-and-recoding": "The capybara took the log of its income and finally slept soundly. Everything looked normal, including the capybara.",
     "wide-vs-long-data": "Wide capybara, long capybara. Same capybara, different table.",
-    "merging-datasets": "Two ponds, one shared ID. The capybara joined them — then counted the rows twice, because one clone is one too many.",
+    "merging-datasets": "Two ponds, one shared ID. The capybara counted the rows before and after, which is how it found the third Gerald.",
     "reproducible-workflows": "The capybara's whole study fits in a script. Hand it to a stranger and the same lake pours out, every single time.",
     "data-privacy-basics": "The capybara crossed out its name. Then a snoop matched its age, pond, and stripe count. Anonymity is harder than it looks.",
     /* Ethics — gentle by design; these lessons cover real harm */
@@ -1944,7 +1944,7 @@
      only where content actually overflows. Known scrollable containers
      get tagged here; .ref-table additionally gets WRAPPED in a scroll
      div, so a wide table scrolls in place instead of the whole page. */
-  var HS_SELECTOR = ".hscroll, .try-code pre, .mock, #ana-seg, .tbl-demo, .cb-book-wrap, .td-grid-wrap, .apa-ref, .rb-output";
+  var HS_SELECTOR = ".hscroll, .try-code pre, .lesson pre, .mock, #ana-seg, .tbl-demo, .cb-book-wrap, .td-grid-wrap, .apa-ref, .rb-output";
   function hsUpdate(el) {
     var can = el.scrollWidth > el.clientWidth + 1;
     el.classList.toggle("hs-l", can && el.scrollLeft > 2);
