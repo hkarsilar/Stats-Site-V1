@@ -217,7 +217,7 @@
     "wide-vs-long-data": "Wide capybara, long capybara. Same capybara, different table.",
     "merging-datasets": "Two ponds, one shared ID. The capybara counted the rows before and after, which is how it found the third Gerald.",
     "reproducible-workflows": "The capybara's whole study fits in a script. Hand it to a stranger and the same lake pours out, every single time.",
-    "data-privacy-basics": "The capybara crossed out its name. Then a snoop matched its age, pond, and stripe count. Anonymity is harder than it looks.",
+    "data-privacy-basics": "The capybara crossed out its name. Then a snoop matched its age, its pond and its stripe count, and greeted it by name.",
     /* Ethics — gentle by design; these lessons cover real harm */
     "why-research-ethics": "Every rule in this course was written after someone was harmed. The capybara reads this one slowly, and remembers why consent comes first.",
     "informed-consent-and-irb": "Before anything begins, the capybara makes sure everyone knows what they're agreeing to — in plain words, and free to say no.",
@@ -236,7 +236,7 @@
     "decision-trees": "Split, split, split until every leaf is one happy capybara. Grow too deep and the tree just memorizes the pond — test day is a rude surprise.",
     "random-forests-and-ensembles": "One capybara's opinion is jumpy. Three hundred capybaras, each shown a slightly different patch of reeds, are eerily hard to argue with.",
     "knn-and-distance": "The capybara asks its nearest neighbors and copies them. Scale your axes first — and in 100 dimensions everyone is equally far away and equally unhelpful.",
-    "clustering-kmeans": "No labels? The capybara sorts the pond into k piles by proximity. Lovely on round blobs, hilariously confident on two moons. Clusters are hypotheses, not facts.",
+    "clustering-kmeans": "No labels? The capybara sorts the pond into k piles by proximity. Lovely on round blobs, hilariously confident on two moons, and it made you name k before it had even looked.",
     "dimensionality-reduction": "Two hundred variables won't fit on a lily pad. PCA squashes them flat and honestly; t-SNE untangles them beautifully but fibs about distances. Squash to measure, unfold to look.",
     "neural-networks-intuition": "A neuron is just the logistic regression the capybara already knows, wearing a lab coat. Stack a few, roll downhill, and straight lines learn to bend around XOR.",
     "llms-and-ai-in-research": "The capybara's chatbot writes with total confidence and occasional total fiction. Your name goes on both.",
