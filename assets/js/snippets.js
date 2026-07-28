@@ -80,8 +80,8 @@ window.SNIPPETS = {
     py: 'import pingouin as pg   # pip install pingouin\nfrom scipy import stats\nprint(stats.shapiro(resid))          # normality of residuals\nprint(stats.levene(a, b, c))         # equal variances\n# Welch fallback if they differ (scipy.f_oneway assumes equal variances):\nprint(pg.welch_anova(data=df, dv="score", between="group"))'
   },
   "non-parametric-alternatives": {
-    r: 'wilcox.test(drug, ctrl)             # Mann-Whitney U (2 groups)\nkruskal.test(score ~ group, df)     # Kruskal-Wallis (3+ groups)\nwilcox.test(before, after, paired = TRUE)   # signed-rank',
-    py: 'from scipy import stats\nprint(stats.mannwhitneyu(drug, ctrl))     # 2 independent groups\nprint(stats.kruskal(a, b, c))             # 3+ groups\nprint(stats.wilcoxon(before, after))      # paired'
+    r: 'wilcox.test(drug, ctrl)             # Mann-Whitney U (2 groups)\nkruskal.test(score ~ group, df)     # Kruskal-Wallis (3+ groups)\nwilcox.test(before, after, paired = TRUE)   # signed-rank\n\n# rank-biserial effect size, straight from U\nU <- unname(wilcox.test(drug, ctrl)$statistic)\n1 - 2 * U / (length(drug) * length(ctrl))',
+    py: 'from scipy import stats\nprint(stats.mannwhitneyu(drug, ctrl))     # 2 independent groups\nprint(stats.kruskal(a, b, c))             # 3+ groups\nprint(stats.wilcoxon(before, after))      # paired\n\n# rank-biserial effect size, straight from U\nU = stats.mannwhitneyu(drug, ctrl).statistic\nprint(1 - 2 * U / (len(drug) * len(ctrl)))'
   },
   "chi-square-tests": {
     r: 'tab <- matrix(c(30, 10,\n                20, 40), nrow = 2, byrow = TRUE)\nchisq.test(tab)            # association between two categoricals\nchisq.test(tab)$expected   # the counts H0 predicted\nchisq.test(tab)$stdres     # adjusted residuals: |z| > 2 marks the cell',
@@ -129,8 +129,8 @@ window.SNIPPETS = {
     py: 'import statsmodels.formula.api as smf\nimport numpy as np\nfit = smf.logit("passed ~ hours", data=df).fit()\nprint(fit.summary())\nprint(np.exp(fit.params))   # odds ratios'
   },
   "assumptions-of-regression": {
-    r: 'par(mfrow = c(2, 2)); plot(fit)     # the four diagnostic plots\ncar::durbinWatsonTest(fit)          # independence of residuals\ncar::crPlots(fit)                   # linearity, per predictor',
-    py: 'import statsmodels.api as sm\nsm.qqplot(fit.resid, line="45")        # normality of residuals\nprint(sm.stats.durbin_watson(fit.resid))\n# partial-regression (linearity) plots:\nsm.graphics.plot_partregress_grid(fit)'
+    r: 'par(mfrow = c(2, 2)); plot(fit)     # the four diagnostic plots\ncar::durbinWatsonTest(fit)          # independence of residuals\ncar::crPlots(fit)                   # linearity, per predictor\n\nn <- nobs(fit); p <- length(coef(fit))\nwhich(hatvalues(fit) > 2 * p / n)   # leverage: average is p/n, flag at 2p/n\nwhich(cooks.distance(fit) > 4 / n)  # influence: leverage x residual\nrstudent(fit)                       # studentized, not raw, residuals',
+    py: 'import statsmodels.api as sm\nsm.qqplot(fit.resid, line="45")        # normality of residuals\nprint(sm.stats.durbin_watson(fit.resid))\n# partial-regression (linearity) plots:\nsm.graphics.plot_partregress_grid(fit)\n\ninfl = fit.get_influence()\nn, p = int(fit.nobs), len(fit.params)\nprint(infl.hat_matrix_diag > 2 * p / n)      # leverage flag\nprint(infl.cooks_distance[0] > 4 / n)        # influence flag\nprint(infl.resid_studentized_external)       # studentized residuals'
   },
   "model-comparison": {
     r: 'm1 <- lm(score ~ hours, df)\nm2 <- lm(score ~ hours + sleep, df)\nanova(m1, m2)       # F-test for nested models\nAIC(m1, m2); BIC(m1, m2)   # penalized fit, lower = better',
@@ -162,8 +162,8 @@ window.SNIPPETS = {
     py: 'import pymc as pm, arviz as az   # pip install pymc (arviz comes with it)\nwith pm.Model():\n    a = pm.Normal("a", 0, 10); b = pm.Normal("b", 0, 10)\n    s = pm.HalfNormal("s", 10)\n    pm.Normal("y", a + b * df.hours, s, observed=df.score)\n    idata = pm.sample()\nprint(az.summary(idata))   # posterior + credible intervals'
   },
   "generalized-linear-models": {
-    r: '# count outcome -> Poisson GLM with a log link\nfit <- glm(citations ~ years + field, data = df,\n           family = poisson)\nsummary(fit)\nexp(coef(fit))   # multiplicative effects on the expected count',
-    py: 'import statsmodels.formula.api as smf\nimport statsmodels.api as sm\nfit = smf.glm("citations ~ years + field", data=df,\n              family=sm.families.Poisson()).fit()\nprint(fit.summary())'
+    r: '# count outcome -> Poisson GLM with a log link\nfit <- glm(citations ~ years + field, data = df,\n           family = poisson)\nsummary(fit)\nexp(coef(fit))   # multiplicative effects on the expected count\n\n# unequal follow-up? offset the log exposure and read rate ratios\nrate <- glm(falls ~ clinic, data = df, family = poisson,\n            offset = log(days))\nexp(coef(rate))\nrate$deviance / rate$df.residual   # near 1 = equidispersed',
+    py: 'import numpy as np\nimport statsmodels.formula.api as smf\nimport statsmodels.api as sm\nfit = smf.glm("citations ~ years + field", data=df,\n              family=sm.families.Poisson()).fit()\nprint(fit.summary())\n\n# unequal follow-up? offset the log exposure and read rate ratios\nrate = smf.glm("falls ~ clinic", data=df,\n               family=sm.families.Poisson(),\n               offset=np.log(df["days"])).fit()\nprint(np.exp(rate.params))\nprint(rate.deviance / rate.df_resid)   # near 1 = equidispersed'
   },
   "mixed-and-multilevel-models": {
     r: 'library(lme4)\n# random intercept per school: pupils are nested, not independent\nfit <- lmer(score ~ hours + (1 | school), data = df)\nsummary(fit)\nperformance::icc(fit)   # how much variance lives between schools',

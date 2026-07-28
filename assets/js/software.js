@@ -189,7 +189,7 @@ window.SOFTWARE = {
     apa: '<p>Pain ratings were lower in the treatment group (<em>Mdn</em> = 3) than in the control group (<em>Mdn</em> = 5), Mann–Whitney <em>U</em> = 245.5, <em>z</em> = −2.13, <em>p</em> = .033, <em>r</em> = .27. For three or more groups: <em>H</em>(2) = 7.61, <em>p</em> = .022 (Kruskal–Wallis).</p>',
     tips: [
       'Report medians (<em>Mdn</em>) rather than means — that’s what these tests respect.',
-      'An effect size still applies: <em>r</em> = <em>z</em>/√<em>N</em> (or the rank-biserial correlation from JASP).'
+      'An effect size still applies, but the two in circulation are not the same number. JASP’s rank-biserial correlation is the win rate minus the loss rate across every cross-group pairing; <em>r</em> = <em>z</em>/√<em>N</em> is the SPSS-era fallback and will usually be smaller on the same data. Say which one you computed.'
     ]
   },
   "chi-square-tests": {

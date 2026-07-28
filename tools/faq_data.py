@@ -71,8 +71,8 @@ FAQS_12 = {
   "Standard deviation describes the spread of individual data points around their mean. Standard error describes the spread of a <em>statistic</em> (like a sample mean) across repeated samples — it's the standard deviation of the sampling distribution, and it shrinks as n grows (SE = σ/√n for the mean). SD answers \"how much do people vary?\"; SE answers \"how much would my estimate vary if I redid the study?\""),
  ("What is a sampling distribution in simple terms?",
   "Imagine repeating your study thousands of times, each time computing the same statistic — say, the sample mean. The pile of those thousands of values is the sampling distribution. It's a thought experiment (you only run the study once), but its shape and spread are exactly what let you judge how trustworthy your one estimate is."),
- ("Does every statistic have a sampling distribution?",
-  "Anything you compute from a random sample has one: the mean, the median, the SD, a correlation, a regression slope. Each would come out slightly different in another sample, so each has its own distribution across hypothetical repeats. That's what makes inference general: confidence intervals and standard errors exist for medians and correlations, not just means."),
+ ("My estimator is unbiased. Doesn't that make it the right one to use?",
+  "Unbiasedness only says the estimator lands on the truth <em>on average</em>, which is a promise about a thousand studies you will never run. You are running one. Two unbiased estimators can have very different standard errors, and the one with the smaller error is the one that makes your single study informative: on a normal population the sample median is unbiased for the center and still needs about 1.57 times as many participants as the mean to match its precision. Check where an estimator centers, then check how tightly it clusters."),
 ],
 
 "central-limit-theorem": [
@@ -80,8 +80,8 @@ FAQS_12 = {
   "The folk rule is n ≥ 30, and for mildly skewed data that's usually plenty — sample means settle into a near-normal shape quickly. But it's a rule of thumb, not a law: heavily skewed or outlier-prone populations can need substantially more, while symmetric populations are fine much earlier. When in doubt, look at your data's shape rather than trusting the magic 30."),
  ("Does the Central Limit Theorem make my data normally distributed?",
   "This is the classic misreading. The CLT says the distribution of <em>sample means</em> approaches normal as n grows. Your raw data keeps whatever shape it has; skewed data stays skewed no matter how much you collect. The bell curve emerges one level up, in the averages across samples, which is what t-tests and confidence intervals actually rely on."),
- ("Why does the standard error shrink with the square root of n?",
-  "Averaging cancels luck: within one sample, unusually high values tend to offset unusually low ones, and the bigger the sample, the better the cancellation. The math works out to SE = σ/√n — which has a sobering consequence: to <em>halve</em> your uncertainty you need <em>four times</em> the data. Precision gets expensive fast."),
+ ("My data has a few enormous outliers. Will the CLT still rescue me?",
+  "Usually yes, but later than you would like. The theorem needs the population to have a finite variance, and genuine heavy tails (income, some reaction-time distributions, network sizes) make the convergence slow rather than impossible: the sampling distribution of the mean inherits the population's skewness divided by √n, so a badly skewed population still shows a lopsided sampling distribution at n = 30 and a confidence interval that covers less often than it claims. Two practical moves: look at whether the extremes are real data or errors, and prefer a <a href=\"../../stats-4/bootstrap-and-resampling/\">bootstrap</a> interval, which does not assume the shape has arrived."),
 ],
 
 "confidence-intervals": [
@@ -294,8 +294,8 @@ FAQS_34 = {
   "This is one of the most persistent regression myths: the normality assumption concerns the <em>residuals</em>, not the predictors or even the raw outcome. Skewed predictors, binary dummies, lumpy x-distributions: all perfectly fine. Fit the model, then check a Q-Q plot of the residuals. That's the only normality that matters, and mostly for small samples at that."),
  ("What is leverage in regression?",
   "A point's potential to move the line, determined purely by how unusual its predictor values are — far from the center of the x's means high leverage, like sitting at the end of a seesaw. Leverage alone isn't a problem: a high-leverage point right on the trend just stabilizes the fit. Danger requires leverage <em>plus</em> a large residual — that combination is influence."),
- ("What is a high Cook's distance, and what do I do about it?",
-  "Cook's distance summarizes how much the whole fitted model shifts if a point is deleted; common flags are values above 1, or above 4/n in large samples. For flagged points: check for data errors first, then refit with and without them and report both. A conclusion that survives is solid; one that hinges on a single observation is a finding about fragility, not about x and y."),
+ ("Is there a real test for equal variances, or do I just eyeball the residual plot?",
+  "There are two standard ones, and your software already has them: the Breusch–Pagan test (<code>car::ncvTest()</code> in R, <code>het_breuschpagan()</code> in statsmodels) regresses the squared residuals on the fitted values and asks whether the spread tracks them, and White's test does the same while also allowing curvature. Both are worth running and neither should be your only evidence, because they scale with n like every other test: at n = 2,000 a violation too small to matter comes back significant, and at n = 25 a serious funnel can slip through. Look at the plot, run the test, and let the plot break the tie."),
 ],
 
 "model-comparison": [
@@ -368,8 +368,8 @@ FAQS_34 = {
   "The bridge between a straight line and an outcome that can't follow one. The linear predictor b₀ + b₁x ranges over all numbers, but a probability lives in (0, 1) and a count rate must stay positive — so the link transforms the outcome's mean onto the unlimited scale where the line lives (logit for probabilities, log for counts). One linear machine, different adapters."),
  ("What is overdispersion and how do I handle it?",
   "Poisson regression hard-codes variance = mean, and real counts are almost always messier — more zeros, longer tails (event counts cluster within people, days, sites). The symptoms: deviance far exceeding its degrees of freedom, deceptively tiny standard errors. Standard fixes: a quasi-Poisson model (scales the errors) or, more commonly, a <strong>negative binomial</strong> model with its own dispersion parameter."),
- ("Which GLM family should I use for my outcome?",
-  "Read it off the outcome type: continuous and roughly symmetric → Gaussian (ordinary regression); yes/no → binomial with logit link (logistic); counts of events → Poisson with log link (negative binomial if overdispersed); strictly positive skewed amounts (costs, durations) → Gamma, usually with a log link. The workflow (predictors, interactions, diagnostics) stays identical across all of them."),
+ ("My people were followed for different lengths of time. Can I just divide and model the rate?",
+  "Dividing first throws away the thing the model needs. A count of 2 events in 2 months and 20 in 20 months are both a rate of 1 per month, but the second carries ten times the information, and a Gaussian model on the ratio treats them as equally certain, allows negative predictions, and inherits a variance that grows as exposure shrinks. Keep the count as the outcome and put log(exposure) in as an <strong>offset</strong> instead: a predictor whose coefficient is fixed at 1 rather than estimated. The coefficients then read as rate ratios, and the model still knows which people you watched longest. In R it is <code>offset = log(months)</code>; in SPSS it is the <em>Offset variable</em> box in Generalized Linear Models."),
 ],
 
 "mixed-and-multilevel-models": [

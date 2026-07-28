@@ -137,6 +137,14 @@
           </tbody>
         </table>
 
+        <h2>The effect size your software prints</h2>
+        <p>A rank test still owes you a size, not just a verdict. The parametric side has Cohen's <em>d</em> and η²; the rank side has the <strong>rank-biserial correlation</strong>, and the ledger above is already showing it to you under another name.</p>
+        <p>Recall the probability of superiority: the chance that a randomly picked value from one group beats a randomly picked value from the other. The rank-biserial correlation is that same quantity restretched onto the −1 to +1 scale a correlation lives on:</p>
+        <p style="text-align:center;font-size:1.15rem;margin:1rem 0"><strong><em>r</em><sub>rb</sub> = 2 × P(superiority) − 1</strong></p>
+        <p>Equivalently, it is the win rate minus the loss rate across every cross-group pairing. On the Mann–Whitney tab's starting data the ledger reports P(superiority) = .94, which puts <em>r</em><sub>rb</sub> at .89. Read it as a scoreboard: of the 36 possible pairings of one control value against one treatment value, treatment wins 34 and loses 2, and .89 is the gap between those two rates. Zero means the two groups interleave evenly; a magnitude of 1 means every value in one group beats every value in the other, and the sign records which group that is. (The ledger always reports the winning side's probability of superiority, so the formula above hands you the magnitude.)</p>
+        <p>Wilcoxon has a matched-pairs version of the same idea, (W₊ − W₋) / (W₊ + W₋), built from the signed-rank sums the ledger already displays.</p>
+        <p>Where this bites in practice: JASP prints the rank-biserial correlation when you tick <em>Effect size</em> in the analysis panel, and SPSS does not, which is why so many write-ups fall back on <em>r</em> = <em>z</em>/√<em>N</em> instead. Those two are different statistics, and on this same data they disagree: <em>z</em> = 2.48 over √12 gives <em>r</em> = .72 against the rank-biserial .89. Both are defensible; reporting which one you computed is not optional. If JASP is new to you, the <a href="../../guides/analyze-thesis-data-jasp/">thesis-data walkthrough</a> takes a raw file through to a finished APA sentence.</p>
+
         <h2>The trade-off</h2>
         <div class="callout key">
           <p><strong>Robustness isn't free.</strong> When the data <em>are</em> well-behaved and normal, the parametric test has slightly more <a href="../../stats-1/effect-size-and-power/">power</a>. By discarding the magnitudes, rank tests leave a little information on the table. The rule of thumb: use parametric tests when assumptions hold, and reach for non-parametric ones when they clearly don't (small samples, heavy skew, ordinal data, or outliers you can't explain away).</p>
