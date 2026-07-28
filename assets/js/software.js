@@ -475,7 +475,8 @@ window.SOFTWARE = {
     ],
     apa: '<p>An a priori power analysis for the 2 × 3 between-subjects design (G*Power 3.1; <em>f</em> = 0.25, α = .05, power = .80) indicated a required total sample of 158. For the mixed-effects analysis, a Monte Carlo simulation (1,000 datasets at the pilot effect size) confirmed power ≥ .80 with 40 clusters.</p>',
     tips: [
-      'Name the software, the effect-size metric (<em>f</em>, <em>d</em>, η²) and its value, α, the target power, and the resulting n — all five belong in the Method section.'
+      'Name the software, the effect-size metric (<em>f</em>, <em>d</em>, η²) and its value, α, the target power, and the resulting n — all five belong in the Method section.',
+      'G*Power returns the smallest total <em>N</em> that reaches your target and does not check whether it divides evenly into your cells. The 158 above fills six cells of 26.3 people; a balanced 2 × 3 needs 162. Round up to a multiple of your cell count, then report the number you actually recruited.'
     ]
   },
 

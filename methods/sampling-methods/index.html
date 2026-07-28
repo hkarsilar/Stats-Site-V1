@@ -59,7 +59,7 @@
         </ul>
 
         <h2>Non-probability samples: convenient, and treacherous</h2>
-        <p><strong>Convenience sampling</strong> (whoever's easy to reach: your class, passers-by, an online panel) and <strong>snowball sampling</strong> (participants recruit their friends) don't give everyone a chance of selection, so there's no guarantee of representativeness, and usually no hope of it. They're sometimes unavoidable for hard-to-reach groups, but the people who are <em>easy</em> to reach differ systematically from those who aren't.</p>
+        <p><strong>Convenience sampling</strong> (whoever's easy to reach: your class, passers-by, an online panel) and <strong>snowball sampling</strong> (participants recruit their friends) don't give everyone a chance of selection, so there's no guarantee of representativeness, and usually no hope of it. They're sometimes unavoidable for hard-to-reach groups, but the people who are <em>easy</em> to reach differ systematically from those who aren't. <strong>Quota sampling</strong> is the one that fools people: it sets targets that mirror the population (50 men, 50 women, 30 of them over 60) and then lets the recruiter fill each target with whoever turns up. The final table of counts looks exactly like a stratified sample. The selection inside each quota was never random, so the guarantee that comes with stratification is not there.</p>
 
         <h2>Sample it five ways and watch</h2>
         <p>This is a stylized city whose opinion on some issue varies by neighborhood: the campus district (top-left) is overwhelmingly in favor, the south is against. The <strong>true</strong> city-wide support is marked. Sample the city each way, draw many times, and compare where each method's estimates land.</p>
@@ -111,6 +111,22 @@
         <!-- ============ /INTERACTIVE ============ -->
 
         <p>One pattern runs through all five methods. <strong>Bias</strong> is where the cloud is <em>centered</em>; <strong>variance</strong> is how <em>wide</em> it is. Convenience sampling is <em>biased</em>: its cloud sits far from the truth and merely gets tighter (a more precise wrong answer) as <em>n</em> grows. The probability methods are all roughly <em>unbiased</em>, centered on the truth, but they differ in variance. Stratified is tightest (and, on this neighborhood-ordered list, systematic behaves like it), simple random is wider, and cluster is widest of all. More data fixes variance; only a better <em>method</em> fixes bias.</p>
+
+        <h2>Putting a number on the cluster penalty</h2>
+        <p>"Cluster sampling is noisier" deserves a number, and survey statisticians have one. The <strong>design effect</strong> is the ratio of your design's variance to the variance a simple random sample of the same size would have produced. A design effect of 1 means the method cost you nothing. A design effect of 3 means your estimate wobbles three times as widely as SRS would have, so two thirds of your fieldwork bought no precision at all. Divide by it and you get the number that matters for planning, the <strong>effective sample size</strong>: <code>n_eff = n / deff</code>, the count of independent people your clustered sample is genuinely worth.</p>
+        <p>For clusters of roughly equal size, Kish's approximation writes it in terms of two quantities you can estimate before you start: <code>deff ≈ 1 + (m − 1)ρ</code>, where <em>m</em> is how many people you measure per cluster and <em>ρ</em> is the <a href="../../stats-4/mixed-and-multilevel-models/">intraclass correlation</a>, the share of the total variation that sits between clusters rather than within them. Measuring one person per cluster costs nothing, since <em>m</em> = 1 makes the design effect exactly 1. And a correlation small enough to look negligible stops being negligible once it is multiplied by a large cluster.</p>
+        <p>The <a href="../../stats-3/power-analysis-for-complex-designs/">power lesson</a> poses the case and leaves the arithmetic open: 30 classes of 20 pupils is 600 children, but how many independent ones?</p>
+        <table class="ref-table">
+          <thead><tr><th>Intraclass correlation ρ</th><th>deff at m = 20</th><th>600 pupils are worth</th></tr></thead>
+          <tbody>
+            <tr><td>.05</td><td>1.95</td><td>308 independent pupils</td></tr>
+            <tr><td>.10</td><td>2.90</td><td>207</td></tr>
+            <tr><td>.15</td><td>3.85</td><td>156</td></tr>
+            <tr><td>.20</td><td>4.80</td><td>125</td></tr>
+          </tbody>
+        </table>
+        <p>At ρ = .10, which is unremarkable for children who share a teacher, roughly two thirds of the sample has evaporated before you analyze anything. That is a calculation to run while you are still choosing schools.</p>
+        <p>The city above is the same arithmetic at its extreme. Its four neighborhoods disagree so sharply, 85% support by the campus against 20% in the south-east, that ρ works out at about .24, and the cluster method draws the whole sample from one neighborhood. Take 80 people that way and the estimates land with a standard deviation near .25, against .05 for a simple random sample of the same 80. That is a design effect of about 24, so those 80 answers carry roughly the information of 3 independent ones. The width of that cloud is not a quirk of the animation; it is a number you can compute in advance.</p>
 
         <h2>Frame, population, and the people who don't answer</h2>
         <p>Even a perfect random method samples from your <strong>sampling frame</strong> (the actual list you draw from), not the true population. If your frame is "students with a campus email," everyone without one is invisible before you begin (<strong>coverage error</strong>). Then <strong>nonresponse bias</strong> strikes: if the people who ignore your survey differ from those who answer, as they usually do, your realized sample drifts from your intended one. A famously overlooked flavor is the <strong>WEIRD</strong> problem: a huge share of published psychology rests on Western, Educated, Industrialized, Rich, Democratic undergraduates, who are a strange sample of humanity to generalize from.</p>

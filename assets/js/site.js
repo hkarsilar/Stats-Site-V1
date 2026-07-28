@@ -202,7 +202,7 @@
     "between-vs-within-designs": "One capybara soaking twice, or two capybaras once each? Fewer capybaras the first way — unless the first bath lingers.",
     "quasi-experiments": "Couldn't randomize the weather, so the capybara compared its pond to the one next door — and hoped they'd have drifted alike.",
     "observational-designs": "The capybara didn't assign anyone to the warm spring. It just watched who wandered in — and noted who was never seen leaving.",
-    "sampling-methods": "Poll only the capybaras already in the spa and 100% love warm water. Shocking. Also: sample the whole pond next time.",
+    "sampling-methods": "Poll only the capybaras already in the spa and 100% love warm water. Shocking. Ask a thousand more of them and it is still 100%.",
     "survey-and-questionnaire-design": "\"Don't you agree this lovely water is wonderful?\" The capybara agrees. The capybara would agree with anything phrased like that.",
     "bias-and-blinding": "The capybara double-blinds its taste tests — even it doesn't know which pond the water came from. No expectations, no bias, just vibes.",
     "the-replication-crisis": "The capybara found a 'significant' result on its fourth analysis. Then remembered the first three. Next time: preregister, then snack.",
@@ -248,7 +248,7 @@
     "nonsignificant-results": "p = .08 is not 'a trend toward a nap.' The capybara reads the interval instead — wide means 'who knows yet,' tight-and-near-zero means 'genuinely nothing here.'",
     "discussion-and-limitations": "The capybara found a correlation, so it writes 'was associated with,' never 'causes.' Match the verb to the design and your claims outlive the ones that oversold.",
     "abstracts-and-titles": "The capybara writes the abstract last, in five tidy moves, and puts the actual number in the result. Its titles say what it found — searchable beats clever when a reader is looking for exactly you.",
-    "final-checklist": "The capybara rereads its own paper pretending to hate it. Finds four numbers that disagree. Works every time.",
+    "final-checklist": "The capybara rereads its own paper pretending to hate it. Finds four numbers that disagree.",
     /* Guides */
     "analyze-thesis-data-jasp": "The capybara's first thesis analysis felt enormous too. Then it clicked Descriptives, breathed, and did the next step. There is always just a next step.",
     "spss-output-to-apa": "SPSS prints eleven numbers; your sentence needs five. The capybara knows which five — and it has never once copied 'Sig. = .000'.",
