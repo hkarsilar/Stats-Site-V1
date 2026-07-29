@@ -128,7 +128,7 @@ window.SOFTWARE = {
       'Tick <em>Estimates of effect size</em>; use <em>Descriptives plots</em> with one factor on the x-axis and one as separate lines.',
       'Follow a significant interaction with <em>Simple Main Effects</em> in the same analysis.'
     ],
-    apa: '<p>There was a significant caffeine × time-of-day interaction, <em>F</em>(1, 76) = 6.87, <em>p</em> = .011, η<sub>p</sub>² = .08: caffeine improved performance in the morning, <em>F</em>(1, 76) = 15.2, <em>p</em> &lt; .001, but not in the evening, <em>F</em>(1, 76) = 0.31, <em>p</em> = .58. There was also a main effect of caffeine, <em>F</em>(1, 76) = 9.31, <em>p</em> = .003, η<sub>p</sub>² = .11, qualified by the interaction above.</p>',
+    apa: '<p>There was a significant caffeine × time-of-day interaction, <em>F</em>(1, 76) = 6.87, <em>p</em> = .011, η<sub>p</sub>² = .08: caffeine improved performance in the morning, <em>F</em>(1, 76) = 16.09, <em>p</em> &lt; .001, but not in the evening, <em>F</em>(1, 76) = 0.09, <em>p</em> = .76. There was also a main effect of caffeine, <em>F</em>(1, 76) = 9.31, <em>p</em> = .003, η<sub>p</sub>² = .11, qualified by the interaction above.</p>',
     tips: [
       'Lead with the interaction — a significant interaction changes how the main effects should be read ("qualified by").',
       'GLM output gives <em>partial</em> η² (η<sub>p</sub>²); label it as such, since it isn’t comparable to plain η².'
@@ -593,9 +593,10 @@ window.SOFTWARE = {
       '<strong>Classical Meta-Analysis</strong>: supply each study’s effect size and SE; choose <em>Random effects (REML)</em>.',
       'Tick the forest plot, funnel plot, and heterogeneity statistics — JASP’s meta module is excellent and free (it wraps R’s <em>metafor</em>).'
     ],
-    apa: '<p>Across <em>k</em> = 18 studies (<em>N</em> = 3,842), the random-effects pooled effect was <em>d</em> = 0.42, 95% CI [0.28, 0.56], <em>z</em> = 5.90, <em>p</em> &lt; .001. Heterogeneity was moderate, <em>Q</em>(17) = 38.20, <em>p</em> = .002, <em>I</em>² = 55%, τ = 0.21. The funnel plot and Egger’s test, <em>p</em> = .31, showed no clear small-study asymmetry.</p>',
+    apa: '<p>Across <em>k</em> = 18 studies (<em>N</em> = 2,104), the random-effects pooled effect was <em>d</em> = 0.42, 95% CI [0.29, 0.55], <em>z</em> = 6.28, <em>p</em> &lt; .001. Heterogeneity was moderate, <em>Q</em>(17) = 38.62, <em>p</em> = .002, <em>I</em>² = 56%, τ = 0.21, giving a 95% prediction interval of [−0.04, 0.89] for the true effect in a new study. The funnel plot and Egger’s test, <em>p</em> = .31, showed no clear small-study asymmetry.</p>',
     tips: [
-      'The trio to report: pooled effect with CI, heterogeneity (<em>Q</em>, <em>I</em>², τ), and a publication-bias check.'
+      'The trio to report: pooled effect with CI, heterogeneity (<em>Q</em>, <em>I</em>², τ), and a publication-bias check.',
+      'Add the <strong>prediction interval</strong> whenever the model is random effects. The confidence interval says where the <em>average</em> effect sits; the prediction interval says where the <em>next</em> study is likely to land, and with real heterogeneity it is far wider — here [−0.04, 0.89] against a CI of [0.29, 0.55].'
     ]
   },
   "psychometric-functions": {
@@ -659,7 +660,7 @@ window.SOFTWARE = {
     tips: [
       'Always state the transformation you used and the scale you analyzed on, then back-transform your summaries for the reader (the mean of the logs → the <em>geometric</em> mean).',
       'z-standardizing changes units, never shape — it does <strong>not</strong> fix skew or normality. Use a log or root for that.',
-      'If Box–Cox hands you λ̂ = 0.41, report the rung you actually used (√<em>x</em>) rather than the estimate. The interval around λ̂ is usually half a unit wide or more, so a transform quoted to two decimals claims a precision the method does not have.',
+      'If Box–Cox hands you λ̂ = 0.41, report the rung you actually used (√<em>x</em>) rather than the estimate. At thesis sample sizes the 95% interval around λ̂ is about 0.8 units wide at <em>n</em> = 50 and 0.6 at <em>n</em> = 100, so a transform quoted to two decimals claims a precision the method does not have.',
       'Reverse-code before computing a composite, or the reversed items cancel the rest and deflate the scale. Recompute reliability afterwards to confirm.'
     ]
   }

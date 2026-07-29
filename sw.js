@@ -37,13 +37,12 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v40";  /* P39 twenty-first run: viz.js and site.js both changed, and both are
-                                    precached. viz.js gained the effect-size confidence-interval block
-                                    (nctCI / varExpCI / vCI / rCI, plus the two solvers underneath), which
-                                    apa.html now calls on every render; site.js had three APA quips
-                                    rewritten. styles.css, curriculum.js and the font are untouched;
-                                    snippets.js and software.js also changed but are lazy-loaded and never
-                                    precached.
+const CACHE_VERSION = "sc-v41";  /* P39 twenty-second run: site.js changed and is precached. Its search
+                                    matcher gained ACCENT_FOLD and a word-boundary-aware separator gap in
+                                    flexRe(), so "Cramér's V", "Wilks lambda" and "90% CI" are findable at
+                                    all; two quips were shortened. styles.css, curriculum.js, viz.js and the
+                                    font are untouched; snippets.js and software.js also changed but are
+                                    lazy-loaded and never precached.
                                     (v32 was consumed by an intermediate state during run 14 — never reuse a
                                     string across two byte-contents of a precached asset.) */
 const CACHE = CACHE_VERSION;

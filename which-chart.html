@@ -79,6 +79,7 @@
             <tr><td>Compare one value per category</td><td>Quantitative × categorical (few)</td><td>Bar chart</td></tr>
             <tr><td>Rank many categories / long labels</td><td>Quantitative × categorical (many)</td><td>Horizontal bar chart</td></tr>
             <tr><td>Compare across two categorical splits</td><td>Quantitative × two categorical</td><td>Grouped / stacked bar</td></tr>
+            <tr><td>Compare conditions measured on the same people</td><td>Quantitative × within-subject</td><td>Slopegraph (paired lines)</td></tr>
             <tr><td>See how two numbers relate</td><td>Two quantitative</td><td>Scatter plot</td></tr>
             <tr><td>Summarize or predict a relationship</td><td>Two quantitative</td><td>Scatter + trend line</td></tr>
             <tr><td>Show change over time</td><td>Quantitative × time</td><td>Line chart</td></tr>
@@ -122,7 +123,8 @@
       comp: { q: "What are you comparing across the categories?", opts: [
         { label: "One value per category", desc: "A mean, total or count", next: "comp1" },
         { label: "One value across two grouping variables at once", desc: "e.g. treatment × sex", leaf: "grouped" },
-        { label: "The full distribution within each group", desc: "not just one summary number", leaf: "boxplot" }
+        { label: "The full distribution within each group", desc: "not just one summary number", leaf: "boxplot" },
+        { label: "The same people measured in two or more conditions", desc: "a within-subjects / repeated-measures design", leaf: "paired" }
       ]},
       comp1: { q: "How many categories, and how long are the labels?", opts: [
         { label: "A handful, with short labels", leaf: "bar" },
@@ -165,8 +167,14 @@
       bar: {
         name: "Bar chart",
         why: "Comparing a single value — a mean, total or count — across a handful of clearly-labeled categories. Length is the easiest visual quantity to compare accurately.",
-        mistake: "Truncating the y-axis so it doesn't start at zero exaggerates the differences; bars encode length, so the baseline must be zero. Add error bars (and say what they show) when the bar is a mean.",
+        mistake: "Truncating the y-axis so it doesn't start at zero exaggerates the differences; bars encode length, so the baseline must be zero. Add error bars (and say what they show) when the bar is a mean, but don't read their overlap as a verdict: two ±1 SE bars that just fail to touch sit at about p = .16, while two 95% CIs that just fail to touch are already at p = .006.",
         alt: "A dot or lollipop plot for many categories; box plots when you have each group's full distribution, not just one number."
+      },
+      paired: {
+        name: "Slopegraph (paired lines)",
+        why: "The same people measured twice or more: one line per participant, joining their own scores across conditions. It shows what a paired test actually uses, which is each person's change, and it shows at a glance who moved against the tide.",
+        mistake: "Reaching for two bars with error bars instead. Those bars carry the differences between people, which a paired test never looks at, so they can overlap almost entirely while the test returns p = .0003. If bars are unavoidable, plot the differences, or say in the caption that the bars are between-subject.",
+        alt: "A histogram or box plot of the differences when there are many participants; a line chart when the repeated axis is really time."
       },
       bar_h: {
         name: "Horizontal bar chart",
@@ -294,6 +302,26 @@
           x.fillRect(p.l + slot * i + (slot - bw) / 2, h - p.b - bh, bw, bh);
         }
         baseAxis(x, w, h, C, p);
+      },
+      paired: function (x, w, h, C) {
+        /* slopegraph: one line per participant, two conditions; one falls */
+        var A = [3.2, 4.0, 5.1, 5.8, 6.4, 7.0, 7.6, 8.2],
+            B = [4.4, 5.6, 6.0, 7.2, 7.1, 8.4, 6.9, 9.0], m = 10,
+            p = { l: 28, r: 28, t: 14, b: 18 };
+        var ph = h - p.t - p.b, xa = p.l, xb = w - p.r;
+        function Y(v) { return h - p.b - v / m * ph; }
+        for (var i = 0; i < A.length; i++) {
+          x.strokeStyle = (B[i] >= A[i]) ? C.primary : C.orange;
+          x.fillStyle = x.strokeStyle; x.lineWidth = 1.8;
+          x.globalAlpha = 0.75;
+          x.beginPath(); x.moveTo(xa, Y(A[i])); x.lineTo(xb, Y(B[i])); x.stroke();
+          x.globalAlpha = 1;
+          x.beginPath(); x.arc(xa, Y(A[i]), 2.6, 0, 6.2832); x.fill();
+          x.beginPath(); x.arc(xb, Y(B[i]), 2.6, 0, 6.2832); x.fill();
+        }
+        x.strokeStyle = C.border; x.lineWidth = 1;
+        x.beginPath(); x.moveTo(xa, p.t - 2); x.lineTo(xa, h - p.b);
+        x.moveTo(xb, p.t - 2); x.lineTo(xb, h - p.b); x.stroke();
       },
       bar_h: function (x, w, h, C) {
         var d = [9, 7, 5.5, 4, 2], m = 9, p = { l: 14, r: 14, t: 12, b: 12 };

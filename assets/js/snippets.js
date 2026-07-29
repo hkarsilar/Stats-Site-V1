@@ -19,8 +19,8 @@ window.SNIPPETS = {
     py: 'import numpy as np\nx = np.array([4, 5, 5, 6, 7, 8, 9, 42])   # note the outlier\nprint(x.mean(), np.median(x))             # mean gets dragged\nprint(x.std(ddof=1), np.percentile(x, 75) - np.percentile(x, 25))'
   },
   "visualizing-data": {
-    r: 'x <- rgamma(300, shape = 2, rate = 0.1)   # skewed data\nhist(x, breaks = 30)\nboxplot(x, horizontal = TRUE)\nplot(density(x))',
-    py: 'import numpy as np, matplotlib.pyplot as plt\nx = np.random.default_rng().gamma(2, 10, 300)   # skewed data\nfig, ax = plt.subplots(1, 2, figsize=(9, 3))\nax[0].hist(x, bins=30); ax[1].boxplot(x, vert=False)\nplt.show()'
+    r: 'x <- rgamma(300, shape = 2, rate = 0.1)   # skewed data\nhist(x, breaks = 30)\nboxplot(x, horizontal = TRUE)\nplot(density(x))\n# how many bins do the three standard rules ask for?\nc(sturges = nclass.Sturges(x), scott = nclass.scott(x), fd = nclass.FD(x))',
+    py: 'import numpy as np, matplotlib.pyplot as plt\nx = np.random.default_rng().gamma(2, 10, 300)   # skewed data\nfig, ax = plt.subplots(1, 2, figsize=(9, 3))\nax[0].hist(x, bins=30); ax[1].boxplot(x, vert=False)\nplt.show()\n# the same three rules, as bin counts\nprint({r: len(np.histogram_bin_edges(x, bins=r)) - 1 for r in ("sturges", "scott", "fd")})'
   },
   "z-scores-and-the-normal-distribution": {
     r: 'x <- 130; mu <- 100; sigma <- 15\nz <- (x - mu) / sigma        # z = 2\npnorm(z)                     # P(value below x): 0.977\npnorm(130, 100, 15)          # same thing, no manual z\nqnorm(0.975)                 # the famous 1.96',
@@ -76,8 +76,8 @@ window.SNIPPETS = {
     py: 'from statsmodels.stats.anova import AnovaRM\nres = AnovaRM(df, depvar="rt", subject="subj",\n              within=["condition"]).fit()\nprint(res)'
   },
   "assumptions-and-when-they-break": {
-    r: 'shapiro.test(residuals(fit))       # normality of residuals\ncar::leveneTest(score ~ group, df)  # equal variances\n# robust fallback if variances differ:\noneway.test(score ~ group, data = df)   # Welch ANOVA',
-    py: 'import pingouin as pg   # pip install pingouin\nfrom scipy import stats\nprint(stats.shapiro(resid))          # normality of residuals\nprint(stats.levene(a, b, c))         # equal variances\n# Welch fallback if they differ (scipy.f_oneway assumes equal variances):\nprint(pg.welch_anova(data=df, dv="score", between="group"))'
+    r: 'shapiro.test(residuals(fit))       # normality of residuals\ncar::qqPlot(residuals(fit), envelope = .95)  # Q-Q plot with a simulated envelope\ncar::leveneTest(score ~ group, df)  # equal variances\n# robust fallback if variances differ:\noneway.test(score ~ group, data = df)   # Welch ANOVA',
+    py: 'import numpy as np, pingouin as pg   # pip install pingouin\nfrom scipy import stats\nprint(stats.shapiro(resid))          # normality of residuals\nprint(stats.levene(a, b, c))         # equal variances\n# Welch fallback if they differ (scipy.f_oneway assumes equal variances):\nprint(pg.welch_anova(data=df, dv="score", between="group"))\n# pointwise 95% envelope for the Q-Q plot, by simulation\nz = np.sort((resid - resid.mean()) / resid.std(ddof=1))\nsim = np.random.default_rng().standard_normal((2000, z.size))\nsim = np.sort((sim - sim.mean(1, keepdims=True)) / sim.std(1, ddof=1, keepdims=True), axis=1)\nlo, hi = np.percentile(sim, [2.5, 97.5], axis=0)\nprint(((z < lo) | (z > hi)).sum(), "points outside the band")'
   },
   "non-parametric-alternatives": {
     r: 'wilcox.test(drug, ctrl)             # Mann-Whitney U (2 groups)\nkruskal.test(score ~ group, df)     # Kruskal-Wallis (3+ groups)\nwilcox.test(before, after, paired = TRUE)   # signed-rank\n\n# rank-biserial effect size, straight from U\nU <- unname(wilcox.test(drug, ctrl)$statistic)\n1 - 2 * U / (length(drug) * length(ctrl))',
@@ -186,7 +186,7 @@ window.SNIPPETS = {
     py: 'from sklearn.experimental import enable_iterative_imputer\nfrom sklearn.impute import IterativeImputer\nimport pandas as pd\nimp = IterativeImputer(sample_posterior=True, random_state=0)\ndf_imp = pd.DataFrame(imp.fit_transform(df), columns=df.columns)\n# proper pooled inference: run several imputations and combine'
   },
   "meta-analysis": {
-    r: 'library(metafor)\nres <- rma(yi = d, sei = se, data = studies)  # random effects, REML by default\nsummary(res)      # pooled effect, tau^2, I^2, Q\nforest(res)       # the forest plot\nfunnel(res)       # eyeball publication bias',
+    r: 'library(metafor)\nres <- rma(yi = d, sei = se, data = studies)  # random effects, REML by default\nsummary(res)      # pooled effect, tau^2, I^2, Q\npredict(res)      # adds the 95% PREDICTION interval (pi.lb, pi.ub)\nforest(res)       # the forest plot\nfunnel(res)       # eyeball publication bias',
     py: 'from statsmodels.stats.meta_analysis import combine_effects\nres = combine_effects(studies["d"], studies["se"]**2)\nprint(res.summary_frame())   # fixed + random effects, I^2'
   },
   "psychometric-functions": {

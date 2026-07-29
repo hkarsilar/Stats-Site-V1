@@ -243,7 +243,7 @@
     /* Writing */
     "imrad-structure": "Why it looked, how it looked, what it saw, what it means. Put each sentence in its own room and the paper reads itself.",
     "reporting-statistics-apa": "Italic t, upright η², no little zero before the dot. The capybara has never once written p = .000.",
-    "tables-and-figures": "Chop the axis at 45 and the capybara's three-point lead looks like a landslide. Same three points, taller lie.",
+    "tables-and-figures": "Chop the axis at 45 and the capybara's three-point lead looks like a landslide.",
     "writing-results": "The capybara reports the number and stops. Opinions wait for the Discussion.",
     "nonsignificant-results": "p = .08 is not 'a trend toward a nap.' The capybara reads the interval instead — wide means 'who knows yet,' tight-and-near-zero means 'genuinely nothing here.'",
     "discussion-and-limitations": "The capybara found a correlation, so it writes 'was associated with,' never 'causes.' Match the verb to the design and your claims outlive the ones that oversold.",
@@ -270,7 +270,7 @@
     "distributions": "Distributions are just personality types for data. Come meet the whole squad.",
     "effect-sizes": "Statistically significant ≠ big. The capybara is significant AND big.",
     "power": "How many capybaras do you need to prove capybaras are chill? Fewer than you'd think, if the effect is big.",
-    "descriptives": "Paste your data. The capybara will not judge it. The capybara judges nothing.",
+    "descriptives": "Paste your data. The capybara judges nothing.",
     "apa": "Type the numbers, take the sentence. The capybara handles the brackets and the italics; you do the thinking.",
     "problems": "The capybara does not rush the arithmetic. It writes each line down, checks it once, and then has a snack.",
     "datasets": "Reading about a t-test isn't running one. Grab a CSV, wrangle real numbers, and the capybara will happily wait — it has nowhere to be.",
@@ -1548,10 +1548,11 @@
      edit-distance check carries the rest:
        norm()    lowercase, strip diacritics, hyphens/underscores → spaces
        squash()  norm minus every separator, so "chi-square" === "chisquare"
-       flexRe()  a regex over the SQUASHED query allowing at most one
-                 separator between characters, which is what lets a single
-                 pass over the 620 KB index match every spacing variant at
-                 once. Measured FASTER than the old toLowerCase().indexOf()
+       flexRe()  a regex allowing at most one separator between characters
+                 INSIDE a typed word and up to three BETWEEN typed words,
+                 which is what lets a single pass over the index match every
+                 spacing variant at once. Measured FASTER than the old
+                 toLowerCase().indexOf()
                  it replaces (~1–2 ms vs ~2–3 ms for the whole corpus),
                  because that one re-allocated every lesson's text on every
                  keystroke; no debounce is needed.
@@ -1621,15 +1622,59 @@
      0 → 15, Levene's test 0 → 7, Cook's distance 0 → 5), while ab / xy / zz /
      qq / test / data / mean / sd returned identical counts, so the widening
      buys back real queries without loosening ordinary ones.
-     Still bounded at ONE separator: two or more would let "90% CI" match but
-     would also let a query drift across unrelated words. And newlines stay
-     out on purpose — the index has none today, and allowing them would let a
-     match straddle two sentences. */
-  function flexRe(qs) {
-    if (!qs) return null;
-    var p = [];
-    for (var i = 0; i < qs.length; i++) p.push(qs.charAt(i).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
-    return new RegExp(p.join("[^a-zA-Z0-9]?"), "i");
+     INSIDE a typed word it is still bounded at ONE separator. BETWEEN two
+     typed words it allows up to three, added in P39 run 22 after
+     tools/search-reach.js found that "Wilks lambda" returned nothing: the
+     site writes "Wilks' Λ (lambda)" and "Wilks' lambda", and a flat
+     one-separator budget over the squashed query cannot cross either gap.
+     Run 21 measured the obvious fix (allow two separators everywhere) and
+     rejected it as drift-prone; the safe version keys off the reader's OWN
+     word boundaries, since a space they typed is where a gap is expected.
+     The bound is what makes it safe: [^a-zA-Z0-9]{0,3} cannot swallow a
+     letter, so a match still never crosses a whole word. Measured over 31
+     queries, only "Wilks lambda" 0 → 2, "90% CI" 0 → 3 (the case run 21
+     flagged and left), "p value" 46 → 58 and "test data" 2 → 4 moved by
+     more than one, while ab / xy / zz / qq / test / data / mean / sd /
+     Cohen's d / chi-square / effect size / of the / in a were identical and
+     20 full-corpus passes stayed at 11 ms. Still no newlines: the index has
+     none today, and allowing them would let a match straddle two sentences.
+     "Tukey HSD" stays a miss on purpose — the corpus writes "Tukey's HSD",
+     and reaching it means skipping the letter "s", which is the one thing
+     this rule refuses to do.
+
+     ACCENT_FOLD closes the mirror image of that asymmetry, found by
+     tools/search-reach.js in P39 run 22. norm() strips diacritics from the
+     QUERY (NFD + combining-mark removal) but the corpus is matched raw, so an
+     accented letter in the source text blocked the match: "Cramér's V" — a
+     term five lessons and apa.html teach — returned ZERO hits whether or not
+     the reader typed the accent. Every squashed query character is [a-z0-9],
+     so each base letter simply also accepts its own accented forms; measured
+     over the whole index this took Cramér's V from 0 to 7 hits and left all
+     24 control queries (ab / xy / zz / qq / test / data / mean / sd / Cohen's
+     d / regression / …) at identical counts, with 20 full-corpus passes still
+     at 11 ms. */
+  var ACCENT_FOLD = {
+    a: "àáâãäåā", c: "çćč",
+    e: "èéêëē", i: "ìíîïī",
+    n: "ñń", o: "òóôõöøō",
+    s: "śš", u: "ùúûüū", y: "ýÿ",
+    z: "źž"
+  };
+  function flexChar(ch) {
+    var acc = ACCENT_FOLD[ch];
+    return acc ? "[" + ch + acc + "]" : ch.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+  /* takes a NORMALIZED query (norm(), so word boundaries survive) */
+  function flexRe(qn) {
+    var clean = String(qn == null ? "" : qn).replace(/[^a-z0-9 ]+/g, " ").replace(/\s+/g, " ").trim();
+    if (!clean) return null;
+    var words = clean.split(" "), parts = [];
+    for (var i = 0; i < words.length; i++) {
+      var w = words[i], inner = [];
+      for (var j = 0; j < w.length; j++) inner.push(flexChar(w.charAt(j)));
+      parts.push(inner.join("[^a-zA-Z0-9]?"));
+    }
+    return new RegExp(parts.join("[^a-zA-Z0-9]{0,3}"), "i");
   }
   /* normalized haystacks, memoised — every title/keyword string on the site
      is normalized once per session, not once per keystroke */
@@ -1799,7 +1844,7 @@
 
     /* full-text pass: lessons/pages whose BODY mentions the query but whose
        title didn't already match — shown below title matches, with a snippet */
-    var deep = [], re = Q.s.length >= 3 ? flexRe(Q.s) : null;
+    var deep = [], re = Q.s.length >= 3 ? flexRe(Q.n) : null;
     if (re && window.SEARCH_INDEX) {
       var seen = Object.create(null);
       top.forEach(function (s) { seen[s.page ? s.url : s.slug] = 1; });
