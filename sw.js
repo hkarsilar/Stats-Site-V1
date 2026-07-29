@@ -37,11 +37,12 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v38";  /* P39 nineteenth run: two QUIPS rewritten in site.js (precached) — the
-                                    central-limit-theorem and generalized-linear-models lines. styles.css,
+const CACHE_VERSION = "sc-v39";  /* P39 twentieth run: two QUIPS shortened in site.js (precached) — the
+                                    psychometric-functions and variables-and-operationalization lines, both
+                                    losing a closing clause that only labeled the joke. styles.css,
                                     curriculum.js and viz.js are untouched this run, so site.js is again the
-                                    only shell asset whose bytes changed; snippets.js, software.js, checks.js
-                                    and glossary-data.js also changed but are lazy-loaded and never precached.
+                                    only shell asset whose bytes changed; snippets.js and software.js also
+                                    changed but are lazy-loaded and never precached.
                                     (v32 was consumed by an intermediate state during run 14 — never reuse a
                                     string across two byte-contents of a precached asset.) */
 const CACHE = CACHE_VERSION;

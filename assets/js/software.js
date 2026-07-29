@@ -447,7 +447,7 @@ window.SOFTWARE = {
       '<strong>Analyze → General Linear Model → Multivariate…</strong>',
       'All outcome variables into <em>Dependent Variables</em>; the group into <em>Fixed Factor(s)</em>.',
       '<em>Options…</em>: tick <em>Estimates of effect size</em> and <em>Homogeneity tests</em> (Box’s M).',
-      'The <em>Multivariate Tests</em> table lists Pillai’s trace, Wilks’ Λ, Hotelling’s trace, and Roy’s root — Pillai is the robust default.',
+      'The <em>Multivariate Tests</em> table lists Pillai’s trace, Wilks’ Λ, Hotelling’s trace and Roy’s largest root — Pillai is the robust default. SPSS labels the third one after Hotelling alone; §3.11 calls it the Hotelling–Lawley trace, which is the same statistic.',
       'Follow up with the univariate <em>Tests of Between-Subjects Effects</em> (apply a Bonferroni-style correction across outcomes).',
       'MANCOVA: same dialog, add baseline variables into <em>Covariate(s)</em>.'
     ],
@@ -557,9 +557,9 @@ window.SOFTWARE = {
       'Check proportional hazards before you trust that ratio: in Cox Regression, <em>Plots…</em> → <em>Log minus log</em> should give roughly parallel curves. <strong>Analyze → Survival → Cox w/ Time-Dependent Covariate…</strong> is the formal version.'
     ],
     jasp: [
-      'Enable the <strong>Survival</strong> module (+ button).',
-      '<strong>Survival Analysis</strong>: assign time, event status, and the grouping factor.',
-      'Tick the Kaplan-Meier plot with confidence bands and risk table; the log-rank test compares the curves.'
+      'Enable the <strong>Survival</strong> module from the <strong>+</strong> menu at the top right.',
+      'The module splits by how much structure you are willing to assume. <strong>Non-parametric</strong> is the Kaplan-Meier route: assign time, event status, and the grouping factor, then tick the plot with confidence bands and the risk table; the log-rank test compares the curves.',
+      '<strong>Semi-parametric</strong> is Cox regression, added in JASP 0.19.2, and it is where the adjusted hazard ratio in the tips below comes from. <strong>Parametric</strong> arrived in 0.95, for when you want a fitted survival distribution rather than a step function.'
     ],
     apa: '<p>Median survival was 14 months, 95% CI [11, 19], in the treatment arm versus 8 months, 95% CI [6, 11], under control; the curves differed by log-rank test, χ²(1) = 8.42, <em>p</em> = .004. In a Cox model, the control arm’s hazard was higher, <em>HR</em> = 1.83, 95% CI [1.21, 2.77].</p>',
     tips: [

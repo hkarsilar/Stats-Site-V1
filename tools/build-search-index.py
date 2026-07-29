@@ -36,8 +36,19 @@ PAGE_MAX_CHARS = {"problems.html": 120_000, "glossary.html": 120_000}
 # a single one of them. Same reasoning as the two overrides above, same cost
 # shape: the index is lazy-loaded only when the search overlay opens, and the
 # per-keystroke scan is a single regex pass whose cost is linear and measured
-# in low milliseconds. 12,000 clears the longest lesson (10.4k) with headroom.
-LESSON_MAX_CHARS = 12_000
+# in low milliseconds.
+#
+# RAISED 12,000 -> 20,000 in P39 run 20, because the same defect came back.
+# Run 13 set 12,000 to clear the longest lesson of the day (10.4k) "with
+# headroom", but every refresh run since has added 300-600 words to five
+# lessons, and run 20's two subjects went past it: psychometric-functions
+# reached 16.3k and signal-detection-theory 14.5k, so both were cut and both
+# lost exactly the block the cap exists to protect. A cap that is a moving
+# target needs real slack, not a little. 20,000 indexes every lesson whole
+# (longest 16.3k) and costs 6,819 characters, 0.8%, over the 12,000 total.
+# The cap stays as a runaway guard, not as a budget. If a future run adds a
+# term and the index cannot find it, CHECK THIS FIRST.
+LESSON_MAX_CHARS = 20_000
 
 
 def textify(fragment: str) -> str:
