@@ -85,11 +85,11 @@ window.SOFTWARE = {
     jasp: [
       '<strong>ANOVA → ANOVA</strong>.',
       'Outcome into <em>Dependent Variable</em>, group into <em>Fixed Factors</em>.',
-      'Open <em>Additional Options</em> → tick <em>Estimates of effect size</em> (η², ω²), and tick <em>Confidence intervals</em> beside them: JASP builds the interval on the effect size, which most packages leave you to compute yourself.',
+      'Open <em>Additional Options</em> → tick <em>Estimates of effect size</em> (η², ω²), and tick <em>Confidence intervals</em> beside them: JASP builds the interval on the effect size, which most packages leave you to compute yourself. It defaults to <strong>90%</strong>, which is the right level for η² and not a typo.',
       '<em>Post Hoc Tests</em>: move the factor across and tick <em>Tukey</em>.',
       '<em>Assumption Checks</em>: tick <em>Homogeneity tests</em> and <em>Q-Q plot of residuals</em>.'
     ],
-    apa: '<p>Study method affected exam scores, <em>F</em>(2, 87) = 5.42, <em>p</em> = .006, η² = .11. Tukey-corrected comparisons showed that method C outperformed method A, <em>M</em><sub>diff</sub> = 6.8, 95% CI [1.9, 11.7], <em>p</em> = .004; no other pairwise differences were significant.</p>',
+    apa: '<p>Study method affected exam scores, <em>F</em>(2, 87) = 5.42, <em>p</em> = .006, η² = .11, 90% CI [.02, .21]. Tukey-corrected comparisons showed that method C outperformed method A, <em>M</em><sub>diff</sub> = 6.8, 95% CI [1.9, 11.7], <em>p</em> = .004; no other pairwise differences were significant.</p>',
     tips: [
       '<em>F</em> takes two dfs: between-groups and within-groups — <em>F</em>(2, 87).',
       'η² is Greek (not italicized) and can’t exceed 1, so no leading zero: η² = .11.'
@@ -207,7 +207,7 @@ window.SOFTWARE = {
       'Under <em>Cells</em>, tick <em>Expected counts</em> and column percentages.',
       'Goodness-of-fit: <strong>Frequencies → Multinomial Test</strong>.'
     ],
-    apa: '<p>Recovery was associated with treatment condition, χ²(1, <em>N</em> = 120) = 6.25, <em>p</em> = .012, φ = .23: 68% of treated patients recovered versus 45% of controls.</p>',
+    apa: '<p>Recovery was associated with treatment condition, χ²(1, <em>N</em> = 120) = 6.65, <em>p</em> = .010, φ = .24, 90% CI [.09, .39]: 41 of 60 treated patients recovered (68%) versus 27 of 60 controls (45%).</p>',
     tips: [
       'Chi-square reporting includes the sample size inside the parentheses: χ²(df, <em>N</em> = …) = ….',
       'χ² and φ are Greek — no italics. Follow the statistic with the actual percentages so the reader sees what happened.'
@@ -247,7 +247,7 @@ window.SOFTWARE = {
       'Under <em>Statistics</em>, tick <em>Estimates</em>, <em>Confidence intervals</em>, and <em>R squared change</em>.',
       'Under <em>Plots</em>, tick <em>Residuals vs. predicted</em> and the <em>Q-Q plot</em>.'
     ],
-    apa: '<p>Hours of study predicted exam scores, <em>b</em> = 2.31, <em>SE</em> = 0.57, 95% CI [1.16, 3.46], β = .50, <em>t</em>(48) = 4.05, <em>p</em> &lt; .001. The model explained a quarter of the variance, <em>R</em>² = .25, <em>F</em>(1, 48) = 16.40, <em>p</em> &lt; .001.</p>',
+    apa: '<p>Hours of study predicted exam scores, <em>b</em> = 2.31, <em>SE</em> = 0.57, 95% CI [1.16, 3.46], β = .50, <em>t</em>(48) = 4.05, <em>p</em> &lt; .001. The model explained a quarter of the variance, <em>R</em>² = .25, 90% CI [.09, .40], <em>F</em>(1, 48) = 16.40, <em>p</em> &lt; .001.</p>',
     tips: [
       'Give both the unstandardized slope <em>b</em> (real units — "2.31 points per hour") and the standardized β.',
       'β here is Greek (no italics); <em>b</em>, <em>SE</em>, <em>t</em>, <em>R</em>² are Latin (italics).',

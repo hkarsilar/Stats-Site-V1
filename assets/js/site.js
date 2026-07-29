@@ -242,7 +242,7 @@
     "llms-and-ai-in-research": "The capybara's chatbot writes with total confidence and occasional total fiction. Your name goes on both.",
     /* Writing */
     "imrad-structure": "Why it looked, how it looked, what it saw, what it means. Put each sentence in its own room and the paper reads itself.",
-    "reporting-statistics-apa": "Italic t, upright η², no little zero before the dot, and the interval in square brackets. The capybara has never once written p = .000.",
+    "reporting-statistics-apa": "Italic t, upright η², no little zero before the dot. The capybara has never once written p = .000.",
     "tables-and-figures": "Chop the axis at 45 and the capybara's three-point lead looks like a landslide. Same three points, taller lie.",
     "writing-results": "The capybara reports the number and stops. Opinions wait for the Discussion.",
     "nonsignificant-results": "p = .08 is not 'a trend toward a nap.' The capybara reads the interval instead — wide means 'who knows yet,' tight-and-near-zero means 'genuinely nothing here.'",
@@ -265,13 +265,13 @@
     "tables": "Capybaras have memorized exactly zero critical values. That's what this page is for.",
     "formulas": "Print it, laminate it, take it into the bath. The capybara approves.",
     "cheat-test-chooser": "The whole test-picking map on one page. The capybara pinned it above the hot spring, naturally.",
-    "cheat-apa": "Italic t, upright η², and never a little zero before the dot — the capybara laminated this one first.",
+    "cheat-apa": "The whole grammar of a results sentence, on one page. The capybara laminated this one first.",
     "cheat-assumptions": "The capybara checks its assumptions the way it checks the water: before getting in, never after.",
     "distributions": "Distributions are just personality types for data. Come meet the whole squad.",
     "effect-sizes": "Statistically significant ≠ big. The capybara is significant AND big.",
     "power": "How many capybaras do you need to prove capybaras are chill? Fewer than you'd think, if the effect is big.",
     "descriptives": "Paste your data. The capybara will not judge it. The capybara judges nothing.",
-    "apa": "Italic t, upright η², and never a little zero before the dot. The capybara writes its p-values just so.",
+    "apa": "Type the numbers, take the sentence. The capybara handles the brackets and the italics; you do the thinking.",
     "problems": "The capybara does not rush the arithmetic. It writes each line down, checks it once, and then has a snack.",
     "datasets": "Reading about a t-test isn't running one. Grab a CSV, wrangle real numbers, and the capybara will happily wait — it has nowhere to be.",
     "quiz": "Test anxiety? Unknown to capybaras. Breathe in, breathe out, click an answer.",
@@ -1611,13 +1611,25 @@
     }
     return prev[lb];
   }
-  /* newlines are excluded from the separator class on purpose: the index has
-     none today, and allowing them would let one match straddle two sentences */
+  /* The optional separator must be ANY single non-alphanumeric, because that
+     is exactly what squash() strips out of the query: a class narrower than
+     squash's own is an asymmetry, and it was a costly one. Until P39 run 21
+     this allowed only spaces and hyphens, so every APOSTROPHE in the corpus
+     blocked a match and "Cohen's d" — about as ordinary a query as this site
+     can receive — returned nothing at all. Measured over the whole index:
+     9 of 15 natural possessive queries went from 0 hits to hits (Cohen's d
+     0 → 15, Levene's test 0 → 7, Cook's distance 0 → 5), while ab / xy / zz /
+     qq / test / data / mean / sd returned identical counts, so the widening
+     buys back real queries without loosening ordinary ones.
+     Still bounded at ONE separator: two or more would let "90% CI" match but
+     would also let a query drift across unrelated words. And newlines stay
+     out on purpose — the index has none today, and allowing them would let a
+     match straddle two sentences. */
   function flexRe(qs) {
     if (!qs) return null;
     var p = [];
     for (var i = 0; i < qs.length; i++) p.push(qs.charAt(i).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
-    return new RegExp(p.join("[ \\t\\-\\u2010-\\u2015]?"), "i");
+    return new RegExp(p.join("[^a-zA-Z0-9]?"), "i");
   }
   /* normalized haystacks, memoised — every title/keyword string on the site
      is normalized once per session, not once per keystroke */

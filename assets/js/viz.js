@@ -297,5 +297,73 @@ window.VIZ = (function () {
     return negdel ? 1 - tnc : tnc;
   }
 
-  return { css: css, reducedMotion: reducedMotion, coarsePointer: coarsePointer, grabRadius: grabRadius, rafThrottle: rafThrottle, fit: fit, randn: randn, gauss: gauss, erf: erf, normCdf: normCdf, normQ: normQ, normPdf: normPdf, normInv: normInv, mean: mean, sd: sd, onTheme: onTheme, gammaln: gammaln, gammp: gammp, gammq: gammq, betai: betai, betaiUpper: betaiUpper, fUpper: fUpper, chiSqUpper: chiSqUpper, tUpper: tUpper, tPdf: tPdf, chiSqPdf: chiSqPdf, fPdf: fPdf, tInv: tInv, chiSqInv: chiSqInv, fInv: fInv, nctCdf: nctCdf, ncx2Cdf: ncx2Cdf, ncfCdf: ncfCdf };
+  /* ---- confidence intervals on effect sizes ----
+     APA 7 asks for an interval around the estimate, and for d, partial η²,
+     R² and Cramér's V there is no ± formula: the interval is found by
+     INVERTING the test — asking which noncentrality values would leave the
+     observed statistic at the edge of its own distribution. That is why those
+     effect sizes are so often reported bare, and why apa.html can report them.
+       ncpCI(cdf, level)          [λL, λU] for any CDF that decreases in λ
+       nctCI(t, df, level)        interval on a t's noncentrality δ; scale it
+                                  by d/t to get the interval on Cohen's d
+       varExpCI(F, d1, d2, level) interval on partial η² (= η² one-way) or R²
+       vCI(chi, df, N, k, level)  interval on Cramér's V; k = min(rows,cols)−1
+       rCI(r, n, level)           Fisher r-to-z interval (closed form)
+     The λ of a χ² or F is a sum of squares and cannot be negative, so those
+     intervals truncate at zero. The δ of a t is SIGNED (the effect can point
+     the other way), so nctCI brackets on both sides and a nonsignificant
+     result correctly returns a negative lower limit rather than a clamped 0.
+     The λ → proportion-of-variance step divides by d1 + d2 + 1, the standard
+     mapping; it leaves the interval slightly off-center from the sample η²,
+     which is a property of the method rather than a bug, because the point
+     estimate and the interval come from different formulas. */
+  function ncpSolve(cdf, target) {                       // λ ≥ 0 (χ², F)
+    if (!(cdf(0) > target)) return 0;                    // already below at λ = 0
+    var lo = 0, hi = 1;
+    while (cdf(hi) > target && hi < 1e5) hi *= 2;
+    if (cdf(hi) > target) return NaN;                    // never crossed — say so
+    for (var i = 0; i < 100 && hi - lo > 1e-9 * (1 + hi); i++) {
+      var mid = (lo + hi) / 2;
+      if (cdf(mid) > target) lo = mid; else hi = mid;
+    }
+    return (lo + hi) / 2;
+  }
+  function ncpCI(cdf, level) {
+    var a = (1 - (level > 0 && level < 1 ? level : 0.95)) / 2;
+    return [ncpSolve(cdf, 1 - a), ncpSolve(cdf, a)];
+  }
+  function deltaSolve(t, df, target) {                   // δ ∈ ℝ (t)
+    var lo = t, hi = t, step = 1, i;
+    for (i = 0; i < 60 && nctCdf(t, df, lo) < target; i++) { lo -= step; step *= 2; }
+    for (step = 1, i = 0; i < 60 && nctCdf(t, df, hi) > target; i++) { hi += step; step *= 2; }
+    for (i = 0; i < 100 && hi - lo > 1e-9 * (1 + Math.abs(hi)); i++) {
+      var mid = (lo + hi) / 2;
+      if (nctCdf(t, df, mid) > target) lo = mid; else hi = mid;   // cdf decreases in δ
+    }
+    return (lo + hi) / 2;
+  }
+  function nctCI(t, df, level) {
+    if (!isFinite(t) || !(df > 0)) return null;
+    var a = (1 - (level > 0 && level < 1 ? level : 0.95)) / 2;
+    return [deltaSolve(t, df, 1 - a), deltaSolve(t, df, a)];
+  }
+  function varExpCI(F, d1, d2, level) {
+    if (!(F > 0) || !(d1 > 0) || !(d2 > 0)) return null;
+    var N = d1 + d2 + 1;
+    var ci = ncpCI(function (lam) { return ncfCdf(F, d1, d2, lam); }, level);
+    return [ci[0] / (ci[0] + N), ci[1] / (ci[1] + N)];
+  }
+  function vCI(chi, df, N, k, level) {
+    if (!(chi > 0) || !(df > 0) || !(N > 0) || !(k > 0)) return null;
+    var ci = ncpCI(function (lam) { return ncx2Cdf(chi, df, lam); }, level);
+    return [Math.sqrt(ci[0] / (N * k)), Math.sqrt(ci[1] / (N * k))];
+  }
+  function rCI(r, n, level) {
+    if (!(n > 3) || !isFinite(r) || Math.abs(r) >= 1) return null;
+    var z = Math.atanh(r), se = 1 / Math.sqrt(n - 3);
+    var zc = normInv(1 - (1 - (level > 0 && level < 1 ? level : 0.95)) / 2);
+    return [Math.tanh(z - zc * se), Math.tanh(z + zc * se)];
+  }
+
+  return { css: css, reducedMotion: reducedMotion, coarsePointer: coarsePointer, grabRadius: grabRadius, rafThrottle: rafThrottle, fit: fit, randn: randn, gauss: gauss, erf: erf, normCdf: normCdf, normQ: normQ, normPdf: normPdf, normInv: normInv, mean: mean, sd: sd, onTheme: onTheme, gammaln: gammaln, gammp: gammp, gammq: gammq, betai: betai, betaiUpper: betaiUpper, fUpper: fUpper, chiSqUpper: chiSqUpper, tUpper: tUpper, tPdf: tPdf, chiSqPdf: chiSqPdf, fPdf: fPdf, tInv: tInv, chiSqInv: chiSqInv, fInv: fInv, nctCdf: nctCdf, ncx2Cdf: ncx2Cdf, ncfCdf: ncfCdf, ncpCI: ncpCI, nctCI: nctCI, varExpCI: varExpCI, vCI: vCI, rCI: rCI };
 })();

@@ -411,6 +411,84 @@ eq('ncfCdf(f, d1, d2, 0) = central F', V.ncfCdf(2.4, 3, 20, 0), 1 - V.fUpper(2.4
 eq('nctCdf(−t, df, −δ) = 1 − nctCdf(t, df, δ)', V.nctCdf(-1.2, 11, -2), 1 - V.nctCdf(1.2, 11, 2), 1e-8, 'identity');
 
 /* ============================================================
+   6b — confidence intervals on effect sizes (apa.html)
+   ============================================================
+   The d / partial-η² / R² / V intervals are built by inverting the test, so
+   the assertions come in three kinds. ROUND-TRIPS put each returned limit
+   back through its own CDF and demand the tail area it was solved for — a
+   broken bracket or a sign slip fails here first. IDENTITIES tie the interval
+   to the test it inverts, which is the reason d gets 95% and the three
+   variance-explained measures get 90%. ANCHORS are the published defaults on
+   apa.html, each reproduced independently in R 4.5.2 by inverting
+   pt / pf / pchisq(ncp=) with uniroot; all agreed to 4 dp, and coverage
+   simulations at 5,000 reps returned .949 / .900 / .902 against nominal
+   .95 / .90 / .90 (P39 run 21). */
+head('effect-size confidence intervals');
+
+// ROUND-TRIP: each limit, fed back through its own CDF, hits its tail area.
+{
+  const dci = V.nctCI(2.35, 58);
+  eq('nctCI lower limit → P(T ≤ t) = .975', V.nctCdf(2.35, 58, dci[0]), 0.975, 1e-7, 'round-trip');
+  eq('nctCI upper limit → P(T ≤ t) = .025', V.nctCdf(2.35, 58, dci[1]), 0.025, 1e-7, 'round-trip');
+
+  const lam = V.ncpCI((l) => V.ncfCdf(5.40, 2, 87, l), 0.90);
+  eq('ncpCI(F) lower limit → P(F ≤ f) = .95', V.ncfCdf(5.40, 2, 87, lam[0]), 0.95, 1e-7, 'round-trip');
+  eq('ncpCI(F) upper limit → P(F ≤ f) = .05', V.ncfCdf(5.40, 2, 87, lam[1]), 0.05, 1e-7, 'round-trip');
+
+  const lx = V.ncpCI((l) => V.ncx2Cdf(8.14, 2, l), 0.90);
+  eq('ncpCI(χ²) lower limit → P(X ≤ x) = .95', V.ncx2Cdf(8.14, 2, lx[0]), 0.95, 1e-7, 'round-trip');
+  eq('ncpCI(χ²) upper limit → P(X ≤ x) = .05', V.ncx2Cdf(8.14, 2, lx[1]), 0.05, 1e-7, 'round-trip');
+}
+
+// IDENTITY: δ is SIGNED, so a t that fails its own test must return a NEGATIVE
+// lower limit, not one clamped at zero. (The first draft of nctCI clamped it,
+// which an R cross-check caught: p = .058 was reporting d ≥ 0.00 when the honest
+// answer is d ≥ −0.02.) The limit passes through exactly 0 at the critical t.
+is('nctCI lower limit < 0 when p > .05 (t = 1.20, df = 40)', V.nctCI(1.20, 40)[0] < 0, true, 'signed δ');
+eq('nctCI lower limit (t = 1.20, df = 40)', V.nctCI(1.20, 40)[0], -0.7848, 5e-5, 'R 4.5.2 pt(ncp=) inversion');
+is('nctCI lower limit > 0 when p < .05 (t = 2.35, df = 58)', V.nctCI(2.35, 58)[0] > 0, true, 'signed δ');
+eq('nctCI lower limit = 0 at exactly the critical t', V.nctCI(V.tInv(0.025, 58), 58)[0], 0, 1e-6, 'test-inversion identity');
+// and it must flip cleanly with the sign of t
+eq('nctCI(−t) = −nctCI(t) reversed, lower', V.nctCI(-2.35, 58)[0], -V.nctCI(2.35, 58)[1], 1e-9, 'symmetry');
+eq('nctCI(−t) = −nctCI(t) reversed, upper', V.nctCI(-2.35, 58)[1], -V.nctCI(2.35, 58)[0], 1e-9, 'symmetry');
+// This is the whole reason η²/R²/V take a 90% interval: at 90% the lower limit
+// leaves 0 exactly when the (one-tailed) F or χ² test reaches p = .05.
+{
+  const fCrit = V.fInv(0.05, 2, 87);
+  eq('F at exactly p = .05 → 90% η² lower limit = 0', V.varExpCI(fCrit * 0.9999, 2, 87, 0.90)[0], 0, 0, 'one-tailed identity');
+  is('F just above the .05 critical → 90% η² lower limit > 0', V.varExpCI(fCrit * 1.0001, 2, 87, 0.90)[0] > 0, true, 'one-tailed identity');
+  // A 95% interval on the same F would still include 0 — the mismatch APA readers trip on.
+  eq('same F → 95% η² lower limit still 0', V.varExpCI(fCrit * 1.0001, 2, 87, 0.95)[0], 0, 0, 'one-tailed identity');
+}
+// rCI is the closed-form Fisher interval and must reproduce it exactly.
+{
+  const z = Math.atanh(0.42), s = 1 / Math.sqrt(60 - 3), zc = V.normInv(0.975);
+  eq('rCI = tanh(atanh r ± z*·SE), lower', V.rCI(0.42, 60)[0], Math.tanh(z - zc * s), 1e-12, 'Fisher r-to-z');
+  eq('rCI = tanh(atanh r ± z*·SE), upper', V.rCI(0.42, 60)[1], Math.tanh(z + zc * s), 1e-12, 'Fisher r-to-z');
+}
+eq('rCI(.5, 30) lower = correlation.html anchor', V.rCI(0.5, 30)[0], 0.1704, 5e-5, 'R 4.5.2 tanh/atanh');
+eq('rCI(.5, 30) upper = correlation.html anchor', V.rCI(0.5, 30)[1], 0.7290, 5e-5, 'R 4.5.2 tanh/atanh');
+
+// ANCHORS: apa.html's four defaults, reproduced in R 4.5.2 (see the note above).
+{
+  const dci = V.nctCI(2.35, 58).map((x) => x * 0.62 / 2.35);
+  eq('apa.html independent t → d CI lower', dci[0], 0.0882, 5e-5, 'R 4.5.2 pt(ncp=) inversion');
+  eq('apa.html independent t → d CI upper', dci[1], 1.1467, 5e-5, 'R 4.5.2 pt(ncp=) inversion');
+
+  const e1 = V.varExpCI(5.40, 2, 87, 0.90);
+  eq('apa.html one-way ANOVA → 90% η² CI lower', e1[0], 0.0195, 5e-5, 'R 4.5.2 pf(ncp=) inversion');
+  eq('apa.html one-way ANOVA → 90% η² CI upper', e1[1], 0.2071, 5e-5, 'R 4.5.2 pf(ncp=) inversion');
+
+  const e2 = V.varExpCI(14.20, 3, 96, 0.90);
+  eq('apa.html regression model → 90% R² CI lower', e2[0], 0.1686, 5e-5, 'R 4.5.2 pf(ncp=) inversion');
+  eq('apa.html regression model → 90% R² CI upper', e2[1], 0.4018, 5e-5, 'R 4.5.2 pf(ncp=) inversion');
+
+  const vv = V.vCI(8.14, 2, 120, 1, 0.90);
+  eq('apa.html χ² → 90% Cramér’s V CI lower', vv[0], 0.0812, 5e-5, 'R 4.5.2 pchisq(ncp=) inversion');
+  eq('apa.html χ² → 90% Cramér’s V CI upper', vv[1], 0.3976, 5e-5, 'R 4.5.2 pchisq(ncp=) inversion');
+}
+
+/* ============================================================
    7 — documented tool-page constants
    ============================================================ */
 head('tool-page constants');

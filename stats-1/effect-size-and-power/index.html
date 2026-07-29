@@ -110,6 +110,12 @@
           <p><strong>Read the bottom panel like a story.</strong> Your one study will land somewhere under the orange H₁ curve. If it lands past the dashed cutoff, you celebrate a significant result; if it lands short, you miss a real effect (β). Power is simply how much of your future self's luck is green.</p>
         </div>
 
+        <h2 id="how-precisely-do-you-know-d">How precisely do you know d?</h2>
+        <p>The playground treats <em>d</em> as a fact about the world. Your study only ever hands you an estimate of it, and that estimate carries a margin which APA 7 asks you to report. A bare "<em>d</em> = 0.50" reads like a measurement when it is closer to a reading with a range attached.</p>
+        <p>The range is not <em>d</em> plus or minus something. Because <em>d</em> is a ratio of two quantities you estimated, its sampling distribution is a <strong>noncentral t</strong> rather than a normal curve, so the interval has to be found by asking which true effects would leave your observed <em>t</em> where it landed. The <a href="../../apa.html">APA Results Formatter</a> runs that search and writes the answer into the sentence for you; the <a href="../../cheat-apa.html">APA cheat sheet</a> has the finished pattern if you just need the shape of it.</p>
+        <p>Try it on this playground's own dials. At the defaults, <em>d</em> = 0.50 with 30 per group, the test gives <em>t</em>(58) = 1.94 and <em>p</em> = .058, so the study misses, and the interval on <em>d</em> runs <strong>[−0.02, 1.01]</strong>, which still holds open the possibility that the effect points the other way. Now take the 64 per group the readout above asks for at 80% power, observe the same <em>d</em> = 0.50, and the test gives <em>t</em>(126) = 2.83, <em>p</em> = .005. Its interval is <strong>[0.15, 0.85]</strong>. The study worked, and it still cannot separate a small effect from a large one.</p>
+        <p>A result sitting exactly on the significance boundary has a 95% interval whose lower limit is exactly zero, so "significant at .05" and "the interval excludes zero" are two ways of saying one thing. Significance tells you that zero is out, and nothing at all about size. Pinning <em>d</em> down to ±0.20 around 0.50 takes <strong>199 per group</strong>, three times what 80% power costs. Detecting an effect and measuring it are different jobs, and the second is the expensive one.</p>
+
         <h2>Why underpowered studies are dangerous</h2>
         <p>If power is only 40%, you'll miss a real effect more often than you find it — and a "non-significant" result tells you almost nothing. Worse, the few significant results that <em>do</em> squeak through tend to overestimate the effect. This is why researchers run a <strong>power analysis before collecting data</strong>: pick the effect size you care about, the power you want (say 80%), and solve for the sample size you need. Want the exact number for your own study? The <a href="../../power.html">power &amp; sample-size calculator</a> does it for t-tests, ANOVA, correlation, and more, and the <a href="../../guides/complete-worked-project/">complete worked project</a> shows the calculation being made for a real design before a single participant is recruited.</p>
         <p><em>Before</em> is doing the work in that sentence. Running the same calculation afterwards on the effect size you happened to observe produces a number that contains no information you didn't already have from the p-value, and <a href="../../stats-3/power-analysis-for-complex-designs/">power analysis for complex designs</a> sets out why that is arithmetic rather than bad luck, along with the after-the-fact questions that are worth asking.</p>
@@ -164,21 +170,41 @@
     function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
     function vx(v) { return padX + ((v - LOX) / (HIX - LOX)) * (W - 2 * padX); }
 
-    /* two-sample test on the observed standardized difference d̂:
-       under H0, d̂ ~ N(0, SE);  under H1, d̂ ~ N(d, SE);  SE = √(2/n) */
+    /* two-sample test on the observed standardized difference d̂, SE = √(2/n).
+       The two CURVES are drawn as normals, which is what makes the picture
+       readable. The three NUMBERS are exact: they come from the noncentral t,
+       the same engine as power.html, because a reader carries those to their
+       own study and the two pages must not disagree. At d = 0.5, n = 30 the
+       normal shortcut says 49% and n ≈ 63; the truth is 48% and 64, which is
+       the G*Power anchor the rest of the site quotes. */
     function se() { return Math.sqrt(2 / n); }
-    function zcrit() { return VIZ.normInv(1 - alpha / tails); }
-    function dcrit() { return zcrit() * se(); }
-    function powerOf() {
-      var s = se(), c = dcrit();
-      var p = 1 - VIZ.normCdf((c - d) / s);
-      if (tails === 2) p += VIZ.normCdf((-c - d) / s);
+    var critCache = {};
+    function dcrit() {                                   // critical d̂, exact t
+      var key = alpha + "|" + tails + "|" + n;
+      if (!(key in critCache)) critCache[key] = VIZ.tInv(alpha / tails, 2 * n - 2) * se();
+      return critCache[key];
+    }
+    function powerAt(m) {                                // exact power at m/group
+      var df = 2 * m - 2, del = d / Math.sqrt(2 / m), tc = VIZ.tInv(alpha / tails, df);
+      var p = 1 - VIZ.nctCdf(tc, df, del);
+      if (tails === 2) p += VIZ.nctCdf(-tc, df, del);
       return p;
     }
-    function n80() {          // normal-approx n per group for 80% power
+    function powerOf() { return powerAt(n); }
+    var n80Cache = {};
+    function n80() {          // smallest n per group reaching 80% power
       if (d <= 0) return null;
-      var zb = VIZ.normInv(0.8);
-      return Math.ceil(2 * Math.pow((zcrit() + zb) / d, 2));
+      // cached because n80 does not depend on n, so dragging the sample-size
+      // slider (the common move) never recomputes it
+      var key = d + "|" + alpha + "|" + tails;
+      if (key in n80Cache) return n80Cache[key];
+      // the normal shortcut lands 0–3 below the exact answer across the whole
+      // slider range (measured), so start just under it and walk up
+      var guess = Math.ceil(2 * Math.pow((VIZ.normInv(1 - alpha / tails) + VIZ.normInv(0.8)) / d, 2));
+      var out = null;
+      for (var m = Math.max(2, guess - 3); m <= guess + 60; m++) if (powerAt(m) >= 0.8) { out = m; break; }
+      n80Cache[key] = out;
+      return out;
     }
 
     /* draw one normal curve scaled into a panel; optionally fill [a,b] */

@@ -15,16 +15,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>APA Results Formatter — Turn Your Numbers into Correct APA 7 Text — StatsCapybara</title>
-  <meta name="description" content="Enter your t, F, χ², r, or regression numbers and get a correctly formatted APA 7 results sentence — with a statcheck-style consistency check." />
+  <meta name="description" content="Enter your t, F, χ², r, or regression numbers and get a correctly formatted APA 7 results sentence, confidence interval included, plus a consistency check." />
   <link rel="canonical" href="https://statscapybara.com/apa.html" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="APA Results Formatter — StatsCapybara" />
-  <meta property="og:description" content="Type your statistics, copy a correctly formatted APA 7 results sentence — right italics, no leading zeros, and a consistency check that recomputes your p-value." />
+  <meta property="og:description" content="Type your statistics, copy a correctly formatted APA 7 results sentence — right italics, no leading zeros, the confidence interval APA 7 asks for, and a p-value consistency check." />
   <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
   <meta property="og:url" content="https://statscapybara.com/apa.html" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="APA Results Formatter — StatsCapybara" />
-  <meta name="twitter:description" content="Type your statistics, copy a correctly formatted APA 7 results sentence — right italics, no leading zeros, and a p-value consistency check." />
+  <meta name="twitter:description" content="Type your statistics, copy a correctly formatted APA 7 results sentence — right italics, no leading zeros, the interval APA 7 asks for, and a p-value consistency check." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="assets/css/styles.css" />
@@ -78,7 +78,7 @@
       <article class="lesson" style="margin:0 auto">
         <span class="lesson-eyebrow">Tools</span>
         <h1>APA Results Formatter</h1>
-        <p class="lede">You ran the analysis; now you have to <em>write it up</em>. APA 7 has fussy little rules — which symbols are italic, when to drop the leading zero, why you never type <em>p</em> = .000. Enter your numbers and get a clean, copy-ready results sentence, with a statcheck-style warning if your <em>p</em>-value doesn't match your statistic.</p>
+        <p class="lede">You ran the analysis; now you have to <em>write it up</em>. APA 7 has fussy little rules — which symbols are italic, when to drop the leading zero, why you never type <em>p</em> = .000. Enter your numbers and get a clean, copy-ready results sentence, complete with the confidence interval APA 7 asks for and a statcheck-style warning if your <em>p</em>-value doesn't match your statistic.</p>
 
         <div class="viz" id="apaviz">
           <div class="controls">
@@ -116,23 +116,24 @@
           <li><strong>Never <em>p</em> = .000.</strong> A <em>p</em>-value is never exactly zero. The smallest value APA reports is <em>p</em> &lt; .001 — this tool floors it for you and leaves a note.</li>
           <li><strong>Degrees of freedom in parentheses</strong>, right after the italic statistic: <em>t</em>(48), <em>F</em>(2, 87), <em>r</em>(58), χ²(2, <em>N</em> = 120).</li>
           <li><strong>Report an effect size</strong> alongside the test — <em>d</em>, η², <em>r</em>, or <em>V</em>. Significance answers "is there an effect?"; the effect size answers "how big?"</li>
+          <li><strong>And an interval around it.</strong> APA 7 asks for the range your estimate is consistent with, written <code>95% CI [lower, upper]</code>. This tool builds one for every analysis here, including the three that need a noncentral distribution instead of a ± formula and are therefore usually reported bare. <a href="writing/reporting-statistics-apa/#where-the-confidence-interval-goes">Where it goes in the sentence</a> is its own small craft.</li>
         </ul>
 
         <h2>The master patterns</h2>
         <table class="ref-table">
           <thead><tr><th>Test</th><th>APA 7 pattern</th></tr></thead>
           <tbody>
-            <tr><td>Independent <em>t</em></td><td><em>t</em>(df) = 2.35, <em>p</em> = .022, <em>d</em> = 0.62</td></tr>
-            <tr><td>Paired <em>t</em></td><td><em>t</em>(df) = 3.10, <em>p</em> = .004, <em>d</em><sub>z</sub> = 0.57</td></tr>
-            <tr><td>One-way ANOVA</td><td><em>F</em>(2, 87) = 5.40, <em>p</em> = .006, η² = .11</td></tr>
-            <tr><td>Chi-square</td><td>χ²(2, <em>N</em> = 120) = 8.14, <em>p</em> = .017, <em>V</em> = .26</td></tr>
-            <tr><td>Correlation</td><td><em>r</em>(58) = .42, <em>p</em> &lt; .001</td></tr>
-            <tr><td>Regression coef.</td><td><em>b</em> = 2.31, <em>SE</em> = 0.68, β = .38, <em>t</em>(87) = 3.40, <em>p</em> = .001</td></tr>
+            <tr><td>Independent <em>t</em></td><td><em>t</em>(df) = 2.35, <em>p</em> = .022, <em>d</em> = 0.62, 95% CI [0.09, 1.15]</td></tr>
+            <tr><td>Paired <em>t</em></td><td><em>t</em>(df) = 3.10, <em>p</em> = .004, <em>d</em><sub>z</sub> = 0.57, 95% CI [0.18, 0.95]</td></tr>
+            <tr><td>One-way ANOVA</td><td><em>F</em>(2, 87) = 5.40, <em>p</em> = .006, η² = .11, 90% CI [.02, .21]</td></tr>
+            <tr><td>Chi-square</td><td>χ²(2, <em>N</em> = 120) = 8.14, <em>p</em> = .017, <em>V</em> = .26, 90% CI [.08, .40]</td></tr>
+            <tr><td>Correlation</td><td><em>r</em>(58) = .42, 95% CI [.19, .61], <em>p</em> &lt; .001</td></tr>
+            <tr><td>Regression coef.</td><td><em>b</em> = 2.31, <em>SE</em> = 0.68, 95% CI [0.96, 3.66], β = .38, <em>t</em>(87) = 3.40, <em>p</em> = .001</td></tr>
           </tbody>
         </table>
 
         <div class="callout key">
-          <p><strong>The consistency check is the honest bit.</strong> This tool recomputes your <em>p</em>-value from the test statistic and its <em>df</em> — the same idea as the <em>statcheck</em> tool that scans published papers. If your reported <em>p</em> doesn't match, it's usually a typo, a rounding slip, or a one- vs two-tailed mix-up. Fix it before your grader (or a reviewer) does. Learn the full write-up craft in <a href="writing/reporting-statistics-apa/">Reporting Statistics in APA Style</a>, and if you still need the numbers, the <a href="descriptives.html">Descriptives Calculator</a> hands you <em>M</em> and <em>SD</em> ready to paste.</p>
+          <p><strong>The consistency check is the honest bit.</strong> This tool recomputes your <em>p</em>-value from the test statistic and its <em>df</em> — the same idea as the <em>statcheck</em> tool that scans published papers. If your reported <em>p</em> doesn't match, it's usually a typo, a rounding slip, or a one- vs two-tailed mix-up. It does the same for η² and <em>R</em>², which are locked to <em>F</em> and its <em>df</em> by an exact formula, so a mismatch there usually means η² and partial η² have been mixed up. Fix either before your grader (or a reviewer) does. Learn the full write-up craft in <a href="writing/reporting-statistics-apa/">Reporting Statistics in APA Style</a>, and if you still need the numbers, the <a href="descriptives.html">Descriptives Calculator</a> hands you <em>M</em> and <em>SD</em> ready to paste.</p>
         </div>
       </article>
     </div>
@@ -187,6 +188,41 @@
       return " (" + em("M") + " = " + fx(m, 2) + ", " + em("SD") + " = " + fx(sd, 2) + ")";
     }
 
+    /* ---------- confidence intervals ----------
+       APA 7 asks for an interval around the estimate. d, partial η², R² and
+       Cramér's V have no ± formula, so VIZ inverts the test for them (see the
+       effect-size CI block in viz.js); r uses Fisher's transformation and an
+       unstandardized slope is the one ordinary ± case. Level is 95% for the
+       two-tailed statistics and 90% for the three built on a one-tailed F or
+       χ², which is the convention JASP follows and the reason it exists: at
+       90% the interval clears zero exactly when the test reaches p = .05.
+       An interval is written in the leading-zero style of what it bounds. */
+    function ciTxt(lo, hi, dp, bounded, level) {
+      if (!isFinite(lo) || !isFinite(hi)) return "";
+      var f = bounded ? function (x) { return nz(x, dp); } : function (x) { return fx(x, dp); };
+      var a = Math.min(lo, hi), b = Math.max(lo, hi);
+      return ", " + (level === 90 ? "90" : "95") + "% CI [" + f(a) + ", " + f(b) + "]";
+    }
+    /* interval on Cohen's d: the CI on the t's noncentrality, rescaled by d/t */
+    function dCI() {
+      var t = val("t"), df = val("df"), d = val("d");
+      if (!isFinite(t) || t === 0 || !isFinite(df) || df <= 0 || !isFinite(d)) return "";
+      var ci = VIZ.nctCI(t, df, 0.95);
+      if (!ci || !isFinite(ci[0]) || !isFinite(ci[1])) return "";
+      return ciTxt(ci[0] * d / t, ci[1] * d / t, 2, false, 95);
+    }
+    /* interval on the raw difference: SE comes back out of the t itself */
+    function mdCI(md) {
+      var t = val("t"), df = val("df");
+      if (!isFinite(md) || !isFinite(t) || t === 0 || !isFinite(df) || df <= 0) return "";
+      var se = Math.abs(md) / Math.abs(t), crit = VIZ.tInv(0.025, df);
+      if (!isFinite(se) || !isFinite(crit)) return "";
+      return ", 95% CI of the difference [" + fx(md - crit * se, 2) + ", " + fx(md + crit * se, 2) + "]";
+    }
+
+    /* Why the three variance-explained measures get 90% and not 95%. */
+    var CI90 = '<div class="apa-note info">η², <em>R</em>² and Cramér’s <em>V</em> take a <strong>90%</strong> interval by convention, and JASP prints one by default. Their test is one-tailed: only a large <em>F</em> or χ² counts against the null. At 90% the interval clears zero exactly when <em>p</em> reaches .05, while a 95% interval on the same result can still include zero, which reads as a contradiction and is not one.</div>';
+
     /* ---------- analysis definitions ---------- */
     var A = {
       t: {
@@ -196,7 +232,7 @@
             { id: "t", label: "t", def: v === "paired" ? 3.10 : (v === "one" ? 2.68 : 2.35), step: "0.01" },
             { id: "df", label: "df", def: v === "paired" ? 29 : (v === "one" ? 41 : 58), step: "1" },
             { id: "p", label: "p", def: v === "paired" ? 0.004 : (v === "one" ? 0.011 : 0.022), step: "0.001" },
-            { id: "d", label: v === "paired" ? "Cohen's dz" : "Cohen's d", def: v === "paired" ? 0.57 : (v === "one" ? 0.42 : 0.62), step: "0.01" }
+            { id: "d", label: v === "paired" ? "Cohen's dz" : "Cohen's d", def: v === "paired" ? 0.57 : (v === "one" ? 0.41 : 0.62), step: "0.01" }
           ];
           if (v === "one") {
             return [
@@ -219,8 +255,9 @@
         },
         sentence: function (v) {
           var p = fmtP(val("p")); if (!p) return null;
+          var md = v === "one" ? val("m") - val("mu") : val("m1") - val("m2");
           var tail = ", " + em("t") + "(" + iv(val("df")) + ") = " + fx(val("t"), 2) + ", " + em("p") + " " + p.html +
-            ", " + em(v === "paired" ? "d" : "d") + (v === "paired" ? "<sub>z</sub>" : "") + " = " + fx(val("d"), 2) + ".";
+            mdCI(md) + ", " + em("d") + (v === "paired" ? "<sub>z</sub>" : "") + " = " + fx(val("d"), 2) + dCI() + ".";
           if (v === "one") {
             return "A one-sample " + em("t") + " test showed that " + txt("lbl1", "reading scores") + ds("m", "sd") +
               " " + (sig(val("p")) ? "differed significantly" : "did not differ significantly") + " from " + fx(val("mu"), 2).replace(/\.00$/, "") + tail;
@@ -229,6 +266,7 @@
           return noun + em("t") + " test showed " + sigWord(val("p")) + " difference between " +
             txt("lbl1", "group 1") + ds("m1", "sd1") + " and " + txt("lbl2", "group 2") + ds("m2", "sd2") + tail;
         },
+        ciNote: '<div class="apa-note info">The interval on <em>d</em> is not <em>d</em> ± something: it comes from inverting the <em>t</em> test, so it sits off-center around the estimate. Fill in the means to get the interval on the raw difference as well, then name which one you are reporting. <a href="writing/reporting-statistics-apa/#where-the-confidence-interval-goes">APA asks for the quantity in words</a>.</div>',
         recomp: function () { var t = val("t"), df = val("df"); return (isFinite(t) && isFinite(df) && df > 0) ? 2 * VIZ.tUpper(Math.abs(t), df) : null; },
         links: function (v) {
           return v === "ind"
@@ -252,10 +290,13 @@
         sentence: function (v) {
           var p = fmtP(val("p")); if (!p) return null;
           var etaSym = v === "fact" ? "η²<sub>p</sub>" : "η²";
+          var e = VIZ.varExpCI(val("F"), val("df1"), val("df2"), 0.90);
           return "There was " + sigWord(val("p")) + " " + txt("eff", v === "fact" ? "interaction" : "effect of condition") +
             ", " + em("F") + "(" + iv(val("df1")) + ", " + iv(val("df2")) + ") = " + fx(val("F"), 2) +
-            ", " + em("p") + " " + p.html + ", " + etaSym + " = " + nz(val("eta"), 2) + ".";
+            ", " + em("p") + " " + p.html + ", " + etaSym + " = " + nz(val("eta"), 2) +
+            (e ? ciTxt(e[0], e[1], 2, true, 90) : "") + ".";
         },
+        ciNote: CI90,
         recomp: function () { var f = val("F"), d1 = val("df1"), d2 = val("df2"); return (isFinite(f) && isFinite(d1) && isFinite(d2) && d1 > 0 && d2 > 0) ? VIZ.fUpper(f, d1, d2) : null; },
         links: function (v) {
           return v === "fact"
@@ -273,18 +314,21 @@
             { id: "df", label: "df", def: 2, step: "1" },
             { id: "N", label: "N", def: 120, step: "1" },
             { id: "p", label: "p", def: 0.017, step: "0.001" },
-            { id: "V", label: "Cramér's V", def: 0.26, step: "0.01", opt: true }
+            { id: "V", label: "Cramér's V", def: 0.26, step: "0.01", opt: true },
+            { id: "k", label: "k = min(rows, cols) − 1", def: 1, step: "1" }
           ];
         },
         sentence: function () {
           var p = fmtP(val("p")); if (!p) return null;
-          var vv = val("V"), vClause = isFinite(vv) ? ", " + em("V") + " = " + nz(vv, 2) : "";
+          var vv = val("V"), vci = isFinite(vv) ? VIZ.vCI(val("chi"), val("df"), val("N"), val("k"), 0.90) : null;
+          var vClause = isFinite(vv) ? ", " + em("V") + " = " + nz(vv, 2) + (vci ? ciTxt(vci[0], vci[1], 2, true, 90) : "") : "";
           return "A chi-square test of independence showed " + sigWord(val("p")) + " association between " +
             txt("lbl1", "gender") + " and " + txt("lbl2", "handedness") +
             ", χ²(" + iv(val("df")) + ", " + em("N") + " = " + iv(val("N")) + ") = " + fx(val("chi"), 2) +
             ", " + em("p") + " " + p.html + vClause + ".";
         },
         recomp: function () { var c = val("chi"), df = val("df"); return (isFinite(c) && isFinite(df) && df > 0) ? VIZ.chiSqUpper(c, df) : null; },
+        ciNote: CI90,
         links: function () { return { l: "stats-2/chi-square-tests/", t: "Chi-square tests lesson" }; }
       },
 
@@ -302,9 +346,12 @@
           var p = fmtP(val("p")); if (!p) return null;
           var r = val("r"), n = val("n"), df = isFinite(n) ? n - 2 : NaN;
           var dir = r >= 0 ? "positively" : "negatively";
+          var rci = VIZ.rCI(r, n, 0.95);
           return cap(txt("lbl1", "sleep")) + " was " + dir + " correlated with " + txt("lbl2", "exam score") +
-            ", " + em("r") + "(" + iv(df) + ") = " + nz(r, 2) + ", " + em("p") + " " + p.html + ".";
+            ", " + em("r") + "(" + iv(df) + ") = " + nz(r, 2) + (rci ? ciTxt(rci[0], rci[1], 2, true, 95) : "") +
+            ", " + em("p") + " " + p.html + ".";
         },
+        ciNote: '<div class="apa-note info">The interval on <em>r</em> is not symmetric, and the closer <em>r</em> gets to 1 the more lopsided it becomes. It is built on <a href="stats-2/correlation/#the-interval-around-r">Fisher’s transformation</a>, which stretches <em>r</em> onto a scale where the sampling distribution is normal, adds the ± there, and maps the two limits back.</div>',
         recomp: function () {
           var r = val("r"), n = val("n"), df = n - 2;
           if (!isFinite(r) || !isFinite(n) || df <= 0 || Math.abs(r) >= 1) return null;
@@ -318,7 +365,7 @@
         variants: [{ k: "coef", label: "Coefficient" }, { k: "model", label: "Model fit" }],
         fields: function (v) {
           if (v === "model") return [
-            { id: "r2", label: "R²", def: 0.34, step: "0.01" },
+            { id: "r2", label: "R²", def: 0.31, step: "0.01" },
             { id: "F", label: "F", def: 14.20, step: "0.01" },
             { id: "df1", label: "df₁ (model)", def: 3, step: "1" },
             { id: "df2", label: "df₂ (residual)", def: 96, step: "1" },
@@ -337,16 +384,24 @@
         sentence: function (v) {
           var p = fmtP(val("p")); if (!p) return null;
           if (v === "model") {
+            var e = VIZ.varExpCI(val("F"), val("df1"), val("df2"), 0.90);
             return "The model explained " + sigWord(val("p")) + " proportion of variance in the outcome, " +
-              em("R") + "² = " + nz(val("r2"), 2) + ", " + em("F") + "(" + iv(val("df1")) + ", " + iv(val("df2")) + ") = " +
+              em("R") + "² = " + nz(val("r2"), 2) + (e ? ciTxt(e[0], e[1], 2, true, 90) : "") +
+              ", " + em("F") + "(" + iv(val("df1")) + ", " + iv(val("df2")) + ") = " +
               fx(val("F"), 2) + ", " + em("p") + " " + p.html + ".";
           }
           var b = val("b"), se = val("se"), df = val("df");
+          var crit = (isFinite(df) && df > 0) ? VIZ.tInv(0.025, df) : NaN;
           var seClause = isFinite(se) ? ", " + em("SE") + " = " + fx(se, 2) : "";
+          var bciClause = (isFinite(b) && isFinite(se) && isFinite(crit)) ? ciTxt(b - crit * se, b + crit * se, 2, false, 95) : "";
           var tClause = (isFinite(b) && isFinite(se) && se !== 0) ? ", " + em("t") + "(" + iv(df) + ") = " + fx(b / se, 2) : "";
           return cap(txt("pred", "study time")) + " " + (sig(val("p")) ? "significantly predicted" : "did not significantly predict") +
-            " " + txt("out", "exam score") + ", " + em("b") + " = " + fx(b, 2) + seClause +
+            " " + txt("out", "exam score") + ", " + em("b") + " = " + fx(b, 2) + seClause + bciClause +
             ", β = " + nz(val("beta"), 2) + tClause + ", " + em("p") + " " + p.html + ".";
+        },
+        ciNote: function (v) {
+          return v === "model" ? CI90
+            : '<div class="apa-note info">A slope is the one ordinary case: <em>b</em> ± <em>t</em>*·<em>SE</em>, symmetric, in the outcome’s own units. That is what makes it worth reporting: <a href="stats-2/simple-linear-regression/">β tells you nothing about how much the outcome moves</a>, while the interval on <em>b</em> gives you the size and the precision together.</div>';
         },
         recomp: function (v) {
           if (v === "model") { var f = val("F"), d1 = val("df1"), d2 = val("df2"); return (isFinite(f) && isFinite(d1) && isFinite(d2) && d1 > 0 && d2 > 0) ? VIZ.fUpper(f, d1, d2) : null; }
@@ -399,6 +454,21 @@
         else if (pv < 0.001) html += '<div class="apa-note info">Very small <em>p</em> shown as <strong><em>p</em> &lt; .001</strong> (APA’s reporting floor — never write out more zeros).</div>';
         else if (pv > 1) html += '<div class="apa-note info">A <em>p</em>-value can’t exceed 1 — clamped to 1.00.</div>';
       }
+      /* the same statcheck idea, turned on the effect size: partial η² and R²
+         are both F·df₁/(F·df₁ + df₂) exactly, whatever the design */
+      var vePub = cur === "anova" ? val("eta") : (cur === "reg" && variant === "model" ? val("r2") : NaN);
+      if (isFinite(vePub)) {
+        var f1 = val("F"), a1 = val("df1"), a2 = val("df2");
+        if (isFinite(f1) && f1 > 0 && a1 > 0 && a2 > 0) {
+          var veCalc = f1 * a1 / (f1 * a1 + a2), lbl = cur === "anova" ? (variant === "fact" ? "η²<sub>p</sub>" : "η²") : "<em>R</em>²";
+          if (Math.abs(vePub - veCalc) > 0.015) {
+            html += '<div class="apa-note warn">⚠️ From <em>F</em> and its <em>df</em>, ' + lbl + ' should be about <strong>' + nz(veCalc, 2) +
+              '</strong>, not ' + nz(vePub, 2) + '. The two are locked together by <em>F</em>·<em>df</em>₁ / (<em>F</em>·<em>df</em>₁ + <em>df</em>₂)' +
+              (cur === "anova" ? ', so a mismatch usually means η² and partial η² have been mixed up.' : '. Check whether that is the adjusted <em>R</em>² or a ΔR² from a hierarchical step.') + '</div>';
+          }
+        }
+      }
+
       var rec = A[cur].recomp ? A[cur].recomp(variant) : null;
       if (isFinite(pv) && rec != null && isFinite(rec)) {
         var ok = rec < 0.001 ? (pv < 0.0015) : (Math.abs(pv - rec) <= 0.01);
@@ -410,6 +480,8 @@
             '. Double-check for a typo or a one- vs two-tailed mix-up — this is exactly the slip a <a href="ethics/fraud-and-self-correction/">statcheck</a> scan catches.</div>';
         }
       }
+      var cn = A[cur].ciNote;
+      if (cn && /CI \[/.test(s)) html += (typeof cn === "function" ? cn(variant) : cn);
       notes.innerHTML = html;
 
       var lk = A[cur].links(variant);

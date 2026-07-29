@@ -55,8 +55,8 @@ window.SNIPPETS = {
     py: 'import numpy as np\nfrom scipy import stats\nrng = np.random.default_rng()\nctrl = rng.normal(100, 15, 40); drug = rng.normal(108, 15, 40)\nprint(stats.ttest_ind(drug, ctrl, equal_var=False))  # Welch'
   },
   "effect-size-and-power": {
-    r: '# Cohen\'s d, then the n needed to detect it with 80% power\nlibrary(pwr)    # install.packages("pwr")\nd <- (108 - 100) / 15                 # ~0.53, a medium effect\npwr.t.test(d = d, power = 0.80, sig.level = 0.05)',
-    py: 'from statsmodels.stats.power import TTestIndPower\nd = (108 - 100) / 15                  # Cohen\'s d ~ 0.53\nn = TTestIndPower().solve_power(effect_size=d, power=0.80,\n                                alpha=0.05)\nprint(n)   # per group'
+    r: '# Cohen\'s d, then the n needed to detect it with 80% power\nlibrary(pwr)    # install.packages("pwr")\nd <- (108 - 100) / 15                 # ~0.53, a medium effect\npwr.t.test(d = d, power = 0.80, sig.level = 0.05)\n# and the interval around a d you have already observed: invert the t\nci_d <- function(t, df, scale) sapply(c(.975, .025), function(p)\n  uniroot(function(ncp) pt(t, df, ncp) - p, c(t - 6, t + 6))$root) * scale\nci_d(2.83, 126, 0.5 / 2.83)           # d = 0.50, n = 64/group -> 0.15  0.85',
+    py: 'from statsmodels.stats.power import TTestIndPower\nd = (108 - 100) / 15                  # Cohen\'s d ~ 0.53\nn = TTestIndPower().solve_power(effect_size=d, power=0.80,\n                                alpha=0.05)\nprint(n)   # per group\n# the interval around an observed d: invert the noncentral t\nfrom scipy.optimize import brentq\nfrom scipy.stats import nct\nt, df, scale = 2.83, 126, 0.5 / 2.83\nprint([brentq(lambda k: nct.cdf(t, df, k) - q, t - 6, t + 6) * scale\n       for q in (0.975, 0.025)])   # -> [0.15, 0.85]'
   },
   /* ---------------- Stats 2 ---------------- */
   "one-way-anova": {
@@ -88,8 +88,8 @@ window.SNIPPETS = {
     py: 'import numpy as np\nfrom scipy import stats\ntab = np.array([[30, 10], [20, 40]])\nchi2, p, dof, expected = stats.chi2_contingency(tab)\nprint(chi2, p)\nprint(expected)   # the counts H0 predicted'
   },
   "correlation": {
-    r: 'cor(x, y)                  # Pearson r\ncor.test(x, y)             # r with CI and p-value\ncor.test(x, y, method = "spearman")   # rank-based, robust to curves\n# partial correlation: correlate what is left after removing z from both\ncor(resid(lm(x ~ z)), resid(lm(y ~ z)))',
-    py: 'from scipy import stats\nr, p = stats.pearsonr(x, y)\nprint(r, p)\nprint(stats.spearmanr(x, y))   # rank-based alternative\nimport pingouin as pg\nprint(pg.partial_corr(data=df, x="x", y="y", covar="z"))   # holding z constant'
+    r: 'cor(x, y)                  # Pearson r\ncor.test(x, y)             # r with CI and p-value\ncor.test(x, y, method = "spearman")   # rank-based, robust to curves\n# partial correlation: correlate what is left after removing z from both\ncor(resid(lm(x ~ z)), resid(lm(y ~ z)))\n# do two independent correlations differ? Fisher z, no package needed\nzd <- (atanh(.55) - atanh(.30)) / sqrt(1/(60 - 3) + 1/(60 - 3))\n2 * pnorm(-abs(zd))                   # z = 1.65, p = .099',
+    py: 'from scipy import stats\nres = stats.pearsonr(x, y)\nprint(res.statistic, res.pvalue)\nprint(res.confidence_interval())   # Fisher-z interval, SciPy 1.11+\nprint(stats.spearmanr(x, y))   # rank-based alternative\nimport pingouin as pg\nprint(pg.partial_corr(data=df, x="x", y="y", covar="z"))   # holding z constant'
   },
   "simple-linear-regression": {
     r: 'fit <- lm(score ~ hours, data = df)\nsummary(fit)         # slope, intercept, R-squared\nconfint(fit)         # the interval APA asks for, alongside each b\nplot(df$hours, df$score); abline(fit, col = "red")',
