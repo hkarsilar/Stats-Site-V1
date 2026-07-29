@@ -137,6 +137,22 @@
           </tbody>
         </table>
 
+        <h2 id="after-h">After a significant H</h2>
+        <p>Kruskal–Wallis inherits one more thing from ANOVA: it is an omnibus test. A small <em>p</em> says the <em>k</em> groups are not interchangeable and stops there. The rank-based follow-up is <strong>Dunn's test</strong>, which compares two groups' <em>mean ranks</em> using the ranking the omnibus already computed. With no ties, the standard error for a pair is √[<em>N</em>(<em>N</em> + 1)/12 × (1/<em>n<sub>i</sub></em> + 1/<em>n<sub>j</sub></em>)], the difference in mean ranks divided by it is treated as a <em>z</em>, and the resulting <em>p</em>-values get the same <a href="../../stats-2/post-hoc-tests/">family-wise correction</a> you would apply after an ANOVA.</p>
+        <p>The temptation is to skip all that and run three Mann–Whitney tests instead. Fifteen scores show why that is a different analysis rather than a shortcut. Take the numbers 1 to 15, so every value is its own rank, split across three groups:</p>
+        <table class="ref-table">
+          <thead>
+            <tr><th>Group</th><th>Scores</th><th>Mean rank</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>A</td><td>1, 3, 4, 5, 7</td><td>4.0</td></tr>
+            <tr><td>B</td><td>11, 12, 13, 14, 15</td><td>13.0</td></tr>
+            <tr><td>C</td><td>2, 6, 8, 9, 10</td><td>7.0</td></tr>
+          </tbody>
+        </table>
+        <p>Kruskal–Wallis gives <em>H</em> = 10.5 on 2 <em>df</em>, <em>p</em> = .005. Dunn's test then puts A against B at <em>z</em> = 3.18 and A against C at <em>z</em> = 1.06, and B against C at <em>z</em> = 2.12, which after a Holm correction leaves only A versus B below .05 (.004, against .068 for B versus C). Run the three Mann–Whitney tests instead, correct them the same way, and B versus C comes back significant at .024.</p>
+        <p>Both answers are arithmetically right, because they rank different things. Every B score beats every C score, so a test that sees only those ten values finds the most extreme separation five-on-five can produce. Dunn sees all fifteen, and in the full ladder B and C sit next to each other with six mean-rank points between them. Only one of those two views matches the <em>H</em> you just reported, which is the argument for Dunn: a pairwise test discards the third group and re-ranks, so its ranks are not the ranks the omnibus used. Friedman needs the same care for the same reason, and its follow-up ranks within each participant rather than pooling.</p>
+
         <h2>The effect size your software prints</h2>
         <p>A rank test still owes you a size, not just a verdict. The parametric side has Cohen's <em>d</em> and η²; the rank side has the <strong>rank-biserial correlation</strong>, and the ledger above is already showing it to you under another name.</p>
         <p>Recall the probability of superiority: the chance that a randomly picked value from one group beats a randomly picked value from the other. The rank-biserial correlation is that same quantity restretched onto the −1 to +1 scale a correlation lives on:</p>

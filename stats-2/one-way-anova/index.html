@@ -100,11 +100,27 @@
         <ul>
           <li>The groups are independent, and observations within each are independent.</li>
           <li>The outcome is roughly normal within each group (or samples are large).</li>
-          <li><strong>Homogeneity of variance</strong> — the groups have similar spread. <a href="../../stats-2/assumptions-and-when-they-break/">Checking that properly</a> takes a plot and a test; when it is badly violated, you reach for a <a href="../../stats-2/non-parametric-alternatives/">robust or non-parametric alternative</a>.</li>
+          <li><strong>Homogeneity of variance</strong>, meaning the groups have similar spread. <a href="../../stats-2/assumptions-and-when-they-break/">Checking that properly</a> takes a plot and a test, and the next section covers what to run when the check fails.</li>
         </ul>
 
+        <h2 id="unequal-spreads">When the spreads are not equal</h2>
+        <p>The practice file at the foot of this lesson was built to break this assumption. <a href="../../datasets.html#study">study-methods.csv</a> holds 35 students per revision method with standard deviations of 7.97, 8.86 and 11.97, and Levene's test duly objects: <em>F</em>(2, 102) = 3.54, <em>p</em> = .033. Run the ordinary ANOVA anyway and it returns <em>F</em>(2, 102) = 11.57, <em>p</em> &lt; .001. Run <strong>Welch's ANOVA</strong>, which weights each group by its own precision rather than pooling everyone into one error term, and it returns <em>F</em>(2, 66.43) = 13.10, <em>p</em> &lt; .001. Same story, with a fractional denominator <em>df</em> because the weighting has to be paid for somewhere.</p>
+        <p>The agreement is not luck, and the reason is the part the textbook warning usually omits. Unequal variances alone do surprisingly little damage; unequal variances paired with unequal group sizes do a great deal. Three groups drawn from populations that genuinely do not differ, 100,000 samples per row, testing at α = .05:</p>
+        <table class="ref-table">
+          <thead>
+            <tr><th>Group sizes</th><th>Population SDs</th><th>Ordinary <em>F</em> rejects</th><th>Welch rejects</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>20, 20, 20</td><td>1, 1, 3</td><td>7.4%</td><td>5.2%</td></tr>
+            <tr><td>10, 20, 30</td><td>3, 2, 1</td><td>16.1%</td><td>5.3%</td></tr>
+            <tr><td>10, 20, 30</td><td>1, 2, 3</td><td>2.1%</td><td>4.9%</td></tr>
+          </tbody>
+        </table>
+        <p>Read the middle row first. The smallest group is the noisiest one, and a test advertised at 5% false alarms delivers 16%. Flip the pairing so the big group carries the big spread and the rate drops to 2%. That direction looks like the safe one to err in, and it costs you too: a test that rejects too rarely under the null is missing real effects at the same time. The site's own dataset lands in none of these traps because its groups are the same size, and equal <em>n</em> is doing most of the protecting.</p>
+        <p>Welch holds near 5% in all three rows. What it costs when the variances really are equal is small and measurable: about one percentage point of power at 20 per group, about three at 10 per group. SPSS prints it under <em>Robust Tests of Equality of Means</em>, on a line above a second robust test called <strong>Brown–Forsythe</strong>. Be careful with that name, because two different procedures wear it. One is the robust <em>F</em> in that box; the other is the version of Levene's test that centers on medians instead of means, which is what R's <code>car::leveneTest</code> gives you by default. A significant omnibus still owes you follow-up comparisons, and those need the same correction the omnibus did: <a href="../../stats-2/post-hoc-tests/#unequal-variances">Games–Howell</a> is Tukey's HSD rebuilt on the same principle.</p>
+
         <div class="callout">
-          <p><strong>Why it matters:</strong> ANOVA is the backbone of experimental statistics. Once you can partition variation into "between" and "within," you can extend the idea to <a href="../../stats-2/factorial-anova-two-way/">multiple factors at once</a> and to <a href="../../stats-2/repeated-measures-anova/">repeated measurements</a>. The printable <a href="../../cheat-test-chooser.html">test-chooser poster</a> lays that whole family out in one grid, from two groups up to two factors.</p>
+          <p><strong>Why it matters:</strong> ANOVA is the backbone of experimental statistics. Once you can partition variation into "between" and "within," you can extend the idea to <a href="../../stats-2/factorial-anova-two-way/">multiple factors at once</a> and to <a href="../../stats-2/repeated-measures-anova/">repeated measurements</a>. The printable <a href="../../cheat-test-chooser.html">test-chooser poster</a> lays that whole family out in one grid, from two groups up to two factors, and its companion <a href="../../cheat-assumptions.html">assumption-checks sheet</a> pairs each check with the fix it calls for.</p>
         </div>
 
         <p class="pb-xref">For a run on real data, <a href="../../datasets.html#study">study-methods.csv</a> compares three revision techniques across 105 students, with group SDs deliberately unequal so Levene's test has something to say.</p>

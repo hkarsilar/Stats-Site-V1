@@ -100,6 +100,7 @@ window.SOFTWARE = {
       'In <strong>One-Way ANOVA → Post Hoc…</strong> (or <strong>GLM Univariate → Post Hoc…</strong>).',
       'Tick <em>Tukey</em> for all-pairwise comparisons with honest error rates; <em>Bonferroni</em> if you have only a few planned comparisons.',
       'If variances are unequal, use the <em>Games-Howell</em> option in the "Equal Variances Not Assumed" panel instead.',
+      'If every treatment is being compared against one control rather than against each other, tick <em>Dunnett</em> and set the control category; it corrects for only the comparisons you made, so it is more powerful than Tukey here.',
       'The output’s <em>Multiple Comparisons</em> table gives each pair’s mean difference, adjusted p, and CI.'
     ],
     jasp: [
@@ -186,10 +187,10 @@ window.SOFTWARE = {
       '<strong>ANOVA → ANOVA → Nonparametrics</strong> → Kruskal-Wallis; <strong>Repeated Measures ANOVA → Nonparametrics</strong> → Friedman.',
       'Tick <em>Effect size</em> — JASP reports the rank-biserial correlation, a natural effect size for these tests.'
     ],
-    apa: '<p>Pain ratings were lower in the treatment group (<em>Mdn</em> = 3) than in the control group (<em>Mdn</em> = 5), Mann–Whitney <em>U</em> = 245.5, <em>z</em> = −2.13, <em>p</em> = .033, <em>r</em> = .27. For three or more groups: <em>H</em>(2) = 7.61, <em>p</em> = .022 (Kruskal–Wallis).</p>',
+    apa: '<p>Pain ratings were lower in the treatment group (<em>Mdn</em> = 3, <em>n</em> = 30) than in the control group (<em>Mdn</em> = 5, <em>n</em> = 30), Mann–Whitney <em>U</em> = 306, <em>z</em> = −2.13, <em>p</em> = .033, rank-biserial <em>r</em> = .32. For three or more groups: <em>H</em>(2) = 7.61, <em>p</em> = .022 (Kruskal–Wallis).</p>',
     tips: [
       'Report medians (<em>Mdn</em>) rather than means — that’s what these tests respect.',
-      'An effect size still applies, but the two in circulation are not the same number. JASP’s rank-biserial correlation is the win rate minus the loss rate across every cross-group pairing; <em>r</em> = <em>z</em>/√<em>N</em> is the SPSS-era fallback and will usually be smaller on the same data. Say which one you computed.'
+      'An effect size still applies, but the two in circulation are not the same number. JASP’s rank-biserial correlation is the win rate minus the loss rate across every cross-group pairing; <em>r</em> = <em>z</em>/√<em>N</em> is the SPSS-era fallback and will usually be smaller on the same data. The sentence above is a case in point: .32 as a rank-biserial correlation, .27 as <em>z</em>/√<em>N</em>. Say which one you computed.'
     ]
   },
   "chi-square-tests": {
