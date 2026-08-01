@@ -50,6 +50,17 @@ PAGE_MAX_CHARS = {"problems.html": 120_000, "glossary.html": 120_000}
 # term and the index cannot find it, CHECK THIS FIRST.
 LESSON_MAX_CHARS = 20_000
 
+# Guides get the same treatment, and for the same reason (P39 run 24). The
+# five long-form guides run 9.8k-17.5k characters and were being indexed with
+# the 4,500 default, so between 54% and 74% of each one was unsearchable:
+# complete-worked-project lost 74% of itself, and clean-survey-data's whole
+# reliability section (found in run 24 by searching the rebuilt index for the
+# terms that run had just written) fell past the cut. This is the same defect
+# run 13 fixed for lessons, left standing on the pages built to answer
+# high-intent thesis queries. 30,000 clears the longest guide with real slack,
+# per run 20's lesson that a cap chasing a growing corpus needs it.
+GUIDE_MAX_CHARS = 30_000
+
 
 def textify(fragment: str) -> str:
     """Strip tags/scripts and collapse whitespace to plain searchable text."""
@@ -147,7 +158,7 @@ for slug in [
 ]:
     p = ROOT / "guides" / slug / "index.html"
     if p.exists():
-        pages.append({"u": f"guides/{slug}/", "txt": page_text(p)})
+        pages.append({"u": f"guides/{slug}/", "txt": page_text(p, GUIDE_MAX_CHARS)})
 # glossary terms now live in assets/js/glossary-data.js; index them under glossary.html
 gl = ROOT / "assets/js/glossary-data.js"
 if gl.exists():

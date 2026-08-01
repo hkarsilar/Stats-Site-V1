@@ -173,7 +173,7 @@
     "multicollinearity-and-variable-selection": "Two predictors sharing one trench coat and pretending to be different variables.",
     "categorical-predictors-and-dummy-coding": "Dummy coding is not an insult. It's just capybara = 1, not-capybara = 0.",
     "ancova": "ANCOVA is just ANOVA that remembered to control for the vibes.",
-    "interactions-in-regression": "Sometimes the effect of snacks depends on the pool. That's an interaction. Keep up.",
+    "interactions-in-regression": "Sometimes the effect of snacks depends on the pool. That's an interaction.",
     "mediation-and-indirect-effects": "Snacks → serenity → chill. The capybara understood mediation all along.",
     "logistic-regression": "Will the capybara enter the pool? Yes / no. Logistic regression was born for this.",
     "assumptions-of-regression": "Linear, independent, equal-variance, roughly normal. The capybara checks all four before it relaxes.",
@@ -203,8 +203,8 @@
     "quasi-experiments": "Couldn't randomize the weather, so the capybara compared its pond to the one next door — and hoped they'd have drifted alike.",
     "observational-designs": "The capybara didn't assign anyone to the warm spring. It just watched who wandered in — and noted who was never seen leaving.",
     "sampling-methods": "Poll only the capybaras already in the spa and 100% love warm water. Shocking. Ask a thousand more of them and it is still 100%.",
-    "survey-and-questionnaire-design": "\"Don't you agree this lovely water is wonderful?\" The capybara agrees. The capybara would agree with anything phrased like that.",
-    "bias-and-blinding": "The capybara double-blinds its taste tests — even it doesn't know which pond the water came from. No expectations, no bias, just vibes.",
+    "survey-and-questionnaire-design": "\"Don't you agree this lovely water is wonderful?\" The capybara would agree with anything phrased like that.",
+    "bias-and-blinding": "The capybara double-blinds its taste tests — even it doesn't know which pond the water came from.",
     "the-replication-crisis": "The capybara found a 'significant' result on its fourth analysis. Then remembered the first three. Next time: preregister, then snack.",
     "preregistration-and-open-science": "The capybara wrote its whole plan down before the snack arrived — so it couldn't pretend afterwards that it always wanted the small one.",
     /* Data */
@@ -276,7 +276,7 @@
     "datasets": "Reading about a t-test isn't running one. Grab a CSV, wrangle real numbers, and the capybara will happily wait.",
     "quiz": "Test anxiety? Unknown to capybaras. Breathe in, breathe out, click an answer.",
     "glossary": "Big words, small stress. The capybara defines, you vibe.",
-    "flashcards": "Flip, rate, repeat. The capybara only revises the words it forgot — and it forgets nothing on purpose, only for spacing.",
+    "flashcards": "Flip, rate, repeat. The capybara only revises the words it forgot.",
     "progress": "No streaks, no nagging — just your rings filling up at capybara pace. Finish a whole course and there's a certificate soaking in it for you.",
     "teachers": "One syllabus link, a whole class taught. The capybara would put that on its CV, if capybaras had jobs."
   };

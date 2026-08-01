@@ -52,9 +52,9 @@
         <h2>The quasi-experimental toolkit</h2>
         <ul>
           <li><strong>Nonequivalent groups:</strong> a treated group and a comparison group that formed by choice or circumstance, not a coin flip, so they may differ in hidden ways.</li>
-          <li><strong>Pre/post (one group):</strong> measure before and after a treatment. Cheap, but anything else changing over time (maturation, the season, the economy) is confounded with the effect.</li>
+          <li><strong>Pre/post (one group):</strong> measure before and after a treatment. Cheap, but anything else changing over time (maturation, the season, the economy) is confounded with the effect. The analysis is the ordinary <a href="../between-vs-within-designs/">within-subjects comparison</a>; what is missing is a group that did not get the treatment.</li>
           <li><strong>Interrupted time series:</strong> many measurements before and after an intervention, so you can see whether the <em>trend</em> genuinely bent at the intervention.</li>
-          <li><strong>Matching:</strong> pair each treated unit with a comparison unit that looks similar on measured variables, which helps, but can only balance what you measured, never the unknown confounds randomization would have caught. Which variables belong in the match is a question about <a href="../../stats-4/causal-dags-and-confounding/">causal structure</a>, not a question about which ones you happen to have.</li>
+          <li><strong>Matching:</strong> pair each treated unit with a comparison unit that looks similar on measured variables, which helps, but can only balance what you measured, never the unknown confounds randomization would have caught. Which variables belong in the match is a question about <a href="../../stats-4/causal-dags-and-confounding/">causal structure</a>, not a question about which ones you happen to have. Matching on a variable and <a href="../../stats-3/ancova/">adjusting for it statistically</a> chase the same imbalance from opposite directions, and neither one reaches a variable you never recorded.</li>
         </ul>
 
         <h2>Difference-in-differences: the workhorse</h2>
@@ -96,13 +96,13 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <p>Two biases, canceled: comparing the groups <em>after only</em> is fooled by the <strong>baseline gap</strong> (the groups differed to begin with); comparing the treated group's <em>change only</em> is fooled by the <strong>shared trend</strong> (things were moving anyway). Difference-in-differences subtracts the comparison group's change from the treated group's change, wiping out both, <em>provided</em> the two groups would have moved in parallel without the treatment. That last clause is the <strong>parallel-trends assumption</strong>, and the differential-trend slider shows exactly how much a violation of it leaks straight into your estimate.</p>
+        <p>Two biases, canceled: comparing the groups <em>after only</em> is fooled by the <strong>baseline gap</strong> (the groups differed to begin with); comparing the treated group's <em>change only</em> is fooled by the <strong>shared trend</strong> (things were moving anyway). Difference-in-differences subtracts the comparison group's change from the treated group's change, wiping out both, <em>provided</em> the two groups would have moved in parallel without the treatment. That last clause is the <strong>parallel-trends assumption</strong>, and the differential-trend slider shows exactly how much a violation of it leaks straight into your estimate. In a regression the whole estimate is one coefficient, the treated × post <a href="../../stats-3/interactions-in-regression/">interaction term</a>, which is why software output for a difference-in-differences study looks so anticlimactic.</p>
 
         <h2>Regression discontinuity, in one picture</h2>
         <p>When a treatment is handed out by a strict cutoff — a scholarship for scores ≥ 90, a program for incomes below a line — you can compare people <em>just above</em> and <em>just below</em> the threshold. They're nearly identical by luck of landing on either side, so a sudden <strong>jump</strong> in the outcome right at the cutoff is hard to explain as anything but the treatment. It's the closest a quasi-experiment gets to a local randomized trial.</p>
 
         <div class="callout key">
-          <p><strong>Natural experiments</strong> take this further: nature or policy does the "assigning" for you, whether a lottery, an arbitrary border, or a law that changed in one region but not the neighboring one. When the assigning event is genuinely as-good-as-random with respect to the outcome, a natural experiment can rival a true experiment for causal credibility, on data you could never have assigned yourself.</p>
+          <p><strong>Natural experiments</strong> take this further: nature or policy does the "assigning" for you, whether a lottery, an arbitrary border, or a law that changed in one region but not the neighboring one. When the assigning event is genuinely as-good-as-random with respect to the outcome, a natural experiment can rival a true experiment for causal credibility, on data you could never have assigned yourself. When there is no assigning event at all and you are simply watching who does what, you have crossed into <a href="../observational-designs/">observational territory</a>, where the comparison has to be built rather than found.</p>
         </div>
 
         <div class="callout">

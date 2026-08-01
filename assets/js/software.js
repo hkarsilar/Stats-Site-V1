@@ -438,7 +438,7 @@ window.SOFTWARE = {
       'Set <em>Rotation</em> to oblique (<em>oblimin</em>) unless you have reason to force independence.',
       'Tick <em>KMO test</em> and <em>Bartlett’s test</em> under Assumption Checks.'
     ],
-    apa: '<p>Sampling adequacy was good, KMO = .84, and Bartlett’s test was significant, χ²(190) = 1438.2, <em>p</em> &lt; .001. Parallel analysis supported two factors, together explaining 58% of the variance. After oblimin rotation, nine items loading ≥ .40 defined a "sociability" factor and seven a "assertiveness" factor (loadings in Table 1).</p>',
+    apa: '<p>Sampling adequacy was good, KMO = .84, and Bartlett’s test was significant, χ²(190) = 1438.2, <em>p</em> &lt; .001. Parallel analysis supported two factors, together explaining 58% of the variance. After oblimin rotation, nine items loading ≥ .40 defined a "sociability" factor and seven an "assertiveness" factor (loadings in Table 1).</p>',
     tips: [
       'State the extraction method, the retention rule (parallel analysis / scree / eigenvalues), the rotation, and the variance explained — the four decisions reviewers look for.'
     ]
@@ -626,15 +626,16 @@ window.SOFTWARE = {
       'Set <em>Model</em> to <em>Alpha</em>.',
       'Click <em>Statistics…</em> and tick <em>Scale if item deleted</em> and <em>Inter-Item Correlations</em>.',
       'Read <em>Cronbach’s Alpha</em> in the Reliability Statistics table; scan the <em>Cronbach’s Alpha if Item Deleted</em> column for items dragging the scale down.',
-      'SPSS 28+ can also compute <em>McDonald’s ω</em> here: set <em>Model</em> to <em>Omega</em> and run the analysis again.',
+      'SPSS 27 and later can also compute <em>McDonald’s ω</em> here: set <em>Model</em> to <em>Omega</em> and run the analysis again.',
       'For rater agreement instead of item consistency, use <strong>Analyze → Descriptive Statistics → Crosstabs…</strong> with one rater in Rows and the other in Columns, then <em>Statistics… → Kappa</em>. The two rating variables must use the <em>same</em> category codes, or the square table Kappa needs will not be built.'
     ],
     jasp: [
-      '<strong>Reliability → Unidimensional Reliability</strong> (the classical option).',
+      '<strong>Reliability → Reliability</strong>, the first entry in the module’s <em>Classical</em> group (it is the unidimensional analysis; earlier versions of JASP labeled it that way).',
       'Drag the scale’s items into <em>Variables</em>; under <em>Reverse-Scaled Items</em>, move any negatively worded ones across.',
       'Tick <em>Cronbach’s α</em>, and under <em>Individual Items</em> tick <em>α (if item dropped)</em> and the <em>item-rest correlation</em>.',
       'JASP also reports <em>McDonald’s ω</em> — a modern alternative many methodologists now prefer over α.',
-      'Rater agreement lives beside it under <strong>Reliability → Inter-Rater Reliability</strong>: Cohen’s κ for two raters, Fleiss’ κ for more, and the ICC when the ratings are continuous.'
+      '<strong>Reliability → Standard Error of Measurement</strong> is a separate entry in the same group, and it is the one to run when a score describes an individual rather than a group: it turns the coefficient into a band around one person’s score.',
+      'Rater agreement sits two entries further down. <strong>Reliability → Rater Agreement</strong> gives Cohen’s κ for two raters and Fleiss’ κ for more; <strong>Reliability → Intraclass Correlation</strong> is the one to use when the ratings are continuous.'
     ],
     apa: '<p>Internal consistency was acceptable: the 10-item Perceived Stress Scale had a Cronbach’s α of .82 in this sample, 95% CI [.78, .86]. One reverse-worded item was recoded before scoring, and all item–rest correlations exceeded .30.</p>',
     tips: [

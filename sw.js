@@ -37,11 +37,12 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v42";  /* P39 twenty-third run: site.js changed and is precached. Three quips
-                                    were shortened (which-test, cheat-assumptions, datasets), each losing a
-                                    closing clause that only relabeled the one before it. styles.css,
-                                    curriculum.js, viz.js and the font are untouched; snippets.js and
-                                    software.js also changed but are lazy-loaded and never precached.
+const CACHE_VERSION = "sc-v43";  /* P39 twenty-fourth run: site.js changed and is precached. Four quips
+                                    were shortened (survey-and-questionnaire-design, interactions-in-regression,
+                                    bias-and-blinding, flashcards), each losing a trailing clause that only
+                                    restated the one before it. styles.css, curriculum.js, viz.js and the font
+                                    are untouched; snippets.js, software.js, glossary-data.js and
+                                    search-index.js also changed but are lazy-loaded and never precached.
                                     (v32 was consumed by an intermediate state during run 14 — never reuse a
                                     string across two byte-contents of a precached asset.) */
 const CACHE = CACHE_VERSION;

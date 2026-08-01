@@ -88,7 +88,7 @@ window.SNIPPETS = {
     py: 'import numpy as np\nfrom scipy import stats\ntab = np.array([[30, 10], [20, 40]])\nchi2, p, dof, expected = stats.chi2_contingency(tab)\nprint(chi2, p)\nprint(expected)   # the counts H0 predicted'
   },
   "correlation": {
-    r: 'cor(x, y)                  # Pearson r\ncor.test(x, y)             # r with CI and p-value\ncor.test(x, y, method = "spearman")   # rank-based, robust to curves\n# partial correlation: correlate what is left after removing z from both\ncor(resid(lm(x ~ z)), resid(lm(y ~ z)))\n# do two independent correlations differ? Fisher z, no package needed\nzd <- (atanh(.55) - atanh(.30)) / sqrt(1/(60 - 3) + 1/(60 - 3))\n2 * pnorm(-abs(zd))                   # z = 1.65, p = .099',
+    r: 'cor(x, y)                  # Pearson r\ncor.test(x, y)             # r with CI and p-value\ncor.test(x, y, method = "spearman")   # rank-based, robust to curves\n# partial correlation: correlate what is left after removing z from both\ncor(resid(lm(x ~ z)), resid(lm(y ~ z)))\n# do two independent correlations differ? Fisher z, no package needed\nzd <- (atanh(.55) - atanh(.30)) / sqrt(1/(60 - 3) + 1/(60 - 3))\n2 * pnorm(-abs(zd))                   # z = 1.65, p = .099\n# correction for attenuation: divide out the two reliabilities\nr_obs <- .42; rxx <- .70; ryy <- .70\nr_obs / sqrt(rxx * ryy)               # .60 -- print it BESIDE r, never instead',
     py: 'from scipy import stats\nres = stats.pearsonr(x, y)\nprint(res.statistic, res.pvalue)\nprint(res.confidence_interval())   # Fisher-z interval, SciPy 1.11+\nprint(stats.spearmanr(x, y))   # rank-based alternative\nimport pingouin as pg\nprint(pg.partial_corr(data=df, x="x", y="y", covar="z"))   # holding z constant'
   },
   "simple-linear-regression": {
@@ -137,7 +137,7 @@ window.SNIPPETS = {
     py: 'import statsmodels.formula.api as smf\nm1 = smf.ols("score ~ hours", data=df).fit()\nm2 = smf.ols("score ~ hours + sleep", data=df).fit()\nprint(m2.compare_f_test(m1))     # call it on the LARGER model, pass the smaller\nprint(m1.aic, m2.aic)            # lower = better'
   },
   "factor-analysis-pca": {
-    r: 'pc <- prcomp(df_items, scale. = TRUE)\nsummary(pc); plot(pc, type = "l")     # scree plot\nlibrary(psych)\nfa(df_items, nfactors = 2, rotate = "oblimin")   # proper EFA',
+    r: 'pc <- prcomp(df_items, scale. = TRUE)\nsummary(pc); plot(pc, type = "l")     # scree plot\nlibrary(psych)\nfa(df_items, nfactors = 2, rotate = "oblimin")   # proper EFA\n# base R alternative, and the column people forget to read\nfit <- factanal(df_items, factors = 2)\n1 - fit$uniquenesses     # communality: share of each item the factors explain',
     py: 'from sklearn.decomposition import PCA\nfrom sklearn.preprocessing import StandardScaler\nZ = StandardScaler().fit_transform(df_items)\npc = PCA().fit(Z)\nprint(pc.explained_variance_ratio_)   # scree by numbers\n# proper EFA: pip install factor_analyzer'
   },
   "manova": {
@@ -208,7 +208,7 @@ window.SNIPPETS = {
     py: 'import pandas as pd\nfrom scipy.stats import zscore\nstress = df[["cortisol", "hrv", "self_report"]].apply(zscore)  # standardize each\ndf["stress_index"] = stress.mean(axis=1)                      # composite measure'
   },
   "reliability-and-validity": {
-    r: 'library(psych)\n# items: rows = people, cols = the scale items\nalpha(items)$total$std.alpha   # standardized Cronbach alpha\ncor(time1_total, time2_total)  # test-retest reliability\n# inter-rater agreement, base R: Cohen kappa from the 2-rater table\ntab <- table(rater1, rater2)\npo <- sum(diag(tab)) / sum(tab)\npe <- sum(rowSums(tab) * colSums(tab)) / sum(tab)^2\n(po - pe) / (1 - pe)            # report po alongside it',
+    r: 'library(psych)\n# items: rows = people, cols = the scale items\nalpha(items)$total$std.alpha   # standardized Cronbach alpha\ncor(time1_total, time2_total)  # test-retest reliability\n# alpha, the standard error of measurement and the item-rest\n# correlations, base R only\nk <- ncol(items)\na <- k / (k - 1) * (1 - sum(apply(items, 2, var)) / var(rowSums(items)))\nsem <- sd(rowMeans(items)) * sqrt(1 - a)      # band around ONE person score\nc(alpha = a, sem = sem, half_width_95 = 1.96 * sem)\nsapply(1:k, function(j) cor(items[, j], rowSums(items[, -j])))\n# inter-rater agreement, base R: Cohen kappa from the 2-rater table\ntab <- table(rater1, rater2)\npo <- sum(diag(tab)) / sum(tab)\npe <- sum(rowSums(tab) * colSums(tab)) / sum(tab)^2\n(po - pe) / (1 - pe)            # report po alongside it',
     py: 'import pingouin as pg\n# items: one column per scale item\npg.cronbach_alpha(data=items)   # -> (alpha, 95% CI)\nfrom sklearn.metrics import cohen_kappa_score\nprint(cohen_kappa_score(rater1, rater2))   # inter-rater agreement'
   },
   "experimental-design-and-randomization": {
@@ -232,8 +232,8 @@ window.SNIPPETS = {
     py: '# 2x2 counts: exposed-case, exposed-control, unexposed-case, unexposed-control\na, b, c, d = 30, 78, 20, 112\nodds_ratio = (a * d) / (b * c)              # odds ratio (any design)\nrisk_ratio = (a / (a + b)) / (c / (c + d))  # risk ratio (cohort data only)\nprint(odds_ratio, risk_ratio)'
   },
   "survey-and-questionnaire-design": {
-    r: '# reverse-code items q3 & q5 on a 1-5 scale, then average into a composite\nlibrary(dplyr)\nrev5 <- function(x) 6 - x            # 1<->5, 2<->4, 3 unchanged\ndf <- df %>% mutate(q3 = rev5(q3), q5 = rev5(q5),\n                    composite = rowMeans(across(q1:q6)))',
-    py: 'items = ["q1", "q2", "q3", "q4", "q5", "q6"]\nfor r in ["q3", "q5"]:\n    df[r] = 6 - df[r]                # reverse-code on a 1-5 scale\ndf["composite"] = df[items].mean(axis=1)'
+    r: '# reverse-code items q3 & q5 on a 1-5 scale, then average into a composite\nlibrary(dplyr)\nrev5 <- function(x) 6 - x            # 1<->5, 2<->4, 3 unchanged\ndf <- df %>% mutate(q3 = rev5(q3), q5 = rev5(q5),\n                    composite = rowMeans(across(q1:q6)))\n# floor and ceiling check: who is stuck in an end box?\nitems <- paste0("q", 1:6)\nsapply(df[items], function(v) c(floor = mean(v == 1, na.rm = TRUE),\n                                ceiling = mean(v == 5, na.rm = TRUE)))',
+    py: 'items = ["q1", "q2", "q3", "q4", "q5", "q6"]\nfor r in ["q3", "q5"]:\n    df[r] = 6 - df[r]                # reverse-code on a 1-5 scale\ndf["composite"] = df[items].mean(axis=1)\n# floor and ceiling check: who is stuck in an end box?\nprint((df[items] == 1).mean(), (df[items] == 5).mean())'
   },
   "the-replication-crisis": {
     r: '# how forking paths inflate the false-positive rate on data with NO real effect\nset.seed(1)\nany_sig <- function() {\n  x <- rnorm(50); g <- rep(0:1, 25)                 # two groups, same population\n  keep <- abs(scale(x)) < 2                          # a defensible "outlier" rule\n  p1 <- t.test(x ~ g)$p.value                        # path 1: analyze everyone\n  p2 <- t.test(x[keep] ~ g[keep])$p.value            # path 2: drop outliers\n  min(p1, p2) < .05                                   # "significant" if EITHER works\n}\nmean(replicate(4000, any_sig()))   # ~.07 already -- above .05, and that is just two forks',
