@@ -98,6 +98,21 @@
           <li><strong>Expected counts are large enough</strong> — a common rule is every expected count ≥ 5. For small 2×2 tables, use Yates' continuity correction or <strong>Fisher's exact test</strong> instead. Counts are cheap to collect and easy to under-collect, so if the study is still ahead of you, the <a href="../../power.html?sc=chisq">power calculator</a> will tell you how many observations a given association needs.</li>
         </ul>
 
+        <h2 id="same-person-twice">When the same person appears twice</h2>
+        <p>Two different meanings of "independent" meet in this test, and only one of them is the null hypothesis. The test asks whether the two <em>variables</em> are independent. The assumption above is about the <em>observations</em>: sixty people should produce sixty entries, not a hundred and twenty.</p>
+
+        <p>Sixty students say whether they feel confident reading a results section, once before a workshop and once after. Stack the two occasions and you have a 2 × 2 table of 120 answers, which looks like a perfectly ordinary chi-square problem. It is not one. Each student sits in that table twice, so the table has 60 independent units, and a test built on 120 will describe a study nobody ran.</p>
+
+        <p>The fix is to make the person the row. Cross each student's before-answer with their own after-answer and every student lands in exactly one of four cells: yes both times, no both times, or one of the two switchers. The students who answered the same way twice tell you nothing about whether the workshop changed anything, so <strong>McNemar's test</strong> throws them out and works only on the switchers, which textbooks call the <strong>discordant pairs</strong>:</p>
+
+        <p style="text-align:center;font-family:var(--mono);font-size:1rem">χ² = (b − c)² ⁄ (b + c), with 1 degree of freedom</p>
+
+        <p>where <em>b</em> and <em>c</em> are the two off-diagonal counts. Suppose 18 students went from no to yes and 6 went the other way. Then χ² = (18 − 6)² / 24 = 6.00 and <em>p</em> = .014. SPSS and R apply a continuity correction by default, giving 5.04 and <em>p</em> = .025; with only 24 switchers you can skip the approximation entirely and ask the binomial directly, which returns <em>p</em> = .023. All three say the same thing, and the exact one is the one to quote when <em>b</em> + <em>c</em> is small.</p>
+
+        <p>What does stacking the occasions actually cost? Simulating 60 students whose two answers correlate at .6, with no real change at all, the ordinary chi-square on the 120 rows rejects about 1% of the time rather than 5%. It is too cautious, not too eager, which catches most people out. Give the same students a genuine shift, from 60% confident to 78%, and McNemar finds it 78% of the time against the stacked test's 60%. Break the link between the two answers so that the pairing carries no information and the two tests land on top of each other, at 58% each. Pairing is worth using precisely when there is a pairing to use, and ignoring it here wastes participants rather than manufacturing findings.</p>
+
+        <p>Three or more occasions on the same people follow the same logic under a different name, Cochran's Q, which generalizes McNemar to <em>k</em> repeated yes/no measurements. The printable <a href="../../cheat-assumptions.html">assumptions poster</a> names McNemar as the fix for this row; the reason it is a fix, and what happens when the repetition is people inside schools rather than occasions inside people, is <a href="../../stats-4/mixed-and-multilevel-models/">mixed &amp; multilevel models</a>.</p>
+
         <div class="callout">
           <p><strong>Why it matters:</strong> survey responses, A/B test conversions, medical outcomes, demographic breakdowns — categorical data is everywhere, and chi-square is the workhorse for testing whether the categories hang together. Its neighbors in the association family, and when each one applies, sit in the third panel of the printable <a href="../../cheat-test-chooser.html">test-chooser poster</a>.</p>
         </div>

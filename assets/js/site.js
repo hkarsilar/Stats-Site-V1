@@ -186,7 +186,7 @@
     "bayesian-thinking": "The capybara had priors about you. It updated them. That's growth.",
     "bayesian-estimation": "The 95% credible interval: where the capybara actually believes the truth naps.",
     "generalized-linear-models": "One straight line, three disguises. The link function just changes its outfit.",
-    "mixed-and-multilevel-models": "Capybaras nested in herds nested in hot springs. Multilevel living.",
+    "mixed-and-multilevel-models": "Capybaras nested in herds nested in hot springs. Not one of them is independent.",
     "cross-validation-and-overfitting": "Memorizing the training data is not learning. Even capybaras generalize.",
     "causal-dags-and-confounding": "The pool didn't cause the chill. The capybara confounds us all.",
     "survival-analysis": "How long until the capybara leaves the spa? Right-censored. It never left.",
@@ -246,7 +246,7 @@
     "tables-and-figures": "Chop the axis at 45 and the capybara's three-point lead looks like a landslide.",
     "writing-results": "The capybara reports the number and stops. Opinions wait for the Discussion.",
     "nonsignificant-results": "p = .08 is not 'a trend toward a nap.' The capybara reads the interval instead — wide means 'who knows yet,' tight-and-near-zero means 'genuinely nothing here.'",
-    "discussion-and-limitations": "The capybara found a correlation, so it writes 'was associated with,' never 'causes.' Match the verb to the design and your claims outlive the ones that oversold.",
+    "discussion-and-limitations": "The capybara found a correlation, so it writes 'was associated with,' never 'causes.'",
     "abstracts-and-titles": "The capybara writes the abstract last, in five tidy moves, and puts the actual number in the result. Its titles say what it found — searchable beats clever when a reader is looking for exactly you.",
     "final-checklist": "The capybara rereads its own paper pretending to hate it. Finds four numbers that disagree.",
     /* Guides */

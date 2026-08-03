@@ -593,6 +593,18 @@ function jsSurfaces() {
   }
   out.push({ file: 'assets/js/site.js (QUIPS)', strict: 'spell', items: quips });
 
+  /* glossary-data.js — 274 definitions in the site's own voice, and until
+     P39 run 25 no linter of any kind read them (the page scanner sees only
+     the empty shell glossary.html renders into). Run 25 wrote "Analysing"
+     into a new entry and caught it by eye, which is the surface arguing for
+     itself. Held to rule 12 only: a definition is a dictionary entry, so its
+     dash rate and its "the point is" are not paragraph-prose questions. */
+  const gloss = [];
+  for (const g of loadWindow([path.join(ROOT, 'assets/js/glossary-data.js')]).GLOSSARY || []) {
+    gloss.push({ key: g.t, text: stripTags(g.t + '. ' + g.d) });
+  }
+  out.push({ file: 'assets/js/glossary-data.js', strict: 'spell', items: gloss });
+
   /* one token before the space, so --page inline-scripts inspects it. */
   out.push({ file: 'inline-scripts (every page)', strict: 'spell', items: inlineScriptStrings(), spellAll: true });
 

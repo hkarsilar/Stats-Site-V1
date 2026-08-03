@@ -397,8 +397,8 @@ window.SOFTWARE = {
     jasp: [
       '<strong>Regression → Logistic Regression</strong>.',
       'Outcome into <em>Dependent Variable</em>; predictors into <em>Covariates</em>/<em>Factors</em>.',
-      'Under <em>Statistics</em>, tick <em>Odds ratios</em> and <em>Confidence intervals</em>.',
-      'The <em>Performance Diagnostics</em> section gives classification accuracy and AUC.'
+      'Under <em>Statistics</em> → <em>Coefficients</em>, <em>Odds ratios</em> is already ticked; add <em>Confidence intervals</em>, which reports them on the odds-ratio scale by default.',
+      'Two separate boxes further down: <em>Performance Diagnostics</em> holds the confusion matrix, and <em>Performance Metrics</em> holds accuracy, AUC, sensitivity, specificity, precision and the Brier score.'
     ],
     apa: '<p>Each additional study hour increased the odds of passing, <em>b</em> = 0.85, <em>SE</em> = 0.21, Wald χ²(1) = 16.40, <em>p</em> &lt; .001, <em>OR</em> = 2.34, 95% CI [1.55, 3.53]. The full model outperformed the null, χ²(2) = 28.7, <em>p</em> &lt; .001, Nagelkerke <em>R</em>² = .29.</p>',
     tips: [
