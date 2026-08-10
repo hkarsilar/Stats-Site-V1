@@ -148,6 +148,12 @@ for slug in course_slugs():
     p = ROOT / slug / "index.html"
     if p.exists():
         pages.append({"u": f"{slug}/", "txt": page_text(p)})
+# the guides hub (guides/index.html) — the front door of the guides folder.
+# A publishing folder with no index.html is a 404 every crawler finds by
+# walking the path up, which is how /guides/ landed in Search Console.
+hub = ROOT / "guides" / "index.html"
+if hub.exists():
+    pages.append({"u": "guides/", "txt": page_text(hub)})
 # long-form guides (guides/<slug>/index.html) — indexed under their clean URL
 for slug in [
     "analyze-thesis-data-jasp",
