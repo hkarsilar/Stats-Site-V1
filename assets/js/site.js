@@ -16,10 +16,22 @@
      body[data-course-home="<slug>"] — they get the shared chrome (nav,
      footer, theme, search, skip link, SW) but no sidebar, prev/next,
      progress recording, or quip. Using relative links keeps the whole
-     site working no matter how deep it's hosted. */
+     site working no matter how deep it's hosted.
+
+     A SECTION HUB (body[data-hub="<name>"]) is the fourth marker and the
+     other depth-1 shape: the front door of a folder that holds pages but
+     is not a course, i.e. guides/index.html. It exists because a folder
+     of published pages with no index.html is a 404 that nothing on the
+     site links to and every crawler finds by walking the path up — which
+     is exactly how /guides/ reached Search Console's Not-found report.
+     Hubs are hand-written (there is no curriculum entry to render from),
+     so this marker buys them only the depth-1 BASE; audit.js CHECK 3d
+     covers their SEO, and tools/audit.js also fails now on ANY publishing
+     folder that lacks an index.html, so the next one cannot ship. */
   var GUIDE = document.body ? document.body.getAttribute("data-guide") : null;
   var CHOME = document.body ? document.body.getAttribute("data-course-home") : null;
-  var BASE = (document.body && (document.body.getAttribute("data-section") || GUIDE)) ? "../../" : (CHOME ? "../" : "");
+  var HUB = document.body ? document.body.getAttribute("data-hub") : null;
+  var BASE = (document.body && (document.body.getAttribute("data-section") || GUIDE)) ? "../../" : ((CHOME || HUB) ? "../" : "");
   var HERE = document.body ? document.body.getAttribute("data-section") : null;
 
   /* ---------- embed mode (?embed=1 on a lesson page) ----------
@@ -91,6 +103,7 @@
     if (HERE) return HERE;
     if (GUIDE) return GUIDE;
     if (CHOME) return CHOME;
+    if (HUB) return HUB;          // section hubs: "guides"
     var m = /([^\/]+)\.html$/.exec(window.location.pathname);
     return m ? m[1] : "home";
   }
@@ -412,7 +425,10 @@
       '</div>';
     }).join("");
 
-    var toolboxActive = page === "toolbox" || TOOLBOX.some(function (t) { return t.key === page; });
+    /* the guides hub lights the Toolbox too: the five guides are a TOOLBOX
+       group ("Read the guides"), so /guides/ is a toolbox room, not a
+       fifth tab */
+    var toolboxActive = page === "toolbox" || HUB === "guides" || TOOLBOX.some(function (t) { return t.key === page; });
     /* the Toolbox panel groups its tools exactly like toolbox.html
        (TOOLBOX_GROUPS order and titles), as compact one-line rows split
        across two columns — whole groups only, order preserved — so all
@@ -1531,6 +1547,7 @@
     { title: "Ethics: Responsible Research", url: "ethics/", tag: "Course", kw: "ethics course overview syllabus research ethics consent irb deception debriefing privacy confidentiality questionable research practices plagiarism authorship ai fraud" },
     { title: "ML & AI: Machine Learning for Researchers", url: "ml/", tag: "Course", kw: "machine learning course overview syllabus ml ai prediction train test regularization classification roc auc trees forests knn clustering pca neural networks llms" },
     { title: "Writing: Reporting Your Research", url: "writing/", tag: "Course", kw: "writing course overview syllabus imrad apa reporting tables figures results discussion limitations abstracts titles checklist scientific writing paper thesis" },
+    { title: "Statistics Guides", url: "guides/", tag: "Guide", kw: "guides hub all guides long form walkthroughs index thesis dissertation tutorials how to read the guides section" },
     { title: "Analyze Your Thesis Data in JASP", url: "guides/analyze-thesis-data-jasp/", tag: "Guide", kw: "jasp guide tutorial thesis dissertation analyze data start to finish walkthrough import csv descriptives assumptions levene welch t-test run read output write up apa how to" },
     { title: "From SPSS Output to APA Results", url: "guides/spss-output-to-apa/", tag: "Guide", kw: "spss guide output apa results report write up sig 2-tailed .000 levene two rows t-test anova correlation chi-square regression tables how to read coefficients" },
     { title: "Choosing Statistics for Your Dissertation", url: "guides/choose-statistics-dissertation/", tag: "Guide", kw: "choose choosing statistics dissertation thesis which test analysis pick guide outcome predictor groups paired design likert messy real data decision" },

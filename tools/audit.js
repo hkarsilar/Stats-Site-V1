@@ -349,6 +349,10 @@ const GUIDES = ['analyze-thesis-data-jasp', 'spss-output-to-apa', 'choose-statis
 /* course landing pages — <course>/index.html (P61); each is a body[data-course-home] page.
    Derived from the curriculum, so adding a course automatically expects its landing page. */
 const COURSE_PAGES = CURRICULUM.map((c) => c.slug);
+/* section hubs — <folder>/index.html for a folder that publishes pages but is
+   not a course; each is a body[data-hub] page. See CHECK 3d: guides/ had no
+   index.html, so /guides/ was the "Not found (404)" in Search Console. */
+const HUB_FOLDERS = ['guides'];
 /* allowed non-lesson QUIPS keys: index→"home" plus each root page's basename, plus guide slugs */
 const rootKeys = new Set(['home', ...ROOT_PAGES.filter((f) => f !== 'index.html').map((f) => f.replace('.html', '')), ...GUIDES]);
 
@@ -652,6 +656,90 @@ for (const slug of COURSE_PAGES) {
   if (attrs(body)['data-course-home'] !== slug) err(`${slug}/ → body data-course-home is "${attrs(body)['data-course-home'] || 'MISSING'}", expected "${slug}"`);
   if (!sitemapLocs.has(trueUrl)) err(`sitemap.xml missing ${slug}/`);
   if (!(SEARCH_INDEX.pages || []).some((p) => p.u === `${slug}/`)) err(`search-index.js has no page entry for "${slug}/" — rerun tools/build-search-index.py`);
+}
+
+/* ============================================================
+   CHECK 3d — section hub pages (<folder>/index.html for a folder that
+   holds published pages but is NOT a course, i.e. guides/).
+
+   Why this exists: guides/ shipped for months with no index.html, so
+   https://statscapybara.com/guides/ was a hard 404 — and NOTHING here
+   could see it, because every link check starts from a link and no page
+   linked there. Crawlers do not need a link: Google walks a URL's path
+   upward from guides/<slug>/, found /guides/, and reported it under
+   "Not found (404)". P61 fixed exactly this shape for /stats-1/; the
+   guides folder was the one left behind.
+
+   Same SEO contract as a course landing page (GA, exact canonical +
+   og:url, website og:type, description, an og:image that resolves) plus
+   CollectionPage + BreadcrumbList JSON-LD, the body[data-hub] marker
+   that gives it depth-1 BASE in site.js, and sitemap + search-index
+   entries. HUB_FOLDERS is the registration point for a new one.
+   ============================================================ */
+for (const hub of HUB_FOLDERS) {
+  const file = path.join(ROOT, hub, 'index.html');
+  if (!fs.existsSync(file)) { err(`missing section hub page: ${hub}/index.html`); continue; }
+  const src = read(file), ms = metaTags(src);
+  const trueUrl = `${BASE_URL}${hub}/`;
+  if (gaCount(src) !== 2) err(`${hub}/ → expected exactly one GA tag (2 ${GA_ID} refs), found ${gaCount(src)}`);
+  const canon = canonicalOf(src);
+  if (canon !== trueUrl) err(`${hub}/ → canonical is ${canon || 'MISSING'}, expected ${trueUrl}`);
+  if (metaProp(ms, 'og:url') !== trueUrl) err(`${hub}/ → og:url is ${metaProp(ms, 'og:url') || 'MISSING'}, expected ${trueUrl}`);
+  if (metaProp(ms, 'og:type') !== 'website') err(`${hub}/ → og:type is "${metaProp(ms, 'og:type') || 'MISSING'}", expected "website"`);
+  const desc = metaName(ms, 'description');
+  if (!desc) err(`${hub}/ → missing meta description`);
+  else if (desc.length < 50 || desc.length > 160) warn(`${hub}/ → meta description is ${desc.length} chars (want 50–160)`);
+  const hImg = metaProp(ms, 'og:image');
+  if (!hImg) warn(`${hub}/ → missing og:image`);
+  else if (!siteAssetExists(hImg)) err(`${hub}/ → og:image ${hImg} does not resolve to a file on disk`);
+  const lds = jsonLd(src);
+  if (lds.some((b) => !b.ok)) err(`${hub}/ → a JSON-LD block does not parse`);
+  const hObjs = ldObjects(lds);
+  const hTypes = hObjs.map((o) => o['@type']);
+  if (!hTypes.includes('CollectionPage')) err(`${hub}/ → missing CollectionPage JSON-LD`);
+  if (!hTypes.includes('BreadcrumbList')) err(`${hub}/ → missing BreadcrumbList JSON-LD`);
+  checkLdFields(`${hub}/`, hObjs);                  // CHECK 7 — per-type required fields
+  metaHygiene(`${hub}/`, src, ms);                  // CHECK 8 — dedupe + title pattern
+  const body = (src.match(/<body\b[^>]*>/i) || [''])[0];
+  if (attrs(body)['data-hub'] !== hub) err(`${hub}/ → body data-hub is "${attrs(body)['data-hub'] || 'MISSING'}", expected "${hub}"`);
+  if (!sitemapLocs.has(trueUrl)) err(`sitemap.xml missing ${hub}/`);
+  if (!(SEARCH_INDEX.pages || []).some((p) => p.u === `${hub}/`)) err(`search-index.js has no page entry for "${hub}/" — rerun tools/build-search-index.py`);
+}
+
+/* ============================================================
+   CHECK 3e — NO PUBLISHING FOLDER WITHOUT AN index.html.
+
+   The generalized form of the defect CHECK 3d documents, and the part
+   that protects the folders nobody has created yet. Every check in this
+   file that could catch a 404 starts from a link, so a directory URL
+   that the site never links to is invisible to all of them — while a
+   crawler reaches it by truncating the path of any page inside it. Both
+   URLs a reader can construct from guides/clean-survey-data/ (the page
+   and its parent) must therefore resolve.
+
+   The rule: any directory containing an index.html at depth ≥ 1, or a
+   directory whose children publish index.html files, must itself hold
+   an index.html. Asset/tooling folders are excluded — they publish no
+   pages, so their directory URLs are not reader-reachable.
+   ============================================================ */
+const NOT_PUBLISHED = new Set(['assets', 'tools', 'data-files', '.git', '.claude', 'node_modules']);
+function publishingFolders(dir, rel = '', out = new Set()) {
+  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (!e.isDirectory() || e.name.startsWith('.') || NOT_PUBLISHED.has(e.name)) continue;
+    const sub = rel ? `${rel}/${e.name}` : e.name;
+    const abs = path.join(dir, e.name);
+    // a folder publishes if it holds an index.html, or any descendant does
+    const kids = fs.readdirSync(abs, { withFileTypes: true });
+    if (kids.some((k) => k.isFile() && k.name === 'index.html')) out.add(sub);
+    publishingFolders(abs, sub, out);
+    if ([...out].some((o) => o.startsWith(sub + '/'))) out.add(sub);
+  }
+  return out;
+}
+// `data/` is a curriculum course folder, so it publishes; the CSVs live elsewhere
+for (const folder of [...publishingFolders(ROOT)].sort()) {
+  if (!fs.existsSync(path.join(ROOT, folder, 'index.html')))
+    err(`${folder}/ holds published pages but has no index.html — https://statscapybara.com/${folder}/ is a 404 that no link check can see (crawlers reach it by walking the path up)`);
 }
 
 /* ============================================================

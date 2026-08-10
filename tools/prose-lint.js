@@ -251,6 +251,9 @@ const ROOT_PAGES = ['index.html', 'quiz.html', 'glossary.html', 'toolbox.html', 
   'plan.html', 'tables.html', 'formulas.html', 'distributions.html', 'effect-sizes.html', 'descriptives.html', 'correlation.html', 'power.html', 'apa.html', 'problems.html', 'datasets.html', 'flashcards.html', 'progress.html',
   'cheat-test-chooser.html', 'cheat-apa.html', 'cheat-assumptions.html', 'privacy.html'];
 const GUIDES =['analyze-thesis-data-jasp', 'spss-output-to-apa', 'choose-statistics-dissertation', 'clean-survey-data', 'complete-worked-project'];
+/* section hubs — <folder>/index.html for a folder that publishes pages but is
+   not a course (guides/). Mirrors HUB_FOLDERS in tools/audit.js. */
+const HUB_FOLDERS = ['guides'];
 /* course landing pages — <course>/index.html (P61); derived from the curriculum below */
 
 /* ============================================================
@@ -516,6 +519,7 @@ function inlineScriptStrings() {
     ...READY.map((s) => `${s.course}/${s.slug}/index.html`),
     ...GUIDES.map((g) => `guides/${g}/index.html`),
     ...COURSE_PAGES.map((c) => `${c}/index.html`),
+    ...HUB_FOLDERS.map((h) => `${h}/index.html`),
     ...ROOT_PAGES,
   ];
   const items = [];
@@ -662,6 +666,7 @@ const pages = [];
 for (const s of READY) pages.push(scanPage('lesson', `${s.course}/${s.slug}/`, path.join(ROOT, s.course, s.slug, 'index.html'), s.slug));
 for (const g of GUIDES) pages.push(scanPage('guide', `guides/${g}/`, path.join(ROOT, 'guides', g, 'index.html'), null));
 for (const c of COURSE_PAGES) pages.push(scanPage('course', `${c}/`, path.join(ROOT, c, 'index.html'), null));
+for (const h of HUB_FOLDERS) pages.push(scanPage('hub', `${h}/`, path.join(ROOT, h, 'index.html'), null));
 for (const f of ROOT_PAGES) pages.push(scanPage('root', f, path.join(ROOT, f), null));
 
 /* ============================================================
