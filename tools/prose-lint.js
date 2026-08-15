@@ -11,6 +11,8 @@
 
      node tools/prose-lint.js                 # full report, worst pages first
      node tools/prose-lint.js --page <path>   # one page, every hit with a snippet
+     node tools/prose-lint.js --bold          # bold-lead bullets, worst pages first
+     node tools/prose-lint.js --duplicates    # every cross-page duplicate passage
      node tools/prose-lint.js --strict        # exit 1 if any hard budget is exceeded
 
    The PATTERNS table + budget constants below MIRROR VOICE.md's
@@ -18,6 +20,29 @@
    same commit (VOICE.md says the same). Voice is editorial
    judgment, not build health, so this script is deliberately NOT
    wired into tools/audit.js.
+
+   ROUND TWO (P73, 15 Aug 2026). Phase 10 got every page under its
+   budgets and the site still read AI-made, because the budgets had
+   been set where the 2026 corpus could reach rather than where a
+   human editor lands — and the corpus then MIGRATED TO THE CAP: on
+   15 Aug every one of 136 pages passed ≤10 em-dashes, six sat at
+   exactly 10, the lesson median was 6, and the short tool pages ran
+   18–34 per 1,000 words where a technical editor runs 1–3. Four
+   things changed here, all mirrored in VOICE.md:
+     • Rule 1 gained a SECOND CLAUSE the flat cap cannot fake. A page
+       must pass ≤4 dashes AND ≤8 per 1,000 of its own words (floored,
+       minimum allowance 1). The rate clause exists because
+       descriptives.html holds 10 dashes in 291 words: the flat cap
+       alone would bless 4 there, still triple a human rate.
+     • Rule 2 fell from ≤3 to ≤1 across a lesson's three FAQ answers.
+     • The five JS surfaces got their first dash budgets and are gated
+       from now on. QUIPS stay exempt — brand voice, reported forever.
+     • The report prints the lesson MEDIAN and an AT-THE-CAP count
+       beside each budget, because "every page passes" was exactly the
+       reading that hid the problem. Budgets are ceilings, not targets.
+   Plus two REPORT-ONLY metrics — measured first, gated never, on
+   faq-audit.js's precedent that gating a judgment metric only teaches
+   future runs to write around it. See their notes further down.
 
    What counts as "prose" here: the <body> text of a page with
    <script>/<style>/<pre> blocks, comments, and tags stripped and
@@ -83,11 +108,93 @@ const read = (p) => fs.readFileSync(p, 'utf8');
    Budgets + patterns — MIRROR of VOICE.md's HARD RULES (keep in sync!)
    ============================================================ */
 
-const EMDASH_PAGE_MAX = 10;       // rule 1 — per page of prose (FAQ block excluded)
-const EMDASH_FAQ_MAX = 3;         // rule 2 — ≤1 per answer on average × 3 answers per lesson
+const EMDASH_PAGE_MAX = 4;        // rule 1a — flat cap per page of prose (was 10 until P73)
+const EMDASH_PER_1K = 8;          // rule 1b — …and per 1,000 words of that page's own prose
+const EMDASH_RATE_FLOOR = 1;      // …with a minimum allowance, so a 50-word page isn't gated to 0
+const EMDASH_FAQ_MAX = 1;         // rule 2 — across a lesson's three FAQ answers (was 3 until P73)
 const THINK_SITE_MAX = 3;         // rule 8 — "Think of it as" sitewide
 const NOTICE_PAGE_MAX = 1;        // rule 10 — "Notice how/that" per page
 const ANDWATCH_SHARE_MAX = 0.15;  // rule 11 — "…and watch…" meta descriptions
+
+/* Rule 1b: the dash allowance a page's own length earns it. floor(), never
+   rounding up, with a floor of EMDASH_RATE_FLOOR so a short page keeps one.
+   BOTH clauses gate, so a page's effective ceiling is the smaller of them —
+   4 for anything from 500 words up, and tighter below that, which is where
+   the worst rates on the site live (descriptives.html: 291 words → 2). */
+const rateAllowance = (words) => Math.max(EMDASH_RATE_FLOOR, Math.floor((words * EMDASH_PER_1K) / 1000));
+const dashCap = (words) => Math.min(EMDASH_PAGE_MAX, rateAllowance(words));
+
+/* P73 — the first dash budgets for the injected surfaces. Rule 1 is per
+   PAGE and none of these are pages, so they get absolute counts instead,
+   each set near a quarter of its 15 Aug 2026 load (checks.js 203,
+   software.js 66, glossary-data.js 127, inline-script literals 521,
+   snippet comments 5 — already at budget). P77 pays these down; from now
+   on --strict gates them. QUIPS are `null` = exempt on purpose: VOICE.md's
+   anti-rule makes the capybara one-liners brand voice, so their dash count
+   is reported forever and gated never. Keys are surface `file` strings. */
+const JS_DASH_BUDGETS = {
+  'assets/js/checks.js': 50,
+  'assets/js/software.js': 15,
+  'assets/js/snippets.js (comments)': 5,
+  'assets/js/glossary-data.js': 30,
+  'inline-scripts (every page)': 130,
+  'assets/js/site.js (QUIPS)': null,
+};
+
+/* ------------------------------------------------------------------
+   REPORT-ONLY METRIC 1 (P73) — the bold-lead bullet.
+   `<li><strong>Term:</strong> explanation` is the shape a generated
+   corpus reaches for whenever it has three related things to say, and
+   no budget can see it: the dash count, the banned patterns and the
+   spelling rules all pass on a page built entirely out of them.
+   DEFINITION: an <li> whose first element child is a <strong>. Three
+   narrower readings were measured against this corpus and discarded —
+   requiring a colon inside the <strong> gives 117, requiring one just
+   after it gives 12, and either-side gives 133, so the colon is a
+   punctuation habit rather than the shape itself; every li/strong
+   variant (literal `<li><strong>`, whitespace-tolerant, attribute-
+   tolerant) returns the same 447, and not one of the 447 is a whole
+   bolded item with no trailing prose. The Phase 16 addendum's hand
+   count of 403 came from an ad-hoc scan whose definition wasn't
+   recorded; this one is, so future runs measure the same thing.
+   NO BUDGET: a bold-lead list is the right shape often enough — a
+   glossary-ish rundown of named things — that a gated number would
+   only push the next run into writing around it. It is a worklist.
+   ------------------------------------------------------------------ */
+const BOLD_LEAD_RE = /<li\b[^>]*>\s*<strong\b/gi;
+
+/* ------------------------------------------------------------------
+   REPORT-ONLY METRIC 2 (P73) — cross-page duplicate passages.
+   An 8-word run of prose appearing on two DIFFERENT pages. Measured as
+   a candidate on 15 Aug, where the single suspect turned out to be one
+   page's FAQ block colliding with its own FAQPage JSON-LD rather than
+   a cross-page repeat; this generalizes it to all 136 pages.
+   Three things are load-bearing, each arrived at by measuring:
+     • The baked <footer> is stripped first. It is the same sentence on
+       every page, so without that every long page collides with every
+       other on its own footer tail — 207 shingles before, 125 after,
+       and the ones it removed were pure chrome. (Only the duplicate
+       scan strips it: taking it out of extractProse would shift every
+       page's word count and rate, breaking comparison with the P73
+       baseline.) A lesson's FAQ block is already excluded upstream,
+       and head JSON-LD never enters, since extractProse starts at
+       <body> — between them, the 15 Aug false positive cannot recur.
+     • A window needs at least SHINGLE_MIN_WORDY real words. Without
+       it the report fills with APA statistics that legitimately repeat
+       ("f 2 102 11 57 p lt 001") — those are shared NUMBERS, not
+       shared prose, and the site's numbers are supposed to agree.
+     • Overlapping windows are merged into maximal passages. One
+       repeated sentence otherwise reports as four or five separate
+       hits, which reads as five problems instead of one.
+   NO BUDGET, and two benign classes stay in the report rather than
+   being filtered out of it: a cheat poster deliberately mirrors
+   which-test.html's decision tree, and a page naming another page's
+   title matches its title. Filtering those would need a list of
+   exceptions to maintain — VOICE.md rule 12's lesson — so they are
+   left visible and explained instead.
+   ------------------------------------------------------------------ */
+const SHINGLE_N = 8;         // words per window
+const SHINGLE_MIN_WORDY = 6; // …of which this many must be actual words
 
 /* VOICE.md rule 12 — the site is American English.
    ------------------------------------------------------------------
@@ -291,7 +398,7 @@ const NAMED_ENTITIES = {
   mdash: '—', ndash: '–', hellip: '…', rsquo: '’', lsquo: '‘', rdquo: '”', ldquo: '“',
   times: '×', minus: '−', middot: '·', bull: '•', rarr: '→', larr: '←', harr: '↔',
   le: '≤', ge: '≥', ne: '≠', asymp: '≈', plusmn: '±', deg: '°', sup2: '²', sup3: '³',
-  frac12: '½', radic: '√', infin: '∞', sum: '∑', alpha: 'α', beta: 'β', chi: 'χ',
+  frac12: '½', radic: '√', infin: '∞', sum: '∑', alpha: 'α', beta: 'β', chi: 'χ', divide: '÷',
   eta: 'η', mu: 'μ', sigma: 'σ', rho: 'ρ', phi: 'φ', lambda: 'λ', omega: 'ω', delta: 'δ', epsilon: 'ε',
 };
 function decodeEntities(s) {
@@ -303,12 +410,15 @@ function decodeEntities(s) {
 
 /* Rendered prose of a page: <body> text minus scripts/styles/<pre>/comments/
    tags, entities decoded, whitespace collapsed. stripFaq removes a lesson's
-   baked-in FAQ block (linted separately from faq_data.py). */
-function extractProse(html, stripFaq) {
+   baked-in FAQ block (linted separately from faq_data.py). stripChrome
+   additionally drops the baked <footer>, and is used ONLY by the duplicate-
+   passage scan — see its note above for why it must not become the default. */
+function extractProse(html, stripFaq, stripChrome) {
   let s = html;
   const bodyAt = s.search(/<body\b/i);
   if (bodyAt >= 0) s = s.slice(bodyAt);
   if (stripFaq) s = s.replace(/<!--\s*faq:start[\s\S]*?<!--\s*faq:end\s*-->/g, ' ');
+  if (stripChrome) s = s.replace(/<footer\b[\s\S]*?<\/footer>/gi, ' ');
   s = s
     .replace(/<script\b[\s\S]*?<\/script>/gi, ' ')
     .replace(/<style\b[\s\S]*?<\/style>/gi, ' ')
@@ -403,10 +513,30 @@ function findHits(text, source) {
   return hits;
 }
 const countDashes = (text) => (text.match(/—/g) || []).length;
+/* The overcorrection watch (P73, VOICE.md anti-rule 1): a dash paydown that
+   turns every cut dash into a semicolon or a trailing "…" has traded one tell
+   for another. Reported per page with NO budget — the number exists so
+   P74–P77 can prove the swap didn't happen, not to be optimized. Only the
+   real ellipsis character is counted; "..." typed as three periods appears
+   in ranges and code and would measure something else. */
+const countSemis = (text) => (text.match(/;/g) || []).length;
+const countEllipses = (text) => (text.match(/…/g) || []).length;
+/* Bold-lead bullets are counted on the HTML, not the rendered prose — the
+   whole point is a markup shape, and extractProse has already thrown the
+   tags away. Same FAQ exclusion as the prose scan, so a lesson isn't
+   charged for the injected-FAQ markup it doesn't author here. */
+function countBoldLead(html, stripFaq) {
+  let s = html;
+  const bodyAt = s.search(/<body\b/i);
+  if (bodyAt >= 0) s = s.slice(bodyAt);
+  if (stripFaq) s = s.replace(/<!--\s*faq:start[\s\S]*?<!--\s*faq:end\s*-->/g, ' ');
+  return (s.match(BOLD_LEAD_RE) || []).length;
+}
 
 function scanPage(kind, label, file, slug) {
   const html = read(file);
   const prose = extractProse(html, kind === 'lesson');
+  const dupProse = extractProse(html, kind === 'lesson', true);
   const desc = metaDescription(html);
   const faqAnswers = kind === 'lesson' ? FAQ_ANSWERS[slug] || [] : [];
 
@@ -427,13 +557,20 @@ function scanPage(kind, label, file, slug) {
   const dashes = countDashes(prose);
   const faqDashes = faqAnswers.reduce((n, a) => n + countDashes(a), 0);
   const banned = PATTERNS.filter((p) => p.budget === 0).reduce((n, p) => n + counts[p.id], 0);
+  const cap = dashCap(words);
 
   return {
     kind, label, file, slug, words, dashes, faqDashes, counts, hits, verdicts, desc,
+    dupProse,
+    cap, rateCap: rateAllowance(words),
+    bold: countBoldLead(html, kind === 'lesson'),
+    semis: countSemis(prose), ellipses: countEllipses(prose),
     rate: words ? (dashes * 1000) / words : 0,
     andWatch: !!(desc && AND_WATCH.test(desc)),
-    // heuristic worst-first ranking: hard-budget overages + every banned-flavor hit
-    score: Math.max(0, dashes - EMDASH_PAGE_MAX) + Math.max(0, faqDashes - EMDASH_FAQ_MAX)
+    // heuristic worst-first ranking: hard-budget overages + every banned-flavor hit.
+    // Overage is against the EFFECTIVE cap (both clauses of rule 1), so the
+    // worst-N table is a paydown worklist for P74–P77 rather than a flat-cap list.
+    score: Math.max(0, dashes - cap) + Math.max(0, faqDashes - EMDASH_FAQ_MAX)
       + banned + counts['think-of'] + Math.max(0, counts.notice - NOTICE_PAGE_MAX) + verdicts.length,
     banned,
   };
@@ -615,6 +752,8 @@ function jsSurfaces() {
   for (const s of out) {
     s.hits = [];
     s.dashes = 0;
+    s.dashMax = JS_DASH_BUDGETS[s.file];   // undefined = unlisted, null = exempt
+    if (s.dashMax === undefined) s.dashMax = null;
     for (const it of s.items) {
       s.dashes += countDashes(it.text);
       for (const h of findHits(it.text, it.key)) {
@@ -648,7 +787,8 @@ function jsSurfaces() {
 
 const JS_SURFACES = jsSurfaces();
 
-/* A surface's strict failures: every banned pattern, or spelling only. */
+/* A surface's strict failures: every banned pattern (or spelling only), plus
+   its P73 dash budget where it has one. */
 function jsStrictFails() {
   const fails = [];
   for (const s of JS_SURFACES) {
@@ -658,8 +798,65 @@ function jsStrictFails() {
         fails.push(`${s.file} — ${h.source}: banned ${p.id} ${h.snippet}`);
       }
     }
+    if (s.dashMax !== null && s.dashes > s.dashMax) {
+      fails.push(`${s.file} — ${s.dashes} em-dashes (budget ${s.dashMax})`);
+    }
   }
   return fails;
+}
+
+/* ============================================================
+   Cross-page duplicate passages (report-only) — see the note above.
+   ============================================================ */
+
+const wordyToken = (t) => /^[a-z'’]{2,}$/.test(t);
+const tokenize = (text) => text.toLowerCase().replace(/[^a-z0-9'’\s]/g, ' ').split(/\s+/).filter(Boolean);
+
+function duplicatePassages(pageList) {
+  const toks = new Map();
+  for (const pg of pageList) toks.set(pg.label, tokenize(pg.dupProse));
+
+  /* shingle → Map(page label → its FIRST index on that page) */
+  const shingles = new Map();
+  for (const [label, w] of toks) {
+    for (let i = 0; i + SHINGLE_N <= w.length; i++) {
+      const win = w.slice(i, i + SHINGLE_N);
+      if (win.filter(wordyToken).length < SHINGLE_MIN_WORDY) continue;
+      const k = win.join(' ');
+      let m = shingles.get(k);
+      if (!m) { m = new Map(); shingles.set(k, m); }
+      if (!m.has(label)) m.set(label, i);
+    }
+  }
+
+  /* Group the duplicates by the exact set of pages they appear on, then
+     merge overlapping windows within a group into one maximal passage. */
+  const groups = new Map();
+  let dupShingles = 0;
+  for (const [, m] of shingles) {
+    if (m.size < 2) continue;
+    dupShingles++;
+    const labels = [...m.keys()].sort();
+    const sig = labels.join(' + ');
+    let g = groups.get(sig);
+    if (!g) { g = { labels, starts: [] }; groups.set(sig, g); }
+    g.starts.push(m.get(labels[0]));
+  }
+
+  const passages = [];
+  for (const { labels, starts } of groups.values()) {
+    const w = toks.get(labels[0]);
+    starts.sort((a, b) => a - b);
+    let start = starts[0], end = starts[0] + SHINGLE_N;
+    for (const i of starts.slice(1)) {
+      if (i <= end) { end = Math.max(end, i + SHINGLE_N); continue; }
+      passages.push({ labels, text: w.slice(start, end).join(' '), len: end - start });
+      start = i; end = i + SHINGLE_N;
+    }
+    passages.push({ labels, text: w.slice(start, end).join(' '), len: end - start });
+  }
+  passages.sort((a, b) => b.len - a.len || a.labels[0].localeCompare(b.labels[0]));
+  return { passages, dupShingles, totalShingles: shingles.size };
 }
 
 const pages = [];
@@ -668,6 +865,8 @@ for (const g of GUIDES) pages.push(scanPage('guide', `guides/${g}/`, path.join(R
 for (const c of COURSE_PAGES) pages.push(scanPage('course', `${c}/`, path.join(ROOT, c, 'index.html'), null));
 for (const h of HUB_FOLDERS) pages.push(scanPage('hub', `${h}/`, path.join(ROOT, h, 'index.html'), null));
 for (const f of ROOT_PAGES) pages.push(scanPage('root', f, path.join(ROOT, f), null));
+
+const DUPES = duplicatePassages(pages);
 
 /* ============================================================
    Aggregates + strict budgets
@@ -689,7 +888,12 @@ const median = (xs) => {
 function strictCheck() {
   const fails = [];
   for (const pg of pages) {
-    if (pg.dashes > EMDASH_PAGE_MAX) fails.push(`${pg.label} — ${pg.dashes} em-dashes in page prose (budget ${EMDASH_PAGE_MAX})`);
+    /* rule 1's two clauses fail separately, so the report says WHICH one a
+       page missed — a 300-word tool page at 4 dashes passes the cap and
+       fails the rate, and "4 is fine everywhere" is the belief this phase
+       exists to correct. */
+    if (pg.dashes > EMDASH_PAGE_MAX) fails.push(`${pg.label} — ${pg.dashes} em-dashes in page prose (budget ${EMDASH_PAGE_MAX}/page)`);
+    if (pg.dashes > pg.rateCap) fails.push(`${pg.label} — ${pg.dashes} em-dashes in ${pg.words} words = ${pg.rate.toFixed(1)}/1k (budget ${EMDASH_PER_1K}/1k → ${pg.rateCap} here)`);
     if (pg.faqDashes > EMDASH_FAQ_MAX) fails.push(`${pg.label} — ${pg.faqDashes} em-dashes across its FAQ answers (budget ${EMDASH_FAQ_MAX})`);
     if (pg.counts.notice > NOTICE_PAGE_MAX) fails.push(`${pg.label} — ${pg.counts.notice}× "Notice how/that" (budget ${NOTICE_PAGE_MAX}/page)`);
     for (const v of pg.verdicts) fails.push(`${pg.label} — ${v.source} opens with a verdict word: ${v.snippet}`);
@@ -715,19 +919,34 @@ const line = (n) => '─'.repeat(n);
 
 function pageRow(pg) {
   return pad(pg.label, 46) + rpad(pg.words, 6) + rpad(pg.dashes, 5) + rpad(pg.rate.toFixed(1), 6)
-    + rpad(pg.kind === 'lesson' ? pg.faqDashes : '·', 5) + rpad(pg.banned, 7)
+    + rpad(pg.cap, 5) + rpad(pg.kind === 'lesson' ? pg.faqDashes : '·', 5)
+    + rpad(pg.bold, 6) + rpad(pg.semis, 6) + rpad(pg.ellipses, 5) + rpad(pg.banned, 7)
     + rpad(pg.counts['think-of'], 6) + rpad(pg.counts.notice, 7) + rpad(pg.kind === 'lesson' ? pg.verdicts.length : '·', 8)
     + rpad(pg.score, 6);
 }
 const HEADER = pad('page', 46) + rpad('words', 6) + rpad('em—', 5) + rpad('/1k', 6)
-  + rpad('faq—', 5) + rpad('banned', 7) + rpad('think', 6) + rpad('notice', 7) + rpad('verdict', 8) + rpad('score', 6);
+  + rpad('cap', 5) + rpad('faq—', 5) + rpad('bold', 6) + rpad('semi', 6) + rpad('ell', 5)
+  + rpad('banned', 7) + rpad('think', 6) + rpad('notice', 7) + rpad('verdict', 8) + rpad('score', 6);
+const W = 124;   // report width (the table above is 124 columns)
 
 function printSitewide() {
   const lessons = pages.filter((p) => p.kind === 'lesson');
+  /* "At the cap" is the number this phase exists because of: on 15 Aug every
+     page passed and six sat at exactly the ceiling. A budget a corpus parks
+     on is a target. Printed beside every budget from P73 on. */
+  const atCap = pages.filter((p) => p.dashes === p.cap && p.cap > 0).length;
+  const faqAtCap = lessons.filter((p) => p.faqDashes === EMDASH_FAQ_MAX).length;
   console.log('\nSITEWIDE');
-  console.log(line(96));
-  console.log(`  em-dashes in page prose: ${pages.reduce((n, p) => n + p.dashes, 0)} total · lesson median ${median(lessons.map((p) => p.dashes))} · max ${Math.max(...pages.map((p) => p.dashes))} · ${pages.filter((p) => p.dashes > EMDASH_PAGE_MAX).length}/${pages.length} pages over the ≤${EMDASH_PAGE_MAX} budget`);
-  console.log(`  em-dashes in FAQ answers: ${lessons.reduce((n, p) => n + p.faqDashes, 0)} total across ${lessons.length}×3 answers · ${lessons.filter((p) => p.faqDashes > EMDASH_FAQ_MAX).length} lessons over the ≤${EMDASH_FAQ_MAX}/trio budget`);
+  console.log(line(W));
+  console.log(`  em-dashes in page prose: ${pages.reduce((n, p) => n + p.dashes, 0)} total · lesson median ${median(lessons.map((p) => p.dashes))} · max ${Math.max(...pages.map((p) => p.dashes))}`);
+  console.log(`      rule 1a ≤${EMDASH_PAGE_MAX}/page: ${pages.filter((p) => p.dashes > EMDASH_PAGE_MAX).length}/${pages.length} pages over`
+    + ` · rule 1b ≤${EMDASH_PER_1K}/1k words: ${pages.filter((p) => p.dashes > p.rateCap).length}/${pages.length} over`
+    + ` · ${pages.filter((p) => p.dashes > p.cap).length}/${pages.length} over their effective cap · ${atCap} sitting exactly AT it`);
+  console.log(`  em-dashes in FAQ answers: ${lessons.reduce((n, p) => n + p.faqDashes, 0)} total across ${lessons.length}×3 answers · median ${median(lessons.map((p) => p.faqDashes))}`
+    + ` · ${lessons.filter((p) => p.faqDashes > EMDASH_FAQ_MAX).length} lessons over the ≤${EMDASH_FAQ_MAX}/trio budget · ${faqAtCap} at it`);
+  console.log(`  budgets are CEILINGS, not targets — P74–P77 aim at a lesson median of ≤ 2, not every page at ${EMDASH_PAGE_MAX}`);
+  console.log(`  overcorrection watch (no budget, VOICE.md anti-rule): semicolons ${pages.reduce((n, p) => n + p.semis, 0)} total · lesson median ${median(lessons.map((p) => p.semis))} · max ${Math.max(...pages.map((p) => p.semis))}`
+    + ` — ellipses ${pages.reduce((n, p) => n + p.ellipses, 0)} total · lesson median ${median(lessons.map((p) => p.ellipses))} · max ${Math.max(...pages.map((p) => p.ellipses))}`);
   console.log(`  FAQ verdict openers ("No — "/"Yes — "): ${verdictTotal} (budget 0)`);
   for (const p of PATTERNS) {
     const budget = p.budget === 0 ? 'budget 0' : p.budget === 'site' ? `budget ${THINK_SITE_MAX} sitewide` : `budget ${NOTICE_PAGE_MAX}/page`;
@@ -735,31 +954,89 @@ function printSitewide() {
   }
   console.log(`  "…and watch…" meta descriptions: ${andWatchPages.length}/${descPages.length} = ${(andWatchShare * 100).toFixed(1)}% (budget ≤ ${ANDWATCH_SHARE_MAX * 100}%)`);
 
-  console.log('\nJS-INJECTED PROSE (not pages, so no em-dash budget — see the header note)');
-  console.log(line(96));
-  console.log(pad('surface', 40) + rpad('strings', 9) + rpad('em—', 6) + rpad('banned', 8) + rpad('enforced', 10));
+  console.log('\nJS-INJECTED PROSE (rule 1 is per PAGE, so these carry their own absolute dash budgets since P73)');
+  console.log(line(W));
+  console.log(pad('surface', 40) + rpad('strings', 9) + rpad('em—', 6) + rpad('budget', 8) + rpad('over', 7) + rpad('banned', 8) + rpad('enforced', 11));
   for (const s of JS_SURFACES) {
     const rules = PATTERNS.filter((p) => p.budget === 0 && (s.strict === 'all' || p.id === 'britspell'));
     const banned = rules.reduce((n, p) => n + s.counts[p.id], 0);
-    console.log(pad(s.file, 40) + rpad(s.items.length, 9) + rpad(s.dashes, 6) + rpad(banned, 8)
-      + rpad(s.strict === 'all' ? 'all rules' : 'spelling', 10));
+    const over = s.dashMax === null ? '·' : s.dashes > s.dashMax ? `+${s.dashes - s.dashMax}` : s.dashes === s.dashMax ? 'AT' : 'ok';
+    console.log(pad(s.file, 40) + rpad(s.items.length, 9) + rpad(s.dashes, 6)
+      + rpad(s.dashMax === null ? 'exempt' : s.dashMax, 8) + rpad(over, 7) + rpad(banned, 8)
+      + rpad(s.strict === 'all' ? 'all rules' : 'spelling', 11));
   }
 
-  const worst = [...pages].sort((a, b) => b.score - a.score || b.dashes - a.dashes).slice(0, 10);
-  console.log('\nWORST 10 PAGES');
-  console.log(line(96));
+  /* Phase 16's one-number exit criterion (P77): every em-dash a reader can
+     actually meet, wherever it lives. Printed here so the closing run reads
+     it off the tool instead of adding up eight numbers by hand. 1,801 on
+     15 Aug 2026; the phase targets under ~500. QUIPS are counted — they are
+     exempt from being GATED, not from being seen. */
+  const readerVisible = pages.reduce((n, p) => n + p.dashes + p.faqDashes, 0)
+    + JS_SURFACES.reduce((n, s) => n + s.dashes, 0);
+  console.log(`\n  READER-VISIBLE EM-DASHES SITEWIDE (page prose + FAQ answers + every injected surface): ${readerVisible}`);
+
+  /* ---- report-only metric 1: bold-lead bullets ---- */
+  const lg = pages.filter((p) => p.kind === 'lesson' || p.kind === 'guide');
+  console.log(`\nBOLD-LEAD BULLETS  <li><strong>Term:</strong> …  (report only, no budget — P74/P75's reshaping worklist)`);
+  console.log(line(W));
+  console.log(`  ${lg.reduce((n, p) => n + p.bold, 0)} across ${lg.filter((p) => p.bold > 0).length}/${lg.length} lessons+guides`
+    + ` · ${pages.reduce((n, p) => n + p.bold, 0)} across all ${pages.length} pages · lesson median ${median(pages.filter((p) => p.kind === 'lesson').map((p) => p.bold))}`);
+  const worstBold = [...pages].sort((a, b) => b.bold - a.bold).filter((p) => p.bold > 0);
+  for (const pg of worstBold.slice(0, 15)) console.log(`  ${rpad(pg.bold, 4)}  ${pg.label}`);
+  if (worstBold.length > 15) console.log(`  … ${worstBold.length - 15} more pages with at least one (node tools/prose-lint.js --bold)`);
+
+  /* ---- report-only metric 2: cross-page duplicate passages ---- */
+  console.log(`\nCROSS-PAGE DUPLICATE PASSAGES  (${SHINGLE_N}-word runs shared by 2+ pages; report only, no budget)`);
+  console.log(line(W));
+  if (!DUPES.passages.length) {
+    console.log(`  none — no ${SHINGLE_N}-word run of prose appears on two different pages. The corpus is clean here; add no rule.`);
+  } else {
+    console.log(`  ${DUPES.dupShingles} duplicate shingles of ${DUPES.totalShingles} → ${DUPES.passages.length} merged passages. Longest first:`);
+    for (const p of DUPES.passages.slice(0, 12)) {
+      console.log(`  [${p.len}w] ${p.labels.join(' + ')}`);
+      console.log(`        "${p.text}"`);
+    }
+    if (DUPES.passages.length > 12) console.log(`  … ${DUPES.passages.length - 12} more (node tools/prose-lint.js --duplicates)`);
+  }
+
+  const worst = [...pages].sort((a, b) => b.score - a.score || b.dashes - a.dashes).slice(0, 20);
+  console.log('\nWORST 20 PAGES');
+  console.log(line(W));
   console.log(HEADER);
   for (const pg of worst) console.log(pageRow(pg));
 }
 
 const args = process.argv.slice(2);
 
+if (args[0] === '--bold') {
+  const rows = [...pages].sort((a, b) => b.bold - a.bold).filter((p) => p.bold > 0);
+  const lg = pages.filter((p) => p.kind === 'lesson' || p.kind === 'guide');
+  console.log(`bold-lead bullets — ${lg.reduce((n, p) => n + p.bold, 0)} across lessons+guides, ${pages.reduce((n, p) => n + p.bold, 0)} sitewide (report only, no budget)`);
+  console.log(line(W));
+  for (const pg of rows) console.log(`  ${rpad(pg.bold, 4)}  ${pg.label}`);
+  process.exit(0);
+}
+
+if (args[0] === '--duplicates') {
+  console.log(`cross-page duplicate passages — ${SHINGLE_N}-word runs of prose shared by 2+ pages (report only, no budget)`);
+  console.log(line(W));
+  if (!DUPES.passages.length) console.log('  none.');
+  for (const p of DUPES.passages) {
+    console.log(`  [${p.len}w] ${p.labels.join(' + ')}`);
+    console.log(`        "${p.text}"`);
+  }
+  process.exit(0);
+}
+
 if (args[0] === '--page') {
   /* a JS surface can be inspected the same way: --page assets/js/software.js */
   const surface = JS_SURFACES.find((s) => s.file.split(' ')[0] === (args[1] || '').replace(/^\.\//, ''));
   if (surface) {
-    console.log(`${surface.file} — ${surface.items.length} strings · ${surface.dashes} em-dashes (not budgeted) · --strict enforces `
-      + (surface.strict === 'all' ? 'every budget-0 rule' : 'British spellings only'));
+    console.log(`${surface.file} — ${surface.items.length} strings · ${surface.dashes} em-dashes `
+      + (surface.dashMax === null ? '(exempt from the dash budget)' : `(budget ${surface.dashMax}${surface.dashes > surface.dashMax ? `, over by ${surface.dashes - surface.dashMax}` : ''})`)
+      + ` · --strict enforces `
+      + (surface.strict === 'all' ? 'every budget-0 rule' : 'British spellings only')
+      + (surface.dashMax === null ? '' : ' + the dash budget'));
     if (!surface.hits.length) console.log('\nno pattern hits.');
     for (const p of PATTERNS) {
       const hits = surface.hits.filter((h) => h.pattern === p.id);
@@ -773,8 +1050,11 @@ if (args[0] === '--page') {
   const want = (args[1] || '').replace(/^\.\//, '').replace(/\/?(index\.html)?$/, '');
   const pg = pages.find((p) => p.label.replace(/\/$/, '') === want || p.label === args[1]);
   if (!pg) { console.error(`prose-lint: no such page "${args[1]}" (expected e.g. stats-1/central-limit-theorem or tables.html)`); process.exit(2); }
-  console.log(`${pg.label} — ${pg.words} words · ${pg.dashes} em-dashes (${pg.rate.toFixed(1)}/1k, budget ≤ ${EMDASH_PAGE_MAX})`
+  console.log(`${pg.label} — ${pg.words} words · ${pg.dashes} em-dashes (${pg.rate.toFixed(1)}/1k)`
+    + ` · budget ≤ ${EMDASH_PAGE_MAX}/page AND ≤ ${EMDASH_PER_1K}/1k = ${pg.rateCap} here, so ≤ ${pg.cap}`
+    + (pg.dashes > pg.cap ? ` — OVER by ${pg.dashes - pg.cap}` : pg.dashes === pg.cap ? ' — at the cap' : '')
     + (pg.kind === 'lesson' ? ` · ${pg.faqDashes} FAQ em-dashes (budget ≤ ${EMDASH_FAQ_MAX})` : ''));
+  console.log(`bold-lead bullets ${pg.bold} · semicolons ${pg.semis} · ellipses ${pg.ellipses}  (report only, no budget)`);
   if (pg.desc) console.log(`meta description${pg.andWatch ? ' (uses "…and watch…")' : ''}: ${pg.desc}`);
   if (!pg.hits.length && !pg.verdicts.length) console.log('\nno pattern hits.');
   for (const p of PATTERNS) {
@@ -805,8 +1085,8 @@ if (args[0] === '--strict') {
 
 /* default: full report, worst first */
 console.log(`StatsCapybara prose lint — ${pages.length} pages (${READY.length} lessons, ${GUIDES.length} guides, ${COURSE_PAGES.length} course, ${ROOT_PAGES.length} root) · ${Object.values(FAQ_ANSWERS).reduce((n, a) => n + a.length, 0)} FAQ answers · ${descPages.length} meta descriptions`);
-console.log(`budgets: em-dash ≤ ${EMDASH_PAGE_MAX}/page + ≤ ${EMDASH_FAQ_MAX}/FAQ trio · banned constructions 0 · think ≤ ${THINK_SITE_MAX} sitewide · notice ≤ ${NOTICE_PAGE_MAX}/page · "and watch" ≤ ${ANDWATCH_SHARE_MAX * 100}% of descriptions`);
-console.log(line(96));
+console.log(`budgets: em-dash ≤ ${EMDASH_PAGE_MAX}/page AND ≤ ${EMDASH_PER_1K}/1k words · ≤ ${EMDASH_FAQ_MAX}/FAQ trio · banned constructions 0 · think ≤ ${THINK_SITE_MAX} sitewide · notice ≤ ${NOTICE_PAGE_MAX}/page · "and watch" ≤ ${ANDWATCH_SHARE_MAX * 100}% of descriptions`);
+console.log(line(W));
 console.log(HEADER);
 for (const pg of [...pages].sort((a, b) => b.score - a.score || b.dashes - a.dashes)) console.log(pageRow(pg));
 printSitewide();
