@@ -1379,5 +1379,129 @@ Run as ULTRA (multi-agent): one agent writes the guide; one independently recomp
 
 ---
 
-*End of prompt library — genuinely, this time. After P72 the site is built: 9 courses with landing pages, 97 interactive lessons, an exam mode, a 43-problem worked-problems library, 20+ tools, 5 guides, 3 posters, print/offline/a11y polish, prose that reads like a person, instructor embeds that carry their configuration, math under regression test, honest analytics honestly disclosed, and forgiving search. From there the roadmap IS the loops — P37 (waiting on a Search Console export), P38 quarterly (its next run should sweep the P61–P68 surfaces), P39 refresh — plus the human-only checklist, which is now the growth engine: distribution, not construction. Phases 12–15 (P49–P72) were review-driven punch-lists; anything proposed beyond them should have to argue its way past "the site doesn't need it".*
+## Phase 16 — De-AI round two (P73–P78)
+
+Phase 10 killed the banned constructions and got every page under its budgets — and the 15 Aug 2026 re-measurement (ROADMAP.md's Phase 16 addendum has the numbers) shows exactly what a budget-met site can still look like: pages parked *at* the em-dash cap (lesson median 6, six pages sitting at exactly 10), short tool pages running 18–34 em-dashes per 1,000 words, and ~1,070 more em-dashes on the surfaces that never had a budget at all (FAQ answers 126, `checks.js` 203, `glossary-data.js` 127, `software.js` 66, the inline-script strings 521). A reader who skims one page meets a capped 10; a student who works through a course meets ~1,800. Round two is a paydown, not a hunt — every Phase-10 pattern reads 0 today, so what remains is frequency and shape, plus the one tell that is not prose at all: the planning docs that narrate the AI process are publicly served at `statscapybara.com/CLAUDE.md`, `/PROMPTS.md`, `/ROADMAP.md`, `/VOICE.md`.
+
+Two rules govern the whole phase. **The iron rule carries over unchanged:** prose only — no verified number, statistical claim, formula, code block, element id/class/anchor, link target, or interactive may change. **And the guardrail:** de-AI means style and surface, never a claim — nothing anywhere may assert or imply the prose was hand-written; the About section and `privacy.html` stay exactly as honest as they are.
+
+**Order:** P73 first (it resets the budgets and the measuring stick; `prose-lint --strict` is *expected red* from P73 until P77 closes it — the same interregnum Phase 10 ran, with `audit.js` staying the commit gate throughout). P74–P76 in any order. P77 last of the editing passes (it is the sitewide finisher). P78 is independent and can run any time, including first.
+
+### P73 — The second baseline: budgets that bite + prose-lint v2
+
+**→ Powerful · Extra**
+
+```
+StatsCapybara roadmap prompt P73 (see ROADMAP.md — read the Phase 16 addendum first; it has the 15 Aug 2026 numbers). Run node tools/audit.js AND node tools/prose-lint.js first; keep the full lint output as the "before".
+
+Phase 10's budgets are all met and the site still reads AI-made, because the budgets were set where the 2026 corpus could reach, not where a human editor lands: pages migrate to the ≤10 em-dash cap and sit there, and five prose surfaces never got a dash budget at all. This prompt tightens the law and the measuring stick; P74–P77 do the editing. No content changes in this prompt — VOICE.md, tools/prose-lint.js, and stale doc numbers only.
+
+1. VOICE.md hard-rule updates, with prose-lint.js's PATTERNS/budget table updated in the SAME commit (both files carry that warning):
+   - Rule 1: em-dashes ≤ 4 per page (was 10), AND ≤ 8 per 1,000 words of that page's prose (floor, minimum allowance 1). The rate clause exists because descriptives.html holds 10 dashes in 291 words (34/1k) — the flat cap alone would bless 4 there, still triple a human technical editor's rate. Both clauses gate in --strict.
+   - Rule 2: ≤ 1 em-dash across a lesson's three FAQ answers combined (was ≤ 3).
+   - NEW dash budgets for the surfaces that had none, gated in --strict from now on: checks.js ≤ 50 total (today 203), software.js ≤ 15 (today 66), glossary-data.js ≤ 30 (today 127), inline-script string literals ≤ 130 (today 521), snippets.js comments ≤ 5 (today 5, already there). QUIPS stay exempt (anti-rule: brand voice) — keep reporting their count, never gate it.
+   - Budgets are ceilings, not targets — Phase 10's lesson is that pages migrate to the cap. The sitewide summary must now print the lesson MEDIAN and an "at the cap" count beside each budget, and P74–P76 aim at median ≤ 2, not all-pages-at-4.
+   - Overcorrection watch: report per-page semicolon and ellipsis ("…") counts, no budget. The anti-rule stands — a semicolon plague is worse than the dashes — and the report line exists so P74–P77 can prove they didn't trade one tell for another.
+2. Two new REPORT-ONLY metrics — measure first, a rule only if the corpus earns it (faq-audit's precedent: gating a judgment metric teaches future runs to write around it):
+   - Bold-lead bullets: <li><strong>…</strong> items in lesson/guide prose (403 today across lessons+guides). Report per page, worst pages first — that list is P74/P75's reshaping worklist. No hard budget.
+   - Duplicate sentences: 8-word shingles shared by 2+ DIFFERENT pages' rendered prose. Strip each lesson's FAQPage JSON-LD head copy first or every lesson self-collides with its own baked FAQ block, and exclude the injected/chrome strings, which repeat by design. Measured only as a candidate on 15 Aug (the one suspect turned out to be a single page's FAQ + JSON-LD copy, not a cross-page repeat) — if the corpus comes back clean, say so in the report and add no rule.
+3. What NOT to build, stated in VOICE.md so it survives future sessions: no generic "AI word" inventory. This corpus was measured on 15 Aug 2026: delve 0, "worth noting" 0, "keep in mind" 0, "at its core" 0, crucial 7, journey 4 — and the two words a stock list flags hardest, leverage (54×) and robust (42×), are statistics vocabulary here (high-leverage points, robust standard errors). Rule 12's polarity lesson applies: measure a candidate in context before listing it, and prefer shape rules to word lists.
+4. Stale-number sweep: CLAUDE.md and PROMPTS.md reference the old ≤10/≤3-per-trio budgets in a few places (the problems.html em-dash note among them) — update them to the new numbers. Note under P73's tick in ROADMAP.md that prose-lint --strict is EXPECTED red from now until P77 lands; audit.js stays the commit gate.
+5. Paste the new sitewide summary (the new budgets failing against today's numbers is the point) plus the worst-20 pages under the new rules into your report AND under P73's tick — that table is P74–P77's worklist.
+
+Standard verification (audit clean; node --check tools/prose-lint.js; prose-lint runs clean as a PROGRAM on every mode — exit 1 under --strict is the expected budget verdict, not a crash; --page and the JS-surface modes still work). Tick P73 in ROADMAP.md.
+```
+
+### P74 — Dash paydown + reshaping: the Statistics Core
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P74 (see ROADMAP.md). Requires P73 (the tightened VOICE.md + prose-lint v2). Run node tools/audit.js AND node tools/prose-lint.js first; save this batch's before numbers.
+
+Round-two editing pass over the Statistics Core — Stats 1, Stats 2, Stats 3, Stats 4, ML (59 lessons today; read curriculum.js, don't trust this count): each lesson's prose, its three FAQ answers in tools/faq_data.py, nothing else. P41/P42/P44 already killed the constructions here; this pass is frequency and shape.
+
+Rules of engagement (VOICE.md as amended by P73):
+1. The iron rule, verbatim from Phase 10: surgical prose edits only — never numbers, statistical claims, formulas, code, ids/classes/anchors, link targets, the viz, or JSON-LD beyond description strings. A technical qualifier ("under equal variances", "given the null") survives every rewrite with identical meaning.
+2. Every lesson to ≤ 4 page em-dashes and ≤ 1 across its FAQ trio — and each COURSE's median to ≤ 2, so most lessons land at 0–2 rather than all at 4. Vary the fixes: most cut dashes become commas, periods, parentheses, or a restructured sentence; a genuinely load-bearing em-dash may stay (a page at 3 well-earned dashes is the goal state, not an unfinished job). The semicolon and ellipsis report lines must not balloon — paste before/after.
+3. Reshaping, from P73's bold-lead worklist: where a lesson's every list is "<strong>Term:</strong> explanation", recast some items as plain sentences, fold some into prose, and keep the list where a list is honestly the right shape. Same for rule-of-three cadence: two items, four items, or a sentence. Batch word count must not grow.
+4. Read each course's opening paragraphs consecutively (the P41 check) — round-one rewrites have had a year of drift-free rest, so verify they still don't share a rhythm before touching anything else.
+5. FAQ edits via faq_data.py → ./tools/inject-faqs.py, never hand-edited lesson HTML; rerun ./tools/build-search-index.py once at the end.
+
+Verification: prose-lint --strict passes for every page in this batch (sitewide strict stays red until P77 — expected); before/after per-course table (total dashes, median, at-the-cap count, bold-lead items, semicolons/ellipses); audit clean; browser-check 3 rewritten lessons in light+dark (prose renders, TOC anchors, FAQ details + FAQPage JSON-LD intact); read ONE rewritten lesson start to finish and give the honest verdict in the report. Tick P74 in ROADMAP.md.
+```
+
+### P75 — Dash paydown + reshaping: the Toolkit + guides + posters
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P75 (see ROADMAP.md). Requires P73. Run node tools/audit.js AND node tools/prose-lint.js first; save this batch's before numbers.
+
+Same round-two pass as P74 (same five rules of engagement), applied to the Research Toolkit — Methods, Data, Ethics, Writing (38 lessons; read curriculum.js) — plus the five guides/<slug>/ pages and the three cheat-<slug>.html posters.
+
+Extra care points, all inherited from round one and still true: Ethics keeps its sober register (fewer dashes ≠ added levity; Tuskegee/Milgram/Stapel facts byte-identical in meaning). The Writing course TEACHES prose style — after editing, its advice and its own writing must agree; check that explicitly. Guides keep their query-shaped H2/H3s (the SEO surface) — edit body voice, not headings; every worked number stays byte-identical. Posters are terse reference text where an em-dash is often doing separator work — a colon or a table column usually reads better; afterwards REVERIFY one-page print fit at A4 and Letter the P30/P35 CSSOM way, since text length changed. Scenario/vignette text inside interactives is prose and IN scope; its correct/incorrect logic and scoring are NOT — round-trip any touched interactive.
+
+FAQ edits via faq_data.py + inject; guides/posters/lesson edits → rerun ./tools/build-search-index.py once at the end.
+
+Verification: as P74 (batch --strict green, before/after table, audit clean, 3-page browser check, one honest full read), plus the poster fit re-measurement. Tick P75 in ROADMAP.md.
+```
+
+### P76 — Dash paydown: tool pages, homepage & root prose
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P76 (see ROADMAP.md). Requires P73. Run node tools/audit.js AND node tools/prose-lint.js first; save the before numbers.
+
+The per-word worst offenders live here: descriptives.html (34 dashes/1k words), effect-sizes.html (33/1k), power.html (18/1k), formulas.html (10/1k) — reference-and-calculator pages where the em-dash became the default separator ("d — the standardized difference"). Scope: every tool page's prose (intros, help text, empty states, pro tips, datasets.html's stories — every number untouchable), toolbox.html, teachers.html, quiz.html copy, problems.html (already at 2 dashes; check it against P73's bold-lead and duplicate reports instead), the homepage + About section, privacy.html, 404.html, offline.html, and the course landing pages' hand-written paragraphs.
+
+Rules of engagement: as P74, plus two page-type-specific ones. (1) In reference tables and control help text, a separator em-dash usually wants to be a colon or its own table column, not a comma — pick what a careful technical writer would print, and keep any table's print layout intact (mind the posters' cousin rule: these pages print). (2) UI microcopy — button labels, control labels, table headers, seg options — is chrome, not prose: leave wording alone unless it carries a dash doing prose work. The H1 brand line and its <title>/og copies STAY (P46 precedent). Meta descriptions: only touch a page's description if it still fails a budget; keep 50–160 chars and sitewide-unique (audit-enforced).
+
+Root-page edits → rerun ./tools/build-search-index.py once at the end. These pages' HTML is network-first (no CACHE_VERSION bump for prose), but bump if site.js changes for any reason.
+
+Verification: prose-lint --strict green for every page in scope (sitewide red allowed only from surfaces P77 owns); before/after table; audit clean; browser-check descriptives.html, power.html and the homepage in light+dark with zero console errors — including one real calculation on each tool to prove no number or control changed. Tick P76 in ROADMAP.md.
+```
+
+### P77 — The injected layer + sitewide finisher
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P77 (see ROADMAP.md). Requires P73–P76 (run me LAST of the editing passes). Run node tools/audit.js AND node tools/prose-lint.js first.
+
+The five JS prose surfaces get their paydown to P73's budgets, then the phase closes sitewide.
+
+1. checks.js "why" strings (203 dashes → ≤ 50) and software.js tips (66 → ≤ 15; the APA example sentences' statistical content is untouchable — edit only the surrounding wording). glossary-data.js definitions (127 → ≤ 30). snippets.js comments are at budget already — verify, don't churn.
+2. Inline-script string literals (521 → ≤ 130): lesson verdict/interpretation sentences and quiz.html's BANK "why" strings are prose — fair game. Chart/axis labels where the dash separates ("Group A — treatment") can become a middle dot or colon. HARD limits: wording-only edits to display-only literals; NEVER touch a string that code compares, parses, or keys on; node --check every touched page's largest <script> block (the CLAUDE.md one-liner); round-trip the controls of every touched lesson's interactive.
+3. Duplicate-sentence fixes from P73's report, if it found any.
+4. The finisher: sitewide node tools/prose-lint.js --strict must exit 0 — the first green since P73. Rerun ./tools/build-search-index.py (glossary text is indexed). Paste the phase's one-number exit into the report and under P77's tick: reader-visible em-dashes sitewide, 1,801 on 15 Aug 2026 → final (target: under ~500, lesson median ≤ 2).
+
+CACHE_VERSION: bump ONLY if site.js changed — checks.js/software.js/glossary-data.js/snippets.js are lazy-loaded (not precached) and lesson HTML is network-first.
+
+Verification: audit clean; math-check.js still passes untouched (run it as the no-change proof); browser-check one lesson end to end (checks flow scores, software tabs render, FAQ opens), one classic quiz run + one exam run, glossary.html + flashcards.html render their reworded definitions, and the search overlay finds a reworded glossary term. Tick P77 in ROADMAP.md.
+```
+
+### P78 — Provenance: take the planning docs off the public domain
+
+**→ Powerful · Extra**
+
+```
+StatsCapybara roadmap prompt P78 (see ROADMAP.md). Independent of P73–P77. Run node tools/audit.js first.
+
+The loudest tell on the site is not prose: statscapybara.com/CLAUDE.md opens with "guidance to Claude Code", and /PROMPTS.md, /ROADMAP.md, /VOICE.md, /AGENTS.md and /README.md narrate the entire AI process — served verbatim because GitHub Pages publishes the branch as-is and .nojekyll makes that literal. "Unlinked and un-indexed" was a fine SEO judgment; it is no defense against a student who truncates a URL or anyone who tries /README.md. tools/ ships the checkers' full narration the same way.
+
+1. Move Pages from branch-deploy to the Actions deploy path: a workflow on push to main that checks out, assembles the artifact as "the repo minus an exclude list", and publishes via upload-pages-artifact + deploy-pages (permissions: pages: write, id-token: write). Exclude: the six root .md files (CLAUDE, AGENTS, PROMPTS, ROADMAP, VOICE, README), tools/, .claude/, .github/, .gitignore. Keep EVERYTHING else byte-identical — CNAME, robots.txt, sitemap.xml, sw.js/offline.html, all of assets/ including the practice CSVs. Nothing is processed, minified, or rewritten: this is deploy plumbing, not a build step, and CLAUDE.md's no-build law still holds for the site itself. (Jekyll's _config.yml exclude: was considered and rejected — removing .nojekyll puts a build layer with murky .md/theme behavior under a 136-page verified site; the artifact route is exactly "repo minus a list".)
+2. Local proof before anything ships: assemble the artifact directory with the same exclude logic; diff -r against the repo must show ONLY the exclusions; serve the artifact with node tools/serve.js and confirm each excluded URL 404s while the homepage, one lesson, one tool, sw.js and a CSV return byte-identical content. Confirm no served page links into the excluded set (audit's link check + a grep for href="tools/ etc.).
+3. Sweep what will actually be served for process references: grep the artifact for Claude/ChatGPT/GPT (expect exactly the legitimate teaching mentions in ml/llms-and-ai-in-research and quiz.html's LLM question — verified 15 Aug 2026), and for prompt/roadmap/P-number strings in HTML comments (expected clean — also verified 15 Aug). List anything new for a judgment call; the datasets' verification comments are a craftsman's audit trail and STAY.
+4. robots.txt stays unchanged — a Disallow line would advertise exactly the paths it hides, and after the filter they 404 anyway. Update CLAUDE.md's deploy note and README's "deployed as-is from main" sentence to describe the filtered deploy honestly.
+5. The report states the honest limits, with no action taken: the GitHub repo stays public (free-plan Pages requires it), so the docs and the commit history remain reachable by anyone who finds the repo — the options are a paid plan + private repo, or accepting that the site itself no longer points there; Hakan decides. And the guardrail in writing: this prompt adds no claim of human authorship anywhere — it removes signposts, it does not plant flags.
+6. Cutover, for Hakan (the one step a session cannot do): after merging, flip Settings → Pages → Source to "GitHub Actions"; confirm the custom domain + HTTPS survive the flip. Roll back by flipping Source back to the branch. First-deploy checklist in the report: curl the six doc URLs (404), the homepage/a lesson/sw.js/a CSV (200), and one full lesson in a browser.
+
+Verification: the local artifact diff plus the 404/200 matrix pasted in the report; node tools/audit.js clean on the repo (it audits the tree, not the artifact — unchanged); no content edits in this prompt. Tick P78 in ROADMAP.md.
+```
+
+---
+
+*End of prompt library. After P72 the site is built: 9 courses with landing pages, 97 interactive lessons, an exam mode, a 43-problem worked-problems library, 20+ tools, 5 guides, 3 posters, print/offline/a11y polish, instructor embeds that carry their configuration, math under regression test, honest analytics honestly disclosed, and forgiving search. From there the roadmap IS the loops — P37 (waiting on a Search Console export), P38 quarterly (its next run should sweep the P61–P68 surfaces), P39 refresh — plus the human-only checklist, which is now the growth engine: distribution, not construction. Phases 12–15 (P49–P72) were review-driven punch-lists; anything proposed beyond them should have to argue its way past "the site doesn't need it". Phase 16 (P73–P78) argued its way past it with a measurement: the de-AI job was budget-met, not finished — a paydown and a provenance fix, not a feature.*
 
