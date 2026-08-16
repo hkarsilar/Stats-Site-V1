@@ -47,11 +47,11 @@
         <span class="lesson-eyebrow">Section 2.8</span>
         <h1>Merging Datasets</h1>
 
-        <p class="lede">Real projects rarely live in one file. Demographics sit in one table, survey responses in another, lab results in a third, and at some point you need them side by side, one row per person. That stitching-together is a <strong>join</strong> (a "merge"). It looks trivial and usually is, right up until a mismatched key silently drops half your sample or a repeated key doubles it.</p>
+        <p class="lede">Almost no project lives in a single file. Demographics sit in one table, survey responses in another, lab results in a third, and at some point you need them side by side, one row per person. That stitching-together is a <strong>join</strong> (a "merge"). It looks trivial and usually is, right up until a mismatched key silently drops half your sample or a repeated key doubles it.</p>
 
         <h2>Keys line the rows up</h2>
         <p>A join matches rows across two tables using a shared <strong>key</strong>: a column both tables carry that says which row belongs with which, most often a participant ID. Get the key right and everything follows; get it wrong and the merge is nonsense.</p>
-        <p>The one property that decides how a join behaves is <strong>uniqueness</strong>. If the key is unique in a table (each ID appears once), that table contributes at most one row per match. If it repeats, every copy matches — which is sometimes what you want (long-format repeated measures) and sometimes an accident that inflates your data. Below, the <code>sessions</code> table has ID&nbsp;3 twice; watch what that does.</p>
+        <p>The one property that decides how a join behaves is <strong>uniqueness</strong>. If the key is unique in a table (each ID appears once), that table contributes at most one row per match. If it repeats, every copy matches, which is sometimes what you want (long-format repeated measures) and sometimes an accident that inflates your data. Below, the <code>sessions</code> table has ID&nbsp;3 twice; watch what that does.</p>
 
         <!-- ============ INTERACTIVE 1 ============ -->
         <div class="viz" id="jn">
@@ -96,7 +96,7 @@
         <p>Almost every merge disaster is caught by two cheap checks:</p>
         <ul>
           <li><strong>Check your keys are unique first.</strong> If the same ID appears more than once in a table you meant to be one-row-per-person, a join becomes <strong>many-to-many</strong> and the output multiplies: two matching rows on each side of one key produce four rows. That's how a clean 200-person dataset becomes 380 rows nobody ordered.</li>
-          <li><strong>Count rows before and after.</strong> Know your expected row count going in (usually the size of your "spine" table) and compare it to what you got. A left join should return exactly as many rows as the left table <em>unless</em> the right key repeats. A drop means a key mismatch (trailing spaces, <code>"01"</code> vs <code>1</code>, upper vs lower case — clean the key like any other field first, see <a href="../data-cleaning-workflow/">the cleaning workflow</a>). A jump up means a duplicate key.</li>
+          <li><strong>Count rows before and after.</strong> Know your expected row count going in (usually the size of your "spine" table) and compare it to what you got. A left join should return exactly as many rows as the left table <em>unless</em> the right key repeats. A drop means a key mismatch: trailing spaces, <code>"01"</code> vs <code>1</code>, upper vs lower case. Clean the key like any other field first, the way <a href="../data-cleaning-workflow/">the cleaning workflow</a> does. A jump up means a duplicate key.</li>
         </ul>
 
         <h2>Make the software do the checking</h2>
@@ -105,7 +105,7 @@
 #&gt; Error: Each row in `x` must match at most 1 row in `y`.</code></pre>
         <p>Pandas has the same idea spelled <code>validate="1:1"</code>. Either way the check is free and the failure is loud. A merge that quadruples your sample should stop the script rather than survive into the analysis.</p>
 
-        <p>You cannot lean on the default warnings alone, and it is worth knowing exactly why. <code>dplyr</code> does warn on a genuine many-to-many join ("Detected an unexpected many-to-many relationship"), but the <code>sessions</code> table above is <em>one</em>-to-many — unique on the left, repeated on the right — and that case passes in complete silence. The four participants above joined to that table return five rows and no message at all. The loud disaster warns you; the quiet one does not.</p>
+        <p>You cannot lean on the default warnings alone, and it is worth knowing exactly why. <code>dplyr</code> does warn on a genuine many-to-many join ("Detected an unexpected many-to-many relationship"), but the <code>sessions</code> table above is <em>one</em>-to-many (unique on the left, repeated on the right), and that case passes in complete silence. The four participants above joined to that table return five rows and no message at all. The loud disaster warns you; the quiet one does not.</p>
 
         <p>When the count does come out wrong, the fastest way to find out who is responsible is an <strong>anti-join</strong>: the rows of one table whose key finds no partner in the other. On these two tables it returns Ann and Dan in one direction and the orphaned session 5 in the other, which is the entire mismatch, named. Run it both ways before you start guessing whether the cause is a trailing space or a genuinely absent participant. A full join shows you that someone is missing; an anti-join hands you the list.</p>
 

@@ -77,7 +77,7 @@
         <p>JASP can only be as good as the spreadsheet you feed it. Two rules before you even open the software:</p>
         <ul>
           <li><strong>One row per observation, one column per variable, one value per cell.</strong> No merged cells, no color-coding-as-data, no two variables squeezed into one column. If your file breaks these rules, fix it first. The <a href="../../data/tidy-data/">Tidy Data</a> lesson shows every classic sin and its repair, and if your export needs real surgery, work through <a href="../clean-survey-data/">Clean Your Survey Data, Step by Step</a> before returning here.</li>
-          <li><strong>Never edit the raw export.</strong> Copy it, clean the copy, and keep a note of what you changed. Your future self — and anyone auditing your thesis — needs the original to exist. The <a href="../../data/data-cleaning-workflow/">Cleaning Workflow</a> lesson turns this into a habit.</li>
+          <li>Never edit the raw export. Copy it, clean the copy, and keep a note of what you changed. Your future self, and anyone auditing your thesis, needs the original to exist. The <a href="../../data/data-cleaning-workflow/">Cleaning Workflow</a> lesson turns this into a habit.</li>
         </ul>
         <p>While you're at it, make sure every cryptic column name has a line in a <a href="../../data/codebooks-and-documentation/">codebook</a>: what it measures, its units, and how missing values are marked. Blank cells are the safest missing-value marker; numeric codes like <code>-99</code> will silently poison your means.</p>
 
@@ -92,18 +92,14 @@
         <ul>
           <li><strong>Sanity.</strong> Is <em>n</em> what it should be? Are the minimum and maximum possible values for your measure? An age of 511 or a reaction time of 3 ms is a data-entry error, not a finding; the <a href="../../data/data-entry-and-validation/">validation lesson</a> shows how these creep in.</li>
           <li><strong>Shape.</strong> Roughly symmetric, or badly skewed? One hump or two? This preview tells you whether the assumption checks in Step 3 will be drama or formality.</li>
-          <li><strong>Outliers.</strong> Points far beyond the boxplot whiskers deserve investigation — <em>investigation</em>, not silent deletion. <a href="../../data/outliers-in-practice/">Outliers: Detect, Investigate, Decide</a> gives you the triage rules.</li>
+          <li><strong>Outliers.</strong> Points far beyond the boxplot whiskers deserve investigation. <em>Investigation</em>, not silent deletion. <a href="../../data/outliers-in-practice/">Outliers: Detect, Investigate, Decide</a> gives you the triage rules.</li>
         </ul>
         <p>For the sleep data you should see: normal sleep <em>M</em> = 20.07, <em>SD</em> = 5.92; restricted sleep <em>M</em> = 22.77, <em>SD</em> = 6.02, with 40 people per group and no impossible values. (Want the same numbers without opening JASP? Paste a column into our <a href="../../descriptives.html">descriptives calculator</a>.)</p>
 
         <h2 id="assumptions">Step 3: Check the assumptions</h2>
         <p>Every classical test makes assumptions, and JASP will check the big ones <em>inside the analysis itself</em>. For a t-test, tick <em>Assumption checks</em> to get normality tests and Levene's test for equal variances in the same output panel.</p>
-        <p>Two honest rules for reading them, both argued properly in <a href="../../stats-2/assumptions-and-when-they-break/">Assumptions &amp; When They Break</a>:</p>
-        <ul>
-          <li><strong>Plots beat p-values.</strong> With large samples, normality tests flag harmless wobbles; with small samples, they miss disasters. Look at the Q-Q plot: points hugging the line are what "normal enough" looks like.</li>
-          <li><strong>Have the fallback ready.</strong> Unequal variances? Use the Welch row, which many statisticians simply always do. Hopeless skew with a small sample? The <a href="../../stats-2/non-parametric-alternatives/">non-parametric alternatives</a> trade a little power for a lot of safety.</li>
-        </ul>
-        <p>For the sleep data, the two groups' spreads are nearly identical — Levene's <em>F</em>(1, 78) = 0.10, <em>p</em> = .758 — so equal variances is comfortable here.</p>
+        <p>Two honest rules for reading them, both argued properly in <a href="../../stats-2/assumptions-and-when-they-break/">Assumptions &amp; When They Break</a>. The first is that <strong>plots beat p-values</strong>: with large samples, normality tests flag harmless wobbles, and with small samples they miss disasters, so look at the Q-Q plot instead, where points hugging the line are what "normal enough" looks like. The second is to have the fallback ready. Unequal variances? Use the Welch row, which many statisticians simply always do. Hopeless skew with a small sample? The <a href="../../stats-2/non-parametric-alternatives/">non-parametric alternatives</a> trade a little power for a lot of safety.</p>
+        <p>For the sleep data, the two groups' spreads are nearly identical (Levene's <em>F</em>(1, 78) = 0.10, <em>p</em> = .758), so equal variances is comfortable here.</p>
 
         <h2 id="choose">Step 4: Confirm you're running the right test</h2>
         <p>You probably planned this before collecting data (if not, no judgment here, but read <a href="../../methods/preregistration-and-open-science/">why planning first matters</a>). The choice comes down to your outcome type, your group structure, and whether the same people were measured more than once. Two of our tools do the deciding with you: the quick <a href="../../which-test.html">Which test should I use?</a> chooser, and <a href="../../plan.html">Plan My Analysis</a>, which turns your answers into a printable plan with a sample-size estimate. The long-form reasoning lives in <a href="../choose-statistics-dissertation/">Choosing Statistics for Your Dissertation</a>.</p>
@@ -113,7 +109,7 @@
         <p>In JASP: <strong>T-Tests → Independent Samples T-Test</strong>. Drag <code>errors</code> into <em>Dependent Variables</em> and <code>condition</code> into <em>Grouping Variable</em>. Under <em>Tests</em>, tick <em>Welch</em> alongside <em>Student</em>; under <em>Additional Statistics</em>, tick <em>Descriptives</em> and <em>Effect size</em> (Cohen's <em>d</em>); tick the <em>Assumption checks</em>. The output appears instantly:</p>
 
         <div class="mock" role="img" aria-label="Mock JASP output table for an independent-samples t-test: Student row t = 2.022, df = 78, p = 0.047, Cohen's d = 0.452; Welch row nearly identical.">
-          <p class="mock-cap">Independent Samples T-Test — JASP output (mock)</p>
+          <p class="mock-cap">Independent Samples T-Test · JASP output (mock)</p>
           <table>
             <thead><tr><th></th><th>Test</th><th>t</th><th>df</th><th>p</th><th>Cohen's d</th></tr></thead>
             <tbody>
@@ -121,13 +117,13 @@
               <tr><td></td><td>Welch</td><td>2.022</td><td>77.98</td><td>0.047</td><td>0.452</td></tr>
             </tbody>
           </table>
-          <p class="mock-note">Highlighted cells are the four numbers your results sentence needs. Here the Student and Welch rows agree to two decimals because the groups' spreads are nearly identical — when they disagree, trust Welch.</p>
+          <p class="mock-note">Highlighted cells are the four numbers your results sentence needs. Here the Student and Welch rows agree to two decimals because the groups' spreads are nearly identical. When they disagree, trust Welch.</p>
         </div>
 
         <h2 id="read-output">Step 6: Read the output like an examiner</h2>
         <ul>
           <li><strong><em>t</em> and df:</strong> the test statistic and its degrees of freedom (here 78 = 40 + 40 − 2). The df going into your write-up must match your <em>n</em>; examiners check.</li>
-          <li><strong><em>p</em>:</strong> two-tailed by default, which is almost always what you want. <em>p</em> = 0.047 means: if sleep restriction truly did nothing, data this extreme would turn up about 5% of the time. It is <em>not</em> the probability the effect is real — <a href="../../stats-1/hypothesis-testing-logic/">Hypothesis-Testing Logic</a> untangles that knot.</li>
+          <li><strong><em>p</em>:</strong> two-tailed by default, which is almost always what you want. <em>p</em> = 0.047 means: if sleep restriction truly did nothing, data this extreme would turn up about 5% of the time. It is <em>not</em> the probability the effect is real. <a href="../../stats-1/hypothesis-testing-logic/">Hypothesis-Testing Logic</a> untangles that knot.</li>
           <li><strong>Cohen's <em>d</em>:</strong> the size of the effect in standard-deviation units, and the number your discussion section actually cares about. <em>d</em> = 0.45 is a medium-ish effect; <a href="../../stats-1/effect-size-and-power/">Effect Size &amp; Power</a> explains the benchmarks and their limits, and the <a href="../../effect-sizes.html">effect-size converter</a> translates <em>d</em> into overlap you can picture.</li>
         </ul>
 
