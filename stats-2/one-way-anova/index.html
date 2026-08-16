@@ -55,12 +55,12 @@
         <h2>The F-ratio: signal vs. noise, again</h2>
         <p>ANOVA splits the total variation in the data into two pieces and takes their ratio:</p>
         <p style="text-align:center;font-size:1.15rem;margin:1.25rem 0"><strong>F = (variance <em>between</em> groups) / (variance <em>within</em> groups)</strong></p>
-        <p>If the groups really differ, their means are spread out (big between-group variance) relative to the scatter inside each group — so F is large. If the groups are all basically the same, the between-group variance is just noise of the same size as the within-group variance, and F sits near 1. The bookkeeping underneath (each MS as SS &divide; df, the two df, and &eta;&sup2; from the same table) is laid out on the <a href="../../formulas.html">formula sheet</a>.</p>
+        <p>If the groups really differ, their means are spread out (big between-group variance) relative to the scatter inside each group, so F is large. If the groups are all basically the same, the between-group variance is just noise of the same size as the within-group variance, and F sits near 1. The bookkeeping underneath (each MS as SS &divide; df, the two df, and &eta;&sup2; from the same table) is laid out on the <a href="../../formulas.html">formula sheet</a>.</p>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="anovaviz">
           <p class="viz-title">🎮 The F-Ratio in Action</p>
-          <p class="viz-sub">Four groups of the <em>same</em> people throughout — pull their means apart (more signal) or crank up the within-group scatter (more noise), and watch F and the p-value respond. The dashed line is the grand mean; “New samples” draws fresh people.</p>
+          <p class="viz-sub">Four groups of the <em>same</em> people throughout: pull their means apart (more signal) or crank up the within-group scatter (more noise), and watch F and the p-value respond. The dashed line is the grand mean; “New samples” draws fresh people.</p>
 
           <div class="controls">
             <div class="control" style="flex:1;min-width:200px">
@@ -93,7 +93,7 @@
         <h2>Reading the result</h2>
         <p>The F-ratio comes with two degrees of freedom, one for the between part (number of groups minus 1) and one for the within part (total observations minus number of groups), which together give the p-value. As usual, p &lt; 0.05 means "this much separation would be surprising if all the groups were really identical." If you are still designing the study rather than reading one, the <a href="../../power.html?sc=anova">power calculator</a> runs the same numbers backwards: tell it how many groups and how big an effect you care about, and it returns the n per group you need.</p>
         <div class="callout key">
-          <p><strong>ANOVA is an omnibus test.</strong> A significant F tells you <em>that</em> the groups aren't all equal — but not <em>which</em> ones differ. Group A might tower over the rest while B, C, and D are identical. To find out where the differences actually are, you follow up with <a href="../../stats-2/post-hoc-tests/">post-hoc tests</a>.</p>
+          <p><strong>ANOVA is an omnibus test.</strong> A significant F says the group means are not all the same. It stays silent about which pair is responsible: group A might tower over the rest while B, C, and D are identical. To find out where the differences actually are, you follow up with <a href="../../stats-2/post-hoc-tests/">post-hoc tests</a>.</p>
         </div>
 
         <h2>What you're assuming</h2>

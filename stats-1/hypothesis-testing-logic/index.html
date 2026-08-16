@@ -33,7 +33,7 @@
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Hypothesis Testing Logic", "description": "The logic behind p-values, made visual: assume the null, see how surprising your data is, and decide. Drag the observed statistic to see the p-value move.", "url": "https://statscapybara.com/stats-1/hypothesis-testing-logic/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Foundations", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Hypothesis Testing Logic", "item": "https://statscapybara.com/stats-1/hypothesis-testing-logic/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What does p < 0.05 actually mean?", "acceptedAnswer": {"@type": "Answer", "text": "It means: if there were truly no effect (H₀ true), data this extreme would occur less than 5% of the time by chance alone. Since that's rare, we treat the result as evidence against H₀. It does not mean there's a 95% chance the effect is real, and it says nothing about how large or important the effect is — that's the job of effect sizes."}}, {"@type": "Question", "name": "Why do we say 'fail to reject' the null instead of 'accept' it?", "acceptedAnswer": {"@type": "Answer", "text": "Because a non-significant result means the evidence wasn't strong enough to rule out chance — not that H₀ is true. Like a courtroom's \"not guilty,\" it reflects insufficient evidence, not established innocence. Small studies fail to reject false nulls all the time simply because they lack power."}}, {"@type": "Question", "name": "Why is the significance level set at 0.05?", "acceptedAnswer": {"@type": "Answer", "text": "Convention, not law of nature. R. A. Fisher suggested in the 1920s that one-in-twenty was a convenient benchmark for \"surprising\" (roughly the chance of landing beyond ±2 SDs), and it stuck. Nothing magical happens between p = .049 and p = .051, which is why fields with different stakes choose differently: particle physics demands \"5 sigma\" (about 1 in 3.5 million), genome-wide studies use 5 × 10⁻⁸, and some journals now suggest .005 for new discoveries. What matters is fixing α before you look at the data, and remembering that crossing it says nothing about how large or important the effect is."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What does p < 0.05 actually mean?", "acceptedAnswer": {"@type": "Answer", "text": "It means: if there were truly no effect (H₀ true), data this extreme would occur less than 5% of the time by chance alone. Since that's rare, we treat the result as evidence against H₀. It does not mean there's a 95% chance the effect is real, and it says nothing about how large or important the effect is. That's the job of effect sizes."}}, {"@type": "Question", "name": "Why do we say 'fail to reject' the null instead of 'accept' it?", "acceptedAnswer": {"@type": "Answer", "text": "Because a non-significant result means the evidence wasn't strong enough to rule out chance — not that H₀ is true. Like a courtroom's \"not guilty,\" it reflects insufficient evidence, not established innocence. Small studies fail to reject false nulls all the time simply because they lack power."}}, {"@type": "Question", "name": "Why is the significance level set at 0.05?", "acceptedAnswer": {"@type": "Answer", "text": "Convention, not law of nature. R. A. Fisher suggested in the 1920s that one-in-twenty was a convenient benchmark for \"surprising\" (roughly the chance of landing beyond ±2 SDs), and it stuck. Nothing magical happens between p = .049 and p = .051, which is why fields with different stakes choose differently: particle physics demands \"5 sigma\" (about 1 in 3.5 million), genome-wide studies use 5 × 10⁻⁸, and some journals now suggest .005 for new discoveries. What matters is fixing α before you look at the data, and remembering that crossing it says nothing about how large or important the effect is."}}]}
   </script>
 </head>
 <body data-course="stats-1" data-section="hypothesis-testing-logic">
@@ -51,16 +51,16 @@
 
         <h2>The four moves</h2>
         <ol>
-          <li><strong>State two hypotheses.</strong> The <strong>null (H₀)</strong> is the boring "nothing's going on" claim (no effect, no difference). The <strong>alternative (H₁)</strong> is what you suspect instead. (Turning a vague research question into these two crisp statements is a skill of its own — <a href="../../methods/from-question-to-hypothesis/">From Question to Hypothesis</a> walks the whole path.)</li>
-          <li><strong>Assume H₀ is true.</strong> This gives you a <strong>null distribution</strong> — the range of results you'd expect from chance alone if there really were no effect.</li>
+          <li><strong>State two hypotheses.</strong> The <strong>null (H₀)</strong> is the boring "nothing's going on" claim (no effect, no difference). The <strong>alternative (H₁)</strong> is what you suspect instead. (Turning a vague research question into these two crisp statements is a skill of its own. <a href="../../methods/from-question-to-hypothesis/">From Question to Hypothesis</a> walks the whole path.)</li>
+          <li><strong>Assume H₀ is true.</strong> This gives you a <strong>null distribution</strong>, the range of results you'd expect from chance alone if there really were no effect.</li>
           <li><strong>Measure surprise.</strong> Find where your actual result falls on that distribution. The <strong>p-value</strong> is the probability of getting a result <em>this extreme or more</em>, just by chance, if H₀ were true.</li>
-          <li><strong>Decide.</strong> If the p-value is below a pre-set threshold <strong>α</strong> (usually 0.05), the result is "too surprising to be chance" — reject H₀. Otherwise, fail to reject it.</li>
+          <li><strong>Decide.</strong> If the p-value is below a pre-set threshold <strong>α</strong> (usually 0.05), the result is "too surprising to be chance," so you reject H₀. Otherwise, fail to reject it.</li>
         </ol>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="htviz">
           <p class="viz-title">🎮 P-Value Explorer</p>
-          <p class="viz-sub">The bell is the null distribution — what chance alone would produce. Slide your observed result and watch how much of the curve is "this extreme or worse" (the shaded p-value).</p>
+          <p class="viz-sub">The bell is the null distribution: what chance alone would produce. Slide your observed result and watch how much of the curve is "this extreme or worse" (the shaded p-value).</p>
 
           <div class="controls">
             <div class="control" style="flex:1;min-width:240px">
@@ -101,17 +101,17 @@
           <p><strong>A p-value is NOT the probability that H₀ is true.</strong> It's the probability of data this extreme <em>assuming</em> H₀ is true. Those are different questions. p = 0.03 does not mean "3% chance there's no effect."</p>
         </div>
         <div class="callout key">
-          <p><strong>"Fail to reject" is NOT "proven true."</strong> A courtroom's "not guilty" doesn't mean "definitely innocent" — just "not enough evidence." Likewise, a non-significant result means we couldn't rule out chance, not that H₀ is correct. (Writing that up honestly, without "trend toward significance," is covered in <a href="../../writing/nonsignificant-results/">Writing About Non-Significant Results</a>.)</p>
+          <p><strong>"Fail to reject" is NOT "proven true."</strong> A courtroom's "not guilty" doesn't mean "definitely innocent," only "not enough evidence." Likewise, a non-significant result means we couldn't rule out chance, not that H₀ is correct. (Writing that up honestly, without "trend toward significance," is covered in <a href="../../writing/nonsignificant-results/">Writing About Non-Significant Results</a>.)</p>
         </div>
 
         <h2>Two ways to be wrong</h2>
         <ul>
           <li><strong>Type I error (false positive):</strong> rejecting H₀ when it's actually true. Its rate is exactly α: set α = 0.05 and you'll wrongly "find" an effect 5% of the time by chance.</li>
-          <li><strong>Type II error (false negative):</strong> failing to detect a real effect. Lowering α (demanding stronger evidence) guards against Type I errors but makes Type II errors more likely — a genuine trade-off, explored in <a href="../../stats-1/effect-size-and-power/">effect size &amp; power</a>.</li>
+          <li><strong>Type II error (false negative):</strong> failing to detect a real effect. Lowering α (demanding stronger evidence) guards against Type I errors but makes Type II errors more likely, a genuine trade-off explored in <a href="../../stats-1/effect-size-and-power/">effect size &amp; power</a>.</li>
         </ul>
 
         <div class="callout">
-          <p><strong>Why it matters:</strong> every test you'll meet — t-tests, ANOVA, chi-square, regression — runs this exact playbook. Master the logic once here, and the rest is just swapping in different null distributions.</p>
+          <p><strong>Why it matters:</strong> every test you'll meet (t-tests, ANOVA, chi-square, regression) runs this exact playbook. Master the logic once here, and the rest is just swapping in different null distributions.</p>
         </div>
 
 
@@ -121,7 +121,7 @@
           <h2>Common questions</h2>
           <details class="faq-item">
             <summary>What does p < 0.05 actually mean?</summary>
-            <div class="faq-a"><p>It means: <em>if</em> there were truly no effect (H₀ true), data this extreme would occur less than 5% of the time by chance alone. Since that's rare, we treat the result as evidence against H₀. It does <strong>not</strong> mean there's a 95% chance the effect is real, and it says nothing about how large or important the effect is — that's the job of <a href="../../stats-1/effect-size-and-power/">effect sizes</a>.</p></div>
+            <div class="faq-a"><p>It means: <em>if</em> there were truly no effect (H₀ true), data this extreme would occur less than 5% of the time by chance alone. Since that's rare, we treat the result as evidence against H₀. It does <strong>not</strong> mean there's a 95% chance the effect is real, and it says nothing about how large or important the effect is. That's the job of <a href="../../stats-1/effect-size-and-power/">effect sizes</a>.</p></div>
           </details>
           <details class="faq-item">
             <summary>Why do we say 'fail to reject' the null instead of 'accept' it?</summary>

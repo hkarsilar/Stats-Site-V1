@@ -54,21 +54,21 @@
         <span class="lesson-eyebrow">Section 5.2</span>
         <h1>Train/Test Splits &amp; Generalization</h1>
 
-        <p class="lede">A predictive model has exactly one job: to work on data it has never seen. So there is one golden rule, and breaking it is the most common way careful people fool themselves in machine learning — <strong>never judge a model on data it was trained on.</strong> The moment you do, you're measuring memory, not learning.</p>
+        <p class="lede">A predictive model has exactly one job: to work on data it has never seen. So there is one golden rule, and breaking it is the most common way careful people fool themselves in machine learning: <strong>never judge a model on data it was trained on.</strong> The moment you do, you're measuring memory, not learning.</p>
 
         <h2>The golden rule and the split</h2>
-        <p>A flexible model can memorize its training data almost perfectly and still be useless on the next case — that's <a href="../../stats-4/cross-validation-and-overfitting/">overfitting</a>. To get an honest estimate of how well a model <em>generalizes</em>, you hold data back:</p>
+        <p>A flexible model can memorize its training data almost perfectly and still be useless on the next case. That's <a href="../../stats-4/cross-validation-and-overfitting/">overfitting</a>. To get an honest estimate of how well a model <em>generalizes</em>, you hold data back:</p>
         <ul>
           <li><strong>Training set:</strong> the model learns here (fits coefficients, grows trees, picks neighbors).</li>
           <li><strong>Test set:</strong> locked in a drawer until the very end, opened <em>once</em> to report honest performance. If you peek and adjust, it's no longer a test set.</li>
         </ul>
-        <p>A typical split is 70–80% train, the rest test. For classification, <strong>stratify</strong> the split so each side keeps the same class proportions — otherwise a rare class can vanish from one side by chance. And when you need to compare or tune models, carve a <em>validation</em> set (or use <a href="../../stats-4/cross-validation-and-overfitting/">cross-validation</a>) out of the training data, so the test set stays pristine.</p>
+        <p>A typical split is 70–80% train, the rest test. For classification, <strong>stratify</strong> the split so each side keeps the same class proportions, otherwise a rare class can vanish from one side by chance. And when you need to compare or tune models, carve a <em>validation</em> set (or use <a href="../../stats-4/cross-validation-and-overfitting/">cross-validation</a>) out of the training data, so the test set stays pristine.</p>
 
         <h2>Data leakage: the #1 silent killer</h2>
         <p><strong>Data leakage</strong> is when information from the test set sneaks into training. It doesn't crash anything or throw a warning; it just makes your reported score gorgeous and your real-world performance disappointing. Three classic leaks account for most disasters:</p>
         <ol>
           <li><strong>Preprocessing before the split.</strong> Scaling, or choosing "the most predictive features", using the <em>whole</em> dataset lets the test rows influence those choices. The test set helped build the model, so it can't fairly grade it.</li>
-          <li><strong>The same subjects on both sides.</strong> Duplicate rows, or multiple measurements from one person landing in both train and test, let the model recognize individuals it "already met" — inflating the score without any real skill.</li>
+          <li><strong>The same subjects on both sides.</strong> Duplicate rows, or multiple measurements from one person landing in both train and test, let the model recognize individuals it "already met," inflating the score without any real skill.</li>
           <li><strong>Tuning on the test set.</strong> Trying many models / thresholds / settings and reporting the one that scored best on the test set turns your test set into a training set for your choices. You've optimized against the exam.</li>
         </ol>
         <p>Below is a real (if tiny) predictive pipeline: a <a href="../../ml/knn-and-distance/">k-nearest-neighbors</a> classifier on data where only a couple of features carry weak signal and the rest are noise. Flip the leaks on and watch the pipeline's <em>reported</em> accuracy pull away from its <em>true</em> accuracy on fresh cases.</p>
@@ -76,7 +76,7 @@
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="leakviz">
           <p class="viz-title">🧪 The leakage laboratory</p>
-          <p class="viz-sub">Each bar is an average over many simulated studies. With an <strong>honest</strong> pipeline the two bars match — the test score is trustworthy. Switch on a leak and the reported bar inflates while the true bar (performance on never-seen data) barely moves. That gap is self-deception, measured.</p>
+          <p class="viz-sub">Each bar is an average over many simulated studies. With an <strong>honest</strong> pipeline the two bars match, and the test score is trustworthy. Switch on a leak and the reported bar inflates while the true bar (performance on never-seen data) barely moves. That gap is self-deception, measured.</p>
 
           <div class="controls" style="flex-wrap:wrap;gap:.5rem">
             <div class="control"><button class="leak-btn" data-leak="pre" type="button">① Preprocess before splitting</button></div>
@@ -91,7 +91,7 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <p>With every leak off, the reported and true bars sit on top of each other — that's what an honest evaluation looks like. Each leak you add lifts the <em>reported</em> bar while the <em>true</em> bar stays put, and stacking all three produces a triumphant number that is almost entirely fiction. This is exactly how a model posts 0.95 in the notebook and 0.60 in production.</p>
+        <p>With every leak off, the reported and true bars sit on top of each other: that's what an honest evaluation looks like. Each leak you add lifts the <em>reported</em> bar while the <em>true</em> bar stays put, and stacking all three produces a triumphant number that is almost entirely fiction. This is exactly how a model posts 0.95 in the notebook and 0.60 in production.</p>
 
         <h2>How to split honestly</h2>
         <p>The leak-proof principle is one sentence: <strong>every step that learns anything from the data must happen inside the training split, never before it.</strong> In practice:</p>

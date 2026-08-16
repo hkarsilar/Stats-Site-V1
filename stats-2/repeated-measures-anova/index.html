@@ -50,12 +50,12 @@
         <p class="lede">When you measure the <em>same</em> people under several conditions (the same patients before, during, and after treatment), you have a repeated-measures design. Just as the <a href="../../stats-1/one-sample-and-paired-t-tests/">paired t-test</a> beats the independent one, repeated-measures ANOVA has a superpower: it can subtract out the fact that people just differ from each other.</p>
 
         <h2>The problem with big individual differences</h2>
-        <p>Suppose you test three conditions and people vary enormously to begin with — some always score high, some always low. In a <a href="../../methods/between-vs-within-designs/">between-subjects design</a>, that person-to-person variability becomes <em>noise</em> that swamps the condition effect. You might have a perfectly real effect and still fail to find it, buried under "well, people are just different."</p>
+        <p>Suppose you test three conditions and people vary enormously to begin with: some always score high, some always low. In a <a href="../../methods/between-vs-within-designs/">between-subjects design</a>, that person-to-person variability becomes <em>noise</em> that swamps the condition effect. You might have a perfectly real effect and still fail to find it, buried under "well, people are just different."</p>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="rmviz">
           <p class="viz-title">🎮 Removing the Individual Differences</p>
-          <p class="viz-sub">Eight people, three conditions — each line is one person. Crank up how different people are, then flip to the subject-centered view to see the condition pattern snap into focus.</p>
+          <p class="viz-sub">Eight people, three conditions, and each line is one person. Crank up how different people are, then flip to the subject-centered view to see the condition pattern snap into focus.</p>
 
           <div class="controls">
             <div class="control" style="flex:1;min-width:220px">
@@ -93,7 +93,7 @@
         </div>
 
         <h2>The catch: sphericity</h2>
-        <p>Repeated measures come with their own assumption, <strong>sphericity</strong> — roughly, that the differences between every pair of conditions have similar variance. When it's violated (common with time-based data, where adjacent timepoints correlate more than distant ones), the test becomes too liberal. Standard corrections (Greenhouse-Geisser, Huynh-Feldt) adjust the degrees of freedom to compensate.</p>
+        <p>Repeated measures come with their own assumption, <strong>sphericity</strong>: roughly, that the differences between every pair of conditions have similar variance. When it's violated (common with time-based data, where adjacent timepoints correlate more than distant ones), the test becomes too liberal. Standard corrections (Greenhouse-Geisser, Huynh-Feldt) adjust the degrees of freedom to compensate.</p>
 
         <h3 id="epsilon">What ε is, and what it costs</h3>
         <p>Both corrections work through a single number, <strong>epsilon</strong>, written ε. It measures how far the pattern of condition-to-condition differences has drifted from sphericity, and it runs from 1 down to a hard floor of 1/(<em>k</em> − 1). Perfect sphericity gives ε = 1. Three conditions can fall no lower than .5, four no lower than .33. Multiply both degrees of freedom by ε and re-read the <em>F</em> table; the <em>F</em> ratio itself never changes, only the distribution it is compared against.</p>
@@ -114,7 +114,7 @@
         <p>There is also a more modern route. A <a href="../../stats-4/mixed-and-multilevel-models/">mixed (multilevel) model</a> treats each participant as a random effect and estimates the correlation structure directly, so it needs no sphericity correction, tolerates unequal spacing between timepoints, and keeps a participant who missed one session instead of dropping them from every condition. Repeated-measures ANOVA is still the clearer way to <em>understand</em> what within-subjects designs buy you, which is why it comes first. When the repeated outcome is a category rather than a number, the same reasoning arrives as <a href="../chi-square-tests/#same-person-twice">McNemar's test</a>: pair each person with themselves and count only the ones who changed.</p>
 
         <div class="callout">
-          <p><strong>Why it matters:</strong> within-subjects designs are everywhere in psychology, medicine, and UX research — anywhere you can measure the same unit repeatedly. Knowing that they trade a sphericity assumption for a big gain in power helps you design more efficient studies. <a href="../../plan.html?test=rm-anova">Plan My Analysis</a> will lay one out for you, assumptions and write-up included.</p>
+          <p><strong>Why it matters:</strong> within-subjects designs are everywhere in psychology, medicine, and UX research, anywhere you can measure the same unit repeatedly. Knowing that they trade a sphericity assumption for a big gain in power helps you design more efficient studies. <a href="../../plan.html?test=rm-anova">Plan My Analysis</a> will lay one out for you, assumptions and write-up included.</p>
         </div>
 
         <p class="pb-xref"><a href="../../problems.html#p2-4">Problem 16 of the practice problems</a> works the case above from the sums of squares up, so you build the <em>F</em> yourself before correcting it, and <a href="../../problems.html#p3-5">Problem 27</a> asks the prior question: whether a study is between, within, or neither.</p>

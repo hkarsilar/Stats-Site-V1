@@ -88,13 +88,13 @@
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="llmviz">
           <p class="viz-title">🔮 The prediction machine</p>
-          <p class="viz-sub">This toy has read only the ten sentences below. Press <strong>predict next word</strong> to watch it pick — each bar is how often a word followed the current one in its tiny "training data". It strings together grammatical text that is often <em>completely false</em>. It isn't lying; it has no idea what true means.</p>
+          <p class="viz-sub">This toy has read only the ten sentences below. Press <strong>predict next word</strong> to watch it pick. Each bar is how often a word followed the current one in its tiny "training data". It strings together grammatical text that is often <em>completely false</em>. It isn't lying; it has no idea what true means.</p>
 
           <div class="llm-corpus" id="llm-corpus"></div>
 
           <div class="llm-out" id="llm-out"></div>
 
-          <p class="llm-note">Next-word candidates for "<span id="llm-ctx">The</span>" — <span style="color:#f97316">orange</span> = the one it just picked:</p>
+          <p class="llm-note">Next-word candidates for "<span id="llm-ctx">The</span>". The <span style="color:#f97316">orange</span> bar is the one it just picked:</p>
           <div class="llm-bars" id="llm-bars"></div>
 
           <div class="controls" style="margin-top:.6rem">
@@ -107,14 +107,14 @@
           <hr style="border:none;border-top:1px solid var(--border);margin:1.3rem 0" />
 
           <p class="viz-title">🕵️ Spot the fabricated citation</p>
-          <p class="viz-sub">An AI produced these three references for a paper on sleep and memory. <strong>One is completely invented.</strong> Read them and pick the fake — then see how you did.</p>
+          <p class="viz-sub">An AI produced these three references for a paper on sleep and memory. <strong>One is completely invented.</strong> Read them and pick the fake, then see how you did.</p>
           <div class="llm-refs" id="llm-refs"></div>
           <p id="llm-ref-result" style="font-size:.88rem;margin-top:.4rem;min-height:1.2em"></p>
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
         <h2>Why fluency isn't truth</h2>
-        <p>Because the model is built to produce <em>plausible</em> continuations, a wrong answer that reads smoothly is exactly as easy for it to generate as a right one — often easier. This is <strong>hallucination</strong>, and it isn't a bug to be patched away; it's a direct consequence of how the thing works. The starkest example is the <strong>fabricated citation</strong>: asked for references, an LLM will happily invent authors, titles, journals, years, and a plausible-looking DOI, because a citation is just a very patterned string of tokens, and it has learned the pattern without the papers. As the game above shows, the invented reference is frequently the most <em>impressive</em>-looking one — and you cannot tell it's fake by reading it. You have to check.</p>
+        <p>Because the model is built to produce <em>plausible</em> continuations, a wrong answer that reads smoothly is exactly as easy for it to generate as a right one — often easier. This is <strong>hallucination</strong>, and it isn't a bug to be patched away; it's a direct consequence of how the thing works. The starkest example is the <strong>fabricated citation</strong>: asked for references, an LLM will happily invent authors, titles, journals, years, and a plausible-looking DOI, because a citation is just a very patterned string of tokens, and it has learned the pattern without the papers. As the game above shows, the invented reference is frequently the most <em>impressive</em>-looking one, and you cannot tell it's fake by reading it. You have to check.</p>
 
         <h2>Two things that complicate this: the cutoff and retrieval</h2>
         <p>The first is the <strong>knowledge cutoff</strong>. A model working from its own weights alone answers out of a frozen snapshot of text gathered up to some date. Ask it about a paper published after that date, or about a package whose API changed last month, and it answers anyway, in exactly the same confident register, because nothing in the mechanism separates "I have seen this" from "this is what such an answer usually looks like".</p>
@@ -147,10 +147,10 @@
         <p>That last red item is also a data-protection issue, not just an accuracy one: participant data pasted into a third-party service has left your control. See <a href="../../ethics/ai-in-research-ethics/">Using AI Tools Ethically</a> and <a href="../../ethics/privacy-and-confidentiality/">Privacy &amp; Confidentiality</a>.</p>
 
         <h2>A verification workflow</h2>
-        <p>Treat every AI output as <strong>an eager intern's first draft</strong>: quick, confident, occasionally brilliant, and never to be trusted unread. Concretely: run any code and check it does what you meant; recompute any number yourself; click through <em>every</em> citation and drop the ones you can't find; and remember the non-negotiable: <strong>you own every word and number in your work.</strong> "The AI said so" is never a defense, and an AI can't be an author because it can't be accountable (<a href="../../ethics/ai-in-research-ethics/">ethics of AI in research</a>). Finally, disclose your use honestly — journal and university policies differ, so check yours.</p>
+        <p>Treat every AI output as <strong>an eager intern's first draft</strong>: quick, confident, occasionally brilliant, and never to be trusted unread. Concretely: run any code and check it does what you meant; recompute any number yourself; click through <em>every</em> citation and drop the ones you can't find; and remember the non-negotiable: <strong>you own every word and number in your work.</strong> "The AI said so" is never a defense, and an AI can't be an author because it can't be accountable (<a href="../../ethics/ai-in-research-ethics/">ethics of AI in research</a>). Finally, disclose your use honestly: journal and university policies differ, so check yours.</p>
 
         <div class="callout">
-          <p><strong>Why it matters:</strong> An LLM is a next-word predictor optimized for plausibility, not truth — so fluency tells you nothing about accuracy, and fabricated facts and citations are structural, not accidental. Used as a tireless assistant whose every output you verify, it's a genuine accelerator for coding, critique, and drafting. Used as an oracle for facts, statistics, or citations you don't check (or as a place to paste participant data), it's a fast route to an error with your name on it. Know the mechanism, keep yourself in the loop, and verify everything.</p>
+          <p><strong>Why it matters:</strong> An LLM is a next-word predictor optimized for plausibility, not truth, so fluency tells you nothing about accuracy, and fabricated facts and citations are structural, not accidental. Used as a tireless assistant whose every output you verify, it's a genuine accelerator for coding, critique, and drafting. Used as an oracle for facts, statistics, or citations you don't check (or as a place to paste participant data), it's a fast route to an error with your name on it. Know the mechanism, keep yourself in the loop, and verify everything.</p>
         </div>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->

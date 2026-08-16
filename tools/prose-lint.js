@@ -408,11 +408,42 @@ function decodeEntities(s) {
     .replace(/&([a-zA-Z]+[0-9]*);/g, (m, n) => NAMED_ENTITIES[n.toLowerCase()] ?? m);
 }
 
+/* ------------------------------------------------------------------
+   READOUT PLACEHOLDERS (P74) — an em-dash that is a whole element's
+   entire text content is a UI glyph, not prose.
+   Every interactive on this site ships its stat readouts empty, as
+   `<span class="v" id="s-mean">—</span>`, and JS overwrites them on
+   boot. Nobody reads them; they are the canvas equivalent of a blank
+   field. Counting them as page prose put FOUR pages on P73's worst-20
+   worklist whose prose contains ZERO em-dashes — descriptives.html
+   (the page cited to justify rule 1b: 10 dashes, all ten placeholders),
+   stats-4/signal-detection-theory, ml/classification-metrics and
+   stats-4/psychometric-functions — and made rule 1 unsatisfiable for
+   them, since P74's iron rule puts the viz out of bounds. 241 of the
+   site's 731 counted dashes (33%) were this.
+   DEFINITION: an opening tag, optional whitespace, the dash, optional
+   whitespace, a CLOSING tag. The looser `>—<` was measured first and
+   discarded: it also swallows a dash sitting BETWEEN two sibling
+   elements, which is doing real prose work — `<li><strong>HARKing</strong>
+   — <em>Hypothesizing After the Results are Known</em></li>` in
+   ethics/questionable-research-practices and methods/the-replication-crisis
+   are exactly that shape, and are the whole 243-vs-241 difference.
+   Stripping the enclosing `<div class="viz">` outright (widget-terms.js's
+   stripViz) was the third candidate and is too blunt here: a viz block
+   also holds its title, sub and control labels, which ARE prose and
+   must stay linted.
+   Blind spot, stated rather than smoothed over: a placeholder written
+   as `<span>– </span>` (en dash) or as bare text with no element of its
+   own is not matched. The site writes them one way today.
+   ------------------------------------------------------------------ */
+const READOUT_PLACEHOLDER = /(<(?!\/)[a-zA-Z][^>]*>)\s*—\s*(?=<\/)/g;
+
 /* Rendered prose of a page: <body> text minus scripts/styles/<pre>/comments/
-   tags, entities decoded, whitespace collapsed. stripFaq removes a lesson's
-   baked-in FAQ block (linted separately from faq_data.py). stripChrome
-   additionally drops the baked <footer>, and is used ONLY by the duplicate-
-   passage scan — see its note above for why it must not become the default. */
+   readout placeholders/tags, entities decoded, whitespace collapsed. stripFaq
+   removes a lesson's baked-in FAQ block (linted separately from faq_data.py).
+   stripChrome additionally drops the baked <footer>, and is used ONLY by the
+   duplicate-passage scan — see its note above for why it must not become the
+   default. */
 function extractProse(html, stripFaq, stripChrome) {
   let s = html;
   const bodyAt = s.search(/<body\b/i);
@@ -424,8 +455,24 @@ function extractProse(html, stripFaq, stripChrome) {
     .replace(/<style\b[\s\S]*?<\/style>/gi, ' ')
     .replace(/<pre\b[\s\S]*?<\/pre>/gi, ' ')
     .replace(/<!--[\s\S]*?-->/g, ' ')
+    .replace(READOUT_PLACEHOLDER, '$1')
     .replace(/<[^>]+>/g, ' ');
   return decodeEntities(s).replace(/\s+/g, ' ').trim();
+}
+
+/* How many placeholders a page carries — reported, so the exclusion above is
+   visible and auditable rather than silent. Same masking as extractProse. */
+function countPlaceholders(html, stripFaq) {
+  let s = html;
+  const bodyAt = s.search(/<body\b/i);
+  if (bodyAt >= 0) s = s.slice(bodyAt);
+  if (stripFaq) s = s.replace(/<!--\s*faq:start[\s\S]*?<!--\s*faq:end\s*-->/g, ' ');
+  s = s
+    .replace(/<script\b[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style\b[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<pre\b[\s\S]*?<\/pre>/gi, ' ')
+    .replace(/<!--[\s\S]*?-->/g, ' ');
+  return (s.match(READOUT_PLACEHOLDER) || []).length;
 }
 
 function metaDescription(html) {
@@ -563,6 +610,7 @@ function scanPage(kind, label, file, slug) {
     kind, label, file, slug, words, dashes, faqDashes, counts, hits, verdicts, desc,
     dupProse,
     cap, rateCap: rateAllowance(words),
+    placeholders: countPlaceholders(html, kind === 'lesson'),
     bold: countBoldLead(html, kind === 'lesson'),
     semis: countSemis(prose), ellipses: countEllipses(prose),
     rate: words ? (dashes * 1000) / words : 0,
@@ -945,6 +993,7 @@ function printSitewide() {
   console.log(`  em-dashes in FAQ answers: ${lessons.reduce((n, p) => n + p.faqDashes, 0)} total across ${lessons.length}×3 answers · median ${median(lessons.map((p) => p.faqDashes))}`
     + ` · ${lessons.filter((p) => p.faqDashes > EMDASH_FAQ_MAX).length} lessons over the ≤${EMDASH_FAQ_MAX}/trio budget · ${faqAtCap} at it`);
   console.log(`  budgets are CEILINGS, not targets — P74–P77 aim at a lesson median of ≤ 2, not every page at ${EMDASH_PAGE_MAX}`);
+  console.log(`  readout placeholders excluded as UI, not prose (P74): ${pages.reduce((n, p) => n + p.placeholders, 0)} — see READOUT_PLACEHOLDER`);
   console.log(`  overcorrection watch (no budget, VOICE.md anti-rule): semicolons ${pages.reduce((n, p) => n + p.semis, 0)} total · lesson median ${median(lessons.map((p) => p.semis))} · max ${Math.max(...pages.map((p) => p.semis))}`
     + ` — ellipses ${pages.reduce((n, p) => n + p.ellipses, 0)} total · lesson median ${median(lessons.map((p) => p.ellipses))} · max ${Math.max(...pages.map((p) => p.ellipses))}`);
   console.log(`  FAQ verdict openers ("No — "/"Yes — "): ${verdictTotal} (budget 0)`);

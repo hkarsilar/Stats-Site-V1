@@ -47,7 +47,7 @@
         <span class="lesson-eyebrow">Section 3.11</span>
         <h1>MANOVA &amp; Multivariate Tests</h1>
 
-        <p class="lede">Real studies rarely measure one outcome. A therapy trial tracks anxiety <em>and</em> depression <em>and</em> sleep; a memory experiment logs accuracy <em>and</em> reaction time. <strong>MANOVA</strong> (Multivariate ANOVA) tests whether groups differ on a whole <em>set</em> of outcomes at once, and it can see differences that testing each outcome separately will flat-out miss.</p>
+        <p class="lede">A therapy trial tracks anxiety, depression and sleep. A memory experiment logs accuracy alongside reaction time. Measuring a single outcome is the exception, not the rule. <strong>MANOVA</strong> (Multivariate ANOVA) tests whether groups differ on a whole <em>set</em> of outcomes at once, and it can see differences that testing each outcome separately will flat-out miss.</p>
 
         <h2>Why not just run several ANOVAs?</h2>
         <p>Two reasons. First, the familiar <a href="../../stats-2/post-hoc-tests/">multiple-testing problem</a>: five outcomes at α = .05 gives you roughly a 23% chance of at least one false alarm. The second is less obvious: separate ANOVAs are <strong>blind to the correlation structure</strong>. Outcomes usually travel together, and a pattern that's unremarkable variable-by-variable can be wildly improbable as a <em>combination</em>. MANOVA looks at the cloud of outcomes as a shape, not as a list.</p>
@@ -90,15 +90,15 @@
         <p>That's the secret behind the ✨ button. When two outcomes are strongly correlated, they normally move together, so a treatment that pushes them in <em>opposite</em> directions is extremely surprising, even if each individual shift is small. Each univariate ANOVA sees a small, non-significant nudge; MANOVA sees a pattern the correlation structure says should almost never happen.</p>
 
         <div class="callout key">
-          <p><strong>Don't skip the ✨ demo:</strong> small opposite differences (+0.35 and −0.35) with a strong correlation (r ≈ 0.8). Both univariate p-values hover far above .05 — separately, nothing to see. The MANOVA p-value collapses below .001. Now drag the correlation to 0 and watch the advantage evaporate: with independent outcomes, MANOVA is roughly just the two tests glued together.</p>
+          <p><strong>Don't skip the ✨ demo:</strong> small opposite differences (+0.35 and −0.35) with a strong correlation (r ≈ 0.8). Both univariate p-values hover far above .05, so separately there is nothing to see. The MANOVA p-value collapses below .001. Now drag the correlation to 0 and watch the advantage evaporate: with independent outcomes, MANOVA is roughly just the two tests glued together.</p>
         </div>
 
         <h2>The statistics you'll meet in the output</h2>
         <p>Software reports four multivariate test statistics, all summarizing how much of the outcome-space variation the group factor explains:</p>
         <ul>
-          <li><strong>Wilks' Λ (lambda)</strong> — the share of variance <em>not</em> explained by groups; smaller = stronger effect. The most commonly reported.</li>
-          <li><strong>Pillai's trace</strong> — the most robust to assumption violations; many texts recommend it as your default.</li>
-          <li><strong>Hotelling–Lawley trace</strong> (SPSS prints it as <em>Hotelling's trace</em>) and <strong>Roy's largest root</strong> — variations on the same theme; Roy's focuses only on the single best discriminant direction.</li>
+          <li><strong>Wilks' Λ (lambda).</strong> The share of variance <em>not</em> explained by groups; smaller = stronger effect. The most commonly reported.</li>
+          <li><strong>Pillai's trace.</strong> The most robust to assumption violations; many texts recommend it as your default.</li>
+          <li><strong>Hotelling–Lawley trace</strong> (SPSS prints it as <em>Hotelling's trace</em>) and <strong>Roy's largest root</strong> are variations on the same theme; Roy's focuses only on the single best discriminant direction.</li>
         </ul>
         <p>With exactly two groups they all collapse into one number: <strong>Hotelling's T²</strong>, the multivariate cousin of the t-test, which is what the playground above computes. With three-plus groups and several outcomes they can disagree slightly; that's when Pillai's robustness earns its keep.</p>
 
@@ -122,7 +122,7 @@
         </div>
 
         <div class="callout">
-          <p><strong>Why it matters:</strong> multivariate outcomes are the rule, not the exception — batteries of symptoms, panels of biomarkers, bundles of test scores. MANOVA and its family are how you test the <em>profile</em> honestly, without either alpha inflation or throwing away the structure that makes your measures informative.</p>
+          <p><strong>Why it matters:</strong> multivariate outcomes are the rule, not the exception: batteries of symptoms, panels of biomarkers, bundles of test scores. MANOVA and its family are how you test the <em>profile</em> honestly, without either alpha inflation or throwing away the structure that makes your measures informative.</p>
         </div>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->

@@ -47,16 +47,16 @@
         <span class="lesson-eyebrow">Section 5.8</span>
         <h1>k-NN &amp; Why Distance Gets Weird</h1>
 
-        <p class="lede">Here is the laziest idea in machine learning, and one of the most useful: to label a new case, find the handful of training points nearest to it and let them vote. No equation, no training step, no coefficients — just "who are my neighbors, and what are they?" It works surprisingly well, right up until two things bite: the scale of your features, and the strange geometry of high-dimensional space.</p>
+        <p class="lede">Here is the laziest idea in machine learning, and one of the most useful: to label a new case, find the handful of training points nearest to it and let them vote. No equation, no training step, no coefficients, just "who are my neighbors, and what are they?" It works surprisingly well, right up until two things bite: the scale of your features, and the strange geometry of high-dimensional space.</p>
 
         <h2>Prediction by neighborhood</h2>
         <p><strong>k-nearest-neighbors</strong> (k-NN) stores the training data and does all its work at prediction time. For a new point, it measures the distance to every training point, keeps the <em>k</em> closest, and predicts the majority class among them (or, for regression, their average). There is no model to fit — the data <em>is</em> the model. That makes k-NN a <strong>nonparametric</strong> method: it assumes nothing about the shape of the data (no normality, no straight-line boundary) and can trace a wiggly boundary that a linear model never could.</p>
 
         <h2>k is the smoothness dial</h2>
-        <p>The one real choice is <em>k</em>, and it sets the bias–variance balance directly. At <strong>k = 1</strong> every point rules its own tiny territory, so the boundary wraps around individual points, including noisy, mislabeled ones. That's low bias but high variance: the model has essentially <em>memorized</em> the training set. Crank <em>k</em> up and each prediction averages over a wider neighborhood, so the boundary smooths out; push it toward <em>k</em> = <em>n</em> and every point gets the same prediction — the overall majority class. Somewhere in between is the sweet spot, and you find it with <a href="../../stats-4/cross-validation-and-overfitting/">cross-validation</a>, not a formula.</p>
+        <p>The one real choice is <em>k</em>, and it sets the bias–variance balance directly. At <strong>k = 1</strong> every point rules its own tiny territory, so the boundary wraps around individual points, including noisy, mislabeled ones. That's low bias but high variance: the model has essentially <em>memorized</em> the training set. Crank <em>k</em> up and each prediction averages over a wider neighborhood, so the boundary smooths out; push it toward <em>k</em> = <em>n</em> and every point gets the same prediction: the overall majority class. Somewhere in between is the sweet spot, and you find it with <a href="../../stats-4/cross-validation-and-overfitting/">cross-validation</a>, not a formula.</p>
 
         <h2>Scaling is not optional</h2>
-        <p>Because k-NN ranks neighbors by distance, <strong>the scale of each feature decides how much it counts</strong>. Put income (0–100,000) next to a 1–5 rating and the Euclidean distance is essentially just the income difference — the rating contributes nothing, however predictive it is. Standardizing every feature to a comparable range first is mandatory, not a nicety. The interactive below has a switch that "forgets" to scale one feature; flip it and watch a good boundary collapse into meaningless stripes.</p>
+        <p>Because k-NN ranks neighbors by distance, <strong>the scale of each feature decides how much it counts</strong>. Put income (0–100,000) next to a 1–5 rating and the Euclidean distance is essentially just the income difference, and the rating contributes nothing, however predictive it is. Standardizing every feature to a comparable range first is mandatory, not a nicety. The interactive below has a switch that "forgets" to scale one feature; flip it and watch a good boundary collapse into meaningless stripes.</p>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="knnviz">
@@ -78,8 +78,8 @@
         <!-- ============ /INTERACTIVE ============ -->
 
         <h2>The curse of dimensionality</h2>
-        <p>k-NN leans entirely on "near" meaning something. In two or three dimensions it does. Add features, and geometry turns treacherous: volume grows so fast that data becomes hopelessly sparse, and every point drifts toward being <em>equally far</em> from every other — the nearest neighbor is barely nearer than the farthest. When all distances are alike, "nearest" carries no information, and distance-based methods fail without warning.</p>
-        <p>One exact picture makes it vivid. Take the ball that just fits inside a unit cube (radius ½, touching each face). What fraction of the cube's volume does it fill? In 2-D, most of it; by 10-D, almost none — the volume has fled into the cube's corners, where the ball can't reach:</p>
+        <p>k-NN leans entirely on "near" meaning something. In two or three dimensions it does. Add features, and geometry turns treacherous: volume grows so fast that data becomes hopelessly sparse, and every point drifts toward being <em>equally far</em> from every other: the nearest neighbor is barely nearer than the farthest. When all distances are alike, "nearest" carries no information, and distance-based methods fail without warning.</p>
+        <p>One exact picture makes it vivid. Take the ball that just fits inside a unit cube (radius ½, touching each face). What fraction of the cube's volume does it fill? In 2-D, most of it; by 10-D, almost none. The volume has fled into the cube's corners, where the ball can't reach:</p>
 
         <div class="viz" id="curseviz" style="padding-top:1rem">
           <p class="viz-title" style="margin-bottom:.3rem">🫥 Share of a unit cube within distance ½ of its center</p>
@@ -87,7 +87,7 @@
           <div id="curse-host"></div>
         </div>
 
-        <p>That is why more features is not automatically better for k-NN: past a point, extra dimensions dilute the signal until neighbors are meaningless. The escapes are <a href="../../ml/regularization-ridge-and-lasso/">feature selection</a>, <a href="../../stats-3/factor-analysis-pca/">dimensionality reduction</a>, or a ruler better matched to your data — anything that gets you back to a space where "close" means "similar."</p>
+        <p>That is why more features is not automatically better for k-NN: past a point, extra dimensions dilute the signal until neighbors are meaningless. The escapes are <a href="../../ml/regularization-ridge-and-lasso/">feature selection</a>, <a href="../../stats-3/factor-analysis-pca/">dimensionality reduction</a>, or a ruler better matched to your data, anything that gets you back to a space where "close" means "similar."</p>
 
         <h2>Which distance?</h2>
         <p>"Nearest" presumes a ruler, and straight-line Euclidean distance is only the default one. Swap it and you change who your neighbors are.</p>
@@ -97,7 +97,7 @@
         <p>Choosing the metric also softens the curse a little, without lifting it. Repeat the nearest-versus-farthest comparison on uniform random points and the farthest of 500 points sits about 47 times as far away as the nearest in 2 dimensions, 3.4 times in 10, and only 1.16 times in 500. Manhattan holds slightly more of that contrast than Euclidean at every dimension (1.20 against 1.16 at 500 features), which is why L1 is often recommended for wide data. Slightly more of almost nothing is still almost nothing, so treat it as a tie-breaker and not a rescue.</p>
 
         <div class="callout">
-          <p><strong>Why it matters:</strong> k-NN is the clearest window onto two ideas that haunt all of machine learning. First, distance-based models are only as sensible as your feature scaling — standardize before you compute a single neighbor. Second, high-dimensional space is nothing like the 2-D pictures in your head: as dimensions climb, data thins out and "nearest" loses meaning, so reducing dimensions is often the difference between a model that works and one that only looks like it should.</p>
+          <p><strong>Why it matters:</strong> k-NN is the clearest window onto two ideas that haunt all of machine learning. First, distance-based models are only as sensible as your feature scaling, so standardize before you compute a single neighbor. Second, high-dimensional space is nothing like the 2-D pictures in your head: as dimensions climb, data thins out and "nearest" loses meaning, so reducing dimensions is often the difference between a model that works and one that only looks like it should.</p>
         </div>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->

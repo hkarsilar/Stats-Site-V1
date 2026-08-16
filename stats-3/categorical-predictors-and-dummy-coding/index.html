@@ -47,7 +47,7 @@
         <span class="lesson-eyebrow">Section 3.3</span>
         <h1>Categorical Predictors &amp; Dummy Coding</h1>
 
-        <p class="lede">Regression runs on numbers — it multiplies each predictor by a coefficient. So what do you do with a predictor like treatment group, country, or education level, where the values are <em>categories</em>, not amounts? You can't just label them 1, 2, 3 (that would falsely claim group 3 is "three times" group 1). The fix is <strong>dummy coding</strong>.</p>
+        <p class="lede">Regression runs on numbers, multiplying each predictor by a coefficient. So what do you do with a predictor like treatment group, country, or education level, where the values are <em>categories</em>, not amounts? You can't just label them 1, 2, 3 (that would falsely claim group 3 is "three times" group 1). The fix is <strong>dummy coding</strong>.</p>
 
         <h2>How dummy coding works</h2>
         <p>For a categorical variable with <em>k</em> groups, you create <strong>k − 1</strong> new 0/1 indicator variables. One group is left out as the <strong>reference</strong>; each dummy variable flags membership in one of the other groups. Three groups (Control, Drug A, Drug B) with Control as reference becomes two dummies:</p>
@@ -92,7 +92,7 @@
         </div>
 
         <h2>Choosing the reference</h2>
-        <p>Switch the reference group above and watch the coefficients change — but notice the <em>predicted group means stay identical</em>. The reference is just the baseline you measure everything against, so pick the one that makes your comparisons most meaningful: the control condition, the placebo, the "standard" category. The model is the same either way; only the story the coefficients tell changes.</p>
+        <p>Switch the reference group above and watch the coefficients change, but notice that the <em>predicted group means stay identical</em>. The reference is just the baseline you measure everything against, so pick the one that makes your comparisons most meaningful: the control condition, the placebo, the "standard" category. The model is the same either way; only the story the coefficients tell changes.</p>
 
         <h2>The other coding scheme you'll meet</h2>
         <p>Dummy coding (software often calls it <strong>treatment coding</strong>, and it is R's default) is not the only way to turn groups into numbers. <strong>Effect coding</strong> uses −1, 0 and 1 instead of 0 and 1, and it moves the baseline: the intercept becomes the <em>grand mean</em> of all groups rather than one group's mean, and each coefficient becomes that group's distance from the grand mean rather than from a reference. Both schemes fit the identical model and give the identical predictions and R²; they differ only in what the individual coefficients mean. The distinction starts to matter once you add <a href="../../stats-3/interactions-in-regression/">an interaction</a>, because under dummy coding the lower-order terms describe the reference group rather than an average, which is the single most common misreading of a factorial regression.</p>

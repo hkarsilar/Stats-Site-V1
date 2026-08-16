@@ -33,7 +33,7 @@
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Correlation", "description": "What a correlation coefficient looks like: set the strength, drag points, and see r respond to the shape of the cloud.", "url": "https://statscapybara.com/stats-2/correlation/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: Comparing Groups & Relationships", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Correlation", "item": "https://statscapybara.com/stats-2/correlation/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What counts as a strong correlation?", "acceptedAnswer": {"@type": "Answer", "text": "Common benchmarks: |r| ≈ .10 small, .30 medium, .50+ large — psychology rarely sees field correlations above .5, while physics laughs at anything below .95. Context is everything: r = .3 between a cheap screening question and job performance is valuable; r = .8 between two versions of the same questionnaire is unremarkable. Always interpret r against what's typical for your domain."}}, {"@type": "Question", "name": "What is the difference between Pearson and Spearman correlation?", "acceptedAnswer": {"@type": "Answer", "text": "Pearson's r measures linear association using the actual values; Spearman's ρ replaces values with ranks first, so it measures monotonic association (\"consistently increasing, straight or not\"). Spearman is robust to outliers and fine for ordinal data — if the two disagree sharply, that's a clue your relationship is curved or an outlier is steering Pearson."}}, {"@type": "Question", "name": "My two groups both show a correlation, but one is bigger. Can I test whether they really differ?", "acceptedAnswer": {"@type": "Answer", "text": "You can, and the answer is usually humbling. Put both correlations on the Fisher z scale, subtract, and divide by √(1/(n₁−3) + 1/(n₂−3)); the result is a z you read off the normal table. Take r = .55 in one group of 60 and r = .30 in another: z = 1.65, p = .099, so a gap that looks decisive is not distinguishable from sampling noise, and the two intervals ([.34, .71] and [.05, .51]) overlap across most of their length. Detecting that difference with 80% power would take 168 people per group, twice what either correlation on its own needs. Correlations measured on the same people (does X predict Y better than Z does?) are a different test again, because the two estimates are not independent."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What counts as a strong correlation?", "acceptedAnswer": {"@type": "Answer", "text": "Common benchmarks: |r| ≈ .10 small, .30 medium, .50+ large. Psychology rarely sees field correlations above .5, while physics laughs at anything below .95. Context is everything: r = .3 between a cheap screening question and job performance is valuable; r = .8 between two versions of the same questionnaire is unremarkable. Always interpret r against what's typical for your domain."}}, {"@type": "Question", "name": "What is the difference between Pearson and Spearman correlation?", "acceptedAnswer": {"@type": "Answer", "text": "Pearson's r measures linear association using the actual values; Spearman's ρ replaces values with ranks first, so it measures monotonic association (\"consistently increasing, straight or not\"). Spearman is robust to outliers and fine for ordinal data — if the two disagree sharply, that's a clue your relationship is curved or an outlier is steering Pearson."}}, {"@type": "Question", "name": "My two groups both show a correlation, but one is bigger. Can I test whether they really differ?", "acceptedAnswer": {"@type": "Answer", "text": "You can, and the answer is usually humbling. Put both correlations on the Fisher z scale, subtract, and divide by √(1/(n₁−3) + 1/(n₂−3)); the result is a z you read off the normal table. Take r = .55 in one group of 60 and r = .30 in another: z = 1.65, p = .099, so a gap that looks decisive is not distinguishable from sampling noise, and the two intervals ([.34, .71] and [.05, .51]) overlap across most of their length. Detecting that difference with 80% power would take 168 people per group, twice what either correlation on its own needs. Correlations measured on the same people (does X predict Y better than Z does?) are a different test again, because the two estimates are not independent."}}]}
   </script>
 </head>
 <body data-course="stats-2" data-section="correlation">
@@ -47,14 +47,14 @@
         <span class="lesson-eyebrow">Section 2.8</span>
         <h1>Correlation</h1>
 
-        <p class="lede">Two things vary together — taller people tend to weigh more, more study hours tend to mean higher grades. <strong>Correlation</strong> puts a single number on that co-movement: the <strong>correlation coefficient <em>r</em></strong>, which runs from −1 to +1 and captures both the <em>direction</em> and the <em>strength</em> of a straight-line relationship.</p>
+        <p class="lede">Two things vary together: taller people tend to weigh more, more study hours tend to mean higher grades. <strong>Correlation</strong> puts a single number on that co-movement: the <strong>correlation coefficient <em>r</em></strong>, which runs from −1 to +1 and captures both the <em>direction</em> and the <em>strength</em> of a straight-line relationship.</p>
 
         <h2>Reading the number</h2>
         <ul>
           <li><strong>Sign = direction.</strong> Positive <em>r</em>: as one goes up, so does the other. Negative <em>r</em>: as one goes up, the other goes down.</li>
           <li><strong>Size = strength.</strong> Near ±1 the points hug a straight line; near 0 they're a shapeless blob with no linear trend.</li>
         </ul>
-        <p>Numbers are abstract, though. The fastest way to build intuition is to <em>see</em> what an <em>r</em> of 0.3 versus 0.9 actually looks like — and to break a tidy relationship by dragging a single point.</p>
+        <p>Numbers are abstract, though. The fastest way to build intuition is to <em>see</em> what an <em>r</em> of 0.3 versus 0.9 actually looks like, and to break a tidy relationship by dragging a single point.</p>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="corrviz">
@@ -95,13 +95,13 @@
           <p><strong>1. Correlation only sees straight lines.</strong> A perfect U-shape (y = x²) can have <em>r</em> ≈ 0 even though the variables are perfectly related. Low <em>r</em> means "no <em>linear</em> trend," not "no relationship." Always look at the scatter.</p>
         </div>
         <div class="callout key">
-          <p><strong>2. Correlation is not causation.</strong> Ice-cream sales and drowning deaths rise together (both driven by hot weather). A strong <em>r</em> tells you two things move together — never <em>why</em>. If you can measure the lurking variable, a <strong>partial correlation</strong> asks the question again with that variable held constant, which is the same "holding the others constant" idea that <a href="../../stats-3/multiple-regression/">multiple regression</a> generalizes. Hold temperature constant and the ice-cream link collapses; the ones that survive are the interesting ones.</p>
+          <p><strong>2. Correlation is not causation.</strong> Ice-cream sales and drowning deaths rise together (both driven by hot weather). A strong <em>r</em> tells you two things move together, never <em>why</em>. If you can measure the lurking variable, a <strong>partial correlation</strong> asks the question again with that variable held constant, which is the same "holding the others constant" idea that <a href="../../stats-3/multiple-regression/">multiple regression</a> generalizes. Hold temperature constant and the ice-cream link collapses; the ones that survive are the interesting ones.</p>
         </div>
         <div class="callout key">
-          <p><strong>3. A single outlier can fake — or hide — a correlation.</strong> Drag one point far away in the playground and watch <em>r</em> lurch. Real analyses always check whether one stray point is doing all the work.</p>
+          <p><strong>3. A single outlier can fake a correlation, or hide one.</strong> Drag one point far away in the playground and watch <em>r</em> lurch. Real analyses always check whether one stray point is doing all the work.</p>
         </div>
 
-        <p>All three warnings collapse into one habit: <strong>plot your data.</strong> The classic proof is Anscombe's quartet — four datasets that share almost every summary number yet look nothing alike. (For two numeric variables the scatterplot is nearly always right; when one of them turns out to be categorical, the <a href="../../which-chart.html">chart chooser</a> hands you the display that fits instead.)</p>
+        <p>All three warnings collapse into one habit: <strong>plot your data.</strong> The classic proof is Anscombe's quartet: four datasets that share almost every summary number yet look nothing alike. (For two numeric variables the scatterplot is nearly always right; when one of them turns out to be categorical, the <a href="../../which-chart.html">chart chooser</a> hands you the display that fits instead.)</p>
 
         <!-- ============ INTERACTIVE 2 ============ -->
         <div class="viz" id="ansviz">
@@ -130,7 +130,7 @@
         </div>
         <!-- ============ /INTERACTIVE 2 ============ -->
 
-        <p>Every dataset above reports r = 0.82 and the exact same line — yet only the first is the tidy linear relationship that number implies. The second is a smooth curve, the third is a perfect line derailed by one outlier, and the fourth has no trend at all until a single far-flung point invents one. Summary statistics are a compression; the scatter is the truth.</p>
+        <p>Every dataset above reports r = 0.82 and the exact same line, yet only the first is the tidy linear relationship that number implies. The second is a smooth curve, the third is a perfect line derailed by one outlier, and the fourth has no trend at all until a single far-flung point invents one. Summary statistics are a compression; the scatter is the truth.</p>
 
         <h2>Two reasons r comes out too small</h2>
         <p>A weak correlation sometimes means the relationship is weak. Two duller explanations come first, and both make an honest relationship look smaller than it is.</p>
@@ -154,7 +154,7 @@
         <p>Two things follow. The interval is wide: .19 to .61 covers everything from below Cohen's "medium" to above his "large", so an <em>r</em> reported bare invites a reader to take .42 far more literally than 60 people can support, and getting the half-width down to .10 around this estimate would take <em>n</em> = 263. And the transformation is more than a reporting device. Correlations are averaged on the <em>z</em> scale rather than the <em>r</em> scale for the same reason, which is one of the conversions behind <a href="../../stats-4/meta-analysis/">pooling results across studies</a>.</p>
 
         <div class="callout">
-          <p><strong>Why it matters:</strong> correlation is the first measure of "do these two move together?" — and it's the direct stepping stone to <a href="../../stats-2/simple-linear-regression/">regression</a>, which turns that relationship into a predictive line.</p>
+          <p><strong>Why it matters:</strong> correlation is the first measure of "do these two move together?" And it's the direct stepping stone to <a href="../../stats-2/simple-linear-regression/">regression</a>, which turns that relationship into a predictive line.</p>
           <p style="margin-top:.6rem">Got two columns of your own? Paste them into the <a href="../../correlation.html">Correlation &amp; Regression Calculator</a> for a live scatterplot, <em>r</em> with its <em>p</em>-value and 95% CI, Spearman's ρ, and an outlier-robustness check.</p>
         </div>
 
@@ -167,7 +167,7 @@
           <h2>Common questions</h2>
           <details class="faq-item">
             <summary>What counts as a strong correlation?</summary>
-            <div class="faq-a"><p>Common benchmarks: |r| ≈ .10 small, .30 medium, .50+ large — psychology rarely sees field correlations above .5, while physics laughs at anything below .95. Context is everything: r = .3 between a cheap screening question and job performance is valuable; r = .8 between two versions of the same questionnaire is unremarkable. Always interpret r against what's typical for your domain.</p></div>
+            <div class="faq-a"><p>Common benchmarks: |r| ≈ .10 small, .30 medium, .50+ large. Psychology rarely sees field correlations above .5, while physics laughs at anything below .95. Context is everything: r = .3 between a cheap screening question and job performance is valuable; r = .8 between two versions of the same questionnaire is unremarkable. Always interpret r against what's typical for your domain.</p></div>
           </details>
           <details class="faq-item">
             <summary>What is the difference between Pearson and Spearman correlation?</summary>

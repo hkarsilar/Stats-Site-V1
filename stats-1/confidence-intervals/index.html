@@ -33,7 +33,7 @@
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Confidence Intervals", "description": "What does 95% confidence really mean? Build interval after interval and count how often they capture the true mean.", "url": "https://statscapybara.com/stats-1/confidence-intervals/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Foundations", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Confidence Intervals", "item": "https://statscapybara.com/stats-1/confidence-intervals/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does a 95% confidence interval mean there's a 95% chance the true value is inside?", "acceptedAnswer": {"@type": "Answer", "text": "Not quite — the 95% describes the procedure, not any single interval. If you repeated the study endlessly, 95% of the intervals built this way would capture the truth; the one interval in front of you either contains it or doesn't. If you want a statement like \"95% probability the parameter is in this range,\" that's what Bayesian credible intervals provide."}}, {"@type": "Question", "name": "Can I tell whether two groups differ by seeing if their confidence intervals overlap?", "acceptedAnswer": {"@type": "Answer", "text": "Half of that inference is safe and the other half is not. If two 95% intervals do not overlap, the difference is significant at the .05 level, always. The reverse does not follow: overlapping intervals are perfectly compatible with a significant difference, because the interval around a difference is narrower than the two individual intervals side by side. For two equally precise means, the difference reaches p = .05 while the intervals still overlap by about 29% of their length, so a whole band of genuinely significant results looks non-significant to the eyeball test. Test the difference itself, or plot the interval around the difference rather than two intervals around the means. For paired or repeated measures the eyeball test is worse still, since the two intervals ignore the within-person correlation that the test uses."}}, {"@type": "Question", "name": "What does it mean if my confidence interval contains zero?", "acceptedAnswer": {"@type": "Answer", "text": "For a difference or an effect, an interval like [−1.2, +3.5] says \"zero effect is among the plausible values\" — so the result is not statistically significant at the matching α. That's a statement of uncertainty, not proof of no effect: the interval also contains plenty of non-zero values. Wide intervals containing zero usually mean the study was underpowered."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does a 95% confidence interval mean there's a 95% chance the true value is inside?", "acceptedAnswer": {"@type": "Answer", "text": "Not quite: the 95% describes the procedure, not any single interval. If you repeated the study endlessly, 95% of the intervals built this way would capture the truth; the one interval in front of you either contains it or doesn't. If you want a statement like \"95% probability the parameter is in this range,\" that's what Bayesian credible intervals provide."}}, {"@type": "Question", "name": "Can I tell whether two groups differ by seeing if their confidence intervals overlap?", "acceptedAnswer": {"@type": "Answer", "text": "Half of that inference is safe and the other half is not. If two 95% intervals do not overlap, the difference is significant at the .05 level, always. The reverse does not follow: overlapping intervals are perfectly compatible with a significant difference, because the interval around a difference is narrower than the two individual intervals side by side. For two equally precise means, the difference reaches p = .05 while the intervals still overlap by about 29% of their length, so a whole band of genuinely significant results looks non-significant to the eyeball test. Test the difference itself, or plot the interval around the difference rather than two intervals around the means. For paired or repeated measures the eyeball test is worse still, since the two intervals ignore the within-person correlation that the test uses."}}, {"@type": "Question", "name": "What does it mean if my confidence interval contains zero?", "acceptedAnswer": {"@type": "Answer", "text": "For a difference or an effect, an interval like [−1.2, +3.5] says \"zero effect is among the plausible values,\" so the result is not statistically significant at the matching α. That's a statement of uncertainty, not proof of no effect: the interval also contains plenty of non-zero values. Wide intervals containing zero usually mean the study was underpowered."}}]}
   </script>
 </head>
 <body data-course="stats-1" data-section="confidence-intervals">
@@ -47,17 +47,17 @@
         <span class="lesson-eyebrow">Section 1.9</span>
         <h1>Confidence Intervals</h1>
 
-        <p class="lede">A single estimate — "the average is 102" — pretends to a precision it doesn't have. A <strong>confidence interval</strong> is more honest: instead of one number, it reports a <em>range</em> of plausible values, like "somewhere between 99 and 105." But the phrase "95% confident" trips almost everyone up. Let's pin down what it actually means.</p>
+        <p class="lede">A single estimate ("the average is 102") pretends to a precision it doesn't have. A <strong>confidence interval</strong> is more honest: instead of one number, it reports a <em>range</em> of plausible values, like "somewhere between 99 and 105." But the phrase "95% confident" trips almost everyone up. Let's pin down what it actually means.</p>
 
         <h2>From estimate to interval</h2>
         <p>Recall that a sample mean has a <a href="../../stats-1/sampling-distributions/">sampling distribution</a> with a known spread (the standard error). A confidence interval just wraps a margin around the estimate:</p>
         <p style="text-align:center;font-size:1.2rem;margin:1.25rem 0"><strong>estimate&nbsp;±&nbsp;(critical value)&nbsp;×&nbsp;(standard error)</strong></p>
-        <p>Pick a higher confidence level and the critical value grows, so the interval gets wider — you trade precision for a better chance of being right. The playground makes that trade-off, and the real meaning of "95%," impossible to miss. (To build one from your own numbers rather than a slider, paste a column into the <a href="../../descriptives.html">descriptives calculator</a>, which returns the interval along with everything that goes into it; the <a href="../../tables.html">tables calculator</a> supplies the critical value on its own.)</p>
+        <p>Pick a higher confidence level and the critical value grows, so the interval gets wider. You trade precision for a better chance of being right. The playground makes that trade-off, and the real meaning of "95%," impossible to miss. (To build one from your own numbers rather than a slider, paste a column into the <a href="../../descriptives.html">descriptives calculator</a>, which returns the interval along with everything that goes into it; the <a href="../../tables.html">tables calculator</a> supplies the critical value on its own.)</p>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="civiz">
           <p class="viz-title">🎮 Confidence Interval Coverage</p>
-          <p class="viz-sub">The dashed line is the true mean (normally unknown — here we cheat and show it). Each horizontal bar is one study's interval. Green bars caught the truth; red ones missed.</p>
+          <p class="viz-sub">The dashed line is the true mean (normally unknown, though here we cheat and show it). Each horizontal bar is one study's interval. Green bars caught the truth; red ones missed.</p>
 
           <div class="controls">
             <div class="control">
@@ -91,9 +91,9 @@
         <h2>What "95% confident" really means</h2>
         <p>Keep drawing studies and watch the capture rate settle near your chosen level. <strong>That</strong> is the meaning of confidence:</p>
         <div class="callout key">
-          <p>"95% confidence" is a statement about the <em>procedure</em>, not about any single interval. If you repeated the study endlessly, about 95% of the intervals you'd build would contain the true value. Any one interval either contains it or doesn't — there's no "95% probability" hiding inside a single result.</p>
+          <p>"95% confidence" is a statement about the <em>procedure</em>, not about any single interval. If you repeated the study endlessly, about 95% of the intervals you'd build would contain the true value. Any one interval either contains it or doesn't. There is no "95% probability" hiding inside a single result.</p>
         </div>
-        <p>This is why the red bars matter. At 95% confidence, roughly 1 interval in 20 <em>misses</em> entirely — and that's not a bug, it's the advertised failure rate. Switch to 99% and misses become rare, but every interval gets wider (less precise). Switch to 90% and intervals tighten, but you miss more often.</p>
+        <p>This is why the red bars matter. At 95% confidence, roughly 1 interval in 20 <em>misses</em> entirely, and that's not a bug, it's the advertised failure rate. Switch to 99% and misses become rare, but every interval gets wider (less precise). Switch to 90% and intervals tighten, but you miss more often.</p>
 
         <h2>What changes the width</h2>
         <ul>
@@ -102,7 +102,7 @@
         </ul>
 
         <div class="callout">
-          <p><strong>Why it matters:</strong> confidence intervals are how good science reports uncertainty — not a false-precision point estimate, but a range plus a stated reliability. They're also two sides of the same coin as <a href="../../stats-1/hypothesis-testing-logic/">hypothesis tests</a>, which come next.</p>
+          <p><strong>Why it matters:</strong> confidence intervals are how good science reports uncertainty: not a false-precision point estimate, but a range plus a stated reliability. They're also two sides of the same coin as <a href="../../stats-1/hypothesis-testing-logic/">hypothesis tests</a>, which come next.</p>
         </div>
 
         <p class="pb-xref"><a href="../../problems.html#p1-8">Problem 8 of the practice problems</a> builds a 95% interval from 25 students by hand, then shows exactly how much quadrupling the sample narrows it.</p>
@@ -112,7 +112,7 @@
           <h2>Common questions</h2>
           <details class="faq-item">
             <summary>Does a 95% confidence interval mean there's a 95% chance the true value is inside?</summary>
-            <div class="faq-a"><p>Not quite — the 95% describes the <em>procedure</em>, not any single interval. If you repeated the study endlessly, 95% of the intervals built this way would capture the truth; the one interval in front of you either contains it or doesn't. If you want a statement like "95% probability the parameter is in this range," that's what Bayesian <a href="../../stats-4/bayesian-estimation/">credible intervals</a> provide.</p></div>
+            <div class="faq-a"><p>Not quite: the 95% describes the <em>procedure</em>, not any single interval. If you repeated the study endlessly, 95% of the intervals built this way would capture the truth; the one interval in front of you either contains it or doesn't. If you want a statement like "95% probability the parameter is in this range," that's what Bayesian <a href="../../stats-4/bayesian-estimation/">credible intervals</a> provide.</p></div>
           </details>
           <details class="faq-item">
             <summary>Can I tell whether two groups differ by seeing if their confidence intervals overlap?</summary>
@@ -120,7 +120,7 @@
           </details>
           <details class="faq-item">
             <summary>What does it mean if my confidence interval contains zero?</summary>
-            <div class="faq-a"><p>For a difference or an effect, an interval like [−1.2, +3.5] says "zero effect is among the plausible values" — so the result is not statistically significant at the matching α. That's a statement of uncertainty, not proof of no effect: the interval also contains plenty of non-zero values. Wide intervals containing zero usually mean the study was underpowered.</p></div>
+            <div class="faq-a"><p>For a difference or an effect, an interval like [−1.2, +3.5] says "zero effect is among the plausible values," so the result is not statistically significant at the matching α. That's a statement of uncertainty, not proof of no effect: the interval also contains plenty of non-zero values. Wide intervals containing zero usually mean the study was underpowered.</p></div>
           </details>
         </section>
         <!-- faq:end -->

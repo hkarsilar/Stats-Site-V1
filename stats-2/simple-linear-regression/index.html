@@ -33,7 +33,7 @@
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Simple Linear Regression", "description": "Fit a line to data by hand, watch the sum of squared residuals, then see why least squares wins.", "url": "https://statscapybara.com/stats-2/simple-linear-regression/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: Comparing Groups & Relationships", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Simple Linear Regression", "item": "https://statscapybara.com/stats-2/simple-linear-regression/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I know whether my slope is statistically significant?", "acceptedAnswer": {"@type": "Answer", "text": "Divide the slope by its own standard error: t = b / SE, tested against df = n − 2. A slope of b = 2.31 with SE = 0.57 in a sample of 50 gives t(48) = 4.05, p &lt; .001, so the software prints it as significant. Two facts make this easy to sanity-check. Squaring that t gives the model's F (4.05² = 16.4), and testing the slope is the same test as asking whether r differs from 0, so both p-values match exactly. Report the CI alongside it, here [1.16, 3.46], because \"significant\" only says the interval misses zero, not that the slope is large enough to care about."}}, {"@type": "Question", "name": "What is the difference between correlation and regression?", "acceptedAnswer": {"@type": "Answer", "text": "Correlation gives one symmetric number describing how tightly two variables co-move — no direction, no units. Regression fits an equation (ŷ = b₀ + b₁x) for predicting y from x, with a slope in real units (\"each extra study hour buys 2.3 exam points\"). Correlation describes; regression predicts."}}, {"@type": "Question", "name": "Can I use my regression line to predict beyond my data's range?", "acceptedAnswer": {"@type": "Answer", "text": "That's extrapolation, and it's where regression goes to die. The line is only supported within the x-values you observed — beyond them, the relationship may bend, flatten, or reverse, and the model gives no warning (a child's growth line predicts 3-meter adults). Predict within the observed range; extrapolate only with strong theoretical justification and loud caveats."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I know whether my slope is statistically significant?", "acceptedAnswer": {"@type": "Answer", "text": "Divide the slope by its own standard error: t = b / SE, tested against df = n − 2. A slope of b = 2.31 with SE = 0.57 in a sample of 50 gives t(48) = 4.05, p &lt; .001, so the software prints it as significant. Two facts make this easy to sanity-check. Squaring that t gives the model's F (4.05² = 16.4), and testing the slope is the same test as asking whether r differs from 0, so both p-values match exactly. Report the CI alongside it, here [1.16, 3.46], because \"significant\" only says the interval misses zero, not that the slope is large enough to care about."}}, {"@type": "Question", "name": "What is the difference between correlation and regression?", "acceptedAnswer": {"@type": "Answer", "text": "Correlation gives one symmetric number describing how tightly two variables co-move — no direction, no units. Regression fits an equation (ŷ = b₀ + b₁x) for predicting y from x, with a slope in real units (\"each extra study hour buys 2.3 exam points\"). Correlation describes; regression predicts."}}, {"@type": "Question", "name": "Can I use my regression line to predict beyond my data's range?", "acceptedAnswer": {"@type": "Answer", "text": "That's extrapolation, and it's where regression goes to die. The line is only supported within the x-values you observed. Beyond them, the relationship may bend, flatten, or reverse, and the model gives no warning (a child's growth line predicts 3-meter adults). Predict within the observed range; extrapolate only with strong theoretical justification and loud caveats."}}]}
   </script>
 </head>
 <body data-course="stats-2" data-section="simple-linear-regression">
@@ -50,13 +50,13 @@
         <p class="lede"><a href="../../stats-2/correlation/">Correlation</a> tells you two variables move together. <strong>Regression</strong> goes further: it draws the single best straight line through the cloud, so you can actually <em>predict</em> one variable from the other. The whole game is choosing that line, and there's a precise, beautiful rule for what "best" means.</p>
 
         <h2>The line and its errors</h2>
-        <p>A regression line is just <code>ŷ = b₀ + b₁x</code> — an intercept and a slope. For any line you propose, each data point sits some vertical distance above or below it. That gap is the <strong>residual</strong>: the prediction error for that point.</p>
+        <p>A regression line is just <code>ŷ = b₀ + b₁x</code>: an intercept and a slope. For any line you propose, each data point sits some vertical distance above or below it. That gap is the <strong>residual</strong>: the prediction error for that point.</p>
         <p>A good line makes those residuals small overall. But small <em>how</em>? Add them up and positives cancel negatives. The fix: <strong>square</strong> each residual (killing the sign and punishing big misses extra hard), then add them up. That total is the <strong>sum of squared residuals (SSR)</strong>, and the <strong>least-squares line</strong> is the one, out of all possible lines, that makes it as small as possible.</p>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="regviz">
           <p class="viz-title">🎮 Least-Squares Playground</p>
-          <p class="viz-sub">Move the line with the sliders and try to make the error as small as you can. Then hit "best fit" — you won't beat it.</p>
+          <p class="viz-sub">Move the line with the sliders and try to make the error as small as you can. Then hit "best fit." You won't beat it.</p>
 
           <div class="controls">
             <div class="control">
@@ -98,7 +98,7 @@
         </ul>
 
         <h2>R²: how much the line explains</h2>
-        <p>Once you've got the best line, <strong>R²</strong> (which is just the correlation <em>r</em> squared) says what fraction of the variation in <code>y</code> the line accounts for. R² = 0.7 means the line explains 70% of the ups and downs in <code>y</code>; the rest is scatter the line can't capture. Generate new data a few times and watch SSR and R² move together — tighter clouds give smaller SSR and bigger R².</p>
+        <p>Once you've got the best line, <strong>R²</strong> (which is just the correlation <em>r</em> squared) says what fraction of the variation in <code>y</code> the line accounts for. R² = 0.7 means the line explains 70% of the ups and downs in <code>y</code>; the rest is scatter the line can't capture. Generate new data a few times and watch SSR and R² move together: tighter clouds give smaller SSR and bigger R².</p>
 
         <div class="callout key">
           <p><strong>The key idea:</strong> "best fit" has an exact meaning: the unique line that minimizes the total squared error. The sliders let you hunt for it; the math finds it instantly. They land in the same place.</p>
@@ -112,7 +112,7 @@
         </div>
 
         <div class="callout">
-          <p><strong>Why it matters:</strong> simple regression is the foundation of nearly everything in Stats 3 — add more predictors and you've got <a href="../../stats-3/multiple-regression/">multiple regression</a>, the workhorse of modern data analysis.</p>
+          <p><strong>Why it matters:</strong> simple regression is the foundation of nearly everything in Stats 3. Add more predictors and you've got <a href="../../stats-3/multiple-regression/">multiple regression</a>, the workhorse of modern data analysis.</p>
           <p style="margin-top:.6rem">Fit a line to your own data on the <a href="../../correlation.html">Correlation &amp; Regression Calculator</a> — scatterplot, least-squares equation, R², a residual plot, and a copy-ready APA sentence for the slope.</p>
         </div>
 
@@ -131,7 +131,7 @@
           </details>
           <details class="faq-item">
             <summary>Can I use my regression line to predict beyond my data's range?</summary>
-            <div class="faq-a"><p>That's extrapolation, and it's where regression goes to die. The line is only supported within the x-values you observed — beyond them, the relationship may bend, flatten, or reverse, and the model gives no warning (a child's growth line predicts 3-meter adults). Predict within the observed range; extrapolate only with strong theoretical justification and loud caveats.</p></div>
+            <div class="faq-a"><p>That's extrapolation, and it's where regression goes to die. The line is only supported within the x-values you observed. Beyond them, the relationship may bend, flatten, or reverse, and the model gives no warning (a child's growth line predicts 3-meter adults). Predict within the observed range; extrapolate only with strong theoretical justification and loud caveats.</p></div>
           </details>
         </section>
         <!-- faq:end -->
