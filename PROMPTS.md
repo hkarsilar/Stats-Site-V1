@@ -1,12 +1,12 @@
 # StatsCapybara — Prompt Library
 
-Copy one prompt per Claude Code session (started in the repo root, in the `Stats-Site-V1` folder), paste it verbatim, review the diff, push via GitHub Desktop. The plan behind these prompts is in [ROADMAP.md](ROADMAP.md). CLAUDE.md is loaded automatically in every session — prompts lean on its checklists instead of repeating them.
+Copy one prompt per Claude Code session (started in the repo root, in the `Stats-Site-V1` folder) and paste it verbatim. **The session commits and pushes its own work to `main`** — see CLAUDE.md's "Finishing a session" rule, which every session loads automatically. The plan behind these prompts is in [ROADMAP.md](ROADMAP.md). CLAUDE.md is loaded automatically in every session — prompts lean on its checklists instead of repeating them.
 
 **Conventions baked into every prompt below:**
 
 - *"Standard lesson integration"* = CLAUDE.md's "Adding a lesson" checklist, in full: `curriculum.js` entry (`ready: true`) · page copied from an existing lesson with **all per-page SEO retargeted** (title, description, canonical, og/twitter, JSON-LD) · correct `data-course`/`data-section` + hardcoded `Section N.n` eyebrow · inline viz using `VIZ` helpers with the **frozen-noise pattern** · 3 questions in `checks.js` · 3 FAQs in `tools/faq_data.py` + run `python tools/inject-faqs.py` · a `QUIPS` entry · glossary term(s) · course-tagged quiz question(s) · R/Python snippet if analysis-relevant · SPSS/JASP + APA entry in `software.js` if a runnable analysis · `sitemap.xml` · rerun `python tools/build-search-index.py` · update homepage/meta lesson counts if not yet automated.
-- *"Standard verification"* = `node tools/audit.js` passes clean · `node --check` on new/changed scripts · every numeric claim cross-checked against a published value (`node -e` with `VIZ`, G*Power tables, textbook values) · slider round-trip test on every interactive · browser-verify via the preview tooling in light + dark + mobile with zero console errors · leave the working tree **uncommitted** for review.
-- Every prompt ends with ticking its checkbox in `ROADMAP.md`'s status tracker.
+- *"Standard verification"* = `node tools/audit.js` passes clean · `node --check` on new/changed scripts · every numeric claim cross-checked against a published value (`node -e` with `VIZ`, G*Power tables, textbook values) · slider round-trip test on every interactive · browser-verify via the preview tooling in light + dark + mobile with zero console errors · then **commit and push to `main`** per CLAUDE.md's "Finishing a session" rule.
+- Every prompt ends with ticking its checkbox in `ROADMAP.md`'s status tracker **and pushing the work to `main`** (CLAUDE.md's "Finishing a session" rule — the session does this itself, gated on the checks rather than on a human review).
 
 ---
 
@@ -1409,7 +1409,7 @@ Phase 10's budgets are all met and the site still reads AI-made, because the bud
 4. Stale-number sweep: CLAUDE.md and PROMPTS.md reference the old ≤10/≤3-per-trio budgets in a few places (the problems.html em-dash note among them) — update them to the new numbers. Note under P73's tick in ROADMAP.md that prose-lint --strict is EXPECTED red from now until P77 lands; audit.js stays the commit gate.
 5. Paste the new sitewide summary (the new budgets failing against today's numbers is the point) plus the worst-20 pages under the new rules into your report AND under P73's tick — that table is P74–P77's worklist.
 
-Standard verification (audit clean; node --check tools/prose-lint.js; prose-lint runs clean as a PROGRAM on every mode — exit 1 under --strict is the expected budget verdict, not a crash; --page and the JS-surface modes still work). Tick P73 in ROADMAP.md.
+Standard verification (audit clean; node --check tools/prose-lint.js; prose-lint runs clean as a PROGRAM on every mode — exit 1 under --strict is the expected budget verdict, not a crash; --page and the JS-surface modes still work). Tick P73 in ROADMAP.md, then commit and push to main (CLAUDE.md's "Finishing a session" rule).
 ```
 
 ### P74 — Dash paydown + reshaping: the Statistics Core
@@ -1428,7 +1428,7 @@ Rules of engagement (VOICE.md as amended by P73):
 4. Read each course's opening paragraphs consecutively (the P41 check) — round-one rewrites have had a year of drift-free rest, so verify they still don't share a rhythm before touching anything else.
 5. FAQ edits via faq_data.py → ./tools/inject-faqs.py, never hand-edited lesson HTML; rerun ./tools/build-search-index.py once at the end.
 
-Verification: prose-lint --strict passes for every page in this batch (sitewide strict stays red until P77 — expected); before/after per-course table (total dashes, median, at-the-cap count, bold-lead items, semicolons/ellipses); audit clean; browser-check 3 rewritten lessons in light+dark (prose renders, TOC anchors, FAQ details + FAQPage JSON-LD intact); read ONE rewritten lesson start to finish and give the honest verdict in the report. Tick P74 in ROADMAP.md.
+Verification: prose-lint --strict passes for every page in this batch (sitewide strict stays red until P77 — expected); before/after per-course table (total dashes, median, at-the-cap count, bold-lead items, semicolons/ellipses); audit clean; browser-check 3 rewritten lessons in light+dark (prose renders, TOC anchors, FAQ details + FAQPage JSON-LD intact); read ONE rewritten lesson start to finish and give the honest verdict in the report. Tick P74 in ROADMAP.md, then commit and push to main (CLAUDE.md's "Finishing a session" rule).
 ```
 
 ### P75 — Dash paydown + reshaping: the Toolkit + guides + posters
@@ -1444,7 +1444,7 @@ Extra care points, all inherited from round one and still true: Ethics keeps its
 
 FAQ edits via faq_data.py + inject; guides/posters/lesson edits → rerun ./tools/build-search-index.py once at the end.
 
-Verification: as P74 (batch --strict green, before/after table, audit clean, 3-page browser check, one honest full read), plus the poster fit re-measurement. Tick P75 in ROADMAP.md.
+Verification: as P74 (batch --strict green, before/after table, audit clean, 3-page browser check, one honest full read), plus the poster fit re-measurement. Tick P75 in ROADMAP.md, then commit and push to main (CLAUDE.md's "Finishing a session" rule).
 ```
 
 ### P76 — Dash paydown: tool pages, homepage & root prose
@@ -1460,7 +1460,7 @@ Rules of engagement: as P74, plus two page-type-specific ones. (1) In reference 
 
 Root-page edits → rerun ./tools/build-search-index.py once at the end. These pages' HTML is network-first (no CACHE_VERSION bump for prose), but bump if site.js changes for any reason.
 
-Verification: prose-lint --strict green for every page in scope (sitewide red allowed only from surfaces P77 owns); before/after table; audit clean; browser-check descriptives.html, power.html and the homepage in light+dark with zero console errors — including one real calculation on each tool to prove no number or control changed. Tick P76 in ROADMAP.md.
+Verification: prose-lint --strict green for every page in scope (sitewide red allowed only from surfaces P77 owns); before/after table; audit clean; browser-check descriptives.html, power.html and the homepage in light+dark with zero console errors — including one real calculation on each tool to prove no number or control changed. Tick P76 in ROADMAP.md, then commit and push to main (CLAUDE.md's "Finishing a session" rule).
 ```
 
 ### P77 — The injected layer + sitewide finisher
@@ -1479,7 +1479,7 @@ The five JS prose surfaces get their paydown to P73's budgets, then the phase cl
 
 CACHE_VERSION: bump ONLY if site.js changed — checks.js/software.js/glossary-data.js/snippets.js are lazy-loaded (not precached) and lesson HTML is network-first.
 
-Verification: audit clean; math-check.js still passes untouched (run it as the no-change proof); browser-check one lesson end to end (checks flow scores, software tabs render, FAQ opens), one classic quiz run + one exam run, glossary.html + flashcards.html render their reworded definitions, and the search overlay finds a reworded glossary term. Tick P77 in ROADMAP.md.
+Verification: audit clean; math-check.js still passes untouched (run it as the no-change proof); browser-check one lesson end to end (checks flow scores, software tabs render, FAQ opens), one classic quiz run + one exam run, glossary.html + flashcards.html render their reworded definitions, and the search overlay finds a reworded glossary term. Tick P77 in ROADMAP.md, then commit and push to main (CLAUDE.md's "Finishing a session" rule).
 ```
 
 ### P78 — Provenance: take the planning docs off the public domain
@@ -1498,7 +1498,7 @@ The loudest tell on the site is not prose: statscapybara.com/CLAUDE.md opens wit
 5. The report states the honest limits, with no action taken: the GitHub repo stays public (free-plan Pages requires it), so the docs and the commit history remain reachable by anyone who finds the repo — the options are a paid plan + private repo, or accepting that the site itself no longer points there; Hakan decides. And the guardrail in writing: this prompt adds no claim of human authorship anywhere — it removes signposts, it does not plant flags.
 6. Cutover, for Hakan (the one step a session cannot do): after merging, flip Settings → Pages → Source to "GitHub Actions"; confirm the custom domain + HTTPS survive the flip. Roll back by flipping Source back to the branch. First-deploy checklist in the report: curl the six doc URLs (404), the homepage/a lesson/sw.js/a CSV (200), and one full lesson in a browser.
 
-Verification: the local artifact diff plus the 404/200 matrix pasted in the report; node tools/audit.js clean on the repo (it audits the tree, not the artifact — unchanged); no content edits in this prompt. Tick P78 in ROADMAP.md.
+Verification: the local artifact diff plus the 404/200 matrix pasted in the report; node tools/audit.js clean on the repo (it audits the tree, not the artifact — unchanged); no content edits in this prompt. Tick P78 in ROADMAP.md, then commit and push to main (CLAUDE.md's "Finishing a session" rule).
 ```
 
 ---

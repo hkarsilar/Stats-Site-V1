@@ -37,7 +37,7 @@ This file is the master plan. The copy-paste prompts that execute it live in **[
 3. **Frozen-noise interactives.** Sliders transform the *same* data; only explicit "New sample" buttons reseed. Round-trip test every slider.
 4. **Calm, kind, capybara-tasteful.** No ads, ever — Ko-fi in the footer only. No dark patterns, no imposed quizzes, no red-alert UI. Serious topics (ethics history) get a serious tone.
 5. **Each lesson stands alone** and is fully integrated: curriculum entry, checks, FAQs, quip, glossary, quiz question, snippet/software where applicable, sitemap, search index, per-page SEO.
-6. **One prompt = one session = one reviewable diff.** Leave the working tree uncommitted; Hakan reviews and pushes via GitHub Desktop.
+6. **One prompt = one session = one commit pushed to `main`.** The session commits its own work and pushes it to `main` — Hakan does not merge by hand. See CLAUDE.md's "Finishing a session" rule for the exact gate conditions and the one case where a branch push is the correct outcome instead.
 
 ---
 
