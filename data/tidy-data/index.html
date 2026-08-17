@@ -171,11 +171,11 @@
     // The four sins, in the order they become fixable (newest/topmost first).
     var SINS = [
       { chip: "Metadata in a data row",
-        note: "Deleted the title banner — a course name is not an observation. Descriptive metadata belongs in a codebook, never in a data row." },
+        note: "Deleted the title banner, since a course name is not an observation. Descriptive metadata belongs in a codebook, never in a data row." },
       { chip: "Two variables in one column",
         note: "Split “Ann (Year 2)” into a Student column and a Year column. One column = one variable." },
       { chip: "One variable across many columns",
-        note: "Stacked Quiz 1 / Quiz 2 / Final into an Assessment column and a Score column — wide became long. Each row is now one student × one assessment." },
+        note: "Stacked Quiz 1 / Quiz 2 / Final into an Assessment column and a Score column, so wide became long. Each row is now one student × one assessment." },
       { chip: "Color used as data",
         note: "Turned the red “resit” shading into an explicit Resit column. A fill color can't be computed on; a Yes/No value can." }
     ];
@@ -231,7 +231,7 @@
       html += "</tbody></table>";
       gridEl.innerHTML = html;
 
-      legendEl.textContent = showRed ? "🔴 red cell = resit (color used as data — a hidden variable)" :
+      legendEl.textContent = showRed ? "🔴 red cell = resit (color used as data: a hidden variable)" :
         (step >= 4 ? "✔ tidy: every column is a variable, every row is one observation, every cell one value." : "");
 
       // sins
@@ -251,7 +251,7 @@
       });
 
       if (step >= SINS.length) {
-        verdictEl.textContent = "🎉 Tidy! Point at any column — it's one variable. Point at any row — it's one observation. Now every downstream tool just works.";
+        verdictEl.textContent = "🎉 Tidy! Point at any column: it's one variable. Point at any row: it's one observation. Now every downstream tool just works.";
         verdictEl.style.color = "#22c55e";
       }
     }

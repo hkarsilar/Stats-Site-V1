@@ -350,15 +350,15 @@
       if (design === "cohort") {
         nt = "Cohort: you enrolled everyone by exposure at year 0 and followed them forward, so you see every case as it appears. Because you know the denominators, you get the risk ratio directly — the gold standard among observational designs, but slow and impractical for rare outcomes.";
       } else if (design === "casecontrol") {
-        nt = "Case-control: you start from the cases (every outcome, faded people never enter the study) and sample an equal set of controls to look back at their exposure. Efficient and fast for rare outcomes — but because you fixed the case:control ratio, only an odds ratio is estimable.";
+        nt = "Case-control: you start from the cases (every outcome, faded people never enter the study) and sample an equal set of controls to look back at their exposure. Efficient and fast for rare outcomes, but because you fixed the case:control ratio, only an odds ratio is estimable.";
       } else {
-        nt = "Cross-sectional: a single snapshot at year 20. You see who currently has the outcome and who is exposed, but not the onset timing — exposure and outcome are measured together, so you usually can't tell which came first.";
+        nt = "Cross-sectional: a single snapshot at year 20. You see who currently has the outcome and who is exposed, but not the onset timing: exposure and outcome are measured together, so you usually can't tell which came first.";
       }
       document.getElementById("od-note").textContent = nt;
 
       var vd = document.getElementById("od-verdict"), txt, col;
       if (P0 <= 8) {
-        txt = "The outcome is rare (≈" + P0.toFixed(0) + "% baseline risk), so the odds ratio ≈ the risk ratio — the case-control estimate barely distorts it.";
+        txt = "The outcome is rare (≈" + P0.toFixed(0) + "% baseline risk), so the odds ratio ≈ the risk ratio, and the case-control estimate barely distorts it.";
         col = "#22c55e";
       } else {
         txt = "The outcome is common (≈" + P0.toFixed(0) + "% baseline risk), so the odds ratio (" + est.trueOR.toFixed(2) + ") overstates the risk ratio (" + est.trueRR.toFixed(2) + "). Only the cohort recovers risk directly.";

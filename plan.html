@@ -219,12 +219,12 @@
         { label: "Three or more", next: "num_many" }
       ]},
       num_two: { q: "Are the two sets of scores from the same people, or different people?", opts: [
-        { label: "Same people (or matched pairs)", desc: "before/after, both conditions each — within-subjects", leaf: "paired_t" },
+        { label: "Same people (or matched pairs)", desc: "before/after, both conditions each (within-subjects)", leaf: "paired_t" },
         { label: "Different, independent people", desc: "e.g. treatment group vs. control group", next: "num_two_cov" }
       ]},
       num_two_cov: { q: "Do you want to adjust for a baseline covariate?", opts: [
-        { label: "No — just compare the two groups", leaf: "indep_t" },
-        { label: "Yes — control for a covariate", desc: "e.g. adjust the outcome for a pre-test score", leaf: "ancova" }
+        { label: "No, just compare the two groups", leaf: "indep_t" },
+        { label: "Yes, control for a covariate", desc: "e.g. adjust the outcome for a pre-test score", leaf: "ancova" }
       ]},
       num_many: { q: "Same people across every condition, or different people per group?", opts: [
         { label: "Different people in each group", next: "num_many_factors" },
@@ -232,11 +232,11 @@
       ]},
       num_many_factors: { q: "How many grouping factors define the groups?", opts: [
         { label: "One factor", desc: "e.g. four teaching methods", next: "num_many_cov" },
-        { label: "Two or more crossed factors", desc: "e.g. method × class size — you care about the interaction", leaf: "factorial" }
+        { label: "Two or more crossed factors", desc: "e.g. method × class size, where you care about the interaction", leaf: "factorial" }
       ]},
       num_many_cov: { q: "Do you want to adjust for a baseline covariate?", opts: [
-        { label: "No — just compare the groups", leaf: "anova1" },
-        { label: "Yes — control for a covariate", leaf: "ancova" }
+        { label: "No, just compare the groups", leaf: "anova1" },
+        { label: "Yes, control for a covariate", leaf: "ancova" }
       ]},
       num_num: { q: "What do you want from the two numeric variables?", opts: [
         { label: "Just describe how strongly they move together", desc: "an association, no prediction equation", leaf: "pearson" },
@@ -244,7 +244,7 @@
         { label: "Predict the outcome from several predictors", desc: "controlling predictors for each other", leaf: "mult_reg" }
       ]},
       cat: { q: "What are you doing with the categorical variable?", opts: [
-        { label: "Testing whether two categorical variables are associated", desc: "e.g. treatment × recovered — a contingency table, or comparing proportions across groups", leaf: "chisq" },
+        { label: "Testing whether two categorical variables are associated", desc: "e.g. treatment × recovered: a contingency table, or comparing proportions across groups", leaf: "chisq" },
         { label: "Predicting a yes/no outcome from one or more predictors", desc: "e.g. who passes, from hours studied and prior grade", leaf: "logistic" }
       ]}
     };
@@ -262,16 +262,16 @@
     /* sc: power scenario (null = needs specialized power tools).  es: preset key.
        apa: {a,v} → apa.html deep link. slug: query-param name. */
     var LEAVES = {
-      indep_t: { slug: "ttest-ind", name: "Independent-samples t-test", why: "Two unrelated groups, one numeric outcome — the Welch version (most software's default) compares their means without assuming equal variances.",
+      indep_t: { slug: "ttest-ind", name: "Independent-samples t-test", why: "Two unrelated groups, one numeric outcome. The Welch version (most software's default) compares their means without assuming equal variances.",
         lesson: "stats-1/independent-samples-t-test", label: "Independent-Samples t-Test", sc: "t2", es: "d", apa: { a: "t", v: "ind" },
         apaSkel: "An independent-samples " + em("t") + "-test compared " + ph("[outcome]") + " between " + ph("[group 1]") + " and " + ph("[group 2]") + ". " + ph("[Group 1]") + " (" + em("M") + " = " + ph("__") + ", " + em("SD") + " = " + ph("__") + ") " + ph("[did / did not]") + " differ significantly from " + ph("[group 2]") + " (" + em("M") + " = " + ph("__") + ", " + em("SD") + " = " + ph("__") + "), " + em("t") + "(" + ph("__") + ") = " + ph("__") + ", " + em("p") + " = " + ph("__") + ", " + em("d") + " = " + ph("__") + ".",
         assump: [
-          "The outcome is roughly normal within each group — or each group's <em>n</em> is large enough for the CLT. <a href=\"descriptives.html\">Check the shape</a>.",
+          "The outcome is roughly normal within each group, or each group's <em>n</em> is large enough for the CLT. <a href=\"descriptives.html\">Check the shape</a>.",
           "Observations are independent (no repeated measures, no hidden clustering).",
-          "Unequal variances are fine — use Welch's <em>t</em> (it's the default in JASP, R and SPSS).",
+          "Unequal variances are fine: use Welch's <em>t</em> (it's the default in JASP, R and SPSS).",
           "Badly skewed or ordinal in a small sample? Switch to the <a href=\"stats-2/non-parametric-alternatives/#mann-whitney\">Mann–Whitney U</a>."
         ] },
-      paired_t: { slug: "ttest-paired", name: "Paired-samples t-test", why: "Same people measured twice — analyze each person's difference score, so stable individual differences cancel out and you gain power.",
+      paired_t: { slug: "ttest-paired", name: "Paired-samples t-test", why: "Same people measured twice, so analyze each person's difference score, so stable individual differences cancel out and you gain power.",
         lesson: "stats-1/one-sample-and-paired-t-tests", label: "One-Sample & Paired t-Tests", sc: "t1", es: "dz", apa: { a: "t", v: "paired" },
         apaSkel: "A paired-samples " + em("t") + "-test compared " + ph("[outcome]") + " at " + ph("[time 1]") + " (" + em("M") + " = " + ph("__") + ", " + em("SD") + " = " + ph("__") + ") and " + ph("[time 2]") + " (" + em("M") + " = " + ph("__") + ", " + em("SD") + " = " + ph("__") + "), " + em("t") + "(" + ph("__") + ") = " + ph("__") + ", " + em("p") + " = " + ph("__") + ", " + em("d") + "<sub>z</sub> = " + ph("__") + ".",
         assump: [
@@ -287,41 +287,41 @@
           "Observations are independent.",
           "You have a genuinely meaningful fixed value to compare against."
         ] },
-      anova1: { slug: "anova", name: "One-way ANOVA", why: "Three or more independent groups on one factor — one omnibus F-test keeps the false-positive rate honest across all the comparisons at once.",
+      anova1: { slug: "anova", name: "One-way ANOVA", why: "Three or more independent groups on one factor. One omnibus F-test keeps the false-positive rate honest across all the comparisons at once.",
         lesson: "stats-2/one-way-anova", label: "One-Way ANOVA", sc: "anova", es: "f", apa: { a: "anova", v: "one" },
         apaSkel: "A one-way ANOVA tested the effect of " + ph("[factor]") + " on " + ph("[outcome]") + ". The effect was " + ph("[significant / non-significant]") + ", " + em("F") + "(" + ph("__") + ", " + ph("__") + ") = " + ph("__") + ", " + em("p") + " = " + ph("__") + ", η² = " + ph("__") + ".",
         assump: [
-          "Residuals roughly normal; groups have similar variances (homogeneity — check Levene's test).",
+          "Residuals roughly normal; groups have similar variances (homogeneity: check Levene's test).",
           "Independent observations.",
           "A significant F only says \"somewhere\" — follow it with <a href=\"stats-2/post-hoc-tests/\">post-hoc tests</a>.",
           "Assumptions badly broken? Use the <a href=\"stats-2/non-parametric-alternatives/#kruskal-wallis\">Kruskal–Wallis test</a>."
         ] },
-      factorial: { slug: "anova-factorial", name: "Factorial ANOVA", why: "Two or more crossed factors — it tests each main effect and, usually the interesting part, their interaction, all in one design.",
+      factorial: { slug: "anova-factorial", name: "Factorial ANOVA", why: "Two or more crossed factors. It tests each main effect and, usually the interesting part, their interaction, all in one design.",
         lesson: "stats-2/factorial-anova-two-way", label: "Factorial ANOVA (Two-Way)", sc: "anova", es: "f", apa: { a: "anova", v: "fact" }, approxN: true,
         apaSkel: "A " + ph("[2 × 2]") + " factorial ANOVA tested the effects of " + ph("[factor A]") + " and " + ph("[factor B]") + " on " + ph("[outcome]") + ". There was " + ph("[a significant / no]") + " main effect of " + ph("[factor A]") + ", " + em("F") + "(" + ph("__") + ", " + ph("__") + ") = " + ph("__") + ", " + em("p") + " = " + ph("__") + ", and " + ph("[a significant / no]") + " " + ph("[A]") + " × " + ph("[B]") + " interaction, " + em("F") + "(" + ph("__") + ", " + ph("__") + ") = " + ph("__") + ", " + em("p") + " = " + ph("__") + ", partial η² = " + ph("__") + ".",
         assump: [
           "Normal residuals and homogeneous variances across all cells.",
           "Independent observations; ideally balanced (equal) cell sizes.",
           "Read the <strong>interaction first</strong> — main effects can mislead when an interaction is present.",
-          "The sample size below powers a <em>medium main effect</em> — an interaction of the same size usually needs more; confirm in the <a href=\"power.html\">power calculator</a> or G*Power."
+          "The sample size below powers a <em>medium main effect</em>. An interaction of the same size usually needs more, so confirm in the <a href=\"power.html\">power calculator</a> or G*Power."
         ] },
-      rm_anova: { slug: "rm-anova", name: "Repeated-measures ANOVA", why: "Same people across three or more conditions — each person is their own control, which removes stable individual differences from the error term.",
+      rm_anova: { slug: "rm-anova", name: "Repeated-measures ANOVA", why: "Same people across three or more conditions, so each person is their own control, which removes stable individual differences from the error term.",
         lesson: "stats-2/repeated-measures-anova", label: "Repeated-Measures ANOVA", sc: null, es: "f", apa: { a: "anova", v: "one" },
         apaSkel: "A repeated-measures ANOVA tested changes in " + ph("[outcome]") + " across " + ph("[conditions]") + ". Mauchly's test " + ph("[was / was not]") + " significant; " + ph("[Greenhouse–Geisser–corrected]") + " " + em("F") + "(" + ph("__") + ", " + ph("__") + ") = " + ph("__") + ", " + em("p") + " = " + ph("__") + ", partial η² = " + ph("__") + ".",
         assump: [
-          "Sphericity — equal variances of the pairwise differences (check Mauchly's test; apply Greenhouse–Geisser if violated).",
+          "Sphericity: equal variances of the pairwise differences (check Mauchly's test; apply Greenhouse–Geisser if violated).",
           "Independent participants, roughly normal within each condition.",
-          "Missing data hurt RM-ANOVA — a <a href=\"stats-4/mixed-and-multilevel-models/\">mixed model</a> copes far better."
+          "Missing data hurt RM-ANOVA, and a <a href=\"stats-4/mixed-and-multilevel-models/\">mixed model</a> copes far better."
         ], specialN: "Repeated-measures power depends on how strongly the conditions correlate within a person, which no single formula captures. More timepoints and higher within-person correlation both <em>shrink</em> the n you need. Sketch it in the <a href=\"power.html\">power calculator</a> as a one-way ANOVA for a conservative floor, or use G*Power's repeated-measures option." },
-      ancova: { slug: "ancova", name: "ANCOVA", why: "A group comparison that first removes the variance explained by a covariate — you get more power and a cleaner estimate of the group effect.",
+      ancova: { slug: "ancova", name: "ANCOVA", why: "A group comparison that first removes the variance explained by a covariate, so you get more power and a cleaner estimate of the group effect.",
         lesson: "stats-3/ancova", label: "ANCOVA", sc: null, es: "f", apa: { a: "anova", v: "one" },
         apaSkel: "An ANCOVA compared " + ph("[outcome]") + " across " + ph("[groups]") + ", adjusting for " + ph("[covariate]") + ". After adjustment, the effect of " + ph("[factor]") + " was " + ph("[significant / non-significant]") + ", " + em("F") + "(" + ph("__") + ", " + ph("__") + ") = " + ph("__") + ", " + em("p") + " = " + ph("__") + ", partial η² = " + ph("__") + ".",
         assump: [
           "The covariate is measured <strong>before</strong> treatment (or is unaffected by it).",
-          "Homogeneity of regression slopes — the covariate relates to the outcome the same way in every group.",
+          "Homogeneity of regression slopes: the covariate relates to the outcome the same way in every group.",
           "The usual ANOVA assumptions on the residuals."
         ], specialN: "ANCOVA needs slightly <em>fewer</em> participants than the equivalent ANOVA, because the covariate soaks up error variance. For a conservative plan, power it as a one-way ANOVA in the <a href=\"power.html\">power calculator</a>, then treat that n as an upper bound." },
-      pearson: { slug: "correlation", name: "Pearson correlation (r)", why: "Measures the strength and direction of a straight-line relationship between two numeric variables — always read it next to the scatterplot.",
+      pearson: { slug: "correlation", name: "Pearson correlation (r)", why: "Measures the strength and direction of a straight-line relationship between two numeric variables. Always read it next to the scatterplot.",
         lesson: "stats-2/correlation", label: "Correlation", sc: "r", es: "r", apa: { a: "corr", v: null },
         apaSkel: ph("[Outcome]") + " was " + ph("[positively / negatively]") + " correlated with " + ph("[predictor]") + ", " + em("r") + "(" + ph("__") + ") = " + ph("__") + ", " + em("p") + " = " + ph("__") + ".",
         assump: [
@@ -329,28 +329,28 @@
           "No extreme outliers dragging the coefficient around.",
           "Curved, ordinal or outlier-ridden? Use <a href=\"stats-2/correlation/\">Spearman's rank correlation</a> instead."
         ] },
-      simple_reg: { slug: "regression", name: "Simple linear regression", why: "Fits the least-squares line ŷ = a + bx — you get both a significance test and an actual prediction equation. With one predictor, its slope test has exactly the power of the correlation test.",
+      simple_reg: { slug: "regression", name: "Simple linear regression", why: "Fits the least-squares line ŷ = a + bx, so you get both a significance test and an actual prediction equation. With one predictor, its slope test has exactly the power of the correlation test.",
         lesson: "stats-2/simple-linear-regression", label: "Simple Linear Regression", sc: "r", es: "r", apa: { a: "reg", v: "coef" },
         apaSkel: ph("[Predictor]") + " significantly predicted " + ph("[outcome]") + ", " + em("b") + " = " + ph("__") + ", " + em("SE") + " = " + ph("__") + ", β = " + ph("__") + ", " + em("t") + "(" + ph("__") + ") = " + ph("__") + ", " + em("p") + " = " + ph("__") + ". The model explained " + ph("__") + "% of the variance, " + em("R") + "² = " + ph("__") + ".",
         assump: [
-          "Linear relationship; residuals independent, equal-variance and roughly normal — see <a href=\"stats-2/regression-diagnostics/\">regression diagnostics</a>.",
+          "Linear relationship; residuals independent, equal-variance and roughly normal. See <a href=\"stats-2/regression-diagnostics/\">regression diagnostics</a>.",
           "No single influential outlier steering the line (check Cook's distance).",
-          "The sample size below uses the correlation-equivalent power — exact for one predictor."
+          "The sample size below uses the correlation-equivalent power, exact for one predictor."
         ] },
       mult_reg: { slug: "regression-multiple", name: "Multiple regression", why: "Each coefficient is a predictor's effect holding the others constant — the workhorse for prediction and for statistical control alike.",
         lesson: "stats-3/multiple-regression", label: "Multiple Regression", sc: null, es: "f", apa: { a: "reg", v: "coef" },
         apaSkel: "A multiple regression predicted " + ph("[outcome]") + " from " + ph("[predictors]") + ". The model was " + ph("[significant / non-significant]") + ", " + em("F") + "(" + ph("__") + ", " + ph("__") + ") = " + ph("__") + ", " + em("p") + " = " + ph("__") + ", " + em("R") + "² = " + ph("__") + ". " + ph("[Predictor]") + " was a " + ph("[significant]") + " predictor, " + em("b") + " = " + ph("__") + ", β = " + ph("__") + ", " + em("p") + " = " + ph("__") + ".",
         assump: [
           "Linearity, independence, homoscedasticity and normal residuals (<a href=\"stats-2/regression-diagnostics/\">diagnostics</a>).",
-          "Low <a href=\"stats-3/multicollinearity-and-variable-selection/\">multicollinearity</a> among predictors — check the VIFs.",
-          "Enough data — aim for at least 10–15 cases per predictor."
-        ], specialN: "Power for a multiple regression depends on the R² you expect and how many predictors compete for it (Cohen's f²) — not a single closed form. Use G*Power's \"linear multiple regression\" or approximate it in the <a href=\"power.html\">power calculator</a>. A common floor is <strong>10–15 cases per predictor</strong>." },
-      chisq: { slug: "chisq", name: "Chi-square test of independence", why: "Two categorical variables — it compares the observed contingency-table counts to those expected if the variables were unrelated. (Comparing two proportions is just the 2 × 2 case.)",
+          "Low <a href=\"stats-3/multicollinearity-and-variable-selection/\">multicollinearity</a> among predictors: check the VIFs.",
+          "Enough data: aim for at least 10–15 cases per predictor."
+        ], specialN: "Power for a multiple regression depends on the R² you expect and how many predictors compete for it (Cohen's f²), not a single closed form. Use G*Power's \"linear multiple regression\" or approximate it in the <a href=\"power.html\">power calculator</a>. A common floor is <strong>10–15 cases per predictor</strong>." },
+      chisq: { slug: "chisq", name: "Chi-square test of independence", why: "Two categorical variables. It compares the observed contingency-table counts to those expected if the variables were unrelated. (Comparing two proportions is just the 2 × 2 case.)",
         lesson: "stats-2/chi-square-tests", label: "Chi-Square Tests", sc: "chisq", es: "w", apa: { a: "chi", v: null },
         apaSkel: "A chi-square test of independence examined the association between " + ph("[variable 1]") + " and " + ph("[variable 2]") + ". The association was " + ph("[significant / non-significant]") + ", χ²(" + ph("__") + ", " + em("N") + " = " + ph("__") + ") = " + ph("__") + ", " + em("p") + " = " + ph("__") + ", " + em("V") + " = " + ph("__") + ".",
         assump: [
-          "Expected count ≥ 5 in (almost) every cell — use <strong>Fisher's exact test</strong> if the cells are sparse.",
-          "Each observation contributes to exactly one cell (independence — no repeated measures).",
+          "Expected count ≥ 5 in (almost) every cell. Use <strong>Fisher's exact test</strong> if the cells are sparse.",
+          "Each observation contributes to exactly one cell (independence: no repeated measures).",
           "Report <em>Cramér's V</em> or an odds ratio for the strength, not just the p-value.",
           "The default below is a 2 × 2 table (df = 1); set the df for larger tables."
         ] },
@@ -359,9 +359,9 @@
         apaSkel: "A logistic regression predicted " + ph("[yes/no outcome]") + " from " + ph("[predictors]") + ". " + ph("[Predictor]") + " was associated with the outcome, " + em("b") + " = " + ph("__") + ", " + em("SE") + " = " + ph("__") + ", odds ratio = " + ph("__") + ", 95% CI [" + ph("__") + ", " + ph("__") + "], " + em("p") + " = " + ph("__") + ".",
         assump: [
           "Binary outcome; observations independent.",
-          "Roughly <strong>10 outcome events per predictor</strong> (events-per-variable) — a rare outcome needs a big sample.",
+          "Roughly <strong>10 outcome events per predictor</strong> (events-per-variable), since a rare outcome needs a big sample.",
           "Little multicollinearity; watch for complete separation."
-        ], specialN: "Logistic-regression power hinges on the outcome's base rate and how many predictors you fit — simulate it, or use G*Power. The rule of thumb is <strong>~10 events (of the rarer outcome) per predictor</strong>." },
+        ], specialN: "Logistic-regression power hinges on the outcome's base rate and how many predictors you fit, so simulate it, or use G*Power. The rule of thumb is <strong>~10 events (of the rarer outcome) per predictor</strong>." },
       count: { slug: "count", name: "Poisson / negative-binomial regression", why: "A generalized linear model with a log link keeps count predictions positive; switch to negative binomial when the counts are overdispersed.",
         lesson: "stats-4/generalized-linear-models", label: "Generalized Linear Models", sc: null, es: null, apa: null,
         apaSkel: "A Poisson regression modeled " + ph("[count outcome]") + " as a function of " + ph("[predictors]") + ". " + ph("[Predictor]") + " was associated with the rate, incidence-rate ratio = " + ph("__") + ", 95% CI [" + ph("__") + ", " + ph("__") + "], " + em("p") + " = " + ph("__") + ".",
@@ -369,15 +369,15 @@
           "Counts are independent; for plain Poisson, the mean ≈ the variance.",
           "Overdispersed (variance ≫ mean)? Use <strong>negative binomial</strong> regression.",
           "Lots of structural zeros? Consider a zero-inflated model."
-        ], specialN: "Count-model power depends on the baseline rate and dispersion — simulate it, or approximate with a regression power tool such as G*Power. The <a href=\"power.html\">power calculator</a> can give a rough analogue via the closest linear test." },
-      survival: { slug: "survival", name: "Survival analysis (Kaplan–Meier / Cox)", why: "Time-to-event data with censoring — Kaplan–Meier curves estimate survival over time, the log-rank test compares groups, and Cox regression adds predictors.",
+        ], specialN: "Count-model power depends on the baseline rate and dispersion, so simulate it, or approximate with a regression power tool such as G*Power. The <a href=\"power.html\">power calculator</a> can give a rough analogue via the closest linear test." },
+      survival: { slug: "survival", name: "Survival analysis (Kaplan–Meier / Cox)", why: "Time-to-event data with censoring. Kaplan–Meier curves estimate survival over time, the log-rank test compares groups, and Cox regression adds predictors.",
         lesson: "stats-4/survival-analysis", label: "Survival Analysis & Kaplan–Meier", sc: null, es: null, apa: null,
         apaSkel: "A Kaplan–Meier analysis compared survival across " + ph("[groups]") + "; the log-rank test was " + ph("[significant / non-significant]") + ", χ²(" + ph("__") + ") = " + ph("__") + ", " + em("p") + " = " + ph("__") + ". A Cox regression gave a hazard ratio of " + ph("__") + ", 95% CI [" + ph("__") + ", " + ph("__") + "].",
         assump: [
-          "Censoring is <strong>non-informative</strong> — dropout is unrelated to the outcome.",
+          "Censoring is <strong>non-informative</strong>: dropout is unrelated to the outcome.",
           "For Cox regression: proportional hazards over time (check with Schoenfeld residuals).",
-          "Enough <em>events</em>, not just enough people — power is driven by the event count."
-        ], specialN: "Survival power depends on the number of <em>events</em> observed, the follow-up length and the hazard ratio — not the raw sample size. Use a dedicated survival power tool (e.g. the Freedman or Schoenfeld formula, or simulation)." }
+          "Enough <em>events</em>, not just enough people, since power is driven by the event count."
+        ], specialN: "Survival power depends on the number of <em>events</em> observed, the follow-up length and the hazard ratio, not the raw sample size. Use a dedicated survival power tool (e.g. the Freedman or Schoenfeld formula, or simulation)." }
     };
 
     /* slug → leaf key (query-param routing) */
@@ -442,7 +442,7 @@
     /* ---------- sample-size copy ---------- */
     function nSentence(leaf, unit) {
       var sc = leaf.sc;
-      if (!isFinite(unit)) return { big: "n → very large", sub: "This effect is too small to reach 80% power at a practical sample size — try a larger effect or accept lower power." };
+      if (!isFinite(unit)) return { big: "n → very large", sub: "This effect is too small to reach 80% power at a practical sample size. Try a larger effect or accept lower power." };
       if (sc === "t2") return { big: unit + " <span class=\"sub\">/ group</span>", sub: (2 * unit) + " participants in total (" + unit + " per group)" };
       if (sc === "anova") { var N = leaf._N; return { big: "N = " + N, sub: unit + " per group × " + esState.k + " groups" }; }
       if (sc === "chisq") return { big: "N = " + unit, sub: esState.df + " degree" + (esState.df === 1 ? "" : "s") + " of freedom (" + (esState.df === 1 ? "a 2 × 2 table" : "your table size") + ")" };
@@ -479,7 +479,7 @@
           '<span class="seg" id="es-bench">' + buttons + '</span>' +
         '</div>' +
         '<details class="es-note no-print"><summary>🤔 No idea what effect to expect?</summary>' +
-          '<p style="margin:.3rem 0 0">That\'s the honest and common case. In order of preference: (1) use the <strong>smallest effect that would still matter</strong> to you (a SESOI) — power to catch that; (2) borrow an effect from a <a href="stats-4/meta-analysis/">meta-analysis</a> or the closest prior study, and <em>discount it</em> for publication bias; (3) run a small pilot to sanity-check feasibility (not to estimate the effect — pilots are too noisy for that). Benchmarks (small/medium/large) are a last resort; the box starts at Cohen\'s <em>medium</em>. Translate between d, r and η² with the <a href="effect-sizes.html">effect-size converter</a>.</p>' +
+          '<p style="margin:.3rem 0 0">That\'s the honest and common case. In order of preference: (1) use the <strong>smallest effect that would still matter</strong> to you (a SESOI), and power to catch that; (2) borrow an effect from a <a href="stats-4/meta-analysis/">meta-analysis</a> or the closest prior study, and <em>discount it</em> for publication bias; (3) run a small pilot to sanity-check feasibility (not to estimate the effect, since pilots are too noisy for that). Benchmarks (small/medium/large) are a last resort; the box starts at Cohen\'s <em>medium</em>. Translate between d, r and η² with the <a href="effect-sizes.html">effect-size converter</a>.</p>' +
         '</details>';
     }
 

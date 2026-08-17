@@ -394,9 +394,9 @@
         setDash(); drawScatter(); drawResid();
         return;
       }
-      var warnLen = inp.lenX !== inp.lenY ? " (trimmed to " + X.length + " pairs — X and Y had different lengths)" : "";
+      var warnLen = inp.lenX !== inp.lenY ? " (trimmed to " + X.length + " pairs, since X and Y had different lengths)" : "";
       st = compute(X, Y);
-      if (!st) { msg.textContent = "All values in one column are identical — no variation to correlate."; st = null; loo = null; setDash(); drawScatter(); drawResid(); return; }
+      if (!st) { msg.textContent = "All values in one column are identical, so there's no variation to correlate."; st = null; loo = null; setDash(); drawScatter(); drawResid(); return; }
       loo = looAnalyse(X, Y);
       msg.textContent = "paired " + X.length + " values ✓" + warnLen;
 

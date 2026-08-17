@@ -171,13 +171,13 @@
     // The 8 planted errors: which column, the impossible value, and the rule that catches it.
     var ERRORS = [
       { k: "age", val: 142,     rule: '<code>0 ≤ age ≤ 120</code> — range check. 142 is older than any human.' },
-      { k: "age", val: -4,      rule: '<code>age ≥ 0</code> — range check. Ages can’t be negative.' },
+      { k: "age", val: -4,      rule: '<code>age ≥ 0</code>: range check. Ages can’t be negative.' },
       { k: "ht",  val: 31,      rule: '<code>140 ≤ height_cm ≤ 210</code> — range/unit check. 31 looks like inches typed into a cm column.' },
       { k: "ht",  val: 402,     rule: '<code>height_cm ≤ 210</code> — range check. 402 cm is a decimal-point typo.' },
       { k: "wt",  val: 7,       rule: '<code>35 ≤ weight_kg ≤ 250</code> — range check. An adult can’t weigh 7 kg.' },
       { k: "sex", val: "Femal", rule: '<code>sex ∈ {M, F, Other}</code> — allowed-value set. "Femal" is an unlisted typo.' },
       { k: "rt",  val: 4,       rule: '<code>150 ≤ reaction_ms ≤ 3000</code> — range check. 4 ms is faster than a nerve can fire.' },
-      { k: "by",  val: 1699,    rule: '<code>birth_year = ' + COLLECT_YEAR + ' − age (±1)</code> — cross-field check. 1699 fails the range and the age cross-check.' }
+      { k: "by",  val: 1699,    rule: '<code>birth_year = ' + COLLECT_YEAR + ' − age (±1)</code>: cross-field check. 1699 fails the range and the age cross-check.' }
     ];
 
     function mulberry32(a) {
@@ -279,11 +279,11 @@
           msgEl.style.color = "#22c55e";
           showRules();
         } else {
-          msgEl.textContent = "✓ Impossible value — good catch.";
+          msgEl.textContent = "✓ Impossible value. Good catch.";
           msgEl.style.color = "#22c55e";
         }
       } else {
-        msgEl.textContent = "That value is plausible — keep looking.";
+        msgEl.textContent = "That value is plausible, keep looking.";
         msgEl.style.color = "#ef4444";
         td.classList.remove("miss-flash"); void td.offsetWidth; td.classList.add("miss-flash");
       }

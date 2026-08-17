@@ -231,7 +231,7 @@
       if (chk.trim.checked){
         var trimmed = 0;
         rows.forEach(function(r){ var g=r.group.trim(); if(g!==r.group){ r.group=g; trimmed++; } });
-        log.push("trim_ws()  — stripped spaces from " + trimmed + " labels");
+        log.push("trim_ws()  ·  stripped spaces from " + trimmed + " labels");
       }
       if (chk.std.checked){
         var mapped = 0;
@@ -282,7 +282,7 @@
       el("cw-log").innerHTML = lg.length
         ? "<div style='color:var(--text-faint)'># reads raw_survey.csv → writes clean_survey.csv</div>"
           + lg.map(function(l){ return "<div><span class='ok'>✓</span> " + l + "</div>"; }).join("")
-        : "<div class='empty'>No steps applied — this is the raw file, warts and all. Toggle a step to begin.</div>";
+        : "<div class='empty'>No steps applied. This is the raw file, warts and all. Toggle a step to begin.</div>";
     }
 
     Object.keys(chk).forEach(function(k){ chk[k].addEventListener("change", render); });

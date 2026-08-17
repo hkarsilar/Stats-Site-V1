@@ -164,28 +164,28 @@
     // each with a short "why this level" note.
     var FIELDS = [
       { name: "Hypothesis", opts: [
-        { t: "“Sleep affects memory.”", n: "No direction, no population, no measure — almost any result could be claimed as a match." },
+        { t: "“Sleep affects memory.”", n: "No direction, no population, no measure, so almost any result could be claimed as a match." },
         { t: "“More sleep improves memory.”", n: "Directional, but still not pinned to a measurable, testable prediction." },
-        { t: "“Participants given 8 h time-in-bed will recall more words next day than those given 5 h.”", n: "Directional, specific population, concrete outcome — a genuine prediction." }
+        { t: "“Participants given 8 h time-in-bed will recall more words next day than those given 5 h.”", n: "Directional, specific population, concrete outcome: a genuine prediction." }
       ]},
       { name: "Sample size & stopping rule", opts: [
-        { t: "“We'll collect as much data as we can.”", n: "Open-ended n invites optional stopping — peeking and quitting at p < .05." },
+        { t: "“We'll collect as much data as we can.”", n: "Open-ended n invites optional stopping: peeking and quitting at p < .05." },
         { t: "“Around 60 participants.”", n: "A number, but no justification and no rule against adding more if results disappoint." },
         { t: "“N = 128 (64/group), fixed by an a-priori power analysis for d = 0.5, 80% power, α = .05; no interim peeking.”", n: "Fixed, justified, and immune to optional stopping." }
       ]},
       { name: "Manipulation / groups (IV)", opts: [
-        { t: "“A sleep manipulation.”", n: "Unspecified — leaves the actual conditions open to redefine later." },
+        { t: "“A sleep manipulation.”", n: "Unspecified, which leaves the actual conditions open to redefine later." },
         { t: "“A short-sleep vs long-sleep group.”", n: "Names the groups but not how people land in them or how it's enforced." },
         { t: "“Random assignment to 8 h vs 5 h time-in-bed, verified by actigraphy.”", n: "Assignment method and manipulation check both specified." }
       ]},
       { name: "Primary outcome (DV)", opts: [
-        { t: "“Memory.”", n: "A construct, not a measure — many outcomes could be cherry-picked to fit." },
+        { t: "“Memory.”", n: "A construct, not a measure, so many outcomes could be cherry-picked to fit." },
         { t: "“A memory test score.”", n: "Closer, but which test, which score, scored how, and when?" },
         { t: "“Words correctly recalled (0–40) on a free-recall test 24 h after encoding — the single primary outcome.”", n: "One pre-named primary measure kills outcome-switching." }
       ]},
       { name: "Exclusion criteria", opts: [
-        { t: "“We'll remove bad data.”", n: "Fully discretionary — the classic route to dropping inconvenient participants." },
-        { t: "“Exclude obvious outliers.”", n: "“Obvious” is decided after seeing the data — still a researcher degree of freedom." },
+        { t: "“We'll remove bad data.”", n: "Fully discretionary: the classic route to dropping inconvenient participants." },
+        { t: "“Exclude obvious outliers.”", n: "“Obvious” is decided after seeing the data, still a researcher degree of freedom." },
         { t: "“Exclude anyone failing >1 of 3 attention checks, or recall RT z > 3.29; rule set before collection.”", n: "A mechanical rule fixed in advance, applied blind to the result." }
       ]},
       { name: "Confirmatory analysis", opts: [
@@ -195,13 +195,13 @@
       ]},
       { name: "Decision rule (what counts as support)", opts: [
         { t: "“See whether it works.”", n: "No stated criterion means any outcome can be narrated as success." },
-        { t: "“If p < .05.”", n: "A threshold, but no direction — a significant effect the wrong way would falsely 'support' it." },
+        { t: "“If p < .05.”", n: "A threshold, but no direction, so a significant effect the wrong way would falsely 'support' it." },
         { t: "“Supported iff the 8 h mean exceeds the 5 h mean AND p < .05 two-tailed on the primary outcome.”", n: "Direction + threshold + named outcome: a rule you can't wriggle out of." }
       ]},
       { name: "Exploratory analyses (labeled)", opts: [
         { t: "“We might look at other stuff too.”", n: "Vague, and worse, undifferentiated from the confirmatory test." },
         { t: "“Explore other variables.”", n: "Acknowledges exploration but doesn't commit to flagging it as such in the write-up." },
-        { t: "“Any analyses beyond the above (sex differences, a recognition measure) are exploratory and reported explicitly as such.”", n: "Exploration is welcomed — and clearly fenced off from the confirmatory claim." }
+        { t: "“Any analyses beyond the above (sex differences, a recognition measure) are exploratory and reported explicitly as such.”", n: "Exploration is welcomed, and clearly fenced off from the confirmatory claim." }
       ]}
     ];
 
@@ -254,9 +254,9 @@
       if (answered < FIELDS.length) { verdict.hidden = true; return; }
       verdict.hidden = false;
       if (score === MAX) {
-        verdict.innerHTML = "<b>🔒 Locked and unambiguous.</b> Every decision is airtight — a stranger could run your exact analysis and reach your exact numbers, and there's nowhere left to improvise after the data land. <em>That</em> is a preregistration.";
+        verdict.innerHTML = "<b>🔒 Locked and unambiguous.</b> Every decision is airtight. A stranger could run your exact analysis and reach your exact numbers, and there's nowhere left to improvise after the data land. <em>That</em> is a preregistration.";
       } else if (score >= 11) {
-        verdict.innerHTML = "Solid, but a few decisions still leave you wiggle room. Tighten the amber and red choices — each soft spot is a fork a motivated analyst (including future you) could exploit.";
+        verdict.innerHTML = "Solid, but a few decisions still leave you wiggle room. Tighten the amber and red choices: each soft spot is a fork a motivated analyst (including future you) could exploit.";
       } else {
         verdict.innerHTML = "This plan is too loose to constrain anything: after seeing the data you could still justify several different analyses and outcomes. Push every decision toward the airtight version.";
       }

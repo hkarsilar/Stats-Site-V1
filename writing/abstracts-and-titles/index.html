@@ -211,10 +211,10 @@
     "use strict";
 
     var MOVES = [
-      { k: "context",    label: "Context — the gap" },
-      { k: "aim",        label: "Aim — the question" },
-      { k: "method",     label: "Method — who & how" },
-      { k: "result",     label: "Result — with numbers" },
+      { k: "context",    label: "Context: the gap" },
+      { k: "aim",        label: "Aim: the question" },
+      { k: "method",     label: "Method: who & how" },
+      { k: "result",     label: "Result: with numbers" },
       { k: "conclusion", label: "Conclusion — calibrated" }
     ];
 
@@ -273,9 +273,9 @@
 
       var bits = [];
       bits.push('<b>' + words + '</b> words <span style="color:var(--text-faint)">(aim ~150–250 in a real abstract)</span>');
-      if (have.result && !numbersOk) bits.push('<span class="warn">Result has no numbers — give the estimate.</span>');
+      if (have.result && !numbersOk) bits.push('<span class="warn">Result has no numbers. Give the estimate.</span>');
       if (fillers) bits.push('<span class="warn">' + fillers + ' sentence' + (fillers > 1 ? "s add" : " adds") + ' no move.</span>');
-      if (bothResults) bits.push('<span class="warn">Two result sentences — keep the one with numbers.</span>');
+      if (bothResults) bits.push('<span class="warn">Two result sentences. Keep the one with numbers.</span>');
       metaEl.innerHTML = bits.join("<br>");
 
       var movesDone = MOVES.every(function (m) { return have[m.k]; });
@@ -286,7 +286,7 @@
       } else {
         var missing = MOVES.filter(function (m) { return !have[m.k]; }).map(function (m) { return m.k; });
         if (missing.length) gradeEl.textContent = "Missing move" + (missing.length > 1 ? "s" : "") + ": " + missing.join(", ") + ".";
-        else if (!numbersOk) gradeEl.textContent = "All moves present — now put numbers in the result.";
+        else if (!numbersOk) gradeEl.textContent = "All moves present. Now put numbers in the result.";
         else gradeEl.textContent = "Complete, but trim the sentences that carry no move.";
       }
     }

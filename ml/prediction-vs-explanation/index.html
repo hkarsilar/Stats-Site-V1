@@ -287,12 +287,12 @@
       var ce = coefs[explBest], slope = explBest >= 1 ? ce[1] : 0;
       document.getElementById("card-expl").innerHTML =
         "Degree <strong>" + explBest + "</strong> · " + terms(explBest) + "<br>" +
-        (explBest === 1 ? "One clean slope you can report: <strong>" + (slope >= 0 ? "+" : "") + slope.toFixed(2) + "</strong> per unit of x." : "A parsimonious model — few terms to interpret.") +
+        (explBest === 1 ? "One clean slope you can report: <strong>" + (slope >= 0 ? "+" : "") + slope.toFixed(2) + "</strong> per unit of x." : "A parsimonious model: few terms to interpret.") +
         "<br>held-out error = " + cvR[explBest].toFixed(3) + " · <em>easy to explain</em>";
       document.getElementById("card-pred").innerHTML =
         "Degree <strong>" + predBest + "</strong> · " + terms(predBest) + "<br>" +
         "Lowest error on new data: <strong>" + cvR[predBest].toFixed(3) + "</strong>." +
-        "<br>" + (predBest > explBest ? "Extra curvature earns its keep — but harder to explain." : "Here the simple model also predicts best.");
+        "<br>" + (predBest > explBest ? "Extra curvature earns its keep, but it's harder to explain." : "Here the simple model also predicts best.");
       var msg = deg === explBest && deg === predBest ? "Your model matches both goals."
         : deg === explBest ? "Your model = explanation's pick."
         : deg === predBest ? "Your model = prediction's pick."

@@ -211,7 +211,7 @@
       else drawMainNL(g);
       // caption on the main view
       ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px " + VIZ.css("--font"); ctx.textAlign = "center";
-      var cap = view === "3d" ? "the true 3-D data — drag to rotate" : view === "pca" ? "PCA: best linear shadow (rings still overlap)" : "nonlinear embedding: rings untangled";
+      var cap = view === "3d" ? "the true 3-D data · drag to rotate" : view === "pca" ? "PCA: best linear shadow (rings still overlap)" : "nonlinear embedding: rings untangled";
       ctx.fillText(cap, g.x0 + g.S / 2, g.y0 + g.S + 15);
       drawTrio(g);
     }
@@ -242,7 +242,7 @@
       var totalW = tS * 3 + gap * 2, x0 = (W - totalW) / 2;
       var fns = [embLow, embMed, embHigh], labs = ["perplexity 5", "perplexity 30", "perplexity 80"], subs = ["over-split", "just right", "collapsed"];
       ctx.fillStyle = VIZ.css("--text"); ctx.font = "600 11px " + VIZ.css("--font"); ctx.textAlign = "center";
-      ctx.fillText("Same data, one nonlinear method, three perplexity settings — the shape lies:", W / 2, top - 8);
+      ctx.fillText("Same data, one nonlinear method, three perplexity settings, and the shape lies:", W / 2, top - 8);
       for (var i = 0; i < 3; i++) {
         var xx = x0 + i * (tS + gap);
         ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.strokeRect(xx, top, tS, tS);
@@ -253,8 +253,8 @@
     }
 
     function verdict() {
-      var v = view === "3d" ? "Rotate until the two rings link — that interlock is real structure living in all three dimensions."
-        : view === "pca" ? "PCA found the flattest, most faithful shadow — and the rings still bleed into each other. A linear map can rotate, never unfold. The blob does separate: it really is far away."
+      var v = view === "3d" ? "Rotate until the two rings link. That interlock is real structure living in all three dimensions."
+        : view === "pca" ? "PCA found the flattest, most faithful shadow, and the rings still bleed into each other. A linear map can rotate, never unfold. The blob does separate: it really is far away."
         : "A nonlinear method pulls the rings apart into clean loops. Gorgeous — but look below before you trust the gaps.";
       document.getElementById("dr-verdict").textContent = v;
     }

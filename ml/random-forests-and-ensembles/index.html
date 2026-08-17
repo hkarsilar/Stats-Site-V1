@@ -271,10 +271,10 @@
       document.getElementById("ens-acc").textContent = (ensCurve[nShown - 1] * 100).toFixed(1) + "%";
       document.getElementById("one-acc").textContent = (singleAcc * 100).toFixed(1) + "%";
       var gain = ensCurve[nShown - 1] - singleAcc, v;
-      if (nShown === 1) v = "One tree is just one noisy opinion — jagged and unreliable. Add more and let them vote.";
-      else if (nShown < 8) v = "Already " + (gain > 0 ? "ahead of" : "near") + " the average single tree — the boundary is smoothing as votes pile up.";
+      if (nShown === 1) v = "One tree is just one noisy opinion, jagged and unreliable. Add more and let them vote.";
+      else if (nShown < 8) v = "Already " + (gain > 0 ? "ahead of" : "near") + " the average single tree, and the boundary is smoothing as votes pile up.";
       else if (nShown < 30) v = "Variance melting away: the forest is +" + (gain * 100).toFixed(1) + " points over one tree, and the curve is flattening.";
-      else v = "Plateaued. More trees just steady the estimate — they never overfit. Depth, not tree count, is the overfitting dial.";
+      else v = "Plateaued. More trees just steady the estimate. They never overfit. Depth, not tree count, is the overfitting dial.";
       document.getElementById("rf-verdict").textContent = v;
       draw();
     }

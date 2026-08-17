@@ -237,10 +237,10 @@
       document.getElementById("val-val").textContent = val;
       var d = document.getElementById("db-diag");
       var hiR = rel >= 50, hiV = val >= 50, txt, col;
-      if (hiR && hiV) { txt = "Reliable AND valid — consistent and on target"; col = "#22c55e"; }
-      else if (hiR && !hiV) { txt = "Reliable but NOT valid — consistently wrong"; col = "#ef4444"; }
-      else if (!hiR && hiV) { txt = "Valid on average but NOT reliable — centered yet scattered"; col = "#f59e0b"; }
-      else { txt = "Neither — scattered and off target"; col = "#ef4444"; }
+      if (hiR && hiV) { txt = "Reliable AND valid: consistent and on target"; col = "#22c55e"; }
+      else if (hiR && !hiV) { txt = "Reliable but NOT valid: consistently wrong"; col = "#ef4444"; }
+      else if (!hiR && hiV) { txt = "Valid on average but NOT reliable: centered yet scattered"; col = "#f59e0b"; }
+      else { txt = "Neither: scattered and off target"; col = "#ef4444"; }
       d.textContent = txt; d.style.color = col;
       draw();
     }
@@ -272,11 +272,11 @@
       fill.style.background = col;
       var v = document.getElementById("ca-verdict");
       var txt, tc = col;
-      if (a >= 0.90) { txt = "Excellent — but very high α can also mean the items are near-duplicates."; tc = "#22c55e"; }
+      if (a >= 0.90) { txt = "Excellent, but very high α can also mean the items are near-duplicates."; tc = "#22c55e"; }
       else if (a >= 0.80) { txt = "Good internal consistency."; }
       else if (a >= 0.70) { txt = "Acceptable — the common .70 minimum for research scales."; }
-      else if (a >= 0.60) { txt = "Questionable — below the usual .70 threshold."; }
-      else { txt = "Poor — the items aren't yet measuring one coherent thing."; }
+      else if (a >= 0.60) { txt = "Questionable: below the usual .70 threshold."; }
+      else { txt = "Poor. The items aren't yet measuring one coherent thing."; }
       v.textContent = txt; v.style.color = tc;
     }
     document.getElementById("k").addEventListener("input", function () { k = +this.value; update(); });

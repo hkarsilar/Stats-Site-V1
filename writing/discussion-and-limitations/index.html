@@ -182,13 +182,13 @@
 
     var ITEMS = [
       { html: 'Sleeping more <mark>causes</mark> improvements in student wellbeing.',
-        v: "over", why: "'Causes' is a causal verb, but the design is correlational — it can't establish cause. Downgrade to 'was associated with'." },
+        v: "over", why: "'Causes' is a causal verb, but the design is correlational, so it can't establish cause. Downgrade to 'was associated with'." },
       { html: 'More nightly sleep was associated with higher self-reported wellbeing.',
-        v: "calibrated", why: "Correlational verb, group-level claim, no strength inflation — this is exactly what the data support." },
+        v: "calibrated", why: "Correlational verb, group-level claim, no strength inflation: this is exactly what the data support." },
       { html: 'These results <mark>prove</mark> that sleep is the key to student happiness.',
         v: "over", why: "'Prove' overstates any single study, and 'the key' implies a lone dominant cause the data never tested." },
       { html: 'Because the design was correlational, we cannot rule out that a third factor such as workload drives both sleep and wellbeing.',
-        v: "calibrated", why: "A specific, consequential limitation — it names a plausible confound and what it would do to the conclusion." },
+        v: "calibrated", why: "A specific, consequential limitation. It names a plausible confound and what it would do to the conclusion." },
       { html: 'This study found <mark>no meaningful</mark> link between sleep and wellbeing.',
         v: "under", why: "The correlation is r = .28 with a CI that excludes zero — a real, if modest, effect. Calling it 'no meaningful link' throws that away." },
       { html: 'The modest correlation suggests sleep may be one of several factors relating to wellbeing.',
@@ -203,7 +203,7 @@
       '<b>The study:</b> A correlational survey of <b class="oc-rstats">120</b> undergraduates related nightly sleep to a wellbeing scale. ' +
       'Result: students who slept more reported higher wellbeing, <em>r</em> = <b class="oc-rstats">.28</b>, ' +
       '<em>p</em> = <b class="oc-rstats">.002</b>, 95% CI [<b class="oc-rstats">.11, .44</b>]. ' +
-      '<br><span style="color:var(--text-muted)">Modest effect, statistically reliable, and — because nobody was randomly assigned to sleep — strictly correlational.</span>';
+      '<br><span style="color:var(--text-muted)">Modest effect, statistically reliable, and, because nobody was randomly assigned to sleep, strictly correlational.</span>';
 
     document.getElementById("oc-result").innerHTML = RESULT;
     var listEl = document.getElementById("oc-list");
@@ -263,7 +263,7 @@
       var msg = right + " / " + ITEMS.length + " calibrated correctly";
       if (done === ITEMS.length) {
         msg += right === ITEMS.length ? " — a perfectly tuned calibration meter." :
-               right >= ITEMS.length - 1 ? " — you've got the ear for it." :
+               right >= ITEMS.length - 1 ? ". You've got the ear for it." :
                " — reread the highlighted verbs; that's where claims break.";
       }
       scoreEl.textContent = msg;

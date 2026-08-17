@@ -173,11 +173,11 @@
 
     // Shared flowchart. Each gate routes to another gate or a leaf.
     var GATES = [
-      { id: "g1", q: "Does the study require withholding or misrepresenting information — any deception or concealment at all?",
+      { id: "g1", q: "Does the study require withholding or misrepresenting information: any deception or concealment at all?",
         yes: "g2", no: "L_none" },
-      { id: "g2", q: "Could the question be answered well without the deception — is there a reasonable, honest alternative?",
+      { id: "g2", q: "Could the question be answered well without the deception: is there a reasonable, honest alternative?",
         yes: "L_alt", no: "g3" },
-      { id: "g3", q: "Is any harm minimal — no significant distress, and nothing participants would reasonably resent once told?",
+      { id: "g3", q: "Is any harm minimal: no significant distress, and nothing participants would reasonably resent once told?",
         yes: "g4", no: "L_harm" },
       { id: "g4", q: "Will participants be debriefed as soon as possible and allowed to withdraw their data afterwards?",
         yes: "L_ok", no: "L_debrief" }
@@ -185,10 +185,10 @@
     var GATE = {}; GATES.forEach(function (g) { GATE[g.id] = g; });
 
     var LEAVES = {
-      L_none:    { tone: "neutral", text: "No deception is involved — run it with ordinary informed consent." },
-      L_alt:     { tone: "bad",     text: "Not defensible — a reasonable honest alternative exists, so use it." },
-      L_harm:    { tone: "bad",     text: "Not defensible — the potential harm or resentment is more than minimal." },
-      L_debrief: { tone: "bad",     text: "Not defensible — deception without a proper debrief is off the table." },
+      L_none:    { tone: "neutral", text: "No deception is involved, so run it with ordinary informed consent." },
+      L_alt:     { tone: "bad",     text: "Not defensible: a reasonable honest alternative exists, so use it." },
+      L_harm:    { tone: "bad",     text: "Not defensible, since the potential harm or resentment is more than minimal." },
+      L_debrief: { tone: "bad",     text: "Not defensible. Deception without a proper debrief is off the table." },
       L_ok:      { tone: "good",    text: "Defensible — minimal-risk deception, with a full debrief and the right to withdraw data." }
     };
 
@@ -198,7 +198,7 @@
         title: "A cover story in a memory study",
         text: "To stop participants from deliberately rehearsing, you tell them a word list is just a \"warm-up,\" when recall of that list is actually the main measure. Nothing else is misrepresented, there's no distress, and everyone is told the real design and offered data withdrawal at the end.",
         expert: "L_ok",
-        why: "Mild concealment with no honest alternative (revealing the true aim would ruin the measure), no meaningful harm, and a full debrief with withdrawal — this is the textbook case of defensible deception."
+        why: "Mild concealment with no honest alternative (revealing the true aim would ruin the measure), no meaningful harm, and a full debrief with withdrawal. This is the textbook case of defensible deception."
       },
       {
         tab: "Rigged failure feedback",
@@ -217,16 +217,16 @@
       {
         tab: "Avoidable deception",
         title: "Deception you could easily avoid",
-        text: "To study snacking, you plan to tell participants the study is \"about movie preferences\" and secretly weigh how much they eat. But a colleague points out you could measure the same thing by openly framing it as a study of eating during films, with consent — participants' behavior is unaffected either way.",
+        text: "To study snacking, you plan to tell participants the study is \"about movie preferences\" and secretly weigh how much they eat. But a colleague points out you could measure the same thing by openly framing it as a study of eating during films, with consent, since participants' behavior is unaffected either way.",
         expert: "L_alt",
-        why: "Because an honest design answers the question just as well, the deception is unnecessary — and unnecessary deception is never justified, however harmless. The second gate closes it."
+        why: "Because an honest design answers the question just as well, the deception is unnecessary, and unnecessary deception is never justified, however harmless. The second gate closes it."
       },
       {
         tab: "No debrief planned",
         title: "Justified deception, but no debrief",
         text: "A minimal, harmless cover story is genuinely needed and there's no honest alternative. But the researcher decides to skip debriefing to save time and because \"the deception was trivial anyway,\" so participants never learn the true purpose.",
         expert: "L_debrief",
-        why: "The first three gates pass — deception is involved, there's no alternative, harm is minimal — but skipping the debrief fails the last one. Even trivial deception carries the duty to reveal it and offer data withdrawal."
+        why: "The first three gates pass (deception is involved, there's no alternative, harm is minimal), but skipping the debrief fails the last one. Even trivial deception carries the duty to reveal it and offer data withdrawal."
       }
     ];
 

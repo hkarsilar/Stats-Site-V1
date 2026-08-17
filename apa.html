@@ -450,9 +450,9 @@
       var html = "";
       var pv = val("p"), pf = fmtP(pv);
       if (isFinite(pv)) {
-        if (pv <= 0) html += '<div class="apa-note info">APA never reports <em>p</em> = .000 — a <em>p</em>-value is never exactly zero. Rounded up to the reporting floor: <strong><em>p</em> &lt; .001</strong>.</div>';
-        else if (pv < 0.001) html += '<div class="apa-note info">Very small <em>p</em> shown as <strong><em>p</em> &lt; .001</strong> (APA’s reporting floor — never write out more zeros).</div>';
-        else if (pv > 1) html += '<div class="apa-note info">A <em>p</em>-value can’t exceed 1 — clamped to 1.00.</div>';
+        if (pv <= 0) html += '<div class="apa-note info">APA never reports <em>p</em> = .000: a <em>p</em>-value is never exactly zero. Rounded up to the reporting floor: <strong><em>p</em> &lt; .001</strong>.</div>';
+        else if (pv < 0.001) html += '<div class="apa-note info">Very small <em>p</em> shown as <strong><em>p</em> &lt; .001</strong> (APA’s reporting floor, so never write out more zeros).</div>';
+        else if (pv > 1) html += '<div class="apa-note info">A <em>p</em>-value can’t exceed 1, so it’s clamped to 1.00.</div>';
       }
       /* the same statcheck idea, turned on the effect size: partial η² and R²
          are both F·df₁/(F·df₁ + df₂) exactly, whatever the design */
@@ -477,7 +477,7 @@
         } else {
           html += '<div class="apa-note warn">⚠️ From the statistic and <em>df</em>, <em>p</em> should be about <strong>' + pBare(rec) +
             '</strong>, but you entered <em>p</em> ' + (pv <= 0 ? "= .000" : "= " + pv.toFixed(3).replace(/^0\./, ".")) +
-            '. Double-check for a typo or a one- vs two-tailed mix-up — this is exactly the slip a <a href="ethics/fraud-and-self-correction/">statcheck</a> scan catches.</div>';
+            '. Double-check for a typo or a one- vs two-tailed mix-up. This is exactly the slip a <a href="ethics/fraud-and-self-correction/">statcheck</a> scan catches.</div>';
         }
       }
       var cn = A[cur].ciNote;

@@ -159,11 +159,11 @@
 
     /* ---- matching game ---- */
     var CHIPS = [
-      { id: 0, t: "Salivary cortisol (µg/dL)", c: "stress", good: true,  note: "A physiological marker — objective, on a real scale, repeatable. A strong operationalization of stress." },
-      { id: 1, t: "“How stressed do they look?”", c: "stress", good: false, note: "Aims at stress, but it's a subjective impression — two raters would disagree. Not directly measurable." },
+      { id: 0, t: "Salivary cortisol (µg/dL)", c: "stress", good: true,  note: "A physiological marker: objective, on a real scale, repeatable. A strong operationalization of stress." },
+      { id: 1, t: "“How stressed do they look?”", c: "stress", good: false, note: "Aims at stress, but it's a subjective impression, and two raters would disagree. Not directly measurable." },
       { id: 2, t: "Score on a standardized 20-item test", c: "ability", good: true, note: "Specific, standardized, scored identically for everyone. A strong operationalization of academic ability." },
       { id: 3, t: "“Do they seem clever?”", c: "ability", good: false, note: "Points at ability, but it's a vague impression with no defined scale. A weak operationalization." },
-      { id: 4, t: "Horn-honks per trip", c: "aggression", good: true, note: "A countable behavior — creative, yet genuinely measurable. A defensible operationalization of aggression." },
+      { id: 4, t: "Horn-honks per trip", c: "aggression", good: true, note: "A countable behavior, creative yet genuinely measurable. A defensible operationalization of aggression." },
       { id: 5, t: "“How mean are they deep down?”", c: "aggression", good: false, note: "Gestures at aggression, but “deep down” can't be observed or counted. Not measurable." }
     ];
     var BUCKETS = [ { id: "stress", t: "Stress" }, { id: "ability", t: "Academic ability" }, { id: "aggression", t: "Aggression" } ];
@@ -213,7 +213,7 @@
       sel = null; arm(false); hint.textContent = "Click a measure below to pick it up.";
       if (placed === 6) {
         hint.textContent = "All placed.";
-        fb.innerHTML += '<br><strong>Notice:</strong> one construct (stress) had several very different measures — and some “measures” can’t be measured at all.';
+        fb.innerHTML += '<br><strong>Notice:</strong> one construct (stress) had several very different measures, and some “measures” can’t be measured at all.';
       }
     });
     document.getElementById("op-reset").addEventListener("click", build);
@@ -222,8 +222,8 @@
     /* ---- IV / DV / confound labeler ---- */
     var VARS = [
       { t: "Coffee vs. decaf", a: "iv", note: "The independent variable — the cause the researcher deliberately manipulates." },
-      { t: "Reaction time", a: "dv", note: "The dependent variable — the outcome measured to see if the IV mattered." },
-      { t: "Tested in the morning vs. afternoon", a: "conf", note: "A confound — it differs between the groups and also affects reaction time, so it's a rival explanation for any result." }
+      { t: "Reaction time", a: "dv", note: "The dependent variable: the outcome measured to see if the IV mattered." },
+      { t: "Tested in the morning vs. afternoon", a: "conf", note: "A confound: it differs between the groups and also affects reaction time, so it's a rival explanation for any result." }
     ];
     var LABS = [ { id: "iv", t: "IV" }, { id: "dv", t: "DV" }, { id: "conf", t: "Confound" } ];
     var rowsHost = document.getElementById("lab-rows");
@@ -249,7 +249,7 @@
       var note = document.getElementById("lab-note-" + i);
       note.innerHTML = (right ? '<span class="ok" style="color:#22c55e;font-weight:700">Correct.</span> ' : '<span class="no" style="color:#ef4444;font-weight:700">Not quite.</span> ') + v.note;
       answered++; if (right) labCorrect++;
-      if (answered === VARS.length) labDone.innerHTML = '<strong>' + labCorrect + ' / 3.</strong> A clean causal claim needs the IV and DV clearly identified — and every plausible confound accounted for.';
+      if (answered === VARS.length) labDone.innerHTML = '<strong>' + labCorrect + ' / 3.</strong> A clean causal claim needs the IV and DV clearly identified, and every plausible confound accounted for.';
     });
   })();
   </script>

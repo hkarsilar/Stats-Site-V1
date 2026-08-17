@@ -177,30 +177,30 @@
     ];
 
     var SCEN = [
-      { text: "You ran a fully anonymous questionnaire — no names, no contact details, no way to trace a response to a person — and you email the finished dataset to your supervisor.",
+      { text: "You ran a fully anonymous questionnaire, with no names, no contact details and no way to trace a response to a person, and you email the finished dataset to your supervisor.",
         answer: "fine",
         rule: "Anonymization. Data with no re-identification path are not personal data, so ordinary sharing is fine. The catch is being sure it is genuinely anonymous — no hidden IDs, no unique free-text giveaways." },
-      { text: "As \"open data,\" you upload the raw interview transcripts — first names, employers and hometowns still in the text — to a public repository.",
+      { text: "As \"open data,\" you upload the raw interview transcripts, first names, employers and hometowns still in the text, to a public repository.",
         answer: "breach",
-        rule: "Never publish identifiable data. Openness is good, but it applies to de-identified or aggregate data, or controlled access — not raw transcripts that name people and their workplaces." },
+        rule: "Never publish identifiable data. Openness is good, but it applies to de-identified or aggregate data, or controlled access, not raw transcripts that name people and their workplaces." },
       { text: "You pseudonymize responses with participant codes, but you keep the code-to-name key in the same cloud folder as the coded data, both open to your whole lab.",
         answer: "risky",
         rule: "Separate the key. Pseudonymization only protects when the key lives apart, under tighter access. Key + data in one folder is effectively identifiable data waiting for the wrong person to open it." },
-      { text: "A friend outside the project asks how one named participant answered the depression questions, and — because they won't tell anyone — you say.",
+      { text: "A friend outside the project asks how one named participant answered the depression questions, and, because they won't tell anyone, you say.",
         answer: "breach",
         rule: "Confidentiality. Individual identifiable responses may not be disclosed to anyone outside the approved team, however trustworthy they seem. The promise you made covers exactly this." },
       { text: "You collect only the variables your analysis needs, and you delete the recruitment email addresses once data collection is finished.",
         answer: "fine",
-        rule: "Data minimization and storage limitation. Holding less, and deleting identifiers when they've done their job, is exactly what good practice looks like — fewer handles to protect." },
+        rule: "Data minimization and storage limitation. Holding less, and deleting identifiers when they've done their job, is exactly what good practice looks like: fewer handles to protect." },
       { text: "You paste your recordings into a free online transcription site without checking where it stores files or whether it's covered by your institution's data agreement.",
         answer: "risky",
         rule: "Processor due diligence. Third-party tools are data processors; feeding real participant data to an unvetted one can move it outside the protections you promised. Check first, then decide." },
       { text: "Your consent form said data would be destroyed after one year, but the year is up and you keep everything indefinitely \"in case it's useful for a future study.\"",
         answer: "breach",
-        rule: "Purpose limitation and retention. Data may only be used and kept for what participants agreed to. Reusing it for an unnamed future purpose needs fresh consent or approval — keeping it \"just in case\" doesn't." },
-      { text: "Mid-interview, a participant describes a credible, specific plan to seriously harm an identifiable person. You disclose only what's necessary to the appropriate authority — and your consent form had warned this could happen.",
+        rule: "Purpose limitation and retention. Data may only be used and kept for what participants agreed to. Reusing it for an unnamed future purpose needs fresh consent or approval, and keeping it \"just in case\" doesn't." },
+      { text: "Mid-interview, a participant describes a credible, specific plan to seriously harm an identifiable person. You disclose only what's necessary to the appropriate authority, and your consent form had warned this could happen.",
         answer: "fine",
-        rule: "The limits of confidentiality. The duty to prevent serious harm can override confidentiality, and because you disclosed the limit up front and shared only what was necessary, you acted correctly — not in breach." }
+        rule: "The limits of confidentiality. The duty to prevent serious harm can override confidentiality, and because you disclosed the limit up front and shared only what was necessary, you acted correctly, not in breach." }
     ];
 
     var countEl = document.getElementById("ps-count");
@@ -246,7 +246,7 @@
       fbEl.hidden = false;
       fbEl.classList.add(right ? "good" : "bad");
       fbEl.innerHTML =
-        '<span class="ps-verdict">' + (right ? "✓ Correct — " : "✗ Not quite — the answer is ") + labelText(s.answer) + '.</span>' +
+        '<span class="ps-verdict">' + (right ? "✓ Correct — " : "✗ Not quite. The answer is ") + labelText(s.answer) + '.</span>' +
         '<span class="ps-rule"><b>The rule:</b> ' + escapeHtml(s.rule) + '</span>';
       nextEl.hidden = false;
       nextEl.textContent = idx < SCEN.length - 1 ? "Next situation →" : "See summary →";

@@ -289,8 +289,8 @@
       document.getElementById("stat-naive").textContent = est.naive.toFixed(2);
       document.getElementById("stat-adj").textContent = est.adj.toFixed(2);
       document.getElementById("dag-hint").innerHTML = mode === "conf"
-        ? "Z is a <strong>common cause</strong> — the backdoor X ← Z → Y inflates the naive slope. Adjusting for Z (indigo, dashed) closes it and recovers β. Try γ = 0: no confounding, the two lines agree."
-        : "C is a <strong>common effect</strong> — untouched, it biases nothing, so the naive slope is already right. Adjusting for C (indigo, dashed) opens the collider path and <em>drags the estimate away from β</em>. Try γ = 0 to switch the bias off.";
+        ? "Z is a <strong>common cause</strong>: the backdoor X ← Z → Y inflates the naive slope. Adjusting for Z (indigo, dashed) closes it and recovers β. Try γ = 0: no confounding, the two lines agree."
+        : "C is a <strong>common effect</strong>. Untouched, it biases nothing, so the naive slope is already right. Adjusting for C (indigo, dashed) opens the collider path and <em>drags the estimate away from β</em>. Try γ = 0 to switch the bias off.";
     }
 
     function setMode(m) {

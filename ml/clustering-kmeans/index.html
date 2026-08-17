@@ -77,7 +77,7 @@
           <div class="controls" style="margin-top:.5rem">
             <div class="control"><button class="btn btn-sm" id="data-btn">◑ Dataset: three blobs</button></div>
             <div class="control"><button class="btn btn-sm" id="new-btn">↺ New points</button></div>
-            <div class="control" style="margin-left:auto"><span class="val" id="km-status" style="font-size:.9rem">Ready — press Step</span></div>
+            <div class="control" style="margin-left:auto"><span class="val" id="km-status" style="font-size:.9rem">Ready · press Step</span></div>
           </div>
 
           <canvas id="km-canvas" style="touch-action:none;cursor:grab"></canvas>
@@ -281,17 +281,17 @@
     function status() {
       var s;
       if (converged) s = "Converged in " + iter + " iteration" + (iter === 1 ? "" : "s");
-      else if (iter === 0 && phase === "assign") s = "Ready — press Step";
+      else if (iter === 0 && phase === "assign") s = "Ready · press Step";
       else s = (phase === "assign" ? "Centroids moved" : "Points assigned") + " · iter " + iter;
       document.getElementById("km-status").textContent = s;
     }
     function verdict() {
       var v = "";
       if (converged) {
-        if (mode === "moons" && k === 2) v = "Confidently wrong: k-means sliced the two crescents with a straight boundary — its centroids can't wrap a curve. Clusters are hypotheses, not facts.";
-        else if (mode === "blobs" && k === 3) v = "Clean recovery — three tight, roughly spherical blobs are exactly what k-means is built for. Note the sharp elbow at k = 3.";
+        if (mode === "moons" && k === 2) v = "Confidently wrong: k-means sliced the two crescents with a straight boundary, since its centroids can't wrap a curve. Clusters are hypotheses, not facts.";
+        else if (mode === "blobs" && k === 3) v = "Clean recovery: three tight, roughly spherical blobs are exactly what k-means is built for. Note the sharp elbow at k = 3.";
         else if (mode === "blobs" && k > 3) v = "More clusters than there are blobs: k-means splits real groups to keep lowering WCSS. The elbow already flattened at k = 3.";
-        else v = "Converged. Compare the clusters against the elbow — and ask whether these groups mean anything.";
+        else v = "Converged. Compare the clusters against the elbow, and ask whether these groups mean anything.";
       } else v = "";
       document.getElementById("km-verdict").textContent = v;
     }

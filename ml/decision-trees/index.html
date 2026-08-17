@@ -263,8 +263,8 @@
       document.getElementById("tr-acc").textContent = (trAcc[dep] * 100).toFixed(1) + "%";
       document.getElementById("te-acc").textContent = (teAcc[dep] * 100).toFixed(1) + "%";
       var v;
-      if (dep === 0) v = "Depth 0 is a single guess — the majority class everywhere. Start growing.";
-      else if (dep < peakD) v = "Test accuracy still climbing — the tree is learning real structure. Keep going.";
+      if (dep === 0) v = "Depth 0 is a single guess: the majority class everywhere. Start growing.";
+      else if (dep < peakD) v = "Test accuracy still climbing, so the tree is learning real structure. Keep going.";
       else if (dep === peakD) v = "Sweet spot: test accuracy peaks around depth " + peakD + ". Growing further starts to hurt.";
       else v = "Past the peak: training keeps rising toward 100% but test accuracy is falling — that's overfitting.";
       document.getElementById("dt-verdict").textContent = v;

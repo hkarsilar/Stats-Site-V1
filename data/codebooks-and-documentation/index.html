@@ -157,16 +157,16 @@
     var COLS = [
       { name: "grp", vals: "1, 2, 1, 3, 2", type: "Nominal category",
         label: "Study group", tv: "1 = control, 2 = drug A, 3 = drug B", miss: "(none)",
-        flag: "Stored as numbers, but they're labels — never take a mean of a group code." },
+        flag: "Stored as numbers, but they're labels, so never take a mean of a group code." },
       { name: "q3_rev", vals: "5, 2, 4, 1, 3", type: "Ordinal (Likert)",
         label: "Item 3 (reverse-scored)", tv: "1 = strongly disagree … 5 = strongly agree", miss: "blank",
         flag: "Reverse-worded: recode (6 − x) before adding it to a scale, or the composite is wrong." },
       { name: "dtcol", vals: "03/04/24, 11/02/24", type: "Date",
         label: "Test date", tv: "format DD/MM/YYYY", miss: "blank",
-        flag: "“03/04/24” is ambiguous — 3 April or 4 March? Store ISO 8601 (YYYY-MM-DD) or record the format." },
+        flag: "“03/04/24” is ambiguous: 3 April or 4 March? Store ISO 8601 (YYYY-MM-DD) or record the format." },
       { name: "inc", vals: "45000, 52000, −99, 61000", type: "Continuous measure",
         label: "Annual income (USD)", tv: "≥ 0", miss: "−99 = declined to answer",
-        flag: "−99 is a MISSING code, not a salary. Undeclared, it poisons every mean and SD — prefer a blank cell." },
+        flag: "−99 is a MISSING code, not a salary. Undeclared, it poisons every mean and SD, so prefer a blank cell." },
       { name: "pid", vals: "1001, 1002, 1003", type: "Identifier",
         label: "Participant ID", tv: "unique per person", miss: "(none)",
         flag: "An ID is a name, not a quantity — exclude it from every calculation, even though it looks numeric." },
@@ -218,7 +218,7 @@
           sel.addEventListener("change", function () {
             if (sel.value === c.type) { solved[c.name] = true; render(); renderBook(); }
             else {
-              hint.textContent = "Not quite — look again at the sample values.";
+              hint.textContent = "Not quite. Look again at the sample values.";
               hint.style.color = "#ef4444";
               sel.value = "";
               card.classList.remove("cb-shake"); void card.offsetWidth; card.classList.add("cb-shake");

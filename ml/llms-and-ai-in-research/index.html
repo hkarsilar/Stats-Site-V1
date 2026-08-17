@@ -246,7 +246,7 @@
       }).join("");
     }
     function verdict() {
-      if (done) verdEl.textContent = "Fluent? Yes. True? Not necessarily — it never checked. It only ever asked “what word usually comes next?”";
+      if (done) verdEl.textContent = "Fluent? Yes. True? Not necessarily. It never checked. It only ever asked “what word usually comes next?”";
       else verdEl.textContent = "";
     }
     function step() {
@@ -267,9 +267,9 @@
 
     /* --- spot-the-fake-citation --- */
     var REFS = [
-      { html: 'Alvarez, M., &amp; Whitcombe, R. (2019). Sleep duration and working-memory consolidation in young adults. <em>Journal of Sleep Research, 28</em>(4), e12811.', fake: false, note: 'Checks out — the volume, year and article ID are internally consistent and the record resolves.' },
-      { html: 'Osei, D., Lindqvist, K., &amp; Romano, P. (2021). Caffeine, vigilance, and the speed–accuracy trade-off: a preregistered replication. <em>Psychological Science, 32</em>(9), 1442–1455.', fake: false, note: 'Checks out — page range and issue are plausible and the record resolves.' },
-      { html: 'Nakamura, T., &amp; Boone, E. (2020). A meta-analytic review of daytime napping and episodic memory. <em>Nature Reviews Neuroscience, 21</em>, 233–247.', fake: true, note: 'Invented. The DOI leads nowhere and no such article appears in the journal’s 2020 index. Notice it was the most prestigious-looking of the three — fabrications often are. The only reliable test is to look it up.' }
+      { html: 'Alvarez, M., &amp; Whitcombe, R. (2019). Sleep duration and working-memory consolidation in young adults. <em>Journal of Sleep Research, 28</em>(4), e12811.', fake: false, note: 'Checks out: the volume, year and article ID are internally consistent and the record resolves.' },
+      { html: 'Osei, D., Lindqvist, K., &amp; Romano, P. (2021). Caffeine, vigilance, and the speed–accuracy trade-off: a preregistered replication. <em>Psychological Science, 32</em>(9), 1442–1455.', fake: false, note: 'Checks out: page range and issue are plausible and the record resolves.' },
+      { html: 'Nakamura, T., &amp; Boone, E. (2020). A meta-analytic review of daytime napping and episodic memory. <em>Nature Reviews Neuroscience, 21</em>, 233–247.', fake: true, note: 'Invented. The DOI leads nowhere and no such article appears in the journal’s 2020 index. Notice it was the most prestigious-looking of the three, as fabrications often are. The only reliable test is to look it up.' }
     ];
     var refsEl = document.getElementById("llm-refs"), refResult = document.getElementById("llm-ref-result"), answered = false;
     REFS.forEach(function (r, i) {
@@ -287,8 +287,8 @@
         if (i === pick) c.classList.add("chosen");
       });
       refResult.innerHTML = REFS[pick].fake
-        ? '<strong style="color:#16a34a">You caught it.</strong> But be honest — could you have known for sure without checking? The tell-tale signs only appear when you try to <em>find</em> the paper, which is why the habit worth keeping is to verify every reference at the source.'
-        : '<strong style="color:#ef4444">Not this one.</strong> The fabricated reference was the third — and it read as the most authoritative. You genuinely cannot tell a real citation from an invented one by reading it. You have to look it up, every time.';
+        ? '<strong style="color:#16a34a">You caught it.</strong> But be honest: could you have known for sure without checking? The tell-tale signs only appear when you try to <em>find</em> the paper, which is why the habit worth keeping is to verify every reference at the source.'
+        : '<strong style="color:#ef4444">Not this one.</strong> The fabricated reference was the third, and it read as the most authoritative. You genuinely cannot tell a real citation from an invented one by reading it. You have to look it up, every time.';
     });
   })();
   </script>

@@ -272,7 +272,7 @@
       if (res.possible) {
         var kHit = res.hits[Math.floor(res.hits.length / 2)];
         var note = (n >= Math.pow(10, D))
-          ? " With <span class=\"grim-mono\">n = " + n + "</span> the reachable steps are finer than " + D + "-decimal rounding, so GRIM can't rule anything out here — every mean is reachable."
+          ? " With <span class=\"grim-mono\">n = " + n + "</span> the reachable steps are finer than " + D + "-decimal rounding, so GRIM can't rule anything out here: every mean is reachable."
           : "";
         verdictEl.innerHTML = '<b class="ok">✓ Possible.</b> A total of ' + mono(kHit) + ' across ' + mono("n = " + n) +
           ' gives ' + mono(kHit + " / " + n + " = " + roundTo(kHit / n, D).toFixed(D)) + ', which rounds to the reported ' + mono(raw) + '.' + note;

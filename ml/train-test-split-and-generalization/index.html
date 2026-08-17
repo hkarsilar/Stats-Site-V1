@@ -230,7 +230,7 @@
       if (flags.overlap) on.push("subject overlap");
       if (flags.tune) on.push("tuning on the test set");
       if (!on.length) {
-        el.innerHTML = "✅ <strong>Honest pipeline.</strong> Reported and true accuracy agree within noise — this test score is trustworthy.";
+        el.innerHTML = "✅ <strong>Honest pipeline.</strong> Reported and true accuracy agree within noise, so this test score is trustworthy.";
       } else {
         var leaks = on.length === 1 ? on[0] : on.slice(0, -1).join(", ") + " and " + on[on.length - 1];
         el.innerHTML = "⚠️ Leaks active: " + leaks + ". Reported accuracy is inflated by <strong>" + gap.toFixed(1) + " points</strong> over true performance — that gap is invisible until the model meets real data.";

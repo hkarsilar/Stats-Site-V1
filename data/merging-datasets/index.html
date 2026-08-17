@@ -253,13 +253,13 @@
         inner: "<strong>inner:</strong> keep only ids in <em>both</em> tables. Ann (1) and Dan (4) have no session and vanish; session id 5 has no participant and vanishes.",
         left:  "<strong>left:</strong> keep all four participants; Ann and Dan get <span class='na-inline'>NA</span> minutes. Session id 5 is dropped — it isn't in the left table.",
         right: "<strong>right:</strong> keep all four sessions; id 5 gets an <span class='na-inline'>NA</span> name. Participants Ann and Dan are dropped.",
-        full:  "<strong>full:</strong> keep everyone. Ann and Dan get NA minutes, session id 5 gets an NA name — nothing is lost."
+        full:  "<strong>full:</strong> keep everyone. Ann and Dan get NA minutes, session id 5 gets an NA name. Nothing is lost."
       }[join];
       document.getElementById("jn-desc").innerHTML = desc;
 
       var many = rows.filter(function (r) { return r.id === 3; }).length;
       var audit = "<span class='cnt'>4</span> participant rows &nbsp;⋈&nbsp; <span class='cnt'>4</span> session rows &nbsp;→&nbsp; <span class='cnt'>" + rows.length + "</span> result rows";
-      if (many > 1) audit += "<span class='warn'>⚠ id 3 appears twice in <code>sessions</code>, so Cara is duplicated — the result has more rows than the participant table. That's a many-to-many join: always check the count.</span>";
+      if (many > 1) audit += "<span class='warn'>⚠ id 3 appears twice in <code>sessions</code>, so Cara is duplicated, and the result has more rows than the participant table. That's a many-to-many join: always check the count.</span>";
       document.getElementById("jn-audit").innerHTML = audit;
     }
 

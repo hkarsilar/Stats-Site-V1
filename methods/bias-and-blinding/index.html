@@ -167,10 +167,10 @@
     "use strict";
     var ITEMS = [
       {
-        q: "A physiotherapist rates each patient's recovery on a 10-point scale. She knows who received the new therapy and who got standard care — and her ratings run higher for the new-therapy patients.",
+        q: "A physiotherapist rates each patient's recovery on a 10-point scale. She knows who received the new therapy and who got standard care, and her ratings run higher for the new-therapy patients.",
         opts: ["Experimenter-expectancy bias", "Selection bias", "Attrition bias", "Placebo effect"],
         correct: 0,
-        why: "The assessor's hope for the new therapy leaks into a subjective rating — classic observer / expectancy bias (the Clever Hans mechanism).",
+        why: "The assessor's hope for the new therapy leaks into a subjective rating: classic observer / expectancy bias (the Clever Hans mechanism).",
         bias: "Experimenter-expectancy",
         blinding: true, fix: "Blind the assessor: have someone who doesn't know each patient's group score the outcomes."
       },
@@ -186,7 +186,7 @@
         q: "A 12-week weight-loss trial: in the control arm, discouraged participants quit at three times the rate of the treatment arm, so only the most motivated controls remain at the final weigh-in.",
         opts: ["Attrition bias", "Demand characteristics", "Experimenter-expectancy bias", "Placebo effect"],
         correct: 0,
-        why: "Non-random dropout leaves a skewed remnant — the surviving controls are unusually motivated, so the groups are no longer comparable.",
+        why: "Non-random dropout leaves a skewed remnant, since the surviving controls are unusually motivated, so the groups are no longer comparable.",
         bias: "Attrition",
         blinding: false, fix: "Blinding can't help. Use intention-to-treat analysis, retention incentives, and report the dropout rates by arm."
       },
@@ -202,15 +202,15 @@
         q: "A study on \"exercise and wellbeing\" recruits its sample by handing out flyers at a fitness center. The participants are far fitter and healthier than the general public before anything is measured.",
         opts: ["Selection bias", "Attrition bias", "Demand characteristics", "Experimenter-expectancy bias"],
         correct: 0,
-        why: "Who got into the sample is systematically unrepresentative — a selection problem baked in at recruitment, before any measurement.",
+        why: "Who got into the sample is systematically unrepresentative: a selection problem baked in at recruitment, before any measurement.",
         bias: "Selection",
-        blinding: false, fix: "Blinding can't help. Fix the sampling frame — recruit from the target population, ideally with random sampling."
+        blinding: false, fix: "Blinding can't help. Fix the sampling frame by recruiting from the target population, ideally with random sampling."
       },
       {
         q: "An anonymous-in-name-only survey asks students how often they cheat, then requests their student ID. Reported cheating rates come back implausibly low.",
         opts: ["Response (social desirability) bias", "Demand characteristics", "Selection bias", "Placebo effect"],
         correct: 0,
-        why: "A sensitive admission tied to an identifier pushes people to answer in a flattering way — social desirability, a form of response bias.",
+        why: "A sensitive admission tied to an identifier pushes people to answer in a flattering way. That is social desirability, a form of response bias.",
         bias: "Response (social desirability)",
         blinding: false, fix: "Blinding is irrelevant here. Guarantee genuine anonymity, drop identifiers, and soften the framing of sensitive items."
       }
@@ -280,7 +280,7 @@
 
     function finish() {
       tallyEl.textContent = "Blinding stops " + blindKills + " of these " + ITEMS.length +
-        " biases — the belief-and-expectation family. The other " + (ITEMS.length - blindKills) +
+        " biases, the belief-and-expectation family. The other " + (ITEMS.length - blindKills) +
         " are baked into who's in the sample and how they answer, and need design fixes instead.";
     }
 

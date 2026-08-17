@@ -123,7 +123,7 @@
       ]},
       g1: { q: "Is the outcome roughly symmetric / is your sample decently sized?", opts: [
         { label: "Yes, or n is large", desc: "The t-test's assumptions look fine", leaf: "one_t" },
-        { label: "No — small sample with strong skew or outliers", leaf: "wilcoxon" }
+        { label: "No: small sample with strong skew or outliers", leaf: "wilcoxon" }
       ]},
       g2: { q: "Are the two sets of scores from the same people, or different people?", opts: [
         { label: "Same people (or matched pairs)", desc: "before/after, twin pairs, both conditions each", next: "g2p" },
@@ -131,11 +131,11 @@
       ]},
       g2p: { q: "Do the difference scores look reasonably well-behaved?", opts: [
         { label: "Yes, or n is large", leaf: "paired_t" },
-        { label: "No — heavy skew or outliers in a small sample", leaf: "wilcoxon" }
+        { label: "No, heavy skew or outliers in a small sample", leaf: "wilcoxon" }
       ]},
       g2i: { q: "Do the assumptions look OK (roughly normal within groups, no wild outliers)?", opts: [
         { label: "Yes, or n is large", leaf: "indep_t" },
-        { label: "No — badly skewed / ordinal / tiny sample", leaf: "mann" }
+        { label: "No, badly skewed / ordinal / tiny sample", leaf: "mann" }
       ]},
       g3: { q: "Same people in every condition, or different people per group?", opts: [
         { label: "Different people in each group", next: "g3b" },
@@ -147,11 +147,11 @@
       ]},
       g3b1: { q: "Do the assumptions look OK (roughly normal, similar spreads)?", opts: [
         { label: "Yes, or n is large", leaf: "anova1" },
-        { label: "No — badly skewed / ordinal / tiny groups", leaf: "kruskal" }
+        { label: "No, badly skewed / ordinal / tiny groups", leaf: "kruskal" }
       ]},
       g3w: { q: "Do the assumptions look OK?", opts: [
-        { label: "Yes — carry on parametrically", leaf: "rm_anova" },
-        { label: "No — skewed or ordinal outcome", leaf: "friedman" }
+        { label: "Yes, carry on parametrically", leaf: "rm_anova" },
+        { label: "No, skewed or ordinal outcome", leaf: "friedman" }
       ]},
       related: { q: "What types are the two variables?", opts: [
         { label: "Both numeric (continuous)", next: "rel_cc" },
@@ -168,7 +168,7 @@
         { label: "A count (0, 1, 2, …)", leaf: "poisson" },
         { label: "The data are nested or repeated", desc: "students in schools, trials in people…", leaf: "mixed" },
         { label: "Time until an event", leaf: "survival" },
-        { label: "I don't need a test — I just want the most accurate predictions", desc: "prediction over explanation: machine-learning territory", leaf: "ml_predict" }
+        { label: "I don't need a test, I just want the most accurate predictions", desc: "prediction over explanation: machine-learning territory", leaf: "ml_predict" }
       ]},
       pred_n: { q: "How many predictors?", opts: [
         { label: "Just one", leaf: "simple_reg" },
@@ -176,7 +176,7 @@
       ]},
       chi: { q: "Which situation matches yours?", opts: [
         { label: "One categorical variable vs. expected proportions", desc: "e.g. is this die fair? equal preference for 4 flavors?", leaf: "chi_gof" },
-        { label: "Two categorical variables — are they associated?", desc: "e.g. treatment × recovered, a contingency table", leaf: "chi_ind" }
+        { label: "Two categorical variables: are they associated?", desc: "e.g. treatment × recovered, a contingency table", leaf: "chi_ind" }
       ]}
     };
 
@@ -185,15 +185,15 @@
       one_t:    { name: "One-sample t-test", why: "Compares one group's mean to a fixed reference value, using the t-distribution to account for estimating the SD from the sample.", lesson: "stats-1/one-sample-and-paired-t-tests", label: "One-Sample & Paired t-Tests", alts: [{ name: "Wilcoxon signed-rank", when: "if the data are badly skewed in a small sample", lesson: "stats-2/non-parametric-alternatives#wilcoxon" }] },
       paired_t: { name: "Paired t-test", why: "Same people, two measurements: analyze each person's difference score. Individual differences cancel out, which buys you power.", lesson: "stats-1/one-sample-and-paired-t-tests", label: "One-Sample & Paired t-Tests", alts: [{ name: "Wilcoxon signed-rank", when: "if the difference scores are badly skewed", lesson: "stats-2/non-parametric-alternatives#wilcoxon" }] },
       indep_t:  { name: "Independent-samples t-test", why: "Two unrelated groups, one numeric outcome. Prefer the Welch version (most software's default), which doesn't require equal variances.", lesson: "stats-1/independent-samples-t-test", label: "Independent Samples t-Test", alts: [{ name: "Mann-Whitney U", when: "if assumptions fail badly", lesson: "stats-2/non-parametric-alternatives#mann-whitney" }, { name: "ANCOVA", when: "to adjust for a baseline covariate", lesson: "stats-3/ancova" }] },
-      mann:     { name: "Mann-Whitney U test", why: "The rank-based cousin of the independent t-test — robust to outliers and skew, and happy with ordinal outcomes.", lesson: "stats-2/non-parametric-alternatives#mann-whitney", label: "Non-Parametric Alternatives", alts: [] },
-      wilcoxon: { name: "Wilcoxon signed-rank test", why: "The rank-based alternative for one-sample or paired designs — it works on the signed ranks of the (difference) scores, so outliers lose their leverage.", lesson: "stats-2/non-parametric-alternatives#wilcoxon", label: "Non-Parametric Alternatives", alts: [] },
+      mann:     { name: "Mann-Whitney U test", why: "The rank-based cousin of the independent t-test, robust to outliers and skew, and happy with ordinal outcomes.", lesson: "stats-2/non-parametric-alternatives#mann-whitney", label: "Non-Parametric Alternatives", alts: [] },
+      wilcoxon: { name: "Wilcoxon signed-rank test", why: "The rank-based alternative for one-sample or paired designs. It works on the signed ranks of the (difference) scores, so outliers lose their leverage.", lesson: "stats-2/non-parametric-alternatives#wilcoxon", label: "Non-Parametric Alternatives", alts: [] },
       anova1:   { name: "One-way ANOVA", why: "One omnibus F-test across all groups keeps the false-positive rate honest; follow a significant result with post-hoc tests to see which groups differ.", lesson: "stats-2/one-way-anova", label: "One-Way ANOVA", alts: [{ name: "Post-hoc tests", when: "after a significant F", lesson: "stats-2/post-hoc-tests" }, { name: "ANCOVA", when: "to adjust for a baseline covariate", lesson: "stats-3/ancova" }, { name: "Kruskal-Wallis", when: "if assumptions fail badly", lesson: "stats-2/non-parametric-alternatives#kruskal-wallis" }] },
-      kruskal:  { name: "Kruskal-Wallis test", why: "The rank-based version of one-way ANOVA — compares three or more independent groups without normality assumptions.", lesson: "stats-2/non-parametric-alternatives#kruskal-wallis", label: "Non-Parametric Alternatives", alts: [] },
-      factorial:{ name: "Factorial ANOVA", why: "Crossing factors tests each main effect and — usually the interesting part — their interaction, all in one design.", lesson: "stats-2/factorial-anova-two-way", label: "Factorial ANOVA (Two-Way)", alts: [] },
+      kruskal:  { name: "Kruskal-Wallis test", why: "The rank-based version of one-way ANOVA, comparing three or more independent groups without normality assumptions.", lesson: "stats-2/non-parametric-alternatives#kruskal-wallis", label: "Non-Parametric Alternatives", alts: [] },
+      factorial:{ name: "Factorial ANOVA", why: "Crossing factors tests each main effect and, usually the interesting part, their interaction, all in one design.", lesson: "stats-2/factorial-anova-two-way", label: "Factorial ANOVA (Two-Way)", alts: [] },
       rm_anova: { name: "Repeated-measures ANOVA", why: "Each person serves as their own control, removing stable individual differences from the error term. Watch the sphericity assumption.", lesson: "stats-2/repeated-measures-anova", label: "Repeated Measures ANOVA", alts: [{ name: "Mixed models", when: "for missing data or unbalanced designs", lesson: "stats-4/mixed-and-multilevel-models" }] },
       friedman: { name: "Friedman test", why: "The rank-based counterpart of repeated-measures ANOVA for three or more within-person conditions.", lesson: "stats-2/non-parametric-alternatives#friedman", label: "Non-Parametric Alternatives", alts: [{ name: "Mixed models", when: "a more flexible modern route", lesson: "stats-4/mixed-and-multilevel-models" }] },
       pearson:  { name: "Pearson correlation (r)", why: "Measures the strength and direction of a straight-line relationship between two numeric variables. Always look at the scatterplot alongside it.", lesson: "stats-2/correlation", label: "Correlation", alts: [{ name: "Simple regression", when: "if you also want a prediction equation", lesson: "stats-2/simple-linear-regression" }] },
-      spearman: { name: "Spearman rank correlation", why: "Correlate the ranks instead of the raw values — it captures any monotone (consistently rising/falling) relationship and shrugs off outliers.", lesson: "stats-2/correlation", label: "Correlation", alts: [{ name: "Non-parametric tests", when: "for the broader rank-based toolkit", lesson: "stats-2/non-parametric-alternatives" }] },
+      spearman: { name: "Spearman rank correlation", why: "Correlate the ranks instead of the raw values, so it captures any monotone (consistently rising/falling) relationship and shrugs off outliers.", lesson: "stats-2/correlation", label: "Correlation", alts: [{ name: "Non-parametric tests", when: "for the broader rank-based toolkit", lesson: "stats-2/non-parametric-alternatives" }] },
       chi_ind:  { name: "Chi-square test of independence", why: "Compares the observed contingency-table counts to those expected if the two categorical variables were unrelated. Report Cramér's V or an odds ratio for strength.", lesson: "stats-2/chi-square-tests", label: "Chi-Square Tests", alts: [] },
       chi_gof:  { name: "Chi-square goodness-of-fit test", why: "Checks whether one categorical variable's counts match a hypothesized distribution (equal shares, or any expected proportions you specify).", lesson: "stats-2/chi-square-tests", label: "Chi-Square Tests", alts: [] },
       simple_reg:{ name: "Simple linear regression", why: "Fits the least-squares line ŷ = a + bx, giving you both a significance test and an actual prediction equation.", lesson: "stats-2/simple-linear-regression", label: "Simple Linear Regression", alts: [{ name: "Regression diagnostics", when: "to sanity-check the fit", lesson: "stats-2/regression-diagnostics" }] },
@@ -203,8 +203,8 @@
       mixed:    { name: "Mixed / multilevel model", why: "Random effects absorb the correlation that comes from nesting (students in schools, trials in people), keeping your standard errors honest.", lesson: "stats-4/mixed-and-multilevel-models", label: "Mixed & Multilevel Models", alts: [] },
       survival: { name: "Survival analysis (Kaplan–Meier)", why: "Time-to-event data with censoring: Kaplan–Meier curves estimate survival over time, the log-rank test compares groups, and Cox regression adds predictors.", lesson: "stats-4/survival-analysis", label: "Survival Analysis & Kaplan–Meier", alts: [] },
       meta:     { name: "Meta-analysis", why: "Pool the effect sizes across studies, weighting by precision, and quantify how much the studies genuinely disagree (I²).", lesson: "stats-4/meta-analysis", label: "Meta-Analysis & Forest Plots", alts: [] },
-      manova:   { name: "MANOVA", why: "One multivariate test across all the outcomes at once — it controls the false-alarm rate and uses the correlations between outcomes, catching patterns no single outcome shows.", lesson: "stats-3/manova", label: "MANOVA & Multivariate Tests", alts: [{ name: "MANCOVA", when: "if you also need to adjust for covariates", lesson: "stats-3/manova" }, { name: "Follow-up ANOVAs with a correction", when: "after a significant MANOVA", lesson: "stats-2/post-hoc-tests" }] },
-      ml_predict: { name: "Predictive modeling (machine learning)", why: "When the goal is the most accurate predictions on new cases — not an interpretable test of a hypothesis — you've crossed from statistics into machine learning. Fit flexible models, and judge them by honest held-out error rather than p-values.", lesson: "ml/prediction-vs-explanation", label: "Prediction vs Explanation", alts: [{ name: "Train/test splits & generalization", when: "to evaluate a predictive model honestly and avoid leakage", lesson: "ml/train-test-split-and-generalization" }, { name: "Random forests & ensembles", when: "a strong, low-tuning default predictor", lesson: "ml/random-forests-and-ensembles" }] }
+      manova:   { name: "MANOVA", why: "One multivariate test across all the outcomes at once. It controls the false-alarm rate and uses the correlations between outcomes, catching patterns no single outcome shows.", lesson: "stats-3/manova", label: "MANOVA & Multivariate Tests", alts: [{ name: "MANCOVA", when: "if you also need to adjust for covariates", lesson: "stats-3/manova" }, { name: "Follow-up ANOVAs with a correction", when: "after a significant MANOVA", lesson: "stats-2/post-hoc-tests" }] },
+      ml_predict: { name: "Predictive modeling (machine learning)", why: "When the goal is the most accurate predictions on new cases, not an interpretable test of a hypothesis, you've crossed from statistics into machine learning. Fit flexible models, and judge them by honest held-out error rather than p-values.", lesson: "ml/prediction-vs-explanation", label: "Prediction vs Explanation", alts: [{ name: "Train/test splits & generalization", when: "to evaluate a predictive model honestly and avoid leakage", lesson: "ml/train-test-split-and-generalization" }, { name: "Random forests & ensembles", when: "a strong, low-tuning default predictor", lesson: "ml/random-forests-and-ensembles" }] }
     };
 
     var stage = document.getElementById("wt-stage");

@@ -117,7 +117,7 @@
         { label: "The precise numbers, meant to be read exactly", desc: "Your reader needs exact values", leaf: "table" }
       ]},
       dist: { q: "Whose distribution are you showing?", opts: [
-        { label: "One numeric variable", desc: "See its shape — center, skew, gaps, extra peaks", leaf: "histogram" },
+        { label: "One numeric variable", desc: "See its shape: center, skew, gaps, extra peaks", leaf: "histogram" },
         { label: "The same measure across several groups", desc: "Compare center and spread side by side", leaf: "boxplot" }
       ]},
       comp: { q: "What are you comparing across the categories?", opts: [
@@ -136,7 +136,7 @@
         { label: "One numeric, one categorical", desc: "that's a group comparison in disguise", next: "comp" }
       ]},
       rel_num: { q: "Do you just want to see the link, or summarize it too?", opts: [
-        { label: "See whether — and how — they move together, and spot outliers", leaf: "scatter" },
+        { label: "See whether, and how, they move together, and spot outliers", leaf: "scatter" },
         { label: "Also fit a trend line or predict one from the other", leaf: "scatter_trend" }
       ]},
       parts: { q: "One whole, or several wholes compared?", opts: [
@@ -144,7 +144,7 @@
         { label: "Compositions compared across groups or time", leaf: "grouped" }
       ]},
       time: { q: "How dense is your time axis?", opts: [
-        { label: "Many time points — show a continuous trend", desc: "one or several series", leaf: "line" },
+        { label: "Many time points, showing a continuous trend", desc: "one or several series", leaf: "line" },
         { label: "A few discrete periods, comparing totals", desc: "e.g. one bar per year", leaf: "bar" }
       ]}
     };
@@ -154,19 +154,19 @@
     var LEAVES = {
       histogram: {
         name: "Histogram",
-        why: "Showing the distribution of one numeric variable — its center, spread, skew, gaps and any second peak. The go-to first look at a single measurement.",
-        mistake: "Too few or too many bins hides the real shape — try a couple of bin widths. And don't confuse it with a bar chart: histogram bars touch (a continuous axis), bar-chart bars have gaps (separate categories).",
+        why: "Showing the distribution of one numeric variable: its center, spread, skew, gaps and any second peak. The go-to first look at a single measurement.",
+        mistake: "Too few or too many bins hides the real shape, so try a couple of bin widths. And don't confuse it with a bar chart: histogram bars touch (a continuous axis), bar-chart bars have gaps (separate categories).",
         alt: "A density plot or dot plot for small samples; box plots to compare the distribution across several groups."
       },
       boxplot: {
         name: "Box plot(s)",
-        why: "Comparing the center and spread of a numeric variable across two or more groups at a glance — median, quartiles and outliers, lined up side by side.",
+        why: "Comparing the center and spread of a numeric variable across two or more groups at a glance: median, quartiles and outliers, lined up side by side.",
         mistake: "A box plot hides the shape: bimodal or clustered data can look identical to smooth data. Overlay the raw points (or use a violin plot) when each group is small.",
         alt: "A histogram for a single group; a violin or strip plot when you also want to see the shape."
       },
       bar: {
         name: "Bar chart",
-        why: "Comparing a single value — a mean, total or count — across a handful of clearly-labeled categories. Length is the easiest visual quantity to compare accurately.",
+        why: "Comparing a single value (a mean, total or count) across a handful of clearly-labeled categories. Length is the easiest visual quantity to compare accurately.",
         mistake: "Truncating the y-axis so it doesn't start at zero exaggerates the differences; bars encode length, so the baseline must be zero. Add error bars (and say what they show) when the bar is a mean, but don't read their overlap as a verdict: two ±1 SE bars that just fail to touch sit at about p = .16, while two 95% CIs that just fail to touch are already at p = .006.",
         alt: "A dot or lollipop plot for many categories; box plots when you have each group's full distribution, not just one number."
       },
@@ -178,50 +178,50 @@
       },
       bar_h: {
         name: "Horizontal bar chart",
-        why: "Comparing or ranking a value across many categories, or when the labels are long — turning the bars sideways gives the text room and makes a ranking easy to read top-to-bottom.",
+        why: "Comparing or ranking a value across many categories, or when the labels are long. Turning the bars sideways gives the text room and makes a ranking easy to read top-to-bottom.",
         mistake: "Leaving the bars in arbitrary order. Unless the categories have a natural order (age bands, months), sort by value so the ranking is the message.",
         alt: "A vertical bar chart for a few short-labeled categories."
       },
       grouped: {
         name: "Grouped or stacked bar",
         why: "Breaking a comparison down by a second categorical variable. Grouped (bars side by side) compares values within each group; stacked (segments on top of each other) shows how a whole splits into parts across groups.",
-        mistake: "Stacking too many segments makes every series except the bottom one impossible to compare — only the bottom shares a common baseline. Keep the segments few, or switch to grouped bars or small multiples.",
+        mistake: "Stacking too many segments makes every series except the bottom one impossible to compare, since only the bottom shares a common baseline. Keep the segments few, or switch to grouped bars or small multiples.",
         alt: "A heatmap when both variables are categorical and the pattern is the point; a line chart if one axis is time."
       },
       scatter: {
         name: "Scatter plot",
-        why: "Showing how two numeric variables relate — the direction, strength, curvature, clusters and outliers of the cloud. Always the first thing to draw for two quantities.",
+        why: "Showing how two numeric variables relate: the direction, strength, curvature, clusters and outliers of the cloud. Always the first thing to draw for two quantities.",
         mistake: "Overplotting: with thousands of points the cloud turns into a solid blob. Use transparency, smaller dots or a 2-D density/hexbin. And never trust a correlation number without looking at the scatter (remember Anscombe's quartet).",
         alt: "Add a trend line to summarize or predict; a heatmap or hexbin plot for very large samples."
       },
       scatter_trend: {
         name: "Scatter plot with a trend line",
-        why: "The relationship of two numeric variables when you also want to summarize it or predict one from the other — the fitted line, and its slope, drawn on top of the raw cloud.",
+        why: "The relationship of two numeric variables when you also want to summarize it or predict one from the other, with the fitted line and its slope, drawn on top of the raw cloud.",
         mistake: "Drawing the line far beyond the data (extrapolation), or fitting a straight line to an obviously curved cloud. Let the points, not the line, have the final say.",
         alt: "A plain scatter when the trend isn't the point; a line chart when the x-axis is time rather than a second measurement."
       },
       line: {
         name: "Line chart",
-        why: "Showing how a measurement changes along an ordered axis — usually time. The connecting line implies the points are steps on a continuum, guiding the eye through the trend.",
-        mistake: "Connecting categories that have no order — a line chart implies continuity — or plotting so many series they tangle into spaghetti. A truncated y-axis can still mislead, so label it honestly.",
+        why: "Showing how a measurement changes along an ordered axis, usually time. The connecting line implies the points are steps on a continuum, guiding the eye through the trend.",
+        mistake: "Connecting categories that have no order (a line chart implies continuity), or plotting so many series they tangle into spaghetti. A truncated y-axis can still mislead, so label it honestly.",
         alt: "A bar chart for a few discrete periods; small multiples when you have many series to compare."
       },
       heatmap: {
         name: "Heatmap / mosaic plot",
-        why: "Showing the association between two categorical variables — color (heatmap) or tile area (mosaic) reveals which combinations are over- or under-represented in a contingency table.",
+        why: "Showing the association between two categorical variables. Color (heatmap) or tile area (mosaic) reveals which combinations are over- or under-represented in a contingency table.",
         mistake: "A rainbow color scale invents structure that isn't there and fails color-blind readers. Use a single-hue sequential scale, and label cells with the counts so exact values are still readable.",
         alt: "A grouped or stacked bar for just a few categories; a table when the exact counts matter most."
       },
       pie_resist: {
         name: "Parts of a whole → resist the pie",
         why: "Showing how one whole splits into parts. The honest answer is usually a bar chart of the parts (or a single stacked bar): people compare lengths far more accurately than angles or wedge areas.",
-        mistake: "The pie chart itself. Beyond two or three slices, similar wedges are impossible to rank and the labels crowd the rim. If you must use one, keep it to a two-way split — otherwise reach for a bar.",
+        mistake: "The pie chart itself. Beyond two or three slices, similar wedges are impossible to rank and the labels crowd the rim. If you must use one, keep it to a two-way split; otherwise reach for a bar.",
         alt: "A bar chart with the parts sorted by size; a stacked bar to compare compositions across several groups."
       },
       table: {
         name: "Table",
-        why: "When the reader needs the exact numbers — to look a specific value up, compare precise figures, or reference them later. A well-built table beats a chart whenever precision matters more than pattern.",
-        mistake: "Turning a table into a wall of numbers. Round to the precision that matters, right-align the numbers, drop the vertical rules (APA style), and don't table data whose story is really a trend — that wants a chart.",
+        why: "When the reader needs the exact numbers, to look a specific value up, compare precise figures, or reference them later. A well-built table beats a chart whenever precision matters more than pattern.",
+        mistake: "Turning a table into a wall of numbers. Round to the precision that matters, right-align the numbers, drop the vertical rules (APA style), and don't table data whose story is really a trend. That wants a chart.",
         alt: "A chart when the shape or trend is the message; both — a chart in the text, the full table in an appendix — for a thorough report."
       }
     };
@@ -500,8 +500,8 @@
           '</div>' +
           '<p class="wt-alts-label">Learn more:</p>' +
           '<ul class="wt-alts">' +
-            '<li><a href="stats-1/visualizing-data/">Visualizing Data</a> — the interactive lesson on reading and building charts.</li>' +
-            '<li><a href="writing/tables-and-figures/">Tables &amp; Figures That Don\'t Lie</a> — putting charts in a report honestly.</li>' +
+            '<li><a href="stats-1/visualizing-data/">Visualizing Data</a>, the interactive lesson on reading and building charts.</li>' +
+            '<li><a href="writing/tables-and-figures/">Tables &amp; Figures That Don\'t Lie</a>, on putting charts in a report honestly.</li>' +
           '</ul>' +
         '</div>';
       wireStageNav();
