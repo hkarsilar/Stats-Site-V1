@@ -20,8 +20,8 @@ is uploaded; see [privacy.html](privacy.html) for the full account.
 ## Architecture in two sentences
 
 It is a plain static multi-page site: vanilla HTML, CSS and JS with **no build
-step, no framework, no bundler, and no npm dependencies**, deployed as-is by
-GitHub Pages from `main`. `assets/js/curriculum.js` is the single source of
+step, no framework, no bundler, and no npm dependencies**, published from
+`main` by GitHub Actions. `assets/js/curriculum.js` is the single source of
 truth for courses and lessons, and the homepage grid, every sidebar, the
 search overlay, and the prev/next links are all generated from it.
 
@@ -42,9 +42,10 @@ tools/                      Build/QA scripts (see below)
 CLAUDE.md VOICE.md ROADMAP.md PROMPTS.md    Dev guide, editorial rules, roadmap, session prompts
 ```
 
-Dev docs and `.claude/` live in the repo so they sync across machines. Because
-`.nojekyll` is set they are served verbatim by GitHub Pages, but they are
-unlinked and excluded from `sitemap.xml`.
+Dev docs, `tools/` and `.claude/` live in the repo so they sync across
+machines, and they are **not published**: the deploy ships the committed tree
+minus that list, so they return 404 on statscapybara.com. They are of course
+still right here in the repository.
 
 ## Working on it
 
@@ -69,10 +70,23 @@ checks, snippets, FAQs, and a rebuild of the search index.
 
 ## Deploying
 
-Commit and push to `main`; GitHub Pages serves the repo root and the live site
-updates in under a minute. `CNAME` sets the custom domain. If a deploy changes
-a precached shell asset (`styles.css`, `site.js`, `curriculum.js`, `viz.js`,
-the font, an icon, or `offline.html`), bump `CACHE_VERSION` in `sw.js`.
+Commit and push to `main`. That fires `.github/workflows/pages.yml`, which
+assembles the artifact with `node tools/make-pages-artifact.js` — the
+committed tree minus the six root `.md` files, `tools/`, `.claude/`,
+`.github/` and the two git dotfiles — and publishes it; the live site updates
+in a minute or two. `CNAME` sets the custom domain. Nothing is compiled,
+minified or rewritten: every published file is copied byte-for-byte, and the
+no-build rule above still holds.
+
+```bash
+node tools/make-pages-artifact.js --list   # what ships and what doesn't
+node tools/make-pages-artifact.js _site    # assemble it locally (self-verifying)
+node tools/serve.js 8097 _site             # browse it exactly as the world sees it
+```
+
+If a deploy changes a precached shell asset (`styles.css`, `site.js`,
+`curriculum.js`, `viz.js`, the font, an icon, or `offline.html`), bump
+`CACHE_VERSION` in `sw.js`.
 
 ## Found a mistake?
 

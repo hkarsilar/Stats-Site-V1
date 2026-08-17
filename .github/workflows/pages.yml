@@ -1,0 +1,60 @@
+# Publish statscapybara.com from `main`.
+#
+# This replaces GitHub Pages' branch-deploy, which served the repository
+# verbatim (`.nojekyll` makes that literal) and so published CLAUDE.md,
+# AGENTS.md, PROMPTS.md, ROADMAP.md, VOICE.md, README.md and tools/ on
+# the live domain. The build step below assembles "the committed tree
+# minus a list" and uploads that instead; the list lives in
+# tools/make-pages-artifact.js, which is also what the local proof runs.
+#
+# It is NOT a build step for the site. Nothing is processed, minified or
+# rewritten — every published file is copied byte-for-byte, and the
+# no-build law in CLAUDE.md still holds.
+#
+# Source must be set to "GitHub Actions" under Settings → Pages for this
+# to take effect. Rolling back is flipping that setting back to the
+# branch; nothing in the repository has to change.
+
+name: Deploy site to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let a running deploy finish rather than cancelling it — a half-applied
+# deploy is worse than a slightly stale one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Assemble the artifact (the committed tree minus the development files)
+        run: node tools/make-pages-artifact.js _site
+
+      - name: Upload the artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
