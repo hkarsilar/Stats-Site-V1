@@ -37,13 +37,12 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v45";  /* Search Console "Not found (404)" fix: site.js changed and is
-                                    precached. It gained the body[data-hub] marker (the fourth BASE
-                                    state, depth-1 like a course landing page) so the new
-                                    guides/index.html gets working ../ links, a SEARCH_PAGES entry for
-                                    guides/, and the guides hub now lights the Toolbox nav tab.
-                                    styles.css, curriculum.js, viz.js and the font are untouched;
-                                    search-index.js also changed but is lazy-loaded and never precached.
+const CACHE_VERSION = "sc-v46";  /* Toolbox dropdown group headers moved from green to the brand
+                                    indigo, so styles.css changed and is precached: --group-head is
+                                    now #5850ec / #818cf8 (5.6:1 and 5.8:1 on their own panels) and
+                                    the AA-safe green it used to carry moved to a new --ok-ink token,
+                                    which .h2link.copied now uses. site.js, curriculum.js, viz.js and
+                                    the font are untouched.
                                     (v32 was consumed by an intermediate state during run 14 — never reuse a
                                     string across two byte-contents of a precached asset.) */
 const CACHE = CACHE_VERSION;

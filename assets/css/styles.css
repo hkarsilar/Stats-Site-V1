@@ -41,12 +41,19 @@
      vs body text #0f172a (so the link is perceivable without the underline;
      raw --primary #6366f1 is only ~2.9:1 vs body text). Indigo, brand-close. */
   --link: #5850ec;
-  /* green accent for the Toolbox dropdown group headers — deeper than the
-     bright --success #22c55e (which is only ~2.3:1 on white) so it clears
-     4.5:1 on the white dropdown panel; the dark theme swaps back to the
-     bright green, which passes easily on the dark surface. Tuned per-theme
-     exactly like --link. */
-  --group-head: #15803d;
+  /* accent for the Toolbox dropdown group headers. Indigo, not green: the
+     green was the one place in the chrome that stepped outside the site's
+     blue/indigo/violet family, so the four group labels read as a foreign
+     accent rather than as brand. This is --link's indigo, already tuned to
+     clear 4.5:1 on every light surface (5.6:1 on the white dropdown panel);
+     the dark theme lifts to #818cf8 for the same reason --text-faint does.
+     Tuned per-theme exactly like --link. */
+  --group-head: #5850ec;
+  /* success ink — the AA-safe green that --group-head used to carry, kept
+     for the "copied" confirmation check, where green means "that worked"
+     and must NOT follow the header accent. --success #22c55e is only
+     ~2.3:1 on white, hence the deeper light value. */
+  --ok-ink: #15803d;
 
   /* surfaces (light) */
   --bg: #ffffff;
@@ -86,8 +93,12 @@ html[data-theme="dark"] {
      on AND ≥3:1 vs body text #e7ecf5 (--primary-light #818cf8 is only ~2.5:1
      vs that near-white text). A touch deeper than --primary-light to win it. */
   --link: #6f7bf2;
-  /* bright green reads clearly on the dark dropdown surface (~6.5:1) */
-  --group-head: #22c55e;
+  /* lifted indigo reads clearly on the dark dropdown surface (~5.8:1);
+     --link's #6f7bf2 also passes but only at ~4.8:1, and these are small
+     uppercase labels, so the brighter of the two brand indigos wins here */
+  --group-head: #818cf8;
+  /* bright green reads clearly on the dark surfaces (~6.5:1) */
+  --ok-ink: #22c55e;
   --shadow: 0 1px 3px rgba(0, 0, 0, .4);
   --shadow-lg: 0 10px 30px -10px rgba(0, 0, 0, .6);
 }
@@ -261,11 +272,12 @@ h1, h2, h3, h4 { line-height: 1.2; letter-spacing: -0.02em; }
 .ndp-col { display: flex; flex-direction: column; gap: .1rem; min-width: 13rem; }
 .ndp-group { display: flex; flex-direction: column; gap: .1rem; }
 .ndp-group + .ndp-group { margin-top: .5rem; padding-top: .45rem; border-top: 1px solid var(--border); }
-/* group headers in the green accent so they separate the four groups at a
-   glance instead of dissolving into faint gray. --group-head is tuned
-   per-theme to clear 4.5:1 on the dropdown surface (the bright --success
-   green fails that on white). Text-only — the emoji is stripped in renderNav
-   so these read as clean section labels, not a second row of icons. */
+/* group headers in the brand indigo so they separate the four groups at a
+   glance instead of dissolving into faint gray — and so the dropdown stays
+   inside the site's blue/indigo/violet family. --group-head is tuned
+   per-theme to clear 4.5:1 on the dropdown surface. Text-only — the emoji is
+   stripped in renderNav so these read as clean section labels, not a second
+   row of icons. */
 .ndp-ghead {
   font-size: .82rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em;
   color: var(--group-head); padding: .5rem .65rem .35rem; white-space: nowrap;
@@ -642,7 +654,7 @@ body[data-course="writing"] { --course-accent: #84cc16; }
 /* :focus, not just :focus-visible — a control that HAS focus must be visible,
    whether or not the browser decided to draw its focus ring */
 .h2link:focus { opacity: 1; }
-.h2link.copied { opacity: 1; color: var(--group-head); }   /* the AA-safe green */
+.h2link.copied { opacity: 1; color: var(--ok-ink); }   /* the AA-safe green */
 .h2link .h2link-ok { display: none; }
 .h2link.copied .h2link-ico { display: none; }
 .h2link.copied .h2link-ok { display: block; }
