@@ -35,7 +35,7 @@ window.CURRICULUM = [
       { n: "1.3",  slug: "describing-data",                     title: "Describing Data", ready: true },
       { n: "1.4",  slug: "visualizing-data",                    title: "Visualizing Data", ready: true },
       { n: "1.5",  slug: "z-scores-and-the-normal-distribution", title: "Z-Scores & The Normal Distribution", ready: true },
-      { n: "1.6",  slug: "producing-data-and-sampling-design",  title: "Producing Data & Sampling Design", ready: false },
+      { n: "1.6",  slug: "producing-data-and-sampling-design",  title: "Producing Data & Sampling Design", ready: true },
       { n: "1.7",  slug: "probability-basics",                  title: "Probability Basics", ready: true },
       { n: "1.8",  slug: "binomial-distribution",               title: "The Binomial Distribution", ready: false },
       { n: "1.9",  slug: "sampling-distributions",              title: "Sampling Distributions", ready: true },

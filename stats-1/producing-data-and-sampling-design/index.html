@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    /* Consent Mode: storage denied by default, so GA sets no cookie and
+       follows nobody between visits. Anonymous counts still arrive. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Producing Data & Sampling Design — StatsCapybara</title>
+  <meta name="description" content="Where your numbers come from decides what they can prove. Four sampling designs run on one population, each graded against a truth you already know." />
+  <link rel="canonical" href="https://statscapybara.com/stats-1/producing-data-and-sampling-design/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Producing Data &amp; Sampling Design — StatsCapybara" />
+  <meta property="og:description" content="Where your numbers come from decides what they can prove. Four sampling designs run on one population, each graded against a truth you already know." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og-stats-1.png" />
+  <meta property="og:url" content="https://statscapybara.com/stats-1/producing-data-and-sampling-design/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Producing Data &amp; Sampling Design — StatsCapybara" />
+  <meta name="twitter:description" content="Where your numbers come from decides what they can prove. Four sampling designs run on one population, each graded against a truth you already know." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-1.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Producing Data & Sampling Design", "description": "Where your numbers come from decides what they can prove. Four sampling designs run on one population, each graded against a truth you already know.", "url": "https://statscapybara.com/stats-1/producing-data-and-sampling-design/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Introduction to Statistics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Producing Data & Sampling Design", "item": "https://statscapybara.com/stats-1/producing-data-and-sampling-design/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the difference between an observational study and an experiment?", "acceptedAnswer": {"@type": "Answer", "text": "In an observational study you record the condition people are already in; in an experiment you assign it yourself, using a chance mechanism. That single difference decides what you may conclude. People who chose to exercise differ from people who did not in income, health and a dozen things nobody measured, so a blood-pressure gap has several available explanations. Random assignment makes the groups comparable on every variable at once, including the ones you never thought of, which is why only an experiment supports a claim about cause."}}, {"@type": "Question", "name": "Is a bigger sample always better?", "acceptedAnswer": {"@type": "Answer", "text": "Only for precision. Sample size controls how much an estimate bounces around from study to study, and it does nothing at all about a design that points at the wrong number. A convenience sample of 5,000 estimates the population it can reach, more and more precisely, however large it grows. The famous case is the 1936 Literary Digest poll, which collected 2.4 million responses from car and telephone owners and called the presidential election for the wrong man. Fix the design first, then spend money on n."}}, {"@type": "Question", "name": "How do I choose between simple random and stratified sampling?", "acceptedAnswer": {"@type": "Answer", "text": "Stratify when you know the population splits into groups that differ on what you are measuring, and when you can tell which group each person belongs to before sampling. That is what buys the precision: the between-group variation is removed from the sampling error rather than left in it. If the groups turn out to have similar means the design costs you effort and returns nothing, and if you cannot classify people in advance it is not available at all. A simple random sample is the safe default and needs no prior knowledge."}}]}
+  </script>
+</head>
+<body data-course="stats-1" data-section="producing-data-and-sampling-design">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 1.6</span>
+        <h1>Producing Data &amp; Sampling Design</h1>
+
+        <p class="lede">Every statistical method in this course assumes the data arrived honestly. Where the numbers came from decides what they are allowed to prove, and no amount of careful analysis afterwards can repair a sample that was gathered the wrong way.</p>
+
+        <h2>Population, sample, parameter, statistic</h2>
+        <p>The <strong>population</strong> is the whole group you want to describe: every student at the university, every patient with the diagnosis, every trial a participant could have run. A <strong>sample</strong> is the part of it you actually measure. The number you want is a <strong>parameter</strong>, a fixed property of the population, and the number you get is a <strong>statistic</strong>, computed from your sample and different every time you repeat the study.</p>
+        <p>Those four words are the whole vocabulary of inference. Greek letters conventionally mark parameters (μ, pronounced mu, for a population mean; σ, sigma, for its standard deviation) and Latin letters mark statistics (x̄ for the sample mean, <em>s</em> for the sample standard deviation). You will meet that convention again in every formula in <a href="../../stats-1/confidence-intervals/">Section 1.11</a> onward.</p>
+
+        <h2>Observational study or experiment?</h2>
+        <p>An <strong>observational study</strong> measures people as you find them. You record who exercises and who does not, then compare their blood pressure. An <strong>experiment</strong> assigns the condition yourself: you decide, by a chance mechanism, which participants get the exercise program.</p>
+        <p>The difference decides what you may claim. In an observational study the groups differ in the thing you measured and in everything that made them sort themselves that way, so a difference in outcome has more than one available explanation. That extra variable is a <strong>confounder</strong>. Random assignment is what breaks the link, because it makes the groups comparable on every variable at once, the ones you thought of and the ones you did not. Observation supports a claim about association; a randomized experiment supports a claim about cause.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="pdviz">
+          <p class="viz-title">🎮 Four Ways to Choose 100 Students</p>
+          <p class="viz-sub">A campus of 800 students is asked whether the university should run a late-night bus. On-campus students mostly say no; commuters mostly say yes. The true answer is fixed and known, so every design can be graded against it.</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>Sampling design</label>
+              <div class="seg" id="pd-design">
+                <button data-d="srs" class="active">Simple random</button>
+                <button data-d="strat">Stratified</button>
+                <button data-d="conv">Convenience</button>
+                <button data-d="vol">Voluntary response</button>
+              </div>
+            </div>
+            <div class="control">
+              <label>Sample size <span class="val" id="pd-nval">n = 100</span></label>
+              <input type="range" id="pd-n" min="20" max="200" step="10" value="100" />
+            </div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="pd-new">New samples</button></div>
+          </div>
+
+          <p class="viz-sub" style="margin:.25rem 0">The 800 students. Filled dots want the bus; the block on the right commutes. One sample is ringed.</p>
+          <canvas id="pd-pop" style="--viz-ar: 5 / 2"></canvas>
+
+          <p class="viz-sub" style="margin:1rem 0 .25rem">What 200 repeats of this design estimate. The line marks the truth.</p>
+          <canvas id="pd-hist"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">True support</span><span class="v" id="pd-true">—</span></div>
+            <div class="stat"><span class="k">Average estimate</span><span class="v" id="pd-avg">—</span></div>
+            <div class="stat"><span class="k">Bias</span><span class="v" id="pd-bias">—</span></div>
+            <div class="stat"><span class="k">Standard error</span><span class="v" id="pd-se">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>What the four designs are doing</h2>
+        <p>A <strong>simple random sample</strong> gives every group of <em>n</em> students the same chance of being the one you get. It is the reference design, and the histogram shows why: the estimates pile up on the true 40%, so the bias readout sits near zero whatever sample size you choose.</p>
+        <p>A <strong>stratified sample</strong> splits the population into groups that differ from each other, then draws a separate random sample inside each one. Here the strata are the residents and the commuters, sampled in proportion to their sizes. The estimates still center on the truth, and they cluster more tightly: at <em>n</em> = 100 the standard error falls from about 4.6% to about 3.9%, a 15% reduction bought with no extra participants. Stratifying pays off exactly when the groups differ on the thing you are measuring, which is why the design needs you to know something about the population first. Multistage designs extend the same idea, sampling schools and then classes and then pupils, because a national list of every pupil rarely exists.</p>
+        <p>The two remaining designs are the ones you meet in the wild. A <strong>convenience sample</strong> takes whoever is easy to reach, which on this campus means the café at lunchtime, which means residents. The histogram slides down to 25% and stays there. A <strong>voluntary response sample</strong> lets people put themselves forward, and the students who want the bus are the ones motivated to click the link, so the estimate climbs to about 67%.</p>
+        <div class="callout key">
+          <p><strong>A bigger bad sample is a worse bad sample.</strong> Push the slider right and watch the two flawed designs. Their spread shrinks like everyone else's, so the estimate becomes more and more precisely wrong. Sample size fixes variability; only the design fixes bias.</p>
+        </div>
+
+        <h2>Randomized comparative experiments</h2>
+        <p>The same logic runs the other way when you are assigning conditions rather than choosing people. A <strong>randomized comparative experiment</strong> takes the participants you have, splits them by a chance device, and gives each group a different treatment. Comparison rules out anything that would have happened anyway, such as recovery with time or practice on the task. Randomization rules out the systematic differences between the people in each group. A control group with no treatment, or a placebo, supplies the baseline that makes the comparison mean something.</p>
+        <p>Two refinements are worth naming now. <strong>Blocking</strong> is stratification applied to assignment: sort participants into similar blocks first, then randomize inside each block, so a known source of variation cannot land unevenly. A <strong>matched pairs</strong> design pushes that to its limit by pairing participants, or by measuring the same person under both conditions, which is where the paired <em>t</em>-test in <a href="../../stats-1/one-sample-and-paired-t-tests/">Section 1.13</a> comes from.</p>
+
+        <h2>Four ways a survey goes wrong</h2>
+        <p><strong>Undercoverage</strong> leaves part of the population off the list you sample from, so those people could never have been chosen. A phone survey misses households without a phone, and the campus café misses commuters entirely. <strong>Non-response</strong> happens after selection: you picked a proper random sample and some of them declined, and if the refusers differ from the responders your careful design has turned into a voluntary one without announcing it.</p>
+        <p><strong>Response bias</strong> is about the answers rather than the people. Participants understate their drinking, overstate their voting, and adjust what they say to suit the interviewer in front of them. <strong>Question wording</strong> is the most easily overlooked, because a leading phrase moves an answer without anyone noticing: asking whether the university should "finally do something about late-night safety" measures the sentence rather than the opinion.</p>
+        <p>None of these show up in a standard error. A confidence interval reports how much your estimate would bounce around across repeated samples, and it is computed as though the design were sound. The interval around that 67% is honest arithmetic on a number that is 27 points from the truth.</p>
+
+        <h2>Going deeper</h2>
+        <p>This lesson is the course-level treatment. The Research Toolkit works the same ground in more depth, one design decision at a time: <a href="../../methods/sampling-methods/">Sampling Methods</a> covers probability and non-probability sampling frames and how to report a sampling strategy; <a href="../../methods/observational-designs/">Observational Designs</a> separates cohort, case-control and cross-sectional studies; <a href="../../methods/experimental-design-and-randomization/">Experiments &amp; Random Assignment</a> goes further into allocation, blocking and blinding; and <a href="../../methods/reliability-and-validity/">Reliability &amp; Validity</a> takes up whether the instrument measures what you think it measures once the sample is in the door.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> the rest of Stats 1 assumes a random sample from the population you care about. <a href="../../stats-1/sampling-distributions/">Sampling distributions</a> describe how a statistic varies across those repeats, and that description is only true if the sampling was random in the first place.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What is the difference between an observational study and an experiment?</summary>
+            <div class="faq-a"><p>In an observational study you record the condition people are already in; in an experiment you assign it yourself, using a chance mechanism. That single difference decides what you may conclude. People who chose to exercise differ from people who did not in income, health and a dozen things nobody measured, so a blood-pressure gap has several available explanations. Random assignment makes the groups comparable on every variable at once, including the ones you never thought of, which is why only an experiment supports a claim about cause.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Is a bigger sample always better?</summary>
+            <div class="faq-a"><p>Only for precision. Sample size controls how much an estimate bounces around from study to study, and it does nothing at all about a design that points at the wrong number. A convenience sample of 5,000 estimates the population it can reach, more and more precisely, however large it grows. The famous case is the 1936 Literary Digest poll, which collected 2.4 million responses from car and telephone owners and called the presidential election for the wrong man. Fix the design first, then spend money on n.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>How do I choose between simple random and stratified sampling?</summary>
+            <div class="faq-a"><p>Stratify when you know the population splits into groups that differ on what you are measuring, and when you can tell which group each person belongs to before sampling. That is what buys the precision: the between-group variation is removed from the sampling error rather than left in it. If the groups turn out to have similar means the design costs you effort and returns nothing, and if you cannot classify people in advance it is not available at all. A simple random sample is the safe default and needs no prior knowledge.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ Sampling-design visualization ============
+       Frozen noise: seed() fills the per-repetition permutation and
+       acceptance pools once; rebuild() maps (pools, n, design) -> estimates
+       deterministically, so moving the slider away and back returns the
+       exact same readouts. "New samples" is the only thing that reseeds.
+  -->
+  <script>
+  (function () {
+    "use strict";
+    var NA = 600, NB = 200, N = NA + NB;      // residents, commuters
+    var PA = 0.25, PB = 0.85;                  // support in each stratum
+    var REPS = 200, MAXN = 200;
+    var VOL_BASE = 0.3, VOL_MULT = 3;          // supporters answer 3x as often
+
+    var popYes = new Uint8Array(N);            // 1 = wants the bus
+    var perm = [], uni = [];                   // REPS permutations + uniforms
+    var ests = new Float64Array(REPS);
+    var lastSample = null;
+    var n = 100, design = "srs";
+    var truth = 0;
+
+    var popC = document.getElementById("pd-pop");
+    var hisC = document.getElementById("pd-hist");
+    if (!popC || !hisC) return;
+
+    /* ---------- population: fixed, built once ---------- */
+    function buildPop() {
+      var i, wantA = Math.round(NA * PA), wantB = Math.round(NB * PB);
+      for (i = 0; i < NA; i++) popYes[i] = i < wantA ? 1 : 0;
+      for (i = 0; i < NB; i++) popYes[NA + i] = i < wantB ? 1 : 0;
+      // spread the yes/no within each block so the picture is not two solid bands
+      shuffleRange(0, NA); shuffleRange(NA, N);
+      truth = 0;
+      for (i = 0; i < N; i++) truth += popYes[i];
+      truth /= N;
+    }
+    function shuffleRange(lo, hi) {
+      for (var i = hi - 1; i > lo; i--) {
+        var j = lo + Math.floor(Math.random() * (i - lo + 1));
+        var t = popYes[i]; popYes[i] = popYes[j]; popYes[j] = t;
+      }
+    }
+
+    /* ---------- the frozen pools ---------- */
+    function seed() {
+      perm = []; uni = [];
+      for (var r = 0; r < REPS; r++) {
+        var p = new Int16Array(N), i;
+        for (i = 0; i < N; i++) p[i] = i;
+        for (i = N - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var t = p[i]; p[i] = p[j]; p[j] = t;
+        }
+        perm.push(p);
+        var u = new Float32Array(N);
+        for (i = 0; i < N; i++) u[i] = Math.random();
+        uni.push(u);
+      }
+    }
+
+    /* ---------- one repetition, deterministic in (pools, n, design) ---------- */
+    function drawOne(r) {
+      var p = perm[r], u = uni[r], out = [], i, idx;
+      if (design === "srs") {
+        for (i = 0; i < n; i++) out.push(p[i]);
+      } else if (design === "strat") {
+        var nA = Math.round(n * NA / N), nB = n - nA, a = 0, b = 0;
+        for (i = 0; i < N && (a < nA || b < nB); i++) {
+          idx = p[i];
+          if (idx < NA) { if (a < nA) { out.push(idx); a++; } }
+          else if (b < nB) { out.push(idx); b++; }
+        }
+      } else if (design === "conv") {          // café at lunchtime: residents only
+        for (i = 0; i < N && out.length < n; i++) {
+          idx = p[i];
+          if (idx < NA) out.push(idx);
+        }
+      } else {                                  // voluntary response
+        for (i = 0; i < N && out.length < n; i++) {
+          idx = p[i];
+          if (u[i] < VOL_BASE * (popYes[idx] ? VOL_MULT : 1)) out.push(idx);
+        }
+      }
+      return out;
+    }
+
+    function rebuild() {
+      var r, k, s;
+      for (r = 0; r < REPS; r++) {
+        var samp = drawOne(r);
+        s = 0;
+        for (k = 0; k < samp.length; k++) s += popYes[samp[k]];
+        ests[r] = samp.length ? s / samp.length : 0;
+        if (r === 0) lastSample = samp;
+      }
+      draw();
+    }
+
+    /* ---------- drawing ---------- */
+    var COLS_A = 30, COLS_B = 10, ROWS = 20;
+    function draw() {
+      drawPop(); drawHist(); readouts();
+    }
+
+    function drawPop() {
+      var H = Math.max(200, Math.round((popC.clientWidth || 640) * 0.4));
+      var o = VIZ.fit(popC, H), ctx = o.ctx, W = o.w;
+      ctx.clearRect(0, 0, W, H);
+      var inSample = new Uint8Array(N), i;
+      if (lastSample) for (i = 0; i < lastSample.length; i++) inSample[lastSample[i]] = 1;
+
+      var gap = Math.max(14, W * 0.035);
+      var cellW = (W - gap - 16) / (COLS_A + COLS_B);
+      var cellH = (H - 8) / ROWS;                 // 8px of vertical breathing room
+      var cell = Math.min(cellW, cellH);
+      var top = (H - cell * ROWS) / 2;
+      var rad = Math.max(1.5, cell * 0.3);
+      var yes = VIZ.css("--primary") || "#6366f1";
+      var no = VIZ.css("--text-faint") || "#8b95a6";
+      var ring = "#f97316";
+
+      function block(from, count, cols, x0) {
+        for (var k = 0; k < count; k++) {
+          var idx = from + k, col = k % cols, row = Math.floor(k / cols);
+          var x = x0 + col * cell + cell / 2, y = top + row * cell + cell / 2;
+          ctx.beginPath(); ctx.arc(x, y, rad, 0, 6.2832);
+          if (popYes[idx]) { ctx.fillStyle = yes; ctx.fill(); }
+          else { ctx.strokeStyle = no; ctx.lineWidth = 1; ctx.stroke(); }
+          if (inSample[idx]) {
+            ctx.beginPath(); ctx.arc(x, y, rad + 2.4, 0, 6.2832);
+            ctx.strokeStyle = ring; ctx.lineWidth = 1.6; ctx.stroke();
+          }
+        }
+      }
+      block(0, NA, COLS_A, 8);
+      block(NA, NB, COLS_B, 8 + COLS_A * cell + gap);
+    }
+
+    function drawHist() {
+      var H = Math.max(150, Math.round((hisC.clientWidth || 640) / 3));
+      var o = VIZ.fit(hisC, H), ctx = o.ctx, W = o.w;
+      ctx.clearRect(0, 0, W, H);
+      var padL = 34, padR = 12, padB = 24, padT = 10;
+      var plotW = W - padL - padR, plotH = H - padT - padB;
+      var BINS = 40, counts = new Array(BINS).fill(0), i;
+      for (i = 0; i < REPS; i++) {
+        var b = Math.min(BINS - 1, Math.floor(ests[i] * BINS));
+        counts[b]++;
+      }
+      var max = Math.max.apply(null, counts) || 1;
+      var bw = plotW / BINS;
+      ctx.fillStyle = VIZ.css("--primary") || "#6366f1";
+      for (i = 0; i < BINS; i++) {
+        if (!counts[i]) continue;
+        var h = (counts[i] / max) * plotH;
+        ctx.fillRect(padL + i * bw + 0.5, padT + plotH - h, Math.max(1, bw - 1), h);
+      }
+      // truth marker
+      var tx = padL + truth * plotW;
+      ctx.strokeStyle = "#f97316"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(tx, padT); ctx.lineTo(tx, padT + plotH); ctx.stroke();
+      // axis
+      ctx.strokeStyle = VIZ.css("--border") || "#d5dbe4"; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, padT + plotH); ctx.lineTo(padL + plotW, padT + plotH); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-muted") || "#5f6e86";
+      ctx.font = "12px " + (VIZ.css("--font") || "sans-serif");
+      ctx.textAlign = "center";
+      for (i = 0; i <= 4; i++) {
+        var v = i / 4, x = padL + v * plotW;
+        ctx.fillText(Math.round(v * 100) + "%", x, H - 7);
+      }
+      ctx.textAlign = "left";
+      ctx.fillText("truth", tx + 5, padT + 11);
+    }
+
+    function readouts() {
+      var i, m = 0;
+      for (i = 0; i < REPS; i++) m += ests[i];
+      m /= REPS;
+      var v = 0;
+      for (i = 0; i < REPS; i++) v += (ests[i] - m) * (ests[i] - m);
+      var se = Math.sqrt(v / (REPS - 1));
+      var bias = m - truth;
+      document.getElementById("pd-true").textContent = (truth * 100).toFixed(1) + "%";
+      document.getElementById("pd-avg").textContent = (m * 100).toFixed(1) + "%";
+      document.getElementById("pd-bias").textContent = (bias >= 0 ? "+" : "") + (bias * 100).toFixed(1) + " pts";
+      document.getElementById("pd-se").textContent = (se * 100).toFixed(2) + "%";
+    }
+
+    /* ---------- wiring ---------- */
+    document.getElementById("pd-design").addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-d]");
+      if (!b) return;
+      this.querySelectorAll("button").forEach(function (x) { x.classList.remove("active"); });
+      b.classList.add("active");
+      design = b.getAttribute("data-d");
+      rebuild();
+    });
+    document.getElementById("pd-n").addEventListener("input", function () {
+      n = +this.value;
+      document.getElementById("pd-nval").textContent = "n = " + n;
+      rebuild();
+    });
+    document.getElementById("pd-new").addEventListener("click", function () { seed(); rebuild(); });
+
+    var redraw = VIZ.rafThrottle(draw);
+    window.addEventListener("resize", redraw);
+    if (window.ResizeObserver) { new ResizeObserver(redraw).observe(popC); }
+    VIZ.onTheme(draw);
+
+    buildPop(); seed(); rebuild();
+  })();
+  </script>
+
+</body>
+</html>

@@ -30,6 +30,10 @@ window.SNIPPETS = {
     r: '# P(exactly 7 heads in 10 fair flips)\ndbinom(7, size = 10, prob = 0.5)\n# simulate it\nmean(replicate(100000, sum(rbinom(10, 1, 0.5)) == 7))',
     py: 'import numpy as np\nfrom scipy import stats\nprint(stats.binom.pmf(7, 10, 0.5))   # exact\nflips = np.random.default_rng().binomial(10, 0.5, 100_000)\nprint((flips == 7).mean())           # simulated'
   },
+  "producing-data-and-sampling-design": {
+    r: 'df <- data.frame(id = 1:800,\n                 group = rep(c("resident", "commuter"), c(600, 200)))\n\n# simple random sample of 100\nsrs <- df[sample(nrow(df), 100), ]\n\n# stratified: 75 residents, 25 commuters, in proportion\nlibrary(dplyr)\nstrat <- df |>\n  group_by(group) |>\n  slice_sample(prop = 100 / 800) |>\n  ungroup()\ntable(strat$group)',
+    py: 'import pandas as pd, numpy as np\nrng = np.random.default_rng(42)\ndf = pd.DataFrame({"id": range(800),\n                   "group": ["resident"] * 600 + ["commuter"] * 200})\n\n# simple random sample of 100\nsrs = df.sample(100, random_state=42)\n\n# stratified: same fraction from each group\nstrat = df.groupby("group", group_keys=False).apply(\n    lambda g: g.sample(frac=100 / 800, random_state=42))\nprint(strat["group"].value_counts())'
+  },
   "sampling-distributions": {
     r: 'pop <- rexp(100000, rate = 1/50)          # skewed population\nmeans <- replicate(10000, mean(sample(pop, 40)))\nsd(means)                                  # standard error, empirically\nsd(pop) / sqrt(40)                         # standard error, by formula',
     py: 'import numpy as np\nrng = np.random.default_rng()\npop = rng.exponential(50, 100_000)         # skewed population\nmeans = [rng.choice(pop, 40).mean() for _ in range(10_000)]\nprint(np.std(means), pop.std() / np.sqrt(40))  # empirical vs formula SE'
