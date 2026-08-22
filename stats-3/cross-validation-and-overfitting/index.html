@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    /* Consent Mode: storage denied by default, so GA sets no cookie and
+       follows nobody between visits. Anonymous counts still arrive. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cross-Validation &amp; Overfitting — StatsCapybara</title>
+  <meta name="description" content="Watch a model memorize noise: crank up a polynomial's flexibility, then let 5-fold cross-validation reveal which complexity actually generalizes to new data." />
+  <link rel="canonical" href="https://statscapybara.com/stats-3/cross-validation-and-overfitting/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Cross-Validation &amp; Overfitting — StatsCapybara" />
+  <meta property="og:description" content="Watch a model memorize noise: crank up a polynomial's flexibility, then let 5-fold cross-validation reveal which complexity actually generalizes to new data." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og-stats-3.png" />
+  <meta property="og:url" content="https://statscapybara.com/stats-3/cross-validation-and-overfitting/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Cross-Validation &amp; Overfitting — StatsCapybara" />
+  <meta name="twitter:description" content="Watch a model memorize noise, then let 5-fold cross-validation reveal which complexity actually generalizes." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-3.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Cross-Validation & Overfitting", "description": "Watch a model memorize noise: crank up a polynomial's flexibility, then let 5-fold cross-validation reveal which complexity actually generalizes to new data.", "url": "https://statscapybara.com/stats-3/cross-validation-and-overfitting/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced & Elective Topics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Cross-Validation & Overfitting", "item": "https://statscapybara.com/stats-3/cross-validation-and-overfitting/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What value of k should I use for k-fold cross-validation?", "acceptedAnswer": {"@type": "Answer", "text": "k = 5 or k = 10 is the standard, well-studied compromise: each fold's training set is nearly the full data (low bias), without the variance and cost of leave-one-out (k = n). Small datasets lean toward k = 10 or repeated CV (multiple random fold splits, averaged) to stabilize the estimate. There's rarely a reason to deviate."}}, {"@type": "Question", "name": "What is the difference between a validation set and a test set?", "acceptedAnswer": {"@type": "Answer", "text": "The validation set is used during modeling (comparing candidate models, tuning complexity), so decisions get optimized against it, and its error estimate becomes optimistic. The test set is opened exactly once, after all decisions are final, to report honest performance. Cross-validation typically replaces the validation set; the untouched final test set remains best practice."}}, {"@type": "Question", "name": "Can I use cross-validation on time-series data?", "acceptedAnswer": {"@type": "Answer", "text": "Not the ordinary kind. Random folds put future observations in the training set and past ones in the test set, so the model gets to see what it is supposed to be predicting and the score comes out far too good. Use a scheme that respects the arrow of time instead: rolling-origin (also called forward-chaining) validation trains on everything up to a cut-off, tests on the stretch that follows, then slides the cut-off forward and repeats, so every evaluation only ever looks forward. If neighboring observations are correlated, leave a gap between the training window and the test window as well, since an observation an hour before the test period leaks nearly as much as one inside it. The same care applies to any data with structure that random splitting would break, including repeated measurements on the same person: split by person, not by row."}}]}
+  </script>
+</head>
+<body data-course="stats-3" data-section="cross-validation-and-overfitting">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 3.11</span>
+        <h1>Cross-Validation &amp; Overfitting</h1>
+
+        <p class="lede">A model's job is to predict data you <em>don't</em> have yet, not merely to fit the data you have. Give a model enough flexibility and it will happily "explain" every random wiggle in your sample, scoring beautifully on the training data and failing on the next dataset. That failure mode is <strong>overfitting</strong>, and <strong>cross-validation</strong> is the standard, honest way to catch it before it catches you.</p>
+
+        <h2>The trap: fitting the noise</h2>
+        <p>Every dataset is signal plus noise. A too-simple model misses part of the signal (<strong>underfitting</strong>); a too-flexible one chases the noise (<strong>overfitting</strong>). The treacherous part is that ordinary fit statistics computed on the training data (like R² or mean squared error) <em>always</em> improve as the model gets more flexible. Judged on its own training data, the most absurdly wiggly model always looks best. You cannot detect overfitting by asking the training data.</p>
+
+        <h2>Held-out data tells the truth</h2>
+        <p>The cure is to evaluate the model on data it never saw while being fit. <strong>k-fold cross-validation</strong> does this without wasting a single observation: split the data into k chunks ("folds"), fit the model on k−1 of them, measure prediction error on the held-out fold, and rotate until every fold has had its turn as the test set. Average the k error estimates and you have an honest score. With k = 5 you get the classic <em>5-fold CV</em> used below.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="cvviz">
+          <p class="viz-title">🎮 The Overfitting Playground</p>
+          <p class="viz-sub">The dots are a noisy sample from the dashed teal curve (the truth). Raise the polynomial degree and watch the orange fit: training error (teal line, bottom panel) only ever falls, but 5-fold CV error (orange line) turns back up the moment the model starts memorizing noise.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:220px">
+              <label>Polynomial degree <span class="val" id="d-val">d = 3</span></label>
+              <input type="range" id="d-range" min="0" max="9" step="1" value="3" style="width:100%" />
+            </div>
+            <div class="control"><button class="btn btn-primary btn-sm" id="resample">New sample</button></div>
+          </div>
+
+          <canvas id="cv-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k" style="color:var(--secondary)">Training MSE</span><span class="v" id="stat-train">—</span></div>
+            <div class="stat"><span class="k" style="color:#f97316">5-fold CV MSE</span><span class="v" id="stat-cv">—</span></div>
+            <div class="stat"><span class="k">Best degree by CV</span><span class="v" id="stat-best">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>Play with it for a minute and the pattern becomes unmistakable: training error keeps rewarding complexity forever, while CV error traces a U: falling while extra flexibility captures real signal, then rising once it starts capturing noise. The degree at the bottom of the U is the complexity the <em>data can actually support</em>. Hit "New sample" a few times: the best degree wobbles a little from sample to sample, which is itself a useful reminder that model selection has uncertainty too.</p>
+
+        <h2>The mistake that puts the optimism back</h2>
+        <p>Cross-validation is only honest about choices it did not make. Use the CV error to pick the polynomial degree above, and that same CV error stops being an unbiased estimate of how the chosen model will perform, because you selected the winner partly on its luck across those particular folds. The number you report is then a best-of-many, and it flatters. The same applies to anything else tuned by looking at the folds: a regularization penalty, a variable-selection step, even the decision of which outcome to model. Two clean fixes, both standard: hold out a final test set that is touched exactly once, at the very end, after every choice is locked; or use <strong>nested cross-validation</strong>, where an inner loop does the tuning and an outer loop measures a model whose tuning it never saw. The gap between the naive and nested estimates is usually small for one tuned parameter and embarrassing for several.</p>
+
+        <h2>The bias–variance trade-off, in one sentence</h2>
+        <p>Simple models are wrong in a stable way (high <strong>bias</strong>, low <strong>variance</strong>); flexible models are right on average but wildly unstable from sample to sample (low bias, high <strong>variance</strong>). Prediction error is the sum of both, which is exactly why the CV curve is U-shaped, and why "more flexible" is not the same as "better."</p>
+
+        <h2>Where you'll meet this idea again</h2>
+        <p>Cross-validation is the workhorse behind choosing predictors in <a href="../../stats-2/multicollinearity-and-variable-selection/">variable selection</a>, comparing models honestly alongside AIC/BIC from <a href="../../stats-2/model-comparison/">model comparison</a>, and tuning essentially every machine-learning method. It's the backbone of the ML habit of <a href="../../ml/train-test-split-and-generalization/">train/test splits and honest generalization</a>. And its philosophical cousin — judging a procedure by how it behaves across repeated resampling — is the same move the <a href="../../stats-3/bootstrap-and-resampling/">bootstrap</a> makes for uncertainty.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> training-data fit flatters every model, so it can never be the judge. Evaluating on held-out data (via a test set or k-fold cross-validation) is the single most reliable habit for building models that survive contact with new data.</p>
+        </div>
+
+        <p class="pb-xref"><a href="../../problems.html#p4-7">Problem 37 of the practice problems</a> puts this side by side with the information criteria: four nested models, and the question of whether the one that fits best is the one to report.</p>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What value of k should I use for k-fold cross-validation?</summary>
+            <div class="faq-a"><p>k = 5 or k = 10 is the standard, well-studied compromise: each fold's training set is nearly the full data (low bias), without the variance and cost of leave-one-out (k = n). Small datasets lean toward k = 10 or repeated CV (multiple random fold splits, averaged) to stabilize the estimate. There's rarely a reason to deviate.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is the difference between a validation set and a test set?</summary>
+            <div class="faq-a"><p>The validation set is used <em>during</em> modeling (comparing candidate models, tuning complexity), so decisions get optimized against it, and its error estimate becomes optimistic. The test set is opened exactly once, after all decisions are final, to report honest performance. Cross-validation typically replaces the validation set; the untouched final test set remains best practice.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Can I use cross-validation on time-series data?</summary>
+            <div class="faq-a"><p>Not the ordinary kind. Random folds put future observations in the training set and past ones in the test set, so the model gets to see what it is supposed to be predicting and the score comes out far too good. Use a scheme that respects the arrow of time instead: <strong>rolling-origin</strong> (also called forward-chaining) validation trains on everything up to a cut-off, tests on the stretch that follows, then slides the cut-off forward and repeats, so every evaluation only ever looks forward. If neighboring observations are correlated, leave a gap between the training window and the test window as well, since an observation an hour before the test period leaks nearly as much as one inside it. The same care applies to any data with structure that random splitting would break, including repeated measurements on the same person: split by person, not by row.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ overfitting / cross-validation visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var N = 45, NOISE = 0.22, DMAX = 9, K = 5;
+    var canvas = document.getElementById("cv-canvas"), ctx, W = 0, H = 380;
+    var deg = 3, xs = [], ys = [], us = [], foldOf = [];
+    var trainMSE = [], cvMSE = [], coefs = [];
+
+    function truth(x) { return 0.65 * Math.sin(2.2 * Math.PI * x); }
+
+    /* ---- exact least-squares polynomial fit (normal equations + Gauss) ---- */
+    function solve(A, b) {
+      var n = b.length, i, j, k2;
+      for (i = 0; i < n; i++) {
+        var p = i;
+        for (j = i + 1; j < n; j++) if (Math.abs(A[j][i]) > Math.abs(A[p][i])) p = j;
+        var t = A[p]; A[p] = A[i]; A[i] = t; var tb = b[p]; b[p] = b[i]; b[i] = tb;
+        for (j = i + 1; j < n; j++) {
+          var f = A[j][i] / A[i][i];
+          for (k2 = i; k2 < n; k2++) A[j][k2] -= f * A[i][k2];
+          b[j] -= f * b[i];
+        }
+      }
+      var x = new Array(n);
+      for (i = n - 1; i >= 0; i--) {
+        var s = b[i];
+        for (j = i + 1; j < n; j++) s -= A[i][j] * x[j];
+        x[i] = s / A[i][i];
+      }
+      return x;
+    }
+    function polyfit(u, y, d) {
+      var m = d + 1, A = [], b = [], i, j, k2;
+      for (i = 0; i < m; i++) { A.push(new Array(m).fill(0)); b.push(0); }
+      for (k2 = 0; k2 < u.length; k2++) {
+        var pw = [1];
+        for (i = 1; i < m; i++) pw.push(pw[i - 1] * u[k2]);
+        for (i = 0; i < m; i++) { b[i] += pw[i] * y[k2]; for (j = 0; j < m; j++) A[i][j] += pw[i] * pw[j]; }
+      }
+      for (i = 0; i < m; i++) A[i][i] += 1e-10;   // tiny ridge for numerical stability
+      return solve(A, b);
+    }
+    function pv(c, u) { var s = 0; for (var i = c.length - 1; i >= 0; i--) s = s * u + c[i]; return s; }
+
+    /* ---- data + errors ---- */
+    function resample() {
+      xs = []; ys = []; us = []; foldOf = [];
+      for (var i = 0; i < N; i++) {
+        var x = Math.random();
+        xs.push(x); us.push(2 * x - 1);
+        ys.push(truth(x) + NOISE * VIZ.randn());
+      }
+      // random fold assignment for 5-fold CV
+      var idx = xs.map(function (_, i2) { return i2; });
+      for (var s = idx.length - 1; s > 0; s--) { var r = (Math.random() * (s + 1)) | 0; var t = idx[s]; idx[s] = idx[r]; idx[r] = t; }
+      idx.forEach(function (orig, pos) { foldOf[orig] = pos % K; });
+      computeErrors();
+    }
+    function computeErrors() {
+      trainMSE = []; cvMSE = []; coefs = [];
+      for (var d = 0; d <= DMAX; d++) {
+        var c = polyfit(us, ys, d);
+        coefs.push(c);
+        var sse = 0;
+        for (var i = 0; i < N; i++) { var e = ys[i] - pv(c, us[i]); sse += e * e; }
+        trainMSE.push(sse / N);
+        var cvSSE = 0;
+        for (var f = 0; f < K; f++) {
+          var uT = [], yT = [], uH = [], yH = [];
+          for (var j = 0; j < N; j++) {
+            if (foldOf[j] === f) { uH.push(us[j]); yH.push(ys[j]); }
+            else { uT.push(us[j]); yT.push(ys[j]); }
+          }
+          var cf = polyfit(uT, yT, d);
+          for (var h = 0; h < uH.length; h++) { var e2 = yH[h] - pv(cf, uH[h]); cvSSE += e2 * e2; }
+        }
+        cvMSE.push(cvSSE / N);
+      }
+    }
+
+    /* ---- drawing ---- */
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      var padL = 40, padR = 14;
+      /* top panel: the fit */
+      var t0 = 8, t1 = 218, YMIN = -1.5, YMAX = 1.5;
+      function tx(x) { return padL + x * (W - padL - padR); }
+      function ty(y) { return t1 - (Math.max(YMIN, Math.min(YMAX, y)) - YMIN) / (YMAX - YMIN) * (t1 - t0); }
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, ty(0)); ctx.lineTo(W - padR, ty(0)); ctx.stroke();
+      // truth (dashed teal)
+      ctx.strokeStyle = VIZ.css("--secondary"); ctx.setLineDash([5, 4]); ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (var px = 0; px <= 1.0001; px += 0.01) { var y = truth(px); if (px === 0) ctx.moveTo(tx(px), ty(y)); else ctx.lineTo(tx(px), ty(y)); }
+      ctx.stroke(); ctx.setLineDash([]);
+      // fitted polynomial (orange)
+      var c = coefs[deg];
+      ctx.strokeStyle = "#f97316"; ctx.lineWidth = 2.5; ctx.beginPath();
+      for (var p2 = 0; p2 <= 1.0001; p2 += 0.004) { var yf = pv(c, 2 * p2 - 1); if (p2 === 0) ctx.moveTo(tx(p2), ty(yf)); else ctx.lineTo(tx(p2), ty(yf)); }
+      ctx.stroke();
+      // sample points (indigo)
+      ctx.fillStyle = VIZ.css("--primary");
+      for (var i = 0; i < N; i++) { ctx.globalAlpha = 0.85; ctx.beginPath(); ctx.arc(tx(xs[i]), ty(ys[i]), 3.2, 0, 6.2832); ctx.fill(); }
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px " + VIZ.css("--font");
+      ctx.textAlign = "left"; ctx.fillText("truth (dashed)  ·  fit (orange)  ·  data (blue)", padL, t1 + 16);
+
+      /* bottom panel: error vs degree, log10 scale */
+      var b0 = 262, b1 = H - 26;
+      var all = trainMSE.concat(cvMSE).map(function (v) { return Math.log10(Math.max(v, 1e-4)); });
+      var lo = Math.min.apply(null, all) - 0.08, hi = Math.max.apply(null, all) + 0.08;
+      function bx(d) { return padL + d / DMAX * (W - padL - padR); }
+      function by(v) { return b1 - (Math.log10(Math.max(v, 1e-4)) - lo) / (hi - lo) * (b1 - b0); }
+      ctx.strokeStyle = VIZ.css("--border");
+      ctx.beginPath(); ctx.moveTo(padL, b1); ctx.lineTo(W - padR, b1); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px ui-monospace, monospace"; ctx.textAlign = "center";
+      for (var d2 = 0; d2 <= DMAX; d2++) ctx.fillText(d2, bx(d2), b1 + 15);
+      ctx.fillText("polynomial degree →", (padL + W - padR) / 2, H - 3);
+      // current-degree marker
+      ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.moveTo(bx(deg), b0 - 4); ctx.lineTo(bx(deg), b1); ctx.stroke(); ctx.setLineDash([]);
+      // the two error curves
+      function line(arr, color) {
+        ctx.strokeStyle = color; ctx.lineWidth = 2.2; ctx.beginPath();
+        for (var d3 = 0; d3 <= DMAX; d3++) { if (d3 === 0) ctx.moveTo(bx(d3), by(arr[d3])); else ctx.lineTo(bx(d3), by(arr[d3])); }
+        ctx.stroke();
+        ctx.fillStyle = color;
+        for (var d4 = 0; d4 <= DMAX; d4++) { ctx.beginPath(); ctx.arc(bx(d4), by(arr[d4]), 3, 0, 6.2832); ctx.fill(); }
+      }
+      line(trainMSE, VIZ.css("--secondary"));
+      line(cvMSE, "#f97316");
+      ctx.font = "600 11px " + VIZ.css("--font"); ctx.textAlign = "left";
+      ctx.fillStyle = VIZ.css("--secondary"); ctx.fillText("training error", padL + 4, b0 + 4);
+      ctx.fillStyle = "#f97316"; ctx.fillText("5-fold CV error", padL + 4, b0 + 18);
+    }
+
+    function update() {
+      var best = 0;
+      for (var d = 1; d <= DMAX; d++) if (cvMSE[d] < cvMSE[best]) best = d;
+      document.getElementById("stat-train").textContent = trainMSE[deg].toFixed(3);
+      document.getElementById("stat-cv").textContent = cvMSE[deg].toFixed(3);
+      document.getElementById("stat-best").textContent = "d = " + best;
+      draw();
+    }
+
+    document.getElementById("d-range").addEventListener("input", function () {
+      deg = +this.value; document.getElementById("d-val").textContent = "d = " + deg; update();
+    });
+    document.getElementById("resample").addEventListener("click", function () { resample(); update(); });
+    window.addEventListener("resize", function () { fit(); draw(); });
+    VIZ.onTheme(draw);
+
+    fit(); resample(); update();
+  })();
+  </script>
+</body>
+</html>

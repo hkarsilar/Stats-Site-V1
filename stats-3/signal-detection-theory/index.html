@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    /* Consent Mode: storage denied by default, so GA sets no cookie and
+       follows nobody between visits. Anonymous counts still arrive. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Signal Detection Theory — StatsCapybara</title>
+  <meta name="description" content="Drag the criterion between two overlapping distributions to pull sensitivity (d′) apart from response bias (c), then sweep it to trace the ROC curve." />
+  <link rel="canonical" href="https://statscapybara.com/stats-3/signal-detection-theory/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Signal Detection Theory — StatsCapybara" />
+  <meta property="og:description" content="Drag the criterion between two overlapping distributions to pull sensitivity (d′) apart from response bias (c), then sweep it to trace the ROC curve." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og-stats-3.png" />
+  <meta property="og:url" content="https://statscapybara.com/stats-3/signal-detection-theory/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Signal Detection Theory — StatsCapybara" />
+  <meta name="twitter:description" content="Drag the criterion between two overlapping distributions to pull sensitivity (d′) apart from response bias (c), then sweep it to trace the ROC curve." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-3.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Signal Detection Theory", "description": "Drag the criterion between two overlapping distributions to pull sensitivity (d′) apart from response bias (c), then sweep it to trace the ROC curve.", "url": "https://statscapybara.com/stats-3/signal-detection-theory/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced & Elective Topics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Signal Detection Theory", "item": "https://statscapybara.com/stats-3/signal-detection-theory/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is a good d′ value?", "acceptedAnswer": {"@type": "Answer", "text": "Zero means the observer cannot tell signal from noise at all, and values grow without a fixed ceiling. Useful anchors come from the ROC identity AUC = Φ(d′/√2): d′ = 1 corresponds to getting a two-alternative comparison right about 76% of the time, d′ = 2 about 92%, and beyond 3 performance is so close to perfect that hit and false-alarm rates start saturating at 0 and 1, where the estimate itself turns fragile. What counts as good is task-dependent. A d′ of 1 is respectable for faint stimuli near threshold and alarming for a tumor-versus-clean judgment."}}, {"@type": "Question", "name": "My task was two-alternative forced choice, not yes/no. Does d′ still work?", "acceptedAnswer": {"@type": "Answer", "text": "Forced choice needs a different formula and hands back a cleaner number. The observer compares two intervals and picks one, so there is no yes/no line to place and whatever interval bias survives is usually small, which makes proportion correct close to a pure sensitivity measure on its own. Convert it with d′ = √2 · z(Pc): 76% correct is d′ = 1 and 92% is d′ = 2, the same two anchors as the AUC identity, because it is the same formula. What the conversion does not license is mixing designs. A 2AFC d′ and a yes/no d′ from the same observer are estimates of the same underlying sensitivity but they come from different tasks and different amounts of measurement noise, so name the design beside the number instead of pooling the two."}}, {"@type": "Question", "name": "What should I do when a hit or false-alarm rate is exactly 0 or 1?", "acceptedAnswer": {"@type": "Answer", "text": "The z-transform sends those proportions to infinity, so d′ cannot be computed from them directly. Two standard corrections exist. The log-linear rule adds 0.5 to every count and 1 to every trial total before converting — applied to all observers, not just the extreme ones. The 1/(2N) rule instead replaces only the offending rates, with 1/(2N) standing in for 0 and 1 − 1/(2N) for 1. Both shrink extreme estimates toward the middle; the log-linear version is less biased in simulations and is what this lesson uses. Whichever you pick, apply it uniformly and name it in your methods section."}}]}
+  </script>
+</head>
+<body data-course="stats-3" data-section="signal-detection-theory">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 3.17</span>
+        <h1>Signal Detection Theory</h1>
+
+        <p class="lede">A radiologist stares at a chest X-ray. Somewhere in the gray there is either a tumor or nothing, and the image refuses to say which: diseased tissue sometimes photographs clean, healthy tissue sometimes looks suspicious. <strong>Signal detection theory</strong> is the statistics of decisions made on evidence that overlaps like that. Its gift to research is a clean separation between two things every raw accuracy score blurs together: how well the observer can <em>tell</em> the two worlds apart (sensitivity), and how willing they are to say &ldquo;yes&rdquo; (response bias).</p>
+
+        <h2>One question, four outcomes</h2>
+        <p>The basic experiment could not be simpler. On every trial something is either there (signal) or not (noise), the observer answers yes or no, and each trial lands in one of four cells. A yes to a real signal is a <strong>hit</strong>; a no is a <strong>miss</strong>. A yes when nothing was there is a <strong>false alarm</strong>; a no is a <strong>correct rejection</strong>. If that table feels familiar, it should: it is the same 2×2 you met as the <a href="../../ml/classification-metrics/">confusion matrix</a>, with a human playing the role of the classifier.</p>
+        <p>Because each row must sum to 100%, the whole table boils down to two independent numbers: the <strong>hit rate</strong> <em>H</em> (the share of signal trials answered yes) and the <strong>false-alarm rate</strong> <em>FA</em> (the share of noise trials answered yes). And two numbers is one more than a percent-correct score keeps. That lost number is the interesting one. An observer who answers yes on every single trial earns a perfect 100% hit rate, alongside a 100% false-alarm rate; they detected nothing at all. Accuracy alone cannot tell that strategy apart from skill.</p>
+
+        <h2>Two bells and one line</h2>
+        <p>The model behind the theory is almost drawably simple. Every trial produces an <em>internal evidence</em> value in the observer's head: how tumor-ish the X-ray looks, how word-like the memory feels. Noise trials generate evidence scattered around a low average; signal trials generate evidence from the same bell shifted to the right. The distance between the two bells, measured in standard deviation units, is <strong><em>d′</em></strong> (&ldquo;d-prime&rdquo;): the observer's sensitivity. Far-apart bells mean the two worlds rarely produce confusable evidence; overlapping bells mean frequent confusion no strategy can remove.</p>
+        <p>The observer's decision rule is a single vertical line, the <strong>criterion</strong>: answer yes whenever the evidence lands to its right. Placed low (to the left), the rule is <strong>liberal</strong>, producing many hits and many false alarms; placed high, it is <strong>conservative</strong>, producing few of both. The statistic <strong><em>c</em></strong> measures that placement as the distance from the neutral point halfway between the bells, so <em>c</em> = 0 is unbiased, positive is conservative, negative is liberal.</p>
+        <p>Everything is computed with the <a href="../../stats-1/z-scores-and-the-normal-distribution/">z-scores</a> you already know. Convert the two observed rates into normal quantiles and both parameters fall out:</p>
+        <p style="text-align:center"><em>d′</em> = <em>z</em>(<em>H</em>) − <em>z</em>(<em>FA</em>) &nbsp;&nbsp;&nbsp;&nbsp; <em>c</em> = −[<em>z</em>(<em>H</em>) + <em>z</em>(<em>FA</em>)] / 2</p>
+        <p>A third index, β = e<sup><em>c</em>·<em>d′</em></sup>, expresses the same bias as a likelihood ratio: how many times more probable the evidence at the criterion must be under signal than under noise before the observer commits to yes. Play with all of it below.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="sdtviz">
+          <p class="viz-title">🎛️ The signal detection playground</p>
+          <p class="viz-sub">Top: the <span style="color:var(--secondary);font-weight:700">noise</span> and <span style="color:#f97316;font-weight:700">signal + noise</span> evidence distributions. Drag the criterion line sideways (or focus the chart and use ← →); everything to its right gets a &ldquo;yes.&rdquo; The four shaded regions, the 2×2 grid, and the ROC point all follow. <strong>Sweep</strong> rides the criterion across the whole axis to trace the ROC curve.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:200px"><label>Sensitivity d′ <span class="val" id="sdt-d-val">1.50</span></label><input type="range" id="sdt-d" min="0" max="3" step="0.05" value="1.5" /></div>
+            <div class="control" style="flex:1;min-width:200px"><label>Criterion c <span class="val" id="sdt-c-val">0.00</span></label><input type="range" id="sdt-c" min="-2.5" max="2.5" step="0.05" value="0" /></div>
+            <div class="control"><button class="btn btn-primary btn-sm" id="sdt-sweep">▶ Sweep the criterion</button></div>
+          </div>
+
+          <canvas id="sdt-canvas" tabindex="0" aria-label="Signal detection playground. Two overlapping evidence distributions with a movable decision criterion. Drag the criterion line, or use the left and right arrow keys while the chart is focused; the outcome rates below update as it moves." style="--viz-ar: 5 / 2; touch-action:none; cursor:ew-resize"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Hit rate</span><span class="v" id="sdt-h">—</span></div>
+            <div class="stat"><span class="k">False alarms</span><span class="v" id="sdt-fa">—</span></div>
+            <div class="stat"><span class="k" style="text-transform:none">d′ = z(H) − z(FA)</span><span class="v" id="sdt-dp">—</span></div>
+            <div class="stat"><span class="k" style="text-transform:none">criterion c</span><span class="v" id="sdt-cc">—</span></div>
+            <div class="stat"><span class="k" style="text-transform:none">bias β</span><span class="v" id="sdt-beta">—</span></div>
+            <div class="stat"><span class="k" style="text-transform:none">AUC = Φ(d′/√2)</span><span class="v" id="sdt-auc">—</span></div>
+          </div>
+
+          <div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center;margin-top:1rem">
+            <div style="flex:1 1 280px;min-width:250px" aria-live="polite">
+              <div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:6px;align-items:stretch;font-size:.85rem">
+                <div></div>
+                <div style="text-align:center;color:var(--text-muted);font-weight:600;align-self:end">respond &ldquo;yes&rdquo;</div>
+                <div style="text-align:center;color:var(--text-muted);font-weight:600;align-self:end">respond &ldquo;no&rdquo;</div>
+                <div style="color:var(--text-muted);font-weight:600;align-self:center;text-align:right;padding-right:2px">signal<br>present</div>
+                <div style="border:1px solid var(--border);border-left:4px solid #22c55e;border-radius:8px;background:var(--bg-soft);padding:.45rem .6rem;text-align:center"><div style="font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em">Hit</div><div id="sdt-q-hit" style="font-size:1.15rem;font-weight:800">—</div></div>
+                <div style="border:1px solid var(--border);border-left:4px solid #ef4444;border-radius:8px;background:var(--bg-soft);padding:.45rem .6rem;text-align:center"><div style="font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em">Miss</div><div id="sdt-q-miss" style="font-size:1.15rem;font-weight:800">—</div></div>
+                <div style="color:var(--text-muted);font-weight:600;align-self:center;text-align:right;padding-right:2px">noise<br>only</div>
+                <div style="border:1px solid var(--border);border-left:4px solid #ef4444;border-radius:8px;background:var(--bg-soft);padding:.45rem .6rem;text-align:center"><div style="font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em">False alarm</div><div id="sdt-q-fa" style="font-size:1.15rem;font-weight:800">—</div></div>
+                <div style="border:1px solid var(--border);border-left:4px solid #22c55e;border-radius:8px;background:var(--bg-soft);padding:.45rem .6rem;text-align:center"><div style="font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em">Correct rejection</div><div id="sdt-q-cr" style="font-size:1.15rem;font-weight:800">—</div></div>
+              </div>
+            </div>
+            <div style="flex:0 1 250px;min-width:210px;margin:0 auto">
+              <canvas id="sdt-roc" aria-label="ROC curve for the current sensitivity. The current hit and false-alarm rates are marked as a point; sweeping the criterion moves the point along the curve." style="--viz-ar: 1 / 1; background:var(--bg-soft); border-radius:10px"></canvas>
+            </div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Skill or strategy: two ways to get more hits</h2>
+        <p>The playground makes the central lesson physical. There are exactly two ways to raise a hit rate. Pull the bells apart (raise <em>d′</em>), and hits climb while false alarms fall: the observer genuinely distinguishes better. Or slide the criterion left (lower <em>c</em>), and hits climb while false alarms climb with them: nothing about the perception improved, only the willingness to commit. Only the first is skill. A memory drug that &ldquo;improves recognition by 10%&rdquo; has shown nothing until the false-alarm rate is on the table too.</p>
+        <p>Neither parameter is more &ldquo;real&rdquo; than the other, though. Criterion placement is where costs, rewards, and base rates enter the decision. A smoke detector is engineered to be extremely liberal, because a false alarm costs a minute of annoyance while a miss costs a house. A criminal jury is instructed to be conservative for the mirror-image reason. Airport screeners, spam filters, and drowsy radiologists all live at some chosen point on this trade-off, and signal detection theory is the language for saying where, separately from how good they are.</p>
+
+        <h2>Where the criterion should sit</h2>
+        <p>Costs, rewards and base rates determine the criterion exactly. The optimal policy is to answer yes whenever the evidence is more likely under signal than under noise by some constant factor, and that factor is the β above:</p>
+        <p style="text-align:center">β<sub>opt</sub> = [<em>P</em>(noise) / <em>P</em>(signal)] × [cost of a false alarm / cost of a miss]</p>
+        <p>Rare signals push β up, because most yeses would be wrong anyway; expensive misses push it down. In the criterion units the playground uses, <em>c</em><sub>opt</sub> = ln(β<sub>opt</sub>) / <em>d′</em>, which is worth setting on the sliders above at their default <em>d′</em> = 1.5. Equally common signal and noise trials with equally costly errors give β<sub>opt</sub> = 1 and <em>c</em><sub>opt</sub> = 0, the slider's home position. Make signal trials rare, one in ten, and β<sub>opt</sub> = 9 lifts the ideal criterion to <em>c</em> = +1.46, where hits fall to 24% and false alarms to 1.3%. That looks lazy until you remember that at a 10% base rate a neutral observer's yeses are wrong more often than not. A smoke alarm sits at the other extreme: if a miss costs twenty times a false alarm, β<sub>opt</sub> = .05 and <em>c</em><sub>opt</sub> = −2.00.</p>
+        <p>The instructive case is the one where both forces pull at once. In a screening program where 5 people in 1,000 carry the disease and a missed case costs a hundred times a needless recall, the base-rate term (199) and the cost term (1/100) very nearly cancel: β<sub>opt</sub> = 1.99, <em>c</em><sub>opt</sub> = +0.46, a hit rate of 61% and a false-alarm rate of 11%. Neither of those two numbers looks defensible by itself, and both fall out of one line of arithmetic. It is the prior-odds-times-likelihood-ratio move from <a href="../../stats-3/bayesian-thinking/">Bayesian thinking</a>, with a yes/no decision on the end of it.</p>
+
+        <h2>Sweep the criterion and you draw the ROC</h2>
+        <p>Every criterion placement yields one (false-alarm rate, hit rate) pair: a single point in the square panel above. Sliding the criterion across the whole evidence axis drags that point along a curve, from the ultra-conservative corner (never say yes: 0, 0) to the ultra-liberal one (always say yes: 1, 1). That curve is the <strong>receiver operating characteristic</strong>, and the &ldquo;receiver&rdquo; in the name is a 1950s radar operator judging blips, which is where this theory was born. The <a href="../../ml/roc-curves-and-auc/">ROC curve you met in the ML course</a> is the identical object with a model's score threshold standing in for the observer's criterion.</p>
+        <p>The curve's shape depends on <em>d′</em> alone. Moving the criterion slides the operating point <em>along</em> the curve; only a change in sensitivity lifts the whole curve toward the top-left corner. That makes ROC area the bias-proof summary of performance: for the equal-variance model, AUC = Φ(<em>d′</em>/√2), so <em>d′</em> = 1 gives 0.76 and <em>d′</em> = 2 gives 0.92, the same numbers the ML lesson reports for its separation slider. Memory researchers exploit this daily: asking participants for confidence ratings instead of a bare yes/no yields several criteria at once, an empirical ROC, and a sensitivity estimate no criterion shift can fake.</p>
+
+        <!-- ============ INTERACTIVE 2 ============ -->
+        <div class="viz" id="detgame">
+          <p class="viz-title">🕹️ Be the detector</p>
+          <p class="viz-sub">Twenty quick trials. Each shows one evidence reading drawn from the model above at d′ = 1.5, half the trials signal and half noise, shuffled. Decide where your criterion sits and call each one; your own hits and false alarms then give <em>your</em> measured d′ and c.</p>
+          <div class="controls" style="align-items:center">
+            <div class="control"><button class="btn btn-primary btn-sm" id="dg-start">▶ Start the 20 trials</button></div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="dg-noise" disabled>Noise</button></div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="dg-signal" disabled>Signal</button></div>
+            <div class="control" style="font-weight:700" id="dg-progress" aria-live="polite">Press Start.</div>
+          </div>
+          <div id="dg-track" style="position:relative;height:52px;border:1px solid var(--border);border-radius:10px;background:var(--bg-soft);margin:.6rem 0 .2rem">
+            <div id="dg-dot" style="position:absolute;top:10px;width:16px;height:16px;border-radius:50%;background:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb, var(--primary) 25%, transparent);display:none"></div>
+          </div>
+          <p id="dg-feedback" aria-live="polite" style="min-height:1.3em;font-size:.9rem;margin:.35rem 0 0"></p>
+          <div id="dg-summary" style="display:none;border:1px solid var(--border);border-left:4px solid var(--primary);border-radius:10px;padding:.7rem .9rem;margin-top:.6rem;font-size:.92rem"></div>
+        </div>
+        <!-- ============ /INTERACTIVE 2 ============ -->
+
+        <h2>From counts to d′</h2>
+        <p>Real data arrive as four counts, and the arithmetic is two z-transforms long. Say a recognition-memory test used 20 old and 20 new words, and a participant produced 15 hits and 4 false alarms. Then <em>H</em> = .75 and <em>FA</em> = .20, so <em>z</em>(.75) = 0.674 and <em>z</em>(.20) = −0.842 (the site's <a href="../../tables.html">z, t, χ² and F tables</a> will hand you either one), giving <em>d′</em> = 0.674 − (−0.842) = 1.52 and <em>c</em> = −(0.674 − 0.842)/2 = 0.08: solid discrimination, close to neutral bias. The &ldquo;Try it yourself&rdquo; box below runs the same four lines in R or Python.</p>
+
+        <div class="callout key">
+          <p><strong>The 0-and-1 problem.</strong> A perfect hit rate or a zero false-alarm rate breaks the formula, because <em>z</em>(0) and <em>z</em>(1) are infinite. The standard fixes nudge the extreme proportions inward, and this lesson (including the game above) uses the <strong>log-linear rule</strong>: add 0.5 to every count and 1 to every trial total before converting, for all participants, extreme or not. The common alternative, the 1/(2<em>N</em>) rule, replaces only the offending 0s and 1s. Either is respectable; applying one consistently and saying so in your methods section is what matters.</p>
+        </div>
+
+        <h2>When the two bells are not the same width</h2>
+        <p>All of the above assumes the two evidence distributions have the same spread, which is what lets a single <em>d′</em> stand for sensitivity. Memory data have disagreed with that assumption for decades. The way to check it is the <strong>zROC</strong>: take the several (false-alarm rate, hit rate) pairs a confidence-rating experiment gives you, convert both to z-scores, and plot <em>z</em>(<em>H</em>) against <em>z</em>(<em>FA</em>). Equal variance predicts a straight line of slope 1. Old/new recognition studies keep returning a slope nearer <strong>0.8</strong>, which says the studied-item distribution is about 1.25 times wider than the new-item one. That is not mysterious: studied items differ in how well they were learned, while unstudied items have nothing to differ in.</p>
+        <p>A slope other than 1 has an uncomfortable consequence. Plain <em>d′</em> = <em>z</em>(<em>H</em>) − <em>z</em>(<em>FA</em>) stops describing the observer and starts describing the observer plus their criterion. Put the signal distribution at 1.5 with an SD of 1.25 against standard-normal noise, giving a zROC of slope .80 and intercept 1.20, and read the usual statistics off at six criterion placements:</p>
+        <table class="ref-table">
+          <thead><tr><th>Criterion</th><th>Hit rate</th><th>False alarms</th><th>Plain <em>d′</em></th><th><em>c</em></th></tr></thead>
+          <tbody>
+            <tr><td>liberal</td><td>94.5%</td><td>69.1%</td><td>1.10</td><td>−1.05</td></tr>
+            <tr><td>&nbsp;</td><td>88.5%</td><td>50.0%</td><td>1.20</td><td>−0.60</td></tr>
+            <tr><td>&nbsp;</td><td>78.8%</td><td>30.9%</td><td>1.30</td><td>−0.15</td></tr>
+            <tr><td>&nbsp;</td><td>65.5%</td><td>15.9%</td><td>1.40</td><td>+0.30</td></tr>
+            <tr><td>&nbsp;</td><td>50.0%</td><td>6.7%</td><td>1.50</td><td>+0.75</td></tr>
+            <tr><td>conservative</td><td>34.5%</td><td>2.3%</td><td>1.60</td><td>+1.20</td></tr>
+          </tbody>
+        </table>
+        <p>One observer, one true sensitivity, six different answers, and the only thing that changed was how willing they were to say yes. Two groups that differ in criterion will therefore look as though they differ in sensitivity, which is the confound <em>d′</em> exists to remove.</p>
+        <p>Fixing it takes more than one point on the ROC, which is the practical reason confidence ratings are worth collecting. Given the whole zROC, the summary that survives unequal variance is <em>d<sub>a</sub></em>, the separation divided by the root-mean-square of the two spreads:</p>
+        <p style="text-align:center"><em>d<sub>a</sub></em> = (μ<sub>S</sub> − μ<sub>N</sub>) / √[(σ<sub>N</sub>² + σ<sub>S</sub>²) / 2]</p>
+        <p>For the observer in the table that is 1.33, with an area <em>A<sub>z</sub></em> = Φ(<em>d<sub>a</sub></em>/√2) = .826, where Φ (phi) is the normal CDF, that a Monte Carlo of forty million trial pairs reproduces to four decimals. The six equal-variance readings above would have claimed areas anywhere from .782 to .871 for that same curve. So check the zROC slope before you quote a <em>d′</em>, and when it is not close to 1, report <em>d<sub>a</sub></em> or <em>A<sub>z</sub></em> and name which.</p>
+
+        <p>Beyond the lab, the same two-number logic runs through recognition-memory experiments (old/new judgments), audiology and vision screening, radiologists' diagnostic performance, eyewitness lineups, and quality inspection. And it connects straight back to the <a href="../../stats-3/psychometric-functions/">previous lesson</a>: the cumulative-Gaussian psychometric function is what a signal detection observer traces as the stimulus itself grows stronger. Section 4.11 fits the response curve; this lesson is the decision theory underneath it.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> whenever a person or a model makes yes/no calls on ambiguous evidence, percent correct hides the strategy inside the skill. Reporting <em>d′</em> and <em>c</em> (or an ROC and its area) keeps the two honest and separable: a training program that truly sharpens perception, and one that merely coaches people to say yes more often, produce identical hit rates and completely different signal detection profiles.</p>
+        </div>
+
+        <p class="pb-xref"><a href="../../problems.html#p4-3">Problem 33 of the practice problems</a> computes <em>d′</em>, <em>c</em>, β and AUC from raw hit and false-alarm counts, including the participant who scored worse on percent correct while being the more sensitive observer.</p>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What is a good d′ value?</summary>
+            <div class="faq-a"><p>Zero means the observer cannot tell signal from noise at all, and values grow without a fixed ceiling. Useful anchors come from the ROC identity AUC = Φ(d′/√2): d′ = 1 corresponds to getting a two-alternative comparison right about 76% of the time, d′ = 2 about 92%, and beyond 3 performance is so close to perfect that hit and false-alarm rates start saturating at 0 and 1, where the estimate itself turns fragile. What counts as good is task-dependent. A d′ of 1 is respectable for faint stimuli near threshold and alarming for a tumor-versus-clean judgment.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>My task was two-alternative forced choice, not yes/no. Does d′ still work?</summary>
+            <div class="faq-a"><p>Forced choice needs a different formula and hands back a cleaner number. The observer compares two intervals and picks one, so there is no yes/no line to place and whatever interval bias survives is usually small, which makes proportion correct close to a pure sensitivity measure on its own. Convert it with d′ = √2 · z(P<sub>c</sub>): 76% correct is d′ = 1 and 92% is d′ = 2, the same two anchors as the AUC identity, because it is the same formula. What the conversion does not license is mixing designs. A 2AFC d′ and a yes/no d′ from the same observer are estimates of the same underlying sensitivity but they come from different tasks and different amounts of measurement noise, so name the design beside the number instead of pooling the two.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What should I do when a hit or false-alarm rate is exactly 0 or 1?</summary>
+            <div class="faq-a"><p>The z-transform sends those proportions to infinity, so d′ cannot be computed from them directly. Two standard corrections exist. The log-linear rule adds 0.5 to every count and 1 to every trial total before converting — applied to all observers, not just the extreme ones. The 1/(2N) rule instead replaces only the offending rates, with 1/(2N) standing in for 0 and 1 − 1/(2N) for 1. Both shrink extreme estimates toward the middle; the log-linear version is less biased in simulations and is what this lesson uses. Whichever you pick, apply it uniformly and name it in your methods section.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ Signal-detection visualization ============
+       URL presets (P67):
+         ?d=<0–3>       sensitivity d′
+         ?c=<-2.5–2.5>  criterion c (negative = liberal, positive = conservative)
+       e.g.  ?embed=1&d=2&c=0.75  →  "sensitive observer, conservative criterion"
+  -->
+  <script>
+  (function () {
+    "use strict";
+    /* Equal-variance Gaussian SDT (Macmillan & Creelman conventions), verified by
+       node acceptance tests against normal-table references:
+         noise ~ N(0,1), signal ~ N(d',1), criterion at lambda = c + d'/2
+         H = 1 - Phi(lambda - d'), FA = 1 - Phi(lambda)
+         d' = z(H) - z(FA); c = -(z(H)+z(FA))/2; beta = exp(c*d'); AUC = Phi(d'/sqrt 2)
+         (AUC identity shared with ml/roc-curves-and-auc: d'=1 -> .76, d'=2 -> .92) */
+    var ORANGE = "#f97316";
+    var XMIN = -3.5, XMAX = 6.5;
+
+    var dIn = document.getElementById("sdt-d"), cIn = document.getElementById("sdt-c");
+    var d = +dIn.value, c = +cIn.value;
+
+    var canvas = document.getElementById("sdt-canvas"), ctx, W = 0, H = 290;
+    var roc = document.getElementById("sdt-roc"), rctx, RW = 0;
+    var padL = 12, padR = 12, padT = 30, padB = 44;
+    function fitCv() {
+      var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w;
+      var s = Math.max(150, roc.clientWidth || 240);
+      var r = VIZ.fit(roc, s); rctx = r.ctx; RW = r.w;
+    }
+    function vx(x) { return padL + (x - XMIN) / (XMAX - XMIN) * (W - padL - padR); }
+    function xv(px) { return XMIN + (px - padL) / (W - padL - padR) * (XMAX - XMIN); }
+
+    /* sweep state: while sweeping, lamShow overrides the resting criterion;
+       traced keeps the completed trace on screen until the next interaction */
+    var sweeping = false, lamShow = null, traced = false, raf = null;
+    var LAM_HI = 4.5, LAM_LO = -3.5;
+
+    function rates(lam) { return { h: 1 - VIZ.normCdf(lam - d), fa: 1 - VIZ.normCdf(lam) }; }
+
+    function drawMain(lam) {
+      var base = H - padB, top = padT + 8;
+      var yScale = (base - top) / 0.42;
+      ctx.clearRect(0, 0, W, H);
+
+      // axis + ticks
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, base); ctx.lineTo(W - padR, base); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px Inter,sans-serif"; ctx.textAlign = "center";
+      for (var t = -3; t <= 6; t++) {
+        ctx.beginPath(); ctx.moveTo(vx(t), base); ctx.lineTo(vx(t), base + 4); ctx.stroke();
+        ctx.fillText(String(t), vx(t), base + 16);
+      }
+      ctx.fillText("internal evidence (z units)", padL + (W - padL - padR) / 2, H - 4);
+
+      // one curve = one fill pass; right of the criterion gets a second, stronger pass
+      function curve(mu, color) {
+        function y(x) { return base - VIZ.normPdf(x, mu, 1) * yScale; }
+        function area(x0, x1, alpha) {
+          if (x1 - x0 < 0.01) return;
+          ctx.globalAlpha = alpha; ctx.fillStyle = color; ctx.beginPath();
+          ctx.moveTo(vx(x0), base);
+          for (var x = x0; x <= x1 + 1e-9; x += 0.04) ctx.lineTo(vx(Math.min(x, x1)), y(Math.min(x, x1)));
+          ctx.lineTo(vx(x1), base); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
+        }
+        area(XMIN, Math.min(Math.max(lam, XMIN), XMAX), 0.09);
+        area(Math.min(Math.max(lam, XMIN), XMAX), XMAX, 0.26);
+        ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.beginPath();
+        for (var x = XMIN; x <= XMAX; x += 0.04) {
+          if (x === XMIN) ctx.moveTo(vx(x), y(x)); else ctx.lineTo(vx(x), y(x));
+        }
+        ctx.stroke();
+      }
+      curve(0, VIZ.css("--secondary"));
+      curve(d, ORANGE);
+
+      // region labels, stacked either side of the criterion (skip a side that's off-canvas)
+      var r = rates(lam);
+      ctx.font = "600 11.5px Inter,sans-serif";
+      var lx = vx(Math.min(Math.max(lam, XMIN), XMAX));
+      if (r.h > 0.02 || r.fa > 0.02) {
+        ctx.textAlign = "left";
+        var rx = Math.min(lx + 10, W - padR - 90);
+        if (r.h > 0.02) { ctx.fillStyle = ORANGE; ctx.fillText("hits", rx, top + 8); }
+        if (r.fa > 0.02) { ctx.fillStyle = VIZ.css("--secondary"); ctx.fillText("false alarms", rx, top + 24); }
+      }
+      if (1 - r.h > 0.02 || 1 - r.fa > 0.02) {
+        ctx.textAlign = "right";
+        var lxx = Math.max(lx - 10, padL + 120);
+        if (1 - r.h > 0.02) { ctx.fillStyle = ORANGE; ctx.fillText("misses", lxx, top + 8); }
+        if (1 - r.fa > 0.02) { ctx.fillStyle = VIZ.css("--secondary"); ctx.fillText("correct rejections", lxx, top + 24); }
+      }
+
+      // criterion line + handle
+      ctx.strokeStyle = VIZ.css("--text"); ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(lx, base); ctx.lineTo(lx, padT - 6); ctx.stroke();
+      ctx.font = "700 11px Inter,sans-serif"; ctx.textAlign = "center";
+      var tag = "◂ no · yes ▸", tw = ctx.measureText(tag).width + 14;
+      ctx.fillStyle = VIZ.css("--surface"); ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      var tx = Math.min(Math.max(lx, padL + tw / 2), W - padR - tw / 2);
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(tx - tw / 2, padT - 20, tw, 18, 9); else ctx.rect(tx - tw / 2, padT - 20, tw, 18);
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text"); ctx.fillText(tag, tx, padT - 7);
+    }
+
+    function rocXY(lam) { return { fa: 1 - VIZ.normCdf(lam), h: 1 - VIZ.normCdf(lam - d) }; }
+    function drawRoc(lam) {
+      var P = 26, PT = 8, PR = 8, S = RW;
+      var x0 = P, y0 = S - P, x1 = S - PR, y1 = PT;
+      function rx(fa) { return x0 + fa * (x1 - x0); }
+      function ry(h) { return y0 - h * (y0 - y1); }
+      rctx.clearRect(0, 0, S, S);
+      rctx.strokeStyle = VIZ.css("--border"); rctx.lineWidth = 1;
+      rctx.strokeRect(x0, y1, x1 - x0, y0 - y1);
+      rctx.setLineDash([4, 4]); rctx.beginPath(); rctx.moveTo(rx(0), ry(0)); rctx.lineTo(rx(1), ry(1)); rctx.stroke(); rctx.setLineDash([]);
+      rctx.fillStyle = VIZ.css("--text-faint"); rctx.font = "10px Inter,sans-serif"; rctx.textAlign = "center";
+      rctx.fillText("0", rx(0), y0 + 12); rctx.fillText("1", rx(1), y0 + 12);
+      rctx.fillText("false-alarm rate", (x0 + x1) / 2, S - 2);
+      rctx.textAlign = "left"; rctx.fillText("hit rate", x0 + 4, y1 + 10);
+      rctx.textAlign = "right"; rctx.fillText("1", x0 - 3, ry(1) + 3); rctx.fillText("0", x0 - 3, ry(0) + 3);
+
+      // full curve for the current d'
+      rctx.strokeStyle = VIZ.css("--primary"); rctx.lineWidth = 2.5; rctx.beginPath();
+      var first = true;
+      for (var l = 6; l >= -6.0001; l -= 0.05) {
+        var p = rocXY(l);
+        if (first) { rctx.moveTo(rx(p.fa), ry(p.h)); first = false; } else rctx.lineTo(rx(p.fa), ry(p.h));
+      }
+      rctx.stroke();
+      // swept-so-far portion, retraced hot
+      if (sweeping || lamShow !== null || traced) {
+        var upto = lamShow === null ? -6 : lamShow;
+        rctx.strokeStyle = ORANGE; rctx.lineWidth = 3.5; rctx.beginPath(); first = true;
+        for (var l2 = 6; l2 >= upto - 1e-9; l2 -= 0.05) {
+          var p2 = rocXY(l2);
+          if (first) { rctx.moveTo(rx(p2.fa), ry(p2.h)); first = false; } else rctx.lineTo(rx(p2.fa), ry(p2.h));
+        }
+        rctx.stroke();
+      }
+      // operating point + guides
+      var q = rocXY(lam);
+      rctx.strokeStyle = VIZ.css("--text-faint"); rctx.setLineDash([3, 3]); rctx.lineWidth = 1;
+      rctx.beginPath(); rctx.moveTo(rx(q.fa), y0); rctx.lineTo(rx(q.fa), ry(q.h)); rctx.lineTo(x0, ry(q.h)); rctx.stroke(); rctx.setLineDash([]);
+      rctx.fillStyle = ORANGE; rctx.beginPath(); rctx.arc(rx(q.fa), ry(q.h), 5, 0, 2 * Math.PI); rctx.fill();
+      rctx.strokeStyle = VIZ.css("--surface"); rctx.lineWidth = 1.5; rctx.stroke();
+      rctx.fillStyle = VIZ.css("--text-muted"); rctx.font = "700 11px Inter,sans-serif"; rctx.textAlign = "right";
+      rctx.fillText("AUC " + VIZ.normCdf(d / Math.SQRT2).toFixed(2).replace("0.", "."), x1 - 6, y0 - 8);
+    }
+
+    function fmtC(v) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(2); }
+    function update() {
+      var lam = lamShow !== null ? lamShow : c + d / 2;
+      var r = rates(lam);
+      /* readouts are re-derived from the rates via the count formulas, so the
+         identities d' = z(H)-z(FA) and c = -(z(H)+z(FA))/2 are live on screen */
+      var zH = VIZ.normInv(Math.min(1 - 1e-9, Math.max(1e-9, r.h)));
+      var zF = VIZ.normInv(Math.min(1 - 1e-9, Math.max(1e-9, r.fa)));
+      var dp = zH - zF, cc = -(zH + zF) / 2;
+      document.getElementById("sdt-d-val").textContent = d.toFixed(2);
+      document.getElementById("sdt-c-val").textContent = fmtC(c);
+      document.getElementById("sdt-h").textContent = (r.h * 100).toFixed(1) + "%";
+      document.getElementById("sdt-fa").textContent = (r.fa * 100).toFixed(1) + "%";
+      document.getElementById("sdt-dp").textContent = dp.toFixed(2);
+      var dir = cc > 0.05 ? " conservative" : cc < -0.05 ? " liberal" : " neutral";
+      document.getElementById("sdt-cc").textContent = fmtC(cc) + dir;
+      document.getElementById("sdt-beta").textContent = Math.exp(cc * dp).toFixed(2);
+      document.getElementById("sdt-auc").textContent = VIZ.normCdf(d / Math.SQRT2).toFixed(3);
+      document.getElementById("sdt-q-hit").textContent = (r.h * 100).toFixed(0) + "%";
+      document.getElementById("sdt-q-miss").textContent = ((1 - r.h) * 100).toFixed(0) + "%";
+      document.getElementById("sdt-q-fa").textContent = (r.fa * 100).toFixed(0) + "%";
+      document.getElementById("sdt-q-cr").textContent = ((1 - r.fa) * 100).toFixed(0) + "%";
+      drawMain(lam); drawRoc(lam);
+    }
+
+    /* ---- criterion drag (P47: ew-resize surface) + arrow-key nudge (a11y) ---- */
+    function setCFromEvent(e) {
+      var rect = canvas.getBoundingClientRect();
+      var lam = xv(e.clientX - rect.left);
+      c = Math.max(-2.5, Math.min(2.5, Math.round((lam - d / 2) / 0.05) * 0.05));
+      cIn.value = c; stopSweep(); update();
+    }
+    var dragging = false;
+    canvas.addEventListener("pointerdown", function (e) { dragging = true; try { canvas.setPointerCapture(e.pointerId); } catch (err) {} setCFromEvent(e); });
+    canvas.addEventListener("pointermove", function (e) { if (dragging) setCFromEvent(e); });
+    canvas.addEventListener("pointerup", function () { dragging = false; });
+    canvas.addEventListener("pointercancel", function () { dragging = false; });
+    canvas.addEventListener("keydown", function (e) {
+      var step = e.shiftKey ? 0.25 : 0.05, moved = true;
+      if (e.key === "ArrowLeft") c = Math.max(-2.5, +(c - step).toFixed(2));
+      else if (e.key === "ArrowRight") c = Math.min(2.5, +(c + step).toFixed(2));
+      else moved = false;
+      if (moved) { e.preventDefault(); cIn.value = c; stopSweep(); update(); }
+    });
+
+    /* ---- criterion sweep: ride lambda across the axis, tracing the ROC ---- */
+    function stopSweep() {
+      sweeping = false; lamShow = null; traced = false;
+      if (raf) { cancelAnimationFrame(raf); raf = null; }
+    }
+    document.getElementById("sdt-sweep").addEventListener("click", function () {
+      stopSweep();
+      if (VIZ.reducedMotion()) { traced = true; update(); return; }  // jump to the final frame
+      sweeping = true;
+      var t0 = performance.now(), DUR = 2600;
+      (function frame(now) {
+        if (!sweeping) return;
+        var t = Math.min(1, (now - t0) / DUR);
+        lamShow = LAM_HI + (LAM_LO - LAM_HI) * t;
+        update();
+        if (t < 1) raf = requestAnimationFrame(frame);
+        else { sweeping = false; lamShow = null; traced = true; update(); }
+      })(t0);
+    });
+
+    dIn.addEventListener("input", function () { d = +this.value; stopSweep(); update(); });
+    cIn.addEventListener("input", function () { c = +this.value; stopSweep(); update(); });
+    var refit = VIZ.rafThrottle(function () { fitCv(); update(); });
+    window.addEventListener("resize", refit);
+    if (window.ResizeObserver) { new ResizeObserver(refit).observe(canvas); new ResizeObserver(refit).observe(roc); }
+    VIZ.onTheme(update);
+    fitCv(); update();
+
+    /* URL preset, applied last (see the head comment) */
+    if (window.SC && SC.preset) SC.preset({ d: "#sdt-d", c: "#sdt-c" });
+
+    /* ================= Be the detector ================= */
+    var DG_D = 1.5, DG_N = 20;
+    var startBtn = document.getElementById("dg-start"),
+        noBtn = document.getElementById("dg-noise"), yesBtn = document.getElementById("dg-signal"),
+        prog = document.getElementById("dg-progress"), fb = document.getElementById("dg-feedback"),
+        track = document.getElementById("dg-track"), dot = document.getElementById("dg-dot"),
+        summary = document.getElementById("dg-summary");
+    var trials = [], idx = 0, hits = 0, fas = 0, running = false;
+
+    function trackX(v) { return (v - XMIN) / (XMAX - XMIN) * 100; }
+    function newTrials() {
+      var arr = [];
+      for (var i = 0; i < DG_N; i++) {
+        var sig = i < DG_N / 2;
+        arr.push({ sig: sig, v: VIZ.randn() + (sig ? DG_D : 0) });
+      }
+      for (var j = arr.length - 1; j > 0; j--) { var k = Math.floor(Math.random() * (j + 1)); var tmp = arr[j]; arr[j] = arr[k]; arr[k] = tmp; }
+      return arr;
+    }
+    function show() {
+      var t = trials[idx];
+      dot.style.display = "block";
+      dot.style.left = "calc(" + trackX(t.v).toFixed(2) + "% - 8px)";
+      prog.textContent = "Trial " + (idx + 1) + " / " + DG_N + " — evidence = " + (t.v >= 0 ? "+" : "−") + Math.abs(t.v).toFixed(2);
+    }
+    function histDot(t) {
+      var h = document.createElement("div");
+      h.style.cssText = "position:absolute;bottom:4px;width:8px;height:8px;border-radius:50%;opacity:.55;background:" +
+        (t.sig ? ORANGE : "var(--secondary)") + ";left:calc(" + trackX(t.v).toFixed(2) + "% - 4px)";
+      track.appendChild(h);
+    }
+    function answer(saidYes) {
+      if (!running) return;
+      var t = trials[idx];
+      var name, good;
+      if (t.sig && saidYes) { name = "Hit"; hits++; good = true; }
+      else if (t.sig && !saidYes) { name = "Miss"; good = false; }
+      else if (!t.sig && saidYes) { name = "False alarm"; fas++; good = false; }
+      else { name = "Correct rejection"; good = true; }
+      fb.innerHTML = '<strong style="color:' + (good ? "#22c55e" : "#ef4444") + '">' + name + ".</strong> It was " + (t.sig ? "signal + noise." : "noise.");
+      histDot(t);
+      idx++;
+      if (idx < DG_N) { show(); } else { finish(); }
+    }
+    function finish() {
+      running = false; noBtn.disabled = yesBtn.disabled = true;
+      dot.style.display = "none";
+      prog.textContent = "Done!";
+      var nS = DG_N / 2, nN = DG_N / 2;
+      /* log-linear correction (named in the callout): +0.5 per count, +1 per total */
+      var Hh = (hits + 0.5) / (nS + 1), Ff = (fas + 0.5) / (nN + 1);
+      var dp = VIZ.normInv(Hh) - VIZ.normInv(Ff), cc = -(VIZ.normInv(Hh) + VIZ.normInv(Ff)) / 2;
+      var dir = cc > 0.15 ? "conservative: yes came hard" : cc < -0.15 ? "liberal: yes came easy" : "close to neutral";
+      summary.style.display = "block";
+      summary.innerHTML = "<strong>Your scorecard:</strong> " + hits + "/" + nS + " hits, " + fas + "/" + nN +
+        " false alarms → <strong>d′ ≈ " + dp.toFixed(2) + "</strong>, c ≈ " + fmtC(cc) + " (" + dir +
+        ").<br>The generator ran at d′ = 1.5; with only 20 trials (and the log-linear correction) your estimate is noisy, and a wandering criterion drags it below the ceiling. The colored dots show every reading you judged: <span style='color:var(--secondary);font-weight:700'>noise</span> and <span style='color:" + ORANGE + ";font-weight:700'>signal</span> really do overlap.";
+      startBtn.textContent = "↻ Play again";
+      startBtn.disabled = false;
+    }
+    startBtn.addEventListener("click", function () {
+      trials = newTrials(); idx = 0; hits = 0; fas = 0; running = true;
+      Array.prototype.slice.call(track.querySelectorAll("div")).forEach(function (el) { if (el !== dot) el.remove(); });
+      summary.style.display = "none"; fb.textContent = "";
+      noBtn.disabled = yesBtn.disabled = false; startBtn.disabled = true;
+      show();
+    });
+    noBtn.addEventListener("click", function () { answer(false); });
+    yesBtn.addEventListener("click", function () { answer(true); });
+  })();
+  </script>
+</body>
+</html>

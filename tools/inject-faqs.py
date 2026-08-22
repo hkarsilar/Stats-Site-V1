@@ -8,8 +8,11 @@ Run from the repo root (idempotent — re-running replaces the injected blocks):
 Then rebuild the search index so the new text is searchable:
     python tools/build-search-index.py
 
-Every lesson slug in curriculum.js must have exactly 3 (question, answer)
-pairs in faq_data.py; the script fails loudly on any mismatch.
+Every READY lesson slug in curriculum.js must have exactly 3 (question,
+answer) pairs in faq_data.py; the script fails loudly on any mismatch. A
+section still marked `ready: false` has no page to inject into yet, so it is
+skipped — the guard fires the moment the lesson is published, which is the
+point at which the FAQs are owed.
 """
 import json
 import re
@@ -27,8 +30,11 @@ ROOT = Path(__file__).resolve().parent.parent
 cur = (ROOT / "assets/js/curriculum.js").read_text(encoding="utf-8")
 courses = {}
 for block in re.finditer(r'slug: "([\w-]+)",\s*\n\s*title:.*?sections: \[(.*?)\]\s*\}', cur, re.S):
-    for m in re.finditer(r'slug: "([\w-]+)"', block.group(2)):
-        courses[m.group(1)] = block.group(1)
+    # one section entry per { … } — read its slug AND its ready flag, so a
+    # lesson that has not shipped yet does not fail the coverage check
+    for m in re.finditer(r'\{[^{}]*?slug: "([\w-]+)"[^{}]*?\}', block.group(2)):
+        if re.search(r'ready:\s*true', m.group(0)):
+            courses[m.group(1)] = block.group(1)
 
 missing = [s for s in courses if s not in FAQS]
 extra = [s for s in FAQS if s not in courses]

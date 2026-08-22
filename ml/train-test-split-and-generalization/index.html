@@ -57,12 +57,12 @@
         <p class="lede">A predictive model has exactly one job: to work on data it has never seen. So there is one golden rule, and breaking it is the most common way careful people fool themselves in machine learning: <strong>never judge a model on data it was trained on.</strong> The moment you do, you're measuring memory, not learning.</p>
 
         <h2>The golden rule and the split</h2>
-        <p>A flexible model can memorize its training data almost perfectly and still be useless on the next case. That's <a href="../../stats-4/cross-validation-and-overfitting/">overfitting</a>. To get an honest estimate of how well a model <em>generalizes</em>, you hold data back:</p>
+        <p>A flexible model can memorize its training data almost perfectly and still be useless on the next case. That's <a href="../../stats-3/cross-validation-and-overfitting/">overfitting</a>. To get an honest estimate of how well a model <em>generalizes</em>, you hold data back:</p>
         <ul>
           <li><strong>Training set:</strong> the model learns here (fits coefficients, grows trees, picks neighbors).</li>
           <li><strong>Test set:</strong> locked in a drawer until the very end, opened <em>once</em> to report honest performance. If you peek and adjust, it's no longer a test set.</li>
         </ul>
-        <p>A typical split is 70–80% train, the rest test. For classification, <strong>stratify</strong> the split so each side keeps the same class proportions, otherwise a rare class can vanish from one side by chance. And when you need to compare or tune models, carve a <em>validation</em> set (or use <a href="../../stats-4/cross-validation-and-overfitting/">cross-validation</a>) out of the training data, so the test set stays pristine.</p>
+        <p>A typical split is 70–80% train, the rest test. For classification, <strong>stratify</strong> the split so each side keeps the same class proportions, otherwise a rare class can vanish from one side by chance. And when you need to compare or tune models, carve a <em>validation</em> set (or use <a href="../../stats-3/cross-validation-and-overfitting/">cross-validation</a>) out of the training data, so the test set stays pristine.</p>
 
         <h2>Data leakage: the #1 silent killer</h2>
         <p><strong>Data leakage</strong> is when information from the test set sneaks into training. It doesn't crash anything or throw a warning; it just makes your reported score gorgeous and your real-world performance disappointing. Three classic leaks account for most disasters:</p>

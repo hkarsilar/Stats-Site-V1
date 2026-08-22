@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    /* Consent Mode: storage denied by default, so GA sets no cookie and
+       follows nobody between visits. Anonymous counts still arrive. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Assumptions of Regression — StatsCapybara</title>
+  <meta name="description" content="Regression rests on four assumptions (LINE), and a single high-leverage point can hijack the whole fit. Drag a point to extreme x; the line swings with it." />
+  <link rel="canonical" href="https://statscapybara.com/stats-2/assumptions-of-regression/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Assumptions of Regression — StatsCapybara" />
+  <meta property="og:description" content="Regression rests on four assumptions (LINE), and a single high-leverage point can hijack the whole fit. Drag a point to extreme x; the line swings with it." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og-stats-2.png" />
+  <meta property="og:url" content="https://statscapybara.com/stats-2/assumptions-of-regression/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Assumptions of Regression — StatsCapybara" />
+  <meta name="twitter:description" content="Regression rests on four assumptions (LINE), and a single high-leverage point can hijack the whole fit. Drag a point to extreme x; the line swings with it." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-2.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Assumptions of Regression", "description": "Regression rests on four assumptions (LINE), and a single high-leverage point can hijack the whole fit. Drag a point to extreme x; the line swings with it.", "url": "https://statscapybara.com/stats-2/assumptions-of-regression/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: ANOVA & Regression", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Assumptions of Regression", "item": "https://statscapybara.com/stats-2/assumptions-of-regression/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Do my predictors need to be normally distributed?", "acceptedAnswer": {"@type": "Answer", "text": "This is one of the most persistent regression myths: the normality assumption concerns the residuals, not the predictors or even the raw outcome. Skewed predictors, binary dummies, lumpy x-distributions: all perfectly fine. Fit the model, then check a Q-Q plot of the residuals. That's the only normality that matters, and mostly for small samples at that."}}, {"@type": "Question", "name": "What is leverage in regression?", "acceptedAnswer": {"@type": "Answer", "text": "A point's potential to move the line, determined purely by how unusual its predictor values are: far from the center of the x's means high leverage, like sitting at the end of a seesaw. Leverage alone isn't a problem: a high-leverage point right on the trend just stabilizes the fit. Danger requires leverage plus a large residual — that combination is influence."}}, {"@type": "Question", "name": "Is there a real test for equal variances, or do I just eyeball the residual plot?", "acceptedAnswer": {"@type": "Answer", "text": "There are two standard ones, and your software already has them: the Breusch–Pagan test (car::ncvTest() in R, het_breuschpagan() in statsmodels) regresses the squared residuals on the fitted values and asks whether the spread tracks them, and White's test does the same while also allowing curvature. Both are worth running and neither should be your only evidence, because they scale with n like every other test: at n = 2,000 a violation too small to matter comes back significant, and at n = 25 a serious funnel can slip through. Look at the plot, run the test, and let the plot break the tie."}}]}
+  </script>
+</head>
+<body data-course="stats-2" data-section="assumptions-of-regression">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 2.13</span>
+        <h1>Assumptions of Regression</h1>
+
+        <p class="lede">A regression coefficient and its p-value are only trustworthy if the model's assumptions hold. For ordinary least squares there are four, conveniently spelling <strong>LINE</strong>. Beyond them lurks a separate, sneaky threat: a single data point with enough leverage to bend the whole line to its will.</p>
+
+        <h2>The LINE assumptions</h2>
+        <ul>
+          <li><strong>L · Linearity:</strong> the relationship between predictors and the mean of <code>y</code> is actually a straight line (or plane). Check with <a href="../../stats-2/regression-diagnostics/">residual plots</a>.</li>
+          <li><strong>I · Independence:</strong> the errors are independent of each other. Violated by time series and clustered/repeated data.</li>
+          <li><strong>N · Normality of residuals:</strong> the errors are roughly normal. Matters most for small samples; check with a <a href="../../stats-2/assumptions-and-when-they-break/">Q-Q plot</a> of residuals.</li>
+          <li><strong>E · Equal variance (homoscedasticity):</strong> the residuals have constant spread across all fitted values. A funnel shape means trouble.</li>
+        </ul>
+
+        <h2>Leverage vs. influence vs. outlier</h2>
+        <p>These three get muddled, but they're distinct. An <strong>outlier</strong> has an unusual <code>y</code> (far from the line). A <strong>high-leverage</strong> point has an unusual <code>x</code> (far from the other predictors). A point is <strong>influential</strong> only when it's <em>both</em>: extreme in x <em>and</em> off the trend, so that removing it noticeably moves the line. Drag the point below and feel the difference.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="lvviz">
+          <p class="viz-title">🎮 Leverage &amp; Influence Playground</p>
+          <p class="viz-sub">Drag the ringed point, or focus the chart and nudge it with the arrow keys (hold Shift for bigger steps). The solid line is fit <em>with</em> it; the dashed line is fit <em>without</em> it. Out at the edges (high leverage), small moves swing the whole line.</p>
+
+          <canvas id="lv-canvas" tabindex="0" aria-label="Leverage and influence playground. Move the highlighted point with the arrow keys; the leverage and slope readouts below update as you move it." style="touch-action:none;cursor:grab"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Leverage of the point</span><span class="v" id="stat-lev" style="font-size:1rem">—</span></div>
+            <div class="stat"><span class="k">Slope with the point</span><span class="v" id="stat-sw">—</span></div>
+            <div class="stat"><span class="k">Slope without it</span><span class="v" id="stat-so">—</span></div>
+            <div class="stat"><span class="k">Influential?</span><span class="v" id="stat-inf" style="font-size:1rem">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>Park the point in the middle (average x) and even a big vertical move barely budges the line: low leverage. Drag it far left or right and the line snaps toward it: high leverage. A point is dangerous only when high leverage meets a large residual.</p>
+
+        <div class="callout key">
+          <p><strong>Cook's distance</strong> bundles leverage and residual size into a single number measuring how much the whole fit shifts when a point is removed. Points with a large Cook's distance deserve a hard look. But never delete data just because it's influential. Investigate first: is it an error, or a real and important case?</p>
+        </div>
+
+        <h2>How high is "high"?</h2>
+        <p>The readout above gives the dragged point's leverage as a number and as a multiple of average leverage, and that second figure is the one worth understanding, because leverage comes with a fixed budget. Across all <em>n</em> points the leverages always sum to <em>p</em>, the number of things the model estimates (an intercept plus one slope here, so <em>p</em> = 2). Average leverage is therefore <em>p</em>/<em>n</em>, no matter what the data look like. This chart has 13 fixed points plus the one you drag, so its average is 2/14 = 0.14, and a point can only rise above that by taking leverage away from everybody else.</p>
+        <p>The conventional flags are <strong>2<em>p</em>/<em>n</em></strong>, and sometimes a stricter <strong>3<em>p</em>/<em>n</em></strong>, which work out to 0.29 and 0.43 for this chart. Park the point at the center and its leverage falls to 0.07, half the average. Drag it hard against either wall and it reaches about 0.27, which is 1.9 times average and still under the flag. Thirteen well-spread neighbors are hard to outvote, and that is the whole reason leverage is relative: the same <em>x</em> value is unremarkable in a wide sample and extreme in a narrow one.</p>
+        <p>Residuals need the same treatment, and for a reason that follows from leverage. A high-leverage point pulls the line toward itself, so its raw residual is <em>too small</em> to be compared with anybody else's. The fix is a <strong>studentized residual</strong>, which divides each residual by its own standard error, <em>s</em>√(1 − <em>h</em>). SPSS's <em>Casewise diagnostics</em> box flags on the plain standardized residual, so the studentized version is a separate tick in the same dialog's <em>Save…</em> panel, and it is the one worth having: a point can look tame by the first measure and alarming by the second precisely because of its leverage.</p>
+        <p>Put the two together and you get Cook's distance in closed form: <em>D</em> = (<em>r</em>²/<em>p</em>) × <em>h</em>/(1 − <em>h</em>), where <em>r</em> is the studentized residual. The first factor is the residual, the second is the leverage, and the product is the sentence "influence requires both" written as arithmetic. Either factor near zero drives <em>D</em> to zero. The usual cutoffs are <em>D</em> &gt; 1 and the stricter 4/<em>n</em>, which for these 14 points is also 0.29.</p>
+        <p>Numbers like these are triage, not verdicts. They tell you which rows to open and read; whether the row is an error or a genuinely interesting case is a question about the study, not about the arithmetic.</p>
+
+        <h2>When assumptions fail</h2>
+        <ul>
+          <li><strong>Nonlinearity</strong> → add polynomial or <a href="../../data/transformations-and-recoding/">transformed terms</a>.</li>
+          <li><strong>Non-independence</strong> → use models built for it (time-series, <a href="../../stats-3/mixed-and-multilevel-models/">mixed/multilevel models</a>).</li>
+          <li><strong>Non-normal or heteroscedastic errors</strong> → transform <code>y</code>, or use robust and <a href="../../stats-3/bootstrap-and-resampling/">bootstrapped</a> standard errors.</li>
+          <li><strong>Influential points</strong> → report the fit with and without them, and <a href="../../data/outliers-in-practice/">explain the difference</a>.</li>
+        </ul>
+        <p>"Robust" in that third bullet has a specific meaning worth knowing, since your software will offer it by an abbreviation. A <strong>heteroscedasticity-consistent standard error</strong> (the HC family, usually HC3 by default) rebuilds each coefficient's standard error from the individual squared residuals rather than from one pooled variance. Your slope estimates do not move at all; only the uncertainty around them does. That is the right shape of repair, because unequal variance distorts the standard errors and leaves the coefficients themselves alone.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> the math will hand you a confident slope and a tidy p-value no matter how badly the assumptions are violated. Checking them (and watching for influential points) is what separates a defensible analysis from a fragile one. The printable <a href="../../cheat-assumptions.html">assumption-checks sheet</a> collects the whole routine, this lesson's four included, on a single page.</p>
+        </div>
+
+        <p class="pb-xref"><a href="../../problems.html#p2-10">Problem 22 of the practice problems</a> puts one case on trial using both measures at once: on a 40-property regression, case 31 has leverage <em>h</em> = 0.31 and Cook’s <em>D</em> = 0.68, and you have to say whether either number is unusual enough to act on.</p>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>Do my predictors need to be normally distributed?</summary>
+            <div class="faq-a"><p>This is one of the most persistent regression myths: the normality assumption concerns the <em>residuals</em>, not the predictors or even the raw outcome. Skewed predictors, binary dummies, lumpy x-distributions: all perfectly fine. Fit the model, then check a Q-Q plot of the residuals. That's the only normality that matters, and mostly for small samples at that.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is leverage in regression?</summary>
+            <div class="faq-a"><p>A point's potential to move the line, determined purely by how unusual its predictor values are: far from the center of the x's means high leverage, like sitting at the end of a seesaw. Leverage alone isn't a problem: a high-leverage point right on the trend just stabilizes the fit. Danger requires leverage <em>plus</em> a large residual — that combination is influence.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Is there a real test for equal variances, or do I just eyeball the residual plot?</summary>
+            <div class="faq-a"><p>There are two standard ones, and your software already has them: the Breusch–Pagan test (<code>car::ncvTest()</code> in R, <code>het_breuschpagan()</code> in statsmodels) regresses the squared residuals on the fitted values and asks whether the spread tracks them, and White's test does the same while also allowing curvature. Both are worth running and neither should be your only evidence, because they scale with n like every other test: at n = 2,000 a violation too small to matter comes back significant, and at n = 25 a serious funnel can slip through. Look at the plot, run the test, and let the plot break the tie.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ leverage/influence visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var base = [], drag = { x: 50, y: 50 }, dragging = false;
+    var LO = 5, HI = 95;
+    var canvas = document.getElementById("lv-canvas"), ctx, W = 0, H = 280, pad = 26;
+
+    (function build() { for (var i = 0; i < 13; i++) { var x = 12 + i * 6.2; base.push({ x: x, y: 18 + 0.62 * x + VIZ.gauss(0, 4) }); } })();
+
+    function slope(pts) {
+      var mx = VIZ.mean(pts.map(function (p) { return p.x; })), my = VIZ.mean(pts.map(function (p) { return p.y; }));
+      var sxy = 0, sxx = 0; pts.forEach(function (p) { sxy += (p.x - mx) * (p.y - my); sxx += (p.x - mx) * (p.x - mx); });
+      var b = sxy / sxx; return { b: b, a: my - b * mx };
+    }
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function vx(x) { return pad + ((x - LO) / (HI - LO)) * (W - 2 * pad); }
+    function vy(y) { return (H - pad) - ((y - LO) / (HI - LO)) * (H - 2 * pad); }
+
+    function update() {
+      var all = base.concat([drag]);
+      var fw = slope(all), fo = slope(base);
+      // leverage (hat value) of the dragged point
+      var xs = all.map(function (p) { return p.x; }), mx = VIZ.mean(xs);
+      var sxx = xs.reduce(function (s, x) { return s + (x - mx) * (x - mx); }, 0);
+      var h = 1 / all.length + (drag.x - mx) * (drag.x - mx) / sxx;
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = VIZ.css("--border"); ctx.strokeRect(pad, pad, W - 2 * pad, H - 2 * pad);
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px Inter,sans-serif"; ctx.textAlign = "center"; ctx.fillText("x →", W / 2, H - 6);
+      // lines
+      ctx.save(); ctx.beginPath(); ctx.rect(pad, pad, W - 2 * pad, H - 2 * pad); ctx.clip();
+      ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([6, 4]); ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(vx(LO), vy(fo.a + fo.b * LO)); ctx.lineTo(vx(HI), vy(fo.a + fo.b * HI)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.strokeStyle = VIZ.css("--primary"); ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(vx(LO), vy(fw.a + fw.b * LO)); ctx.lineTo(vx(HI), vy(fw.a + fw.b * HI)); ctx.stroke();
+      ctx.restore();
+      // base points
+      ctx.fillStyle = VIZ.css("--secondary"); base.forEach(function (p) { ctx.beginPath(); ctx.arc(vx(p.x), vy(p.y), 4, 0, 2 * Math.PI); ctx.fill(); });
+      // dragged point
+      ctx.fillStyle = "#f97316"; ctx.beginPath(); ctx.arc(vx(drag.x), vy(drag.y), 7, 0, 2 * Math.PI); ctx.fill();
+      ctx.strokeStyle = VIZ.css("--text"); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(vx(drag.x), vy(drag.y), 10, 0, 2 * Math.PI); ctx.stroke();
+
+      var dSlope = Math.abs(fw.b - fo.b);
+      // report the hat value itself plus its multiple of average leverage (p/n).
+      // The old three-word verdict had an unreachable state: with these 13 fixed
+      // points the dragged point tops out near h = .27, under its "high" cutoff.
+      document.getElementById("stat-lev").textContent = h.toFixed(2) + " (" + (h / (2 / all.length)).toFixed(1) + "× average)";
+      document.getElementById("stat-sw").textContent = fw.b.toFixed(2);
+      document.getElementById("stat-so").textContent = fo.b.toFixed(2);
+      var inf = document.getElementById("stat-inf");
+      if (dSlope > 0.15) { inf.textContent = "yes · bending the line"; inf.style.color = "#f97316"; }
+      else { inf.textContent = "no · line barely moves"; inf.style.color = "#22c55e"; }
+    }
+
+    function near(e) { return Math.hypot(vx(drag.x) - e.offsetX, vy(drag.y) - e.offsetY) < VIZ.grabRadius(18); }   // finger-sized on touch, 18 on a mouse
+    canvas.addEventListener("pointerdown", function (e) { if (near(e)) { dragging = true; try { canvas.setPointerCapture(e.pointerId); } catch (err) {} canvas.style.cursor = "grabbing"; } });
+    canvas.addEventListener("pointermove", function (e) {
+      if (!dragging) return;
+      drag.x = Math.max(LO, Math.min(HI, LO + (e.offsetX - pad) / (W - 2 * pad) * (HI - LO)));
+      drag.y = Math.max(LO, Math.min(HI, LO + ((H - pad) - e.offsetY) / (H - 2 * pad) * (HI - LO)));
+      update();
+    });
+    function end() { dragging = false; canvas.style.cursor = "grab"; }
+    canvas.addEventListener("pointerup", end); canvas.addEventListener("pointercancel", end);
+    // keyboard equivalent for the drag: arrow keys nudge the point (Shift = 3× step)
+    canvas.addEventListener("keydown", function (e) {
+      var step = (e.shiftKey ? 6 : 2), moved = true;
+      if (e.key === "ArrowLeft") drag.x = Math.max(LO, drag.x - step);
+      else if (e.key === "ArrowRight") drag.x = Math.min(HI, drag.x + step);
+      else if (e.key === "ArrowUp") drag.y = Math.min(HI, drag.y + step);
+      else if (e.key === "ArrowDown") drag.y = Math.max(LO, drag.y - step);
+      else moved = false;
+      if (moved) { e.preventDefault(); update(); }
+    });
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(update);
+    fit(); update();
+  })();
+  </script>
+</body>
+</html>

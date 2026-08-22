@@ -448,7 +448,7 @@ window.SOFTWARE = {
       '<strong>Analyze → General Linear Model → Multivariate…</strong>',
       'All outcome variables into <em>Dependent Variables</em>; the group into <em>Fixed Factor(s)</em>.',
       '<em>Options…</em>: tick <em>Estimates of effect size</em> and <em>Homogeneity tests</em> (Box’s M).',
-      'The <em>Multivariate Tests</em> table lists Pillai’s trace, Wilks’ Λ, Hotelling’s trace and Roy’s largest root, of which Pillai is the robust default. SPSS labels the third one after Hotelling alone; §3.11 calls it the Hotelling–Lawley trace, which is the same statistic.',
+      'The <em>Multivariate Tests</em> table lists Pillai’s trace, Wilks’ Λ, Hotelling’s trace and Roy’s largest root, of which Pillai is the robust default. SPSS labels the third one after Hotelling alone; §3.4 calls it the Hotelling–Lawley trace, which is the same statistic.',
       'Follow up with the univariate <em>Tests of Between-Subjects Effects</em> (apply a Bonferroni-style correction across outcomes).',
       'MANCOVA: same dialog, add baseline variables into <em>Covariate(s)</em>.'
     ],

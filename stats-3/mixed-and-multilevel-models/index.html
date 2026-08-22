@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    /* Consent Mode: storage denied by default, so GA sets no cookie and
+       follows nobody between visits. Anonymous counts still arrive. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mixed & Multilevel Models (GLMMs) — StatsCapybara</title>
+  <meta name="description" content="When data is grouped, mixed models share information across groups, pulling noisy estimates toward the mean. See partial pooling and shrinkage in action." />
+  <link rel="canonical" href="https://statscapybara.com/stats-3/mixed-and-multilevel-models/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Mixed &amp; Multilevel Models (GLMMs) — StatsCapybara" />
+  <meta property="og:description" content="When data is grouped, mixed models share information across groups, pulling noisy estimates toward the mean. See partial pooling and shrinkage in action." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og-stats-3.png" />
+  <meta property="og:url" content="https://statscapybara.com/stats-3/mixed-and-multilevel-models/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Mixed &amp; Multilevel Models (GLMMs) — StatsCapybara" />
+  <meta name="twitter:description" content="When data is grouped, mixed models share information across groups, pulling noisy estimates toward the mean. See partial pooling and shrinkage in action." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-3.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Mixed & Multilevel Models (GLMMs)", "description": "When data is grouped, mixed models share information across groups, pulling noisy estimates toward the mean. See partial pooling and shrinkage in action.", "url": "https://statscapybara.com/stats-3/mixed-and-multilevel-models/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced & Elective Topics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Mixed & Multilevel Models (GLMMs)", "item": "https://statscapybara.com/stats-3/mixed-and-multilevel-models/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the difference between fixed and random effects?", "acceptedAnswer": {"@type": "Answer", "text": "Fixed effects are coefficients estimated for effects you care about specifically and would keep in a replication (treatment, age, condition). Random effects model sampled clusters (these particular schools, participants, litters) as draws from a population, estimating how much clusters vary rather than each one in isolation. Litmus test: would new data bring the same levels (fixed) or new ones (random)?"}}, {"@type": "Question", "name": "Why doesn't my mixed model print p-values?", "acceptedAnswer": {"@type": "Answer", "text": "Because for a mixed model nobody agrees what the denominator degrees of freedom should be. In a balanced classical ANOVA the error df are countable; once you have unequal group sizes, crossed random effects and partial pooling, the effective df fall between two defensible numbers and the F ratio is only approximately F-distributed. R's lme4 therefore declines to guess, which surprises everyone the first time. The accepted ways forward: report the fixed effects with their confidence intervals and let those carry the inference, use Satterthwaite or Kenward-Roger approximate df (the lmerTest package adds them, and SPSS and JASP apply Satterthwaite by default, which is why they show p-values and lme4 does not), or compare nested models with a likelihood-ratio test. Whichever you choose, say which one in the write-up, because the three do not always agree at the margin."}}, {"@type": "Question", "name": "How many groups do I need to fit random effects?", "acceptedAnswer": {"@type": "Answer", "text": "Rules of thumb converge on: fewer than ~5 groups, don't — the model can't estimate between-group variance from 3 numbers (use fixed dummy codes instead); 10–20 groups works but estimates variance components roughly; 30+ is comfortable, and 50+ is preferred for random slopes or when the variance components are themselves the research question."}}]}
+  </script>
+</head>
+<body data-course="stats-3" data-section="mixed-and-multilevel-models">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 3.10</span>
+        <h1>Mixed &amp; Multilevel Models (GLMMs)</h1>
+
+        <p class="lede">Data is often <strong>grouped</strong>: students within schools, patients within hospitals, <a href="../../stats-2/repeated-measures-anova/">repeated measurements within people</a>. Those observations aren't independent, and pretending they are breaks your standard errors. <strong>Mixed (multilevel) models</strong> handle grouping head-on, and they come with a genuinely magical trick: groups <em>borrow strength</em> from each other.</p>
+
+        <h2>Fixed effects vs. random effects</h2>
+        <p>A mixed model has two kinds of terms. <strong>Fixed effects</strong> are the usual coefficients: effects assumed constant across the whole population. <strong>Random effects</strong> let each group have its own intercept (and sometimes its own slope), drawn from a distribution the model estimates. Instead of estimating every group in isolation, the model learns "how much do groups vary?" and uses that to inform each one.</p>
+
+        <h2>How much of the variation is the grouping?</h2>
+        <p>Two spreads come out of a fitted mixed model: <em>τ</em> (tau), the standard deviation between group means, and <em>σ</em> (sigma), the spread of individuals inside a group. Their ratio has a name you will meet everywhere clustered data is discussed. The <strong>intraclass correlation</strong> is <code>ICC = τ² / (τ² + σ²)</code>, the share of the total variation that lives between groups rather than within them, and equivalently the correlation you expect between two observations drawn from the same group.</p>
+        <p>In the playground below, <em>σ</em> is fixed at 11 and the τ slider is therefore an ICC dial. At its default τ = 8 the ICC is .35, so a third of the variation is between groups. Slide τ down to 1 and it collapses to .008, which is the regime where groups barely differ and shrinkage pulls everything to the grand mean. Push τ to 30 and it reaches .88, where each group is nearly its own population. The same number governs how badly clustering hurts a survey, which is why <a href="../../methods/sampling-methods/">sampling methods</a> uses it to compute the price of cluster sampling.</p>
+
+        <h2 id="hidden-clustering">What ignoring the grouping costs</h2>
+        <p>The assumptions poster tells you to rule out "hidden clustering" before you trust an ordinary test, which is easy to nod at and hard to act on. Clustering is hidden whenever the rows of your file are not the units you sampled: pupils inside the classes you recruited, trials inside the people you ran. Analyzing those rows as though each were a fresh participant has a name, <strong>pseudoreplication</strong>, and it has a price you can compute in advance.</p>
+
+        <p>Survey statisticians got there first. The design effect from <a href="../../methods/sampling-methods/">sampling methods</a>, <code>deff ≈ 1 + (m − 1)ρ</code>, converts your row count into the sample size those rows are really worth: <em>m</em> observations per cluster and an ICC of ρ. Twenty classes of twenty pupils is 400 rows, but at an ICC of .10 the design effect is 2.9, so those rows carry about as much information as 138 independent pupils. Run a test that believes in all 400 and the standard error is too small by a factor of √2.9, which is 1.7.</p>
+
+        <p>Simulate that and the damage is plain. With the treatment given to whole classes and no true effect at all, an ordinary two-sample <em>t</em>-test across the 400 pupils calls the difference significant <strong>24.7%</strong> of the time. At an ICC of .05 it is 16.0% and at .20 it is 37.4%. Average each class into a single number first, so that the 20 units in the test are the 20 units that were randomized, and the false-positive rate returns to 4.8%. A five-percent test that fires a quarter of the time is most of the reason cluster-randomized trials are analyzed the way they are.</p>
+
+        <p>The direction of the damage depends on where the effect lives. Split the treatment <em>inside</em> every class instead, so each class contributes both conditions, and the same neglected clustering makes the ordinary test slightly conservative rather than reckless: 4.1% false positives, and about two points of power given away (70.9% against the mixed model's 73.2% for a difference of a quarter of a standard deviation). Between-cluster comparisons are inflated by ignored clustering. Within-cluster comparisons are merely blunted by it, which is the same arithmetic that makes a paired test beat an unpaired one on <a href="../../stats-1/chi-square-tests/#same-person-twice">the same people counted twice</a>.</p>
+
+        <p>How would you know? Fit the model with no predictors at all, read off τ and σ, and look at the ICC. Anything much above zero means the grouping is carrying real variance and the rows are not independent. A design where an ICC of .02 would be alarming is a design with very large clusters, since it is <em>m</em> and ρ together, not ρ alone, that decide the price.</p>
+
+        <h2>The three ways to handle groups</h2>
+        <ul>
+          <li><strong>Complete pooling:</strong> ignore the groups entirely; one estimate for everyone. Simple, but throws away real group differences.</li>
+          <li><strong>No pooling:</strong> estimate each group on its own. Honest, but tiny or noisy groups get wild, unreliable estimates.</li>
+          <li><strong>Partial pooling</strong> is the mixed-model compromise: each group's estimate is pulled toward the overall mean, <em>more so when the group has little data or lots of noise</em>. This is <strong>shrinkage</strong>.</li>
+        </ul>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="glmmviz">
+          <p class="viz-title">🎮 Shrinkage in Action</p>
+          <p class="viz-sub">Each row is a group. The open circle is its own raw mean (no pooling); the filled purple circle is the partial-pooled estimate. Drag the group-variation slider down and watch the estimates pulled toward the overall mean (dashed line); small groups move most.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:min(300px,100%)">
+              <label>How much groups truly vary (τ) <span class="val" id="tau-val">14</span></label>
+              <input type="range" id="tau-range" min="1" max="30" step="1" value="8" style="width:100%" />
+            </div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="resample">New groups</button></div>
+          </div>
+
+          <canvas id="glmm-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Overall mean</span><span class="v" id="stat-grand">—</span></div>
+            <div class="stat"><span class="k">Average shrinkage toward it</span><span class="v" id="stat-shrink">—</span></div>
+            <div class="stat"><span class="k">Pooling regime</span><span class="v" id="stat-regime" style="font-size:1rem">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Why shrinkage is a good thing</h2>
+        <div class="callout key">
+          <p>It feels like cheating to move a group's estimate away from its own data — but it <em>improves</em> accuracy on average. A group of 3 with a freakishly high mean is probably just lucky; pulling it toward the overall mean is usually closer to the truth. This is the same logic behind why a rookie's hot first week doesn't predict their season. Partial pooling formalizes "regression to the mean."</p>
+        </div>
+        <p>Notice in the playground: when τ is large (groups really do differ a lot), there's little shrinkage: the data is trusted. When τ is small (groups are mostly alike), estimates collapse toward the overall mean. And at any setting, the <em>small</em> groups shrink more than the big ones, because they carry less independent information. You have already met this machinery under another name if you have read ahead: a random-effects <a href="../meta-analysis/">meta-analysis</a> is partial pooling with published studies as the groups, which is why a small study's estimate gets pulled toward the pooled effect.</p>
+
+        <h2>The "G" in GLMM</h2>
+        <p>Combine this grouping machinery with a <a href="../../stats-3/generalized-linear-models/">link function</a> and you get a <strong>generalized linear mixed model (GLMM)</strong>: random effects on top of logistic or Poisson regression. That covers an enormous swath of real research: yes/no outcomes measured repeatedly within people, event counts nested within regions, and far more.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> mixed models are now the default for grouped and repeated-measures data across psychology, ecology, medicine, and education. They respect the data's structure and make better predictions for small groups. They're a fitting place to end the course: the full power of the linear model, finally set loose on the messy, nested data of the real world.</p>
+        </div>
+
+        <p class="pb-xref"><a href="../../problems.html#p3-5">Problem 27 of the practice problems</a> starts one step earlier, with a researcher deciding whether to run 90 people through one design each or 30 people through all three, which is the <a href="../../methods/between-vs-within-designs/">design choice</a> that determines whether you need any of this machinery.</p>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What is the difference between fixed and random effects?</summary>
+            <div class="faq-a"><p>Fixed effects are coefficients estimated for effects you care about specifically and would keep in a replication (treatment, age, condition). Random effects model <em>sampled clusters</em> (these particular schools, participants, litters) as draws from a population, estimating how much clusters vary rather than each one in isolation. Litmus test: would new data bring the <em>same levels</em> (fixed) or new ones (random)?</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Why doesn't my mixed model print p-values?</summary>
+            <div class="faq-a"><p>Because for a mixed model nobody agrees what the denominator degrees of freedom should be. In a balanced classical ANOVA the error df are countable; once you have unequal group sizes, crossed random effects and partial pooling, the effective df fall between two defensible numbers and the <em>F</em> ratio is only approximately <em>F</em>-distributed. R's lme4 therefore declines to guess, which surprises everyone the first time. The accepted ways forward: report the fixed effects with their confidence intervals and let those carry the inference, use Satterthwaite or Kenward-Roger approximate df (the lmerTest package adds them, and SPSS and JASP apply Satterthwaite by default, which is why they show p-values and lme4 does not), or compare nested models with a likelihood-ratio test. Whichever you choose, say which one in the write-up, because the three do not always agree at the margin.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>How many groups do I need to fit random effects?</summary>
+            <div class="faq-a"><p>Rules of thumb converge on: fewer than ~5 groups, don't — the model can't estimate between-group variance from 3 numbers (use fixed dummy codes instead); 10–20 groups works but estimates variance components roughly; 30+ is comfortable, and 50+ is preferred for random <em>slopes</em> or when the variance components are themselves the research question.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ shrinkage / partial-pooling visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var K = 9, GRAND = 50, SIGMA = 11, tau = 8, groups = [];
+    var LO = 15, HI = 85;
+    var canvas = document.getElementById("glmm-canvas"), ctx, W = 0, H = 300, padL = 60, padR = 18, padT = 14, padB = 24;
+
+    function gen() {
+      groups = [];
+      for (var g = 0; g < K; g++) {
+        var trueMean = GRAND + VIZ.gauss(0, 13);
+        var nj = 2 + Math.floor(Math.random() * 18);     // group sizes vary 2..19
+        var sum = 0; for (var i = 0; i < nj; i++) sum += VIZ.gauss(trueMean, SIGMA);
+        groups.push({ raw: sum / nj, n: nj });
+      }
+      update();
+    }
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function vx(v) { return padL + ((v - LO) / (HI - LO)) * (W - padL - padR); }
+
+    function update() {
+      // overall mean weighted by n
+      var totN = 0, totSum = 0; groups.forEach(function (gp) { totN += gp.n; totSum += gp.raw * gp.n; });
+      var grand = totSum / totN;
+      var rowH = (H - padT - padB) / K, shrinkSum = 0;
+      ctx.clearRect(0, 0, W, H);
+      // axis
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center";
+      for (var t = 20; t <= 80; t += 20) { var x = vx(t); ctx.globalAlpha = 0.35; ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, H - padB); ctx.stroke(); ctx.globalAlpha = 1; ctx.fillText(t, x, H - padB + 14); }
+      // grand mean line
+      ctx.strokeStyle = "#f97316"; ctx.setLineDash([5, 4]); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(vx(grand), padT - 4); ctx.lineTo(vx(grand), H - padB); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = "#f97316"; ctx.fillText("overall", vx(grand), padT - 6);
+
+      for (var g = 0; g < K; g++) {
+        var gp = groups[g], y = padT + (g + 0.5) * rowH;
+        var w = (gp.n / (SIGMA * SIGMA)) / (gp.n / (SIGMA * SIGMA) + 1 / (tau * tau));  // weight on own data
+        var est = w * gp.raw + (1 - w) * grand;
+        shrinkSum += (1 - w);
+        // connector
+        ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(vx(gp.raw), y); ctx.lineTo(vx(est), y); ctx.stroke();
+        // raw (open circle), sized by n
+        var r = 3 + Math.min(7, gp.n * 0.4);
+        ctx.strokeStyle = VIZ.css("--text-faint"); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(vx(gp.raw), y, r, 0, 2 * Math.PI); ctx.stroke();
+        // partial-pooled (filled)
+        ctx.fillStyle = "#f97316"; ctx.beginPath(); ctx.arc(vx(est), y, 5, 0, 2 * Math.PI); ctx.fill();
+        // group label with n
+        ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px Inter,sans-serif"; ctx.textAlign = "right"; ctx.fillText("n=" + gp.n, padL - 8, y + 3);
+      }
+      // legend
+      ctx.textAlign = "left"; ctx.font = "600 10px Inter,sans-serif"; ctx.fillStyle = VIZ.css("--text-faint"); ctx.fillText("○ raw mean", padL, H - 4); ctx.fillStyle = "#f97316"; ctx.fillText("● pooled estimate", padL + 72, H - 4);
+
+      var avgShrink = shrinkSum / K;
+      document.getElementById("tau-val").textContent = tau;
+      document.getElementById("stat-grand").textContent = grand.toFixed(1);
+      document.getElementById("stat-shrink").textContent = (avgShrink * 100).toFixed(0) + "%";
+      var rg = document.getElementById("stat-regime");
+      if (avgShrink > 0.6) { rg.textContent = "near complete pooling"; rg.style.color = "#f97316"; }
+      else if (avgShrink < 0.1) { rg.textContent = "near no pooling"; rg.style.color = "#f97316"; }
+      else { rg.textContent = "partial pooling"; rg.style.color = VIZ.css("--text"); }
+    }
+
+    document.getElementById("tau-range").addEventListener("input", function () { tau = +this.value; update(); });
+    document.getElementById("resample").addEventListener("click", gen);
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(update);
+    fit(); gen();
+  })();
+  </script>
+</body>
+</html>

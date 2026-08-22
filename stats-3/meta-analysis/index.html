@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    /* Consent Mode: storage denied by default, so GA sets no cookie and
+       follows nobody between visits. Anonymous counts still arrive. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Meta-Analysis &amp; Forest Plots — StatsCapybara</title>
+  <meta name="description" content="Pool a whole literature into one estimate: build forest plots, weight studies by precision, and see when random effects and I² tell you the studies disagree." />
+  <link rel="canonical" href="https://statscapybara.com/stats-3/meta-analysis/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Meta-Analysis &amp; Forest Plots — StatsCapybara" />
+  <meta property="og:description" content="Pool a whole literature into one estimate: build forest plots, weight studies by precision, and see when random effects and I² tell you the studies disagree." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og-stats-3.png" />
+  <meta property="og:url" content="https://statscapybara.com/stats-3/meta-analysis/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Meta-Analysis &amp; Forest Plots — StatsCapybara" />
+  <meta name="twitter:description" content="Build forest plots, weight studies by precision, and see when random effects and I² say the studies disagree." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-3.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Meta-Analysis & Forest Plots", "description": "Pool a whole literature into one estimate: build forest plots, weight studies by precision, and see when random effects and I² tell you the studies disagree.", "url": "https://statscapybara.com/stats-3/meta-analysis/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced & Elective Topics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Meta-Analysis & Forest Plots", "item": "https://statscapybara.com/stats-3/meta-analysis/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What does I² tell you in a meta-analysis?", "acceptedAnswer": {"@type": "Answer", "text": "The share of visible between-study variation that reflects real differences in effects rather than sampling noise. Rough bands: 25% low, 50% moderate, 75% high heterogeneity. High I² is a finding, not a defect: the effect genuinely varies across populations or protocols, the fixed-effect summary is too confident, and the interesting question becomes what moderates the effect."}}, {"@type": "Question", "name": "How many studies do I need for a meta-analysis?", "acceptedAnswer": {"@type": "Answer", "text": "Two will produce a number, so the arithmetic is never the constraint. What breaks down with few studies is the part that matters: with fewer than about five, the between-study variance τ² is estimated so poorly that I² and the width of a random-effects interval become close to guesswork, and the pooled result inherits that uncertainty without showing it. Somewhere around ten the estimates start to behave, and moderator analyses need considerably more than that, since each moderator is effectively a regression on a sample of studies. The Hartung-Knapp adjustment is the usual defense for a small set, because it widens the interval to reflect how badly τ² is pinned down. The real constraint, though, is comparability rather than count: five studies asking the same question pool honestly, while twenty measuring subtly different things produce a precise average of nothing in particular."}}, {"@type": "Question", "name": "What is a funnel plot and what does asymmetry mean?", "acceptedAnswer": {"@type": "Answer", "text": "Each study plotted as effect size vs. precision: big precise studies cluster at the top, small noisy ones fan out below — symmetrically, if all results reached publication. A missing lower corner (typically small null studies) suggests publication bias, testable with Egger's regression and probed with trim-and-fill. Caveat: asymmetry has innocent causes too, like small studies using different populations."}}]}
+  </script>
+</head>
+<body data-course="stats-3" data-section="meta-analysis">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 3.15</span>
+        <h1>Meta-Analysis &amp; Forest Plots</h1>
+
+        <p class="lede">No single study settles a question. Samples are small, contexts differ, and chance is loud. <strong>Meta-analysis</strong> treats the studies themselves as data points: pool every estimate of an effect, weight each by its precision, and out comes the field's best combined answer, plus something just as valuable: a measure of how much the studies genuinely <em>disagree</em>.</p>
+
+        <h2>The one rule: weight by precision</h2>
+        <p>A 400-person trial should count for more than a 30-person pilot. Meta-analysis formalizes this with <strong>inverse-variance weighting</strong>: each study's weight is 1/SE², so tight studies (small standard errors, from <a href="../../stats-1/sampling-distributions/">the usual n law</a>) dominate and noisy ones contribute what little they know. Before any of that can happen the studies have to be on one scale, which usually means converting each result to a common effect size first; the <a href="../../effect-sizes.html">effect-size converter</a> handles the arithmetic when a literature reports a mix of <em>d</em>, <em>r</em> and odds ratios. The pooled effect is just the weighted average, and its standard error shrinks as evidence accumulates: the whole literature behaving like one giant study.</p>
+
+        <h2>Reading a forest plot</h2>
+        <p>The standard picture is the <strong>forest plot</strong>: one row per study, a square at its effect estimate (sized by weight), whiskers for its 95% CI, and a diamond at the bottom for the pooled effect; the diamond's width <em>is</em> its confidence interval. One glance tells you the effect sizes, who was precise, and whether the studies even agree.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="metaviz">
+          <p class="viz-title">🎮 Build Your Own Literature</p>
+          <p class="viz-sub">Each row is a simulated study of the same true effect μ (standardized mean difference). Crank up between-study heterogeneity τ and watch the studies fan out, I² climb, and the random-effects diamond widen while the fixed-effect one stays overconfident.</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>Number of studies <span class="val" id="k-val">k = 8</span></label>
+              <input type="range" id="k-range" min="4" max="15" step="1" value="8" />
+            </div>
+            <div class="control">
+              <label>True mean effect <span class="val" id="mu-val">μ = 0.40</span></label>
+              <input type="range" id="mu-range" min="0" max="0.8" step="0.05" value="0.4" />
+            </div>
+            <div class="control">
+              <label>Heterogeneity <span class="val" id="tau-val">τ = 0.20</span></label>
+              <input type="range" id="tau-range" min="0" max="0.5" step="0.05" value="0.2" />
+            </div>
+            <div class="control"><button class="btn btn-primary btn-sm" id="resample">New studies</button></div>
+          </div>
+
+          <canvas id="meta-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k" style="color:#f97316">Random-effects d [95% CI]</span><span class="v" id="stat-re">—</span></div>
+            <div class="stat"><span class="k" style="color:var(--secondary)">Fixed-effect d [95% CI]</span><span class="v" id="stat-fe">—</span></div>
+            <div class="stat"><span class="k">I² (heterogeneity)</span><span class="v" id="stat-i2">—</span></div>
+            <div class="stat"><span class="k">τ̂ (est. between-study SD)</span><span class="v" id="stat-tau">—</span></div>
+            <div class="stat"><span class="k">Q test</span><span class="v" id="stat-q">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Fixed vs random effects (and I²)</h2>
+        <p>A <strong>fixed-effect</strong> model assumes every study estimates the <em>same</em> true effect, differing only by sampling noise. A <strong>random-effects</strong> model allows the true effect to vary across studies (different populations, doses, protocols) with between-study standard deviation τ. The <strong>Q statistic</strong> tests whether studies scatter more than chance allows, and <strong>I²</strong> converts it to a percentage: roughly, how much of the visible spread is real disagreement rather than sampling noise. When I² is large, the random-effects model (with its honestly wider diamond) is the defensible summary, and the interesting question becomes <em>why</em> the effect varies (moderator analysis, the meta-level cousin of <a href="../../stats-2/interactions-in-regression/">interactions</a>).</p>
+
+        <h2>The diamond is not a forecast</h2>
+        <p>The diamond answers one question: where is the <em>average</em> true effect? It says nothing about where the <em>next</em> study will land, and readers routinely take it to mean both. Once the studies genuinely disagree, those two answers are far apart.</p>
+        <p>The second question has an interval of its own. A <strong>prediction interval</strong> covers the plausible true effect of a new study drawn from the same population of studies, so it puts the between-study spread back in:</p>
+        <p><code>PI = d̂ ± t(k − 2) × √(τ̂² + SE(d̂)²)</code></p>
+        <p>Take a literature shaped like the playground's defaults: <em>k</em> = 8 studies, a pooled <em>d</em> of 0.40 with a standard error of 0.10, and τ̂ = 0.20, which is an I² of about 50%. The diamond runs from <strong>0.20 to 0.60</strong>, a comfortably positive average effect. The 95% prediction interval runs from <strong>−0.15 to 0.95</strong>. A new trial finding nothing whatsoever would be entirely consistent with this literature, and the forest plot as usually drawn gives no hint of that.</p>
+        <p>The interval is wider than the distribution of true effects it describes (which spans 0.01 to 0.79 here) because μ and τ are both estimated, and with 6 degrees of freedom the multiplier is 2.45 rather than 1.96. And that same shortage of studies is what makes τ̂ shaky in the first place, so a prediction interval built on five studies is honest about its own ignorance in a way that can look almost useless. That is information too: it's the width a literature this thin has earned. In R, <code>metafor</code>'s <code>predict()</code> prints the interval beside the pooled estimate.</p>
+
+        <h2>The elephant: publication bias</h2>
+        <p>Meta-analysis can only pool what got published — and significant results get published more. If the null results are sitting in file drawers, your pooled estimate is built from a flattering sample of the evidence. Funnel plots, Egger's test, and trim-and-fill are the standard diagnostics; the deeper fixes are cultural, and they are the ones <a href="../../methods/the-replication-crisis/">the replication crisis</a> forced on the field: <a href="../../methods/preregistration-and-open-science/">preregistration</a> and registered reports, which get a study into the record before its result is known. A meta-analysis is only as unbiased as the literature it feeds on, the same "how did this sample come to be?" question you've asked since <a href="../../stats-1/what-is-statistics/">lesson 1.1</a>.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> single studies whisper; literatures speak. Meta-analysis turns a pile of noisy, conflicting results into a weighted answer with honest uncertainty, and I² tells you when "the studies disagree" is itself the headline finding.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What does I² tell you in a meta-analysis?</summary>
+            <div class="faq-a"><p>The share of visible between-study variation that reflects real differences in effects rather than sampling noise. Rough bands: 25% low, 50% moderate, 75% high heterogeneity. High I² is a finding, not a defect: the effect genuinely varies across populations or protocols, the fixed-effect summary is too confident, and the interesting question becomes <em>what moderates the effect</em>.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>How many studies do I need for a meta-analysis?</summary>
+            <div class="faq-a"><p>Two will produce a number, so the arithmetic is never the constraint. What breaks down with few studies is the part that matters: with fewer than about five, the between-study variance τ² is estimated so poorly that I² and the width of a random-effects interval become close to guesswork, and the pooled result inherits that uncertainty without showing it. Somewhere around ten the estimates start to behave, and moderator analyses need considerably more than that, since each moderator is effectively a regression on a sample of studies. The Hartung-Knapp adjustment is the usual defense for a small set, because it widens the interval to reflect how badly τ² is pinned down. The real constraint, though, is comparability rather than count: five studies asking the same question pool honestly, while twenty measuring subtly different things produce a precise average of nothing in particular.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is a funnel plot and what does asymmetry mean?</summary>
+            <div class="faq-a"><p>Each study plotted as effect size vs. precision: big precise studies cluster at the top, small noisy ones fan out below — symmetrically, if all results reached publication. A missing lower corner (typically small null studies) suggests publication bias, testable with Egger's regression and probed with trim-and-fill. Caveat: asymmetry has innocent causes too, like small studies using different populations.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ meta-analysis / forest plot visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var k = 8, mu = 0.4, tau = 0.2;
+    var studies = [];   // {d, se, n}
+    var canvas = document.getElementById("meta-canvas"), ctx, W = 0, H = 300;
+
+    /* Frozen noise: every potential study keeps a fixed size draw and two
+       fixed z-draws, so the μ / τ / k sliders morph the SAME forest plot
+       (studies shift and spread; k reveals more of the same list) instead
+       of rerolling it. "New studies" reseeds. */
+    var KMAX = 15, POOL = [];
+    function seed() {
+      POOL = [];
+      for (var i = 0; i < KMAX; i++) POOL.push({ u: Math.random(), z1: VIZ.randn(), z2: VIZ.randn() });
+    }
+    function gen() {
+      studies = [];
+      for (var i = 0; i < k; i++) {
+        var n = 30 + Math.round(POOL[i].u * 270);               // total N, two equal arms
+        var se = Math.sqrt(4 / n);                              // SE of an SMD, to first order
+        var theta = mu + tau * POOL[i].z1;                      // this study's own true effect
+        studies.push({ d: theta + se * POOL[i].z2, se: se, n: n });
+      }
+    }
+
+    /* ---- fixed-effect + DerSimonian–Laird random-effects pooling ---- */
+    function meta(st) {
+      var i, wF = st.map(function (s) { return 1 / (s.se * s.se); });
+      var sumW = 0, sumWd = 0, sumW2 = 0;
+      for (i = 0; i < st.length; i++) { sumW += wF[i]; sumWd += wF[i] * st[i].d; sumW2 += wF[i] * wF[i]; }
+      var dF = sumWd / sumW, seF = Math.sqrt(1 / sumW);
+      var Q = 0;
+      for (i = 0; i < st.length; i++) { var e = st[i].d - dF; Q += wF[i] * e * e; }
+      var df = st.length - 1;
+      var C = sumW - sumW2 / sumW;
+      var tau2 = Math.max(0, (Q - df) / C);
+      var I2 = Q > 0 ? Math.max(0, (Q - df) / Q) * 100 : 0;
+      var sumWR = 0, sumWRd = 0;
+      var wR = st.map(function (s) { return 1 / (s.se * s.se + tau2); });
+      for (i = 0; i < st.length; i++) { sumWR += wR[i]; sumWRd += wR[i] * st[i].d; }
+      var dR = sumWRd / sumWR, seR = Math.sqrt(1 / sumWR);
+      return { dF: dF, seF: seF, dR: dR, seR: seR, Q: Q, df: df, tau2: tau2, I2: I2, pQ: VIZ.chiSqUpper(Q, df), wR: wR };
+    }
+
+    /* ---- drawing ---- */
+    var ROW = 24, TOPPAD = 26, BOTTOM = 96;
+    function fit() {
+      H = TOPPAD + k * ROW + BOTTOM;
+      var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w;
+    }
+    function draw(m) {
+      ctx.clearRect(0, 0, W, H);
+      var padL = 66, padR = 118;
+      var lo = 0, hi = 0;
+      studies.forEach(function (s) {
+        lo = Math.min(lo, s.d - 1.96 * s.se); hi = Math.max(hi, s.d + 1.96 * s.se);
+      });
+      lo = Math.min(lo, -0.2) - 0.1; hi = Math.max(hi, 0.9) + 0.1;
+      function sx(v) { return padL + (v - lo) / (hi - lo) * (W - padL - padR); }
+      var base = H - 40;
+      // axis + zero line
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, base); ctx.lineTo(W - padR, base); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px ui-monospace, monospace"; ctx.textAlign = "center";
+      for (var t = Math.ceil(lo * 2) / 2; t <= hi; t += 0.5) ctx.fillText(t.toFixed(1), sx(t), base + 15);
+      ctx.fillText("effect size (d) →", (padL + W - padR) / 2, base + 30);
+      ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([3, 4]);
+      ctx.beginPath(); ctx.moveTo(sx(0), 8); ctx.lineTo(sx(0), base); ctx.stroke(); ctx.setLineDash([]);
+      // pooled RE line (orange dotted)
+      ctx.strokeStyle = "#f97316"; ctx.setLineDash([2, 4]);
+      ctx.beginPath(); ctx.moveTo(sx(m.dR), 8); ctx.lineTo(sx(m.dR), base); ctx.stroke(); ctx.setLineDash([]);
+      // study rows
+      var wMax = Math.max.apply(null, m.wR);
+      ctx.textAlign = "left";
+      studies.forEach(function (s, i) {
+        var y = TOPPAD + i * ROW;
+        ctx.strokeStyle = VIZ.css("--text-muted"); ctx.lineWidth = 1.6;
+        ctx.beginPath(); ctx.moveTo(sx(s.d - 1.96 * s.se), y); ctx.lineTo(sx(s.d + 1.96 * s.se), y); ctx.stroke();
+        var half = 3 + 5 * Math.sqrt(m.wR[i] / wMax);
+        ctx.fillStyle = VIZ.css("--primary");
+        ctx.fillRect(sx(s.d) - half, y - half, 2 * half, 2 * half);
+        ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10.5px ui-monospace, monospace";
+        ctx.fillText("S" + (i + 1) + "  n=" + s.n, 8, y + 4);
+        ctx.fillText(s.d.toFixed(2) + " [" + (s.d - 1.96 * s.se).toFixed(2) + ", " + (s.d + 1.96 * s.se).toFixed(2) + "]", W - padR + 8, y + 4);
+      });
+      // pooled diamonds
+      function diamond(d, se, y, color, label) {
+        var l = sx(d - 1.96 * se), r = sx(d + 1.96 * se), c = sx(d);
+        ctx.fillStyle = color;
+        ctx.beginPath(); ctx.moveTo(l, y); ctx.lineTo(c, y - 8); ctx.lineTo(r, y); ctx.lineTo(c, y + 8); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = color; ctx.font = "600 11px " + VIZ.css("--font");
+        ctx.fillText(label, 8, y + 4);
+      }
+      var yF = TOPPAD + k * ROW + 8, yR = yF + 22;
+      diamond(m.dF, m.seF, yF, VIZ.css("--secondary"), "Fixed");
+      diamond(m.dR, m.seR, yR, "#f97316", "Random");
+    }
+
+    function update() {
+      var m = meta(studies);
+      fit();          // canvas height depends on k
+      draw(m);
+      function ci(d, se) { return d.toFixed(2) + " [" + (d - 1.96 * se).toFixed(2) + ", " + (d + 1.96 * se).toFixed(2) + "]"; }
+      document.getElementById("stat-re").textContent = ci(m.dR, m.seR);
+      document.getElementById("stat-fe").textContent = ci(m.dF, m.seF);
+      document.getElementById("stat-i2").textContent = m.I2.toFixed(0) + "%";
+      document.getElementById("stat-tau").textContent = Math.sqrt(m.tau2).toFixed(2);
+      document.getElementById("stat-q").textContent = "Q(" + m.df + ") = " + m.Q.toFixed(1) + (m.pQ < 0.0001 ? ", p < .0001" : ", p = " + m.pQ.toFixed(3));
+    }
+
+    document.getElementById("k-range").addEventListener("input", function () {
+      k = +this.value; document.getElementById("k-val").textContent = "k = " + k; gen(); update();
+    });
+    document.getElementById("mu-range").addEventListener("input", function () {
+      mu = +this.value; document.getElementById("mu-val").textContent = "μ = " + mu.toFixed(2); gen(); update();
+    });
+    document.getElementById("tau-range").addEventListener("input", function () {
+      tau = +this.value; document.getElementById("tau-val").textContent = "τ = " + tau.toFixed(2); gen(); update();
+    });
+    document.getElementById("resample").addEventListener("click", function () { seed(); gen(); update(); });
+    window.addEventListener("resize", update);
+    VIZ.onTheme(update);
+
+    seed(); gen(); update();
+  })();
+  </script>
+</body>
+</html>

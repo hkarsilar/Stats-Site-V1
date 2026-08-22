@@ -45,7 +45,7 @@
         counts, track titles, first-lesson URLs, and educationalLevels all
         match curriculum.js; each lesson's LearningResource names its own
         course in isPartOf and carries the course's expected educationalLevel
-        (stats-1 Beginner, stats-2 Intermediate, stats-3/4 and ml Advanced,
+        (stats-1 Beginner, stats-2 Intermediate, stats-3 and ml Advanced,
         toolkit courses Intermediate — see CORE_LEVELS).
      8. Meta hygiene (P36) — no two audited pages share a meta description,
         and every <title> follows "Thing — StatsCapybara" (the homepage is
@@ -210,7 +210,7 @@ function checkLdFields(label, objs) {
    audience). Every core course MUST be listed here — a core course absent
    from this map makes expectedLevel() return null, which silently disables
    the check for it rather than failing. */
-const CORE_LEVELS = { 'stats-1': 'Beginner', 'stats-2': 'Intermediate', 'stats-3': 'Advanced', 'stats-4': 'Advanced', ml: 'Advanced' };
+const CORE_LEVELS = { 'stats-1': 'Beginner', 'stats-2': 'Intermediate', 'stats-3': 'Advanced', ml: 'Advanced' };
 function expectedLevel(course) {
   if (CORE_LEVELS[course]) return CORE_LEVELS[course];
   const c = CURRICULUM.find((x) => x.slug === course);

@@ -311,10 +311,10 @@
         assump: [
           "Sphericity: equal variances of the pairwise differences (check Mauchly's test; apply Greenhouse–Geisser if violated).",
           "Independent participants, roughly normal within each condition.",
-          "Missing data hurt RM-ANOVA, and a <a href=\"stats-4/mixed-and-multilevel-models/\">mixed model</a> copes far better."
+          "Missing data hurt RM-ANOVA, and a <a href=\"stats-3/mixed-and-multilevel-models/\">mixed model</a> copes far better."
         ], specialN: "Repeated-measures power depends on how strongly the conditions correlate within a person, which no single formula captures. More timepoints and higher within-person correlation both <em>shrink</em> the n you need. Sketch it in the <a href=\"power.html\">power calculator</a> as a one-way ANOVA for a conservative floor, or use G*Power's repeated-measures option." },
       ancova: { slug: "ancova", name: "ANCOVA", why: "A group comparison that first removes the variance explained by a covariate, so you get more power and a cleaner estimate of the group effect.",
-        lesson: "stats-3/ancova", label: "ANCOVA", sc: null, es: "f", apa: { a: "anova", v: "one" },
+        lesson: "stats-2/ancova", label: "ANCOVA", sc: null, es: "f", apa: { a: "anova", v: "one" },
         apaSkel: "An ANCOVA compared " + ph("[outcome]") + " across " + ph("[groups]") + ", adjusting for " + ph("[covariate]") + ". After adjustment, the effect of " + ph("[factor]") + " was " + ph("[significant / non-significant]") + ", " + em("F") + "(" + ph("__") + ", " + ph("__") + ") = " + ph("__") + ", " + em("p") + " = " + ph("__") + ", partial η² = " + ph("__") + ".",
         assump: [
           "The covariate is measured <strong>before</strong> treatment (or is unaffected by it).",
@@ -322,15 +322,15 @@
           "The usual ANOVA assumptions on the residuals."
         ], specialN: "ANCOVA needs slightly <em>fewer</em> participants than the equivalent ANOVA, because the covariate soaks up error variance. For a conservative plan, power it as a one-way ANOVA in the <a href=\"power.html\">power calculator</a>, then treat that n as an upper bound." },
       pearson: { slug: "correlation", name: "Pearson correlation (r)", why: "Measures the strength and direction of a straight-line relationship between two numeric variables. Always read it next to the scatterplot.",
-        lesson: "stats-2/correlation", label: "Correlation", sc: "r", es: "r", apa: { a: "corr", v: null },
+        lesson: "stats-1/correlation", label: "Correlation", sc: "r", es: "r", apa: { a: "corr", v: null },
         apaSkel: ph("[Outcome]") + " was " + ph("[positively / negatively]") + " correlated with " + ph("[predictor]") + ", " + em("r") + "(" + ph("__") + ") = " + ph("__") + ", " + em("p") + " = " + ph("__") + ".",
         assump: [
           "The relationship is roughly <strong>linear</strong> — look at the <a href=\"descriptives.html\">scatterplot</a> before you trust r.",
           "No extreme outliers dragging the coefficient around.",
-          "Curved, ordinal or outlier-ridden? Use <a href=\"stats-2/correlation/\">Spearman's rank correlation</a> instead."
+          "Curved, ordinal or outlier-ridden? Use <a href=\"stats-1/correlation/\">Spearman's rank correlation</a> instead."
         ] },
       simple_reg: { slug: "regression", name: "Simple linear regression", why: "Fits the least-squares line ŷ = a + bx, so you get both a significance test and an actual prediction equation. With one predictor, its slope test has exactly the power of the correlation test.",
-        lesson: "stats-2/simple-linear-regression", label: "Simple Linear Regression", sc: "r", es: "r", apa: { a: "reg", v: "coef" },
+        lesson: "stats-1/simple-linear-regression", label: "Simple Linear Regression", sc: "r", es: "r", apa: { a: "reg", v: "coef" },
         apaSkel: ph("[Predictor]") + " significantly predicted " + ph("[outcome]") + ", " + em("b") + " = " + ph("__") + ", " + em("SE") + " = " + ph("__") + ", β = " + ph("__") + ", " + em("t") + "(" + ph("__") + ") = " + ph("__") + ", " + em("p") + " = " + ph("__") + ". The model explained " + ph("__") + "% of the variance, " + em("R") + "² = " + ph("__") + ".",
         assump: [
           "Linear relationship; residuals independent, equal-variance and roughly normal. See <a href=\"stats-2/regression-diagnostics/\">regression diagnostics</a>.",
@@ -338,15 +338,15 @@
           "The sample size below uses the correlation-equivalent power, exact for one predictor."
         ] },
       mult_reg: { slug: "regression-multiple", name: "Multiple regression", why: "Each coefficient is a predictor's effect holding the others constant — the workhorse for prediction and for statistical control alike.",
-        lesson: "stats-3/multiple-regression", label: "Multiple Regression", sc: null, es: "f", apa: { a: "reg", v: "coef" },
+        lesson: "stats-2/multiple-regression", label: "Multiple Regression", sc: null, es: "f", apa: { a: "reg", v: "coef" },
         apaSkel: "A multiple regression predicted " + ph("[outcome]") + " from " + ph("[predictors]") + ". The model was " + ph("[significant / non-significant]") + ", " + em("F") + "(" + ph("__") + ", " + ph("__") + ") = " + ph("__") + ", " + em("p") + " = " + ph("__") + ", " + em("R") + "² = " + ph("__") + ". " + ph("[Predictor]") + " was a " + ph("[significant]") + " predictor, " + em("b") + " = " + ph("__") + ", β = " + ph("__") + ", " + em("p") + " = " + ph("__") + ".",
         assump: [
           "Linearity, independence, homoscedasticity and normal residuals (<a href=\"stats-2/regression-diagnostics/\">diagnostics</a>).",
-          "Low <a href=\"stats-3/multicollinearity-and-variable-selection/\">multicollinearity</a> among predictors: check the VIFs.",
+          "Low <a href=\"stats-2/multicollinearity-and-variable-selection/\">multicollinearity</a> among predictors: check the VIFs.",
           "Enough data: aim for at least 10–15 cases per predictor."
         ], specialN: "Power for a multiple regression depends on the R² you expect and how many predictors compete for it (Cohen's f²), not a single closed form. Use G*Power's \"linear multiple regression\" or approximate it in the <a href=\"power.html\">power calculator</a>. A common floor is <strong>10–15 cases per predictor</strong>." },
       chisq: { slug: "chisq", name: "Chi-square test of independence", why: "Two categorical variables. It compares the observed contingency-table counts to those expected if the variables were unrelated. (Comparing two proportions is just the 2 × 2 case.)",
-        lesson: "stats-2/chi-square-tests", label: "Chi-Square Tests", sc: "chisq", es: "w", apa: { a: "chi", v: null },
+        lesson: "stats-1/chi-square-tests", label: "Chi-Square Tests", sc: "chisq", es: "w", apa: { a: "chi", v: null },
         apaSkel: "A chi-square test of independence examined the association between " + ph("[variable 1]") + " and " + ph("[variable 2]") + ". The association was " + ph("[significant / non-significant]") + ", χ²(" + ph("__") + ", " + em("N") + " = " + ph("__") + ") = " + ph("__") + ", " + em("p") + " = " + ph("__") + ", " + em("V") + " = " + ph("__") + ".",
         assump: [
           "Expected count ≥ 5 in (almost) every cell. Use <strong>Fisher's exact test</strong> if the cells are sparse.",
@@ -355,7 +355,7 @@
           "The default below is a 2 × 2 table (df = 1); set the df for larger tables."
         ] },
       logistic: { slug: "logistic", name: "Logistic regression", why: "Models the probability of a yes/no outcome with an S-shaped curve; the coefficients exponentiate into odds ratios.",
-        lesson: "stats-3/logistic-regression", label: "Logistic Regression", sc: null, es: null, apa: null,
+        lesson: "stats-2/logistic-regression", label: "Logistic Regression", sc: null, es: null, apa: null,
         apaSkel: "A logistic regression predicted " + ph("[yes/no outcome]") + " from " + ph("[predictors]") + ". " + ph("[Predictor]") + " was associated with the outcome, " + em("b") + " = " + ph("__") + ", " + em("SE") + " = " + ph("__") + ", odds ratio = " + ph("__") + ", 95% CI [" + ph("__") + ", " + ph("__") + "], " + em("p") + " = " + ph("__") + ".",
         assump: [
           "Binary outcome; observations independent.",
@@ -363,7 +363,7 @@
           "Little multicollinearity; watch for complete separation."
         ], specialN: "Logistic-regression power hinges on the outcome's base rate and how many predictors you fit, so simulate it, or use G*Power. The rule of thumb is <strong>~10 events (of the rarer outcome) per predictor</strong>." },
       count: { slug: "count", name: "Poisson / negative-binomial regression", why: "A generalized linear model with a log link keeps count predictions positive; switch to negative binomial when the counts are overdispersed.",
-        lesson: "stats-4/generalized-linear-models", label: "Generalized Linear Models", sc: null, es: null, apa: null,
+        lesson: "stats-3/generalized-linear-models", label: "Generalized Linear Models", sc: null, es: null, apa: null,
         apaSkel: "A Poisson regression modeled " + ph("[count outcome]") + " as a function of " + ph("[predictors]") + ". " + ph("[Predictor]") + " was associated with the rate, incidence-rate ratio = " + ph("__") + ", 95% CI [" + ph("__") + ", " + ph("__") + "], " + em("p") + " = " + ph("__") + ".",
         assump: [
           "Counts are independent; for plain Poisson, the mean ≈ the variance.",
@@ -371,7 +371,7 @@
           "Lots of structural zeros? Consider a zero-inflated model."
         ], specialN: "Count-model power depends on the baseline rate and dispersion, so simulate it, or approximate with a regression power tool such as G*Power. The <a href=\"power.html\">power calculator</a> can give a rough analogue via the closest linear test." },
       survival: { slug: "survival", name: "Survival analysis (Kaplan–Meier / Cox)", why: "Time-to-event data with censoring. Kaplan–Meier curves estimate survival over time, the log-rank test compares groups, and Cox regression adds predictors.",
-        lesson: "stats-4/survival-analysis", label: "Survival Analysis & Kaplan–Meier", sc: null, es: null, apa: null,
+        lesson: "stats-3/survival-analysis", label: "Survival Analysis & Kaplan–Meier", sc: null, es: null, apa: null,
         apaSkel: "A Kaplan–Meier analysis compared survival across " + ph("[groups]") + "; the log-rank test was " + ph("[significant / non-significant]") + ", χ²(" + ph("__") + ") = " + ph("__") + ", " + em("p") + " = " + ph("__") + ". A Cox regression gave a hazard ratio of " + ph("__") + ", 95% CI [" + ph("__") + ", " + ph("__") + "].",
         assump: [
           "Censoring is <strong>non-informative</strong>: dropout is unrelated to the outcome.",
@@ -479,7 +479,7 @@
           '<span class="seg" id="es-bench">' + buttons + '</span>' +
         '</div>' +
         '<details class="es-note no-print"><summary>🤔 No idea what effect to expect?</summary>' +
-          '<p style="margin:.3rem 0 0">That\'s the honest and common case. In order of preference: (1) use the <strong>smallest effect that would still matter</strong> to you (a SESOI), and power to catch that; (2) borrow an effect from a <a href="stats-4/meta-analysis/">meta-analysis</a> or the closest prior study, and <em>discount it</em> for publication bias; (3) run a small pilot to sanity-check feasibility (not to estimate the effect, since pilots are too noisy for that). Benchmarks (small/medium/large) are a last resort; the box starts at Cohen\'s <em>medium</em>. Translate between d, r and η² with the <a href="effect-sizes.html">effect-size converter</a>.</p>' +
+          '<p style="margin:.3rem 0 0">That\'s the honest and common case. In order of preference: (1) use the <strong>smallest effect that would still matter</strong> to you (a SESOI), and power to catch that; (2) borrow an effect from a <a href="stats-3/meta-analysis/">meta-analysis</a> or the closest prior study, and <em>discount it</em> for publication bias; (3) run a small pilot to sanity-check feasibility (not to estimate the effect, since pilots are too noisy for that). Benchmarks (small/medium/large) are a last resort; the box starts at Cohen\'s <em>medium</em>. Translate between d, r and η² with the <a href="effect-sizes.html">effect-size converter</a>.</p>' +
         '</details>';
     }
 

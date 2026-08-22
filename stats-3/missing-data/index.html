@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    /* Consent Mode: storage denied by default, so GA sets no cookie and
+       follows nobody between visits. Anonymous counts still arrive. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Missing Data &amp; Imputation — StatsCapybara</title>
+  <meta name="description" content="Data rarely go missing at random. Toggle MCAR, MAR, and MNAR mechanisms, then check what complete-case analysis and mean imputation do to your estimates." />
+  <link rel="canonical" href="https://statscapybara.com/stats-3/missing-data/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Missing Data &amp; Imputation — StatsCapybara" />
+  <meta property="og:description" content="Data rarely go missing at random. Toggle MCAR, MAR, and MNAR mechanisms, then check what complete-case analysis and mean imputation do to your estimates." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og-stats-3.png" />
+  <meta property="og:url" content="https://statscapybara.com/stats-3/missing-data/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Missing Data &amp; Imputation — StatsCapybara" />
+  <meta name="twitter:description" content="Toggle MCAR, MAR, and MNAR, then check what complete-case analysis and mean imputation do to your estimates." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-3.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Missing Data & Imputation", "description": "Data rarely go missing at random. Toggle MCAR, MAR, and MNAR mechanisms, then check what complete-case analysis and mean imputation do to your estimates.", "url": "https://statscapybara.com/stats-3/missing-data/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced & Elective Topics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Missing Data & Imputation", "item": "https://statscapybara.com/stats-3/missing-data/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How much missing data is too much?", "acceptedAnswer": {"@type": "Answer", "text": "Wrong first question: the mechanism outranks the amount. 5% missing not-at-random (MNAR) can bias conclusions more than 30% missing at random handled with multiple imputation. That said, practical strain grows past ~10% (report sensitivity analyses) and results lean heavily on the imputation model past ~40%. Always report how much was missing, why you believe it went missing, and how you handled it."}}, {"@type": "Question", "name": "How do I report missing data in a paper?", "acceptedAnswer": {"@type": "Answer", "text": "Say four things, and say them before the results rather than in a footnote after. How much is missing, per variable and per group, in counts as well as percentages, because \"8% missing\" hides the fact that it was 14 in one arm and 2 in the other. Why you think it went missing, named as a mechanism and defended in a sentence, since that assumption is what licenses everything you do next. What you did about it, including the imputation model and the number of imputations if you imputed. And whether the conclusion survives a different reasonable assumption, which is what a sensitivity analysis is for. Trials additionally report the flow of participants through the study, and the results section is where most of this belongs. Reviewers rarely object to missing data that is described honestly; they object to discovering it in a degrees-of-freedom count that does not match the stated sample size."}}, {"@type": "Question", "name": "How many imputations should I use in multiple imputation?", "acceptedAnswer": {"@type": "Answer", "text": "The old advice of m = 5 came from an era of expensive computing. The modern heuristic: at least as many imputations as the percentage of incomplete cases (30% incomplete → m ≥ 30); m = 20–50 covers most studies and stabilizes standard errors and p-values across reruns. Computation is cheap now — err high."}}]}
+  </script>
+</head>
+<body data-course="stats-3" data-section="missing-data">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 3.14</span>
+        <h1>Missing Data &amp; Imputation</h1>
+
+        <p class="lede">Real datasets have holes: participants skip questions, sensors fail, people drop out. The reflex (analyze whoever's left, or plug gaps with the average) feels harmless. But whether it <em>is</em> harmless depends entirely on <strong>why</strong> the data are missing. Statisticians sort that "why" into three mechanisms, and the difference between them decides whether your results are fine, slightly noisy, or systematically wrong.</p>
+
+        <h2>Three ways data go missing</h2>
+        <ul>
+          <li><strong>MCAR:</strong> <em>Missing Completely At Random.</em> The holes are pure chance, unrelated to anything (a dropped test tube). Analyses of the remaining data are unbiased; you just lose precision.</li>
+          <li><strong>MAR:</strong> <em>Missing At Random</em> (a terrible name). Missingness depends on <em>other observed variables</em>, not on the missing value itself: for example, students with heavy course loads (observed) skip your exam more often. Complete-case analysis can be biased, but the observed data contain enough information to correct it.</li>
+          <li><strong>MNAR:</strong> <em>Missing Not At Random.</em> Missingness depends on the missing value itself — the students who'd have scored worst are precisely the ones who didn't show. This is the dangerous one: the observed data alone can't fully fix it.</li>
+        </ul>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="missviz">
+          <p class="viz-title">🎮 The Missingness Machine</p>
+          <p class="viz-sub">200 students: study hours (X, always observed) vs exam score (Y, sometimes missing). Hollow orange points are the values you never saw. Switch mechanisms and watch the estimated mean (orange line) drift from the truth (teal dashed). Then turn on mean imputation and check what happens to the SD and the correlation.</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>Mechanism</label>
+              <span class="seg">
+                <button id="mech-mcar" class="active">MCAR</button>
+                <button id="mech-mar">MAR</button>
+                <button id="mech-mnar">MNAR</button>
+              </span>
+            </div>
+            <div class="control">
+              <label>Handling</label>
+              <span class="seg">
+                <button id="meth-cc" class="active">Complete cases</button>
+                <button id="meth-imp">Mean imputation</button>
+              </span>
+            </div>
+            <div class="control">
+              <label>Missing <span class="val" id="p-val">30%</span></label>
+              <input type="range" id="p-range" min="0" max="0.6" step="0.05" value="0.3" />
+            </div>
+            <div class="control"><button class="btn btn-primary btn-sm" id="resample">New class</button></div>
+          </div>
+
+          <canvas id="miss-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k" style="color:var(--secondary)">True mean (all 200)</span><span class="v" id="stat-true">—</span></div>
+            <div class="stat"><span class="k" style="color:#f97316">Estimated mean</span><span class="v" id="stat-est">—</span></div>
+            <div class="stat"><span class="k">Bias</span><span class="v" id="stat-bias">—</span></div>
+            <div class="stat"><span class="k">SD (est / true)</span><span class="v" id="stat-sd">—</span></div>
+            <div class="stat"><span class="k">r (est / true)</span><span class="v" id="stat-r">—</span></div>
+          </div>
+          <p id="miss-hint" style="margin:.75rem 0 0;font-size:.88rem;color:var(--text-muted)"></p>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Why mean imputation is a trap</h2>
+        <p>Replacing every hole with the observed average looks tidy, but you've invented data with <em>zero variability</em> sitting exactly on the mean. The imputed sample's standard deviation shrinks, every correlation weakens (all those flat points pull r toward 0), and, worst of all, your software now believes it has a full n, so standard errors and p-values come out overconfident. The visualization makes this visible: flip to mean imputation and watch the SD and r readouts sag while the mean stays put.</p>
+
+        <h2>What your software calls all this</h2>
+        <p>Complete-case analysis goes by another name in every menu you will actually click: <strong>listwise deletion</strong>, or "exclude cases listwise". Its neighbor in the same dialog, <strong>pairwise deletion</strong>, keeps a case for every calculation it has the values for, so a correlation matrix ends up built from a different subset of people in every cell. It keeps more data than listwise does, and two things go with it. You no longer have one honest <em>n</em> to report. And the matrix is no longer guaranteed to be internally consistent: with 35% of values missing at random, a pairwise correlation matrix comes out mathematically impossible in roughly one simulated dataset in forty, carrying a negative eigenvalue that no real correlation matrix can have, at which point factor analysis or regression either refuses to run or runs on nonsense.</p>
+        <p>Neither is a modern default. Both are worth recognizing on sight, because they are what the software offers first.</p>
+
+        <h2>What to do instead</h2>
+        <p>The modern default is <strong>multiple imputation</strong>: fill each hole several times with plausible values drawn from a model of the data (spread included!), analyze each completed dataset, and pool the results, so the extra uncertainty from the holes flows honestly into your standard errors. Maximum-likelihood approaches (like FIML, standard in <a href="../../stats-3/mixed-and-multilevel-models/">mixed models</a> software) get the same job done. Both are valid under MCAR and MAR; under MNAR nothing is automatic and sensitivity analysis becomes your friend.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> deleting incomplete cases or plugging in averages silently rewrites your data with the strongest assumption possible: that the holes were harmless. Name the mechanism first (MCAR, MAR, MNAR), then choose a method built for it. "It's just a few missing values" is how biased conclusions are born.</p>
+        </div>
+
+        <p>Two habits upstream make all of this easier. Record missingness in a way that survives the trip to your analysis software, which means one documented code per reason in the <a href="../../data/codebooks-and-documentation/">codebook</a> rather than a blank cell that could mean anything, and keep the decision about who gets dropped inside a <a href="../../data/data-cleaning-workflow/">cleaning script</a> where it can be read and re-run instead of in a spreadsheet where it cannot.</p>
+
+        <p class="pb-xref"><a href="../../problems.html#p3-8">Problem 30 of the practice problems</a> is this lesson with the stakes attached: 24 of 180 trial participants never came back for the final weigh-in, 18 of them from the intervention arm, and the analyst simply dropped them.</p>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>How much missing data is too much?</summary>
+            <div class="faq-a"><p>Wrong first question: the <em>mechanism</em> outranks the amount. 5% missing not-at-random (MNAR) can bias conclusions more than 30% missing at random handled with multiple imputation. That said, practical strain grows past ~10% (report sensitivity analyses) and results lean heavily on the imputation model past ~40%. Always report how much was missing, why you believe it went missing, and how you handled it.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>How do I report missing data in a paper?</summary>
+            <div class="faq-a"><p>Say four things, and say them before the results rather than in a footnote after. How much is missing, per variable and per group, in counts as well as percentages, because "8% missing" hides the fact that it was 14 in one arm and 2 in the other. Why you think it went missing, named as a mechanism and defended in a sentence, since that assumption is what licenses everything you do next. What you did about it, including the imputation model and the number of imputations if you imputed. And whether the conclusion survives a different reasonable assumption, which is what a sensitivity analysis is for. Trials additionally report the flow of participants through the study, and <a href="../../writing/writing-results/">the results section</a> is where most of this belongs. Reviewers rarely object to missing data that is described honestly; they object to discovering it in a degrees-of-freedom count that does not match the stated sample size.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>How many imputations should I use in multiple imputation?</summary>
+            <div class="faq-a"><p>The old advice of m = 5 came from an era of expensive computing. The modern heuristic: at least as many imputations as the percentage of incomplete cases (30% incomplete → m ≥ 30); m = 20–50 covers most studies and stabilizes standard errors and p-values across reruns. Computation is cheap now — err high.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ missing-data visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var N = 200, p = 0.3, mech = "mcar", meth = "cc";
+    var X = [], Y = [], miss = [];
+    var canvas = document.getElementById("miss-canvas"), ctx, W = 0, H = 300;
+
+    function corr(x, y) {
+      var mx = VIZ.mean(x), my = VIZ.mean(y), sxy = 0, sxx = 0, syy = 0;
+      for (var i = 0; i < x.length; i++) { var a = x[i] - mx, b = y[i] - my; sxy += a * b; sxx += a * a; syy += b * b; }
+      return sxy / Math.sqrt(sxx * syy);
+    }
+
+    var U = [];   // fixed per-point uniform draws — see note below
+    function gen() {
+      X = []; Y = []; U = [];
+      for (var i = 0; i < N; i++) {
+        var x = Math.max(2, Math.min(38, VIZ.gauss(20, 6)));
+        X.push(x);
+        Y.push(Math.max(20, Math.min(100, 40 + 1.8 * x + VIZ.gauss(0, 8))));
+        U.push(Math.random());
+      }
+      applyMissing();
+    }
+    function applyMissing() {
+      // rank-based probabilities: E[missing] = p, but who goes missing depends on the mechanism.
+      // Each point keeps a fixed uniform draw U[i], so moving the % slider fades the SAME points
+      // out in a stable order instead of reshuffling which ones vanish.
+      var driver = mech === "mar" ? X : Y;    // MAR: driven by observed X; MNAR: by Y itself
+      var order = X.map(function (_, i) { return i; });
+      if (mech !== "mcar") order.sort(function (a, b) { return driver[a] - driver[b]; });
+      var rank = [];
+      order.forEach(function (idx, pos) { rank[idx] = pos; });
+      miss = X.map(function (_, i) {
+        var pi = mech === "mcar" ? p : Math.min(0.95, p * 2 * (rank[i] + 0.5) / N);
+        return U[i] < pi;
+      });
+    }
+
+    /* ---- drawing ---- */
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function draw(est) {
+      ctx.clearRect(0, 0, W, H);
+      var padL = 44, padR = 14, top = 12, base = H - 32;
+      var XMIN = 0, XMAX = 40, YMIN = 20, YMAX = 105;
+      function sx(v) { return padL + (v - XMIN) / (XMAX - XMIN) * (W - padL - padR); }
+      function sy(v) { return base - (v - YMIN) / (YMAX - YMIN) * (base - top); }
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, base); ctx.lineTo(W - padR, base); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(padL, top); ctx.lineTo(padL, base); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px ui-monospace, monospace"; ctx.textAlign = "center";
+      for (var t = 0; t <= 40; t += 10) ctx.fillText(t, sx(t), base + 15);
+      ctx.fillText("study hours →", (padL + W - padR) / 2, H - 3);
+      ctx.textAlign = "right";
+      for (var s = 20; s <= 100; s += 20) ctx.fillText(s, padL - 6, sy(s) + 4);
+      // points
+      for (var i = 0; i < N; i++) {
+        var px = sx(X[i]), py = sy(Y[i]);
+        if (miss[i]) {
+          ctx.strokeStyle = "#f97316"; ctx.globalAlpha = 0.55; ctx.lineWidth = 1.4;
+          ctx.beginPath(); ctx.arc(px, py, 3.2, 0, 6.2832); ctx.stroke();
+        } else {
+          ctx.fillStyle = VIZ.css("--primary"); ctx.globalAlpha = 0.7;
+          ctx.beginPath(); ctx.arc(px, py, 3, 0, 6.2832); ctx.fill();
+        }
+      }
+      ctx.globalAlpha = 1;
+      // imputed points collapse onto the mean line
+      if (meth === "imp") {
+        ctx.fillStyle = "#f97316";
+        for (var j = 0; j < N; j++) {
+          if (!miss[j]) continue;
+          ctx.globalAlpha = 0.8;
+          ctx.beginPath(); ctx.arc(sx(X[j]), sy(est.mean), 2.6, 0, 6.2832); ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+      }
+      // mean lines: truth (teal dashed) vs estimate (orange)
+      var trueMean = VIZ.mean(Y);
+      ctx.strokeStyle = VIZ.css("--secondary"); ctx.setLineDash([6, 5]); ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(padL, sy(trueMean)); ctx.lineTo(W - padR, sy(trueMean)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.strokeStyle = "#f97316"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(padL, sy(est.mean)); ctx.lineTo(W - padR, sy(est.mean)); ctx.stroke();
+      ctx.font = "600 11px " + VIZ.css("--font"); ctx.textAlign = "left";
+      ctx.fillStyle = VIZ.css("--secondary"); ctx.fillText("true mean", padL + 5, sy(trueMean) - 5);
+      ctx.fillStyle = "#f97316"; ctx.fillText("estimated mean", padL + 5, sy(est.mean) + 13);
+    }
+
+    function update() {
+      var obsX = [], obsY = [];
+      for (var i = 0; i < N; i++) if (!miss[i]) { obsX.push(X[i]); obsY.push(Y[i]); }
+      var ccMean = obsY.length ? VIZ.mean(obsY) : 0;
+      var est;
+      if (meth === "cc") {
+        est = { mean: ccMean, sd: VIZ.sd(obsY), r: obsY.length > 2 ? corr(obsX, obsY) : 0 };
+      } else {
+        var impY = Y.map(function (y, j) { return miss[j] ? ccMean : y; });
+        est = { mean: VIZ.mean(impY), sd: VIZ.sd(impY), r: corr(X, impY) };
+      }
+      var trueMean = VIZ.mean(Y), trueSD = VIZ.sd(Y), trueR = corr(X, Y);
+      draw(est);
+      document.getElementById("stat-true").textContent = trueMean.toFixed(1);
+      document.getElementById("stat-est").textContent = est.mean.toFixed(1);
+      var bias = est.mean - trueMean;
+      document.getElementById("stat-bias").textContent = (bias >= 0 ? "+" : "") + bias.toFixed(1);
+      document.getElementById("stat-sd").textContent = est.sd.toFixed(1) + " / " + trueSD.toFixed(1);
+      document.getElementById("stat-r").textContent = est.r.toFixed(2) + " / " + trueR.toFixed(2);
+      document.getElementById("miss-hint").innerHTML =
+        mech === "mcar" ? "Holes are pure chance, so the estimate wobbles but isn't systematically off. Missingness only costs precision here." :
+        mech === "mar" ? "Students who study <em>more</em> (observed X) skip the exam more often, so the surviving cases over-represent low scorers and the estimated mean is dragged <strong>down</strong>. Fixable, because X tells you who's missing." :
+        "The <em>highest would-be scores</em> are the ones missing — the observed data can't reveal what they'd have been. This bias survives naive fixes; only assumptions and sensitivity analysis can address it.";
+    }
+
+    function setSeg(groupIds, activeId) {
+      groupIds.forEach(function (id) { document.getElementById(id).className = id === activeId ? "active" : ""; });
+    }
+    [["mech-mcar", "mcar"], ["mech-mar", "mar"], ["mech-mnar", "mnar"]].forEach(function (pair) {
+      document.getElementById(pair[0]).addEventListener("click", function () {
+        mech = pair[1]; setSeg(["mech-mcar", "mech-mar", "mech-mnar"], pair[0]); applyMissing(); update();
+      });
+    });
+    [["meth-cc", "cc"], ["meth-imp", "imp"]].forEach(function (pair) {
+      document.getElementById(pair[0]).addEventListener("click", function () {
+        meth = pair[1]; setSeg(["meth-cc", "meth-imp"], pair[0]); update();
+      });
+    });
+    document.getElementById("p-range").addEventListener("input", function () {
+      p = +this.value; document.getElementById("p-val").textContent = Math.round(p * 100) + "%"; applyMissing(); update();
+    });
+    document.getElementById("resample").addEventListener("click", function () { gen(); update(); });
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(update);
+
+    fit(); gen(); update();
+  })();
+  </script>
+</body>
+</html>

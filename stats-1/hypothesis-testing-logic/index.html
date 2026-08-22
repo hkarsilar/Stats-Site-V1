@@ -30,7 +30,7 @@
   <link rel="stylesheet" href="../../assets/css/styles.css" />
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
-  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Hypothesis Testing Logic", "description": "The logic behind p-values, made visual: assume the null, see how surprising your data is, and decide. Drag the observed statistic to see the p-value move.", "url": "https://statscapybara.com/stats-1/hypothesis-testing-logic/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Foundations", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Hypothesis Testing Logic", "item": "https://statscapybara.com/stats-1/hypothesis-testing-logic/"}]}]
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Hypothesis Testing Logic", "description": "The logic behind p-values, made visual: assume the null, see how surprising your data is, and decide. Drag the observed statistic to see the p-value move.", "url": "https://statscapybara.com/stats-1/hypothesis-testing-logic/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Introduction to Statistics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Hypothesis Testing Logic", "item": "https://statscapybara.com/stats-1/hypothesis-testing-logic/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
   {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What does p < 0.05 actually mean?", "acceptedAnswer": {"@type": "Answer", "text": "It means: if there were truly no effect (H₀ true), data this extreme would occur less than 5% of the time by chance alone. Since that's rare, we treat the result as evidence against H₀. It does not mean there's a 95% chance the effect is real, and it says nothing about how large or important the effect is. That's the job of effect sizes."}}, {"@type": "Question", "name": "Why do we say 'fail to reject' the null instead of 'accept' it?", "acceptedAnswer": {"@type": "Answer", "text": "Because a non-significant result means the evidence wasn't strong enough to rule out chance — not that H₀ is true. Like a courtroom's \"not guilty,\" it reflects insufficient evidence, not established innocence. Small studies fail to reject false nulls all the time simply because they lack power."}}, {"@type": "Question", "name": "Why is the significance level set at 0.05?", "acceptedAnswer": {"@type": "Answer", "text": "Convention, not law of nature. R. A. Fisher suggested in the 1920s that one-in-twenty was a convenient benchmark for \"surprising\" (roughly the chance of landing beyond ±2 SDs), and it stuck. Nothing magical happens between p = .049 and p = .051, which is why fields with different stakes choose differently: particle physics demands \"5 sigma\" (about 1 in 3.5 million), genome-wide studies use 5 × 10⁻⁸, and some journals now suggest .005 for new discoveries. What matters is fixing α before you look at the data, and remembering that crossing it says nothing about how large or important the effect is."}}]}
@@ -44,7 +44,7 @@
       <aside class="sidebar" id="sidebar"></aside>
 
       <article class="lesson">
-        <span class="lesson-eyebrow">Section 1.10</span>
+        <span class="lesson-eyebrow">Section 1.12</span>
         <h1>Hypothesis Testing Logic</h1>
 
         <p class="lede">A hypothesis test is a structured way to answer "could this result just be a fluke?" The logic mirrors a courtroom: the null hypothesis is <em>presumed innocent</em>, and we only convict (reject it) when the evidence would be genuinely surprising if it were true.</p>
@@ -107,7 +107,7 @@
         <h2>Two ways to be wrong</h2>
         <ul>
           <li><strong>Type I error (false positive):</strong> rejecting H₀ when it's actually true. Its rate is exactly α: set α = 0.05 and you'll wrongly "find" an effect 5% of the time by chance.</li>
-          <li><strong>Type II error (false negative):</strong> failing to detect a real effect. Lowering α (demanding stronger evidence) guards against Type I errors but makes Type II errors more likely, a genuine trade-off explored in <a href="../../stats-1/effect-size-and-power/">effect size &amp; power</a>.</li>
+          <li><strong>Type II error (false negative):</strong> failing to detect a real effect. Lowering α (demanding stronger evidence) guards against Type I errors but makes Type II errors more likely, a genuine trade-off explored in <a href="../../stats-3/effect-size-and-power/">effect size &amp; power</a>.</li>
         </ul>
 
         <div class="callout">
@@ -121,7 +121,7 @@
           <h2>Common questions</h2>
           <details class="faq-item">
             <summary>What does p < 0.05 actually mean?</summary>
-            <div class="faq-a"><p>It means: <em>if</em> there were truly no effect (H₀ true), data this extreme would occur less than 5% of the time by chance alone. Since that's rare, we treat the result as evidence against H₀. It does <strong>not</strong> mean there's a 95% chance the effect is real, and it says nothing about how large or important the effect is. That's the job of <a href="../../stats-1/effect-size-and-power/">effect sizes</a>.</p></div>
+            <div class="faq-a"><p>It means: <em>if</em> there were truly no effect (H₀ true), data this extreme would occur less than 5% of the time by chance alone. Since that's rare, we treat the result as evidence against H₀. It does <strong>not</strong> mean there's a 95% chance the effect is real, and it says nothing about how large or important the effect is. That's the job of <a href="../../stats-3/effect-size-and-power/">effect sizes</a>.</p></div>
           </details>
           <details class="faq-item">
             <summary>Why do we say 'fail to reject' the null instead of 'accept' it?</summary>
@@ -129,7 +129,7 @@
           </details>
           <details class="faq-item">
             <summary>Why is the significance level set at 0.05?</summary>
-            <div class="faq-a"><p>Convention, not law of nature. R. A. Fisher suggested in the 1920s that one-in-twenty was a convenient benchmark for "surprising" (roughly the chance of landing beyond ±2 SDs), and it stuck. Nothing magical happens between p = .049 and p = .051, which is why fields with different stakes choose differently: particle physics demands "5 sigma" (about 1 in 3.5 million), genome-wide studies use 5 × 10⁻⁸, and some journals now suggest .005 for new discoveries. What matters is fixing α <em>before</em> you look at the data, and remembering that crossing it says nothing about how <a href="../../stats-1/effect-size-and-power/">large or important</a> the effect is.</p></div>
+            <div class="faq-a"><p>Convention, not law of nature. R. A. Fisher suggested in the 1920s that one-in-twenty was a convenient benchmark for "surprising" (roughly the chance of landing beyond ±2 SDs), and it stuck. Nothing magical happens between p = .049 and p = .051, which is why fields with different stakes choose differently: particle physics demands "5 sigma" (about 1 in 3.5 million), genome-wide studies use 5 × 10⁻⁸, and some journals now suggest .005 for new discoveries. What matters is fixing α <em>before</em> you look at the data, and remembering that crossing it says nothing about how <a href="../../stats-3/effect-size-and-power/">large or important</a> the effect is.</p></div>
           </details>
         </section>
         <!-- faq:end -->

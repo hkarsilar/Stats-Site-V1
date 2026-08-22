@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    /* Consent Mode: storage denied by default, so GA sets no cookie and
+       follows nobody between visits. Anonymous counts still arrive. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chi-Square Tests — StatsCapybara</title>
+  <meta name="description" content="Chi-square tests work on counts, not means. Pull a contingency table away from independence and see chi-square climb as p falls." />
+  <link rel="canonical" href="https://statscapybara.com/stats-1/chi-square-tests/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Chi-Square Tests — StatsCapybara" />
+  <meta property="og:description" content="Chi-square tests work on counts, not means. Pull a contingency table away from independence and see chi-square climb as p falls." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og-stats-1.png" />
+  <meta property="og:url" content="https://statscapybara.com/stats-1/chi-square-tests/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Chi-Square Tests — StatsCapybara" />
+  <meta name="twitter:description" content="Chi-square tests work on counts, not means. Pull a contingency table away from independence and see chi-square climb as p falls." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-1.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Chi-Square Tests", "description": "Chi-square tests work on counts, not means. Pull a contingency table away from independence and see chi-square climb as p falls.", "url": "https://statscapybara.com/stats-1/chi-square-tests/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Introduction to Statistics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Chi-Square Tests", "item": "https://statscapybara.com/stats-1/chi-square-tests/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "My chi-square is significant. Which cell is responsible?", "acceptedAnswer": {"@type": "Answer", "text": "The test itself will not tell you, because it pools every cell into one number. Ask the table for adjusted standardized residuals, which SPSS offers under Crosstabs → Cells and R returns as chisq.test(tab)$stdres. Each one is roughly a z-score for its cell under independence, so a value beyond about ±2 marks a cell holding noticeably more or fewer cases than independence predicts, and the sign tells you which direction. Read the pattern before you write the sentence: a significant χ² on a 3 × 4 table usually comes from one or two cells, not from the whole table drifting at once. With many cells, treat the residuals as exploratory rather than as a stack of formal tests."}}, {"@type": "Question", "name": "What if my expected counts are less than 5?", "acceptedAnswer": {"@type": "Answer", "text": "The χ² p-value is an approximation that degrades with small expected counts. The standard rule: all (or at least 80% of) expected counts should be ≥ 5. Below that, use Fisher's exact test for 2×2 tables (exact, no approximation) — or collapse sparse categories together when it makes conceptual sense."}}, {"@type": "Question", "name": "Can a chi-square test tell me how strong the association is?", "acceptedAnswer": {"@type": "Answer", "text": "χ² itself can't; it grows with sample size, so a huge study can produce an enormous χ² from a trivial association. Pair the test with an effect size: Cramér's V (0 = none, 1 = perfect) for general tables, or the odds ratio for 2×2 tables, which our effect-size converter can translate into other metrics."}}]}
+  </script>
+</head>
+<body data-course="stats-1" data-section="chi-square-tests">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 1.16</span>
+        <h1>Chi-Square Tests</h1>
+
+        <p class="lede">Everything so far has compared <em>means</em> of numeric data. But what about <strong>counts</strong>: how many people picked option A vs. B, recovered vs. didn't, voted left vs. right? The <strong>chi-square (χ²) test</strong> works with frequencies in categories, and its most common job is asking: are two categorical variables <strong>associated</strong>, or independent?</p>
+
+        <h2>Observed vs. expected</h2>
+        <p>The whole test rests on one comparison. You have the <strong>observed</strong> counts (what actually happened). Then you compute the <strong>expected</strong> counts: what you'd see if the two variables were completely unrelated (each cell's expected count is just its row total × column total ÷ grand total). The bigger the gap between observed and expected, the more evidence of a real association:</p>
+        <p style="text-align:center;font-size:1.15rem;margin:1.25rem 0"><strong>χ² = Σ (observed − expected)² / expected</strong></p>
+        <p>The Σ (sigma) is an instruction to add: work the fraction out for one cell, then do it for every cell and total them.</p>
+        <p>That formula, the expected-count rule, the df and Cramér's V are four consecutive rows on the printable <a href="../../formulas.html">formula sheet</a>, worth having beside you the first few times.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="chiviz">
+          <p class="viz-title">🎮 Contingency Table Explorer</p>
+          <p class="viz-sub">A treatment trial. Each bar shows the recovery split for one group. When the two splits match the dashed "no-association" line, χ² is tiny. Pull them apart and watch χ² climb.</p>
+
+          <canvas id="chi-canvas"></canvas>
+
+          <div class="controls" style="margin-top:.75rem">
+            <div class="control" style="flex:1;min-width:200px"><label style="color:var(--primary)">Treatment · recovered <span class="val" id="va">45</span></label><input type="range" id="a" min="2" max="120" step="1" value="45" /></div>
+            <div class="control" style="flex:1;min-width:200px"><label>Treatment · did not <span class="val" id="vb">20</span></label><input type="range" id="b" min="2" max="120" step="1" value="20" /></div>
+          </div>
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:200px"><label style="color:var(--primary)">Placebo · recovered <span class="val" id="vc">25</span></label><input type="range" id="c" min="2" max="120" step="1" value="25" /></div>
+            <div class="control" style="flex:1;min-width:200px"><label>Placebo · did not <span class="val" id="vd">40</span></label><input type="range" id="d" min="2" max="120" step="1" value="40" /></div>
+          </div>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">χ² statistic</span><span class="v" id="stat-chi">—</span></div>
+            <div class="stat"><span class="k">Degrees of freedom</span><span class="v" id="stat-df">1</span></div>
+            <div class="stat"><span class="k">p-value</span><span class="v" id="stat-p">—</span></div>
+            <div class="stat"><span class="k">Association?</span><span class="v" id="stat-dec" style="font-size:1rem">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Reading the result</h2>
+        <p>The degrees of freedom for a table are (rows − 1) × (columns − 1), just 1 for our 2×2. A χ² statistic far from zero, with p &lt; 0.05, means the observed counts would be surprising if the variables were truly independent, so you conclude they're <strong>associated</strong>. In the trial: treatment and recovery are related.</p>
+        <div class="callout key">
+          <p><strong>Association, not amount.</strong> Like <a href="../../stats-1/correlation/">correlation</a>, a significant χ² tells you a relationship exists, not how strong it is. For strength, report an effect size such as <em>Cramér's V</em> or the odds ratio alongside the test; the <a href="../../effect-sizes.html">effect-size converter</a> will turn an odds ratio into the more familiar <em>d</em> or <em>r</em> if you need to compare it with the rest of your results.</p>
+        </div>
+
+        <h2>Two flavors of chi-square</h2>
+        <ul>
+          <li><strong>Test of independence</strong> is the one above: are two categorical variables related? (Treatment × outcome, gender × preference.)</li>
+          <li><strong>Goodness-of-fit:</strong> does one categorical variable match an expected distribution? (Is this die fair? Do customers pick the four flavors equally?)</li>
+        </ul>
+
+        <h2>What you're assuming</h2>
+        <ul>
+          <li>Counts are <strong>independent</strong>: each observation falls in exactly one cell, and one person's category doesn't affect another's.</li>
+          <li><strong>Expected counts are large enough.</strong> A common rule is every expected count ≥ 5. For small 2×2 tables, use Yates' continuity correction or <strong>Fisher's exact test</strong> instead. Counts are cheap to collect and easy to under-collect, so if the study is still ahead of you, the <a href="../../power.html?sc=chisq">power calculator</a> will tell you how many observations a given association needs.</li>
+        </ul>
+
+        <h2 id="same-person-twice">When the same person appears twice</h2>
+        <p>Two different meanings of "independent" meet in this test, and only one of them is the null hypothesis. The test asks whether the two <em>variables</em> are independent. The assumption above is about the <em>observations</em>: sixty people should produce sixty entries, not a hundred and twenty.</p>
+
+        <p>Sixty students say whether they feel confident reading a results section, once before a workshop and once after. Stack the two occasions and you have a 2 × 2 table of 120 answers, which looks like a perfectly ordinary chi-square problem. It is not one. Each student sits in that table twice, so the table has 60 independent units, and a test built on 120 will describe a study nobody ran.</p>
+
+        <p>The fix is to make the person the row. Cross each student's before-answer with their own after-answer and every student lands in exactly one of four cells: yes both times, no both times, or one of the two switchers. The students who answered the same way twice tell you nothing about whether the workshop changed anything, so <strong>McNemar's test</strong> throws them out and works only on the switchers, which textbooks call the <strong>discordant pairs</strong>:</p>
+
+        <p style="text-align:center;font-family:var(--mono);font-size:1rem">χ² = (b − c)² ⁄ (b + c), with 1 degree of freedom</p>
+
+        <p>where <em>b</em> and <em>c</em> are the two off-diagonal counts. Suppose 18 students went from no to yes and 6 went the other way. Then χ² = (18 − 6)² / 24 = 6.00 and <em>p</em> = .014. SPSS and R apply a continuity correction by default, giving 5.04 and <em>p</em> = .025; with only 24 switchers you can skip the approximation entirely and ask the binomial directly, which returns <em>p</em> = .023. All three say the same thing, and the exact one is the one to quote when <em>b</em> + <em>c</em> is small.</p>
+
+        <p>What does stacking the occasions actually cost? Simulating 60 students whose two answers correlate at .6, with no real change at all, the ordinary chi-square on the 120 rows rejects about 1% of the time rather than 5%. It is too cautious, not too eager, which catches most people out. Give the same students a genuine shift, from 60% confident to 78%, and McNemar finds it 78% of the time against the stacked test's 60%. Break the link between the two answers so that the pairing carries no information and the two tests land on top of each other, at 58% each. Pairing is worth using precisely when there is a pairing to use, and ignoring it here wastes participants rather than manufacturing findings.</p>
+
+        <p>Three or more occasions on the same people follow the same logic under a different name, Cochran's Q, which generalizes McNemar to <em>k</em> repeated yes/no measurements. The printable <a href="../../cheat-assumptions.html">assumptions poster</a> names McNemar as the fix for this row; the reason it is a fix, and what happens when the repetition is people inside schools rather than occasions inside people, is <a href="../../stats-3/mixed-and-multilevel-models/">mixed &amp; multilevel models</a>.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> survey responses, A/B test conversions, medical outcomes, demographic breakdowns: categorical data is everywhere, and chi-square is the workhorse for testing whether the categories hang together. Its neighbors in the association family, and when each one applies, sit in the third panel of the printable <a href="../../cheat-test-chooser.html">test-chooser poster</a>.</p>
+        </div>
+
+        <p class="pb-xref"><a href="../../problems.html#p2-7">Problem 19 in the practice problems</a> works a 2 × 3 table from expected counts through to Cramér's <em>V</em>, and shows how to find the cell that is doing the damage.</p>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>My chi-square is significant. Which cell is responsible?</summary>
+            <div class="faq-a"><p>The test itself will not tell you, because it pools every cell into one number. Ask the table for <strong>adjusted standardized residuals</strong>, which SPSS offers under Crosstabs → Cells and R returns as <code>chisq.test(tab)$stdres</code>. Each one is roughly a z-score for its cell under independence, so a value beyond about ±2 marks a cell holding noticeably more or fewer cases than independence predicts, and the sign tells you which direction. Read the pattern before you write the sentence: a significant χ² on a 3 × 4 table usually comes from one or two cells, not from the whole table drifting at once. With many cells, treat the residuals as exploratory rather than as a stack of formal tests.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What if my expected counts are less than 5?</summary>
+            <div class="faq-a"><p>The χ² p-value is an approximation that degrades with small expected counts. The standard rule: all (or at least 80% of) expected counts should be ≥ 5. Below that, use <strong>Fisher's exact test</strong> for 2×2 tables (exact, no approximation) — or collapse sparse categories together when it makes conceptual sense.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Can a chi-square test tell me how strong the association is?</summary>
+            <div class="faq-a"><p>χ² itself can't; it grows with sample size, so a huge study can produce an enormous χ² from a trivial association. Pair the test with an effect size: <strong>Cramér's V</strong> (0 = none, 1 = perfect) for general tables, or the <strong>odds ratio</strong> for 2×2 tables, which our <a href="../../effect-sizes.html">effect-size converter</a> can translate into other metrics.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ chi-square contingency visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var ids = ["a", "b", "c", "d"];
+    var canvas = document.getElementById("chi-canvas"), ctx, W = 0, H = 150, padL = 70, padR = 60;
+    function val(id) { return +document.getElementById(id).value; }
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+
+    function draw() {
+      var a = val("a"), b = val("b"), c = val("c"), d = val("d");
+      var n1 = a + b, n2 = c + d, N = a + b + c + d, overall = (a + c) / N;
+      ctx.clearRect(0, 0, W, H);
+      var x0 = padL, x1 = W - padR, barW = x1 - x0;
+      function bar(y, recov, tot, label) {
+        var p = recov / tot, split = x0 + p * barW;
+        ctx.fillStyle = VIZ.css("--primary"); ctx.globalAlpha = 0.85; ctx.fillRect(x0, y, split - x0, 30);
+        ctx.fillStyle = VIZ.css("--surface-2"); ctx.globalAlpha = 1; ctx.fillRect(split, y, x1 - split, 30);
+        ctx.strokeStyle = VIZ.css("--border"); ctx.strokeRect(x0, y, barW, 30);
+        ctx.fillStyle = VIZ.css("--text"); ctx.font = "600 12px Inter,sans-serif"; ctx.textAlign = "right";
+        ctx.fillText(label, x0 - 8, y + 19);
+        ctx.textAlign = "left"; ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px ui-monospace,monospace";
+        ctx.fillText((p * 100).toFixed(0) + "%", x1 + 6, y + 19);
+      }
+      bar(28, a, n1, "Treatment");
+      bar(86, c, n2, "Placebo");
+      // overall (expected) split line
+      var ex = x0 + overall * barW;
+      ctx.strokeStyle = "#f97316"; ctx.setLineDash([5, 4]); ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(ex, 18); ctx.lineTo(ex, 128); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = "#f97316"; ctx.textAlign = "center"; ctx.font = "10px Inter,sans-serif";
+      ctx.fillText("no-association split", ex, 12);
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px Inter,sans-serif"; ctx.textAlign = "left";
+      ctx.fillText("■ recovered", x0, H - 4);
+
+      // chi-square
+      var ea = n1 * (a + c) / N, eb = n1 * (b + d) / N, ec = n2 * (a + c) / N, ed = n2 * (b + d) / N;
+      var chi = (a - ea) * (a - ea) / ea + (b - eb) * (b - eb) / eb + (c - ec) * (c - ec) / ec + (d - ed) * (d - ed) / ed;
+      var p = VIZ.chiSqUpper(chi, 1);
+      ids.forEach(function (id) { document.getElementById("v" + id).textContent = val(id); });
+      document.getElementById("stat-chi").textContent = chi.toFixed(2);
+      document.getElementById("stat-p").textContent = p < 0.001 ? "< 0.001" : p.toFixed(3);
+      var dec = document.getElementById("stat-dec");
+      dec.textContent = p < 0.05 ? "Yes — associated" : "No — independent";
+      dec.style.color = p < 0.05 ? "#22c55e" : VIZ.css("--text");
+    }
+
+    ids.forEach(function (id) { document.getElementById(id).addEventListener("input", draw); });
+    window.addEventListener("resize", function () { fit(); draw(); });
+    VIZ.onTheme(draw);
+    fit(); draw();
+  })();
+  </script>
+</body>
+</html>

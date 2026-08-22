@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    /* Consent Mode: storage denied by default, so GA sets no cookie and
+       follows nobody between visits. Anonymous counts still arrive. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simple Linear Regression — StatsCapybara</title>
+  <meta name="description" content="Fit a line to data by hand, watch the sum of squared residuals, then see why least squares wins." />
+  <link rel="canonical" href="https://statscapybara.com/stats-1/simple-linear-regression/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Simple Linear Regression — StatsCapybara" />
+  <meta property="og:description" content="Fit a line to data by hand, watch the sum of squared residuals, then see why least squares wins." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og-stats-1.png" />
+  <meta property="og:url" content="https://statscapybara.com/stats-1/simple-linear-regression/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Simple Linear Regression — StatsCapybara" />
+  <meta name="twitter:description" content="Fit a line to data by hand, watch the sum of squared residuals, then see why least squares wins." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-1.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Simple Linear Regression", "description": "Fit a line to data by hand, watch the sum of squared residuals, then see why least squares wins.", "url": "https://statscapybara.com/stats-1/simple-linear-regression/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Introduction to Statistics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Simple Linear Regression", "item": "https://statscapybara.com/stats-1/simple-linear-regression/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I know whether my slope is statistically significant?", "acceptedAnswer": {"@type": "Answer", "text": "Divide the slope by its own standard error: t = b / SE, tested against df = n − 2. A slope of b = 2.31 with SE = 0.57 in a sample of 50 gives t(48) = 4.05, p &lt; .001, so the software prints it as significant. Two facts make this easy to sanity-check. Squaring that t gives the model's F (4.05² = 16.4), and testing the slope is the same test as asking whether r differs from 0, so both p-values match exactly. Report the CI alongside it, here [1.16, 3.46], because \"significant\" only says the interval misses zero, not that the slope is large enough to care about."}}, {"@type": "Question", "name": "What is the difference between correlation and regression?", "acceptedAnswer": {"@type": "Answer", "text": "Correlation gives one symmetric number describing how tightly two variables co-move — no direction, no units. Regression fits an equation (ŷ = b₀ + b₁x) for predicting y from x, with a slope in real units (\"each extra study hour buys 2.3 exam points\"). Correlation describes; regression predicts."}}, {"@type": "Question", "name": "Can I use my regression line to predict beyond my data's range?", "acceptedAnswer": {"@type": "Answer", "text": "That's extrapolation, and it's where regression goes to die. The line is only supported within the x-values you observed. Beyond them, the relationship may bend, flatten, or reverse, and the model gives no warning (a child's growth line predicts 3-meter adults). Predict within the observed range; extrapolate only with strong theoretical justification and loud caveats."}}]}
+  </script>
+</head>
+<body data-course="stats-1" data-section="simple-linear-regression">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 1.18</span>
+        <h1>Simple Linear Regression</h1>
+
+        <p class="lede"><a href="../../stats-1/correlation/">Correlation</a> tells you two variables move together. <strong>Regression</strong> goes further: it draws the single best straight line through the cloud, so you can actually <em>predict</em> one variable from the other. The whole game is choosing that line, and there's a precise, beautiful rule for what "best" means.</p>
+
+        <h2>The line and its errors</h2>
+        <p>A regression line is just <code>ŷ = b₀ + b₁x</code>: an intercept and a slope. For any line you propose, each data point sits some vertical distance above or below it. That gap is the <strong>residual</strong>: the prediction error for that point.</p>
+        <p>A good line makes those residuals small overall. But small <em>how</em>? Add them up and positives cancel negatives. The fix: <strong>square</strong> each residual (killing the sign and punishing big misses extra hard), then add them up. That total is the <strong>sum of squared residuals (SSR)</strong>, and the <strong>least-squares line</strong> is the one, out of all possible lines, that makes it as small as possible.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="regviz">
+          <p class="viz-title">🎮 Least-Squares Playground</p>
+          <p class="viz-sub">Move the line with the sliders and try to make the error as small as you can. Then hit "best fit." You won't beat it.</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>Intercept b₀ <span class="val" id="b0-val">2.0</span></label>
+              <input type="range" id="b0-range" min="0" max="10" step="0.1" value="2" />
+            </div>
+            <div class="control">
+              <label>Slope b₁ <span class="val" id="b1-val">0.50</span></label>
+              <input type="range" id="b1-range" min="-1.5" max="2" step="0.05" value="0.5" />
+            </div>
+            <div class="control">
+              <label>Show</label>
+              <div class="seg" id="mode-seg">
+                <button data-mode="lines" class="active">Residual lines</button>
+                <button data-mode="squares">Squared errors</button>
+              </div>
+            </div>
+          </div>
+          <div class="controls" style="margin-bottom:.5rem">
+            <div class="control"><button class="btn btn-primary btn-sm" id="bestfit">Snap to best fit</button></div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="newdata">New data</button></div>
+          </div>
+
+          <canvas id="reg-canvas" style="--viz-ar: 4 / 3"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Your line</span><span class="v" id="stat-eq" style="font-size:1rem">ŷ = 2.0 + 0.50x</span></div>
+            <div class="stat"><span class="k">Sum of squared residuals</span><span class="v" id="stat-ssr">—</span></div>
+            <div class="stat"><span class="k">Best possible (least squares)</span><span class="v" id="stat-best">—</span></div>
+            <div class="stat"><span class="k">R² at best fit</span><span class="v" id="stat-r2">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>What the slope and intercept mean</h2>
+        <ul>
+          <li><strong>Slope b₁:</strong> how much <code>ŷ</code> changes for each one-unit increase in <code>x</code>. A slope of 0.6 means "every extra point of x buys 0.6 more y, on average."</li>
+          <li><strong>Intercept b₀:</strong> the predicted <code>y</code> when <code>x = 0</code>. Sometimes meaningful, sometimes just where the line crosses the axis.</li>
+        </ul>
+
+        <h2>R²: how much the line explains</h2>
+        <p>Once you've got the best line, <strong>R²</strong> (which is just the correlation <em>r</em> squared) says what fraction of the variation in <code>y</code> the line accounts for. R² = 0.7 means the line explains 70% of the ups and downs in <code>y</code>; the rest is scatter the line can't capture. Generate new data a few times and watch SSR and R² move together: tighter clouds give smaller SSR and bigger R².</p>
+
+        <div class="callout key">
+          <p><strong>The key idea:</strong> "best fit" has an exact meaning: the unique line that minimizes the total squared error. The sliders let you hunt for it; the math finds it instantly. They land in the same place.</p>
+        </div>
+
+        <h2>Where the name comes from</h2>
+        <p>Francis Galton measured the heights of parents and their grown children in 1886 and found something he called <em>regression toward mediocrity</em>: unusually tall parents had tall children, but on average less tall than themselves. The word stuck to the method, and the effect it names is still one of the easiest ways to fool yourself.</p>
+        <p>It falls straight out of the slope. Put both variables in standard-deviation units and the least-squares slope becomes exactly <code>r</code>, so a predicted score is always closer to its mean, in SD units, than the predictor was. Take a test whose retest correlation is .70. Of the people who scored 2 SD above the mean on Monday, the group averages 1.4 SD on Friday, and 80% of them score lower the second time. No fatigue, no complacency, no lost form. The same arithmetic runs in reverse for the people who bombed on Monday: they will look improved on Friday, on average, having done nothing.</p>
+        <div class="callout key">
+          <p>This is why "we gave extra tutoring to the lowest-scoring students and their scores went up" proves so little on its own. Selecting a group <em>because</em> it sits at an extreme guarantees movement toward the mean at the next measurement, treatment or no treatment. The repair is a design question rather than a statistical one: a control group selected the same way, which <a href="../../methods/quasi-experiments/">quasi-experimental designs</a> exist to arrange. The same shrinkage shows up deliberately in <a href="../../stats-3/mixed-and-multilevel-models/">multilevel models</a>, where pulling small groups toward the overall mean is a feature rather than a trap.</p>
+        </div>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> simple regression is the foundation of nearly everything in Stats 3. Add more predictors and you've got <a href="../../stats-2/multiple-regression/">multiple regression</a>, the workhorse of modern data analysis.</p>
+          <p style="margin-top:.6rem">Fit a line to your own data on the <a href="../../correlation.html">Correlation &amp; Regression Calculator</a> — scatterplot, least-squares equation, R², a residual plot, and a copy-ready APA sentence for the slope.</p>
+        </div>
+
+        <p class="pb-xref"><a href="../../problems.html#p2-9">Problem 21 in the practice problems</a> fits a line to that same six-person dataset, predicts a value, and checks the residual against it.</p>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>How do I know whether my slope is statistically significant?</summary>
+            <div class="faq-a"><p>Divide the slope by its own standard error: t = b / SE, tested against df = n − 2. A slope of b = 2.31 with SE = 0.57 in a sample of 50 gives t(48) = 4.05, p &lt; .001, so the software prints it as significant. Two facts make this easy to sanity-check. Squaring that t gives the model's F (4.05² = 16.4), and testing the slope is the same test as asking whether r differs from 0, so both p-values match exactly. Report the CI alongside it, here [1.16, 3.46], because "significant" only says the interval misses zero, not that the slope is large enough to care about.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is the difference between correlation and regression?</summary>
+            <div class="faq-a"><p>Correlation gives one symmetric number describing how tightly two variables co-move — no direction, no units. Regression fits an equation (ŷ = b₀ + b₁x) for <em>predicting</em> y from x, with a slope in real units ("each extra study hour buys 2.3 exam points"). Correlation describes; regression predicts.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Can I use my regression line to predict beyond my data's range?</summary>
+            <div class="faq-a"><p>That's extrapolation, and it's where regression goes to die. The line is only supported within the x-values you observed. Beyond them, the relationship may bend, flatten, or reverse, and the model gives no warning (a child's growth line predicts 3-meter adults). Predict within the observed range; extrapolate only with strong theoretical justification and loud caveats.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ Regression visualization ============
+       URL presets (P67):
+         ?b0=<0–10>        intercept
+         ?b1=<-1.5–2>      slope
+         ?mode=lines|squares   residuals drawn as lines or as squared errors
+       e.g.  ?embed=1&mode=squares&b1=0  →  "what least squares is minimizing"
+  -->
+  <script>
+  (function () {
+    "use strict";
+    var DMIN = 0, DMAX = 10, b0 = 2, b1 = 0.5, mode = "lines", data = [];
+    var canvas = document.getElementById("reg-canvas"), ctx, W = 0, H = 360, pad = 28;
+    var plot = { side: 0, x0: 0, y0: 0 };
+
+    function newData() {
+      var a = 1 + Math.random() * 3, b = 0.3 + Math.random() * 0.9, k = 12;
+      data = [];
+      for (var i = 0; i < k; i++) {
+        var x = 0.8 + Math.random() * 8.4;
+        var y = a + b * x + VIZ.gauss(0, 1.1);
+        data.push({ x: x, y: Math.max(0.3, Math.min(9.7, y)) });
+      }
+    }
+    function ols() {
+      var n = data.length, mx = VIZ.mean(data.map(function (p) { return p.x; })), my = VIZ.mean(data.map(function (p) { return p.y; }));
+      var sxy = 0, sxx = 0, syy = 0;
+      for (var i = 0; i < n; i++) { var dx = data[i].x - mx, dy = data[i].y - my; sxy += dx * dy; sxx += dx * dx; syy += dy * dy; }
+      var slope = sxy / sxx, inter = my - slope * mx;
+      var ssr = 0; for (var j = 0; j < n; j++) { var e = data[j].y - (inter + slope * data[j].x); ssr += e * e; }
+      var r2 = (sxy * sxy) / (sxx * syy);
+      return { b0: inter, b1: slope, ssr: ssr, r2: r2 };
+    }
+    function ssrOf(B0, B1) { var s = 0; for (var i = 0; i < data.length; i++) { var e = data[i].y - (B0 + B1 * data[i].x); s += e * e; } return s; }
+
+    function fit() {
+      // The plot region is a centered SQUARE (equal x/y scale is required so the
+      // "squared errors" patches render as true squares — both axes span 0–10).
+      // A fixed short canvas capped that square at H−2·pad and wasted the sides,
+      // so track the width: near-square on wide screens (bigger plot, small side
+      // margins), and no tall empty canvas on mobile.
+      var cw = canvas.clientWidth || canvas.parentElement.clientWidth || 640;
+      H = Math.round(Math.max(320, Math.min(cw, 500)));
+      var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w;
+      plot.side = Math.min(W - 2 * pad, H - 2 * pad);
+      plot.x0 = (W - plot.side) / 2; plot.y0 = (H - plot.side) / 2;
+    }
+    function vx(x) { return plot.x0 + (x / DMAX) * plot.side; }
+    function vy(y) { return (plot.y0 + plot.side) - (y / DMAX) * plot.side; }
+    var ppu = function () { return plot.side / DMAX; };
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      // frame + grid
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.strokeRect(plot.x0, plot.y0, plot.side, plot.side);
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace, monospace"; ctx.textAlign = "center";
+      for (var g = 0; g <= 10; g += 2) { ctx.fillText(g, vx(g), plot.y0 + plot.side + 14); ctx.textAlign = "right"; ctx.fillText(g, plot.x0 - 6, vy(g) + 3); ctx.textAlign = "center"; }
+
+      // squared-error patches (drawn under the line/points)
+      if (mode === "squares") {
+        ctx.fillStyle = "#f97316"; ctx.globalAlpha = 0.18; ctx.strokeStyle = "#f97316"; ctx.lineWidth = 1;
+        for (var s = 0; s < data.length; s++) {
+          var pred = b0 + b1 * data[s].x, resid = data[s].y - pred;
+          var sidePx = Math.abs(resid) * ppu();
+          var px = vx(data[s].x), topY = Math.min(vy(data[s].y), vy(pred));
+          // square hangs to the left of the residual segment
+          ctx.globalAlpha = 0.16; ctx.fillRect(px - sidePx, topY, sidePx, sidePx);
+          ctx.globalAlpha = 0.5; ctx.strokeRect(px - sidePx, topY, sidePx, sidePx);
+        }
+        ctx.globalAlpha = 1;
+      }
+
+      // residual lines
+      if (mode === "lines") {
+        ctx.strokeStyle = "#f97316"; ctx.lineWidth = 1.5;
+        for (var r = 0; r < data.length; r++) {
+          var pr = b0 + b1 * data[r].x;
+          ctx.beginPath(); ctx.moveTo(vx(data[r].x), vy(data[r].y)); ctx.lineTo(vx(data[r].x), vy(pr)); ctx.stroke();
+        }
+      }
+
+      // the line (clipped to plot)
+      ctx.save();
+      ctx.beginPath(); ctx.rect(plot.x0, plot.y0, plot.side, plot.side); ctx.clip();
+      ctx.strokeStyle = VIZ.css("--primary"); ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(vx(DMIN), vy(b0 + b1 * DMIN)); ctx.lineTo(vx(DMAX), vy(b0 + b1 * DMAX)); ctx.stroke();
+      ctx.restore();
+
+      // points
+      ctx.fillStyle = VIZ.css("--secondary");
+      for (var i = 0; i < data.length; i++) { ctx.beginPath(); ctx.arc(vx(data[i].x), vy(data[i].y), 5, 0, 2 * Math.PI); ctx.fill(); }
+    }
+
+    var best = null;
+    function update() {
+      var ssr = ssrOf(b0, b1);
+      document.getElementById("b0-val").textContent = b0.toFixed(1);
+      document.getElementById("b1-val").textContent = b1.toFixed(2);
+      document.getElementById("stat-eq").textContent = "ŷ = " + b0.toFixed(1) + (b1 >= 0 ? " + " : " − ") + Math.abs(b1).toFixed(2) + "x";
+      document.getElementById("stat-ssr").textContent = ssr.toFixed(1);
+      document.getElementById("stat-best").textContent = best.ssr.toFixed(1);
+      document.getElementById("stat-r2").textContent = best.r2.toFixed(2);
+      draw();
+    }
+
+    var b0R = document.getElementById("b0-range"), b1R = document.getElementById("b1-range");
+    b0R.addEventListener("input", function () { b0 = +this.value; update(); });
+    b1R.addEventListener("input", function () { b1 = +this.value; update(); });
+    document.getElementById("mode-seg").addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; mode = b.dataset.mode; Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x.dataset.mode === mode); }); draw(); });
+    document.getElementById("bestfit").addEventListener("click", function () {
+      b0 = Math.max(0, Math.min(10, best.b0)); b1 = Math.max(-1.5, Math.min(2, best.b1));
+      b0R.value = b0; b1R.value = b1; update();
+    });
+    document.getElementById("newdata").addEventListener("click", function () { newData(); best = ols(); update(); });
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(draw);
+
+    fit(); newData(); best = ols(); update();
+
+    /* URL preset, applied last: it moves the sliders, it never regenerates
+       the scatter, so the frozen-noise law holds (see the head comment) */
+    if (window.SC && SC.preset) SC.preset({ b0: "#b0-range", b1: "#b1-range", mode: "#mode-seg" });
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    /* Consent Mode: storage denied by default, so GA sets no cookie and
+       follows nobody between visits. Anonymous counts still arrive. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Effect Size & Power — StatsCapybara</title>
+  <meta name="description" content="Significance says whether an effect exists; effect size says how big; power says whether you could detect it. See how effect size and sample size drive power." />
+  <link rel="canonical" href="https://statscapybara.com/stats-3/effect-size-and-power/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Effect Size &amp; Power — StatsCapybara" />
+  <meta property="og:description" content="Significance says whether an effect exists; effect size says how big; power says whether you could detect it. See how effect size and sample size drive power." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og-stats-3.png" />
+  <meta property="og:url" content="https://statscapybara.com/stats-3/effect-size-and-power/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Effect Size &amp; Power — StatsCapybara" />
+  <meta name="twitter:description" content="Significance says whether an effect exists; effect size says how big; power says whether you could detect it. See how effect size and sample size drive power." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-3.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Effect Size & Power", "description": "Significance says whether an effect exists; effect size says how big; power says whether you could detect it. See how effect size and sample size drive power.", "url": "https://statscapybara.com/stats-3/effect-size-and-power/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced & Elective Topics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Effect Size & Power", "item": "https://statscapybara.com/stats-3/effect-size-and-power/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is a good effect size?", "acceptedAnswer": {"@type": "Answer", "text": "Cohen's benchmarks (d ≈ 0.2 small, 0.5 medium, 0.8 large) are rough field-wide defaults, not laws. What counts as meaningful depends on context: d = 0.2 on mortality is enormous; d = 0.5 on a novel lab task may be routine. Compare against typical effects in your literature, and translate d into overlap or percentile terms with the effect-size converter to build intuition."}}, {"@type": "Question", "name": "What does 80% power mean?", "acceptedAnswer": {"@type": "Answer", "text": "If the true effect is exactly the size you assumed, a study with 80% power has an 80% chance of returning a significant result — and a 20% chance of missing it (β = 0.20). It's a property of the design, chosen before data collection: the conventional compromise between missing real effects and the cost of ever-larger samples."}}, {"@type": "Question", "name": "I found a significant effect with a small sample. Doesn't that make it more impressive?", "acceptedAnswer": {"@type": "Answer", "text": "It usually makes the estimate less trustworthy, and the reason is worth seeing in numbers. Take a real effect of d = 0.30 and run it with twenty people per group: that study has about a 15% chance of reaching significance at all, and across the runs that do reach it, the average observed d is 0.82, nearly three times the truth. A small sample clears the significance bar only when the noise happens to push in the helpful direction, so the estimates that survive are the exaggerated ones. That is why one significant small study is a reason to look again rather than a reason to believe a large effect, and why meta-analyses treat published effects as inflated until shown otherwise."}}]}
+  </script>
+</head>
+<body data-course="stats-3" data-section="effect-size-and-power">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 3.1</span>
+        <h1>Effect Size &amp; Power</h1>
+
+        <p class="lede">A <a href="../../stats-1/hypothesis-testing-logic/">p-value</a> answers one narrow question: is there an effect at all? It says nothing about <em>how big</em> the effect is, or whether your study was even capable of finding it. Those two questions, answered by <strong>effect size</strong> and <strong>power</strong>, separate a meaningful result from a misleading one.</p>
+
+        <h2>Effect size: how big, not just whether</h2>
+        <p>With a huge sample, a trivially small difference can be "statistically significant." With a tiny sample, a huge difference can miss significance. Significance is tangled up with sample size, so we need a measure of the effect that <em>isn't</em>. That's <strong>effect size</strong>. For a difference between two means, the standard one is <strong>Cohen's d</strong>: the gap between the means measured in standard deviations.</p>
+        <p style="text-align:center;font-size:1.2rem;margin:1.25rem 0"><strong>d = (mean₁ − mean₂) / standard deviation</strong></p>
+        <p>Rough conventions: d ≈ 0.2 is small, 0.5 medium, 0.8 large. It's the same currency as a <a href="../../stats-1/z-scores-and-the-normal-distribution/">z-score</a> (a standardized distance), so it's comparable across studies and scales.</p>
+        <p>Which standard deviation goes on the bottom? For two groups it is the <strong>pooled</strong> one, both groups' spreads combined into a single yardstick, which takes for granted that the two spreads are similar to begin with. There is also a small-sample wrinkle worth knowing about: d calculated this way comes out slightly too large when samples are small, by about 4% with ten people per group and 2% with twenty. Multiplying by a correction factor removes that bias and gives you <strong>Hedges' g</strong>, which is the version <a href="../../stats-3/meta-analysis/">meta-analyses</a> pool. Past roughly fifty per group the two agree to two decimal places, so the distinction earns its keep only in small studies.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="powviz">
+          <p class="viz-title">🎮 The Power Playground</p>
+          <p class="viz-sub"><strong>Top panel:</strong> the two populations: this is what an effect of size d looks like in the world. <strong>Bottom panel:</strong> what your <em>test</em> sees, the distribution of results you could observe if there were no effect (H₀) vs. the effect being real (H₁). Power is the green area: the share of possible study outcomes that lands past the significance cutoff. Turn all four dials and watch the areas fight.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:200px">
+              <label>True effect size (Cohen's d) <span class="val" id="d-val">0.50</span></label>
+              <input type="range" id="d-range" min="0" max="200" step="1" value="50" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:200px">
+              <label>Sample size per group <span class="val" id="n-val">n = 30</span></label>
+              <input type="range" id="n-range" min="5" max="200" step="1" value="30" style="width:100%" />
+            </div>
+            <div class="control">
+              <label>Significance level α</label>
+              <div class="seg" id="alpha-seg">
+                <button type="button" data-a="0.001">.001</button><button type="button" data-a="0.01">.01</button><button type="button" data-a="0.05" class="active">.05</button><button type="button" data-a="0.1">.10</button>
+              </div>
+            </div>
+            <div class="control">
+              <label>Test</label>
+              <div class="seg" id="tail-seg">
+                <button type="button" data-t="2" class="active">Two-tailed</button><button type="button" data-t="1">One-tailed</button>
+              </div>
+            </div>
+          </div>
+
+          <canvas id="pow-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Power (chance to detect)</span><span class="v" id="stat-power">—</span></div>
+            <div class="stat"><span class="k">β: Type II (miss) risk</span><span class="v" id="stat-beta">—</span></div>
+            <div class="stat"><span class="k">Smallest significant d̂</span><span class="v" id="stat-crit">—</span></div>
+            <div class="stat"><span class="k">n/group for 80% power</span><span class="v" id="stat-n80">—</span></div>
+            <div class="stat"><span class="k">Population overlap</span><span class="v" id="stat-overlap">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Power: could you even detect it?</h2>
+        <p><strong>Power</strong> is the probability that your study correctly rejects the null when a real effect exists — your chance of <em>not</em> missing it. The convention is to aim for at least 80%. Power analysis is really a four-way negotiation; the playground gives you all four dials:</p>
+        <ul>
+          <li><strong>Effect size (d).</strong> Slide it up and the two populations pull apart <em>and</em> the H₁ curve below slides away from the cutoff: the green area swells. Tiny effects are genuinely hard to detect.</li>
+          <li><strong>Sample size (n).</strong> The populations don't move an inch, but the <em>sampling</em> curves below sharpen dramatically. Same effect, narrower curves, less overlap across the cutoff → more power. This is the dial you usually control.</li>
+          <li><strong>Significance level (α).</strong> A stricter α (say .001) drags the cutoff away from zero, shrinking the false-alarm area but eating your power with it. There's no free lunch: α and β trade off.</li>
+          <li><strong>One- vs. two-tailed.</strong> Committing to a direction moves the cutoff closer to zero and buys power, at the price of being blind to an effect in the other direction.</li>
+        </ul>
+        <div class="callout key">
+          <p><strong>Try this:</strong> set d = 0.30 (a realistic effect in psychology), α = .05, two-tailed. At n = 30 the power readout is a coin flip at best. Now drag n until the green area hits 80%. That's a <em>power analysis</em>, and it's exactly the calculation you should run before collecting a single data point. Then set d = 0 and notice power equals α: with no real effect, "detections" are pure false alarms.</p>
+        </div>
+        <div class="callout key">
+          <p><strong>Read the bottom panel like a story.</strong> Your one study will land somewhere under the orange H₁ curve. If it lands past the dashed cutoff, you celebrate a significant result; if it lands short, you miss a real effect (β). Power is simply how much of your future self's luck is green.</p>
+        </div>
+
+        <h2 id="how-precisely-do-you-know-d">How precisely do you know d?</h2>
+        <p>The playground treats <em>d</em> as a fact about the world. Your study only ever hands you an estimate of it, and that estimate carries a margin which APA 7 asks you to report. A bare "<em>d</em> = 0.50" reads like a measurement when it is closer to a reading with a range attached.</p>
+        <p>The range is not <em>d</em> plus or minus something. Because <em>d</em> is a ratio of two quantities you estimated, its sampling distribution is a <strong>noncentral t</strong> rather than a normal curve, so the interval has to be found by asking which true effects would leave your observed <em>t</em> where it landed. The <a href="../../apa.html">APA Results Formatter</a> runs that search and writes the answer into the sentence for you; the <a href="../../cheat-apa.html">APA cheat sheet</a> has the finished pattern if you just need the shape of it.</p>
+        <p>Try it on this playground's own dials. At the defaults, <em>d</em> = 0.50 with 30 per group, the test gives <em>t</em>(58) = 1.94 and <em>p</em> = .058, so the study misses, and the interval on <em>d</em> runs <strong>[−0.02, 1.01]</strong>, which still holds open the possibility that the effect points the other way. Now take the 64 per group the readout above asks for at 80% power, observe the same <em>d</em> = 0.50, and the test gives <em>t</em>(126) = 2.83, <em>p</em> = .005. Its interval is <strong>[0.15, 0.85]</strong>. The study worked, and it still cannot separate a small effect from a large one.</p>
+        <p>A result sitting exactly on the significance boundary has a 95% interval whose lower limit is exactly zero, so "significant at .05" and "the interval excludes zero" are two ways of saying one thing. Significance tells you that zero is out, and nothing at all about size. Pinning <em>d</em> down to ±0.20 around 0.50 takes <strong>199 per group</strong>, three times what 80% power costs. Detecting an effect and measuring it are different jobs, and the second is the expensive one.</p>
+
+        <h2>Why underpowered studies are dangerous</h2>
+        <p>If power is only 40%, you'll miss a real effect more often than you find it, and a "non-significant" result tells you almost nothing. Worse, the few significant results that <em>do</em> squeak through tend to overestimate the effect. This is why researchers run a <strong>power analysis before collecting data</strong>: pick the effect size you care about, the power you want (say 80%), and solve for the sample size you need. Want the exact number for your own study? The <a href="../../power.html">power &amp; sample-size calculator</a> does it for t-tests, ANOVA, correlation, and more, and the <a href="../../guides/complete-worked-project/">complete worked project</a> shows the calculation being made for a real design before a single participant is recruited.</p>
+        <p><em>Before</em> is doing the work in that sentence. Running the same calculation afterwards on the effect size you happened to observe produces a number that contains no information you didn't already have from the p-value, and <a href="../../stats-3/power-analysis-for-complex-designs/">power analysis for complex designs</a> sets out why that is arithmetic rather than bad luck, along with the after-the-fact questions that are worth asking.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> reporting an effect size alongside the p-value, and planning for adequate power, is the difference between research that replicates and research that doesn't. Significance is the start of the story, never the whole of it.</p>
+        </div>
+
+        <p class="pb-xref"><a href="../../problems.html#p1-9">Problem 9 of the practice problems</a> works through a newsletter's misreading of <em>p</em> = .030, then asks the question this lesson is for: a repeat trial on eight plots comes back <em>p</em> = .21, so has anything been shown?</p>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What is a good effect size?</summary>
+            <div class="faq-a"><p>Cohen's benchmarks (d ≈ 0.2 small, 0.5 medium, 0.8 large) are rough field-wide defaults, not laws. What counts as meaningful depends on context: d = 0.2 on mortality is enormous; d = 0.5 on a novel lab task may be routine. Compare against typical effects in your literature, and translate d into overlap or percentile terms with the <a href="../../effect-sizes.html">effect-size converter</a> to build intuition.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What does 80% power mean?</summary>
+            <div class="faq-a"><p>If the true effect is exactly the size you assumed, a study with 80% power has an 80% chance of returning a significant result — and a 20% chance of missing it (β = 0.20). It's a property of the design, chosen before data collection: the conventional compromise between missing real effects and the cost of ever-larger samples.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>I found a significant effect with a small sample. Doesn't that make it more impressive?</summary>
+            <div class="faq-a"><p>It usually makes the estimate less trustworthy, and the reason is worth seeing in numbers. Take a real effect of d = 0.30 and run it with twenty people per group: that study has about a 15% chance of reaching significance at all, and across the runs that do reach it, the average observed d is 0.82, nearly three times the truth. A small sample clears the significance bar only when the noise happens to push in the helpful direction, so the estimates that survive are the exaggerated ones. That is why one significant small study is a reason to look again rather than a reason to believe a large effect, and why <a href="../../stats-3/meta-analysis/">meta-analyses</a> treat published effects as inflated until shown otherwise.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ effect-size / power visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var d = 0.5, n = 30, alpha = 0.05, tails = 2;
+    var canvas = document.getElementById("pow-canvas"), ctx, W = 0, H = 430;
+    var LOX = -3.6, HIX = 5.7, padX = 12;                       // shared x-axis (outcome, SD units)
+    var GREEN = "#22c55e", RED = "#ef4444", ORANGE = "#f97316";
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function vx(v) { return padX + ((v - LOX) / (HIX - LOX)) * (W - 2 * padX); }
+
+    /* two-sample test on the observed standardized difference d̂, SE = √(2/n).
+       The two CURVES are drawn as normals, which is what makes the picture
+       readable. The three NUMBERS are exact: they come from the noncentral t,
+       the same engine as power.html, because a reader carries those to their
+       own study and the two pages must not disagree. At d = 0.5, n = 30 the
+       normal shortcut says 49% and n ≈ 63; the truth is 48% and 64, which is
+       the G*Power anchor the rest of the site quotes. */
+    function se() { return Math.sqrt(2 / n); }
+    var critCache = {};
+    function dcrit() {                                   // critical d̂, exact t
+      var key = alpha + "|" + tails + "|" + n;
+      if (!(key in critCache)) critCache[key] = VIZ.tInv(alpha / tails, 2 * n - 2) * se();
+      return critCache[key];
+    }
+    function powerAt(m) {                                // exact power at m/group
+      var df = 2 * m - 2, del = d / Math.sqrt(2 / m), tc = VIZ.tInv(alpha / tails, df);
+      var p = 1 - VIZ.nctCdf(tc, df, del);
+      if (tails === 2) p += VIZ.nctCdf(-tc, df, del);
+      return p;
+    }
+    function powerOf() { return powerAt(n); }
+    var n80Cache = {};
+    function n80() {          // smallest n per group reaching 80% power
+      if (d <= 0) return null;
+      // cached because n80 does not depend on n, so dragging the sample-size
+      // slider (the common move) never recomputes it
+      var key = d + "|" + alpha + "|" + tails;
+      if (key in n80Cache) return n80Cache[key];
+      // the normal shortcut lands 0–3 below the exact answer across the whole
+      // slider range (measured), so start just under it and walk up
+      var guess = Math.ceil(2 * Math.pow((VIZ.normInv(1 - alpha / tails) + VIZ.normInv(0.8)) / d, 2));
+      var out = null;
+      for (var m = Math.max(2, guess - 3); m <= guess + 60; m++) if (powerAt(m) >= 0.8) { out = m; break; }
+      n80Cache[key] = out;
+      return out;
+    }
+
+    /* draw one normal curve scaled into a panel; optionally fill [a,b] */
+    function curvePath(mu, sd, scale, baseY) {
+      ctx.beginPath();
+      for (var px = padX; px <= W - padX; px += 1.5) {
+        var v = LOX + ((px - padX) / (W - 2 * padX)) * (HIX - LOX);
+        var y = baseY - VIZ.normPdf(v, mu, sd) * scale;
+        if (px === padX) ctx.moveTo(px, y); else ctx.lineTo(px, y);
+      }
+    }
+    function fillRegion(mu, sd, scale, baseY, a, b, color, alphaF) {
+      a = Math.max(a, LOX); b = Math.min(b, HIX);
+      if (b <= a) return;
+      ctx.beginPath();
+      ctx.moveTo(vx(a), baseY);
+      for (var v = a; v <= b; v += (HIX - LOX) / 400) ctx.lineTo(vx(v), baseY - VIZ.normPdf(v, mu, sd) * scale);
+      ctx.lineTo(vx(b), baseY - VIZ.normPdf(b, mu, sd) * scale);
+      ctx.lineTo(vx(b), baseY);
+      ctx.closePath();
+      ctx.fillStyle = color; ctx.globalAlpha = alphaF; ctx.fill(); ctx.globalAlpha = 1;
+    }
+    function panelTitle(text, y) {
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "600 11.5px Inter,sans-serif"; ctx.textAlign = "left";
+      ctx.fillText(text, padX + 2, y);
+    }
+    function legendDot(x, y, color, label) {
+      ctx.fillStyle = color; ctx.globalAlpha = 0.75;
+      ctx.fillRect(x, y - 8, 10, 10); ctx.globalAlpha = 1;
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px Inter,sans-serif"; ctx.textAlign = "left";
+      ctx.fillText(label, x + 14, y);
+      return x + 14 + ctx.measureText(label).width + 16;
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      var s = se(), c = dcrit(), pw = powerOf();
+      var primary = VIZ.css("--primary"), border = VIZ.css("--border"), faint = VIZ.css("--text-faint");
+
+      /* ---------- panel 1: the populations ---------- */
+      var base1 = 168, top1 = 34, scale1 = (base1 - top1) / VIZ.normPdf(0, 0, 1);
+      panelTitle("1 · THE POPULATIONS — what “d = " + d.toFixed(2) + "” means in the world", 16);
+      ctx.strokeStyle = border; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padX, base1); ctx.lineTo(W - padX, base1); ctx.stroke();
+      // overlap region
+      var mid = d / 2;
+      fillRegion(0, 1, scale1, base1, mid, HIX, primary, 0.10);
+      fillRegion(d, 1, scale1, base1, LOX, mid, primary, 0.10);
+      curvePath(0, 1, scale1, base1); ctx.strokeStyle = primary; ctx.lineWidth = 2.5; ctx.stroke();
+      curvePath(d, 1, scale1, base1); ctx.strokeStyle = ORANGE; ctx.stroke();
+      // mean markers + d bracket
+      ctx.setLineDash([4, 3]); ctx.lineWidth = 1.5;
+      ctx.strokeStyle = primary; ctx.beginPath(); ctx.moveTo(vx(0), base1); ctx.lineTo(vx(0), top1 + 4); ctx.stroke();
+      ctx.strokeStyle = ORANGE; ctx.beginPath(); ctx.moveTo(vx(d), base1); ctx.lineTo(vx(d), top1 + 4); ctx.stroke();
+      ctx.setLineDash([]);
+      if (d > 0.03) {
+        var by = top1 - 4;
+        ctx.strokeStyle = faint; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(vx(0), by); ctx.lineTo(vx(d), by); ctx.stroke();
+        ctx.fillStyle = faint; ctx.font = "600 11px Inter,sans-serif"; ctx.textAlign = "center";
+        ctx.fillText("d = " + d.toFixed(2), vx(d / 2), by - 5);
+      }
+      ctx.font = "600 11px Inter,sans-serif"; ctx.textAlign = "center";
+      ctx.fillStyle = primary; ctx.fillText("control", vx(0), base1 + 14);
+      ctx.fillStyle = ORANGE; ctx.fillText("treatment", vx(Math.max(d, 0.65)), base1 + 14);
+
+      /* ---------- panel 2: what the test sees ---------- */
+      var base2 = 396, top2 = 244, peak2 = VIZ.normPdf(0, 0, s), scale2 = (base2 - top2) / peak2;
+      panelTitle("2 · YOUR STUDY (n = " + n + "/group) · possible results d̂ and the " + (tails === 2 ? "two" : "one") + "-tailed cutoff at α = " + alpha, 210);
+      ctx.strokeStyle = border; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padX, base2); ctx.lineTo(W - padX, base2); ctx.stroke();
+
+      // shaded areas first (under the curves)
+      fillRegion(d, s, scale2, base2, c, HIX, GREEN, 0.35);            // power
+      if (tails === 2) fillRegion(d, s, scale2, base2, LOX, -c, GREEN, 0.35);
+      fillRegion(d, s, scale2, base2, tails === 2 ? -c : LOX, c, "#9ca3af", 0.30);  // β (miss)
+      fillRegion(0, s, scale2, base2, c, HIX, RED, 0.40);              // α
+      if (tails === 2) fillRegion(0, s, scale2, base2, LOX, -c, RED, 0.40);
+
+      // curves
+      curvePath(0, s, scale2, base2); ctx.strokeStyle = primary; ctx.lineWidth = 2.5; ctx.setLineDash([6, 4]); ctx.stroke(); ctx.setLineDash([]);
+      curvePath(d, s, scale2, base2); ctx.strokeStyle = ORANGE; ctx.stroke();
+
+      // cutoff line(s) — they stop short of the label row above
+      function cut(x) {
+        ctx.strokeStyle = VIZ.css("--text"); ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]);
+        ctx.beginPath(); ctx.moveTo(vx(x), base2 + 4); ctx.lineTo(vx(x), top2 - 4); ctx.stroke(); ctx.setLineDash([]);
+      }
+      cut(c); if (tails === 2) cut(-c);
+
+      /* text labels go on last, each on a little background plate, so no
+         dashed line or curve can ever strike through them */
+      function plate(txt, x, y, align, color, font) {
+        ctx.font = font; ctx.textAlign = align;
+        var tw = ctx.measureText(txt).width;
+        var x0 = align === "center" ? x - tw / 2 : (align === "right" ? x - tw : x);
+        ctx.fillStyle = VIZ.css("--bg-soft"); ctx.globalAlpha = 0.9;
+        ctx.fillRect(x0 - 4, y - 11, tw + 8, 15); ctx.globalAlpha = 1;
+        ctx.fillStyle = color; ctx.fillText(txt, x, y);
+      }
+      plate("significance cutoff", vx(c), top2 - 12, "center", VIZ.css("--text"), "600 11px Inter,sans-serif");
+      plate("← “not significant”", vx(c) - 62, base2 + 16, "center", faint, "10.5px Inter,sans-serif");
+      plate("“significant!” →", vx(c) + 52, base2 + 16, "center", faint, "10.5px Inter,sans-serif");
+      // curve labels — H₁'s sits right of both the peak and the cutoff
+      plate("if H₀ were true", vx(0) - 10, top2 + 14, "right", primary, "600 11px Inter,sans-serif");
+      plate("if the effect is real (H₁)", vx(Math.max(d, Math.max(c, 0.4))) + 14, top2 + 14, "left", ORANGE, "600 11px Inter,sans-serif");
+
+      // big power number inside the green mass
+      if (pw > 0.02) {
+        ctx.fillStyle = GREEN; ctx.font = "800 " + (pw > 0.35 ? 21 : 14) + "px Inter,sans-serif"; ctx.textAlign = "left";
+        ctx.fillText((pw * 100).toFixed(0) + "%", vx(Math.max(c, d) ) + 8, base2 - 12);
+      }
+
+      // legend
+      var lx = padX + 2;
+      lx = legendDot(lx, 426, GREEN, "power: real effect detected");
+      lx = legendDot(lx, 426, "#9ca3af", "β: real effect missed");
+      legendDot(lx, 426, RED, "α — false alarm");
+    }
+
+    function update() {
+      var pw = powerOf(), c = dcrit(), nn = n80();
+      document.getElementById("d-val").textContent = d.toFixed(2);
+      document.getElementById("n-val").textContent = "n = " + n;
+      var pe = document.getElementById("stat-power");
+      pe.textContent = (pw * 100).toFixed(pw < 0.995 ? 0 : 1) + "%";
+      pe.style.color = pw >= 0.8 ? GREEN : pw >= 0.5 ? ORANGE : RED;
+      document.getElementById("stat-beta").textContent = ((1 - pw) * 100).toFixed(0) + "%";
+      document.getElementById("stat-crit").textContent = (tails === 2 ? "±" : "") + c.toFixed(2);
+      document.getElementById("stat-n80").textContent = nn === null ? "∞" : "≈ " + nn;
+      document.getElementById("stat-overlap").textContent = (200 * VIZ.normCdf(-Math.abs(d) / 2)).toFixed(0) + "%";
+      draw();
+    }
+
+    document.getElementById("d-range").addEventListener("input", function () { d = this.value / 100; update(); });
+    document.getElementById("n-range").addEventListener("input", function () { n = +this.value; update(); });
+    document.getElementById("alpha-seg").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      alpha = +b.dataset.a;
+      Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x === b); });
+      update();
+    });
+    document.getElementById("tail-seg").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      tails = +b.dataset.t;
+      Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x === b); });
+      update();
+    });
+    window.addEventListener("resize", function () { fit(); draw(); });
+    VIZ.onTheme(draw);
+
+    fit(); update();
+  })();
+  </script>
+</body>
+</html>

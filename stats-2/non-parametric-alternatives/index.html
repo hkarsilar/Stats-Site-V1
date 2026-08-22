@@ -30,7 +30,7 @@
   <link rel="stylesheet" href="../../assets/css/styles.css" />
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
-  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Non-Parametric Alternatives", "description": "Mann–Whitney, Wilcoxon, Kruskal–Wallis, Friedman: how each rank-based test actually works, and why one wild outlier can't sway the ranks or the p-value.", "url": "https://statscapybara.com/stats-2/non-parametric-alternatives/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: Comparing Groups & Relationships", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Non-Parametric Alternatives", "item": "https://statscapybara.com/stats-2/non-parametric-alternatives/"}]}]
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Non-Parametric Alternatives", "description": "Mann–Whitney, Wilcoxon, Kruskal–Wallis, Friedman: how each rank-based test actually works, and why one wild outlier can't sway the ranks or the p-value.", "url": "https://statscapybara.com/stats-2/non-parametric-alternatives/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: ANOVA & Regression", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Non-Parametric Alternatives", "item": "https://statscapybara.com/stats-2/non-parametric-alternatives/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
   {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Are non-parametric tests less powerful than parametric ones?", "acceptedAnswer": {"@type": "Answer", "text": "Only slightly, and only when the parametric assumptions actually hold: on truly normal data, the Mann–Whitney test has about 95% of the t-test's efficiency. When assumptions fail (heavy tails, skew, outliers), the ranking tests are often more powerful, because a single wild value can't inflate the noise term. It's a small premium for a lot of insurance."}}, {"@type": "Question", "name": "Should I use a t-test or Mann–Whitney for Likert-scale data?", "acceptedAnswer": {"@type": "Answer", "text": "For a single Likert item (ordinal, few distinct values) Mann–Whitney respects what the data actually is. For a multi-item scale score (summing 8 items into a 8–40 scale), treating it as approximately interval and using a t-test is common and generally defensible. Either way, look at the distributions first; ceiling effects and skew are what really cause trouble."}}, {"@type": "Question", "name": "Does the Mann–Whitney test compare medians?", "acceptedAnswer": {"@type": "Answer", "text": "Not exactly, despite the common shorthand. It tests whether values from one group tend to be larger than values from the other (stochastic dominance). Only under the extra assumption that both distributions have the same shape does that reduce to \"the medians differ.\" With very different shapes or spreads, the test can be significant even when the medians are equal."}}]}
@@ -44,7 +44,7 @@
       <aside class="sidebar" id="sidebar"></aside>
 
       <article class="lesson">
-        <span class="lesson-eyebrow">Section 2.6</span>
+        <span class="lesson-eyebrow">Section 2.1</span>
         <h1>Non-Parametric Alternatives</h1>
 
         <p class="lede">When the <a href="../../stats-2/assumptions-and-when-they-break/">assumptions</a> behind a t-test or ANOVA don't hold (heavy skew, nasty outliers, tiny samples), you don't have to give up. <strong>Non-parametric tests</strong> throw away the raw numbers and work with their <em>ranks</em> instead. That one move makes them remarkably tough.</p>
@@ -92,7 +92,7 @@
         <h3 id="friedman">Friedman: ranking within each person</h3>
         <p>Repeated measures rank <em>within</em> each person rather than across the whole sample. For every participant, rank their conditions from lowest to highest, so each row of the data turns into a small 1-2-3. Add those ranks down each column: if one condition genuinely tends to score highest, its column keeps collecting the top ranks. The statistic reads that imbalance and, like Kruskal–Wallis, compares it to a chi-square distribution with <em>k</em> − 1 degrees of freedom. Ranking inside each person is what cancels stable individual differences, the same trick the paired difference pulls for Wilcoxon.</p>
 
-        <p>Correlation has a rank-based version too. <strong>Spearman's ρ</strong> (rho) is just Pearson's <em>r</em> computed on the ranks, so it captures any steadily rising or falling relationship and shrugs off outliers. It lives alongside the other coefficients in the <a href="../../stats-2/correlation/">correlation lesson</a>.</p>
+        <p>Correlation has a rank-based version too. <strong>Spearman's ρ</strong> (rho) is just Pearson's <em>r</em> computed on the ranks, so it captures any steadily rising or falling relationship and shrugs off outliers. It lives alongside the other coefficients in the <a href="../../stats-1/correlation/">correlation lesson</a>.</p>
 
         <!-- ============ TABBED RANK-LEDGER PLAYGROUND ============ -->
         <div class="viz" id="rankviz">
@@ -133,7 +133,7 @@
             <tr><td><a href="../../stats-1/one-sample-and-paired-t-tests/">Paired t-test</a></td><td><a href="#wilcoxon">Wilcoxon signed-rank</a></td><td>the absolute differences, with signs kept</td></tr>
             <tr><td><a href="../../stats-2/one-way-anova/">One-way ANOVA</a></td><td><a href="#kruskal-wallis">Kruskal–Wallis (H)</a></td><td>the pooled values across all <em>k</em> groups</td></tr>
             <tr><td><a href="../../stats-2/repeated-measures-anova/">Repeated-measures ANOVA</a></td><td><a href="#friedman">Friedman</a></td><td>the conditions, ranked within each person</td></tr>
-            <tr><td><a href="../../stats-2/correlation/">Pearson correlation (r)</a></td><td><a href="../../stats-2/correlation/">Spearman's ρ</a></td><td>each variable converted to ranks</td></tr>
+            <tr><td><a href="../../stats-1/correlation/">Pearson correlation (r)</a></td><td><a href="../../stats-1/correlation/">Spearman's ρ</a></td><td>each variable converted to ranks</td></tr>
           </tbody>
         </table>
 
@@ -163,7 +163,7 @@
 
         <h2>The trade-off</h2>
         <div class="callout key">
-          <p><strong>Robustness isn't free.</strong> When the data <em>are</em> well-behaved and normal, the parametric test has slightly more <a href="../../stats-1/effect-size-and-power/">power</a>. By discarding the magnitudes, rank tests leave a little information on the table. The rule of thumb: use parametric tests when assumptions hold, and reach for non-parametric ones when they clearly don't (small samples, heavy skew, ordinal data, or outliers you can't explain away).</p>
+          <p><strong>Robustness isn't free.</strong> When the data <em>are</em> well-behaved and normal, the parametric test has slightly more <a href="../../stats-3/effect-size-and-power/">power</a>. By discarding the magnitudes, rank tests leave a little information on the table. The rule of thumb: use parametric tests when assumptions hold, and reach for non-parametric ones when they clearly don't (small samples, heavy skew, ordinal data, or outliers you can't explain away).</p>
         </div>
 
         <div class="callout">

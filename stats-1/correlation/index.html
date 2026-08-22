@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    /* Consent Mode: storage denied by default, so GA sets no cookie and
+       follows nobody between visits. Anonymous counts still arrive. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Correlation — StatsCapybara</title>
+  <meta name="description" content="What a correlation coefficient looks like: set the strength, drag points, and see r respond to the shape of the cloud." />
+  <link rel="canonical" href="https://statscapybara.com/stats-1/correlation/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Correlation — StatsCapybara" />
+  <meta property="og:description" content="What a correlation coefficient looks like: set the strength, drag points, and see r respond to the shape of the cloud." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og-stats-1.png" />
+  <meta property="og:url" content="https://statscapybara.com/stats-1/correlation/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Correlation — StatsCapybara" />
+  <meta name="twitter:description" content="What a correlation coefficient looks like: set the strength, drag points, and see r respond to the shape of the cloud." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-1.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Correlation", "description": "What a correlation coefficient looks like: set the strength, drag points, and see r respond to the shape of the cloud.", "url": "https://statscapybara.com/stats-1/correlation/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Introduction to Statistics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Correlation", "item": "https://statscapybara.com/stats-1/correlation/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What counts as a strong correlation?", "acceptedAnswer": {"@type": "Answer", "text": "Common benchmarks: |r| ≈ .10 small, .30 medium, .50+ large. Psychology rarely sees field correlations above .5, while physics laughs at anything below .95. Context is everything: r = .3 between a cheap screening question and job performance is valuable; r = .8 between two versions of the same questionnaire is unremarkable. Always interpret r against what's typical for your domain."}}, {"@type": "Question", "name": "What is the difference between Pearson and Spearman correlation?", "acceptedAnswer": {"@type": "Answer", "text": "Pearson's r measures linear association using the actual values; Spearman's ρ replaces values with ranks first, so it measures monotonic association (\"consistently increasing, straight or not\"). Spearman is robust to outliers and fine for ordinal data — if the two disagree sharply, that's a clue your relationship is curved or an outlier is steering Pearson."}}, {"@type": "Question", "name": "My two groups both show a correlation, but one is bigger. Can I test whether they really differ?", "acceptedAnswer": {"@type": "Answer", "text": "You can, and the answer is usually humbling. Put both correlations on the Fisher z scale, subtract, and divide by √(1/(n₁−3) + 1/(n₂−3)); the result is a z you read off the normal table. Take r = .55 in one group of 60 and r = .30 in another: z = 1.65, p = .099, so a gap that looks decisive is not distinguishable from sampling noise, and the two intervals ([.34, .71] and [.05, .51]) overlap across most of their length. Detecting that difference with 80% power would take 168 people per group, twice what either correlation on its own needs. Correlations measured on the same people (does X predict Y better than Z does?) are a different test again, because the two estimates are not independent."}}]}
+  </script>
+</head>
+<body data-course="stats-1" data-section="correlation">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 1.17</span>
+        <h1>Correlation</h1>
+
+        <p class="lede">Two things vary together: taller people tend to weigh more, more study hours tend to mean higher grades. <strong>Correlation</strong> puts a single number on that co-movement: the <strong>correlation coefficient <em>r</em></strong>, which runs from −1 to +1 and captures both the <em>direction</em> and the <em>strength</em> of a straight-line relationship.</p>
+
+        <h2>Reading the number</h2>
+        <ul>
+          <li><strong>Sign = direction.</strong> Positive <em>r</em>: as one goes up, so does the other. Negative <em>r</em>: as one goes up, the other goes down.</li>
+          <li><strong>Size = strength.</strong> Near ±1 the points hug a straight line; near 0 they're a shapeless blob with no linear trend.</li>
+        </ul>
+        <p>Numbers are abstract, though. The fastest way to build intuition is to <em>see</em> what an <em>r</em> of 0.3 versus 0.9 actually looks like, and to break a tidy relationship by dragging a single point.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="corrviz">
+          <p class="viz-title">🎮 Correlation Explorer</p>
+          <p class="viz-sub">Set a target strength to generate a cloud, then drag any point. The coefficient <em>r</em> is computed live from whatever is on screen.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:220px">
+              <label>Target correlation <span class="val" id="rho-val">+0.70</span></label>
+              <input type="range" id="rho-range" min="-100" max="100" step="5" value="70" style="width:100%" />
+            </div>
+            <div class="control"><button class="btn btn-primary btn-sm" id="newcloud">New cloud</button></div>
+          </div>
+          <!-- overlay toggles, stacked on their own rows -->
+          <div class="controls" style="flex-direction:column;align-items:flex-start;gap:.45rem;margin:-.35rem 0 1rem">
+            <div class="control" style="flex-direction:row;align-items:center;gap:.45rem">
+              <input type="checkbox" id="show-line" style="accent-color:#f97316;width:1rem;height:1rem" />
+              <label for="show-line" style="cursor:pointer">Show the "best-fitting" line</label>
+            </div>
+            <div class="control" style="flex-direction:row;align-items:center;gap:.45rem">
+              <input type="checkbox" id="show-ellipse" style="accent-color:var(--secondary);width:1rem;height:1rem" />
+              <label for="show-ellipse" style="cursor:pointer">Show the ellipse (wider = weaker r)</label>
+            </div>
+          </div>
+
+          <canvas id="corr-canvas" style="touch-action:none;cursor:grab"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Correlation r</span><span class="v" id="stat-r">+0.70</span></div>
+            <div class="stat"><span class="k">Strength</span><span class="v" id="stat-strength" style="font-size:1rem">strong positive</span></div>
+            <div class="stat"><span class="k">Points</span><span class="v" id="stat-n">40</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Three things people get wrong</h2>
+        <div class="callout key">
+          <p><strong>1. Correlation only sees straight lines.</strong> A perfect U-shape (y = x²) can have <em>r</em> ≈ 0 even though the variables are perfectly related. Low <em>r</em> means "no <em>linear</em> trend," not "no relationship." Always look at the scatter.</p>
+        </div>
+        <div class="callout key">
+          <p><strong>2. Correlation is not causation.</strong> Ice-cream sales and drowning deaths rise together (both driven by hot weather). A strong <em>r</em> tells you two things move together, never <em>why</em>. If you can measure the lurking variable, a <strong>partial correlation</strong> asks the question again with that variable held constant, which is the same "holding the others constant" idea that <a href="../../stats-2/multiple-regression/">multiple regression</a> generalizes. Hold temperature constant and the ice-cream link collapses; the ones that survive are the interesting ones.</p>
+        </div>
+        <div class="callout key">
+          <p><strong>3. A single outlier can fake a correlation, or hide one.</strong> Drag one point far away in the playground and watch <em>r</em> lurch. Real analyses always check whether one stray point is doing all the work.</p>
+        </div>
+
+        <p>All three warnings collapse into one habit: <strong>plot your data.</strong> The classic proof is Anscombe's quartet: four datasets that share almost every summary number yet look nothing alike. (For two numeric variables the scatterplot is nearly always right; when one of them turns out to be categorical, the <a href="../../which-chart.html">chart chooser</a> hands you the display that fits instead.)</p>
+
+        <!-- ============ INTERACTIVE 2 ============ -->
+        <div class="viz" id="ansviz">
+          <p class="viz-title">🎮 Same r, Four Different Stories</p>
+          <p class="viz-sub">Four datasets with <em>identical</em> means, correlation (r = 0.82), and best-fit line. The statistics can't tell them apart — but your eyes can. Flip between them.</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>Dataset</label>
+              <div class="seg" id="ans-seg">
+                <button data-set="0" class="active">I</button>
+                <button data-set="1">II</button>
+                <button data-set="2">III</button>
+                <button data-set="3">IV</button>
+              </div>
+            </div>
+          </div>
+
+          <canvas id="ans-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Correlation r</span><span class="v">0.82</span></div>
+            <div class="stat"><span class="k">Best-fit line</span><span class="v" style="font-size:1rem">ŷ = 3.00 + 0.50x</span></div>
+            <div class="stat"><span class="k">What your eyes see</span><span class="v" id="ans-cap" style="font-size:1rem">a genuine straight-line trend</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE 2 ============ -->
+
+        <p>Every dataset above reports r = 0.82 and the exact same line, yet only the first is the tidy linear relationship that number implies. The second is a smooth curve, the third is a perfect line derailed by one outlier, and the fourth has no trend at all until a single far-flung point invents one. Summary statistics are a compression; the scatter is the truth.</p>
+
+        <h2>Two reasons r comes out too small</h2>
+        <p>A weak correlation sometimes means the relationship is weak. Two duller explanations come first, and both make an honest relationship look smaller than it is.</p>
+        <p><strong>Restriction of range.</strong> Correlation feeds on spread, so looking at only part of the range starves it. Suppose an admissions test correlates .60 with later grades across all applicants. Compute that correlation inside the students you actually admitted, the top quarter of the test distribution, and .60 shows up as roughly .35; in the top 10% it falls to about .30. Nothing about the underlying relationship changed. You removed the variation that made it visible. This is why selective samples (admitted students, hired employees, patients sick enough to be referred) return correlations that look disappointing, and why a validity study run inside the selected group understates the very test that did the selecting.</p>
+        <p><strong>Unreliable measures.</strong> Every measurement carries noise, and noise correlates with nothing. The shrinkage this causes has a name, <strong>attenuation</strong>. If your two variables have <a href="../../methods/reliability-and-validity/">reliabilities</a> r<sub>xx</sub> and r<sub>yy</sub>, the correlation you observe is the true one shrunk by a factor of √(r<sub>xx</sub> · r<sub>yy</sub>). Two questionnaires at a respectable α = .70 apiece turn a true correlation of .60 into an observed .42. The same arithmetic sets a ceiling: with those instruments, even a perfect underlying relationship could not report above .70.</p>
+        <div class="callout key">
+          <p>Before writing "the variables were only weakly related," check both. Did you compute <em>r</em> inside a selected slice of the range, and how reliable were the measures? A .30 from a restricted sample with noisy instruments is compatible with a substantial relationship in the population.</p>
+        </div>
+
+        <h2>Undoing attenuation, and why it bites</h2>
+        <p>Attenuation has an obvious-looking inverse. If unreliability shrinks <em>r</em> by a factor of √(r<sub>xx</sub> · r<sub>yy</sub>), dividing that factor back out should recover the correlation between the true scores:</p>
+        <p style="text-align:center;font-family:var(--mono);font-size:1rem">r<sub>corrected</sub> = r<sub>observed</sub> ⁄ √(r<sub>xx</sub> · r<sub>yy</sub>)</p>
+        <p>That is the <strong>correction for attenuation</strong>, and on the example above it works exactly: .42 divided by .70 returns the .60 the noise was hiding. What the formula does not show is that the divisor is itself an estimate from the same modest sample, and dividing by an uncertain number below 1 magnifies everything, sampling error included.</p>
+        <p>Simulating the whole procedure puts a size on that. Two 8-item scales at α ≈ .70, 100 respondents, a true correlation of .60, with both alphas estimated from the same sample: the corrected estimate averages .60, so the correction is unbiased enough, but 90% of its values land between .41 and .78, a spread about a third wider than the raw <em>r</em>'s. Raise the true correlation to .90 and the same procedure returns a corrected value <strong>above 1.0</strong> in roughly one sample in ten.</p>
+        <p>So report the correction as a supplement, never as a replacement: the observed <em>r</em>, the reliabilities you used, and the corrected value labeled as corrected. A reader can then judge whether "stronger than it looks" rests on the data or on dividing by .70. And if the corrected value comes out above 1, say so. It means the reliability estimates are too low for the correlation you observed, which is evidence about your instruments rather than about the constructs.</p>
+
+        <h2 id="the-interval-around-r">The interval around r</h2>
+        <p>An <em>r</em> of .42 from 60 people is one sample's answer, and the fair next question is how far it would move if you ran the study again. The usual add-and-subtract formula cannot answer it. A correlation cannot pass 1, so as the true value climbs, the sampling distribution of <em>r</em> piles up against that ceiling and grows a long tail on the low side only. Symmetric limits would run off the end of the scale.</p>
+        <p><strong>Fisher's transformation</strong> moves the problem somewhere the ceiling does not exist. Writing <em>z</em> = ½ · ln[(1 + <em>r</em>) / (1 − <em>r</em>)] stretches the correlation scale until it runs from minus infinity to plus infinity, and on that scale the sampling distribution is close to normal with a standard error of 1/√(<em>n</em> − 3), which depends on the sample size and nothing else. Add and subtract 1.96 standard errors there, then map both limits back with <em>r</em> = tanh <em>z</em>.</p>
+        <p>On this lesson's own numbers: <em>r</em> = .42 with <em>n</em> = 60 gives <em>z</em> = .448 and a standard error of 1/√57 = .132, so the interval on the transformed scale is .448 ± .260, or [.188, .707]. Mapped back, that is <strong>95% CI [.19, .61]</strong>. The estimate sits .23 above its lower limit and .19 below its upper one, and that lopsidedness is what the transformation exists to handle. It is the number the <a href="../../correlation.html">Correlation &amp; Regression Calculator</a> prints beside <em>r</em> under the label "Fisher <em>z</em>", and the one the <a href="../../apa.html">APA Results Formatter</a> writes into the sentence.</p>
+        <p>Two things follow. The interval is wide: .19 to .61 covers everything from below Cohen's "medium" to above his "large", so an <em>r</em> reported bare invites a reader to take .42 far more literally than 60 people can support, and getting the half-width down to .10 around this estimate would take <em>n</em> = 263. And the transformation is more than a reporting device. Correlations are averaged on the <em>z</em> scale rather than the <em>r</em> scale for the same reason, which is one of the conversions behind <a href="../../stats-3/meta-analysis/">pooling results across studies</a>.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> correlation is the first measure of "do these two move together?" And it's the direct stepping stone to <a href="../../stats-1/simple-linear-regression/">regression</a>, which turns that relationship into a predictive line.</p>
+          <p style="margin-top:.6rem">Got two columns of your own? Paste them into the <a href="../../correlation.html">Correlation &amp; Regression Calculator</a> for a live scatterplot, <em>r</em> with its <em>p</em>-value and 95% CI, Spearman's ρ, and an outlier-robustness check.</p>
+        </div>
+
+        <p class="pb-xref">Want a real cloud to try this on? <a href="../../datasets.html#screen">screen-time.csv</a> holds 60 people, one influential point, and the worked answer for what <em>r</em> does when you drop it.</p>
+
+        <p class="pb-xref"><a href="../../problems.html#p2-8">Problem 20 of the practice problems</a> computes <em>r</em> from six pairs of numbers by hand, then asks what besides causation could have produced it.</p>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What counts as a strong correlation?</summary>
+            <div class="faq-a"><p>Common benchmarks: |r| ≈ .10 small, .30 medium, .50+ large. Psychology rarely sees field correlations above .5, while physics laughs at anything below .95. Context is everything: r = .3 between a cheap screening question and job performance is valuable; r = .8 between two versions of the same questionnaire is unremarkable. Always interpret r against what's typical for your domain.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is the difference between Pearson and Spearman correlation?</summary>
+            <div class="faq-a"><p>Pearson's r measures <em>linear</em> association using the actual values; Spearman's ρ replaces values with ranks first, so it measures <em>monotonic</em> association ("consistently increasing, straight or not"). Spearman is robust to outliers and fine for ordinal data — if the two disagree sharply, that's a clue your relationship is curved or an outlier is steering Pearson.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>My two groups both show a correlation, but one is bigger. Can I test whether they really differ?</summary>
+            <div class="faq-a"><p>You can, and the answer is usually humbling. Put both correlations on the Fisher <em>z</em> scale, subtract, and divide by √(1/(n₁−3) + 1/(n₂−3)); the result is a <em>z</em> you read off the normal table. Take r = .55 in one group of 60 and r = .30 in another: z = 1.65, p = .099, so a gap that looks decisive is not distinguishable from sampling noise, and the two intervals ([.34, .71] and [.05, .51]) overlap across most of their length. Detecting that difference with 80% power would take 168 people per group, twice what either correlation on its own needs. Correlations measured on the <em>same</em> people (does X predict Y better than Z does?) are a different test again, because the two estimates are not independent.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ Correlation visualization ============
+       URL presets (P67):
+         ?r=<-1–1>        target correlation, written as the readout prints it
+         ?line=1|0        show the best-fitting line
+         ?ellipse=1|0     show the ellipse
+       e.g.  ?embed=1&r=0.3&ellipse=1  →  "this is what r = .30 actually looks like"
+  -->
+  <script>
+  (function () {
+    "use strict";
+    var LO = -3.4, HI = 3.4, N = 40, rho = 0.7, pts = [], drag = -1;
+    var canvas = document.getElementById("corr-canvas"), ctx, W = 0, H = 320, pad = 30;
+
+    function vx(v) { return pad + ((v - LO) / (HI - LO)) * (W - 2 * pad); }
+    function vy(v) { return (H - pad) - ((v - LO) / (HI - LO)) * (H - 2 * pad); }
+    function px2x(p) { return LO + ((p - pad) / (W - 2 * pad)) * (HI - LO); }
+    function py2y(p) { return LO + (((H - pad) - p) / (H - 2 * pad)) * (HI - LO); }
+    function clamp(v) { return v < LO ? LO : v > HI ? HI : v; }
+
+    /* Frozen noise: each point keeps a fixed (x, error) pair, so dragging
+       the ρ slider morphs the SAME cloud — points slide toward or away from
+       the trend line — instead of scattering a new one. */
+    var zx = [], ze = [];
+    function seed() {
+      zx = []; ze = [];
+      for (var i = 0; i < N; i++) { zx.push(VIZ.randn()); ze.push(VIZ.randn()); }
+    }
+    function gen() {
+      pts = [];
+      for (var i = 0; i < N; i++) {
+        var x = zx[i];
+        var y = rho * x + Math.sqrt(Math.max(0, 1 - rho * rho)) * ze[i];
+        pts.push({ x: clamp(x), y: clamp(y) });
+      }
+    }
+    function cloudStats() {
+      var n = pts.length, mx = 0, my = 0;
+      for (var i = 0; i < n; i++) { mx += pts[i].x; my += pts[i].y; }
+      mx /= n; my /= n;
+      var sxy = 0, sxx = 0, syy = 0;
+      for (var j = 0; j < n; j++) { var dx = pts[j].x - mx, dy = pts[j].y - my; sxy += dx * dy; sxx += dx * dx; syy += dy * dy; }
+      return { n: n, mx: mx, my: my, sxx: sxx, syy: syy, sxy: sxy };
+    }
+    function pearson() {
+      var s = cloudStats();
+      return (s.sxx === 0 || s.syy === 0) ? 0 : s.sxy / Math.sqrt(s.sxx * s.syy);
+    }
+    function strengthLabel(r) {
+      var a = Math.abs(r), dir = r > 0 ? "positive" : "negative";
+      if (a < 0.1) return "no linear trend";
+      if (a < 0.3) return "weak " + dir;
+      if (a < 0.5) return "moderate " + dir;
+      if (a < 0.7) return "strong " + dir;
+      return "very strong " + dir;
+    }
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      // axes through the means (origin ~ 0,0 here)
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(vx(0), pad - 6); ctx.lineTo(vx(0), H - pad + 6); ctx.moveTo(pad - 6, vy(0)); ctx.lineTo(W - pad + 6, vy(0)); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px Inter, sans-serif";
+      ctx.textAlign = "right"; ctx.fillText("y", vx(0) - 6, pad);
+      ctx.textAlign = "left"; ctx.fillText("x", W - pad, vy(0) + 14);
+
+      var s = cloudStats();
+      ctx.save();
+      ctx.beginPath(); ctx.rect(pad - 8, pad - 8, W - 2 * pad + 16, H - 2 * pad + 16); ctx.clip();
+      // covariance ellipse (~95% region): its shape IS the correlation —
+      // a cigar means strong r, a beach ball means r ≈ 0
+      if (document.getElementById("show-ellipse").checked && s.sxx > 0 && s.syy > 0) {
+        var cxx = s.sxx / s.n, cyy = s.syy / s.n, cxy = s.sxy / s.n;
+        var tr2 = (cxx + cyy) / 2, det = Math.sqrt(Math.pow((cxx - cyy) / 2, 2) + cxy * cxy);
+        var l1 = Math.max(tr2 + det, 1e-9), l2 = Math.max(tr2 - det, 1e-9);
+        var ang = 0.5 * Math.atan2(2 * cxy, cxx - cyy);
+        var r1 = 2.45 * Math.sqrt(l1), r2 = 2.45 * Math.sqrt(l2); // χ²₂(.95) ≈ 5.99 → √ ≈ 2.45
+        ctx.strokeStyle = VIZ.css("--secondary"); ctx.lineWidth = 2; ctx.setLineDash([6, 5]);
+        ctx.beginPath();
+        for (var e = 0; e <= 72; e++) {
+          var th = (e / 72) * 2 * Math.PI;
+          var ex = s.mx + r1 * Math.cos(th) * Math.cos(ang) - r2 * Math.sin(th) * Math.sin(ang);
+          var ey = s.my + r1 * Math.cos(th) * Math.sin(ang) + r2 * Math.sin(th) * Math.cos(ang);
+          if (e === 0) ctx.moveTo(vx(ex), vy(ey)); else ctx.lineTo(vx(ex), vy(ey));
+        }
+        ctx.closePath(); ctx.stroke(); ctx.setLineDash([]);
+      }
+      // least-squares line, computed live from the points on screen
+      if (document.getElementById("show-line").checked && s.sxx > 0) {
+        var slope = s.sxy / s.sxx, icpt = s.my - slope * s.mx;
+        ctx.strokeStyle = "#f97316"; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.moveTo(vx(LO), vy(icpt + slope * LO)); ctx.lineTo(vx(HI), vy(icpt + slope * HI)); ctx.stroke();
+      }
+      ctx.restore();
+      // points
+      for (var i = 0; i < pts.length; i++) {
+        ctx.fillStyle = VIZ.css("--primary"); ctx.globalAlpha = i === drag ? 1 : 0.7;
+        ctx.beginPath(); ctx.arc(vx(pts[i].x), vy(pts[i].y), 5, 0, 2 * Math.PI); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+    function update() {
+      var r = pearson();
+      document.getElementById("stat-r").textContent = (r >= 0 ? "+" : "") + r.toFixed(2);
+      document.getElementById("stat-strength").textContent = strengthLabel(r);
+      document.getElementById("stat-n").textContent = pts.length;
+      draw();
+    }
+
+    function nearest(mx, my) {
+      var best = -1, bd = VIZ.grabRadius(16);   // finger-sized on touch, 16 on a mouse
+      for (var i = 0; i < pts.length; i++) { var d = Math.hypot(vx(pts[i].x) - mx, vy(pts[i].y) - my); if (d < bd) { bd = d; best = i; } }
+      return best;
+    }
+    canvas.addEventListener("pointerdown", function (e) { drag = nearest(e.offsetX, e.offsetY); if (drag >= 0) { canvas.setPointerCapture(e.pointerId); canvas.style.cursor = "grabbing"; update(); } });
+    canvas.addEventListener("pointermove", function (e) { if (drag < 0) return; pts[drag] = { x: clamp(px2x(e.offsetX)), y: clamp(py2y(e.offsetY)) }; update(); });
+    function end() { drag = -1; canvas.style.cursor = "grab"; update(); }
+    canvas.addEventListener("pointerup", end);
+    canvas.addEventListener("pointercancel", end);
+
+    document.getElementById("rho-range").addEventListener("input", function () {
+      rho = this.value / 100; document.getElementById("rho-val").textContent = (rho >= 0 ? "+" : "") + rho.toFixed(2); gen(); update();
+    });
+    document.getElementById("newcloud").addEventListener("click", function () { seed(); gen(); update(); });
+    document.getElementById("show-line").addEventListener("change", draw);
+    document.getElementById("show-ellipse").addEventListener("change", draw);
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(draw);
+
+    fit(); seed(); gen(); update();
+
+    /* URL preset, applied last: r moves the slider (a deterministic remap of
+       the frozen pool), it never reseeds the cloud (see the head comment) */
+    if (window.SC && SC.preset) SC.preset({
+      r: { el: "#rho-range", scale: 100 },
+      line: "#show-line",
+      ellipse: "#show-ellipse"
+    });
+  })();
+  </script>
+
+  <!-- ============ Anscombe's quartet visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    /* Anscombe's quartet — fixed data. All four share mean x = 9, mean y = 7.5,
+       r ≈ 0.82 and the line ŷ = 3.00 + 0.50x, yet look completely different. */
+    var X = [
+      [10, 8, 13, 9, 11, 14, 6, 4, 12, 7, 5],
+      [10, 8, 13, 9, 11, 14, 6, 4, 12, 7, 5],
+      [10, 8, 13, 9, 11, 14, 6, 4, 12, 7, 5],
+      [8, 8, 8, 8, 8, 8, 8, 19, 8, 8, 8]
+    ];
+    var Y = [
+      [8.04, 6.95, 7.58, 8.81, 8.33, 9.96, 7.24, 4.26, 10.84, 4.82, 5.68],
+      [9.14, 8.14, 8.74, 8.77, 9.26, 8.10, 6.13, 3.10, 9.13, 7.26, 4.74],
+      [7.46, 6.77, 12.74, 7.11, 7.81, 8.84, 6.08, 5.39, 8.15, 6.42, 5.73],
+      [6.58, 5.76, 7.71, 8.84, 8.47, 7.04, 5.25, 12.50, 5.56, 7.91, 6.89]
+    ];
+    var CAP = ["a genuine straight-line trend", "a smooth curve · not linear at all",
+      "a perfect line + one lone outlier", "no trend · one point makes the line"];
+    var set = 0;
+    var canvas = document.getElementById("ans-canvas"), ctx, W = 0, H = 280;
+    var padL = 34, padR = 16, padT = 16, padB = 30, XMIN = 3, XMAX = 20, YMIN = 2, YMAX = 13.5;
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function sx(v) { return padL + (v - XMIN) / (XMAX - XMIN) * (W - padL - padR); }
+    function sy(v) { return (H - padB) - (v - YMIN) / (YMAX - YMIN) * (H - padT - padB); }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, sy(YMIN)); ctx.lineTo(W - padR, sy(YMIN)); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, sy(YMIN)); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace, monospace"; ctx.textAlign = "center";
+      for (var gx = 5; gx <= 20; gx += 5) ctx.fillText(gx, sx(gx), H - padB + 14);
+      ctx.textAlign = "right";
+      for (var gy = 4; gy <= 12; gy += 4) ctx.fillText(gy, padL - 5, sy(gy) + 3);
+      // the shared best-fit line ŷ = 3 + 0.5x
+      ctx.strokeStyle = VIZ.css("--primary"); ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(sx(XMIN), sy(3 + 0.5 * XMIN)); ctx.lineTo(sx(XMAX), sy(3 + 0.5 * XMAX)); ctx.stroke();
+      // data points
+      ctx.fillStyle = VIZ.css("--secondary"); ctx.globalAlpha = 0.85;
+      for (var i = 0; i < X[set].length; i++) { ctx.beginPath(); ctx.arc(sx(X[set][i]), sy(Y[set][i]), 4.5, 0, 6.2832); ctx.fill(); }
+      ctx.globalAlpha = 1;
+      document.getElementById("ans-cap").textContent = CAP[set];
+    }
+
+    document.getElementById("ans-seg").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      set = +b.dataset.set;
+      Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", +x.dataset.set === set); });
+      draw();
+    });
+    window.addEventListener("resize", function () { fit(); draw(); });
+    VIZ.onTheme(draw);
+    fit(); draw();
+  })();
+  </script>
+</body>
+</html>

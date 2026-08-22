@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    /* Consent Mode: storage denied by default, so GA sets no cookie and
+       follows nobody between visits. Anonymous counts still arrive. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Psychometric Functions &amp; the PSE — StatsCapybara</title>
+  <meta name="description" content="Fit logistic, cumulative Gaussian, and Weibull curves to a temporal bisection task, read off the PSE and JND, and tell a PSE shift from a slope change." />
+  <link rel="canonical" href="https://statscapybara.com/stats-3/psychometric-functions/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Psychometric Functions &amp; the PSE — StatsCapybara" />
+  <meta property="og:description" content="Fit logistic, cumulative Gaussian, and Weibull curves to a temporal bisection task, read off the PSE and JND, and tell a PSE shift from a slope change." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og-stats-3.png" />
+  <meta property="og:url" content="https://statscapybara.com/stats-3/psychometric-functions/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Psychometric Functions &amp; the PSE — StatsCapybara" />
+  <meta name="twitter:description" content="Fit logistic, cumulative Gaussian, and Weibull curves to a temporal bisection task, read off the PSE and JND, and tell a PSE shift from a slope change." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-3.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Psychometric Functions & the PSE", "description": "Fit logistic, cumulative Gaussian, and Weibull curves to a temporal bisection task, read off the PSE and JND, and tell a PSE shift from a slope change.", "url": "https://statscapybara.com/stats-3/psychometric-functions/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced & Elective Topics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Psychometric Functions & the PSE", "item": "https://statscapybara.com/stats-3/psychometric-functions/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Can I pool everyone's trials into one curve?", "acceptedAnswer": {"@type": "Answer", "text": "Fit each observer separately and average the parameters, rather than the other way round. Pooling trials fits one curve to a mixture of people, and a mixture of shifted curves is always shallower than the curves it is made of: for the cumulative Gaussian the group curve's spread comes out at exactly √(σ² + τ²), where σ is a typical observer's own spread and τ is how much their PSEs differ. Simulate 24 observers with a true JND of 54 ms whose PSEs scatter with an SD of 60 ms and the pooled curve reports 67 ms, about a quarter too wide, while the PSE itself comes back correct. The damage lands on precision, which is usually the thing the study was measuring. When observers contribute unequal numbers of trials, a mixed model on the raw trials keeps the pooling honest."}}, {"@type": "Question", "name": "Which function should I fit: logistic, cumulative Gaussian, or Weibull?", "acceptedAnswer": {"@type": "Answer", "text": "The two symmetric families (logistic and cumulative Gaussian) put the PSE in essentially the same place, and the asymmetric Weibull is usually within a handful of milliseconds; the spread parameter (and with it the JND) varies more, and the tails differ most. The cumulative Gaussian has the cleanest signal-detection interpretation (internal noise is normal), the logistic is computationally convenient and matches logistic regression, and the Weibull suits detection tasks where performance is anchored at zero stimulus. Convention in your subfield is a fine tie-breaker; just report the family and keep it constant across conditions."}}, {"@type": "Question", "name": "Do I need a lapse rate in my psychometric model?", "acceptedAnswer": {"@type": "Answer", "text": "For real observers, usually yes. People blink, press the wrong key, and drift off, so a few errors appear even at the easiest stimulus levels. A two-parameter fit has to tilt the whole curve to accommodate those trials, which biases the slope (and so the JND); adding a small lapse parameter, either fixed at something like 0.02 or estimated with an upper bound, absorbs them instead. Tools built for psychophysics (psignifit, quickpsy) include lapse and guess rates by default, which is a good reason to graduate to them once the basic fit makes sense."}}]}
+  </script>
+</head>
+<body data-course="stats-3" data-section="psychometric-functions">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 3.16</span>
+        <h1>Psychometric Functions &amp; the PSE</h1>
+
+        <p class="lede">Psychophysics is the science of turning perception into numbers: how bright a light must be before you notice it, how much one tone must rise before it sounds louder, how long an interval must last before it feels long. The instrument behind every such measurement is the <strong>psychometric function</strong>, an S-shaped curve that links a stimulus you control to the responses an observer gives. Fitting that curve, and reading two numbers off it, is the whole analysis, and the machinery is one you already met in <a href="../../stats-2/logistic-regression/">logistic regression</a>.</p>
+
+        <h2>Psychophysics and the method of constant stimuli</h2>
+        <p>Psychophysics measures the link between a physical stimulus and the perception it produces, a program Gustav Fechner launched in 1860 and one often credited as the start of experimental psychology. Its most transparent procedure is the <strong>method of constant stimuli</strong>. You fix a ladder of stimulus levels spanning the interesting range, from a level almost everyone judges one way to a level almost everyone judges the other, present each level many times in random order, and record the proportion of one response at each. Plotted against stimulus level, those proportions trace the psychometric function. (Adaptive procedures such as staircases tune each stimulus to the last response instead; the last section of this lesson measures what that actually buys. Constant stimuli is the one to learn first, because it lays the entire curve bare.)</p>
+        <p>That single recipe answers a remarkable range of questions. In vision: the faintest contrast at which a pattern becomes visible, or which of two lines looks longer. In hearing: the quietest detectable tone, the measurement behind the audiogram in every hearing clinic, or which of two tones is louder. In touch: the smallest gap at which two pressed points stop feeling like one. In the lifted-weight experiments that gave us Weber's law: which of two weights feels heavier. In the perception of time: whether an interval feels short or long. Detection tasks ask whether a stimulus is present at all; discrimination tasks ask which of two is more intense. Both yield the same shape, a proportion climbing smoothly from near 0 to near 1 as the stimulus grows.</p>
+
+        <h2>The psychometric function</h2>
+        <p>Whatever sense is being probed, that climbing proportion is the <strong>psychometric function</strong>: stimulus level in, response probability out. The analysis job is to describe its smooth rise with a compact curve and to summarize that curve with a few parameters.</p>
+        <p>Three families do most of the work in practice. The <strong>logistic</strong> is the same S-curve that powers logistic regression. The <strong>cumulative Gaussian</strong> comes from classic <a href="../../stats-3/signal-detection-theory/">signal detection theory</a>: it is what you get if the observer's internal reading of the stimulus is the true level plus normal noise. The <strong>Weibull</strong> is asymmetric on the stimulus axis and is a staple of detection tasks. Each has two parameters, a location and a spread, and each is fit by <strong>maximum likelihood</strong> on the raw trial counts. A trial is a Bernoulli outcome whose probability depends on the stimulus, which is exactly the binomial machinery of a <a href="../../stats-3/generalized-linear-models/">GLM</a>.</p>
+
+        <p>To make this concrete, the rest of the lesson stays with one task: the <strong>temporal bisection procedure</strong>, a standard way to study how people perceive duration. The observer first learns two anchor durations, a short one (200 ms) and a long one (800 ms). Probe intervals of in-between lengths then arrive one at a time, and each judgment is simply whether the probe felt closer to short or closer to long. The share of &ldquo;long&rdquo; responses at each probe duration is precisely the proportion the method of constant stimuli collects, and the interactive below fits a curve to it.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="pfviz">
+          <p class="viz-title">🎮 The Bisection Experiment</p>
+          <p class="viz-sub">Each dot is the share of &ldquo;long&rdquo; responses at one probe duration; the curves are maximum-likelihood fits, with dashed drops at each condition's PSE. The simulated observer is always Gaussian; the selector changes only the fitted model. Sliders re-analyze the same frozen trials; &ldquo;New trials&rdquo; draws fresh ones.</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>Fitted function</label>
+              <div class="seg" id="pf-fam-seg">
+                <button data-f="logistic" class="active">Logistic</button>
+                <button data-f="gauss">Cum. Gaussian</button>
+                <button data-f="weibull">Weibull</button>
+              </div>
+            </div>
+            <div class="control">
+              <label>Conditions</label>
+              <div class="seg" id="pf-cmp-seg">
+                <button data-c="off">Baseline only</button>
+                <button data-c="on" class="active">Compare two</button>
+              </div>
+            </div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="pf-new">New trials</button></div>
+          </div>
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:180px"><label>Trials per level <span class="val" id="pf-n-val">40</span></label><input type="range" id="pf-n" min="10" max="200" step="10" value="40" /></div>
+            <div class="control" style="flex:1;min-width:180px"><label>Observer noise σ (ms) <span class="val" id="pf-sigma-val">80</span></label><input type="range" id="pf-sigma" min="40" max="160" step="5" value="80" /></div>
+          </div>
+          <div class="controls" style="margin-bottom:.5rem">
+            <div class="control" style="flex:1;min-width:180px"><label>Manipulation: PSE shift (ms) <span class="val" id="pf-shift-val">−80</span></label><input type="range" id="pf-shift" min="-150" max="150" step="10" value="-80" /></div>
+            <div class="control" style="flex:1;min-width:180px"><label>Manipulation: noise × <span class="val" id="pf-mult-val">1.00</span></label><input type="range" id="pf-mult" min="0.5" max="2" step="0.05" value="1" /></div>
+          </div>
+
+          <canvas id="pf-canvas" style="--viz-ar: 8 / 3"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Baseline PSE</span><span class="v" id="pf-pse-a">—</span></div>
+            <div class="stat"><span class="k">Baseline JND</span><span class="v" id="pf-jnd-a">—</span></div>
+            <div class="stat"><span class="k">Slope at PSE</span><span class="v" id="pf-slope-a">—</span></div>
+            <div class="stat"><span class="k">Manipulated PSE</span><span class="v" id="pf-pse-b">—</span></div>
+            <div class="stat"><span class="k">Manipulated JND</span><span class="v" id="pf-jnd-b">—</span></div>
+            <div class="stat"><span class="k">ΔPSE</span><span class="v" id="pf-dpse">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Two numbers: PSE and JND</h2>
+        <p>The <strong>point of subjective equality (PSE)</strong> is the stimulus level at which the two responses are equally likely, the 50% point of the fitted curve. In bisection it answers a genuinely psychological question: which duration <em>feels</em> like the exact midpoint between the anchors? Not necessarily the arithmetic middle. Timing studies often find bisection points near the geometric mean of the anchors (for 200 and 800 ms that is √(200 × 800) = 400 ms, not 500), one of the classic clues that our sense of time is compressive.</p>
+        <p>The <strong>just-noticeable difference (JND)</strong> measures precision: half the distance between the curve's 25% and 75% points. A steep curve means a small JND and a sharp sense of duration; a shallow curve means a large one. The two numbers are separate dials. One observer can be biased but precise (shifted PSE, steep slope), another unbiased but noisy. Dividing the JND by the PSE gives the <strong>Weber fraction</strong>, which lets you compare precision across different stimulus ranges.</p>
+        <p><strong>Weber's law</strong> is what makes that ratio worth computing. The lifted-weight experiments mentioned above found that the just-noticeable difference grows in proportion to the baseline, so Δ<em>I</em> / <em>I</em> stays roughly constant as <em>I</em> changes: a gram you can just feel added to 100 g has to become four grams at 400 g. The law also explains why a bisection point lands on the geometric mean. If equal ratios feel equally different, then the duration halfway between 200 and 800 ms is √(200 × 800) = 400 ms, because 400 is double 200 and 800 is double 400. Like most laws in perception it is an approximation, and it fails near the faintest stimulus an observer can detect at all, where the Weber fraction climbs steeply; the usual repair adds a small constant to the denominator, Δ<em>I</em> / (<em>I</em> + <em>a</em>).</p>
+
+        <h2>Shift or slope: two different findings</h2>
+        <p>Now manipulate something. Play the probe tones louder, make a visual stimulus brighter, add a distracting task. When a condition changes the curve, it can do so in two cleanly different ways. A <strong>PSE shift</strong> slides the whole curve sideways: more intense stimuli tend to be judged longer, so a brighter probe moves the curve left and the PSE drops while the slope stays put. A <strong>slope change</strong> flattens or sharpens the curve without moving its midpoint: the observer's timing has become noisier or more precise, and the JND grows or shrinks accordingly.</p>
+        <p>That dissociation is usually the finding itself. &ldquo;The manipulation changed how long things seem&rdquo; is a PSE story; &ldquo;the manipulation changed how well people can time at all&rdquo; is a JND story. The comparison condition in the interactive lets you dial each one independently and watch what the fits report.</p>
+
+        <div class="callout key">
+          <p><strong>Does the choice of function matter?</strong> Less than students fear, though not equally for every family. The two symmetric curves, logistic and cumulative Gaussian, pin their 50% point to where the data bite hardest, so their PSEs agree to a millisecond or two. The asymmetric Weibull can sit several milliseconds off, because it is really a detection function anchored at zero stimulus and its lopsided shape fits symmetric bisection data a little awkwardly. The spread parameter is shakier still: a logistic fit to Gaussian data reports a JND about 10% smaller, and the families diverge most in the tails, where lapses live. Pick the family your subfield uses, report it, and keep it constant across conditions.</p>
+        </div>
+
+        <h2>When the curve cannot start at zero</h2>
+        <p>Every curve so far climbs from 0 to 1, which is right for bisection: an observer who never feels a probe as long says &ldquo;short&rdquo; every time. Plenty of psychophysics does not work that way. In a <strong>two-alternative forced-choice</strong> task (2AFC) the observer gets two intervals and reports which one held the stimulus, so pure guessing already earns 50%. The curve floors at chance rather than at zero, and the threshold is read by convention at <strong>75%</strong>, halfway between chance and perfect, instead of at the 50% point that serves as a PSE here.</p>
+        <p>That floor is the <strong>guess rate</strong> γ (gamma), and the psychometric model used in practice carries it explicitly alongside a <strong>lapse rate</strong> λ (lambda) for the stray errors at the easy end. The curve itself is written ψ (psi):</p>
+        <p style="text-align:center">ψ(<em>x</em>) = γ + (1 − γ − λ) · <em>F</em>(<em>x</em>)</p>
+        <p>with <em>F</em> one of the three families above. Fit a plain two-parameter curve to forced-choice data and the arithmetic breaks rather than bends. Simulating this lesson's own observer as a 2AFC task (true 75% threshold at 500 ms, 40 trials at each of the seven levels), the 50% point of an uncorrected fit lands at <strong>280 ms</strong>, 220 ms below the truth, with the JND inflated from 54 ms to 160 ms. Holding γ at .5 recovers the threshold to within a millisecond.</p>
+        <p>Lapses do gentler damage, and they aim it at the JND. Give the same observer a 4% lapse rate and a two-parameter fit still finds the PSE at 500 ms, but reports a JND of <strong>73 ms against a true 54 ms</strong>, a third too wide: a curve pinned at 0 and 1 can only reach those stray errors by lying flatter. Estimate the lapse rate alongside the curve and the JND comes back to 53 ms. The 2AFC floor and the lapse rate are also why the <a href="../../stats-3/signal-detection-theory/">signal detection</a> reading of a psychometric function is worth keeping in view: a forced-choice proportion correct converts straight to <em>d′</em> = √2 · <em>z</em>(<em>P</em><sub>c</sub>), so 75% correct is a sensitivity of 0.95, while a yes/no proportion correct mixes sensitivity with wherever the observer put their criterion.</p>
+
+        <h2>Fitting it in practice</h2>
+        <p>For a clean two-parameter fit you can stay inside logistic regression: model each trial's response from the stimulus level, and the coefficients hand you both numbers: PSE = −b₀/b₁ and JND = ln 3 / b₁. Comparing conditions is one model away: add the condition and its interaction with stimulus level, and the condition term tests a PSE shift while the interaction tests a slope change. Real laboratory data usually deserve one more ingredient: <strong>lapse rates</strong>, small probabilities of stray finger errors that keep the curve from quite reaching 0 and 1. Purpose-built tools such as psignifit and quickpsy estimate those alongside the curve; the &ldquo;Try it yourself&rdquo; box below shows both routes.</p>
+        <p>In a full study you fit the function per participant and condition, then treat each participant's PSE or JND as a single data point in a familiar analysis: a <a href="../../stats-1/one-sample-and-paired-t-tests/">paired t-test</a> across two conditions, or a <a href="../../stats-3/mixed-and-multilevel-models/">mixed model</a> when the design grows.</p>
+
+        <h2>How adaptive procedures find the threshold</h2>
+        <p>The ladder of levels has one obvious weakness. You have to choose it before you know where the observer's threshold is, and levels far away from it teach you very little. Take this lesson's default observer, PSE 500 ms and σ = 80 ms. At 200 ms and at 800 ms the answer comes back the same on roughly 9,999 trials in 10,000. Adding up the Fisher information each level contributes, the 160 trials spent at 200, 300, 700 and 800 ms carry <strong>7%</strong> of everything the experiment learns about the PSE, while the 40 trials at 500 ms alone carry 44%.</p>
+        <p>A <strong>staircase</strong> hands the placement problem to the observer. Start anywhere, and after each response move the stimulus one step toward the answer they did not give: they said &ldquo;long&rdquo;, so shorten the next probe; they said &ldquo;short&rdquo;, so lengthen it. The stimulus walks toward the level where the two answers are equally likely, then oscillates around it. Each turn is a <strong>reversal</strong>, and the step size normally starts coarse and halves at the first few of them. This 1-up-1-down rule settles on the 50% point, which for a bisection task is the PSE itself. Detection experiments usually want a threshold further up the curve, and Levitt's <strong>transformed up-down</strong> rules get there by demanding a run of correct answers before stepping down: <em>k</em> in a row to step down, one error to step up, which settles where <em>p</em><sup><em>k</em></sup> = ½. So 2-down-1-up targets <strong>70.7%</strong> and 3-down-1-up <strong>79.4%</strong>; simulating both on a forced-choice observer returns .705 and .790.</p>
+        <p>Does it save trials? Placement and estimation turn out to be separate questions, and only the first has the answer you would expect. Simulated on this lesson's observer with the same budget of 280 trials as the ladder above, the staircase puts <strong>97%</strong> of its trials within 80 ms of the true PSE, against the ladder's one level in seven. Then the classic recipe gives most of that back. Averaging the last eight reversals, which is the textbook estimator, recovers the PSE with a standard deviation of <strong>24 ms</strong> against the ladder's <strong>11 ms</strong>, and it stops improving after about forty trials, because eight reversals are eight numbers however long you run. Fit the psychometric function to all 280 staircase trials instead and that standard deviation drops to <strong>6 ms</strong>. The fixed ladder needs roughly 790 trials, 2.8 times as many, to match it.</p>
+        <p>So adaptivity buys two things, and the one people quote is the weaker of them. It concentrates trials where the information is, and it spares you having to know the answer in advance. Move the same simulation to an observer whose true PSE is 525 ms with a sharp σ of 25 ms, so that only one rung of the fixed ladder falls anywhere near the rising part of the curve, and constant stimuli returns 505 ms, out by twenty, while the staircase lands on 525.0. What adaptivity does not buy is a free pass on the analysis: average the reversals and you throw the advantage away, fit the curve and you keep it.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> psychometric functions are the workhorse of psychophysics, and they appear anywhere a binary judgment meets a graded stimulus: perception labs, audiology clinics fitting hearing thresholds, vision screening, animal timing studies. If you can fit one S-curve and read off its PSE and JND, you can quantify what an observer perceives, and argue about bias versus sensitivity with numbers instead of adjectives.</p>
+        </div>
+
+        <p class="pb-xref"><a href="../../problems.html#p4-4">Problem 34 of the practice problems</a> reads a psychometric function off its logistic coefficients, the point of subjective equality and the just-noticeable difference, then compares how a quieter probe shifts both.</p>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>Can I pool everyone's trials into one curve?</summary>
+            <div class="faq-a"><p>Fit each observer separately and average the parameters, rather than the other way round. Pooling trials fits one curve to a mixture of people, and a mixture of shifted curves is always shallower than the curves it is made of: for the cumulative Gaussian the group curve's spread comes out at exactly √(σ² + τ²), where σ is a typical observer's own spread and τ is how much their PSEs differ. Simulate 24 observers with a true JND of 54 ms whose PSEs scatter with an SD of 60 ms and the pooled curve reports 67 ms, about a quarter too wide, while the PSE itself comes back correct. The damage lands on precision, which is usually the thing the study was measuring. When observers contribute unequal numbers of trials, a <a href="../../stats-3/mixed-and-multilevel-models/">mixed model</a> on the raw trials keeps the pooling honest.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Which function should I fit: logistic, cumulative Gaussian, or Weibull?</summary>
+            <div class="faq-a"><p>The two symmetric families (logistic and cumulative Gaussian) put the PSE in essentially the same place, and the asymmetric Weibull is usually within a handful of milliseconds; the spread parameter (and with it the JND) varies more, and the tails differ most. The cumulative Gaussian has the cleanest signal-detection interpretation (internal noise is normal), the logistic is computationally convenient and matches <a href="../../stats-2/logistic-regression/">logistic regression</a>, and the Weibull suits detection tasks where performance is anchored at zero stimulus. Convention in your subfield is a fine tie-breaker; just report the family and keep it constant across conditions.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Do I need a lapse rate in my psychometric model?</summary>
+            <div class="faq-a"><p>For real observers, usually yes. People blink, press the wrong key, and drift off, so a few errors appear even at the easiest stimulus levels. A two-parameter fit has to tilt the whole curve to accommodate those trials, which biases the slope (and so the JND); adding a small lapse parameter, either fixed at something like 0.02 or estimated with an upper bound, absorbs them instead. Tools built for psychophysics (psignifit, quickpsy) include lapse and guess rates by default, which is a good reason to graduate to them once the basic fit makes sense.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ Psychometric-function visualization ============
+       URL presets (P67):
+         ?family=logistic|gauss|weibull  curve family
+         ?compare=on|off                 one condition or two
+         ?trials=<10–200>                trials per level
+         ?sigma=<40–160>                 observer noise σ, in ms
+         ?shift=<-150–150>               PSE shift of the manipulation, in ms
+         ?mult=<0.5–2>                   noise multiplier of the manipulation
+       e.g.  ?embed=1&family=weibull&compare=off&trials=200
+             →  "what a clean threshold estimate looks like"
+  -->
+  <script>
+  (function () {
+    "use strict";
+    var LEVELS = [200, 300, 400, 500, 600, 700, 800];
+    var X0 = 150, X1 = 850, MAXN = 200, MU0 = 500, LN3 = Math.log(3);
+    var ORANGE = "#f97316";
+
+    /* ---- three psychometric families (equations verified against textbook
+       forms: PSE = 50% point; JND = half the 25–75% span) ---- */
+    var FAMS = {
+      logistic: {
+        F: function (x, p) { return 1 / (1 + Math.exp(-(x - p[0]) / p[1])); },        // p = [alpha, beta]
+        pse: function (p) { return p[0]; },
+        jnd: function (p) { return p[1] * LN3; },
+        slopeAtPse: function (p) { return 1 / (4 * p[1]); },
+        fromTheta: function (t) { return [t[0], Math.exp(t[1])]; },
+        toTheta: function (loc, sc) { return [loc, Math.log(sc / 1.1)]; }
+      },
+      gauss: {
+        F: function (x, p) { return VIZ.normCdf((x - p[0]) / p[1]); },                // p = [mu, sigma]
+        pse: function (p) { return p[0]; },
+        jnd: function (p) { return p[1] * 0.674489750196; },
+        slopeAtPse: function (p) { return 1 / (p[1] * Math.sqrt(2 * Math.PI)); },
+        fromTheta: function (t) { return [t[0], Math.exp(t[1])]; },
+        toTheta: function (loc, sc) { return [loc, Math.log(sc)]; }
+      },
+      weibull: {
+        F: function (x, p) { if (x <= 0) return 0; return 1 - Math.exp(-Math.pow(x / p[0], p[1])); }, // p = [lambda, k]
+        pse: function (p) { return p[0] * Math.pow(Math.LN2, 1 / p[1]); },
+        jnd: function (p) { return p[0] * (Math.pow(Math.log(4), 1 / p[1]) - Math.pow(Math.log(4 / 3), 1 / p[1])) / 2; },
+        slopeAtPse: function (p) { return 0.5 * (p[1] / p[0]) * Math.pow(Math.LN2, (p[1] - 1) / p[1]); },
+        fromTheta: function (t) { return [Math.exp(t[0]), Math.exp(t[1])]; },
+        toTheta: function (loc, sc) { return [Math.log(loc / Math.pow(Math.LN2, 1 / 3)), Math.log(3)]; }
+      }
+    };
+
+    /* binomial negative log-likelihood over levels: data = [{x, k, n}] */
+    function makeNll(fam, data) {
+      return function (theta) {
+        var p = fam.fromTheta(theta), s = 0;
+        for (var i = 0; i < data.length; i++) {
+          var F = Math.min(1 - 1e-9, Math.max(1e-9, fam.F(data[i].x, p)));
+          s -= data[i].k * Math.log(F) + (data[i].n - data[i].k) * Math.log(1 - F);
+        }
+        return isFinite(s) ? s : 1e12;
+      };
+    }
+
+    /* small deterministic Nelder–Mead (2 params) */
+    function nelderMead(f, x0, iters) {
+      var n = x0.length, sim = [x0.slice()], i, j;
+      for (i = 0; i < n; i++) { var p0 = x0.slice(); p0[i] += 0.35; sim.push(p0); }
+      var fv = sim.map(f);
+      for (var it = 0; it < iters; it++) {
+        var ord = fv.map(function (v, k) { return k; }).sort(function (a, b) { return fv[a] - fv[b]; });
+        sim = ord.map(function (k) { return sim[k]; }); fv = ord.map(function (k) { return fv[k]; });
+        var c = [];
+        for (j = 0; j < n; j++) { var s = 0; for (i = 0; i < n; i++) s += sim[i][j]; c.push(s / n); }
+        var xr = c.map(function (v, k) { return v + (v - sim[n][k]); }), fr = f(xr);
+        if (fr < fv[0]) {
+          var xe = c.map(function (v, k) { return v + 2 * (v - sim[n][k]); }), fe = f(xe);
+          if (fe < fr) { sim[n] = xe; fv[n] = fe; } else { sim[n] = xr; fv[n] = fr; }
+        } else if (fr < fv[n - 1]) { sim[n] = xr; fv[n] = fr; }
+        else {
+          var xc = c.map(function (v, k) { return v + 0.5 * (sim[n][k] - v); }), fc = f(xc);
+          if (fc < fv[n]) { sim[n] = xc; fv[n] = fc; }
+          else for (i = 1; i <= n; i++) { sim[i] = sim[i].map(function (v, k) { return sim[0][k] + 0.5 * (v - sim[0][k]); }); fv[i] = f(sim[i]); }
+        }
+      }
+      var b = 0; for (i = 1; i <= n; i++) if (fv[i] < fv[b]) b = i;
+      return sim[b];
+    }
+
+    /* initial guess: interpolate the 50% crossing, spread from the level span */
+    function initGuess(fam, data) {
+      var lo = data[0].x, hi = data[data.length - 1].x, cross = (lo + hi) / 2;
+      for (var i = 1; i < data.length; i++) {
+        var p0 = data[i - 1].k / data[i - 1].n, p1 = data[i].k / data[i].n;
+        if (p0 <= 0.5 && p1 >= 0.5) { cross = p1 === p0 ? data[i].x : data[i - 1].x + (0.5 - p0) / (p1 - p0) * (data[i].x - data[i - 1].x); break; }
+      }
+      return fam.toTheta(cross, (hi - lo) / 6);
+    }
+
+    function fitPF(famName, data) {
+      var fam = FAMS[famName];
+      var p = fam.fromTheta(nelderMead(makeNll(fam, data), initGuess(fam, data), 300));
+      return { p: p, pse: fam.pse(p), jnd: fam.jnd(p), slope: fam.slopeAtPse(p) };
+    }
+
+    /* ---- frozen noise: one uniform draw per condition × level × trial slot,
+       so the sliders re-analyze the SAME trials; "New trials" reseeds ---- */
+    var pools = [];
+    function seed() {
+      pools = [];
+      for (var c = 0; c < 2; c++) {
+        var byLevel = [];
+        for (var i = 0; i < LEVELS.length; i++) {
+          var u = [];
+          for (var t = 0; t < MAXN; t++) u.push(Math.random());
+          byLevel.push(u);
+        }
+        pools.push(byLevel);
+      }
+    }
+
+    var famName = "logistic", compare = true;
+    var nIn = document.getElementById("pf-n"), sigIn = document.getElementById("pf-sigma"),
+        shiftIn = document.getElementById("pf-shift"), multIn = document.getElementById("pf-mult");
+
+    /* deterministic: (pools, sliders) → per-level counts for one condition */
+    function gen(cond) {
+      var nT = +nIn.value, sig = +sigIn.value;
+      var mu = cond === 0 ? MU0 : MU0 + (+shiftIn.value);
+      var s = cond === 0 ? sig : sig * (+multIn.value);
+      return LEVELS.map(function (x, i) {
+        var pTrue = VIZ.normCdf((x - mu) / s), k = 0;
+        for (var t = 0; t < nT; t++) if (pools[cond][i][t] < pTrue) k++;
+        return { x: x, k: k, n: nT };
+      });
+    }
+
+    var canvas = document.getElementById("pf-canvas"), ctx, W = 0, H = 300;
+    var padL = 44, padR = 16, padT = 16, padB = 36;
+    function fitCv() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function vx(x) { return padL + (x - X0) / (X1 - X0) * (W - padL - padR); }
+    function vy(p) { return (H - padB) - p * (H - padT - padB); }
+
+    function drawCondition(data, fit, color) {
+      var i;
+      // fitted curve
+      ctx.save(); ctx.beginPath(); ctx.rect(padL, padT, W - padL - padR, H - padT - padB); ctx.clip();
+      ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.beginPath();
+      for (var px = padL; px <= W - padR; px += 2) {
+        var x = X0 + (px - padL) / (W - padL - padR) * (X1 - X0);
+        var y = vy(FAMS[famName].F(x, fit.p));
+        if (px === padL) ctx.moveTo(px, y); else ctx.lineTo(px, y);
+      }
+      ctx.stroke(); ctx.restore();
+      // PSE drop line
+      if (fit.pse > X0 && fit.pse < X1) {
+        ctx.strokeStyle = color; ctx.setLineDash([4, 4]); ctx.globalAlpha = 0.7; ctx.beginPath();
+        ctx.moveTo(vx(fit.pse), H - padB); ctx.lineTo(vx(fit.pse), vy(0.5)); ctx.stroke();
+        ctx.setLineDash([]); ctx.globalAlpha = 1;
+      }
+      // data points
+      ctx.fillStyle = color;
+      for (i = 0; i < data.length; i++) {
+        ctx.beginPath(); ctx.arc(vx(data[i].x), vy(data[i].k / data[i].n), 4.5, 0, 2 * Math.PI); ctx.fill();
+      }
+    }
+
+    function update() {
+      var dataA = gen(0), fitA = fitPF(famName, dataA);
+      var dataB = null, fitB = null;
+      if (compare) { dataB = gen(1); fitB = fitPF(famName, dataB); }
+
+      ctx.clearRect(0, 0, W, H);
+      // frame + gridlines
+      ctx.strokeStyle = VIZ.css("--border"); ctx.strokeRect(padL, padT, W - padL - padR, H - padT - padB);
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px Inter,sans-serif";
+      [0, 0.25, 0.5, 0.75, 1].forEach(function (p) {
+        ctx.strokeStyle = VIZ.css("--border"); ctx.globalAlpha = p === 0.5 ? 0.9 : 0.45;
+        ctx.setLineDash(p === 0.5 ? [5, 4] : [2, 4]); ctx.beginPath();
+        ctx.moveTo(padL, vy(p)); ctx.lineTo(W - padR, vy(p)); ctx.stroke();
+        ctx.setLineDash([]); ctx.globalAlpha = 1;
+        ctx.textAlign = "right"; ctx.fillText(p === 0 ? "0" : p === 1 ? "1" : String(p).replace("0.", "."), padL - 6, vy(p) + 4);
+      });
+      ctx.textAlign = "center";
+      LEVELS.forEach(function (x) { ctx.fillText(String(x), vx(x), H - padB + 16); });
+      ctx.fillText("probe duration (ms)", padL + (W - padL - padR) / 2, H - 4);
+      ctx.textAlign = "left"; ctx.fillText("p(“long”)", padL + 6, padT + 14);
+
+      var indigo = VIZ.css("--primary");
+      if (compare) drawCondition(dataB, fitB, ORANGE);
+      drawCondition(dataA, fitA, indigo);
+
+      // legend
+      var ly = padT + 30;
+      ctx.fillStyle = indigo; ctx.beginPath(); ctx.arc(padL + 12, ly, 4, 0, 2 * Math.PI); ctx.fill();
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.fillText("baseline", padL + 21, ly + 4);
+      if (compare) {
+        ctx.fillStyle = ORANGE; ctx.beginPath(); ctx.arc(padL + 12, ly + 18, 4, 0, 2 * Math.PI); ctx.fill();
+        ctx.fillStyle = VIZ.css("--text-faint"); ctx.fillText("manipulated", padL + 21, ly + 22);
+      }
+
+      // readouts
+      document.getElementById("pf-n-val").textContent = nIn.value;
+      document.getElementById("pf-sigma-val").textContent = sigIn.value;
+      document.getElementById("pf-shift-val").textContent = (+shiftIn.value > 0 ? "+" : "") + (+shiftIn.value === 0 ? "0" : shiftIn.value).toString().replace("-", "−");
+      document.getElementById("pf-mult-val").textContent = (+multIn.value).toFixed(2);
+      document.getElementById("pf-pse-a").textContent = fitA.pse.toFixed(0) + " ms";
+      document.getElementById("pf-jnd-a").textContent = fitA.jnd.toFixed(0) + " ms";
+      document.getElementById("pf-slope-a").textContent = (fitA.slope * 1000).toFixed(1) + "% / 10 ms";
+      document.getElementById("pf-pse-b").textContent = compare ? fitB.pse.toFixed(0) + " ms" : "—";
+      document.getElementById("pf-jnd-b").textContent = compare ? fitB.jnd.toFixed(0) + " ms" : "—";
+      document.getElementById("pf-dpse").textContent = compare ? ((fitB.pse - fitA.pse) >= 0 ? "+" : "−") + Math.abs(fitB.pse - fitA.pse).toFixed(0) + " ms" : "—";
+    }
+
+    document.getElementById("pf-fam-seg").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      famName = b.dataset.f;
+      Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x === b); });
+      update();
+    });
+    document.getElementById("pf-cmp-seg").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      compare = b.dataset.c === "on";
+      Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x === b); });
+      update();
+    });
+    document.getElementById("pf-new").addEventListener("click", function () { seed(); update(); });
+    [nIn, sigIn, shiftIn, multIn].forEach(function (el) { el.addEventListener("input", update); });
+    window.addEventListener("resize", VIZ.rafThrottle(function () { fitCv(); update(); }));
+    VIZ.onTheme(update);
+    fitCv(); seed(); update();
+
+    /* URL preset, applied last: it moves controls, never calls seed(), so the
+       same simulated observer stays on screen (see the head comment) */
+    if (window.SC && SC.preset) SC.preset({
+      family: "#pf-fam-seg", compare: "#pf-cmp-seg",
+      trials: "#pf-n", sigma: "#pf-sigma", shift: "#pf-shift", mult: "#pf-mult"
+    });
+  })();
+  </script>
+</body>
+</html>

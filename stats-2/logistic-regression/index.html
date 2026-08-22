@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    /* Consent Mode: storage denied by default, so GA sets no cookie and
+       follows nobody between visits. Anonymous counts still arrive. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Logistic Regression — StatsCapybara</title>
+  <meta name="description" content="When the outcome is yes/no, a straight line predicts impossible probabilities. Logistic regression bends it into an S-curve that stays between 0 and 1." />
+  <link rel="canonical" href="https://statscapybara.com/stats-2/logistic-regression/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Logistic Regression — StatsCapybara" />
+  <meta property="og:description" content="When the outcome is yes/no, a straight line predicts impossible probabilities. Logistic regression bends it into an S-curve that stays between 0 and 1." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og-stats-2.png" />
+  <meta property="og:url" content="https://statscapybara.com/stats-2/logistic-regression/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Logistic Regression — StatsCapybara" />
+  <meta name="twitter:description" content="When the outcome is yes/no, a straight line predicts impossible probabilities. Logistic regression bends it into an S-curve that stays between 0 and 1." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-2.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Logistic Regression", "description": "When the outcome is yes/no, a straight line predicts impossible probabilities. Logistic regression bends it into an S-curve that stays between 0 and 1.", "url": "https://statscapybara.com/stats-2/logistic-regression/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: ANOVA & Regression", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Logistic Regression", "item": "https://statscapybara.com/stats-2/logistic-regression/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I interpret an odds ratio?", "acceptedAnswer": {"@type": "Answer", "text": "It's the multiplier on the odds for each one-unit increase in the predictor. OR = 1.5 means each extra unit multiplies the odds of the outcome by 1.5 (+50%); OR = 0.8 shrinks them by 20%; OR = 1 means no effect. Two cautions: \"odds\" are p/(1−p), not probability, and an impressive-sounding OR can mean a tiny absolute change when the baseline risk is low."}}, {"@type": "Question", "name": "Why is my odds ratio in the millions, with a confidence interval to match?", "acceptedAnswer": {"@type": "Answer", "text": "Your data is almost certainly separated: some predictor (or combination of them) splits the outcome perfectly, so every case above a cut-off is a 1 and every case below is a 0. No finite coefficient fits that best, because a steeper curve always fits it better than the last one. The estimate simply runs off toward infinity until the software gives up and prints wherever it stopped. Fitting eight perfectly split points by hand, the slope passes an odds ratio of 4 million by iteration 10 and the algorithm loses its footing entirely by iteration 20. It is a signal, not a failure: a predictor that good is usually a proxy for the outcome, a category with no cases in one cell, or a sample too small to have any overlap. The standard remedies are to merge the sparse categories, drop the offending predictor, or fit a penalized model (Firth logistic regression) that keeps the estimate finite."}}, {"@type": "Question", "name": "What is the difference between odds and probability?", "acceptedAnswer": {"@type": "Answer", "text": "Probability is successes ÷ all attempts; odds are successes ÷ failures. A 75% probability is odds of 3 (three successes per failure). They diverge most in the middle of the range (p = .5 is odds = 1) and converge for rare events — p = .01 is odds ≈ .0101, which is why odds ratios approximate risk ratios only when the outcome is uncommon."}}]}
+  </script>
+</head>
+<body data-course="stats-2" data-section="logistic-regression">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 2.16</span>
+        <h1>Logistic Regression</h1>
+
+        <p class="lede">So far the outcome <code>y</code> has always been a number. But often it's a <strong>yes/no</strong>: passed or failed, clicked or didn't, recovered or didn't. Fit a straight <a href="../../stats-1/simple-linear-regression/">regression line</a> to a 0/1 outcome and it cheerfully predicts probabilities like −0.3 or 1.4, which is nonsense. <strong>Logistic regression</strong> fixes this with one elegant move.</p>
+
+        <h2>Bend the line into an S</h2>
+        <p>Instead of predicting <code>y</code> directly, logistic regression predicts the <strong>probability</strong> that <code>y = 1</code>, and runs the linear part through the <strong>logistic (sigmoid) function</strong>, which squashes any number into the range 0–1:</p>
+        <p style="text-align:center;font-size:1.1rem;margin:1.2rem 0"><strong>P(y=1) = 1 / (1 + e<sup>−(b₀ + b₁x)</sup>)</strong></p>
+        <p>The result is a smooth S-curve: near-0 for low x, near-1 for high x, with a steep transition in between. It can never escape 0 or 1, so the predictions always make sense as probabilities.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="lrviz">
+          <p class="viz-title">🎮 Fit the S-Curve</p>
+          <p class="viz-sub">Dots at the top fired (y=1); dots at the bottom didn't (y=0). Slide the midpoint and steepness to fit the logistic curve, and notice the gray straight line shooting past 0 and 1 where it shouldn't.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:220px">
+              <label>Midpoint (where P = 50%) <span class="val" id="x0-val">50</span></label>
+              <input type="range" id="x0-range" min="20" max="80" step="1" value="50" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:220px">
+              <label>Steepness (b₁) <span class="val" id="b1-val">0.12</span></label>
+              <input type="range" id="b1-range" min="2" max="50" step="1" value="12" style="width:100%" />
+            </div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="resample">New sample</button></div>
+          </div>
+
+          <canvas id="lr-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Odds ratio (per +1 in x)</span><span class="v" id="stat-or">—</span></div>
+            <div class="stat"><span class="k">P(y=1) at x = 60</span><span class="v" id="stat-p60">—</span></div>
+            <div class="stat"><span class="k">Classification accuracy</span><span class="v" id="stat-acc">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Log-odds and odds ratios</h2>
+        <p>Logistic regression earns its "regression" name honestly: it <em>is</em> linear, just on the <strong>log-odds</strong> scale. The model says the log-odds of the outcome is a straight line, <code>b₀ + b₁x</code>. That means the coefficient <code>b₁</code> is a change in log-odds per unit of x, and exponentiating it gives the <strong>odds ratio</strong>:</p>
+        <ul>
+          <li><strong>Odds ratio = e<sup>b₁</sup></strong>: how the odds of the outcome multiply for each one-unit increase in x.</li>
+          <li>An odds ratio of 1 means x has no effect; above 1 means it raises the odds; below 1 means it lowers them.</li>
+          <li>Both lines of that translation, the log-odds model and OR = e<sup>b</sup>, are on the <a href="../../formulas.html">formula sheet</a>, a row apart.</li>
+        </ul>
+        <p>Odds ratios are the currency of medical and epidemiological papers, which makes them awkward to compare against the psychology literature's Cohen's <em>d</em>. The <a href="../../effect-sizes.html">effect-size converter</a> translates between the two when you need to put an odds ratio next to a standardized mean difference.</p>
+        <div class="callout key">
+          <p><strong>Probabilities aren't linear, but log-odds are.</strong> A one-unit change in x shifts the <em>odds</em> by a constant factor, but its effect on the <em>probability</em> depends on where you are on the curve: biggest in the steep middle, tiny out in the flat tails. That's why a single "effect on probability" number doesn't exist for logistic models.</p>
+        </div>
+
+        <h2>Is the model any good?</h2>
+        <p>Ordinary regression hands you R² and an F-test. Logistic regression has neither, so it substitutes two things that software prints under unfamiliar names. An <strong>omnibus test</strong> compares your model against an intercept-only model on the likelihood scale and reports a χ²: this is the logistic answer to "does the model beat knowing nothing?". A <strong>pseudo-R²</strong> (Nagelkerke, Cox &amp; Snell, McFadden) rescales that same likelihood improvement onto a 0-to-1 range so it reads like something familiar. Treat it as a rough comparative number rather than variance explained, since the three flavors disagree with each other on the very same model.</p>
+        <p>For individual predictors most output shows a Wald test, which is fine for modest coefficients and unreliable for large ones. When a predictor matters enough to argue about, refit without it and compare the two models by <a href="../../stats-2/model-comparison/">likelihood ratio</a> instead.</p>
+
+        <h2>From probability to decision</h2>
+        <p>To actually classify, you pick a <strong>threshold</strong> (often 0.5): predict "yes" when the curve is above it, "no" below. Move the threshold to trade false positives against false negatives — a choice driven by which mistake is costlier (missing a disease vs. a false alarm). Logistic regression is the workhorse behind credit scoring, medical risk models, and a great deal of machine-learning classification. Choosing that threshold well, and measuring what it costs you, is the subject of <a href="../../ml/classification-metrics/">classification metrics</a>.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> binary outcomes are everywhere, and logistic regression is the standard, interpretable tool for them. It extends naturally to multiple predictors (numeric and <a href="../../stats-2/categorical-predictors-and-dummy-coding/">categorical</a>) exactly like ordinary regression, with the same linear model and a new link function.</p>
+        </div>
+
+        <p class="pb-xref">To fit one yourself, <a href="../../datasets.html#admissions">admissions.csv</a> holds 160 applicants with GRE scores, GPAs and an admitted/rejected outcome, plus the coefficients to check your own against.</p>
+
+        <p class="pb-xref">Want to feel the difference between an odds ratio and a probability change? <a href="../../problems.html#p3-3">Problem 25 of the practice problems</a> moves the same two-unit step along the curve twice and gets .215 in one place and .017 in the other.</p>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>How do I interpret an odds ratio?</summary>
+            <div class="faq-a"><p>It's the multiplier on the odds for each one-unit increase in the predictor. OR = 1.5 means each extra unit multiplies the odds of the outcome by 1.5 (+50%); OR = 0.8 shrinks them by 20%; OR = 1 means no effect. Two cautions: "odds" are p/(1−p), not probability, and an impressive-sounding OR can mean a tiny absolute change when the baseline risk is low.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Why is my odds ratio in the millions, with a confidence interval to match?</summary>
+            <div class="faq-a"><p>Your data is almost certainly <strong>separated</strong>: some predictor (or combination of them) splits the outcome perfectly, so every case above a cut-off is a 1 and every case below is a 0. No finite coefficient fits that best, because a steeper curve always fits it better than the last one. The estimate simply runs off toward infinity until the software gives up and prints wherever it stopped. Fitting eight perfectly split points by hand, the slope passes an odds ratio of 4 million by iteration 10 and the algorithm loses its footing entirely by iteration 20. It is a signal, not a failure: a predictor that good is usually a proxy for the outcome, a category with no cases in one cell, or a sample too small to have any overlap. The standard remedies are to merge the sparse categories, drop the offending predictor, or fit a penalized model (Firth logistic regression) that keeps the estimate finite.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What is the difference between odds and probability?</summary>
+            <div class="faq-a"><p>Probability is successes ÷ all attempts; odds are successes ÷ failures. A 75% probability is odds of 3 (three successes per failure). They diverge most in the middle of the range (p = .5 is odds = 1) and converge for rare events — p = .01 is odds ≈ .0101, which is why odds ratios approximate risk ratios only when the outcome is uncommon.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ logistic-regression visualization ============
+       URL presets (P67):
+         ?x0=<20–80>       midpoint, where P = 50%
+         ?b1=<0.02–0.50>   steepness, written as the lesson prints it
+       e.g.  ?embed=1&x0=50&b1=0.5  →  the near-step-function slide
+  -->
+  <script>
+  (function () {
+    "use strict";
+    var x0 = 50, b1 = 0.12, data = [];
+    var LO = 0, HI = 100, YLO = -0.18, YHI = 1.18;
+    var canvas = document.getElementById("lr-canvas"), ctx, W = 0, H = 240, pad = 30;
+
+    function trueP(x) { return 1 / (1 + Math.exp(-0.14 * (x - 48))); }
+    function gen() { data = []; for (var i = 0; i < 60; i++) { var x = 5 + Math.random() * 90; data.push({ x: x, y: Math.random() < trueP(x) ? 1 : 0 }); } update(); }
+    function P(x) { return 1 / (1 + Math.exp(-b1 * (x - x0))); }
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function vx(x) { return pad + ((x - LO) / (HI - LO)) * (W - 2 * pad); }
+    function vy(y) { return (H - pad) - ((y - YLO) / (YHI - YLO)) * (H - 2 * pad); }
+
+    function update() {
+      ctx.clearRect(0, 0, W, H);
+      // 0 and 1 reference bands
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "right";
+      [0, 0.5, 1].forEach(function (yv) { var y = vy(yv); ctx.globalAlpha = yv === 0.5 ? 0.3 : 0.6; ctx.setLineDash(yv === 0.5 ? [4, 4] : []); ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(W - pad, y); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1; ctx.fillText(yv === 0 ? "0 (no)" : yv === 1 ? "1 (yes)" : "0.5", pad - 4, y + 3); });
+      // naive linear fit (least squares of y on x) — shows the problem
+      var mx = VIZ.mean(data.map(function (p) { return p.x; })), my = VIZ.mean(data.map(function (p) { return p.y; }));
+      var sxy = 0, sxx = 0; data.forEach(function (p) { sxy += (p.x - mx) * (p.y - my); sxx += (p.x - mx) * (p.x - mx); });
+      var c1 = sxy / sxx, c0 = my - c1 * mx;
+      ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([6, 4]); ctx.lineWidth = 1.5;
+      ctx.save(); ctx.beginPath(); ctx.rect(pad, 2, W - 2 * pad, H - 4); ctx.clip();
+      ctx.beginPath(); ctx.moveTo(vx(LO), vy(c0 + c1 * LO)); ctx.lineTo(vx(HI), vy(c0 + c1 * HI)); ctx.stroke(); ctx.restore(); ctx.setLineDash([]);
+      // data points
+      data.forEach(function (p) { ctx.fillStyle = p.y ? "#f97316" : VIZ.css("--primary"); ctx.globalAlpha = 0.55; ctx.beginPath(); ctx.arc(vx(p.x), vy(p.y === 1 ? 1 : 0) + (p.y ? 1 : -1) * ((p.x % 5)), 4, 0, 2 * Math.PI); ctx.fill(); });
+      ctx.globalAlpha = 1;
+      // logistic curve
+      ctx.strokeStyle = VIZ.css("--primary"); ctx.lineWidth = 3; ctx.beginPath();
+      for (var px = 0; px <= W; px += 1.5) { var x = LO + (px / W) * (HI - LO); var y = vy(P(x)); if (px === 0) ctx.moveTo(vx(x), y); else ctx.lineTo(vx(x), y); }
+      ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.textAlign = "center"; ctx.font = "10px Inter,sans-serif"; ctx.fillText("x →", W / 2, H - 6);
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.textAlign = "left"; ctx.fillText("- - - naive linear fit (leaves 0–1!)", pad + 4, 14);
+
+      // stats
+      var acc = 0; data.forEach(function (p) { if ((P(p.x) >= 0.5 ? 1 : 0) === p.y) acc++; });
+      document.getElementById("x0-val").textContent = x0;
+      document.getElementById("b1-val").textContent = b1.toFixed(2);
+      document.getElementById("stat-or").textContent = "×" + Math.exp(b1).toFixed(2);
+      document.getElementById("stat-p60").textContent = (P(60) * 100).toFixed(0) + "%";
+      document.getElementById("stat-acc").textContent = (100 * acc / data.length).toFixed(0) + "%";
+    }
+
+    document.getElementById("x0-range").addEventListener("input", function () { x0 = +this.value; update(); });
+    document.getElementById("b1-range").addEventListener("input", function () { b1 = this.value / 100; update(); });
+    document.getElementById("resample").addEventListener("click", gen);
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(update);
+    fit(); gen();
+
+    /* URL preset, applied last (see the head comment). b1 is scaled because
+       the slider carries hundredths of the printed value. */
+    if (window.SC && SC.preset) SC.preset({
+      x0: "#x0-range",
+      b1: { el: "#b1-range", scale: 100 }
+    });
+  })();
+  </script>
+</body>
+</html>

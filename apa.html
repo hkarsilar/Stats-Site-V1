@@ -329,7 +329,7 @@
         },
         recomp: function () { var c = val("chi"), df = val("df"); return (isFinite(c) && isFinite(df) && df > 0) ? VIZ.chiSqUpper(c, df) : null; },
         ciNote: CI90,
-        links: function () { return { l: "stats-2/chi-square-tests/", t: "Chi-square tests lesson" }; }
+        links: function () { return { l: "stats-1/chi-square-tests/", t: "Chi-square tests lesson" }; }
       },
 
       corr: {
@@ -351,14 +351,14 @@
             ", " + em("r") + "(" + iv(df) + ") = " + nz(r, 2) + (rci ? ciTxt(rci[0], rci[1], 2, true, 95) : "") +
             ", " + em("p") + " " + p.html + ".";
         },
-        ciNote: '<div class="apa-note info">The interval on <em>r</em> is not symmetric, and the closer <em>r</em> gets to 1 the more lopsided it becomes. It is built on <a href="stats-2/correlation/#the-interval-around-r">Fisher’s transformation</a>, which stretches <em>r</em> onto a scale where the sampling distribution is normal, adds the ± there, and maps the two limits back.</div>',
+        ciNote: '<div class="apa-note info">The interval on <em>r</em> is not symmetric, and the closer <em>r</em> gets to 1 the more lopsided it becomes. It is built on <a href="stats-1/correlation/#the-interval-around-r">Fisher’s transformation</a>, which stretches <em>r</em> onto a scale where the sampling distribution is normal, adds the ± there, and maps the two limits back.</div>',
         recomp: function () {
           var r = val("r"), n = val("n"), df = n - 2;
           if (!isFinite(r) || !isFinite(n) || df <= 0 || Math.abs(r) >= 1) return null;
           var t = r * Math.sqrt(df / (1 - r * r));
           return 2 * VIZ.tUpper(Math.abs(t), df);
         },
-        links: function () { return { l: "stats-2/correlation/", t: "Correlation lesson" }; }
+        links: function () { return { l: "stats-1/correlation/", t: "Correlation lesson" }; }
       },
 
       reg: {
@@ -401,14 +401,14 @@
         },
         ciNote: function (v) {
           return v === "model" ? CI90
-            : '<div class="apa-note info">A slope is the one ordinary case: <em>b</em> ± <em>t</em>*·<em>SE</em>, symmetric, in the outcome’s own units. That is what makes it worth reporting: <a href="stats-2/simple-linear-regression/">β tells you nothing about how much the outcome moves</a>, while the interval on <em>b</em> gives you the size and the precision together.</div>';
+            : '<div class="apa-note info">A slope is the one ordinary case: <em>b</em> ± <em>t</em>*·<em>SE</em>, symmetric, in the outcome’s own units. That is what makes it worth reporting: <a href="stats-1/simple-linear-regression/">β tells you nothing about how much the outcome moves</a>, while the interval on <em>b</em> gives you the size and the precision together.</div>';
         },
         recomp: function (v) {
           if (v === "model") { var f = val("F"), d1 = val("df1"), d2 = val("df2"); return (isFinite(f) && isFinite(d1) && isFinite(d2) && d1 > 0 && d2 > 0) ? VIZ.fUpper(f, d1, d2) : null; }
           var b = val("b"), se = val("se"), df = val("df");
           return (isFinite(b) && isFinite(se) && se > 0 && isFinite(df) && df > 0) ? 2 * VIZ.tUpper(Math.abs(b / se), df) : null;
         },
-        links: function () { return { l: "stats-2/simple-linear-regression/", t: "Simple linear regression lesson" }; }
+        links: function () { return { l: "stats-1/simple-linear-regression/", t: "Simple linear regression lesson" }; }
       }
     };
 

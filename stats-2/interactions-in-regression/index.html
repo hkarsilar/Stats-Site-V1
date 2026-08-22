@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    /* Consent Mode: storage denied by default, so GA sets no cookie and
+       follows nobody between visits. Anonymous counts still arrive. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Interactions in Regression — StatsCapybara</title>
+  <meta name="description" content="An interaction term lets one predictor's slope depend on another. Slide it to send two regression lines from parallel to fanning to crossing." />
+  <link rel="canonical" href="https://statscapybara.com/stats-2/interactions-in-regression/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Interactions in Regression — StatsCapybara" />
+  <meta property="og:description" content="An interaction term lets one predictor's slope depend on another. Slide it to send two regression lines from parallel to fanning to crossing." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og-stats-2.png" />
+  <meta property="og:url" content="https://statscapybara.com/stats-2/interactions-in-regression/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Interactions in Regression — StatsCapybara" />
+  <meta name="twitter:description" content="An interaction term lets one predictor's slope depend on another. Slide it to send two regression lines from parallel to fanning to crossing." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-2.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Interactions in Regression", "description": "An interaction term lets one predictor's slope depend on another. Slide it to send two regression lines from parallel to fanning to crossing.", "url": "https://statscapybara.com/stats-2/interactions-in-regression/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: ANOVA & Regression", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Interactions in Regression", "item": "https://statscapybara.com/stats-2/interactions-in-regression/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why should I center variables before creating an interaction term?", "acceptedAnswer": {"@type": "Answer", "text": "Two reasons. Interpretability: with a product term in the model, b₁ is the effect of x₁ when the other variable equals zero, often a meaningless value (age 0, income 0); centering moves \"zero\" to the mean, so b₁ reads as the effect at a typical value. Stability: centering also reduces the artificial correlation between x and x×z, taming multicollinearity in the estimates."}}, {"@type": "Question", "name": "Do I have to keep the main effects if only the interaction is significant?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, keep them. This is the principle of marginality: a model containing x·z should also contain x and z. Drop a main effect and you force that variable's line through a constrained origin, so the surviving coefficients no longer mean what their names suggest and the interaction absorbs whatever the dropped term was carrying. The fit also stops being invariant to how you coded the variables, which means rescaling a predictor can change your conclusion. A non-significant main effect alongside a significant interaction is not a problem to tidy away; it is the ordinary result of an effect that is real in one condition and absent in the other, and it is the finding."}}, {"@type": "Question", "name": "What are simple slopes?", "acceptedAnswer": {"@type": "Answer", "text": "The effect of x computed at chosen values of the moderator — conventionally at its mean and ±1 SD. They turn an abstract product coefficient into direct statements: \"among low-experience users the feature gains 4 points; among high-experience users, 0.5.\" Simple-slope tests then tell you at which moderator values the effect is significantly different from zero."}}]}
+  </script>
+</head>
+<body data-course="stats-2" data-section="interactions-in-regression">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 2.11</span>
+        <h1>Interactions in Regression</h1>
+
+        <p class="lede">Sometimes the effect of one predictor <em>depends on</em> another. A training program might help beginners a lot and experts barely at all; a drug's benefit might grow with the dose only for younger patients. The <a href="../../stats-2/factorial-anova-two-way/">factorial-ANOVA interaction</a> idea lives in regression too, through an <strong>interaction term</strong>.</p>
+
+        <h2>Adding a product term</h2>
+        <p>A model with two predictors and their interaction looks like this:</p>
+        <p style="text-align:center;font-size:1.1rem;margin:1.2rem 0"><strong>ŷ = b₀ + b₁·x + b₂·group + b₃·(x × group)</strong></p>
+        <p>That last term (the <em>product</em> of the two predictors) is the whole trick. Its coefficient <strong>b₃ measures how much the slope of x changes between groups</strong>. If b₃ = 0, both groups share one slope (the lines are parallel, just a level difference). If b₃ ≠ 0, the groups have <em>different slopes</em>: x matters more for one than the other.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="ixviz">
+          <p class="viz-title">🎮 The Interaction Term Tilts the Lines</p>
+          <p class="viz-sub">Two groups, one continuous predictor x. Slide the interaction: at zero the lines are parallel; turn it up and the orange group's slope pulls away from the blue group's.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:min(300px,100%)">
+              <label>Interaction coefficient b₃ <span class="val" id="b3-val">0.0</span></label>
+              <input type="range" id="b3-range" min="-150" max="150" step="1" value="0" style="width:100%" />
+            </div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="resample">New sample</button></div>
+          </div>
+
+          <canvas id="ix-canvas"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k" style="color:var(--primary)">Group 1 slope</span><span class="v" id="stat-s1">—</span></div>
+            <div class="stat"><span class="k" style="color:#f97316">Group 2 slope</span><span class="v" id="stat-s2">—</span></div>
+            <div class="stat"><span class="k">Interaction b₃</span><span class="v" id="stat-b3">—</span></div>
+            <div class="stat"><span class="k">Effect of x…</span><span class="v" id="stat-msg" style="font-size:1rem">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Why the main effects get tricky</h2>
+        <p>When an interaction is present, the "main effect" of x is no longer a single number: it's different in each group, so quoting one average slope can be misleading. With a product term in the model, <strong>b₁ becomes the slope of x specifically when group = 0</strong> (the reference), not an overall effect. This is the #1 source of confusion in interpreting interaction models.</p>
+        <div class="callout key">
+          <p><strong>Center your predictors.</strong> Interpreting interactions is far easier when continuous predictors are mean-centered first. Then b₁ and b₂ read as effects "at the average" of the other variable, instead of at the often-meaningless value of zero. It also reduces <a href="../../stats-2/multicollinearity-and-variable-selection/">multicollinearity</a> between the predictors and their product.</p>
+        </div>
+
+        <h2>Continuous × continuous interactions</h2>
+        <p>Interactions aren't just for groups. Two continuous predictors can interact too: the effect of advertising spend on sales might depend on the season. These are harder to picture (the "lines" become a tilted surface), so we usually probe them with <strong>simple slopes</strong>: plot the effect of x at a few representative values of the moderator (say, low / medium / high), exactly as we did with two groups here.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> "it depends" is one of the most honest and useful things data can tell you, and interactions are how you say it rigorously. They're essential whenever an effect isn't one-size-fits-all — which is most of the time.</p>
+        </div>
+
+        <p>One warning before you design around one: an interaction is estimated less precisely than the effects it qualifies, so a study powered to find a main effect is usually <em>not</em> powered to find the interaction that explains it. <a href="../../stats-3/power-analysis-for-complex-designs/">Power analysis for complex designs</a> works out what that costs.</p>
+
+        <p class="pb-xref"><a href="../../problems.html#p3-2">Problem 24 of the practice problems</a> puts a group difference and a pretest covariate in one model and asks what the raw 6.4-point advantage was really measuring, and <a href="../../problems.html#p3-4">Problem 26</a> hands you an abstract whose headline is a main effect, then asks what the moderator does to that claim.</p>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>Why should I center variables before creating an interaction term?</summary>
+            <div class="faq-a"><p>Two reasons. Interpretability: with a product term in the model, b₁ is the effect of x₁ <em>when the other variable equals zero</em>, often a meaningless value (age 0, income 0); centering moves "zero" to the mean, so b₁ reads as the effect at a typical value. Stability: centering also reduces the artificial correlation between x and x×z, taming multicollinearity in the estimates.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Do I have to keep the main effects if only the interaction is significant?</summary>
+            <div class="faq-a"><p>Yes, keep them. This is the <strong>principle of marginality</strong>: a model containing x·z should also contain x and z. Drop a main effect and you force that variable's line through a constrained origin, so the surviving coefficients no longer mean what their names suggest and the interaction absorbs whatever the dropped term was carrying. The fit also stops being invariant to how you coded the variables, which means rescaling a predictor can change your conclusion. A non-significant main effect alongside a significant interaction is not a problem to tidy away; it is the ordinary result of an effect that is real in one condition and absent in the other, and it is the finding.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>What are simple slopes?</summary>
+            <div class="faq-a"><p>The effect of x computed at chosen values of the moderator — conventionally at its mean and ±1 SD. They turn an abstract product coefficient into direct statements: "among low-experience users the feature gains 4 points; among high-experience users, 0.5." Simple-slope tests then tell you at which moderator values the effect is significantly different from zero.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ interaction visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var b3 = 0, base1 = [], base2 = [];
+    var BASE_SLOPE = 0.5, LO = 0, HI = 100;
+    var canvas = document.getElementById("ix-canvas"), ctx, W = 0, H = 280, pad = 26;
+    var COL = ["#6366f1", "#f97316"];
+
+    function gen() {
+      base1 = []; base2 = [];
+      for (var i = 0; i < 22; i++) { var x = 5 + Math.random() * 90; base1.push({ x: x, n: VIZ.gauss(0, 6) }); }
+      for (var j = 0; j < 22; j++) { var x2 = 5 + Math.random() * 90; base2.push({ x: x2, n: VIZ.gauss(0, 6) }); }
+      update();
+    }
+    // group1: y = 30 + BASE_SLOPE*x ; group2: y = 30 + (BASE_SLOPE + b3)*x  (level matched at x=0)
+    function y1(x) { return 30 + BASE_SLOPE * x; }
+    function y2(x) { return 30 + (BASE_SLOPE + b3) * x; }
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function vx(x) { return pad + ((x - LO) / (HI - LO)) * (W - 2 * pad); }
+    // the y-axis stretches to whatever the tilted line needs, so the
+    // orange group never slides out of view at extreme interactions
+    var YLO = 0, YHI = 100;
+    function setYRange() {
+      var c = [0, 100, y1(LO), y1(HI), y2(LO), y2(HI)];
+      YLO = Math.min.apply(null, c) - 18; YHI = Math.max.apply(null, c) + 18;
+    }
+    function vy(y) { return (H - pad) - ((y - YLO) / (YHI - YLO)) * (H - 2 * pad); }
+
+    function update() {
+      setYRange();
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = VIZ.css("--border"); ctx.strokeRect(pad, pad, W - 2 * pad, H - 2 * pad);
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px Inter,sans-serif"; ctx.textAlign = "center"; ctx.fillText("x →", W / 2, H - 6);
+      // points
+      ctx.fillStyle = COL[0]; ctx.globalAlpha = 0.6; base1.forEach(function (p) { ctx.beginPath(); ctx.arc(vx(p.x), vy(y1(p.x) + p.n), 4, 0, 2 * Math.PI); ctx.fill(); });
+      ctx.fillStyle = COL[1]; base2.forEach(function (p) { ctx.beginPath(); ctx.arc(vx(p.x), vy(y2(p.x) + p.n), 4, 0, 2 * Math.PI); ctx.fill(); });
+      ctx.globalAlpha = 1;
+      // lines (clipped)
+      ctx.save(); ctx.beginPath(); ctx.rect(pad, pad, W - 2 * pad, H - 2 * pad); ctx.clip();
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = COL[0]; ctx.beginPath(); ctx.moveTo(vx(LO), vy(y1(LO))); ctx.lineTo(vx(HI), vy(y1(HI))); ctx.stroke();
+      ctx.strokeStyle = COL[1]; ctx.beginPath(); ctx.moveTo(vx(LO), vy(y2(LO))); ctx.lineTo(vx(HI), vy(y2(HI))); ctx.stroke();
+      ctx.restore();
+      ctx.textAlign = "left"; ctx.font = "600 11px Inter,sans-serif";
+      ctx.fillStyle = COL[0]; ctx.fillText("group 1", pad + 6, pad + 14); ctx.fillStyle = COL[1]; ctx.fillText("group 2", pad + 6, pad + 28);
+
+      var s1 = BASE_SLOPE, s2 = BASE_SLOPE + b3;
+      document.getElementById("b3-val").textContent = b3.toFixed(2);
+      document.getElementById("stat-s1").textContent = s1.toFixed(2);
+      document.getElementById("stat-s2").textContent = s2.toFixed(2);
+      document.getElementById("stat-b3").textContent = (b3 >= 0 ? "+" : "") + b3.toFixed(2);
+      var msg = document.getElementById("stat-msg");
+      if (Math.abs(b3) < 0.05) { msg.textContent = "same in both groups"; msg.style.color = VIZ.css("--text"); }
+      else { msg.textContent = "depends on the group"; msg.style.color = "#f97316"; }
+    }
+
+    document.getElementById("b3-range").addEventListener("input", function () { b3 = this.value / 100; update(); });
+    document.getElementById("resample").addEventListener("click", gen);
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(update);
+    fit(); gen();
+  })();
+  </script>
+</body>
+</html>

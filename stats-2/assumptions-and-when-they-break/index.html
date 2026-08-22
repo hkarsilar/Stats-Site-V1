@@ -14,23 +14,23 @@
   </script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Assumptions & When They Break — StatsCapybara</title>
+  <title>ANOVA &amp; t-Test Assumptions — StatsCapybara</title>
   <meta name="description" content="Every test has fine print. Learn the assumptions behind t-tests and ANOVA, and read a Q-Q plot to diagnose non-normality at a glance." />
   <link rel="canonical" href="https://statscapybara.com/stats-2/assumptions-and-when-they-break/" />
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="Assumptions &amp; When They Break — StatsCapybara" />
+  <meta property="og:title" content="ANOVA &amp; t-Test Assumptions — StatsCapybara" />
   <meta property="og:description" content="Every test has fine print. Learn the assumptions behind t-tests and ANOVA, and read a Q-Q plot to diagnose non-normality at a glance." />
   <meta property="og:image" content="https://statscapybara.com/assets/og-stats-2.png" />
   <meta property="og:url" content="https://statscapybara.com/stats-2/assumptions-and-when-they-break/" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Assumptions &amp; When They Break — StatsCapybara" />
+  <meta name="twitter:title" content="ANOVA &amp; t-Test Assumptions — StatsCapybara" />
   <meta name="twitter:description" content="Every test has fine print. Learn the assumptions behind t-tests and ANOVA, and read a Q-Q plot to diagnose non-normality at a glance." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-2.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
-  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Assumptions & When They Break", "description": "Every test has fine print. Learn the assumptions behind t-tests and ANOVA, and read a Q-Q plot to diagnose non-normality at a glance.", "url": "https://statscapybara.com/stats-2/assumptions-and-when-they-break/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: Comparing Groups & Relationships", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Assumptions & When They Break", "item": "https://statscapybara.com/stats-2/assumptions-and-when-they-break/"}]}]
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "ANOVA & t-Test Assumptions", "description": "Every test has fine print. Learn the assumptions behind t-tests and ANOVA, and read a Q-Q plot to diagnose non-normality at a glance.", "url": "https://statscapybara.com/stats-2/assumptions-and-when-they-break/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: ANOVA & Regression", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "ANOVA & t-Test Assumptions", "item": "https://statscapybara.com/stats-2/assumptions-and-when-they-break/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
   {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I check if my data is normally distributed?", "acceptedAnswer": {"@type": "Answer", "text": "Look, don't just test: a Q-Q plot (points hugging the diagonal = normal) plus a histogram tells you more than any p-value. Formal tests like Shapiro–Wilk have a trap: in large samples they flag trivial, harmless deviations, and in small samples they miss serious ones, exactly backwards from what you need. Learn the Q-Q signatures in the playground above, then calibrate them against the section on how crooked normal data looks: roughly half of genuinely normal samples put at least one point outside a 95% band, and it is almost always at an end. Read the middle of the plot, and give the extremes a lot of rope."}}, {"@type": "Question", "name": "Can I let the assumption test decide which test I run?", "acceptedAnswer": {"@type": "Answer", "text": "It is the obvious move, and it changes what your α means without telling you. Running Levene's test and then picking Student's or Welch's t on the result is a two-stage procedure, and the false-positive rate belongs to the procedure as a whole, not to whichever test you land on. Simulated at 200,000 samples with unequal groups (n = 45 and 15) whose smaller group has the larger variance, always pooling gives a 15.2% false-positive rate at a nominal 5%; Welch alone gives 4.9%; letting Levene choose gives 5.7%. Better than pooling blindly, still not the 5% it advertises. The cleaner habit is to decide from the design before the data arrives and write the choice down, which also spares you a decision you would otherwise be making with the answer already in view."}}, {"@type": "Question", "name": "Which statistical assumption matters most?", "acceptedAnswer": {"@type": "Answer", "text": "Independence, without question. Mild non-normality is usually forgiven by the CLT, and unequal variances have Welch-style fixes — but treating correlated observations (repeated measures, students in the same classroom) as independent silently shrinks your standard errors and manufactures significance. No correction rescues it afterward; it's fixed by design or by models built for structure, like multilevel models."}}]}
@@ -44,8 +44,8 @@
       <aside class="sidebar" id="sidebar"></aside>
 
       <article class="lesson">
-        <span class="lesson-eyebrow">Section 2.5</span>
-        <h1>Assumptions &amp; When They Break</h1>
+        <span class="lesson-eyebrow">Section 2.6</span>
+        <h1>ANOVA &amp; t-Test Assumptions</h1>
 
         <p class="lede">Every test you've met comes with fine print: conditions that must roughly hold for its p-values to mean what they claim. Ignore them and the test still spits out a number; it's just the wrong number. The good news: the main assumptions are few, and most are easy to check by eye.</p>
 
@@ -131,7 +131,7 @@
           </details>
           <details class="faq-item">
             <summary>Which statistical assumption matters most?</summary>
-            <div class="faq-a"><p>Independence, without question. Mild non-normality is usually forgiven by the CLT, and unequal variances have Welch-style fixes — but treating correlated observations (repeated measures, students in the same classroom) as independent silently shrinks your standard errors and manufactures significance. No correction rescues it afterward; it's fixed by design or by models built for structure, like <a href="../../stats-4/mixed-and-multilevel-models/">multilevel models</a>.</p></div>
+            <div class="faq-a"><p>Independence, without question. Mild non-normality is usually forgiven by the CLT, and unequal variances have Welch-style fixes — but treating correlated observations (repeated measures, students in the same classroom) as independent silently shrinks your standard errors and manufactures significance. No correction rescues it afterward; it's fixed by design or by models built for structure, like <a href="../../stats-3/mixed-and-multilevel-models/">multilevel models</a>.</p></div>
           </details>
         </section>
         <!-- faq:end -->
