@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    /* Consent Mode: storage denied by default, so GA sets no cookie and
+       follows nobody between visits. Anonymous counts still arrive. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Non-Linear Relationships & Transformations — StatsCapybara</title>
+  <meta name="description" content="A curved relationship read off the residual plot, then straightened with a log or a quadratic term, and the coefficients read correctly afterwards." />
+  <link rel="canonical" href="https://statscapybara.com/stats-2/nonlinear-relationships-and-transformations/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Non-Linear Relationships &amp; Transformations — StatsCapybara" />
+  <meta property="og:description" content="A curved relationship read off the residual plot, then straightened with a log or a quadratic term, and the coefficients read correctly afterwards." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og-stats-2.png" />
+  <meta property="og:url" content="https://statscapybara.com/stats-2/nonlinear-relationships-and-transformations/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Non-Linear Relationships &amp; Transformations — StatsCapybara" />
+  <meta name="twitter:description" content="A curved relationship read off the residual plot, then straightened with a log or a quadratic term, and the coefficients read correctly afterwards." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-2.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Non-Linear Relationships & Transformations", "description": "A curved relationship read off the residual plot, then straightened with a log or a quadratic term, and the coefficients read correctly afterwards.", "url": "https://statscapybara.com/stats-2/nonlinear-relationships-and-transformations/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: ANOVA & Regression", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Non-Linear Relationships & Transformations", "item": "https://statscapybara.com/stats-2/nonlinear-relationships-and-transformations/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Should I log the predictor or the outcome?", "acceptedAnswer": {"@type": "Answer", "text": "It depends on which side the curvature is on, and both have a story attached. Log the predictor when equal MULTIPLES of x buy equal amounts of y, which is diminishing returns: income against life satisfaction, practice against performance. Log the outcome when each extra unit of x MULTIPLIES y by a fixed factor, which is proportional growth: populations, compound interest, an untreated epidemic. A practical tiebreaker is the residual plot. If the spread of the residuals fans out as the fitted values rise, logging the outcome usually fixes the curvature and the unequal variance at once, which logging the predictor cannot do."}}, {"@type": "Question", "name": "Can I compare R-squared between a model of y and a model of log y?", "acceptedAnswer": {"@type": "Answer", "text": "No, and software will print both without warning you. The two are explaining variation in different quantities, so their totals are different and the ratios are not on a common footing. A logged outcome usually posts the higher R-squared simply because logging compresses a long tail, which is not evidence that it predicts better. To compare fairly, turn the log model's predictions back into the original units and compute R-squared there, which is what the widget on this page does. Note that the naive back-transform, exponentiating the fitted value, estimates the median rather than the mean and runs a little low."}}, {"@type": "Question", "name": "How do I know whether to transform or to fit a more complicated model?", "acceptedAnswer": {"@type": "Answer", "text": "Transform when the curvature has a shape you can name and a mechanism behind it, because a model that encodes a real mechanism keeps behaving sensibly outside the range you sampled, and it stays at one predictor. Reach for something larger when the curve has several bends, when the outcome is a count or a yes/no rather than a quantity, or when the shape differs by group. What you should not do is try every transformation and keep whichever posts the best R-squared. That is a forking path rather than an analysis, and the winner will be partly fitted to your noise. Decide from the residual plot and the mechanism, then report what you chose and why."}}]}
+  </script>
+</head>
+<body data-course="stats-2" data-section="nonlinear-relationships-and-transformations">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 2.17</span>
+        <h1>Non-Linear Relationships &amp; Transformations</h1>
+
+        <p class="lede">A straight line is an assumption, not a fact about your data. When the relationship bends, the fitted line is wrong in a patterned way, and the pattern is visible in a plot you should already be drawing. Often the repair is one transformation rather than a bigger model.</p>
+
+        <h2>The residual plot is where curvature shows up</h2>
+        <p>Fit a line to curved data and it will run above the points at the ends and below them in the middle, or the reverse. On the scatterplot that can be hard to see, because the eye is generous about lines. On a plot of residuals against fitted values it is unmistakable: instead of a formless band around zero you get an arch or a valley.</p>
+        <p>That plot is the first thing <a href="../../stats-2/regression-diagnostics/">Section 2.8</a> teaches you to draw, and curvature is the violation it catches most reliably. Set the widget's model to the plain line and its truth to any of the curved shapes, then look at the lower panel rather than the upper one.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="nlviz">
+          <p class="viz-title">🎮 Straighten It Out</p>
+          <p class="viz-sub">The top panel is the data with the fitted model drawn back in the original units. The bottom panel is residuals against fitted values, where curvature is obvious. Choose the wrong model and the arch appears.</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>What the truth looks like</label>
+              <div class="seg" id="nl-truth">
+                <button data-t="log" class="active">Diminishing returns</button>
+                <button data-t="exp">Exponential growth</button>
+                <button data-t="quad">U-shaped</button>
+              </div>
+            </div>
+            <div class="control">
+              <label>Model you fit</label>
+              <div class="seg" id="nl-model">
+                <button data-m="lin" class="active">y ~ x</button>
+                <button data-m="logx">y ~ log x</button>
+                <button data-m="logy">log y ~ x</button>
+                <button data-m="quad">y ~ x + x²</button>
+              </div>
+            </div>
+            <div class="control">
+              <label>Noise <span class="val" id="nl-sval">0.8</span></label>
+              <input type="range" id="nl-s" min="1" max="30" step="1" value="8" />
+            </div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="nl-new">New sample</button></div>
+          </div>
+
+          <canvas id="nl-fit" style="--viz-ar: 12 / 7"></canvas>
+          <p class="viz-sub" style="margin:1rem 0 .25rem">Residuals against fitted values, in the original units of y</p>
+          <canvas id="nl-res" style="--viz-ar: 4 / 1"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Fitted model</span><span class="v" id="nl-eq">—</span></div>
+            <div class="stat"><span class="k">R² on the original scale</span><span class="v" id="nl-r2">—</span></div>
+            <div class="stat"><span class="k">Residual SE</span><span class="v" id="nl-se">—</span></div>
+            <div class="stat"><span class="k">Curvature left in residuals</span><span class="v" id="nl-curve">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Two transformations do most of the work</h2>
+        <p>Taking the <strong>log of the predictor</strong> fits diminishing returns: <em>y</em> climbs quickly at first and then flattens, so equal <em>multiples</em> of <em>x</em> buy equal amounts of <em>y</em>. Income against life satisfaction behaves this way, and so does practice against performance.</p>
+        <p>Taking the <strong>log of the outcome</strong> fits constant proportional growth: each extra unit of <em>x</em> multiplies <em>y</em> by a fixed factor rather than adding a fixed amount. Populations, compound interest and untreated epidemics do this. Logging the outcome also shrinks a long right tail and often steadies the variance at the same time, which is why it repairs two assumption problems with one move.</p>
+        <p>Adding <strong><em>x</em>²</strong> is not a transformation of either variable but an extra predictor, and it fits a relationship that turns around: rising then falling, or falling then rising. Anxiety against performance is the standard example, and so is any dose that helps up to a point.</p>
+        <p>Note what the widget's R² readout does: it is always computed on the <strong>original</strong> scale of <em>y</em>, with the log-outcome model's predictions turned back into raw units first. That is deliberate. An R² from a model of log <em>y</em> is not comparable to an R² from a model of <em>y</em>, because the two are explaining variation in different quantities, and software will happily print both without warning you.</p>
+
+        <h2>Reading a coefficient after a transformation</h2>
+        <p>This is the part that goes wrong in write-ups, because the slope no longer means "the change in <em>y</em> per unit of <em>x</em>".</p>
+        <p>With <strong>log <em>x</em></strong>, the slope is the change in <em>y</em> per unit of log <em>x</em>, and nobody thinks in those. Convert it: doubling <em>x</em> changes <em>y</em> by <em>b</em>₁ × ln 2 ≈ 0.693<em>b</em>₁. If <em>b</em>₁ = 8, every doubling of <em>x</em> is worth about 5.5 points of <em>y</em>. A 10% rise in <em>x</em> is worth <em>b</em>₁ × ln(1.10) = 0.76, which is close enough to <em>b</em>₁/10 that the shortcut is safe for small percentages.</p>
+        <p>With <strong>log <em>y</em></strong>, each one-unit rise in <em>x</em> multiplies <em>y</em> by <em>e</em><sup><em>b</em>₁</sup>. For <em>b</em>₁ = 0.08 that factor is 1.083, an increase of 8.3%. The familiar shortcut, "read 100<em>b</em>₁ as a percentage", gives 8% here and is off by a third of a point. It stays serviceable while <em>b</em>₁ is under about 0.1 and degrades quickly after that: at <em>b</em>₁ = 0.5 the shortcut says 50% and the true figure is 64.9%. Exponentiate rather than approximating, and report the factor.</p>
+        <p>With <strong><em>x</em>²</strong> in the model, neither coefficient means anything on its own, because the effect of <em>x</em> now depends on where you are. What you report is the turning point, at <em>x</em> = −<em>b</em>₁/(2<em>b</em>₂), and the direction on each side of it. For <em>b</em>₁ = −6 and <em>b</em>₂ = 0.35 the curve bottoms out at <em>x</em> = 8.57 and rises after that. The same "a coefficient is conditional now" logic runs through <a href="../../stats-2/interactions-in-regression/">Section 2.11</a>, and mean-centering <em>x</em> before squaring it helps here for the same reason it helps there.</p>
+
+        <h2>When to transform, and when not to</h2>
+        <p>Transform when the curvature has a shape you can name and a story behind it. Diminishing returns and proportional growth are real mechanisms, and a model that encodes one of them will predict sensibly outside the data you happened to collect. A transformation also keeps the model at one predictor, which keeps the interpretation and the degrees of freedom simple.</p>
+        <p>Reach for something larger when the shape has several bends, when the outcome is a count or a yes/no rather than a quantity, or when the relationship differs by group. A yes/no outcome belongs in <a href="../../stats-2/logistic-regression/">logistic regression</a> rather than under a log, counts belong in a <a href="../../stats-3/generalized-linear-models/">generalized linear model</a>, and a curve that wanders needs a flexible fit rather than a cleverer power.</p>
+        <p>Two warnings worth carrying. Logs are undefined at zero and below, so a variable containing zeros needs a considered decision rather than a reflexive log(<em>x</em> + 1). And a transformation chosen by trying every option and keeping the best R² is a <a href="../../methods/the-replication-crisis/">forking path</a>, not an analysis, so decide from the residual plot and the mechanism instead of from the leaderboard.</p>
+
+        <h2>Going deeper</h2>
+        <p>This is the course-level treatment, aimed at the regression model in front of you. <a href="../../data/transformations-and-recoding/">Transformations &amp; Recoding</a> in the Research Toolkit takes the same operations as a data-preparation job: which transformation to apply to a skewed variable, how to recode and bin sensibly, and how to document what you did so the analysis stays reproducible.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> a curved relationship fitted with a straight line is not a small error. The slope understates the effect where it is strong and overstates it where it is weak, and every prediction outside the middle of the data is biased in a predictable direction. The residual plot tells you in one glance, and usually one transformation is the whole repair.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>Should I log the predictor or the outcome?</summary>
+            <div class="faq-a"><p>It depends on which side the curvature is on, and both have a story attached. Log the predictor when equal MULTIPLES of x buy equal amounts of y, which is diminishing returns: income against life satisfaction, practice against performance. Log the outcome when each extra unit of x MULTIPLIES y by a fixed factor, which is proportional growth: populations, compound interest, an untreated epidemic. A practical tiebreaker is the residual plot. If the spread of the residuals fans out as the fitted values rise, logging the outcome usually fixes the curvature and the unequal variance at once, which logging the predictor cannot do.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Can I compare R-squared between a model of y and a model of log y?</summary>
+            <div class="faq-a"><p>No, and software will print both without warning you. The two are explaining variation in different quantities, so their totals are different and the ratios are not on a common footing. A logged outcome usually posts the higher R-squared simply because logging compresses a long tail, which is not evidence that it predicts better. To compare fairly, turn the log model's predictions back into the original units and compute R-squared there, which is what the widget on this page does. Note that the naive back-transform, exponentiating the fitted value, estimates the median rather than the mean and runs a little low.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>How do I know whether to transform or to fit a more complicated model?</summary>
+            <div class="faq-a"><p>Transform when the curvature has a shape you can name and a mechanism behind it, because a model that encodes a real mechanism keeps behaving sensibly outside the range you sampled, and it stays at one predictor. Reach for something larger when the curve has several bends, when the outcome is a count or a yes/no rather than a quantity, or when the shape differs by group. What you should not do is try every transformation and keep whichever posts the best R-squared. That is a forking path rather than an analysis, and the winner will be partly fitted to your noise. Decide from the residual plot and the mechanism, then report what you chose and why.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ Non-linearity / transformation visualization ============
+       Frozen noise: seed() draws MAXN x positions and MAXN standard-normal
+       errors once. build() maps (pools, truth shape, noise) to the sample
+       deterministically, so switching shape or moving the noise slider
+       transforms the SAME draws. "New sample" is the only reseed.
+
+       R² and the residual SE are always computed on the ORIGINAL y scale,
+       with the log-outcome model's predictions exponentiated back first.
+       An R² from a model of log y is not comparable to one from a model of
+       y, and printing both unlabeled is how that mistake spreads.
+  -->
+  <script>
+  (function () {
+    "use strict";
+    var MAXN = 70, N = 70;
+    var truth = "log", model = "lin", sigma = 0.8;
+    var xs = new Float64Array(MAXN), es = new Float64Array(MAXN);
+    var X = [], Y = [];
+
+    var fitC = document.getElementById("nl-fit");
+    var resC = document.getElementById("nl-res");
+    if (!fitC || !resC) return;
+    var $ = function (id) { return document.getElementById(id); };
+
+    function seed() {
+      for (var i = 0; i < MAXN; i++) { xs[i] = 1 + Math.random() * 19; es[i] = VIZ.randn(); }
+    }
+    function build() {
+      X = []; Y = [];
+      for (var i = 0; i < N; i++) {
+        var x = xs[i], y;
+        if (truth === "log") y = 5 + 8 * Math.log(x) + sigma * 2.2 * es[i];
+        else if (truth === "exp") y = 3 * Math.exp(0.15 * x + sigma * 0.14 * es[i]);
+        else y = 40 - 6 * x + 0.35 * x * x + sigma * 3.5 * es[i];
+        X.push(x); Y.push(y);
+      }
+    }
+
+    /* ---- ordinary least squares for 1 or 2 predictors ---- */
+    function ols1(u, v) {
+      var i, mu = VIZ.mean(u), mv = VIZ.mean(v), Suu = 0, Suv = 0;
+      for (i = 0; i < u.length; i++) { Suu += (u[i] - mu) * (u[i] - mu); Suv += (u[i] - mu) * (v[i] - mv); }
+      var b1 = Suu ? Suv / Suu : 0;
+      return [mv - b1 * mu, b1];
+    }
+    function ols2(u1, u2, v) {                    // v = a + b1 u1 + b2 u2
+      var n = v.length, i, m1 = VIZ.mean(u1), m2 = VIZ.mean(u2), mv = VIZ.mean(v);
+      var S11 = 0, S22 = 0, S12 = 0, S1v = 0, S2v = 0;
+      for (i = 0; i < n; i++) {
+        var d1 = u1[i] - m1, d2 = u2[i] - m2, dv = v[i] - mv;
+        S11 += d1 * d1; S22 += d2 * d2; S12 += d1 * d2; S1v += d1 * dv; S2v += d2 * dv;
+      }
+      var det = S11 * S22 - S12 * S12;
+      if (!det) return [mv, 0, 0];
+      var b1 = (S22 * S1v - S12 * S2v) / det, b2 = (S11 * S2v - S12 * S1v) / det;
+      return [mv - b1 * m1 - b2 * m2, b1, b2];
+    }
+
+    /* ---- fit the chosen model, always predicting on the ORIGINAL y scale ---- */
+    function fit() {
+      var i, b, pred = [], eq = "", k = 2;
+      if (model === "lin") {
+        b = ols1(X, Y);
+        for (i = 0; i < N; i++) pred.push(b[0] + b[1] * X[i]);
+        eq = "ŷ = " + b[0].toFixed(2) + " + " + b[1].toFixed(3) + "x";
+      } else if (model === "logx") {
+        var lx = X.map(Math.log);
+        b = ols1(lx, Y);
+        for (i = 0; i < N; i++) pred.push(b[0] + b[1] * lx[i]);
+        eq = "ŷ = " + b[0].toFixed(2) + " + " + b[1].toFixed(3) + " ln x";
+      } else if (model === "logy") {
+        var ly = Y.map(function (v) { return Math.log(Math.max(v, 1e-6)); });
+        b = ols1(X, ly);
+        for (i = 0; i < N; i++) pred.push(Math.exp(b[0] + b[1] * X[i]));
+        eq = "ln ŷ = " + b[0].toFixed(2) + " + " + b[1].toFixed(3) + "x";
+      } else {
+        var x2 = X.map(function (v) { return v * v; });
+        b = ols2(X, x2, Y); k = 3;
+        for (i = 0; i < N; i++) pred.push(b[0] + b[1] * X[i] + b[2] * X[i] * X[i]);
+        eq = "ŷ = " + b[0].toFixed(2) + " + " + b[1].toFixed(3) + "x + " + b[2].toFixed(4) + "x²";
+      }
+      var my = VIZ.mean(Y), SSE = 0, SST = 0;
+      for (i = 0; i < N; i++) { var e = Y[i] - pred[i]; SSE += e * e; SST += (Y[i] - my) * (Y[i] - my); }
+      return { b: b, pred: pred, eq: eq, r2: SST ? 1 - SSE / SST : 0, se: Math.sqrt(SSE / (N - k)), k: k };
+    }
+
+    /* Curvature left over: split residuals into thirds by fitted value and
+       compare the middle third's mean against the two outer thirds. Scale the
+       gap by ITS OWN standard error, not by the residual SE: with ~23 points
+       per third the gap has SD ≈ 0.26·se under pure noise, so a threshold set
+       against se alone fires on about a third of correctly specified models.
+       Dividing by se·√(1/n_mid + ¼(1/n_lo + 1/n_hi)) makes it read like a z. */
+    function curvature(f) {
+      var pairs = [], i;
+      for (i = 0; i < N; i++) pairs.push([f.pred[i], Y[i] - f.pred[i]]);
+      pairs.sort(function (a, b) { return a[0] - b[0]; });
+      var t = Math.floor(N / 3), lo = 0, mid = 0, hi = 0, nl = 0, nm = 0, nh = 0;
+      for (i = 0; i < N; i++) {
+        if (i < t) { lo += pairs[i][1]; nl++; }
+        else if (i < 2 * t) { mid += pairs[i][1]; nm++; }
+        else { hi += pairs[i][1]; nh++; }
+      }
+      var gap = (mid / nm) - ((lo / nl) + (hi / nh)) / 2;
+      var sd = f.se * Math.sqrt(1 / nm + 0.25 * (1 / nl + 1 / nh));
+      return sd ? Math.abs(gap) / sd : 0;
+    }
+
+    function drawFit(f) {
+      var H = Math.max(220, Math.round((fitC.clientWidth || 640) * 7 / 12));
+      var o = VIZ.fit(fitC, H), ctx = o.ctx, W = o.w;
+      ctx.clearRect(0, 0, W, H);
+      var padL = 48, padR = 14, padT = 12, padB = 28, i;
+      var xlo = 1, xhi = 20, ylo = Infinity, yhi = -Infinity;
+      for (i = 0; i < N; i++) {
+        ylo = Math.min(ylo, Y[i], f.pred[i]); yhi = Math.max(yhi, Y[i], f.pred[i]);
+      }
+      var pad = (yhi - ylo) * 0.07 || 1; ylo -= pad; yhi += pad;
+      var px = function (v) { return padL + (W - padL - padR) * (v - xlo) / (xhi - xlo); };
+      var py = function (v) { return padT + (H - padT - padB) * (1 - (v - ylo) / (yhi - ylo)); };
+      // fitted curve, drawn densely so a curve looks like a curve
+      ctx.strokeStyle = VIZ.css("--primary") || "#6366f1"; ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (i = 0; i <= 160; i++) {
+        var xv = xlo + (xhi - xlo) * i / 160, yv;
+        var b = f.b;
+        if (model === "lin") yv = b[0] + b[1] * xv;
+        else if (model === "logx") yv = b[0] + b[1] * Math.log(xv);
+        else if (model === "logy") yv = Math.exp(b[0] + b[1] * xv);
+        else yv = b[0] + b[1] * xv + b[2] * xv * xv;
+        if (i) ctx.lineTo(px(xv), py(yv)); else ctx.moveTo(px(xv), py(yv));
+      }
+      ctx.stroke();
+      ctx.fillStyle = VIZ.css("--secondary") || "#14b8a6";
+      for (i = 0; i < N; i++) { ctx.beginPath(); ctx.arc(px(X[i]), py(Y[i]), 3, 0, 6.2832); ctx.fill(); }
+      ctx.strokeStyle = VIZ.css("--border") || "#d5dbe4"; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, H - padB); ctx.lineTo(W - padR, H - padB); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, H - padB); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-muted") || "#5f6e86";
+      ctx.font = "12px " + (VIZ.css("--font") || "sans-serif");
+      ctx.textAlign = "center";
+      for (i = 0; i <= 4; i++) ctx.fillText((xlo + (xhi - xlo) * i / 4).toFixed(0), px(xlo + (xhi - xlo) * i / 4), H - padB + 16);
+      ctx.textAlign = "right";
+      for (i = 0; i <= 3; i++) { var yv2 = ylo + (yhi - ylo) * i / 3; ctx.fillText(yv2.toFixed(0), padL - 6, py(yv2) + 4); }
+    }
+
+    function drawRes(f) {
+      var H = Math.max(130, Math.round((resC.clientWidth || 640) / 4));
+      var o = VIZ.fit(resC, H), ctx = o.ctx, W = o.w;
+      ctx.clearRect(0, 0, W, H);
+      var padL = 48, padR = 14, padT = 10, padB = 24, i;
+      var flo = Infinity, fhi = -Infinity, rlo = 0;
+      for (i = 0; i < N; i++) {
+        flo = Math.min(flo, f.pred[i]); fhi = Math.max(fhi, f.pred[i]);
+        rlo = Math.max(rlo, Math.abs(Y[i] - f.pred[i]));
+      }
+      rlo = rlo * 1.12 || 1;
+      var px = function (v) { return padL + (W - padL - padR) * (v - flo) / ((fhi - flo) || 1); };
+      var py = function (v) { return padT + (H - padT - padB) * (1 - (v + rlo) / (2 * rlo)); };
+      ctx.strokeStyle = VIZ.css("--border") || "#d5dbe4"; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, py(0)); ctx.lineTo(W - padR, py(0)); ctx.stroke();
+      ctx.fillStyle = "#f97316";
+      for (i = 0; i < N; i++) { ctx.beginPath(); ctx.arc(px(f.pred[i]), py(Y[i] - f.pred[i]), 3, 0, 6.2832); ctx.fill(); }
+      ctx.fillStyle = VIZ.css("--text-muted") || "#5f6e86";
+      ctx.font = "12px " + (VIZ.css("--font") || "sans-serif");
+      ctx.textAlign = "right";
+      ctx.fillText("0", padL - 6, py(0) + 4);
+      ctx.textAlign = "center";
+      ctx.fillText("fitted", (padL + W - padR) / 2, H - 6);
+    }
+
+    function render() {
+      var f = fit();
+      drawFit(f); drawRes(f);
+      var c = curvature(f);
+      $("nl-eq").textContent = f.eq;
+      $("nl-r2").textContent = f.r2.toFixed(3);
+      $("nl-se").textContent = f.se.toFixed(3);
+      $("nl-curve").textContent = c < 2 ? "none worth worrying about" : c < 4 ? "some" : "clear arch or valley";
+      $("nl-curve").style.color = c < 2 ? "" : "#f97316";
+    }
+
+    function segWire(id, attr, set) {
+      document.getElementById(id).addEventListener("click", function (e) {
+        var b = e.target.closest("button[" + attr + "]");
+        if (!b) return;
+        this.querySelectorAll("button").forEach(function (x) { x.classList.remove("active"); });
+        b.classList.add("active");
+        set(b.getAttribute(attr));
+      });
+    }
+    segWire("nl-truth", "data-t", function (v) { truth = v; build(); render(); });
+    segWire("nl-model", "data-m", function (v) { model = v; render(); });
+    $("nl-s").addEventListener("input", function () {
+      sigma = +this.value / 10;
+      $("nl-sval").textContent = sigma.toFixed(1);
+      build(); render();
+    });
+    $("nl-new").addEventListener("click", function () { seed(); build(); render(); });
+
+    var redraw = VIZ.rafThrottle(render);
+    window.addEventListener("resize", redraw);
+    if (window.ResizeObserver) { new ResizeObserver(redraw).observe(fitC); }
+    VIZ.onTheme(render);
+
+    seed(); build(); render();
+  })();
+  </script>
+
+</body>
+</html>

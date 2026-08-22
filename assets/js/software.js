@@ -14,6 +14,28 @@
 window.SOFTWARE = {
 
   /* ---------------- Stats 1 ---------------- */
+  "nonlinear-relationships-and-transformations": {
+    spss: [
+      "Look before you transform: <b>Analyze &rsaquo; Regression &rsaquo; Linear</b>, then <b>Plots</b>, and put <b>*ZRESID</b> on Y against <b>*ZPRED</b> on X. An arch or a valley there is curvature.",
+      "To log a variable: <b>Transform &rsaquo; Compute Variable</b>, name the target (say <code>log_x</code>) and enter <code>LN(x)</code>. Check for zeros first, since LN(0) is undefined and SPSS writes a missing value without comment.",
+      "For a quadratic term, compute <code>x_c = x - MEAN</code> and then <code>x_c2 = x_c * x_c</code>, and enter both in the regression. Centering first keeps the linear coefficient interpretable.",
+      "Refit and re-inspect the same residual plot. The transformation is doing its job when the arch is gone, not when <em>R</em>&sup2; rises.",
+      "<b>Analyze &rsaquo; Regression &rsaquo; Curve Estimation</b> will fit several shapes at once. Treat it as a way to look, not as a way to choose: picking the winner by fit is a forking path."
+    ],
+    jasp: [
+      "<b>Regression &rsaquo; Linear Regression</b>, then <b>Plots &rsaquo; Residuals vs. Predicted</b> to see the curvature.",
+      "Create the transformed variable in the data tab with a computed column (<code>ln(x)</code>, or <code>x^2</code> after centering), then add it as a covariate.",
+      "Enter the linear and squared terms in the <b>same</b> block, since the pair is what defines the curve.",
+      "Re-check the residual plot after refitting; the arch should be gone."
+    ],
+    apa: '<p>The relationship between practice hours and performance was clearly curved, with a pronounced arch in the residuals from a linear fit. A model using the natural log of practice hours removed the pattern and fitted well, <em>b</em> = 8.04, <em>SE</em> = 1.21, <em>t</em>(58) = 6.64, <em>p</em> &lt; .001, <em>R</em>&sup2; = .43. On this scale each doubling of practice time was associated with a gain of about 5.6 points.</p>',
+    tips: [
+      "Report the effect in units a reader can picture. For a logged predictor that means \"per doubling of x\" (<em>b</em>&#8321; &times; ln 2); for a logged outcome it means the multiplicative factor <em>e</em><sup><em>b</em>&#8321;</sup>, not the raw coefficient.",
+      "The 100<em>b</em>&#8321; percentage shortcut for a logged outcome is fine while <em>b</em>&#8321; is under about 0.1. At <em>b</em>&#8321; = 0.5 it says 50% when the truth is 64.9%, so exponentiate instead.",
+      "Never compare <em>R</em>&sup2; between a model of <em>y</em> and a model of log <em>y</em>. They explain variation in different quantities, and the logged one usually wins for reasons that have nothing to do with prediction.",
+      "Say in the write-up that you transformed, and why, before giving the coefficient. A slope on an undeclared log scale is the fastest way to have a result misread by a factor of several."
+    ]
+  },
   "inference-for-regression": {
     spss: [
       "<b>Analyze &rsaquo; Regression &rsaquo; Linear</b>. Put the outcome in <b>Dependent</b> and the predictor in <b>Independent(s)</b>.",

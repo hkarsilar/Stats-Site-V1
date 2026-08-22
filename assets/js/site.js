@@ -164,6 +164,7 @@
     "z-scores-and-the-normal-distribution": "A capybara 3 SDs above the mean chill is basically a warm rock with a heartbeat.",
     "probability-basics": "50% of capybaras are napping. The other 50% are also napping. Probability!",
     "producing-data-and-sampling-design": "A capybara who only surveys the capybaras already in the pond will conclude that every capybara loves water.",
+    "nonlinear-relationships-and-transformations": "Not every path to the water is straight. Some of them are logarithmic.",
     "inference-for-regression": "The line is easy to draw. The honest part is admitting how much it could have wobbled.",
     "inference-for-proportions": "Ask enough capybaras and you can say what the pond thinks, give or take a few percent.",
     "binomial-distribution": "Twelve capybaras, each independently deciding whether to get in the water. The count has a distribution; the capybaras have a plan.",

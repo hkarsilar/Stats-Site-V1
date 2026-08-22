@@ -6,6 +6,10 @@
    tools/build-search-index.py. Add a term here, not in the HTML.
    ============================================================ */
 window.GLOSSARY = [
+      { t: "Log transformation", d: "Replacing a variable by its logarithm. Logging the predictor fits diminishing returns; logging the outcome fits constant proportional growth and often steadies the variance too.", s: "stats-2/nonlinear-relationships-and-transformations", l: "Non-Linear Relationships & Transformations" },
+      { t: "Polynomial term", d: "An added x² (or higher power) that lets a fitted curve turn around. The turning point sits at −b₁/(2b₂), and neither coefficient is interpretable on its own.", s: "stats-2/nonlinear-relationships-and-transformations", l: "Non-Linear Relationships & Transformations" },
+      { t: "Retransformation bias", d: "Exponentiating the fitted value of a log-outcome model estimates the median of y, not its mean, so a naive back-transform runs low.", s: "stats-2/nonlinear-relationships-and-transformations", l: "Non-Linear Relationships & Transformations" },
+      { t: "Curvature (in residuals)", d: "An arch or valley in a plot of residuals against fitted values. The signature of a relationship that bends where the model assumed a straight line.", s: "stats-2/nonlinear-relationships-and-transformations", l: "Non-Linear Relationships & Transformations" },
       { t: "Population regression model", d: "y = β₀ + β₁x + ε with ε normal, mean zero and the same spread at every x. The model that makes inference about a slope possible.", s: "stats-2/inference-for-regression", l: "Inference for Regression" },
       { t: "Residual standard error (s)", d: "The typical size of a residual, the square root of SSE/(n−2). It estimates σ, the scatter around the population line.", s: "stats-2/inference-for-regression", l: "Inference for Regression" },
       { t: "Standard error of the slope", d: "s divided by the square root of the sum of squared x deviations. Small scatter and widely spread predictor values both make it small.", s: "stats-2/inference-for-regression", l: "Inference for Regression" },

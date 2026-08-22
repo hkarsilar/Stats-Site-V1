@@ -73,7 +73,7 @@ window.CURRICULUM = [
       { n: "2.14", slug: "model-comparison",                         title: "Model Comparison", ready: true },
       { n: "2.15", slug: "ancova",                                   title: "ANCOVA: Controlling for Covariates", ready: true },
       { n: "2.16", slug: "logistic-regression",                      title: "Logistic Regression", ready: true },
-      { n: "2.17", slug: "nonlinear-relationships-and-transformations", title: "Non-Linear Relationships & Transformations", ready: false }
+      { n: "2.17", slug: "nonlinear-relationships-and-transformations", title: "Non-Linear Relationships & Transformations", ready: true }
     ]
   },
   {
