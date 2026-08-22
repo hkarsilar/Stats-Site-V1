@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    /* Consent Mode: storage denied by default, so GA sets no cookie and
+       follows nobody between visits. Anonymous counts still arrive. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Inference for Regression — StatsCapybara</title>
+  <meta name="description" content="The slope you fitted is an estimate. Its standard error, its t test, its confidence interval, the ANOVA table, and the two bands around the line." />
+  <link rel="canonical" href="https://statscapybara.com/stats-2/inference-for-regression/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Inference for Regression — StatsCapybara" />
+  <meta property="og:description" content="The slope you fitted is an estimate. Its standard error, its t test, its confidence interval, the ANOVA table, and the two bands around the line." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og-stats-2.png" />
+  <meta property="og:url" content="https://statscapybara.com/stats-2/inference-for-regression/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Inference for Regression — StatsCapybara" />
+  <meta name="twitter:description" content="The slope you fitted is an estimate. Its standard error, its t test, its confidence interval, the ANOVA table, and the two bands around the line." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-2.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Inference for Regression", "description": "The slope you fitted is an estimate. Its standard error, its t test, its confidence interval, the ANOVA table, and the two bands around the line.", "url": "https://statscapybara.com/stats-2/inference-for-regression/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: ANOVA & Regression", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Inference for Regression", "item": "https://statscapybara.com/stats-2/inference-for-regression/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the difference between a confidence interval and a prediction interval in regression?", "acceptedAnswer": {"@type": "Answer", "text": "They are centered on the same fitted value and answer different questions. A confidence interval for the mean response asks where the average y sits among everyone at that x; a prediction interval asks where a single new individual will land. The second must also absorb that person's own deviation from the line, so its standard error picks up an extra 1 under the square root. On the shipped screen-time data at 6 screen hours the mean interval spans 1.68 points and the prediction interval spans 7.87, nearly five times wider. More data narrows the first and barely touches the second, because the extra 1 does not shrink with n."}}, {"@type": "Question", "name": "Why is the slope test on n − 2 degrees of freedom rather than n − 1?", "acceptedAnswer": {"@type": "Answer", "text": "Because the line costs two parameters. Residuals are measured from a line whose slope and intercept were both estimated from these same data, so two constraints have been imposed and only n − 2 of the residuals are free to vary. The residual standard error divides SSE by n − 2 for exactly that reason, and since the slope's standard error is built from s, the t it produces inherits those degrees of freedom. In multiple regression the pattern generalizes to n − k − 1 for k predictors plus an intercept."}}, {"@type": "Question", "name": "My regression has a tiny R-squared but a significant slope. Which one should I believe?", "acceptedAnswer": {"@type": "Answer", "text": "Both, because they measure different things. The t test asks whether the slope is distinguishable from zero, and with a large enough sample a very shallow slope clears that bar comfortably. R-squared asks how much of the variation in y the line accounts for, and a real but small effect accounts for little. A significant slope with R-squared of .04 says there is probably a relationship and that it is nearly useless for predicting any individual. Report the slope with its confidence interval so a reader can see the size of the effect rather than only its detectability."}}]}
+  </script>
+</head>
+<body data-course="stats-2" data-section="inference-for-regression">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 2.7</span>
+        <h1>Inference for Regression</h1>
+
+        <p class="lede">Fitting a line to a scatterplot is description. <a href="../../stats-1/simple-linear-regression/">Section 1.18</a> did that: least squares, the slope, the intercept, the residuals. This lesson asks the next question, which is whether the slope you got would survive a second sample, and it answers it with the same <em>t</em> machinery you already know.</p>
+
+        <h2>The population regression model</h2>
+        <p>Inference needs a model of where the data came from. The standard one says that for each value of <em>x</em> there is a whole population of <em>y</em> values, that their means fall exactly on a straight line, and that they scatter around it by the same amount everywhere:</p>
+        <p style="text-align:center"><em>y</em> = β₀ + β₁<em>x</em> + ε          ε ~ N(0, σ)</p>
+        <p>β₀ (beta-nought) and β₁ (beta-one) are the parameters, fixed and unknown, and σ (sigma) is the size of the scatter. The line you fit gives <em>b</em>₀ and <em>b</em>₁, which estimate them. Four conditions come packaged with that equation, and they are the ones <a href="../../stats-2/regression-diagnostics/">Section 2.8</a> teaches you to check: the relationship really is linear, the observations are independent, the scatter is the same at every <em>x</em>, and the deviations are roughly normal.</p>
+        <p>σ is estimated by the residual standard error, sometimes just called <em>s</em>, which is the typical size of a residual:</p>
+        <p style="text-align:center"><em>s</em> = √(Σ(<em>y</em> − <em>ŷ</em>)² / (<em>n</em> − 2))</p>
+        <p>The divisor is <em>n</em> − 2 because fitting the line used up two degrees of freedom, one for the slope and one for the intercept. Every test below runs on those <em>n</em> − 2.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="irviz">
+          <p class="viz-title">🎮 One Line, Two Bands</p>
+          <p class="viz-sub">The same points throughout: the sliders change the true slope and the amount of scatter, and the sample is re-derived from a fixed pool rather than redrawn. The inner band is the confidence band for the mean response; the outer is the prediction band for one new case.</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>Sample size <span class="val" id="ir-nval">n = 40</span></label>
+              <input type="range" id="ir-n" min="10" max="120" step="5" value="40" />
+            </div>
+            <div class="control">
+              <label>True slope β₁ <span class="val" id="ir-bval">0.60</span></label>
+              <input type="range" id="ir-b" min="-150" max="150" step="5" value="60" />
+            </div>
+            <div class="control">
+              <label>Scatter σ <span class="val" id="ir-sval">2.0</span></label>
+              <input type="range" id="ir-s" min="5" max="60" step="5" value="20" />
+            </div>
+            <div class="control">
+              <label>Bands</label>
+              <div class="seg" id="ir-band">
+                <button data-b="both" class="active">Both</button>
+                <button data-b="conf">Confidence</button>
+                <button data-b="pred">Prediction</button>
+                <button data-b="none">None</button>
+              </div>
+            </div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="ir-new">New sample</button></div>
+          </div>
+
+          <canvas id="ir-canvas" style="--viz-ar: 12 / 7"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">b₁</span><span class="v" id="ir-b1">—</span></div>
+            <div class="stat"><span class="k">SE(b₁)</span><span class="v" id="ir-se">—</span></div>
+            <div class="stat"><span class="k">t</span><span class="v" id="ir-t">—</span></div>
+            <div class="stat"><span class="k">p</span><span class="v" id="ir-p">—</span></div>
+            <div class="stat"><span class="k">95% CI for β₁</span><span class="v" id="ir-ci">—</span></div>
+            <div class="stat"><span class="k">R²</span><span class="v" id="ir-r2">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>The standard error of the slope</h2>
+        <p>How precisely you know the slope depends on two things, and the formula puts them side by side:</p>
+        <p style="text-align:center">SE(<em>b</em>₁) = <em>s</em> / √(Σ(<em>x</em> − <em>x̄</em>)²)</p>
+        <p>Tight scatter around the line makes <em>s</em> small and the slope precise. Widely spread <em>x</em> values make the denominator large and do the same. That second half is a design lesson rather than an analysis one: if you get to choose where to measure, spreading your <em>x</em> values out buys precision for free, which is why a study that samples only a narrow slice of the predictor struggles to detect anything. Slide the scatter up in the widget and watch the bands swell while the points stay in the same left-to-right pattern.</p>
+
+        <h2>Testing and estimating the slope</h2>
+        <p>The null hypothesis worth testing is that the predictor tells you nothing, H₀: β₁ = 0. As always, the statistic is estimate over standard error, and it is a <em>t</em> on <em>n</em> − 2 degrees of freedom:</p>
+        <p style="text-align:center"><em>t</em> = <em>b</em>₁ / SE(<em>b</em>₁)          CI: <em>b</em>₁ ± <em>t</em>* SE(<em>b</em>₁)</p>
+        <p>Take the shipped <code>screen-time.csv</code>, 60 people with daily screen hours and a sleep-quality score. The fitted line is <em>ŷ</em> = 6.845 − 0.235<em>x</em>, with <em>s</em> = 1.922 and SE(<em>b</em>₁) = 0.147. That gives <em>t</em>(58) = −1.598, <em>p</em> = .115, and a 95% interval for β₁ of [−0.529, 0.059].</p>
+        <p>The interval is the more informative half of that output. It contains zero, which is the same verdict the test just returned, and it also says what the data do and do not rule out: a drop of half a point of sleep quality per screen hour is entirely compatible with these 60 people, and so is a small increase. That is a study too small to settle the question, which is a different statement from "there is no effect", and <a href="../../writing/nonsignificant-results/">Section 3.5</a> is about writing the difference carefully.</p>
+
+        <h2>The ANOVA table for a regression</h2>
+        <p>Software prints an analysis-of-variance table above the coefficients, and it is the same decomposition <a href="../../stats-2/one-way-anova/">one-way ANOVA</a> uses. Total variation in <em>y</em> splits into the part the line explains and the part it leaves behind:</p>
+        <p style="text-align:center">SST = SSR + SSE</p>
+        <table class="ref-table">
+          <thead><tr><th>Source</th><th>SS</th><th>df</th><th>MS</th><th>F</th></tr></thead>
+          <tbody>
+            <tr><td>Regression</td><td>9.43</td><td>1</td><td>9.432</td><td>2.554</td></tr>
+            <tr><td>Residual</td><td>214.16</td><td>58</td><td>3.692</td><td></td></tr>
+            <tr><td>Total</td><td>223.59</td><td>59</td><td></td><td></td></tr>
+          </tbody>
+        </table>
+        <p>Two things in that table are worth pinning down. <em>R</em>² is SSR/SST, here 9.43/223.59 = .042, so the line accounts for about 4% of the variation in sleep quality. And the <em>F</em> statistic is exactly the square of the <em>t</em> from the slope test: 2.554 = (−1.598)², and both report <em>p</em> = .115. In simple regression the <em>F</em> test adds nothing, because there is only one predictor to test. It starts earning its keep in <a href="../../stats-2/multiple-regression/">multiple regression</a>, where it asks whether the predictors <em>as a set</em> do anything.</p>
+
+        <h2>Confidence band or prediction band?</h2>
+        <p>Both bands are centered on the same fitted line and they answer different questions, which is the distinction the widget exists to make visible.</p>
+        <p>A <strong>confidence interval for the mean response</strong> at a given <em>x</em> asks where the average <em>y</em> for everyone at that <em>x</em> lies. A <strong>prediction interval</strong> asks where <em>one new individual</em> at that <em>x</em> will land. The second has to absorb an extra source of variation, that individual's own deviation from the line, and its standard error carries an extra 1:</p>
+        <p style="text-align:center">mean: <em>s</em>√(1/<em>n</em> + (<em>x</em>₀ − <em>x̄</em>)²/Σ(<em>x</em> − <em>x̄</em>)²)          new case: <em>s</em>√(1 + 1/<em>n</em> + …)</p>
+        <p>At 6 screen hours the line predicts 5.44. The confidence interval for the mean runs [4.60, 6.28], a width of 1.68; the prediction interval for one person runs [1.50, 9.37], a width of 7.87. Nearly five times wider, and it barely narrows as <em>n</em> grows, because that leading 1 does not shrink with sample size. Collecting more data pins down the line; it never makes an individual predictable.</p>
+        <p>Both bands are narrowest at <em>x̄</em> and flare toward the edges, since a small error in the slope is magnified by distance from the center. That flare is also the visual argument against extrapolating: the band is telling you how little the data constrain the line out there, before you even reach the range where the model may simply stop being true.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> a slope without a standard error is a number without a claim. This lesson is the inferential half of the regression you met in Stats 1, and every extension that follows, from <a href="../../stats-2/multiple-regression/">several predictors</a> to <a href="../../stats-2/logistic-regression/">a yes/no outcome</a>, keeps this structure: estimate, standard error, <em>t</em>, interval.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>What is the difference between a confidence interval and a prediction interval in regression?</summary>
+            <div class="faq-a"><p>They are centered on the same fitted value and answer different questions. A confidence interval for the mean response asks where the average y sits among everyone at that x; a prediction interval asks where a single new individual will land. The second must also absorb that person's own deviation from the line, so its standard error picks up an extra 1 under the square root. On the shipped screen-time data at 6 screen hours the mean interval spans 1.68 points and the prediction interval spans 7.87, nearly five times wider. More data narrows the first and barely touches the second, because the extra 1 does not shrink with n.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Why is the slope test on n − 2 degrees of freedom rather than n − 1?</summary>
+            <div class="faq-a"><p>Because the line costs two parameters. Residuals are measured from a line whose slope and intercept were both estimated from these same data, so two constraints have been imposed and only n − 2 of the residuals are free to vary. The residual standard error divides SSE by n − 2 for exactly that reason, and since the slope's standard error is built from s, the t it produces inherits those degrees of freedom. In multiple regression the pattern generalizes to n − k − 1 for k predictors plus an intercept.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>My regression has a tiny R-squared but a significant slope. Which one should I believe?</summary>
+            <div class="faq-a"><p>Both, because they measure different things. The t test asks whether the slope is distinguishable from zero, and with a large enough sample a very shallow slope clears that bar comfortably. R-squared asks how much of the variation in y the line accounts for, and a real but small effect accounts for little. A significant slope with R-squared of .04 says there is probably a relationship and that it is nearly useless for predicting any individual. Report the slope with its confidence interval so a reader can see the size of the effect rather than only its detectability.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ Inference-for-regression visualization ============
+       Frozen noise: seed() draws MAXN standardized x-offsets and MAXN
+       standard-normal errors ONCE. rebuild() maps (pools, n, beta1, sigma)
+       to the sample deterministically, so the slope and scatter sliders
+       transform the same points instead of drawing new ones. Sliding away
+       and back restores identical readouts; "New sample" reseeds.
+  -->
+  <script>
+  (function () {
+    "use strict";
+    var MAXN = 120;
+    var n = 40, beta1 = 0.6, sigma = 2.0, band = "both";
+    var B0 = 5, XLO = 0, XHI = 10;
+    var xs = new Float64Array(MAXN), es = new Float64Array(MAXN);
+    var X = [], Y = [];
+
+    var C = document.getElementById("ir-canvas");
+    if (!C) return;
+    var $ = function (id) { return document.getElementById(id); };
+
+    function seed() {
+      for (var i = 0; i < MAXN; i++) {
+        xs[i] = XLO + Math.random() * (XHI - XLO);
+        es[i] = VIZ.randn();
+      }
+    }
+    function rebuild() {
+      X = []; Y = [];
+      for (var i = 0; i < n; i++) { X.push(xs[i]); Y.push(B0 + beta1 * xs[i] + sigma * es[i]); }
+    }
+
+    /* ---------- least squares + inference ---------- */
+    function fit() {
+      var i, mx = VIZ.mean(X), my = VIZ.mean(Y), Sxx = 0, Sxy = 0, Syy = 0;
+      for (i = 0; i < n; i++) {
+        Sxx += (X[i] - mx) * (X[i] - mx);
+        Sxy += (X[i] - mx) * (Y[i] - my);
+        Syy += (Y[i] - my) * (Y[i] - my);
+      }
+      var b1 = Sxx ? Sxy / Sxx : 0, b0 = my - b1 * mx, SSE = 0;
+      for (i = 0; i < n; i++) { var e = Y[i] - (b0 + b1 * X[i]); SSE += e * e; }
+      var df = n - 2, s = Math.sqrt(SSE / df), se = Sxx ? s / Math.sqrt(Sxx) : 0;
+      var t = se ? b1 / se : 0;
+      // tInv takes the UPPER-tail area, so a two-sided 95% interval wants .025
+      var tc = VIZ.tInv(0.025, df);
+      return {
+        b0: b0, b1: b1, s: s, se: se, t: t, df: df, tc: tc,
+        p: 2 * VIZ.tUpper(Math.abs(t), df),
+        lo: b1 - tc * se, hi: b1 + tc * se,
+        r2: Syy ? 1 - SSE / Syy : 0, mx: mx, Sxx: Sxx
+      };
+    }
+
+    function draw() {
+      var H = Math.max(230, Math.round((C.clientWidth || 640) * 7 / 12));
+      var o = VIZ.fit(C, H), ctx = o.ctx, W = o.w;
+      ctx.clearRect(0, 0, W, H);
+      var f = fit();
+      var padL = 46, padR = 16, padT = 12, padB = 30;
+      var i, ylo = Infinity, yhi = -Infinity;
+      for (i = 0; i < n; i++) { if (Y[i] < ylo) ylo = Y[i]; if (Y[i] > yhi) yhi = Y[i]; }
+      // let the widest band decide the frame, so it is never clipped
+      var edge = f.s * Math.sqrt(1 + 1 / n + Math.pow(XHI - f.mx, 2) / (f.Sxx || 1)) * f.tc;
+      ylo = Math.min(ylo, f.b0 + f.b1 * XLO - edge, f.b0 + f.b1 * XHI - edge);
+      yhi = Math.max(yhi, f.b0 + f.b1 * XLO + edge, f.b0 + f.b1 * XHI + edge);
+      var pad = (yhi - ylo) * 0.06 || 1; ylo -= pad; yhi += pad;
+      var px = function (v) { return padL + (W - padL - padR) * (v - XLO) / (XHI - XLO); };
+      var py = function (v) { return padT + (H - padT - padB) * (1 - (v - ylo) / (yhi - ylo)); };
+
+      function bandPath(extra, fill) {
+        var up = [], dn = [], k;
+        for (k = 0; k <= 80; k++) {
+          var xv = XLO + (XHI - XLO) * k / 80;
+          var yh = f.b0 + f.b1 * xv;
+          var w = f.tc * f.s * Math.sqrt(extra + 1 / n + Math.pow(xv - f.mx, 2) / (f.Sxx || 1));
+          up.push([px(xv), py(yh + w)]); dn.push([px(xv), py(yh - w)]);
+        }
+        ctx.beginPath();
+        ctx.moveTo(up[0][0], up[0][1]);
+        for (k = 1; k < up.length; k++) ctx.lineTo(up[k][0], up[k][1]);
+        for (k = dn.length - 1; k >= 0; k--) ctx.lineTo(dn[k][0], dn[k][1]);
+        ctx.closePath();
+        ctx.fillStyle = fill; ctx.fill();
+      }
+      if (band === "both" || band === "pred") { ctx.globalAlpha = 0.16; bandPath(1, "#f97316"); ctx.globalAlpha = 1; }
+      if (band === "both" || band === "conf") { ctx.globalAlpha = 0.28; bandPath(0, VIZ.css("--primary") || "#6366f1"); ctx.globalAlpha = 1; }
+
+      // fitted line
+      ctx.strokeStyle = VIZ.css("--primary") || "#6366f1"; ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(px(XLO), py(f.b0 + f.b1 * XLO));
+      ctx.lineTo(px(XHI), py(f.b0 + f.b1 * XHI));
+      ctx.stroke();
+      // points
+      ctx.fillStyle = VIZ.css("--secondary") || "#14b8a6";
+      for (i = 0; i < n; i++) { ctx.beginPath(); ctx.arc(px(X[i]), py(Y[i]), 3, 0, 6.2832); ctx.fill(); }
+      // axes
+      ctx.strokeStyle = VIZ.css("--border") || "#d5dbe4"; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, H - padB); ctx.lineTo(W - padR, H - padB); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, H - padB); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-muted") || "#5f6e86";
+      ctx.font = "12px " + (VIZ.css("--font") || "sans-serif");
+      ctx.textAlign = "center";
+      for (i = 0; i <= 5; i++) ctx.fillText((XLO + (XHI - XLO) * i / 5).toFixed(0), px(XLO + (XHI - XLO) * i / 5), H - padB + 16);
+      ctx.textAlign = "right";
+      for (i = 0; i <= 3; i++) { var yv = ylo + (yhi - ylo) * i / 3; ctx.fillText(yv.toFixed(1), padL - 6, py(yv) + 4); }
+      return f;
+    }
+
+    function render() {
+      var f = draw();
+      $("ir-b1").textContent = f.b1.toFixed(3);
+      $("ir-se").textContent = f.se.toFixed(3);
+      $("ir-t").textContent = f.t.toFixed(3) + "  (" + f.df + " df)";
+      $("ir-p").textContent = f.p < 0.0001 ? (f.p < 1e-15 ? "< 1e-15" : f.p.toExponential(2)) : f.p.toFixed(4);
+      $("ir-ci").textContent = "[" + f.lo.toFixed(3) + ", " + f.hi.toFixed(3) + "]";
+      $("ir-r2").textContent = f.r2.toFixed(3);
+    }
+
+    $("ir-n").addEventListener("input", function () {
+      n = +this.value; $("ir-nval").textContent = "n = " + n; rebuild(); render();
+    });
+    $("ir-b").addEventListener("input", function () {
+      beta1 = +this.value / 100; $("ir-bval").textContent = beta1.toFixed(2); rebuild(); render();
+    });
+    $("ir-s").addEventListener("input", function () {
+      sigma = +this.value / 10; $("ir-sval").textContent = sigma.toFixed(1); rebuild(); render();
+    });
+    $("ir-band").addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-b]");
+      if (!b) return;
+      this.querySelectorAll("button").forEach(function (x) { x.classList.remove("active"); });
+      b.classList.add("active");
+      band = b.getAttribute("data-b"); render();
+    });
+    $("ir-new").addEventListener("click", function () { seed(); rebuild(); render(); });
+
+    var redraw = VIZ.rafThrottle(render);
+    window.addEventListener("resize", redraw);
+    if (window.ResizeObserver) { new ResizeObserver(redraw).observe(C); }
+    VIZ.onTheme(render);
+
+    seed(); rebuild(); render();
+  })();
+  </script>
+
+</body>
+</html>

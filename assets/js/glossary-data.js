@@ -6,6 +6,12 @@
    tools/build-search-index.py. Add a term here, not in the HTML.
    ============================================================ */
 window.GLOSSARY = [
+      { t: "Population regression model", d: "y = β₀ + β₁x + ε with ε normal, mean zero and the same spread at every x. The model that makes inference about a slope possible.", s: "stats-2/inference-for-regression", l: "Inference for Regression" },
+      { t: "Residual standard error (s)", d: "The typical size of a residual, the square root of SSE/(n−2). It estimates σ, the scatter around the population line.", s: "stats-2/inference-for-regression", l: "Inference for Regression" },
+      { t: "Standard error of the slope", d: "s divided by the square root of the sum of squared x deviations. Small scatter and widely spread predictor values both make it small.", s: "stats-2/inference-for-regression", l: "Inference for Regression" },
+      { t: "Confidence band", d: "The band around a fitted line showing where the MEAN response lies at each x. Narrowest at the mean of x and flaring toward the edges.", s: "stats-2/inference-for-regression", l: "Inference for Regression" },
+      { t: "Prediction interval", d: "The interval for ONE new observation at a given x. Wider than the confidence interval for the mean, and it does not shrink toward zero as n grows.", s: "stats-2/inference-for-regression", l: "Inference for Regression" },
+      { t: "Regression ANOVA table", d: "The decomposition SST = SSR + SSE printed above the coefficients. In simple regression its F equals the slope t squared.", s: "stats-2/inference-for-regression", l: "Inference for Regression" },
       { t: "Sample proportion (p̂)", d: "The fraction of successes in a sample, x/n. Its mean is p and its standard deviation is the square root of p(1−p)/n.", s: "stats-1/inference-for-proportions", l: "Inference for Proportions" },
       { t: "Pooled proportion", d: "The combined success rate across both groups, (x₁+x₂)/(n₁+n₂). Used in the standard error of a two-proportion z test, because H₀ says the two proportions are equal.", s: "stats-1/inference-for-proportions", l: "Inference for Proportions" },
       { t: "Success-failure condition", d: "Inference on a proportion needs at least 10 successes and at least 10 failures, so the normal approximation has room on both sides. It is a condition on both counts, not on n.", s: "stats-1/inference-for-proportions", l: "Inference for Proportions" },

@@ -14,6 +14,28 @@
 window.SOFTWARE = {
 
   /* ---------------- Stats 1 ---------------- */
+  "inference-for-regression": {
+    spss: [
+      "<b>Analyze &rsaquo; Regression &rsaquo; Linear</b>. Put the outcome in <b>Dependent</b> and the predictor in <b>Independent(s)</b>.",
+      "Click <b>Statistics</b> and tick <b>Estimates</b>, <b>Confidence intervals</b> (95%) and <b>Model fit</b>. That adds the interval for the slope beside the coefficient.",
+      "Read the <b>ANOVA</b> table for the overall <em>F</em>, and the <b>Coefficients</b> table for <em>b</em>, its standard error, <em>t</em> and Sig. With one predictor the two agree, since <em>F</em> = <em>t</em>&sup2;.",
+      "<b>Model Summary</b> gives <em>R</em>&sup2; and, under <b>Std. Error of the Estimate</b>, the residual standard error <em>s</em>.",
+      "For the two bands: click <b>Save</b> and tick <b>Prediction Intervals &rsaquo; Mean</b> and <b>Individual</b>. SPSS writes four new columns, and the Individual pair is the wider one."
+    ],
+    jasp: [
+      "<b>Regression &rsaquo; Linear Regression</b>, outcome in <b>Dependent Variable</b> and predictor in <b>Covariates</b>.",
+      "Under <b>Statistics</b>, tick <b>Confidence intervals</b> for the coefficients and <b>Model fit</b> for the ANOVA table.",
+      "The Coefficients table gives <em>b</em>, SE, <em>t</em>, <em>p</em> and the 95% interval; the ANOVA table gives <em>F</em> on 1 and <em>n</em> &minus; 2 df.",
+      "Under <b>Plots &rsaquo; Residuals</b>, add the residuals-versus-predicted plot before trusting any of it."
+    ],
+    apa: '<p>Screen time did not significantly predict sleep quality, <em>b</em> = &minus;0.23, <em>SE</em> = 0.15, <em>t</em>(58) = &minus;1.60, <em>p</em> = .115, 95% CI [&minus;0.53, 0.06], <em>R</em>&sup2; = .04. The interval is wide enough to include both a half-point drop in sleep quality per screen hour and a small increase, so these data leave the question open rather than settling it.</p>',
+    tips: [
+      "Report the slope with its confidence interval, not only its <em>p</em>-value. The interval is what tells a reader the size of the effect the data are compatible with.",
+      "Give <em>b</em> in the units of the variables (\"0.23 points of sleep quality per screen hour\"), and add the standardized &beta; only if readers need to compare predictors.",
+      "In simple regression the ANOVA <em>F</em> and the slope <em>t</em> are the same test. Report one of them; reporting both as separate findings is double counting.",
+      "SPSS's \"Std. Error of the Estimate\" is <em>s</em>, the residual standard error, and not the standard error of the slope. They are different numbers in different tables."
+    ]
+  },
   "inference-for-proportions": {
     spss: [
       "One proportion: <b>Analyze &rsaquo; Nonparametric Tests &rsaquo; One Sample</b>, choose <b>Customize analysis</b>, and under Settings pick <b>Compare observed binary probability to hypothesized (Binomial test)</b>. Set the test proportion and choose the normal approximation if you want the z.",

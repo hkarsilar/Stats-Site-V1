@@ -63,7 +63,7 @@ window.CURRICULUM = [
       { n: "2.4",  slug: "factorial-anova-two-way",                  title: "Factorial ANOVA (Two-Way)", ready: true },
       { n: "2.5",  slug: "repeated-measures-anova",                  title: "Repeated Measures ANOVA", ready: true },
       { n: "2.6",  slug: "assumptions-and-when-they-break",          title: "ANOVA & t-Test Assumptions", ready: true },
-      { n: "2.7",  slug: "inference-for-regression",                 title: "Inference for Regression", ready: false },
+      { n: "2.7",  slug: "inference-for-regression",                 title: "Inference for Regression", ready: true },
       { n: "2.8",  slug: "regression-diagnostics",                   title: "Regression Diagnostics", ready: true },
       { n: "2.9",  slug: "multiple-regression",                      title: "Multiple Regression", ready: true },
       { n: "2.10", slug: "categorical-predictors-and-dummy-coding",  title: "Categorical Predictors & Dummy Coding", ready: true },
