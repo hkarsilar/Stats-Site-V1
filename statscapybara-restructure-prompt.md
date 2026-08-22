@@ -371,19 +371,19 @@ steel blue `#3b82f6` simply retires — note that in CLAUDE.md's accent list, §
 The lesson's FAQ block is regenerated from `faq_data.py` — fix any moved paths **there**,
 not in the baked HTML (rule 10).
 
-### C. `educationalLevel` and `CORE_LEVELS` — a decision, then an edit
+### C. `educationalLevel` and `CORE_LEVELS` — decided, just execute it
 
 `tools/audit.js` line ~213 hardcodes
 `CORE_LEVELS = { 'stats-1': 'Beginner', 'stats-2': 'Intermediate', 'stats-3': 'Advanced', 'stats-4': 'Advanced', ml: 'Advanced' }`
-and errors when a lesson's JSON-LD `educationalLevel` disagrees with its course. Delete the
-`stats-4` key and decide the post-move levels. **Recommendation: keep the mapping
-course-level** (stats-1 Beginner, stats-2 Intermediate, stats-3 Advanced), which means the
-eight ex-Stats-3 lessons arriving in Stats 2 change from `Advanced` to `Intermediate`, and
-`effect-size-and-power` changes from `Beginner` to `Advanced` — a defensible reading of the
-new structure. Flag the decision in your report. Also note `expectedLevel()` returns `null`
-for a core course missing from the map, which silently *disables* the check — so a wrong
-edit here fails open. Verify your edit by temporarily mis-setting one lesson's level and
-watching the audit catch it.
+and errors when a lesson's JSON-LD `educationalLevel` disagrees with its course. **The
+decision is made: the mapping stays course-level** — stats-1 `Beginner`, stats-2
+`Intermediate`, stats-3 `Advanced`; delete the `stats-4` key. Consequences to apply in the
+lessons' JSON-LD: the eight ex-Stats-3 lessons arriving in Stats 2 change from `Advanced`
+to `Intermediate`, the twelve ex-Stats-4 arrivals in Stats 3 stay `Advanced`, and
+`effect-size-and-power` changes from `Beginner` to `Advanced`. Do not reopen this decision.
+Also note `expectedLevel()` returns `null` for a core course missing from the map, which
+silently *disables* the check — so a wrong edit here fails open. Verify your edit by
+temporarily mis-setting one lesson's level and watching the audit catch it.
 
 ### D. Redirect stubs (25)
 
@@ -614,20 +614,27 @@ And the migration-specific checks:
 - [ ] `CACHE_VERSION` bumped once, in the final state.
 
 Report at the end: files changed, stubs added, links rewritten, §-references reconciled,
-the `educationalLevel` decision, anything in §4 that didn't match reality, and the
-`assumptions-*` naming question from §4.
+confirmation that the §6-C `educationalLevel` policy was applied as written, anything in
+§4 that didn't match reality, and the `assumptions-*` naming question from §4.
 
 ---
 
 ## 9. Optional, only if the above is complete and verified
 
-A `/stats-1/ucg/` page (with a `/stats-2/ucg/` equivalent) mapping each teaching week of
-the UCG course to the relevant lessons, using the week tables in §7 — one link a student
-on the course can keep open all block. **Do not build it without proposing it first**, and
-note in the proposal that this page has **no existing page class**: it is not a lesson (no
-curriculum entry), not a course landing page, and not a hub, so nothing in `audit.js` or
-`prose-lint.js` would check it, and CHECK 3e is the only guard it gets for free. The
-proposal must say which class it joins or extends (a `guides/` entry with its 7
-registrations is the closest existing fit; a new `data-*` marker + audit list is the
-honest alternative) — an unregistered page that ships unaudited is exactly the failure
-mode this repo's tooling exists to prevent.
+Two week-map pages, one per UCG course, mapping each teaching week to the relevant lessons
+using the tables in §7 — one link a student on the course can keep open all block. **The
+page class is decided: build them as guides**, because a page under a course folder would
+have no page class and would ship unaudited. That means the URLs are
+`guides/ucg-statistics-1/` and `guides/ucg-statistics-2/` (not `/stats-1/ucg/`), following
+the guide pattern to the letter: `data-guide` marker, `article.lesson` with a `Guide`
+eyebrow and a hand-written static `nav.lesson-toc`, `[Article, BreadcrumbList]` JSON-LD
+with the breadcrumb's "Guides" level pointing at `guides/`, and **all 7 registrations**
+(`TOOLBOX` group `"read"`, `SEARCH_PAGES` tag "Guide", a `QUIPS` key, the guides list in
+`tools/build-search-index.py` + rerun, `sitemap.xml`, `GUIDES` in `tools/audit.js`, and
+`GUIDES` in `tools/prose-lint.js` — the last one nothing enforces, so do it in the same
+commit). Add them to the static card list on the `guides/` hub page, and link each one
+prominently from its course's landing page ("Taking UCG1RM11? Here's your week-by-week
+map"), so students reach it from the course front door. VOICE.md applies; the week tables
+render as `.ref-table`s inside `.hscroll` so they print and scroll cleanly. Content still
+gets a quick proposal before building (which lessons land in which week — some weeks span
+several); the structure does not.
