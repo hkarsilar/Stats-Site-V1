@@ -97,7 +97,7 @@ const NAMES = {
 /* ---------- corpus: every HTML page the site serves as prose ---------- */
 function walk(dir, out) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (e.name.startsWith('.') || e.name === 'node_modules') continue;
+    if (e.name.startsWith('.') || e.name === 'node_modules' || e.name === '_site') continue;
     const p = path.join(dir, e.name);
     if (e.isDirectory()) { if (p !== path.join(ROOT, 'tools')) walk(p, out); }
     else if (e.name.endsWith('.html')) out.push(path.relative(ROOT, p));

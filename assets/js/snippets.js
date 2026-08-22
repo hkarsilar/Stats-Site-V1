@@ -168,7 +168,7 @@ window.SNIPPETS = {
     r: 'library(pwr)\npwr.anova.test(k = 3, f = 0.25, power = 0.80)   # one-way ANOVA; n is PER GROUP (~53)\n# for mixed/complex designs, simulate instead:\nlibrary(simr)   # power by simulation for lmer models',
     py: 'from statsmodels.stats.power import FTestAnovaPower\nn = FTestAnovaPower().solve_power(effect_size=0.25,\n                                  k_groups=3, power=0.80,\n                                  alpha=0.05)\nprint(n)   # total N; complex designs -> simulate'
   },
-  /* ---------------- Stats 4 ---------------- */
+  /* ------- Stats 3, the ex-Stats-4 lessons ------- */
   "bootstrap-and-resampling": {
     r: 'x <- rgamma(50, 2, 0.1)\nboots <- replicate(10000, median(sample(x, replace = TRUE)))\nquantile(boots, c(0.025, 0.975))   # 95% bootstrap CI for the median',
     py: 'import numpy as np\nrng = np.random.default_rng()\nx = rng.gamma(2, 10, 50)\nboots = [np.median(rng.choice(x, len(x))) for _ in range(10_000)]\nprint(np.percentile(boots, [2.5, 97.5]))   # bootstrap CI'

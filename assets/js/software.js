@@ -547,7 +547,7 @@ window.SOFTWARE = {
     ]
   },
 
-  /* ---------------- Stats 4 ---------------- */
+  /* ------- Stats 3, the ex-Stats-4 lessons ------- */
   "bootstrap-and-resampling": {
     spss: [
       'Many dialogs (t-tests, correlations, regression) have a <strong>Bootstrap…</strong> button (requires the Bootstrapping module).',

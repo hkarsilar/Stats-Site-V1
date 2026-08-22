@@ -417,8 +417,8 @@ function decodeEntities(s) {
    field. Counting them as page prose put FOUR pages on P73's worst-20
    worklist whose prose contains ZERO em-dashes — descriptives.html
    (the page cited to justify rule 1b: 10 dashes, all ten placeholders),
-   stats-4/signal-detection-theory, ml/classification-metrics and
-   stats-4/psychometric-functions — and made rule 1 unsatisfiable for
+   stats-3/signal-detection-theory, ml/classification-metrics and
+   stats-3/psychometric-functions — and made rule 1 unsatisfiable for
    them, since P74's iron rule puts the viz out of bounds. 241 of the
    site's 731 counted dashes (33%) were this.
    DEFINITION: an opening tag, optional whitespace, the dash, optional

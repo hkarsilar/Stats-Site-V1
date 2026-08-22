@@ -79,7 +79,7 @@ const ROOT = process.cwd();
 
 function walk(dir, out) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
-    if ([".git", ".claude", "node_modules", "__pycache__"].includes(e.name)) continue;
+    if ([".git", ".claude", "node_modules", "__pycache__", "_site"].includes(e.name)) continue;
     const p = path.join(dir, e.name);
     if (e.isDirectory()) walk(p, out);
     else if (e.name === "index.html") out.push(p);

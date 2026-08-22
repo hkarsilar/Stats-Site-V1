@@ -16,7 +16,7 @@
    defect by hand: the site drops a NAME in passing and no page ever says
    what it stands for. Run 20's instance was "Weber's law", which appeared
    exactly once on the whole site, in a subordinate clause of
-   stats-4/psychometric-functions ("the lifted-weight experiments that gave
+   stats-3/psychometric-functions ("the lifted-weight experiments that gave
    us Weber's law"), with the law itself stated nowhere. Earlier runs found
    the same shape in Pocock, O'Brien, GRIM, TOST, HC3, WCSS and
    rank-biserial, every time by reading rather than by checking.
@@ -106,7 +106,7 @@ const EPONYM = new RegExp(`\\b([A-Z][a-z]{2,}'s\\s+(?:${HEAD_NOUNS.join('|')}))\
 /* ---------- corpus ---------- */
 function walk(dir, out) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (e.name.startsWith('.') || e.name === 'node_modules') continue;
+    if (e.name.startsWith('.') || e.name === 'node_modules' || e.name === '_site') continue;
     const p = path.join(dir, e.name);
     if (e.isDirectory()) { if (p !== path.join(ROOT, 'tools')) walk(p, out); }
     else if (e.name.endsWith('.html')) out.push(path.relative(ROOT, p));

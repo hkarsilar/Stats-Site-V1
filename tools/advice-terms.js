@@ -70,7 +70,7 @@ const only = (function () { const i = args.indexOf("--surface"); return i >= 0 ?
 /* ---------- the prose corpus: every rendered word on the site ---------- */
 function walk(dir, out) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (e.name.startsWith(".") || e.name === "node_modules") continue;
+    if (e.name.startsWith(".") || e.name === "node_modules" || e.name === "_site") continue;
     const p = path.join(dir, e.name);
     if (e.isDirectory()) walk(p, out);
     else if (e.name.endsWith(".html")) out.push(p);

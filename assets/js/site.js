@@ -199,7 +199,7 @@
     "factor-analysis-pca": "43 personality questions, one latent trait: chill. PCA knew it all along.",
     "manova": "Four outcomes, one verdict. The capybara declines to be interviewed one question at a time.",
     "power-analysis-for-complex-designs": "The capybara saw the effect clearly. Your n = 12 did not.",
-    /* Stats 4 */
+    /* Stats 3, the ex-Stats-4 lessons */
     "bootstrap-and-resampling": "Resample your own data 10,000 times. Capybaras call this self-care.",
     "bayesian-thinking": "The capybara had priors about you. It updated them. That's growth.",
     "bayesian-estimation": "The 95% credible interval: where the capybara actually believes the truth naps.",
@@ -898,7 +898,7 @@
     }
     /* group the courses by track, with a heading above each group (like the
        homepage) — only when more than one track is populated, so a single-
-       track site stays a flat list. This is what separates Stats 4 from
+       track site stays a flat list. This is what separates ML & AI from
        Methods in the sidebar instead of one undivided run of courses. */
     var tracks = (window.TRACKS && window.TRACKS.length) ? window.TRACKS : [{ id: "core", title: "" }];
     var known = {};

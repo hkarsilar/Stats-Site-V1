@@ -103,7 +103,7 @@ const ACKED = [
 /* ---------- file walk ---------- */
 function walk(dir, out = []) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (e.name === '.git' || e.name === '.claude' || e.name === 'node_modules') continue;
+    if (e.name === '.git' || e.name === '.claude' || e.name === 'node_modules' || e.name === '_site') continue;
     const p = path.join(dir, e.name);
     if (e.isDirectory()) walk(p, out);
     else if (e.name.endsWith('.html')) out.push(p);

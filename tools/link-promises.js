@@ -5,7 +5,7 @@
   WHY THIS EXISTS (P39 run 18). `audit.js` proves every internal link resolves on
   disk and that any `#fragment` names a real id. Neither check can see the failure
   this run found by hand: `stats-3/power-analysis-for-complex-designs` sends readers
-  to `stats-4/mixed-and-multilevel-models` for "the intraclass correlation", and
+  to `stats-3/mixed-and-multilevel-models` for "the intraclass correlation", and
   that page contained the term ZERO times. P39 run 2 had swapped away the FAQ answer
   that held it, sixteen runs earlier, and nothing noticed. The href was fine; the
   promise was not. Call the class a BROKEN PROMISE.

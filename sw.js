@@ -37,14 +37,10 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v46";  /* Toolbox dropdown group headers moved from green to the brand
-                                    indigo, so styles.css changed and is precached: --group-head is
-                                    now #5850ec / #818cf8 (5.6:1 and 5.8:1 on their own panels) and
-                                    the AA-safe green it used to carry moved to a new --ok-ink token,
-                                    which .h2link.copied now uses. site.js, curriculum.js, viz.js and
-                                    the font are untouched.
-                                    (v32 was consumed by an intermediate state during run 14 — never reuse a
-                                    string across two byte-contents of a precached asset.) */
+const CACHE_VERSION = "sc-v47";  /* Courses restructured from four to three: curriculum.js
+                                      and site.js both changed, and every returning visitor
+                                      has a precached copy naming a Stats 4 that no longer
+                                      exists. */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location

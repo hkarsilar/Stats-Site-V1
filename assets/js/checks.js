@@ -212,7 +212,7 @@ window.CHECKS = {
     { q: "Running a study with 20% power and finding nothing tells you…", o: ["the effect doesn't exist", "almost nothing — the study rarely could have found it anyway", "the effect is small", "alpha was too low"], a: 1, why: "An underpowered null is uninformative: even a real, decent-sized effect would usually be missed at 20% power." }
   ],
 
-  /* ---------- Stats 4 — Modern & Advanced ---------- */
+  /* ------ Stats 3 — the ex-Stats-4 lessons ------ */
   "bootstrap-and-resampling": [
     { q: "One bootstrap resample is created by drawing n observations from your sample…", o: ["without replacement", "with replacement", "from the population", "from a normal curve"], a: 1, why: "Sampling WITH replacement is the trick — each resample is the same size but a different mix, mimicking sampling variability." },
     { q: "A 95% percentile bootstrap CI runs from…", o: ["mean ± 2 SD of the data", "the 2.5th to the 97.5th percentile of the bootstrap statistics", "the min to the max resample", "0 to the observed statistic"], a: 1, why: "Compute the statistic in thousands of resamples and chop 2.5% off each tail of that distribution." },
