@@ -164,6 +164,7 @@
     "z-scores-and-the-normal-distribution": "A capybara 3 SDs above the mean chill is basically a warm rock with a heartbeat.",
     "probability-basics": "50% of capybaras are napping. The other 50% are also napping. Probability!",
     "producing-data-and-sampling-design": "A capybara who only surveys the capybaras already in the pond will conclude that every capybara loves water.",
+    "binomial-distribution": "Twelve capybaras, each independently deciding whether to get in the water. The count has a distribution; the capybaras have a plan.",
     "sampling-distributions": "You can't meet every capybara. You sample a few and trust the vibes. That's inference.",
     "central-limit-theorem": "Stack enough random capybara moods and you get a bell curve. Nobody asked the moods to cooperate.",
     "confidence-intervals": "We're 95% confident the capybara is in the hot spring. The other 5%? Snack run.",

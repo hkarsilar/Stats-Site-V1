@@ -34,6 +34,10 @@ window.SNIPPETS = {
     r: 'df <- data.frame(id = 1:800,\n                 group = rep(c("resident", "commuter"), c(600, 200)))\n\n# simple random sample of 100\nsrs <- df[sample(nrow(df), 100), ]\n\n# stratified: 75 residents, 25 commuters, in proportion\nlibrary(dplyr)\nstrat <- df |>\n  group_by(group) |>\n  slice_sample(prop = 100 / 800) |>\n  ungroup()\ntable(strat$group)',
     py: 'import pandas as pd, numpy as np\nrng = np.random.default_rng(42)\ndf = pd.DataFrame({"id": range(800),\n                   "group": ["resident"] * 600 + ["commuter"] * 200})\n\n# simple random sample of 100\nsrs = df.sample(100, random_state=42)\n\n# stratified: same fraction from each group\nstrat = df.groupby("group", group_keys=False).apply(\n    lambda g: g.sample(frac=100 / 800, random_state=42))\nprint(strat["group"].value_counts())'
   },
+  "binomial-distribution": {
+    r: '# exactly 5 heads in 10 fair tosses\ndbinom(5, size = 10, prob = 0.5)      # 0.2460938\n\n# 6 or more right out of 12 by guessing (p = 1/4)\npbinom(5, size = 12, prob = 0.25, lower.tail = FALSE)   # 0.0543983\n\n# mean and SD of the count\nn <- 12; p <- 0.25\nc(mean = n * p, sd = sqrt(n * p * (1 - p)))',
+    py: 'from scipy import stats\n\n# exactly 5 heads in 10 fair tosses\nstats.binom.pmf(5, n=10, p=0.5)          # 0.24609375\n\n# 6 or more right out of 12 by guessing\nstats.binom.sf(5, n=12, p=0.25)          # 0.05439829\n\n# mean and SD of the count\nstats.binom.stats(12, 0.25, moments="mv")  # (3.0, 2.25)  -> sd = 1.5'
+  },
   "sampling-distributions": {
     r: 'pop <- rexp(100000, rate = 1/50)          # skewed population\nmeans <- replicate(10000, mean(sample(pop, 40)))\nsd(means)                                  # standard error, empirically\nsd(pop) / sqrt(40)                         # standard error, by formula',
     py: 'import numpy as np\nrng = np.random.default_rng()\npop = rng.exponential(50, 100_000)         # skewed population\nmeans = [rng.choice(pop, 40).mean() for _ in range(10_000)]\nprint(np.std(means), pop.std() / np.sqrt(40))  # empirical vs formula SE'

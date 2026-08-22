@@ -6,6 +6,10 @@
    tools/build-search-index.py. Add a term here, not in the HTML.
    ============================================================ */
 window.GLOSSARY = [
+      { t: "Binomial distribution", d: "The distribution of the number of successes in n independent trials that each succeed with the same probability p. Written B(n, p).", s: "stats-1/binomial-distribution", l: "The Binomial Distribution" },
+      { t: "Binomial coefficient", d: "C(n, k) = n! / (k!(n−k)!), the number of different orders in which k successes can occur among n trials.", s: "stats-1/binomial-distribution", l: "The Binomial Distribution" },
+      { t: "Bernoulli trial", d: "A single trial with two outcomes and a fixed success probability. A binomial count is n of them added up.", s: "stats-1/binomial-distribution", l: "The Binomial Distribution" },
+      { t: "Binomial setting", d: "The four conditions a count must meet to be binomial: a fixed n, two outcomes per trial, independent trials, and the same p every trial.", s: "stats-1/binomial-distribution", l: "The Binomial Distribution" },
       { t: "Simple random sample (SRS)", d: "A sample drawn so that every group of n members of the population is equally likely to be the one selected. The reference design all others are judged against.", s: "stats-1/producing-data-and-sampling-design", l: "Producing Data & Sampling Design" },
       { t: "Stratified sample", d: "A sample drawn by splitting the population into groups that differ from each other, then sampling at random inside each group. Removes between-stratum variation from the sampling error.", s: "stats-1/producing-data-and-sampling-design", l: "Producing Data & Sampling Design" },
       { t: "Convenience sample", d: "A sample of whoever is easiest to reach. Cheap, and biased by whatever made those people easy to reach.", s: "stats-1/producing-data-and-sampling-design", l: "Producing Data & Sampling Design" },

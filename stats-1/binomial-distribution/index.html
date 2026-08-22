@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    /* Consent Mode: storage denied by default, so GA sets no cookie and
+       follows nobody between visits. Anonymous counts still arrive. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Binomial Distribution — StatsCapybara</title>
+  <meta name="description" content="Count the successes in a fixed number of independent trials. Four conditions, one formula, and a shape that shifts as you move n and p." />
+  <link rel="canonical" href="https://statscapybara.com/stats-1/binomial-distribution/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="The Binomial Distribution — StatsCapybara" />
+  <meta property="og:description" content="Count the successes in a fixed number of independent trials. Four conditions, one formula, and a shape that shifts as you move n and p." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og-stats-1.png" />
+  <meta property="og:url" content="https://statscapybara.com/stats-1/binomial-distribution/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="The Binomial Distribution — StatsCapybara" />
+  <meta name="twitter:description" content="Count the successes in a fixed number of independent trials. Four conditions, one formula, and a shape that shifts as you move n and p." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-1.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "The Binomial Distribution", "description": "Count the successes in a fixed number of independent trials. Four conditions, one formula, and a shape that shifts as you move n and p.", "url": "https://statscapybara.com/stats-1/binomial-distribution/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Introduction to Statistics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "The Binomial Distribution", "item": "https://statscapybara.com/stats-1/binomial-distribution/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "When is a count NOT binomial?", "acceptedAnswer": {"@type": "Answer", "text": "Whenever one of the four conditions fails, and the two that fail most often are independence and a constant p. Sampling without replacement breaks both at once: deal one ace out of a deck and the chance the next card is an ace has changed. Surveying people who live together breaks independence, because their answers are related before you ask. Counting how many attempts something takes breaks the fixed-n condition, since there the number of trials is the random thing and the count of successes is fixed at one. A rough working rule for sampling without replacement: if your sample is under about 5% of the population, the change in p is small enough that the binomial is a fair approximation."}}, {"@type": "Question", "name": "Why is there a binomial coefficient in the formula?", "acceptedAnswer": {"@type": "Answer", "text": "Because k successes can arrive in more than one order, and the formula has to count them all. Any one specific order, such as three successes followed by seven failures, has probability p³(1−p)⁷, since independent probabilities multiply. But three successes out of ten can also arrive as failure-success-failure-success and so on, and every one of those arrangements has that same probability. C(10, 3) = 120 counts the arrangements, so the total is 120 × p³(1−p)⁷. The coefficient is bookkeeping, not extra probability."}}, {"@type": "Question", "name": "How large does n have to be before I can use the normal approximation?", "acceptedAnswer": {"@type": "Answer", "text": "The usual rule is that np and n(1−p) should both be at least 10, and it is really a rule about the tails rather than about n alone. A binomial with p near 0.5 looks close to normal by n = 20; one with p = 0.02 is still visibly lopsided at n = 100, because the count cannot go below zero and there is no room on the left for the bell to form. Note what the rule uses: not n on its own, but the expected number of successes AND the expected number of failures, which is why a rare outcome demands a large study before any normal-based method is safe."}}]}
+  </script>
+</head>
+<body data-course="stats-1" data-section="binomial-distribution">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 1.8</span>
+        <h1>The Binomial Distribution</h1>
+
+        <p class="lede">Some questions are just counting. How many of twelve guessed answers come out right, how many of forty patients respond to the drug, how many of a hundred emails get opened. When the trials all look alike and none of them influences the others, one formula gives the probability of every possible count.</p>
+
+        <h2>The four conditions</h2>
+        <p>A count follows a <strong>binomial distribution</strong>, written B(<em>n</em>, <em>p</em>), when four things hold. There is a <strong>fixed number of trials</strong>, <em>n</em>, decided before you start. Each trial has <strong>two outcomes</strong>, which we label success and failure without implying either is good news. The trials are <strong>independent</strong>, so knowing how one turned out tells you nothing about the next. And the probability of success, <em>p</em>, is the <strong>same on every trial</strong>.</p>
+        <p>Checking those four is the whole skill, because the formula is unforgiving about them. Dealing cards without replacement breaks the last two at once, since removing an ace changes the chance the next card is an ace. Asking twelve friends who all live together breaks independence. Counting how many attempts it takes to succeed breaks the first condition, because there <em>n</em> is not fixed and the answer is a different distribution altogether.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="bnviz">
+          <p class="viz-title">🎮 Every Possible Count</p>
+          <p class="viz-sub">The bars are the exact probability of each count from 0 to n. Shading picks out the probability you asked for. The trials above are a single run of the experiment.</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>Number of trials <span class="val" id="bn-nval">n = 12</span></label>
+              <input type="range" id="bn-n" min="1" max="40" step="1" value="12" />
+            </div>
+            <div class="control">
+              <label>Success probability <span class="val" id="bn-pval">p = 0.25</span></label>
+              <input type="range" id="bn-p" min="5" max="95" step="5" value="25" />
+            </div>
+            <div class="control">
+              <label>Count of interest <span class="val" id="bn-kval">k = 6</span></label>
+              <input type="range" id="bn-k" min="0" max="40" step="1" value="6" />
+            </div>
+            <div class="control">
+              <label>Probability</label>
+              <div class="seg" id="bn-tail">
+                <button data-t="eq">exactly k</button>
+                <button data-t="le">k or fewer</button>
+                <button data-t="ge" class="active">k or more</button>
+              </div>
+            </div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="bn-new">New trials</button></div>
+          </div>
+
+          <p class="viz-sub" style="margin:.25rem 0">One run of n trials. A filled circle is a success.</p>
+          <canvas id="bn-trials" style="--viz-ar: 8 / 1"></canvas>
+
+          <p class="viz-sub" style="margin:1rem 0 .25rem">The distribution of the count</p>
+          <canvas id="bn-pmf"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">This run</span><span class="v" id="bn-obs">—</span></div>
+            <div class="stat"><span class="k">Probability asked for</span><span class="v" id="bn-prob">—</span></div>
+            <div class="stat"><span class="k">Mean np</span><span class="v" id="bn-mean">—</span></div>
+            <div class="stat"><span class="k">SD √(np(1−p))</span><span class="v" id="bn-sd">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Counting the orders: n choose k</h2>
+        <p>Getting three successes out of ten can happen in many different orders, and each order is equally likely. So the probability of exactly <em>k</em> successes has two parts: how likely one particular order is, and how many orders there are.</p>
+        <p>The count of orders is the <strong>binomial coefficient</strong>, written <em>C</em>(<em>n</em>, <em>k</em>) or ⁿC<sub>k</sub> and read "<em>n</em> choose <em>k</em>":</p>
+        <p style="text-align:center"><em>C</em>(<em>n</em>, <em>k</em>) = <em>n</em>! / (<em>k</em>! (<em>n</em> − <em>k</em>)!)</p>
+        <p>For ten trials and three successes that is 10! / (3! · 7!) = 120 distinct orders. One particular order, say success-success-success then seven failures, has probability <em>p</em>³(1 − <em>p</em>)⁷, because the trials are independent and independent probabilities multiply. Multiplying the two parts gives the <strong>binomial probability</strong>:</p>
+        <p style="text-align:center">P(<em>X</em> = <em>k</em>) = <em>C</em>(<em>n</em>, <em>k</em>) <em>p</em><sup><em>k</em></sup> (1 − <em>p</em>)<sup><em>n</em>−<em>k</em></sup></p>
+        <p>Tossing a fair coin ten times, the chance of exactly five heads is <em>C</em>(10, 5) × 0.5⁵ × 0.5⁵ = 252/1024 = 0.246. Five is the single most likely count and it still happens under a quarter of the time, which is worth remembering before reading anything into a result that merely landed on the average.</p>
+
+        <h2>Mean and standard deviation</h2>
+        <p>You do not need the formula above to describe the center and spread of a binomial count. Both have closed forms, and they are the two you will use constantly:</p>
+        <p style="text-align:center">μ = <em>np</em>          σ = √(<em>np</em>(1 − <em>p</em>))</p>
+        <p>The mean is the one people guess correctly: twelve questions with a one-in-four chance each average three right. The standard deviation is less obvious and more useful. For those twelve questions σ = √(12 × 0.25 × 0.75) = √2.25 = 1.5, so a guesser typically scores somewhere around 3 ± 1.5, and six correct sits two standard deviations up. The exact probability of scoring six or better by guessing alone is 0.054, which the widget will confirm if you set <em>n</em> = 12, <em>p</em> = 0.25 and ask for 6 or more.</p>
+        <p>Notice how σ behaves as you slide <em>p</em>. It peaks at <em>p</em> = 0.5, where each trial is maximally unpredictable, and shrinks toward zero at either extreme, where the outcome is nearly settled before the trial runs. A coin that lands heads 99% of the time produces very consistent counts.</p>
+
+        <h2>The shape, and where it is going</h2>
+        <p>At <em>p</em> = 0.5 the distribution is symmetric. Move <em>p</em> away from the middle and it leans, with a long tail pointing toward the far end of the range. Then raise <em>n</em> and watch the lean fade: the bars settle into the familiar bell whatever <em>p</em> you chose, which is <a href="../../stats-1/central-limit-theorem/">the central limit theorem</a> showing up early, since a binomial count is a sum of <em>n</em> independent trials.</p>
+        <p>That convergence is what makes the next few lessons possible. Once the count is close enough to normal, the sample proportion <em>p̂</em> = <em>X</em>/<em>n</em> is close to normal too, and the inference for proportions two lessons ahead is built on exactly that. The usual rule of thumb is that <em>np</em> and <em>n</em>(1 − <em>p</em>) should both reach at least 10 before the approximation is safe, which is why a rare event needs a large study.</p>
+        <p>To compare the binomial with its neighbors, and to overlay the normal approximation on it directly, the <a href="../../distributions.html">distribution playground</a> renders all nine distributions the course uses from the same exact math this page does.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> the binomial is the first distribution in the course that comes from a described situation rather than from a shape you assume. Four conditions in, one probability out. Everything about proportions later, including the χ² tests in <a href="../../stats-1/chi-square-tests/">Section 1.16</a>, rests on this count.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>When is a count NOT binomial?</summary>
+            <div class="faq-a"><p>Whenever one of the four conditions fails, and the two that fail most often are independence and a constant p. Sampling without replacement breaks both at once: deal one ace out of a deck and the chance the next card is an ace has changed. Surveying people who live together breaks independence, because their answers are related before you ask. Counting how many attempts something takes breaks the fixed-n condition, since there the number of trials is the random thing and the count of successes is fixed at one. A rough working rule for sampling without replacement: if your sample is under about 5% of the population, the change in p is small enough that the binomial is a fair approximation.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>Why is there a binomial coefficient in the formula?</summary>
+            <div class="faq-a"><p>Because k successes can arrive in more than one order, and the formula has to count them all. Any one specific order, such as three successes followed by seven failures, has probability p³(1−p)⁷, since independent probabilities multiply. But three successes out of ten can also arrive as failure-success-failure-success and so on, and every one of those arrangements has that same probability. C(10, 3) = 120 counts the arrangements, so the total is 120 × p³(1−p)⁷. The coefficient is bookkeeping, not extra probability.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>How large does n have to be before I can use the normal approximation?</summary>
+            <div class="faq-a"><p>The usual rule is that np and n(1−p) should both be at least 10, and it is really a rule about the tails rather than about n alone. A binomial with p near 0.5 looks close to normal by n = 20; one with p = 0.02 is still visibly lopsided at n = 100, because the count cannot go below zero and there is no room on the left for the bell to form. Note what the rule uses: not n on its own, but the expected number of successes AND the expected number of failures, which is why a rare outcome demands a large study before any normal-based method is safe.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ Binomial visualization ============
+       The pmf is exact (VIZ.gammaln, the same math distributions.html uses),
+       so it carries no randomness at all. The single run of trials above it
+       is frozen noise: pool[] holds one uniform per trial slot, and a trial
+       succeeds when pool[i] < p. Moving p or n transforms the SAME draws, so
+       sliding away and back restores the identical run. "New trials" reseeds.
+  -->
+  <script>
+  (function () {
+    "use strict";
+    var MAXN = 40;
+    var n = 12, p = 0.25, k = 6, tail = "ge";
+    var pool = new Float64Array(MAXN);
+
+    var trC = document.getElementById("bn-trials");
+    var pmC = document.getElementById("bn-pmf");
+    if (!trC || !pmC) return;
+
+    function seed() { for (var i = 0; i < MAXN; i++) pool[i] = Math.random(); }
+
+    /* exact binomial pmf via log-gamma — no factorial overflow */
+    function pmf(kk) {
+      if (kk < 0 || kk > n) return 0;
+      if (p <= 0) return kk === 0 ? 1 : 0;
+      if (p >= 1) return kk === n ? 1 : 0;
+      var lnC = VIZ.gammaln(n + 1) - VIZ.gammaln(kk + 1) - VIZ.gammaln(n - kk + 1);
+      return Math.exp(lnC + kk * Math.log(p) + (n - kk) * Math.log(1 - p));
+    }
+    function askedFor() {
+      var s = 0, i;
+      if (tail === "eq") return pmf(k);
+      if (tail === "le") { for (i = 0; i <= k; i++) s += pmf(i); return s; }
+      for (i = k; i <= n; i++) s += pmf(i);
+      return s;
+    }
+    function inRegion(i) {
+      return tail === "eq" ? i === k : tail === "le" ? i <= k : i >= k;
+    }
+    function observed() {
+      var c = 0;
+      for (var i = 0; i < n; i++) if (pool[i] < p) c++;
+      return c;
+    }
+
+    function drawTrials() {
+      var H = Math.max(46, Math.round((trC.clientWidth || 640) / 8));
+      var o = VIZ.fit(trC, H), ctx = o.ctx, W = o.w;
+      ctx.clearRect(0, 0, W, H);
+      var cell = Math.min((W - 12) / n, H - 8);
+      var rad = Math.max(3, cell * 0.34);
+      var y = H / 2;
+      var yes = VIZ.css("--primary") || "#6366f1";
+      var no = VIZ.css("--text-faint") || "#8b95a6";
+      for (var i = 0; i < n; i++) {
+        var x = 6 + i * cell + cell / 2;
+        ctx.beginPath(); ctx.arc(x, y, rad, 0, 6.2832);
+        if (pool[i] < p) { ctx.fillStyle = yes; ctx.fill(); }
+        else { ctx.strokeStyle = no; ctx.lineWidth = 1.2; ctx.stroke(); }
+      }
+    }
+
+    function drawPmf() {
+      var H = Math.max(160, Math.round((pmC.clientWidth || 640) / 3));
+      var o = VIZ.fit(pmC, H), ctx = o.ctx, W = o.w;
+      ctx.clearRect(0, 0, W, H);
+      var padL = 40, padR = 12, padB = 26, padT = 10;
+      var plotW = W - padL - padR, plotH = H - padT - padB;
+      var i, probs = [], max = 0;
+      for (i = 0; i <= n; i++) { probs.push(pmf(i)); if (probs[i] > max) max = probs[i]; }
+      if (!max) max = 1;
+      var bw = plotW / (n + 1);
+      var base = VIZ.css("--primary") || "#6366f1";
+      for (i = 0; i <= n; i++) {
+        var h = (probs[i] / max) * plotH;
+        ctx.fillStyle = inRegion(i) ? "#f97316" : base;
+        ctx.globalAlpha = inRegion(i) ? 1 : 0.45;
+        ctx.fillRect(padL + i * bw + 1, padT + plotH - h, Math.max(1, bw - 2), h);
+      }
+      ctx.globalAlpha = 1;
+      // observed count marker
+      var obs = observed();
+      var ox = padL + obs * bw + bw / 2;
+      ctx.strokeStyle = VIZ.css("--secondary") || "#14b8a6";
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(ox, padT); ctx.lineTo(ox, padT + plotH); ctx.stroke();
+      // axis
+      ctx.strokeStyle = VIZ.css("--border") || "#d5dbe4"; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, padT + plotH); ctx.lineTo(padL + plotW, padT + plotH); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-muted") || "#5f6e86";
+      ctx.font = "12px " + (VIZ.css("--font") || "sans-serif");
+      ctx.textAlign = "center";
+      var step = n <= 12 ? 1 : n <= 24 ? 2 : 5;
+      for (i = 0; i <= n; i += step) ctx.fillText(i, padL + i * bw + bw / 2, H - 9);
+      ctx.textAlign = "left";
+      ctx.fillText("this run", Math.min(ox + 5, W - 60), padT + 11);
+    }
+
+    function readouts() {
+      var mean = n * p, sd = Math.sqrt(n * p * (1 - p)), pr = askedFor();
+      document.getElementById("bn-obs").textContent = observed() + " of " + n;
+      document.getElementById("bn-prob").textContent =
+        (pr < 0.0001 && pr > 0 ? pr.toExponential(2) : pr.toFixed(4));
+      document.getElementById("bn-mean").textContent = mean.toFixed(2);
+      document.getElementById("bn-sd").textContent = sd.toFixed(3);
+    }
+
+    function draw() { drawTrials(); drawPmf(); readouts(); }
+
+    function clampK() {
+      var kr = document.getElementById("bn-k");
+      kr.max = n;
+      if (k > n) { k = n; kr.value = n; }
+      document.getElementById("bn-kval").textContent = "k = " + k;
+    }
+
+    document.getElementById("bn-n").addEventListener("input", function () {
+      n = +this.value;
+      document.getElementById("bn-nval").textContent = "n = " + n;
+      clampK(); draw();
+    });
+    document.getElementById("bn-p").addEventListener("input", function () {
+      p = +this.value / 100;
+      document.getElementById("bn-pval").textContent = "p = " + p.toFixed(2);
+      draw();
+    });
+    document.getElementById("bn-k").addEventListener("input", function () {
+      k = +this.value;
+      document.getElementById("bn-kval").textContent = "k = " + k;
+      draw();
+    });
+    document.getElementById("bn-tail").addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-t]");
+      if (!b) return;
+      this.querySelectorAll("button").forEach(function (x) { x.classList.remove("active"); });
+      b.classList.add("active");
+      tail = b.getAttribute("data-t");
+      draw();
+    });
+    document.getElementById("bn-new").addEventListener("click", function () { seed(); draw(); });
+
+    var redraw = VIZ.rafThrottle(draw);
+    window.addEventListener("resize", redraw);
+    if (window.ResizeObserver) { new ResizeObserver(redraw).observe(pmC); }
+    VIZ.onTheme(draw);
+
+    seed(); clampK(); draw();
+  })();
+  </script>
+
+</body>
+</html>
