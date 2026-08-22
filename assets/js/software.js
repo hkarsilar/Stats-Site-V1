@@ -14,6 +14,28 @@
 window.SOFTWARE = {
 
   /* ---------------- Stats 1 ---------------- */
+  "inference-for-proportions": {
+    spss: [
+      "One proportion: <b>Analyze &rsaquo; Nonparametric Tests &rsaquo; One Sample</b>, choose <b>Customize analysis</b>, and under Settings pick <b>Compare observed binary probability to hypothesized (Binomial test)</b>. Set the test proportion and choose the normal approximation if you want the z.",
+      "Two proportions from raw data: <b>Analyze &rsaquo; Descriptive Statistics &rsaquo; Crosstabs</b>, group in Rows and outcome in Columns.",
+      "Click <b>Statistics</b> and tick <b>Chi-square</b>; click <b>Cells</b> and tick <b>Row percentages</b> so both proportions are printed beside the counts.",
+      "Read the <b>Pearson Chi-Square</b> row. On a 2&times;2 table its value is the pooled z squared, and its <b>Asymptotic Sig. (2-sided)</b> is the two-sided p.",
+      "SPSS prints no confidence interval for the difference. Compute it by hand from the row percentages, or use the risk-difference option under <b>Statistics &rsaquo; Risk</b>."
+    ],
+    jasp: [
+      "One proportion: <b>Frequencies &rsaquo; Classical &rsaquo; Binomial Test</b>, set the test value and tick <b>Confidence interval</b>.",
+      "Two proportions: <b>Frequencies &rsaquo; Classical &rsaquo; Contingency Tables</b>, group in Rows and outcome in Columns.",
+      "Under <b>Statistics</b> tick <b>&chi;&sup2;</b>, and under <b>Cells</b> tick <b>Row</b> percentages.",
+      "For the difference and its interval, open <b>Comparative Measures</b> and tick <b>Difference in proportions</b>."
+    ],
+    apa: '<p>Of the 400 students surveyed, 232 said they would use a late-night bus, <em>p&#770;</em> = .58, 95% CI [.53, .63]. That is significantly above an even split, <em>z</em> = 3.20, <em>p</em> = .001. Support did not differ reliably between the two faculties, 37.5% versus 48.0%, <em>z</em> = &minus;1.73, <em>p</em> = .084, 95% CI of the difference [&minus;.22, .01].</p>',
+    tips: [
+      "Report the counts, not only the percentages. \"45 of 120 (37.5%)\" lets a reader check your arithmetic; \"37.5%\" alone does not.",
+      "Give the interval for the DIFFERENCE, not two separate intervals. Whether two intervals overlap is not the same question as whether the difference clears zero, and the overlap version is the more conservative of the two.",
+      "Check both counts before running anything: at least 10 successes and 10 failures per group. Below that, ask for an exact binomial test rather than the normal approximation.",
+      "On a 2&times;2 table, SPSS's Pearson chi-square and the two-proportion z are the same test. Report one of them, and prefer the z, since it carries a direction and an interval."
+    ]
+  },
   "one-sample-and-paired-t-tests": {
     spss: [
       '<strong>Analyze → Compare Means → One-Sample T Test…</strong> (or <strong>Paired-Samples T Test…</strong>). In SPSS 29+ the submenu is called <em>Compare Means and Proportions</em>, with the same procedures inside.',

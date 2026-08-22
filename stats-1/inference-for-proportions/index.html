@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    /* Consent Mode: storage denied by default, so GA sets no cookie and
+       follows nobody between visits. Anonymous counts still arrive. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Inference for Proportions — StatsCapybara</title>
+  <meta name="description" content="From a count to a claim about a percentage: conditions, a confidence interval, a z test, and why chi-square on a 2x2 table is just that z squared." />
+  <link rel="canonical" href="https://statscapybara.com/stats-1/inference-for-proportions/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Inference for Proportions — StatsCapybara" />
+  <meta property="og:description" content="From a count to a claim about a percentage: conditions, a confidence interval, a z test, and why chi-square on a 2x2 table is just that z squared." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og-stats-1.png" />
+  <meta property="og:url" content="https://statscapybara.com/stats-1/inference-for-proportions/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Inference for Proportions — StatsCapybara" />
+  <meta name="twitter:description" content="From a count to a claim about a percentage: conditions, a confidence interval, a z test, and why chi-square on a 2x2 table is just that z squared." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-1.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Inference for Proportions", "description": "From a count to a claim about a percentage: conditions, a confidence interval, a z test, and why chi-square on a 2x2 table is just that z squared.", "url": "https://statscapybara.com/stats-1/inference-for-proportions/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Introduction to Statistics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Inference for Proportions", "item": "https://statscapybara.com/stats-1/inference-for-proportions/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why does the confidence interval use p-hat but the test uses p-nought?", "acceptedAnswer": {"@type": "Answer", "text": "Because a proportion's spread is decided by the proportion itself. The standard deviation of p̂ is the square root of p(1−p)/n, so naming a value for p also names the standard error. A hypothesis test assumes H₀ is true, and H₀ supplies p₀, so the test has a value to use and should use it. A confidence interval assumes nothing, so it has only the data's own p̂ to substitute. When p̂ sits close to p₀ the two standard errors barely differ, and when it sits far away they can differ enough to move the conclusion."}}, {"@type": "Question", "name": "My sample has only 4 successes out of 300. Can I still build an interval?", "acceptedAnswer": {"@type": "Answer", "text": "Not with the normal-based formula, because the success-failure condition needs at least 10 of each and no sample size repairs that. With 4 successes the sampling distribution is pressed against zero and cannot be symmetric. Two honest ways forward: report an exact binomial (Clopper-Pearson) interval, which most software offers and which stays valid at any count, or use the Wilson score interval, which behaves far better than the textbook formula near the boundaries. Both will be asymmetric around p̂, and that asymmetry is the correct answer rather than a defect."}}, {"@type": "Question", "name": "If chi-square and the two-proportion z test are the same test, which should I report?", "acceptedAnswer": {"@type": "Answer", "text": "For a 2×2 table, prefer the z test. The two are algebraically identical, χ² equals z squared on one degree of freedom, and they return the same p-value to every decimal. What differs is what each one hands you afterwards. The z test gives a signed difference and a confidence interval for that difference, which is what a reader needs in order to judge whether the gap matters. Chi-square returns a positive number with no direction and no interval. Once the table is larger than 2×2 the z test is no longer available and chi-square is the tool."}}]}
+  </script>
+</head>
+<body data-course="stats-1" data-section="inference-for-proportions">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 1.15</span>
+        <h1>Inference for Proportions</h1>
+
+        <p class="lede">A proportion is a mean in disguise. Score every success as 1 and every failure as 0, average them, and you have <em>p̂</em>. That one observation lets every tool from the last few lessons carry straight over, with one adjustment: the spread of a proportion is decided by the proportion itself, so you never have to estimate it separately.</p>
+
+        <h2>The sampling distribution of p̂</h2>
+        <p>Take a random sample of size <em>n</em> from a population in which a fraction <em>p</em> would say yes. The count of yes answers is <a href="../../stats-1/binomial-distribution/">binomial</a>, and the sample proportion is that count divided by <em>n</em>. Dividing by a constant rescales the mean and the standard deviation, which gives:</p>
+        <p style="text-align:center">mean of <em>p̂</em> = <em>p</em>          SD of <em>p̂</em> = √(<em>p</em>(1 − <em>p</em>) / <em>n</em>)</p>
+        <p>So <em>p̂</em> is unbiased, and its spread shrinks with √<em>n</em> exactly as the sample mean's does. The shape is the part that needs care. A binomial count turns normal as <em>n</em> grows, but a proportion near 0 or 1 is squeezed against a boundary and stays lopsided far longer than one near the middle.</p>
+
+        <h2>Conditions for inference</h2>
+        <p>Two things have to hold before any of the machinery below is trustworthy. The data must come from a <a href="../../stats-1/producing-data-and-sampling-design/">random sample</a> of the population you want to describe, which no formula can rescue. And the sample must contain <strong>at least 10 successes and at least 10 failures</strong>, so that the normal approximation has room on both sides. When you are testing a hypothesized value the count is checked against that value instead: <em>np</em>₀ ≥ 10 and <em>n</em>(1 − <em>p</em>₀) ≥ 10.</p>
+        <p>The condition is about both counts, never about <em>n</em> alone. A sample of 500 with 4 successes fails it, which is why a rare outcome needs a large study before you can say anything with a <em>z</em>.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="ipviz">
+          <p class="viz-title">🎮 One Proportion, or Two</p>
+          <p class="viz-sub">Set the counts and read off the interval and the test. The condition light turns amber whenever a group holds fewer than 10 successes or fewer than 10 failures.</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>What you have</label>
+              <div class="seg" id="ip-mode">
+                <button data-m="one" class="active">One proportion</button>
+                <button data-m="two">Two proportions</button>
+              </div>
+            </div>
+            <div class="control" data-grp="one">
+              <label>Sample size <span class="val" id="ip-n1val">n = 400</span></label>
+              <input type="range" id="ip-n1" min="20" max="600" step="10" value="400" />
+            </div>
+            <div class="control" data-grp="one">
+              <label>Successes <span class="val" id="ip-x1val">x = 232</span></label>
+              <input type="range" id="ip-x1" min="0" max="600" step="1" value="232" />
+            </div>
+            <div class="control" data-grp="one">
+              <label>Null value <span class="val" id="ip-p0val">p₀ = 0.50</span></label>
+              <input type="range" id="ip-p0" min="5" max="95" step="5" value="50" />
+            </div>
+            <div class="control" data-grp="two" hidden>
+              <label>Group 1 size <span class="val" id="ip-anval">n₁ = 120</span></label>
+              <input type="range" id="ip-an" min="20" max="400" step="10" value="120" />
+            </div>
+            <div class="control" data-grp="two" hidden>
+              <label>Group 1 successes <span class="val" id="ip-axval">x₁ = 45</span></label>
+              <input type="range" id="ip-ax" min="0" max="400" step="1" value="45" />
+            </div>
+            <div class="control" data-grp="two" hidden>
+              <label>Group 2 size <span class="val" id="ip-bnval">n₂ = 150</span></label>
+              <input type="range" id="ip-bn" min="20" max="400" step="10" value="150" />
+            </div>
+            <div class="control" data-grp="two" hidden>
+              <label>Group 2 successes <span class="val" id="ip-bxval">x₂ = 72</span></label>
+              <input type="range" id="ip-bx" min="0" max="400" step="1" value="72" />
+            </div>
+          </div>
+
+          <canvas id="ip-canvas" style="--viz-ar: 20 / 9"></canvas>
+
+          <div class="stat-row" data-grp="one">
+            <div class="stat"><span class="k">p̂</span><span class="v" id="ip-phat">—</span></div>
+            <div class="stat"><span class="k">95% CI for p</span><span class="v" id="ip-ci">—</span></div>
+            <div class="stat"><span class="k">z</span><span class="v" id="ip-z">—</span></div>
+            <div class="stat"><span class="k">two-sided p</span><span class="v" id="ip-p">—</span></div>
+            <div class="stat"><span class="k">Conditions</span><span class="v" id="ip-cond">—</span></div>
+          </div>
+          <div class="stat-row" data-grp="two" hidden>
+            <div class="stat"><span class="k">p̂₁ − p̂₂</span><span class="v" id="ip-diff">—</span></div>
+            <div class="stat"><span class="k">95% CI for the difference</span><span class="v" id="ip-dci">—</span></div>
+            <div class="stat"><span class="k">pooled z</span><span class="v" id="ip-z2">—</span></div>
+            <div class="stat"><span class="k">two-sided p</span><span class="v" id="ip-p2">—</span></div>
+            <div class="stat"><span class="k">χ² = z²</span><span class="v" id="ip-chi">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>A confidence interval for one proportion</h2>
+        <p>The interval has the shape every interval in this course has, an estimate plus or minus a margin:</p>
+        <p style="text-align:center"><em>p̂</em> ± <em>z</em>* √(<em>p̂</em>(1 − <em>p̂</em>) / <em>n</em>)</p>
+        <p>Suppose 232 of 400 sampled students say they would use a late-night bus. Then <em>p̂</em> = 0.58, the standard error is √(0.58 × 0.42 / 400) = 0.0247, and with <em>z</em>* = 1.96 the margin of error is 0.0484. The interval runs from 0.532 to 0.628, so somewhere between 53% and 63% of the student body would use the bus. Report it as a percentage range and nobody has to squint at a decimal.</p>
+
+        <h2>A test for one proportion</h2>
+        <p>Testing works the same way, with one change that costs marks on exams every year. A hypothesis test assumes H₀ is true, and for a proportion H₀ names an exact value <em>p</em>₀, which pins down the standard deviation as well as the center. So the test uses <em>p</em>₀ in the standard error where the interval used <em>p̂</em>:</p>
+        <p style="text-align:center"><em>z</em> = (<em>p̂</em> − <em>p</em>₀) / √(<em>p</em>₀(1 − <em>p</em>₀) / <em>n</em>)</p>
+        <p>For the bus survey against H₀: <em>p</em> = 0.5, the denominator is √(0.25/400) = 0.025, giving <em>z</em> = (0.58 − 0.50)/0.025 = 3.20 and a two-sided <em>p</em>-value of 0.0014. A majority is real, not a sampling accident. The two standard errors differ here in the third decimal, but when <em>p̂</em> sits far from <em>p</em>₀ they can disagree enough to matter, and using the wrong one is marked wrong even when the conclusion survives.</p>
+
+        <h2>Comparing two proportions</h2>
+        <p>Two independent samples, two proportions, and the quantity of interest is their difference <em>p̂</em>₁ − <em>p̂</em>₂. Variances of independent quantities add, so the standard error of the difference is the square root of the sum:</p>
+        <p style="text-align:center">SE = √(<em>p̂</em>₁(1 − <em>p̂</em>₁)/<em>n</em>₁ + <em>p̂</em>₂(1 − <em>p̂</em>₂)/<em>n</em>₂)</p>
+        <p>Take 45 successes out of 120 in one group and 72 out of 150 in the other, so <em>p̂</em>₁ = 0.375 and <em>p̂</em>₂ = 0.480. The difference is −0.105 with a standard error of 0.0601, and the 95% interval runs from −0.223 to 0.013. It contains zero, so the data are consistent with no difference at all.</p>
+        <p>The test again does something different, and for a reason worth understanding. H₀ says the two population proportions are <em>equal</em>, so under H₀ there is only one proportion in the world, and the best estimate of it uses everybody: the <strong>pooled</strong> proportion <em>p̂</em> = (<em>x</em>₁ + <em>x</em>₂)/(<em>n</em>₁ + <em>n</em>₂) = 117/270 = 0.433. That single value goes into both halves of the standard error:</p>
+        <p style="text-align:center"><em>z</em> = (<em>p̂</em>₁ − <em>p̂</em>₂) / √(<em>p̂</em>(1 − <em>p̂</em>)(1/<em>n</em>₁ + 1/<em>n</em>₂))</p>
+        <p>which gives 0.0607 for the denominator and <em>z</em> = −1.73, two-sided <em>p</em> = 0.084. Interval and test agree, as they must: the interval covers zero and the test fails to reject.</p>
+
+        <h2>Why χ² on a 2×2 table is this same test</h2>
+        <p>Those same 270 people can be written as a two-by-two table of successes and failures by group, and a <a href="../../stats-1/chi-square-tests/">chi-square test of independence</a> on that table asks precisely the question the pooled <em>z</em> test just asked. The two are not merely similar. They are algebraically the same test, and</p>
+        <p style="text-align:center">χ² = <em>z</em>²    with 1 degree of freedom</p>
+        <p>Here <em>z</em> = −1.7301 and χ² = 2.9932, which is 1.7301² to every decimal either statistic prints, and both report <em>p</em> = 0.084. The identity holds for any 2×2 table, and it is the same one connecting the two distributions in <a href="../../tables.html">the statistical tables</a>. Use whichever you like, with one practical difference: the <em>z</em> version gives you a signed difference and a confidence interval, and χ² gives you neither. That is a good reason to prefer the two-proportion <em>z</em> when the table really is 2×2.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> proportions are what surveys, clinical trials and A/B tests actually produce. The interval says how precisely you know the percentage; the test says whether a difference is worth talking about. Both need the same two conditions, and neither can repair a sample that was not random.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>Why does the confidence interval use p-hat but the test uses p-nought?</summary>
+            <div class="faq-a"><p>Because a proportion's spread is decided by the proportion itself. The standard deviation of p̂ is the square root of p(1−p)/n, so naming a value for p also names the standard error. A hypothesis test assumes H₀ is true, and H₀ supplies p₀, so the test has a value to use and should use it. A confidence interval assumes nothing, so it has only the data's own p̂ to substitute. When p̂ sits close to p₀ the two standard errors barely differ, and when it sits far away they can differ enough to move the conclusion.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>My sample has only 4 successes out of 300. Can I still build an interval?</summary>
+            <div class="faq-a"><p>Not with the normal-based formula, because the success-failure condition needs at least 10 of each and no sample size repairs that. With 4 successes the sampling distribution is pressed against zero and cannot be symmetric. Two honest ways forward: report an exact binomial (Clopper-Pearson) interval, which most software offers and which stays valid at any count, or use the Wilson score interval, which behaves far better than the textbook formula near the boundaries. Both will be asymmetric around p̂, and that asymmetry is the correct answer rather than a defect.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>If chi-square and the two-proportion z test are the same test, which should I report?</summary>
+            <div class="faq-a"><p>For a 2×2 table, prefer the z test. The two are algebraically identical, χ² equals z squared on one degree of freedom, and they return the same p-value to every decimal. What differs is what each one hands you afterwards. The z test gives a signed difference and a confidence interval for that difference, which is what a reader needs in order to judge whether the gap matters. Chi-square returns a positive number with no direction and no interval. Once the table is larger than 2×2 the z test is no longer available and chi-square is the tool.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ Inference-for-proportions visualization ============
+       Entirely deterministic: every readout is a closed-form function of the
+       slider values, so there is no noise to freeze. The p-values come from
+       VIZ.normQ (the far-tail-safe normal) and VIZ.chiSqUpper rather than
+       from 1 - normCdf, so a large z does not collapse to zero.
+  -->
+  <script>
+  (function () {
+    "use strict";
+    var Z95 = 1.959963984540054;
+    var mode = "one";
+    var n1 = 400, x1 = 232, p0 = 0.5;
+    var an = 120, ax = 45, bn = 150, bx = 72;
+
+    var C = document.getElementById("ip-canvas");
+    if (!C) return;
+    var $ = function (id) { return document.getElementById(id); };
+
+    function fmtP(p) {
+      if (p < 0.0001) return p < 1e-15 ? "< 1e-15" : p.toExponential(2);
+      return p.toFixed(4);
+    }
+    function pct(v) { return (v * 100).toFixed(1) + "%"; }
+
+    /* ---------- one proportion ---------- */
+    function oneStats() {
+      var ph = n1 ? x1 / n1 : 0;
+      var seCI = Math.sqrt(ph * (1 - ph) / n1);
+      var se0 = Math.sqrt(p0 * (1 - p0) / n1);
+      var z = se0 ? (ph - p0) / se0 : 0;
+      return {
+        ph: ph, lo: ph - Z95 * seCI, hi: ph + Z95 * seCI, z: z,
+        p: 2 * VIZ.normQ(Math.abs(z)), se0: se0,
+        ok: x1 >= 10 && (n1 - x1) >= 10
+      };
+    }
+    /* ---------- two proportions ---------- */
+    function twoStats() {
+      var p1 = an ? ax / an : 0, p2 = bn ? bx / bn : 0, d = p1 - p2;
+      var seU = Math.sqrt(p1 * (1 - p1) / an + p2 * (1 - p2) / bn);
+      var pp = (ax + bx) / (an + bn);
+      var seP = Math.sqrt(pp * (1 - pp) * (1 / an + 1 / bn));
+      var z = seP ? d / seP : 0;
+      return {
+        p1: p1, p2: p2, d: d, lo: d - Z95 * seU, hi: d + Z95 * seU,
+        z: z, p: 2 * VIZ.normQ(Math.abs(z)), chi: z * z,
+        ok: ax >= 10 && (an - ax) >= 10 && bx >= 10 && (bn - bx) >= 10
+      };
+    }
+
+    /* ---------- drawing ---------- */
+    function draw() {
+      var H = Math.max(220, Math.round((C.clientWidth || 640) * 0.45));
+      var o = VIZ.fit(C, H), ctx = o.ctx, W = o.w;
+      ctx.clearRect(0, 0, W, H);
+      if (mode === "one") drawOne(ctx, W, H); else drawTwo(ctx, W, H);
+    }
+
+    function axis(ctx, W, H, padL, padR, y, lo, hi, ticks) {
+      ctx.strokeStyle = VIZ.css("--border") || "#d5dbe4"; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-muted") || "#5f6e86";
+      ctx.font = "12px " + (VIZ.css("--font") || "sans-serif");
+      ctx.textAlign = "center";
+      for (var i = 0; i <= ticks; i++) {
+        var v = lo + (hi - lo) * i / ticks;
+        var x = padL + (W - padL - padR) * i / ticks;
+        ctx.fillText(v.toFixed(2), x, y + 16);
+      }
+    }
+
+    function drawOne(ctx, W, H) {
+      var s = oneStats();
+      var padL = 46, padR = 20, padT = 14;
+      var lo = 0, hi = 1;
+      var sd = s.se0 || 0.05;
+      lo = Math.max(0, Math.min(p0 - 4 * sd, s.lo - sd));
+      hi = Math.min(1, Math.max(p0 + 4 * sd, s.hi + sd));
+      var X = function (v) { return padL + (W - padL - padR) * (v - lo) / (hi - lo); };
+      var baseY = H - 62, curveH = baseY - padT;
+
+      // sampling distribution of p-hat under H0
+      var pts = [], i, maxD = 0;
+      for (i = 0; i <= 240; i++) {
+        var v = lo + (hi - lo) * i / 240;
+        var dv = Math.exp(-0.5 * Math.pow((v - p0) / sd, 2));
+        pts.push([v, dv]); if (dv > maxD) maxD = dv;
+      }
+      var cut = Math.abs(s.ph - p0);
+      // shaded two-sided tails
+      ctx.fillStyle = "#f97316"; ctx.globalAlpha = 0.28;
+      ctx.beginPath(); ctx.moveTo(X(lo), baseY);
+      for (i = 0; i < pts.length; i++)
+        if (Math.abs(pts[i][0] - p0) >= cut) ctx.lineTo(X(pts[i][0]), baseY - pts[i][1] / maxD * curveH);
+        else ctx.lineTo(X(pts[i][0]), baseY);
+      ctx.lineTo(X(hi), baseY); ctx.closePath(); ctx.fill();
+      ctx.globalAlpha = 1;
+      // curve
+      ctx.strokeStyle = VIZ.css("--primary") || "#6366f1"; ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (i = 0; i < pts.length; i++) {
+        var px = X(pts[i][0]), py = baseY - pts[i][1] / maxD * curveH;
+        if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py);
+      }
+      ctx.stroke();
+      // observed p-hat
+      ctx.strokeStyle = VIZ.css("--secondary") || "#14b8a6"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(X(s.ph), padT); ctx.lineTo(X(s.ph), baseY); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--secondary") || "#14b8a6";
+      ctx.font = "12px " + (VIZ.css("--font") || "sans-serif");
+      ctx.textAlign = "left";
+      ctx.fillText("p̂", Math.min(X(s.ph) + 5, W - 30), padT + 11);
+      // the confidence interval, drawn under the axis
+      var ciY = H - 22;
+      ctx.strokeStyle = VIZ.css("--primary") || "#6366f1"; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(X(Math.max(lo, s.lo)), ciY); ctx.lineTo(X(Math.min(hi, s.hi)), ciY); ctx.stroke();
+      ctx.beginPath(); ctx.arc(X(s.ph), ciY, 4, 0, 6.2832); ctx.fillStyle = VIZ.css("--primary") || "#6366f1"; ctx.fill();
+      axis(ctx, W, H, padL, padR, baseY, lo, hi, 5);
+      ctx.fillStyle = VIZ.css("--text-muted") || "#5f6e86";
+      ctx.textAlign = "right";
+      ctx.fillText("95% CI for p", W - padR, ciY - 8);
+    }
+
+    function drawTwo(ctx, W, H) {
+      var s = twoStats();
+      var padL = 58, padR = 20;
+      var lo = 0, hi = 1;
+      var X = function (v) { return padL + (W - padL - padR) * (v - lo) / (hi - lo); };
+      var rows = [
+        { lab: "p̂₁", v: s.p1, n: an, x: ax },
+        { lab: "p̂₂", v: s.p2, n: bn, x: bx }
+      ];
+      var c = VIZ.css("--primary") || "#6366f1";
+      var c2 = VIZ.css("--secondary") || "#14b8a6";
+      ctx.font = "13px " + (VIZ.css("--font") || "sans-serif");
+      for (var i = 0; i < rows.length; i++) {
+        var r = rows[i], y = Math.round(H * 0.15) + i * Math.round(H * 0.15);
+        var se = Math.sqrt(r.v * (1 - r.v) / r.n);
+        ctx.strokeStyle = i ? c2 : c; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(X(Math.max(0, r.v - Z95 * se)), y); ctx.lineTo(X(Math.min(1, r.v + Z95 * se)), y); ctx.stroke();
+        ctx.fillStyle = i ? c2 : c;
+        ctx.beginPath(); ctx.arc(X(r.v), y, 4.5, 0, 6.2832); ctx.fill();
+        ctx.textAlign = "right"; ctx.fillText(r.lab, padL - 8, y + 4);
+      }
+      axis(ctx, W, H, padL, padR, Math.round(H * 0.46), 0, 1, 5);
+
+      // the difference, on its own scale, with a zero line
+      var dy = Math.round(H * 0.80);
+      var span = Math.max(0.25, Math.abs(s.lo), Math.abs(s.hi)) * 1.15;
+      var XD = function (v) { return padL + (W - padL - padR) * (v + span) / (2 * span); };
+      ctx.strokeStyle = VIZ.css("--border") || "#d5dbe4"; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(XD(0), dy - 20); ctx.lineTo(XD(0), dy + 12); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-muted") || "#5f6e86";
+      ctx.textAlign = "center"; ctx.fillText("0", XD(0), dy + 24);
+      var crosses = s.lo <= 0 && s.hi >= 0;
+      ctx.strokeStyle = crosses ? "#f97316" : (VIZ.css("--success") || "#22c55e");
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(XD(s.lo), dy); ctx.lineTo(XD(s.hi), dy); ctx.stroke();
+      ctx.fillStyle = ctx.strokeStyle;
+      ctx.beginPath(); ctx.arc(XD(s.d), dy, 4.5, 0, 6.2832); ctx.fill();
+      ctx.textAlign = "right";
+      ctx.fillStyle = VIZ.css("--text-muted") || "#5f6e86";
+      ctx.fillText("p̂₁ − p̂₂", padL - 8, dy + 4);
+    }
+
+    /* ---------- readouts ---------- */
+    function readouts() {
+      if (mode === "one") {
+        var s = oneStats();
+        $("ip-phat").textContent = s.ph.toFixed(3) + "  (" + pct(s.ph) + ")";
+        $("ip-ci").textContent = "[" + s.lo.toFixed(3) + ", " + s.hi.toFixed(3) + "]";
+        $("ip-z").textContent = s.z.toFixed(3);
+        $("ip-p").textContent = fmtP(s.p);
+        $("ip-cond").textContent = s.ok ? "met" : "too few in one cell";
+        $("ip-cond").style.color = s.ok ? "" : "#f97316";
+      } else {
+        var t = twoStats();
+        $("ip-diff").textContent = t.d.toFixed(3);
+        $("ip-dci").textContent = "[" + t.lo.toFixed(3) + ", " + t.hi.toFixed(3) + "]";
+        $("ip-z2").textContent = t.z.toFixed(3);
+        $("ip-p2").textContent = fmtP(t.p);
+        $("ip-chi").textContent = t.chi.toFixed(3);
+      }
+    }
+
+    function render() { draw(); readouts(); }
+
+    /* ---------- wiring ---------- */
+    function bind(id, valId, set, label) {
+      $(id).addEventListener("input", function () {
+        set(+this.value);
+        $(valId).textContent = label();
+        render();
+      });
+    }
+    bind("ip-n1", "ip-n1val", function (v) {
+      n1 = v; $("ip-x1").max = v; if (x1 > v) { x1 = v; $("ip-x1").value = v; $("ip-x1val").textContent = "x = " + x1; }
+    }, function () { return "n = " + n1; });
+    bind("ip-x1", "ip-x1val", function (v) { x1 = v; }, function () { return "x = " + x1; });
+    bind("ip-p0", "ip-p0val", function (v) { p0 = v / 100; }, function () { return "p₀ = " + p0.toFixed(2); });
+    bind("ip-an", "ip-anval", function (v) {
+      an = v; $("ip-ax").max = v; if (ax > v) { ax = v; $("ip-ax").value = v; $("ip-axval").textContent = "x₁ = " + ax; }
+    }, function () { return "n₁ = " + an; });
+    bind("ip-ax", "ip-axval", function (v) { ax = v; }, function () { return "x₁ = " + ax; });
+    bind("ip-bn", "ip-bnval", function (v) {
+      bn = v; $("ip-bx").max = v; if (bx > v) { bx = v; $("ip-bx").value = v; $("ip-bxval").textContent = "x₂ = " + bx; }
+    }, function () { return "n₂ = " + bn; });
+    bind("ip-bx", "ip-bxval", function (v) { bx = v; }, function () { return "x₂ = " + bx; });
+
+    document.getElementById("ip-mode").addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-m]");
+      if (!b) return;
+      this.querySelectorAll("button").forEach(function (x) { x.classList.remove("active"); });
+      b.classList.add("active");
+      mode = b.getAttribute("data-m");
+      showGroups();
+      render();
+    });
+
+    /* [hidden] alone does not hide a .control or .stat-row: both carry an
+       author display rule, which out-cascades the UA [hidden] { display:none }.
+       Set the inline display too, and keep the attribute for assistive tech. */
+    function showGroups() {
+      document.querySelectorAll("#ipviz [data-grp]").forEach(function (el) {
+        var show = el.getAttribute("data-grp") === mode;
+        el.hidden = !show;
+        el.style.display = show ? "" : "none";
+      });
+    }
+
+    var redraw = VIZ.rafThrottle(draw);
+    window.addEventListener("resize", redraw);
+    if (window.ResizeObserver) { new ResizeObserver(redraw).observe(C); }
+    VIZ.onTheme(draw);
+
+    $("ip-x1").max = n1; $("ip-ax").max = an; $("ip-bx").max = bn;
+    showGroups();
+    render();
+  })();
+  </script>
+
+</body>
+</html>

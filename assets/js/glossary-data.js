@@ -6,6 +6,10 @@
    tools/build-search-index.py. Add a term here, not in the HTML.
    ============================================================ */
 window.GLOSSARY = [
+      { t: "Sample proportion (p̂)", d: "The fraction of successes in a sample, x/n. Its mean is p and its standard deviation is the square root of p(1−p)/n.", s: "stats-1/inference-for-proportions", l: "Inference for Proportions" },
+      { t: "Pooled proportion", d: "The combined success rate across both groups, (x₁+x₂)/(n₁+n₂). Used in the standard error of a two-proportion z test, because H₀ says the two proportions are equal.", s: "stats-1/inference-for-proportions", l: "Inference for Proportions" },
+      { t: "Success-failure condition", d: "Inference on a proportion needs at least 10 successes and at least 10 failures, so the normal approximation has room on both sides. It is a condition on both counts, not on n.", s: "stats-1/inference-for-proportions", l: "Inference for Proportions" },
+      { t: "Two-proportion z test", d: "A test of whether two independent groups have the same population proportion. On a 2×2 table it is algebraically the chi-square test, with χ² equal to z squared.", s: "stats-1/inference-for-proportions", l: "Inference for Proportions" },
       { t: "Binomial distribution", d: "The distribution of the number of successes in n independent trials that each succeed with the same probability p. Written B(n, p).", s: "stats-1/binomial-distribution", l: "The Binomial Distribution" },
       { t: "Binomial coefficient", d: "C(n, k) = n! / (k!(n−k)!), the number of different orders in which k successes can occur among n trials.", s: "stats-1/binomial-distribution", l: "The Binomial Distribution" },
       { t: "Bernoulli trial", d: "A single trial with two outcomes and a fixed success probability. A binomial count is n of them added up.", s: "stats-1/binomial-distribution", l: "The Binomial Distribution" },

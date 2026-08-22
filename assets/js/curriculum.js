@@ -44,7 +44,7 @@ window.CURRICULUM = [
       { n: "1.12", slug: "hypothesis-testing-logic",            title: "Hypothesis Testing Logic", ready: true },
       { n: "1.13", slug: "one-sample-and-paired-t-tests",       title: "One-Sample & Paired t-Tests", ready: true },
       { n: "1.14", slug: "independent-samples-t-test",          title: "Independent Samples t-Test", ready: true },
-      { n: "1.15", slug: "inference-for-proportions",           title: "Inference for Proportions", ready: false },
+      { n: "1.15", slug: "inference-for-proportions",           title: "Inference for Proportions", ready: true },
       { n: "1.16", slug: "chi-square-tests",                    title: "Chi-Square Tests", ready: true },
       { n: "1.17", slug: "correlation",                         title: "Correlation", ready: true },
       { n: "1.18", slug: "simple-linear-regression",            title: "Simple Linear Regression", ready: true }
