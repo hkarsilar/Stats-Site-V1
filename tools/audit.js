@@ -795,6 +795,32 @@ if (cm && +cm[1] !== courseCount) err(`index.html says "${cm[1]} courses" but cu
 for (const lm of idx.matchAll(/(\d+)\s+(?:interactive |hands-on )?lessons/gi))
   if (+lm[1] !== lessonCount) err(`index.html says "${lm[1]} … lessons" but curriculum has ${lessonCount} ready lessons`);
 
+/* The visible hero/about counters are <span data-count="…">N</span>, filled at
+   runtime by site.js's renderCounts(). The baked N is the pre-JS fallback: it is
+   what a no-JS reader, a non-executing crawler and the first paint all show.
+   The two scans above CANNOT see it, because "</span> " sits between the number
+   and the word and neither `\s+` nor the lessons pattern matches across a tag —
+   which is exactly how the homepage sat on "9 courses · 95 interactive lessons"
+   through two course additions and a whole restructure while the rendered page
+   read correctly. Check the fallbacks against the same source renderCounts uses. */
+const NUM_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven',
+  'eight', 'nine', 'ten', 'eleven', 'twelve'];
+const numWord = (n) => {
+  const w = NUM_WORDS[n] || String(n);
+  return w.charAt(0).toUpperCase() + w.slice(1);
+};
+const wantCount = { courses: String(courseCount), lessons: String(lessonCount), 'courses-word': numWord(courseCount) };
+let countSpans = 0;
+for (const m of idx.matchAll(/<span data-count="([\w-]+)"\s*>([^<]*)<\/span>/g)) {
+  const [, key, got] = m;
+  if (!(key in wantCount)) { err(`index.html → unknown data-count key "${key}"`); continue; }
+  countSpans++;
+  if (got.trim() !== wantCount[key])
+    err(`index.html → data-count="${key}" fallback is "${got.trim()}", expected "${wantCount[key]}" (it is what a no-JS reader sees)`);
+}
+if (!countSpans) err('index.html → no data-count spans found; the homepage counters lost their markup');
+else info(`homepage data-count fallbacks checked: ${countSpans}`);
+
 /* ============================================================
    CHECK 9 — APA statistic/p consistency (P39 run 12)
 

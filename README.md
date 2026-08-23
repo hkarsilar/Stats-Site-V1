@@ -5,7 +5,7 @@ built for visual learners. Every lesson pairs a written explanation with a
 hands-on canvas visualization you can actually move. Live at
 **[statscapybara.com](https://statscapybara.com/)**.
 
-Nine courses across two tracks — **The Statistics Core** (Stats 1–4 plus
+Eight courses across two tracks — **The Statistics Core** (Stats 1–3 plus
 Machine Learning & AI) and **The Research Toolkit** (Methods, Data, Writing,
 Ethics) — alongside a shelf of tools: calculators for power, effect sizes,
 descriptives and correlation; exact z/t/χ²/F tables; "which test?" and "which
