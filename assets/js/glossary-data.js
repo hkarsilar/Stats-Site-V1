@@ -6,7 +6,6 @@
    tools/build-search-index.py. Add a term here, not in the HTML.
    ============================================================ */
 window.GLOSSARY = [
-      { t: "Log transformation", d: "Replacing a variable by its logarithm. Logging the predictor fits diminishing returns; logging the outcome fits constant proportional growth and often steadies the variance too.", s: "stats-2/nonlinear-relationships-and-transformations", l: "Non-Linear Relationships & Transformations" },
       { t: "Polynomial term", d: "An added x² (or higher power) that lets a fitted curve turn around. The turning point sits at −b₁/(2b₂), and neither coefficient is interpretable on its own.", s: "stats-2/nonlinear-relationships-and-transformations", l: "Non-Linear Relationships & Transformations" },
       { t: "Retransformation bias", d: "Exponentiating the fitted value of a log-outcome model estimates the median of y, not its mean, so a naive back-transform runs low.", s: "stats-2/nonlinear-relationships-and-transformations", l: "Non-Linear Relationships & Transformations" },
       { t: "Curvature (in residuals)", d: "An arch or valley in a plot of residuals against fitted values. The signature of a relationship that bends where the model assumed a straight line.", s: "stats-2/nonlinear-relationships-and-transformations", l: "Non-Linear Relationships & Transformations" },
@@ -167,7 +166,6 @@ window.GLOSSARY = [
       { t: "Odds", d: "The probability of an event divided by the probability of its absence: p / (1 − p). The scale logistic regression works on (as log-odds).", s: "stats-2/logistic-regression", l: "Logistic Regression" },
       { t: "Sphericity", d: "The repeated-measures ANOVA assumption that all pairwise condition-difference scores have equal variance; violations get a Greenhouse–Geisser df correction.", s: "stats-2/repeated-measures-anova", l: "Repeated Measures ANOVA" },
       { t: "Simpson's paradox", d: "A trend that appears in aggregated data but reverses (or vanishes) within every subgroup, caused by an ignored lurking variable.", s: "stats-2/multiple-regression", l: "Multiple Regression" },
-      { t: "Binomial distribution", d: "The distribution of the number of successes in n independent yes/no trials with success probability p.", s: "stats-1/probability-basics", l: "Probability Basics" },
       { t: "Poisson distribution", d: "The classic distribution for counts of events in a fixed window, with variance equal to its mean, the starting point for count GLMs.", s: "stats-3/generalized-linear-models", l: "Generalized Linear Models" },
       { t: "Construct", d: "An abstract idea a study aims to measure — stress, intelligence, aggression — that exists in theory and must be pinned to a concrete measure before it can be studied.", s: "methods/variables-and-operationalization", l: "Variables & Operationalization" },
       { t: "Operationalization", d: "Translating a construct into a specific, measurable procedure: defining 'stress' as salivary cortisol in µg/dL, say. One construct can be operationalized many ways.", s: "methods/variables-and-operationalization", l: "Variables & Operationalization" },

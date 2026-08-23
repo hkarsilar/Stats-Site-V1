@@ -109,10 +109,36 @@ def course_slugs() -> list:
     return re.findall(r'slug: "([\w-]+)",\s*\n\s*title:', cur)
 
 
+def ready_sections() -> dict:
+    """{course slug -> [ready section slugs]}, straight from curriculum.js.
+
+    This MUST drive the walk rather than a glob over each course folder.
+    A course directory also holds redirect stubs left behind by the
+    four-courses-to-three restructure, and since lessons are keyed by slug
+    alone, a stub read after the real page silently overwrote its text with
+    nothing: 11 lessons indexed to zero characters and were unfindable by
+    the site's own search. Enumerating from the source of truth makes a
+    stub structurally invisible here."""
+    cur = (ROOT / "assets/js/curriculum.js").read_text(encoding="utf-8")
+    out = {}
+    for block in re.finditer(
+            r'slug: "([\w-]+)",\s*\n\s*title:.*?sections: \[(.*?)\]\s*\}', cur, re.S):
+        course, body = block.group(1), block.group(2)
+        secs = []
+        for m in re.finditer(r'\{[^{}]*?slug: "([\w-]+)"[^{}]*?\}', body):
+            if re.search(r'ready:\s*true', m.group(0)):
+                secs.append(m.group(1))
+        out[course] = secs
+    return out
+
+
 lessons = {}
+READY = ready_sections()
 for slug in course_slugs():
-    for f in sorted(ROOT.glob(f"{slug}/*/index.html")):
-        lessons[f.parent.name] = lesson_text(f)
+    for sec in READY.get(slug, []):
+        f = ROOT / slug / sec / "index.html"
+        if f.exists():
+            lessons[sec] = lesson_text(f)
 
 pages = []
 for fname, title in [
