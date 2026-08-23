@@ -89,7 +89,23 @@ const ROOT = process.cwd();
 
 /* Acknowledged-benign flags: "surface | name" -> why it is fine.
    Empty on the run that shipped this. Keep it empty if you can. */
-const ACKED = {};
+const ACKED = {
+  /* Shape 2 makes the possessive optional, unlike prescription-terms.js's
+     NAMED, so an ordinary sentence-leading verb can land in the name slot:
+     "... roughly normal. See regression diagnostics." yields "See regression".
+     The row itself is correct — it points at stats-2/regression-diagnostics,
+     which is titled Regression Diagnostics and teaches them.
+     Tightening shape 2 to require the possessive was measured and REJECTED:
+     over these six surfaces it drops the candidate set from 43 to 10 and
+     loses genuine non-possessive method names the check should be verifying
+     (Bonferroni correction, Cox regression, Friedman test, Poisson regression,
+     Schoenfeld residuals, Factorial ANOVA). A function-word stop-list was the
+     other option and is the hand-kept inventory VOICE.md rule 12 documents as
+     the mistake. One benign flag is the cheaper price. */
+  'plan.html | See regression':
+    'a sentence-leading "See" in the name slot; the row points at ' +
+    'stats-2/regression-diagnostics, which does teach regression diagnostics',
+};
 
 /* Prescription surfaces: the places the site says "do this, read that". */
 const SURFACES = ['cheat-apa.html', 'cheat-assumptions.html', 'cheat-test-chooser.html',
@@ -138,7 +154,15 @@ function methodNames(text) {
   /* Shape 2: a capitalized name plus a method head noun, in one clause.
      A candidate whose name is preceded by a hyphen is the tail of a shape-1
      compound ("Kruskal-Wallis test" -> "Wallis test") and is suppressed. */
-  for (const m of t.matchAll(/([A-Z][a-zA-Z]+)('s)?\s+([A-Za-z]+)\b/g)) {
+  /* The head noun sits in a LOOKAHEAD so the match does not consume it.
+     Consuming it made the scan blind to the way a prescription is actually
+     written: in "Use Hartley's test" the regex matched "Use Hartley", found
+     "Hartley" is not a head noun, and resumed PAST the name, so the pair was
+     never considered. Any capitalized word before the name did this --
+     "Try Cox regression", "Then Bonferroni correction" -- i.e. exactly the
+     sentence-initial phrasing these surfaces use. Found by reintroducing a
+     defect the check should have caught and watching it stay silent. */
+  for (const m of t.matchAll(/([A-Z][a-zA-Z]+)('s)?\s+(?=([A-Za-z]+)\b)/g)) {
     if (!HEAD.includes(m[3])) continue;
     if (m.index > 0 && t[m.index - 1] === '-') continue;
     out.add(m[1] + (m[2] ? "'s " : ' ') + m[3]);

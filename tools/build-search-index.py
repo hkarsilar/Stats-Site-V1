@@ -15,7 +15,21 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-MAX_CHARS = 4500
+# RAISED 4,500 -> 20,000 (Aug 2026), because this is the same defect a third
+# time. Run 13 found it on lessons and run 24 on guides; the root and tool
+# pages were the class nobody re-measured, and four of them were being cut:
+# teachers.html indexed 36% of itself (the fourteen-week semester map, the
+# embed + preset section and "free forever" all fell past the cut, so an
+# instructor searching "fourteen-week" or "embed" reached nothing),
+# datasets.html 40%, privacy.html 68% (losing the Ko-fi paragraph, one of the
+# two external services the page exists to disclose) and formulas.html 94%.
+# Found the way runs 13 and 24 were found: by searching the rebuilt index for
+# text the page plainly contains. 20,000 matches LESSON_MAX_CHARS, indexes
+# every root page whole (longest is teachers.html at 12.2k) and costs ~16.5 KB,
+# about 1.6%, on an index that is lazy-loaded only when the overlay opens.
+# The two PAGE_MAX_CHARS overrides below stay: those pages are far larger
+# still. Per run 20's lesson, this is a runaway guard, not a budget.
+MAX_CHARS = 20_000
 
 # Per-page overrides of MAX_CHARS, for the pages whose entire body IS the
 # payload rather than prose you skim. problems.html (P63): someone searching
