@@ -6,11 +6,12 @@
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    /* Consent Mode: storage denied by default, so GA sets no cookie and
-       follows nobody between visits. Anonymous counts still arrive. */
-    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    /* Consent Mode: advertising storage denied outright. Analytics storage is
+       granted so page views are actually counted, while client_storage 'none'
+       keeps gtag from writing a cookie, so nobody is followed between visits. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'granted' });
     gtag('js', new Date());
-    gtag('config', 'G-80HCM6EZVN');
+    gtag('config', 'G-80HCM6EZVN', { client_storage: 'none' });
   </script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />

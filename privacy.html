@@ -6,11 +6,12 @@
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    /* Consent Mode: storage denied by default, so GA sets no cookie and
-       follows nobody between visits. Anonymous counts still arrive. */
-    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+    /* Consent Mode: advertising storage denied outright. Analytics storage is
+       granted so page views are actually counted, while client_storage 'none'
+       keeps gtag from writing a cookie, so nobody is followed between visits. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'granted' });
     gtag('js', new Date());
-    gtag('config', 'G-80HCM6EZVN');
+    gtag('config', 'G-80HCM6EZVN', { client_storage: 'none' });
   </script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -56,7 +57,7 @@
 
         <h2>What is collected</h2>
         <p>Two things: an anonymous page view when you open a page, and an anonymous note when one of ten features is used. That is the whole list.</p>
-        <p>It arrives through Google Analytics 4, and the tag on every page is configured with <a href="https://developers.google.com/tag-platform/security/concepts/consent-mode">Consent Mode</a> set to deny storage by default. In practice that means Google sets no <code>_ga</code> cookie and nothing persists in your browser to recognize you on a later visit. Each view is counted; you are not followed from one to the next. Advertising storage and personalization are denied outright.</p>
+        <p>It arrives through Google Analytics 4. Advertising storage, ad personalization and ad user data are all denied outright through <a href="https://developers.google.com/tag-platform/security/concepts/consent-mode">Consent Mode</a>. Analytics storage is allowed, so that the counts are genuinely recorded, but the tag also sets <code>client_storage</code> to <code>none</code>, which stops it writing the <code>_ga</code> cookie. Nothing persists in your browser to recognize you on a later visit: each view is counted, and you are not followed from one to the next. The cost of that falls on me rather than on you, because a returning reader and a first-time one look identical in the numbers I get back.</p>
         <p>What the counts are for is unglamorous. They tell me which lessons people actually read, which tools get opened, and which pages are broken enough that everyone leaves. That decides what gets rewritten next. Nobody is profiled and nothing is sold, because there is no advertising business here to sell it to.</p>
         <p>The ten feature notes exist for the same reason. A page view cannot tell me whether anyone has ever finished a mock exam, printed a lesson, or embedded one in a slide, so features I spent weeks on could serve nobody at all while I kept maintaining them. Each note carries the event name and, at most, a coarse label:</p>
         <ul>

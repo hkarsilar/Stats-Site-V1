@@ -915,6 +915,57 @@ descSeen.forEach((pages, d) => {
 });
 
 /* ============================================================
+   CHECK 10 — the GA tag's Consent Mode block, byte-identical sitewide
+
+   gaCount() above proves a page carries exactly one GA tag. Nothing proved
+   it carries the RIGHT one, and that gap cost this site its analytics.
+   P69 shipped `analytics_storage: 'denied'` on all 141 pages with no
+   consent update anywhere, so every hit became a cookieless ping — sent,
+   received, and never reported. GA4's stream detail read "No data
+   received" while the tag looked perfectly healthy in the network tab.
+   A hit leaving the browser is not a hit being counted.
+
+   So the exact block is asserted here, which also enforces CLAUDE.md's
+   standing "keep it byte-identical across the site" rule. Pages with no
+   GA tag at all are skipped on purpose: the 25 redirect stubs forward
+   before a tag could fire, and offline.html is self-contained. Whether a
+   page that OUGHT to have a tag has one is already checked per page type.
+   ============================================================ */
+{
+  const CONSENT = "gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', "
+                + "ad_personalization: 'denied', analytics_storage: 'granted' });";
+  const CONFIG = `gtag('config', '${GA_ID}', { client_storage: 'none' });`;
+  const walk = (dir, acc) => {
+    for (const f of fs.readdirSync(dir)) {
+      if (f.startsWith('.') || f === 'node_modules' || f === '_site') continue;
+      const q = path.join(dir, f);
+      if (fs.statSync(q).isDirectory()) walk(q, acc);
+      else if (f.endsWith('.html')) acc.push(q);
+    }
+    return acc;
+  };
+  let tagged = 0;
+  for (const file of walk(ROOT, [])) {
+    const src = read(file);
+    if (!src.includes(GA_ID)) continue;
+    tagged++;
+    if (!src.includes(CONSENT)) {
+      err(`${rel(file)} → GA Consent Mode block is not the expected one. `
+        + `Analytics storage must be 'granted' (denied means GA reports nothing at all).`);
+      continue;
+    }
+    if (!src.includes(CONFIG)) {
+      err(`${rel(file)} → GA config must pass { client_storage: 'none' } (that is what keeps the _ga cookie unwritten).`);
+      continue;
+    }
+    /* Consent has to be set before the first hit or it does not apply to it. */
+    if (src.indexOf(CONSENT) > src.indexOf("gtag('js'"))
+      err(`${rel(file)} → the consent default must come before gtag('js', …).`);
+  }
+  info(`GA consent block verified byte-identical on ${tagged} tagged pages`);
+}
+
+/* ============================================================
    Report
    ============================================================ */
 const line = '─'.repeat(60);
