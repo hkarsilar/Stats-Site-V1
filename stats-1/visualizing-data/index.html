@@ -101,6 +101,48 @@
           <li><strong>Boxplot.</strong> The median, the quartiles, and whiskers reaching as far as the most extreme value still within 1.5 × IQR of the box. Anything beyond gets drawn as its own point, which is what makes a boxplot good at flagging outliers and at lining several groups up side by side.</li>
           <li><strong>Scatterplot.</strong> For two quantitative variables at once; the gateway to <a href="../../stats-1/correlation/">correlation</a> and <a href="../../stats-1/simple-linear-regression/">regression</a>.</li>
         </ul>
+
+        <p>Which of the three you can even draw is settled by the variables in front of you. Count one categorical variable and a bar chart is the display. Split one quantitative variable by a categorical one and you get boxplots lined up side by side. Put two quantitative variables together and it is a scatterplot. The survey below carries all three kinds at once: a room of students, the revision method each of them leaned on, the hours they put in, and what they scored.</p>
+
+        <!-- ============ INTERACTIVE 2 ============ -->
+        <div class="viz" id="vd2viz">
+          <p class="viz-title">🎮 One Survey, Three Charts</p>
+          <p class="viz-sub">The same students drawn three ways. Switch the chart, then use the checkbox to add the thing that display usually leaves out.</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>Chart</label>
+              <div class="seg" id="vd2-seg">
+                <button data-chart="bar" class="active">Bar chart</button>
+                <button data-chart="box">Boxplot</button>
+                <button data-chart="scatter">Scatterplot</button>
+              </div>
+            </div>
+            <div class="control" style="flex:1;min-width:min(200px,100%)">
+              <label>Students surveyed <span class="val" id="vd2-n-val">60</span></label>
+              <input type="range" id="vd2-n" min="16" max="120" step="4" value="60" style="width:100%" />
+            </div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="vd2-new">New sample</button></div>
+          </div>
+
+          <label style="display:flex;align-items:center;gap:.5rem;font-size:.85rem;color:var(--text-muted);margin:-.35rem 0 .8rem">
+            <input type="checkbox" id="vd2-opt" style="accent-color:var(--primary)" /> <span id="vd2-opt-label">draw it as a pie instead</span>
+          </label>
+
+          <canvas id="vd2-canvas" style="--viz-ar: 5 / 2"></canvas>
+          <p class="viz-sub" id="vd2-cap" style="margin:.55rem 0 0">One categorical variable. Bar heights are counts of students, and the gaps say the four methods are separate things rather than points on a scale.</p>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k" id="vd2-k1">Tallest bar</span><span class="v" id="vd2-v1" style="font-size:1rem">—</span></div>
+            <div class="stat"><span class="k" id="vd2-k2">Shortest bar</span><span class="v" id="vd2-v2" style="font-size:1rem">—</span></div>
+            <div class="stat"><span class="k" id="vd2-k3">Closest two</span><span class="v" id="vd2-v3" style="font-size:1rem">—</span></div>
+            <div class="stat"><span class="k" id="vd2-k4">Students shown</span><span class="v" id="vd2-v4">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE 2 ============ -->
+
+        <p>Every view keeps one thing and drops another. The bar chart counts students and says nothing about how any of them did. The boxplot compares the four groups, but it draws much the same box whether a group's scores gather around one value or split into two camps, which is the argument for switching the raw scores on. The scatterplot keeps every student on screen and hides the group comparison until you color the dots. Then walk the survey down to 16 students. Most of what you were confidently reading a moment ago stops being there.</p>
+
         <p>Torn between them for a real dataset? The <a href="../../which-chart.html">Which Chart Should I Use?</a> chooser walks you to the right display in a few clicks. And when the picture is headed for a paper, <a href="../../writing/tables-and-figures/">Tables &amp; Figures That Don't Lie</a> shows how to keep it honest.</p>
 
         <div class="callout">
@@ -188,6 +230,339 @@
     VIZ.onTheme(draw);
 
     fit(); resample();
+  })();
+  </script>
+
+  <!-- ============ bar / boxplot / scatter visualization ============ -->
+  <script>
+  (function () {
+    "use strict";
+    /* One survey, three displays: a bar chart (or pie) of one categorical
+       variable, boxplots of a quantitative variable split by it, and a
+       scatterplot of two quantitative variables. Same students throughout. */
+    var NMAX = 120, n = 60, chart = "bar", extra = false;
+    var canvas = document.getElementById("vd2-canvas"), ctx, W = 0, H = 290;
+    var L = 44, R = 0, T = 16, B = H - 46, YLO = 0, YHI = 1;
+
+    // revision method: share of students, its effect on the exam, its shift in hours
+    var CATS = [
+      { k: "Practice tests", p: 0.28, eff: 7, hs: 0.6, c: "--primary" },
+      { k: "Flashcards", p: 0.26, eff: 2, hs: 0.2, c: "--secondary" },
+      { k: "Rereading", p: 0.27, eff: -3, hs: -0.3, c: "#f97316" },
+      { k: "Highlighting", p: 0.19, eff: -6, hs: -0.6, c: "#22c55e" }
+    ];
+    var pool = null, rows = [];
+    function col(i) { var c = CATS[i].c; return c.charAt(0) === "-" ? VIZ.css(c) : c; }
+
+    /* Frozen noise: one pool of draws, reused at every sample size, so walking
+       the size slider away and back returns exactly the same students. */
+    function seed() {
+      pool = { c: [], h: [], e: [], s: [], j: [] };
+      for (var i = 0; i < NMAX; i++) {
+        pool.c.push(Math.random());
+        pool.h.push(VIZ.randn());
+        pool.e.push(VIZ.randn());
+        pool.s.push(Math.random());
+        pool.j.push(Math.random() * 2 - 1);
+      }
+      build();
+    }
+    function build() {
+      rows = [];
+      for (var i = 0; i < n; i++) {
+        var u = pool.c[i], acc = 0, ci = CATS.length - 1;
+        for (var k = 0; k < CATS.length; k++) { acc += CATS[k].p; if (u < acc) { ci = k; break; } }
+        var hrs = 8 + 3.3 * pool.h[i] + CATS[ci].hs;
+        hrs = Math.round(Math.max(0.5, Math.min(20, hrs)) * 10) / 10;
+        var sc = 46 + 2.4 * hrs + CATS[ci].eff + 6.5 * pool.e[i];
+        if (pool.s[i] < 0.035) sc -= 22;          // roughly one student in thirty lost the revision week
+        rows.push({ c: ci, h: hrs, s: Math.round(Math.max(5, Math.min(100, sc))), j: pool.j[i] });
+      }
+    }
+
+    /* ---------- small helpers ---------- */
+    function q7(sorted, p) {                       // quantile, R's default type 7
+      var h = (sorted.length - 1) * p, lo = Math.floor(h);
+      return sorted[lo] + (h - lo) * (sorted[Math.min(lo + 1, sorted.length - 1)] - sorted[lo]);
+    }
+    function counts() { var c = [0, 0, 0, 0]; for (var i = 0; i < rows.length; i++) c[rows[i].c]++; return c; }
+    function scoresOf(ci) {
+      var g = [];
+      for (var i = 0; i < rows.length; i++) if (rows[i].c === ci) g.push(rows[i].s);
+      return g.sort(function (a, b) { return a - b; });
+    }
+    function boxOf(g) {                            // five-number summary + 1.5 x IQR fences
+      if (g.length < 3) return null;
+      var q1 = q7(g, 0.25), med = q7(g, 0.5), q3 = q7(g, 0.75), iqr = q3 - q1;
+      var lo = q1 - 1.5 * iqr, hi = q3 + 1.5 * iqr, out = [], wLo = null, wHi = null;
+      for (var i = 0; i < g.length; i++) {
+        if (g[i] < lo || g[i] > hi) out.push(g[i]);
+        else { if (wLo === null) wLo = g[i]; wHi = g[i]; }
+      }
+      if (wLo === null) return null;
+      return { q1: q1, med: med, q3: q3, wLo: wLo, wHi: wHi, out: out, n: g.length };
+    }
+    function py(v) { return B - ((v - YLO) / (YHI - YLO)) * (B - T); }
+    function niceTop(m) { var s = m <= 8 ? 2 : m <= 20 ? 5 : m <= 50 ? 10 : 20; return Math.max(s, Math.ceil(m / s) * s); }
+    function gridY(step, unit) {
+      ctx.font = "11px ui-monospace, monospace"; ctx.textAlign = "right";
+      for (var v = YLO; v <= YHI + 1e-9; v += step) {
+        var y = Math.round(py(v)) + 0.5;
+        ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(L, y); ctx.lineTo(R, y); ctx.stroke();
+        ctx.fillStyle = VIZ.css("--text-faint"); ctx.fillText(v, L - 7, y + 4);
+      }
+      ctx.textAlign = "left"; ctx.font = "11px Inter, sans-serif";
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.fillText(unit, 4, 11);
+    }
+    function catLabel(text, x, y, maxW) {
+      ctx.fillStyle = VIZ.css("--text-muted"); ctx.textAlign = "center";
+      var sizes = [11, 10, 9], sp = text.indexOf(" "), i;
+      for (i = 0; i < sizes.length; i++) {
+        ctx.font = sizes[i] + "px Inter, sans-serif";
+        if (ctx.measureText(text).width <= maxW) { ctx.fillText(text, x, y); return; }
+        if (sp > 0) {
+          var a = text.slice(0, sp), b = text.slice(sp + 1);
+          if (Math.max(ctx.measureText(a).width, ctx.measureText(b).width) <= maxW) {
+            ctx.fillText(a, x, y); ctx.fillText(b, x, y + sizes[i] + 1); return;
+          }
+        }
+      }
+      ctx.fillText(text, x, y);
+    }
+    /* one shape per method as well as one color, so the scatter still separates
+       the four groups for a reader who cannot tell teal from green */
+    function marker(x, y, i, r) {
+      ctx.beginPath();
+      if (i === 0) ctx.arc(x, y, r, 0, 6.2832);
+      else if (i === 1) ctx.rect(x - r * 0.88, y - r * 0.88, r * 1.76, r * 1.76);
+      else if (i === 2) { ctx.moveTo(x, y - r * 1.15); ctx.lineTo(x + r, y + r * 0.8); ctx.lineTo(x - r, y + r * 0.8); ctx.closePath(); }
+      else { ctx.moveTo(x, y - r * 1.2); ctx.lineTo(x + r * 1.2, y); ctx.lineTo(x, y + r * 1.2); ctx.lineTo(x - r * 1.2, y); ctx.closePath(); }
+      ctx.fill();
+    }
+    function swatch(x, y, i, shaped) {
+      ctx.fillStyle = col(i); ctx.globalAlpha = 0.9;
+      if (shaped) marker(x + 4, y - 4, i, 4.6); else ctx.fillRect(x, y - 8, 9, 9);
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = VIZ.css("--text-muted"); ctx.textAlign = "left"; ctx.font = "11px Inter, sans-serif";
+      ctx.fillText(CATS[i].k, x + 14, y);
+    }
+    function f1(v) { return (Math.round(v * 10) / 10).toFixed(1); }
+    function pearson(xs, ys) {
+      var m = xs.length, mx = 0, my = 0, i;
+      for (i = 0; i < m; i++) { mx += xs[i]; my += ys[i]; }
+      mx /= m; my /= m;
+      var sxy = 0, sx = 0, sy = 0;
+      for (i = 0; i < m; i++) { var a = xs[i] - mx, b = ys[i] - my; sxy += a * b; sx += a * a; sy += b * b; }
+      return sx && sy ? sxy / Math.sqrt(sx * sy) : 0;
+    }
+    function scoreRange() {
+      var lo = 100, hi = 0;
+      for (var i = 0; i < rows.length; i++) { if (rows[i].s < lo) lo = rows[i].s; if (rows[i].s > hi) hi = rows[i].s; }
+      var step = hi - lo > 50 ? 20 : 10;
+      YLO = Math.max(0, Math.floor((lo - 4) / step) * step);
+      YHI = Math.min(100, Math.ceil((hi + 4) / step) * step);
+      return { lo: lo, hi: hi, step: step };
+    }
+
+    /* ---------- the three charts ---------- */
+    function drawBar() {
+      var c = counts(), i;
+      L = 44; R = W - 14; T = 16; B = H - 46; YLO = 0; YHI = niceTop(Math.max.apply(null, c));
+      var steps = [1, 2, 5, 10, 20, 50], step = 50;
+      for (i = 0; i < steps.length; i++) if (YHI / steps[i] <= 6) { step = steps[i]; break; }
+      gridY(step, "students");
+      var slot = (R - L) / CATS.length, bw = Math.min(slot * 0.56, 78);
+      for (i = 0; i < CATS.length; i++) {
+        var x = L + slot * i + slot / 2, h = (c[i] / YHI) * (B - T);
+        ctx.fillStyle = VIZ.css("--primary"); ctx.globalAlpha = 0.85;
+        ctx.fillRect(x - bw / 2, B - h, bw, h); ctx.globalAlpha = 1;
+        catLabel(CATS[i].k, x, B + 16, slot - 8);
+      }
+      ctx.strokeStyle = VIZ.css("--text-muted"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(L, B + 0.5); ctx.lineTo(R, B + 0.5); ctx.stroke();
+    }
+
+    function drawPie() {
+      var c = counts(), total = rows.length, i;
+      ctx.font = "11px Inter, sans-serif";
+      var legendW = 40;
+      for (i = 0; i < CATS.length; i++) legendW = Math.max(legendW, 16 + ctx.measureText(CATS[i].k).width);
+      var stack = W < 2 * legendW + 190, rad, x0, cx, cy;
+      if (stack) {
+        rad = Math.max(28, Math.min(W / 2 - 14, (H - 62) / 2 - 12));
+        cx = W / 2; cy = 14 + rad; x0 = 0;
+      } else {
+        rad = Math.max(28, Math.min((W - 28 - legendW - 24) / 2, (H - 62) / 2 - 2));
+        x0 = Math.max(8, (W - (rad * 2 + 24 + legendW)) / 2);
+        cx = x0 + rad; cy = (16 + H - 30) / 2;
+      }
+      var a0 = -Math.PI / 2;
+      for (i = 0; i < CATS.length; i++) {
+        var a1 = a0 + (c[i] / total) * Math.PI * 2;
+        ctx.fillStyle = col(i); ctx.globalAlpha = 0.85;
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, rad, a0, a1); ctx.closePath(); ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.strokeStyle = VIZ.css("--surface"); ctx.lineWidth = 2; ctx.stroke();
+        a0 = a1;
+      }
+      if (stack) {
+        for (i = 0; i < CATS.length; i++) {
+          swatch(i % 2 ? W / 2 + 4 : Math.max(8, W / 2 - legendW - 4), H - (i < 2 ? 22 : 5), i);
+        }
+      } else {
+        for (i = 0; i < CATS.length; i++) swatch(x0 + rad * 2 + 24, cy - 22 + i * 18, i);
+      }
+    }
+
+    function drawBox() {
+      L = 44; R = W - 14; T = 16; B = H - 46;
+      gridY(scoreRange().step, "exam score");
+      var slot = (R - L) / CATS.length, bw = Math.min(slot * 0.44, 56), i, j;
+      for (i = 0; i < CATS.length; i++) {
+        var x = L + slot * i + slot / 2, b = boxOf(scoresOf(i));
+        if (b) {
+          ctx.strokeStyle = VIZ.css("--text-muted"); ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(x, py(b.wLo)); ctx.lineTo(x, py(b.q1));
+          ctx.moveTo(x, py(b.q3)); ctx.lineTo(x, py(b.wHi));
+          ctx.moveTo(x - bw / 4, py(b.wLo)); ctx.lineTo(x + bw / 4, py(b.wLo));
+          ctx.moveTo(x - bw / 4, py(b.wHi)); ctx.lineTo(x + bw / 4, py(b.wHi));
+          ctx.stroke();
+          ctx.fillStyle = VIZ.css("--surface-2");
+          ctx.fillRect(x - bw / 2, py(b.q3), bw, py(b.q1) - py(b.q3));
+          ctx.strokeRect(x - bw / 2, py(b.q3), bw, py(b.q1) - py(b.q3));
+          ctx.strokeStyle = VIZ.css("--secondary"); ctx.lineWidth = 2.5;
+          ctx.beginPath(); ctx.moveTo(x - bw / 2, py(b.med)); ctx.lineTo(x + bw / 2, py(b.med)); ctx.stroke();
+          ctx.fillStyle = "#ef4444";
+          for (j = 0; j < b.out.length; j++) { ctx.beginPath(); ctx.arc(x, py(b.out[j]), 3.5, 0, 6.2832); ctx.fill(); }
+        }
+        if (extra) {
+          ctx.fillStyle = VIZ.css("--primary"); ctx.globalAlpha = 0.5;
+          for (j = 0; j < rows.length; j++) {
+            if (rows[j].c !== i) continue;
+            if (b && b.out.indexOf(rows[j].s) >= 0) continue;      // already drawn in red
+            ctx.beginPath(); ctx.arc(x + rows[j].j * (bw * 0.6), py(rows[j].s), 3, 0, 6.2832); ctx.fill();
+          }
+          ctx.globalAlpha = 1;
+        }
+        catLabel(CATS[i].k, x, B + 16, slot - 8);
+      }
+    }
+
+    function drawScatter() {
+      L = 44; R = W - 14; T = 16; B = H - 46;
+      gridY(scoreRange().step, "exam score");
+      var XLO = 0, XHI = 20, i;
+      function px(v) { return L + ((v - XLO) / (XHI - XLO)) * (R - L); }
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px ui-monospace, monospace"; ctx.textAlign = "center";
+      for (i = XLO; i <= XHI; i += 5) ctx.fillText(i, px(i), B + 16);
+      ctx.fillStyle = VIZ.css("--text-muted"); ctx.font = "11px Inter, sans-serif";
+      ctx.fillText("hours of revision per week", (L + R) / 2, B + 34);
+      for (i = 0; i < rows.length; i++) {
+        ctx.fillStyle = extra ? col(rows[i].c) : VIZ.css("--primary");
+        ctx.globalAlpha = 0.75;
+        marker(px(rows[i].h), py(rows[i].s), extra ? rows[i].c : 0, 3.4);
+      }
+      ctx.globalAlpha = 1;
+      if (extra) {
+        var lw = 104, lx = Math.max(L + 8, R - lw - 6), ly = B - 6 - CATS.length * 16;
+        ctx.fillStyle = VIZ.css("--surface"); ctx.globalAlpha = 0.82;
+        ctx.fillRect(lx - 7, ly - 13, lw + 12, CATS.length * 16 + 8); ctx.globalAlpha = 1;
+        for (i = 0; i < CATS.length; i++) swatch(lx, ly + i * 16, i, true);
+      }
+    }
+
+    /* ---------- readouts ---------- */
+    var K = [1, 2, 3, 4].map(function (i) { return document.getElementById("vd2-k" + i); });
+    var V = [1, 2, 3, 4].map(function (i) { return document.getElementById("vd2-v" + i); });
+    function put(i, k, v) { K[i].textContent = k; V[i].textContent = v; }
+
+    function stats() {
+      var i, j;
+      if (chart === "bar") {
+        var c = counts(), big = 0, small = 0, pair = [0, 1], gap = 1e9;
+        for (i = 1; i < CATS.length; i++) { if (c[i] > c[big]) big = i; if (c[i] < c[small]) small = i; }
+        for (i = 0; i < CATS.length; i++) for (j = i + 1; j < CATS.length; j++) {
+          var d = Math.abs(c[i] - c[j]);
+          if (d < gap) { gap = d; pair = [i, j]; }
+        }
+        put(0, extra ? "Biggest slice" : "Tallest bar", CATS[big].k + " (" + c[big] + ")");
+        put(1, extra ? "Smallest slice" : "Shortest bar", CATS[small].k + " (" + c[small] + ")");
+        put(2, "Closest two", CATS[pair[0]].k + " vs " + CATS[pair[1]].k + ", " + gap + " apart");
+      } else if (chart === "box") {
+        var hi = -1, lo = -1, hiV = -1, loV = 1e9, nOut = 0;
+        for (i = 0; i < CATS.length; i++) {
+          var b = boxOf(scoresOf(i));
+          if (!b) continue;
+          nOut += b.out.length;
+          if (b.med > hiV) { hiV = b.med; hi = i; }
+          if (b.med < loV) { loV = b.med; lo = i; }
+        }
+        put(0, "Highest median", hi < 0 ? "not enough data" : CATS[hi].k + " (" + f1(hiV) + ")");
+        put(1, "Lowest median", lo < 0 ? "not enough data" : CATS[lo].k + " (" + f1(loV) + ")");
+        put(2, "Outliers flagged", String(nOut));
+      } else {
+        var hs = [], ss = [], hLo = 99, hHi = 0;
+        for (i = 0; i < rows.length; i++) {
+          hs.push(rows[i].h); ss.push(rows[i].s);
+          if (rows[i].h < hLo) hLo = rows[i].h;
+          if (rows[i].h > hHi) hHi = rows[i].h;
+        }
+        var r = pearson(hs, ss);
+        var sr = scoreRange();
+        put(0, "Correlation r", (r >= 0 ? "+" : "") + r.toFixed(2));
+        put(1, "Hours range", f1(hLo) + " to " + f1(hHi));
+        put(2, "Score range", sr.lo + " to " + sr.hi);
+      }
+      put(3, "Students shown", String(rows.length));
+    }
+
+    var CAPS = {
+      bar: "One categorical variable. Bar heights are counts of students, and the gaps say the four methods are separate things rather than points on a scale.",
+      pie: "The same four counts as slices. Rank the methods from this picture, then switch the pie back off and rank them again.",
+      box: "One quantitative variable split by a categorical one. Each box holds the middle half of that group's scores, the line inside is the median, and a red dot is a score more than 1.5 IQRs past the box.",
+      boxdots: "With every score drawn in, you can see what the box smooths away: how few students some groups hold, and whether the scores gather in one lump or two.",
+      scatter: "Two quantitative variables. Each dot is one student, placed by revision hours across and exam score up.",
+      scattercol: "Coloring by method puts the categorical variable back in, so you can see whether a group sits high or low inside the same trend."
+    };
+    function label() {
+      var t = chart === "bar" ? "draw it as a pie instead"
+        : chart === "box" ? "show every student's score"
+        : "color the dots by method";
+      document.getElementById("vd2-opt-label").textContent = t;
+      var key = chart === "bar" ? (extra ? "pie" : "bar")
+        : chart === "box" ? (extra ? "boxdots" : "box")
+        : (extra ? "scattercol" : "scatter");
+      document.getElementById("vd2-cap").textContent = CAPS[key];
+    }
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      if (chart === "bar") { if (extra) drawPie(); else drawBar(); }
+      else if (chart === "box") drawBox();
+      else drawScatter();
+      stats();
+    }
+
+    document.getElementById("vd2-seg").addEventListener("click", function (e) {
+      var b = e.target.closest("button");
+      if (!b) return;
+      chart = b.dataset.chart;
+      Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x.dataset.chart === chart); });
+      label(); draw();
+    });
+    document.getElementById("vd2-n").addEventListener("input", function () {
+      n = +this.value; document.getElementById("vd2-n-val").textContent = n;
+      build(); draw();
+    });
+    document.getElementById("vd2-new").addEventListener("click", function () { seed(); draw(); });
+    document.getElementById("vd2-opt").addEventListener("change", function () { extra = this.checked; label(); draw(); });
+    window.addEventListener("resize", VIZ.rafThrottle(function () { fit(); draw(); }));
+    VIZ.onTheme(draw);
+
+    fit(); seed(); label(); draw();
   })();
   </script>
 </body>
