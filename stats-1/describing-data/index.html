@@ -16,22 +16,22 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Describing Data — StatsCapybara</title>
-  <meta name="description" content="Why outliers drag the mean while the median stays put: build the intuition for center and spread by dragging points on a number line." />
+  <meta name="description" content="Why outliers drag the mean while the median stays put, and where the standard deviation comes from: two interactives for center and spread." />
   <link rel="canonical" href="https://statscapybara.com/stats-1/describing-data/" />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Describing Data — StatsCapybara" />
-  <meta property="og:description" content="Why outliers drag the mean while the median stays put: build the intuition for center and spread by dragging points on a number line." />
+  <meta property="og:description" content="Why outliers drag the mean while the median stays put, and where the standard deviation comes from: two interactives for center and spread." />
   <meta property="og:image" content="https://statscapybara.com/assets/og-stats-1.png" />
   <meta property="og:url" content="https://statscapybara.com/stats-1/describing-data/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Describing Data — StatsCapybara" />
-  <meta name="twitter:description" content="Why outliers drag the mean while the median stays put: build the intuition for center and spread by dragging points on a number line." />
+  <meta name="twitter:description" content="Why outliers drag the mean while the median stays put, and where the standard deviation comes from: two interactives for center and spread." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-1.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
-  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Describing Data", "description": "Why outliers drag the mean while the median stays put: build the intuition for center and spread by dragging points on a number line.", "url": "https://statscapybara.com/stats-1/describing-data/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Introduction to Statistics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Describing Data", "item": "https://statscapybara.com/stats-1/describing-data/"}]}]
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Describing Data", "description": "Why outliers drag the mean while the median stays put, and where the standard deviation comes from: two interactives for center and spread.", "url": "https://statscapybara.com/stats-1/describing-data/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Introduction to Statistics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Describing Data", "item": "https://statscapybara.com/stats-1/describing-data/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
   {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "When should I use the median instead of the mean?", "acceptedAnswer": {"@type": "Answer", "text": "Use the median when the data is skewed or contains outliers — incomes, house prices, reaction times. The mean gets dragged toward extreme values because it uses every value's actual magnitude; the median only cares about what's in the middle, so it stays a more honest \"typical value.\" For roughly symmetric data the two agree, and the mean is standard."}}, {"@type": "Question", "name": "Why does the sample standard deviation divide by n − 1 instead of n?", "acceptedAnswer": {"@type": "Answer", "text": "A sample's values are, on average, slightly closer to their own sample mean than to the true population mean, so dividing by n would systematically underestimate the population's spread. Dividing by n − 1 (Bessel's correction) inflates the result just enough to fix that bias. With large samples the difference becomes negligible."}}, {"@type": "Question", "name": "Should I report the mean with the SD, or the median with the IQR?", "acceptedAnswer": {"@type": "Answer", "text": "Pair the center with its matching spread. The mean and SD belong together (both use every value's magnitude, so both are outlier-sensitive), and the median pairs with the interquartile range, the span of the middle 50% of the data, built from quartiles just like the median. For roughly symmetric data, mean (SD) is the standard report and what t-tests work with; for skewed or outlier-prone data, median and IQR give the honest picture. Our descriptives calculator computes both pairs so you can compare."}}]}
@@ -92,8 +92,48 @@
         <p>Center isn't the whole story: two datasets can share a mean but look completely different. <strong>Spread</strong> captures how tightly the values cluster:</p>
         <ul>
           <li>The <strong>range</strong> is biggest minus smallest. Simple, but driven entirely by the two extremes.</li>
-          <li>The <strong>standard deviation</strong> is, roughly, the <em>average distance of each point from the mean</em>. Small SD means the data huddles near the center; large SD means it's spread wide. Spread the dots apart in the playground and watch the SD grow.</li>
+          <li>The <strong>standard deviation</strong> is, roughly, the <em>typical distance of a value from the mean</em>. Small SD means the data huddles near the center; large SD means it's spread wide.</li>
         </ul>
+
+        <h2>Where the standard deviation comes from</h2>
+        <p>A value's <strong>deviation</strong> is how far it sits from the mean, with a sign attached: above the mean is positive, below is negative. That is where the name comes from. Add all the deviations up, though, and the total is always zero, because the mean is the balance point of the data. Averaging them directly gets you nowhere. Squaring is the standard way around that, and the four steps below build the rest of the number from there.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="sdviz">
+          <p class="viz-title">📏 Standard Deviation, Step by Step</p>
+          <p class="viz-sub">Eight exam scores, and one number for how spread out they are. Step through the four buttons to build it, and pull the scores apart with the slider to see the number follow.</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>Build it up</label>
+              <div class="seg" id="sd-steps">
+                <button data-step="1" class="active">1 · Deviations</button>
+                <button data-step="2">2 · Squares</button>
+                <button data-step="3">3 · Average</button>
+                <button data-step="4">4 · The SD</button>
+              </div>
+            </div>
+            <div class="control" style="flex:1;min-width:min(190px,100%)">
+              <label>Spread <span class="val" id="sd-spread-val">9.0</span></label>
+              <input type="range" id="sd-spread" min="2" max="12" step="0.5" value="9" style="width:100%" />
+            </div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="sd-new">New sample</button></div>
+          </div>
+
+          <canvas id="sd-canvas" style="--viz-ar: 19 / 10"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Mean</span><span class="v" id="sd-mean">—</span></div>
+            <div class="stat"><span class="k">Sum of deviations</span><span class="v" id="sd-sum">—</span></div>
+            <div class="stat"><span class="k">Sum of squares</span><span class="v" id="sd-ss">—</span></div>
+            <div class="stat"><span class="k">Variance</span><span class="v" id="sd-var">—</span></div>
+            <div class="stat"><span class="k">Std. deviation</span><span class="v" id="sd-sd">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>Read those four steps left to right and you have the formula. Squaring gets rid of the minus signs, and it makes a score twice as far from the mean count four times as heavily. The squares are then added into a total that statisticians call the <strong>sum of squares</strong>, which turns up in almost every test later in this course. Dividing gives the average square, better known as the <strong>variance</strong>. The square root undoes the squaring and brings the answer back to the units you started in: squared exam points mean nothing to anyone, while exam points are something you can picture.</p>
+        <p>Step 3 divides by <em>n</em> − 1 rather than <em>n</em>, which looks like a typo and isn't one. A sample's values sit a little closer to their own mean than to the population's, so dividing by <em>n</em> would report a spread slightly narrower than the truth. The smaller divisor pushes the answer back up by the right amount, and once you have a few hundred values the correction is too small to see.</p>
         <p>Standard deviation is the workhorse of the two; it shows up again the moment we standardize values into <a href="../../stats-1/z-scores-and-the-normal-distribution/">z-scores</a> and everywhere after. If you would rather see the arithmetic than the animation, the mean, the variance and the SD are the first three rows of the printable <a href="../../formulas.html">formula sheet</a>.</p>
         <p>Got numbers of your own? Paste them into the <a href="../../descriptives.html">descriptives calculator</a>, which computes center, spread, and outlier flags, draws the histogram and boxplot, and even drafts the APA sentence for you. If you're unsure which of those two pictures belongs in your write-up, the <a href="../../which-chart.html">chart chooser</a> decides it in a couple of clicks.</p>
 
@@ -160,7 +200,9 @@
 
     function mean(a) { return a.reduce(function (s, v) { return s + v; }, 0) / a.length; }
     function median(a) { var s = a.slice().sort(function (x, y) { return x - y; }), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; }
-    function sd(a) { var m = mean(a); return Math.sqrt(a.reduce(function (s, v) { return s + (v - m) * (v - m); }, 0) / a.length); }
+    /* sample SD: divided by n - 1, matching the FAQ on this page, the formula
+       sheet and the descriptives calculator the prose links to */
+    function sd(a) { if (a.length < 2) return 0; var m = mean(a); return Math.sqrt(a.reduce(function (s, v) { return s + (v - m) * (v - m); }, 0) / (a.length - 1)); }
 
     function draw() {
       var baseY = H - 34;
@@ -229,6 +271,277 @@
     window.addEventListener("resize", function () { fit(); render(); });
     new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
     fit(); render();
+  })();
+  </script>
+
+  <!-- ============ Standard-deviation build-up visualization ============
+       URL presets (window.SC.preset, applied after boot):
+         ?step=1|2|3|4     which build step is showing
+         ?spread=2..12     how far the eight scores sit from their mean
+       Anything else is ignored, and a preset moves controls only: it never
+       reseeds the sample (frozen-noise law). ============================= -->
+  <script>
+  (function () {
+    "use strict";
+    /* Eight exam scores. The frozen pool holds their deviations in standard
+       units, centered so they sum to exactly zero; the spread slider is a
+       deterministic rescale of that same pool, so sliding away and back
+       returns the identical picture. "New sample" is the only thing that
+       reseeds. The number line is a fixed window of HALF either side of the
+       mean rather than the whole 0-100 scale: fixed, so pulling the slider
+       visibly widens the data instead of an axis rescaling under it, and
+       narrow, so the deviations are long enough to read on a phone. */
+    var N = 8, SPREAD_MAX = 12, HALF = 38, ZMAX = 3;
+    var PADX = 18, GAP = 4, SEP = 22;
+
+    var canvas = document.getElementById("sd-canvas"), ctx, W = 0, H = 0;
+    var pool = [], mid = 50, spread = 9, step = 1;
+    var grown = 0, raf = 0;                 // 0 = flat bars, 1 = full squares
+
+    function valToPx(v) { return PADX + ((v - (mid - HALF)) / (2 * HALF)) * (W - 2 * PADX); }
+    function unit() { return (W - 2 * PADX) / (2 * HALF); }
+
+    function fit() {
+      var r = Math.min(window.devicePixelRatio || 1, 2);
+      W = canvas.clientWidth || canvas.parentElement.clientWidth;
+      H = Math.max(300, Math.min(380, Math.round(W / 1.9)));
+      canvas.width = W * r; canvas.height = H * r; canvas.style.height = H + "px";
+      ctx = canvas.getContext("2d"); ctx.setTransform(r, 0, 0, r, 0, 0);
+    }
+
+    /* Eight fresh draws, centered so their deviations sum to exactly zero and
+       scaled so none of them can reach past the end of the number line. A
+       draw whose own SD lands far from 1 is redrawn: with only eight values
+       that happens often enough to leave the picture either almost flat or
+       overflowing, and the slider is the control meant to set the spread. The
+       SD is still computed from the sample, never read off the slider, so the
+       two agree only roughly. */
+    function seed() {
+      for (var tries = 0; tries < 40; tries++) {
+        var i, z, m = 0, big = 0, ss = 0;
+        pool = [];
+        for (i = 0; i < N; i++) {
+          z = VIZ.randn();
+          if (z > 2.5) z = 2.5; else if (z < -2.5) z = -2.5;
+          pool.push(z); m += z;
+        }
+        m /= N;
+        for (i = 0; i < N; i++) { pool[i] -= m; big = Math.max(big, Math.abs(pool[i])); }
+        var cap = Math.max(1, big / ZMAX);                 // a constant divisor keeps the sum at zero
+        for (i = 0; i < N; i++) { pool[i] /= cap; ss += pool[i] * pool[i]; }
+        if (Math.sqrt(ss / (N - 1)) >= 0.8) break;
+      }
+      pool.sort(function (a, b) { return a - b; });
+      mid = Math.round((40 + Math.random() * 20) * 10) / 10;
+    }
+
+    /* Everything on screen is recomputed from the data, so the readouts are
+       the real arithmetic of the real sample. */
+    function stats() {
+      var a = [], i, m = 0, sum = 0, ss = 0, d;
+      for (i = 0; i < N; i++) { a.push(mid + pool[i] * spread); m += a[i]; }
+      m /= N;
+      for (i = 0; i < N; i++) { d = a[i] - m; sum += d; ss += d * d; }
+      var vr = ss / (N - 1);
+      return { a: a, m: m, sum: sum, ss: ss, vr: vr, sd: Math.sqrt(vr) };
+    }
+
+    /* One scale for the squares, fixed against the WORST case the slider can
+       reach rather than the current sample, so the squares genuinely grow and
+       shrink as the slider moves instead of an axis rescaling under them. */
+    function squareScale(hAvail) {
+      var i, u, sumU = 0, maxU = 0, sq = 0;
+      for (i = 0; i < N; i++) {
+        u = Math.abs(pool[i]); sumU += u; if (u > maxU) maxU = u;
+        sq += pool[i] * pool[i];
+      }
+      var side1 = Math.sqrt(sq / (N - 1));                 // the average square, at spread 1
+      var wAvail = W - 2 * PADX - (N - 1) * GAP - SEP;
+      var kw = wAvail / ((sumU + side1) * SPREAD_MAX);
+      var kh = hAvail / (Math.max(maxU, side1) * SPREAD_MAX);   // the average square can be the tallest
+      return Math.max(0.4, Math.min(unit(), kw, kh));
+    }
+
+    var CAPTION = {
+      1: "each score's distance from the mean, above it and below",
+      2: "each distance squared, so a far score counts much more",
+      3: "and the average of those squares, dashed",
+      4: "the dashed square's side is the standard deviation"
+    };
+
+    function draw() {
+      if (!ctx) return;
+      var st = stats(), i, x, y;
+      var LBL_Y = 20, axisY = 34, tickY = 50, ladTop = 58;
+      var sqBase = H - 26;
+      /* At step 1 there are no squares yet, so the deviations get the whole
+         canvas; growing them into squares compresses the rows to make room.
+         Both layouts are driven by the same tween, so the picture reorganizes
+         itself in one motion instead of jumping. */
+      var rowTall = (sqBase - 14 - ladTop) / N;
+      var rowFlat = Math.max(6, Math.min(13, (H - 198) / N));
+      var rowH = rowTall + (rowFlat - rowTall) * grown;
+      var ladBot = ladTop + N * rowH;
+      var capY = ladBot + 17;
+      /* the square scale is read off the FINAL layout, so it stays put while
+         the rows are still moving */
+      var k = squareScale(sqBase - (ladTop + N * rowFlat + 34));
+      var mx = valToPx(st.m);
+      var small = W < 460;
+
+      var cFaint = VIZ.css("--text-faint"), cBorder = VIZ.css("--border");
+      var cDot = VIZ.css("--secondary"), cSum = VIZ.css("--primary"), cDev = "#f97316";
+
+      ctx.clearRect(0, 0, W, H);
+      ctx.lineWidth = 1; ctx.lineCap = "butt"; ctx.setLineDash([]);
+      ctx.textBaseline = "alphabetic";
+
+      /* Tick numbers give way to the labeled lines drawn over them: the
+         mean, and at step 4 the two edges of the band. The tick mark itself
+         still gets drawn, so the scale keeps its rhythm. */
+      var busy = [mx];
+
+      /* step 4: one standard deviation either side of the mean, behind all */
+      if (step >= 4) {
+        var b1 = valToPx(st.m - st.sd), b2 = valToPx(st.m + st.sd);
+        busy.push(b1, b2);
+        ctx.fillStyle = cSum; ctx.globalAlpha = 0.13;
+        ctx.fillRect(b1, 24, b2 - b1, ladBot - 24);
+        ctx.globalAlpha = 1;
+        ctx.strokeStyle = cSum; ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.moveTo(b1, 24); ctx.lineTo(b1, ladBot);
+        ctx.moveTo(b2, 24); ctx.lineTo(b2, ladBot);
+        ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = cSum; ctx.font = "600 " + (small ? 10 : 11) + "px Inter, sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("one SD either side of the mean", Math.max(PADX + 85, Math.min(W - PADX - 85, mx)), capY);
+      }
+
+      /* the number line, its ticks, and the scores sitting on it */
+      ctx.strokeStyle = cBorder;
+      ctx.beginPath(); ctx.moveTo(PADX, axisY + 0.5); ctx.lineTo(W - PADX, axisY + 0.5); ctx.stroke();
+      ctx.fillStyle = cFaint; ctx.font = (small ? 10 : 11) + "px ui-monospace, monospace";
+      ctx.textAlign = "center";
+      var tStep = small ? 20 : 10;
+      for (var t = Math.ceil((mid - HALF) / tStep) * tStep; t <= mid + HALF; t += tStep) {
+        x = valToPx(t);
+        ctx.beginPath(); ctx.moveTo(x, axisY); ctx.lineTo(x, axisY + 4); ctx.stroke();
+        var clear = true;
+        for (var q = 0; q < busy.length; q++) if (Math.abs(busy[q] - x) < 16) clear = false;
+        if (clear) ctx.fillText(String(t), x, tickY);
+      }
+
+      /* the mean: the balance point every deviation is measured against */
+      ctx.strokeStyle = cSum; ctx.lineWidth = 1.5; ctx.setLineDash([4, 3]);
+      ctx.beginPath(); ctx.moveTo(mx, 24); ctx.lineTo(mx, ladBot); ctx.stroke();
+      ctx.setLineDash([]); ctx.lineWidth = 1;
+      ctx.fillStyle = cSum; ctx.font = "600 " + (small ? 10 : 11) + "px Inter, sans-serif";
+      ctx.textAlign = "center"; ctx.fillText("mean", mx, LBL_Y);
+
+      ctx.fillStyle = cDot;
+      for (i = 0; i < N; i++) { ctx.beginPath(); ctx.arc(valToPx(st.a[i]), axisY, 5, 0, 2 * Math.PI); ctx.fill(); }
+
+      /* the deviations themselves, one per row, fanning out from the mean */
+      ctx.lineCap = "round"; ctx.lineWidth = Math.max(2, Math.min(9, rowH * 0.5));
+      var tipR = Math.max(2.2, Math.min(4, rowH * 0.16));
+      for (i = 0; i < N; i++) {
+        y = ladTop + i * rowH + rowH / 2;
+        x = valToPx(st.a[i]);
+        ctx.strokeStyle = cDev;
+        ctx.beginPath(); ctx.moveTo(mx, y); ctx.lineTo(x, y); ctx.stroke();
+        ctx.fillStyle = cDot; ctx.beginPath(); ctx.arc(x, y, tipR, 0, 2 * Math.PI); ctx.fill();
+      }
+      ctx.lineCap = "butt"; ctx.lineWidth = 1;
+
+      /* The same deviations as areas. Each rectangle keeps the width of its
+         own deviation and grows to that height, so a distance visibly turns
+         into a square. Centered, so the row opens outward from the middle as
+         the slider widens instead of crawling in from the left. */
+      var sides = [], rowW = (N - 1) * GAP;
+      for (i = 0; i < N; i++) { sides.push(Math.max(1, Math.abs(st.a[i] - st.m) * k)); rowW += sides[i]; }
+      var aside = Math.max(1, st.sd * k);
+      if (step >= 3) rowW += SEP + aside;
+      var cur = PADX + Math.max(0, (W - 2 * PADX - rowW) / 2);
+      if (grown > 0.02) {
+        ctx.strokeStyle = cBorder;
+        ctx.beginPath(); ctx.moveTo(PADX, sqBase + 0.5); ctx.lineTo(W - PADX, sqBase + 0.5); ctx.stroke();
+        for (i = 0; i < N; i++) {
+          var side = sides[i], hh = side * grown;
+          ctx.fillStyle = cDev; ctx.globalAlpha = 0.2;
+          ctx.fillRect(cur, sqBase - hh, side, hh); ctx.globalAlpha = 1;
+          ctx.strokeStyle = cDev; ctx.lineWidth = 1.5;
+          ctx.strokeRect(cur + 0.75, sqBase - hh + 0.75, Math.max(0.5, side - 1.5), Math.max(0.5, hh - 1.5));
+          cur += side + GAP;
+        }
+      }
+
+      /* the average square: its area is the variance, its side the SD */
+      if (step >= 3) {
+        var ax = cur + SEP - GAP;
+        ctx.fillStyle = cSum; ctx.globalAlpha = 0.16;
+        ctx.fillRect(ax, sqBase - aside, aside, aside); ctx.globalAlpha = 1;
+        ctx.strokeStyle = cSum; ctx.lineWidth = 2; ctx.setLineDash([4, 3]);
+        ctx.strokeRect(ax, sqBase - aside, aside, aside); ctx.setLineDash([]); ctx.lineWidth = 1;
+        ctx.fillStyle = cSum; ctx.font = "600 " + (small ? 10 : 11) + "px Inter, sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("average", Math.min(W - PADX - 24, ax + aside / 2), sqBase - aside - 6);
+      }
+
+      ctx.fillStyle = cFaint; ctx.font = (small ? 10 : 11) + "px Inter, sans-serif"; ctx.textAlign = "left";
+      ctx.fillText(CAPTION[step], PADX, sqBase + 16);
+    }
+
+    function readouts() {
+      var st = stats();
+      document.getElementById("sd-mean").textContent = st.m.toFixed(1);
+      document.getElementById("sd-sum").textContent = Math.abs(st.sum) < 5e-11 ? "0.0" : st.sum.toFixed(1);
+      document.getElementById("sd-ss").textContent = st.ss.toFixed(1);
+      document.getElementById("sd-var").textContent = st.vr.toFixed(1);
+      document.getElementById("sd-sd").textContent = st.sd.toFixed(2);
+    }
+    function render() { draw(); readouts(); }
+
+    /* Growing the bars into squares is the one thing worth animating here,
+       because the area is the idea. Reduced motion jumps to the end state. */
+    function setStep(s) {
+      if (s === step) return;
+      step = s;
+      var target = s >= 2 ? 1 : 0;
+      if (raf) { cancelAnimationFrame(raf); raf = 0; }
+      if (VIZ.reducedMotion() || grown === target) { grown = target; render(); return; }
+      var from = grown, t0 = null;
+      var tick = function (ts) {
+        if (t0 === null) t0 = ts;
+        var p = Math.min(1, (ts - t0) / 260);
+        var e = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+        grown = from + (target - from) * e;
+        render();
+        if (p < 1) raf = requestAnimationFrame(tick); else { raf = 0; grown = target; render(); }
+      };
+      raf = requestAnimationFrame(tick);
+    }
+
+    var segBox = document.getElementById("sd-steps");
+    segBox.addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      var s = +b.dataset.step;
+      Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", +x.dataset.step === s); });
+      setStep(s);
+    });
+    document.getElementById("sd-spread").addEventListener("input", function () {
+      spread = +this.value;
+      document.getElementById("sd-spread-val").textContent = spread.toFixed(1);
+      render();
+    });
+    document.getElementById("sd-new").addEventListener("click", function () { seed(); render(); });
+
+    window.addEventListener("resize", VIZ.rafThrottle(function () { fit(); render(); }));
+    VIZ.onTheme(draw);
+
+    fit(); seed(); render();
+
+    if (window.SC && SC.preset) SC.preset({ step: "#sd-steps", spread: "#sd-spread" });
   })();
   </script>
 </body>
