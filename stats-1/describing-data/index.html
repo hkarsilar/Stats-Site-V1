@@ -101,7 +101,7 @@
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="sdviz">
           <p class="viz-title">📏 Standard Deviation, Step by Step</p>
-          <p class="viz-sub">Eight exam scores, and one number for how spread out they are. Step through the four buttons to build it, and pull the scores apart with the slider to see the number follow.</p>
+          <p class="viz-sub">Eight exam scores, and one number for how spread out they are. Step through the four buttons to build it, then pull the scores apart with the slider: the number grows, and so does the bell curve underneath.</p>
 
           <div class="controls">
             <div class="control">
@@ -120,7 +120,8 @@
             <div class="control"><button class="btn btn-ghost btn-sm" id="sd-new">New sample</button></div>
           </div>
 
-          <canvas id="sd-canvas" style="--viz-ar: 19 / 10"></canvas>
+          <canvas id="sd-canvas" style="--viz-ar: 19 / 10;border-radius:10px 10px 0 0"></canvas>
+          <canvas id="sd-curve" role="img" style="--viz-ar: 21 / 5;border-radius:0 0 10px 10px" aria-label="The normal curve that fits the same eight scores, drawn on the same scale as the number line above. Its area stays fixed, so widening the spread flattens the bell and narrowing it makes the bell taller. A shaded band marks one standard deviation either side of the mean, where the curve falls most steeply."></canvas>
 
           <div class="stat-row">
             <div class="stat"><span class="k">Mean</span><span class="v" id="sd-mean">—</span></div>
@@ -134,6 +135,7 @@
 
         <p>Read those four steps left to right and you have the formula. Squaring gets rid of the minus signs, and it makes a score twice as far from the mean count four times as heavily. The squares are then added into a total that statisticians call the <strong>sum of squares</strong>, which turns up in almost every test later in this course. Dividing gives the average square, better known as the <strong>variance</strong>. The square root undoes the squaring and brings the answer back to the units you started in: squared exam points mean nothing to anyone, while exam points are something you can picture.</p>
         <p>Step 3 divides by <em>n</em> − 1 rather than <em>n</em>, which looks like a typo and isn't one. A sample's values sit a little closer to their own mean than to the population's, so dividing by <em>n</em> would report a spread slightly narrower than the truth. The smaller divisor pushes the answer back up by the right amount, and once you have a few hundred values the correction is too small to see.</p>
+        <p>Below the squares is the normal curve that fits those eight scores, with the same mean and the same standard deviation. The mean fixes where the bell sits. The standard deviation fixes how wide it is, and nothing else about the shape can change: pull the scores apart and the bell spreads and flattens, keeping the same area underneath. The shaded band marks one SD either side of the mean, which is exactly where the curve falls most steeply, so with a little practice you can read a distribution's spread straight off its picture.</p>
         <p>Standard deviation is the workhorse of the two; it shows up again the moment we standardize values into <a href="../../stats-1/z-scores-and-the-normal-distribution/">z-scores</a> and everywhere after. If you would rather see the arithmetic than the animation, the mean, the variance and the SD are the first three rows of the printable <a href="../../formulas.html">formula sheet</a>.</p>
         <p>Got numbers of your own? Paste them into the <a href="../../descriptives.html">descriptives calculator</a>, which computes center, spread, and outlier flags, draws the histogram and boxplot, and even drafts the APA sentence for you. If you're unsure which of those two pictures belongs in your write-up, the <a href="../../which-chart.html">chart chooser</a> decides it in a couple of clicks.</p>
 
@@ -291,14 +293,16 @@
        mean rather than the whole 0-100 scale: fixed, so pulling the slider
        visibly widens the data instead of an axis rescaling under it, and
        narrow, so the deviations are long enough to read on a phone. */
-    var N = 8, SPREAD_MAX = 12, HALF = 38, ZMAX = 3;
+    var N = 8, SPREAD_MAX = 12, HALF = 38, ZMAX = 3, SPREAD_REF = 4;
     var PADX = 18, GAP = 4, SEP = 22;
 
     var canvas = document.getElementById("sd-canvas"), ctx, W = 0, H = 0;
+    var curve = document.getElementById("sd-curve"), cctx, CH = 0;
     var pool = [], mid = 50, spread = 9, step = 1;
     var grown = 0, raf = 0;                 // 0 = flat bars, 1 = full squares
 
     function valToPx(v) { return PADX + ((v - (mid - HALF)) / (2 * HALF)) * (W - 2 * PADX); }
+    function pxToVal(p) { return (mid - HALF) + ((p - PADX) / (W - 2 * PADX)) * (2 * HALF); }
     function unit() { return (W - 2 * PADX) / (2 * HALF); }
 
     function fit() {
@@ -307,6 +311,11 @@
       H = Math.max(300, Math.min(380, Math.round(W / 1.9)));
       canvas.width = W * r; canvas.height = H * r; canvas.style.height = H + "px";
       ctx = canvas.getContext("2d"); ctx.setTransform(r, 0, 0, r, 0, 0);
+      /* the curve sits directly below and shares the number line's x-scale,
+         so it is the same element width and uses the same W and valToPx */
+      CH = Math.max(130, Math.min(180, Math.round(W / 4.2)));
+      curve.width = W * r; curve.height = CH * r; curve.style.height = CH + "px";
+      cctx = curve.getContext("2d"); cctx.setTransform(r, 0, 0, r, 0, 0);
     }
 
     /* Eight fresh draws, centered so their deviations sum to exactly zero and
@@ -492,6 +501,75 @@
       ctx.fillText(CAPTION[step], PADX, sqBase + 16);
     }
 
+    /* The normal curve those eight scores fit: same mean, same SD, drawn on
+       the number line's own scale so the two line up.
+
+       The vertical scale is FIXED, referenced to the curve at SPREAD_REF, so
+       the area under the bell is conserved: widening the spread flattens it,
+       which is the honest picture and half of what the panel is for. A
+       density much tighter than the reference is taller than the panel, so it
+       is clipped rather than rescaled — rescaling per frame would hide the
+       very effect the slider is demonstrating. */
+    function drawCurve() {
+      if (!cctx) return;
+      var st = stats(), i, x;
+      var base = CH - 22, usable = base - 10;
+      var cSum = VIZ.css("--primary"), cDot = VIZ.css("--secondary");
+      var cFaint = VIZ.css("--text-faint"), cBorder = VIZ.css("--border");
+      var small = W < 460;
+
+      cctx.clearRect(0, 0, W, CH);
+      cctx.setLineDash([]); cctx.lineWidth = 1;
+
+      var poolSd = st.sd / spread;                    // the pool's own SD, spread-free
+      var yScale = usable / VIZ.normPdf(0, 0, poolSd * SPREAD_REF);
+      function yAt(px) { return base - VIZ.normPdf(pxToVal(px), st.m, st.sd) * yScale; }
+
+      cctx.save();
+      cctx.beginPath(); cctx.rect(0, 0, W, base); cctx.clip();
+
+      function slab(x1, x2, alpha) {
+        x1 = Math.max(PADX, x1); x2 = Math.min(W - PADX, x2);
+        if (x2 <= x1) return;
+        cctx.beginPath(); cctx.moveTo(x1, base);
+        for (var v = x1; v < x2; v += 1) cctx.lineTo(v, yAt(v));
+        cctx.lineTo(x2, yAt(x2)); cctx.lineTo(x2, base); cctx.closePath();
+        cctx.fillStyle = cSum; cctx.globalAlpha = alpha; cctx.fill(); cctx.globalAlpha = 1;
+      }
+      slab(PADX, W - PADX, 0.12);                                        // the whole density
+      slab(valToPx(st.m - st.sd), valToPx(st.m + st.sd), 0.16);          // one SD either side
+
+      cctx.beginPath();
+      for (x = PADX; x <= W - PADX; x += 1) {
+        if (x === PADX) cctx.moveTo(x, yAt(x)); else cctx.lineTo(x, yAt(x));
+      }
+      cctx.strokeStyle = cSum; cctx.lineWidth = 2; cctx.stroke();
+
+      /* the mean, and the two shoulders where the curve is steepest */
+      cctx.setLineDash([3, 3]); cctx.lineWidth = 1.5; cctx.strokeStyle = cSum;
+      var marks = [st.m - st.sd, st.m, st.m + st.sd];
+      for (i = 0; i < marks.length; i++) {
+        x = valToPx(marks[i]);
+        cctx.beginPath(); cctx.moveTo(x, base); cctx.lineTo(x, yAt(x)); cctx.stroke();
+      }
+      cctx.setLineDash([]); cctx.lineWidth = 1;
+      cctx.fillStyle = cSum;
+      for (i = 0; i < marks.length; i += 2) {
+        x = valToPx(marks[i]);
+        cctx.beginPath(); cctx.arc(x, yAt(x), 3.5, 0, 2 * Math.PI); cctx.fill();
+      }
+      cctx.restore();
+
+      cctx.strokeStyle = cBorder; cctx.lineWidth = 1;
+      cctx.beginPath(); cctx.moveTo(PADX, base + 0.5); cctx.lineTo(W - PADX, base + 0.5); cctx.stroke();
+
+      cctx.fillStyle = cDot;                                             // the scores themselves
+      for (i = 0; i < N; i++) { cctx.beginPath(); cctx.arc(valToPx(st.a[i]), base, 3.5, 0, 2 * Math.PI); cctx.fill(); }
+
+      cctx.fillStyle = cFaint; cctx.font = (small ? 10 : 11) + "px Inter, sans-serif"; cctx.textAlign = "left";
+      cctx.fillText("one SD either side: where the curve falls steepest", PADX, base + 16);
+    }
+
     function readouts() {
       var st = stats();
       document.getElementById("sd-mean").textContent = st.m.toFixed(1);
@@ -500,7 +578,8 @@
       document.getElementById("sd-var").textContent = st.vr.toFixed(1);
       document.getElementById("sd-sd").textContent = st.sd.toFixed(2);
     }
-    function render() { draw(); readouts(); }
+    function render() { draw(); drawCurve(); readouts(); }
+    function repaint() { draw(); drawCurve(); }
 
     /* Growing the bars into squares is the one thing worth animating here,
        because the area is the idea. Reduced motion jumps to the end state. */
@@ -537,7 +616,7 @@
     document.getElementById("sd-new").addEventListener("click", function () { seed(); render(); });
 
     window.addEventListener("resize", VIZ.rafThrottle(function () { fit(); render(); }));
-    VIZ.onTheme(draw);
+    VIZ.onTheme(repaint);
 
     fit(); seed(); render();
 
