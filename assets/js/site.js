@@ -2069,16 +2069,20 @@
     }
     // describe every interactive canvas for screen readers — the title says
     // WHAT the chart is, the sub-caption HOW it responds, so the label is a
-    // real description ("Leverage playground — drag the ringed point…") not "canvas"
+    // real description ("Leverage playground — drag the ringed point…") not "canvas".
+    // Role and label are decided SEPARATELY: a canvas whose own hand-written
+    // aria-label beats the generated one (the second chart in a viz block, say)
+    // still needs the role, and one guard covering both left nine canvases
+    // labelled but role-less — a description hung on a generic element.
+    // An author-supplied role or label always wins over the generated one.
     Array.prototype.forEach.call(document.querySelectorAll(".viz canvas"), function (cv) {
-      if (cv.getAttribute("aria-label") || cv.getAttribute("role")) return;
       var viz = cv.closest(".viz");
       var title = viz && viz.querySelector(".viz-title");
       var sub = viz && viz.querySelector(".viz-sub");
       var name = title ? title.textContent.replace(/^[^\w]+/, "").trim() : "Interactive statistics visualization";
       var extra = sub ? " — " + sub.textContent.trim().replace(/\s+/g, " ").slice(0, 150) : " — interactive chart";
-      cv.setAttribute("role", "img");
-      cv.setAttribute("aria-label", name + extra);
+      if (!cv.getAttribute("role")) cv.setAttribute("role", "img");
+      if (!cv.getAttribute("aria-label")) cv.setAttribute("aria-label", name + extra);
     });
     // announce live readouts: when a slider changes a stat, screen readers hear
     // the new value. The whole .stat-row is a polite live region so any of its
