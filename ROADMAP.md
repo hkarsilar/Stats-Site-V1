@@ -62,6 +62,7 @@ This file is the master plan. The copy-paste prompts that execute it live in **[
 | **14 — Depth & reach** | P61–P68 | course landing pages · quiz exam mode + deeper bank · worked-problems library (Stats 1–2, then 3–4 + toolkit) · touch ergonomics · math regression gate + link checker · lesson presets for instructor embeds · trust touches |
 | **15 — Footing** | P69–P72 | privacy page + honest claims + README rewrite · GA interaction events for the loops · search v2 (typo tolerance, glossary answers) · capstone worked-project guide |
 | **16 — De-AI round two** | P73–P78 | tightened voice budgets + prose-lint v2 · em-dash paydown across every prose surface (pages, FAQs, injected JS strings) · list/shape variance · filtered Pages deploy so the planning docs stop being publicly served |
+| **17 — Teaching alongside Stats 1** | P79–P87 | textbook-dialect conventions labeled (quartiles, conservative df, σ-known z procedures) · printed Tables A/D/F + lookup drill · the probability lecture built out (rules, conditional, Bayes, random variables) · tails/practical significance/power in Stats 1 terms · t, χ² and regression by hand · section-range mock exams + exam-style problems · `?data=` presets, 7-week block map, present mode |
 
 **Recommended order** (content and tools interleaved so the site visibly improves every week):
 
@@ -72,6 +73,8 @@ Hard dependencies: **P2 before any new course** (P4+). **P32 after at least two 
 **Post-buildout order (Phases 10–11, added 11 Jul 2026):** P40 first (it creates the standard and the measuring stick), then P41–P46 in any order but **P46 last** (it's the sitewide finisher), then P47 → P48.
 
 **De-AI round two order (Phase 16, added 15 Aug 2026):** P73 first (it resets the budgets — `prose-lint --strict` is *expected red* from P73 until P77; `audit.js` stays the commit gate), then P74–P76 in any order, **P77 last of the editing passes** (the sitewide finisher), P78 independent — it can run any time, including first.
+
+**Teaching-alongside order (Phase 17, added 6 Sep 2026):** P81 first (the week-2 lecture is being taught now), then P80, P79, P82, P86 before the 1 Oct midterm, then P83, P84, P85 before the 26 Oct final, P87 last. One at a time: they share `faq_data.py`, `glossary-data.js`, `quiz.html`, `problems.html`, `software.js`, `teachers.html` and the search index. Dates in the Phase 17 addendum.
 
 ---
 
@@ -135,6 +138,74 @@ The fix is **P73–P78**: P73 tightens VOICE.md + prose-lint (page ≤ 4 dashes 
 
 ---
 
+## Phase 17 addendum (6 Sep 2026) — teaching alongside Stats 1
+
+**Source:** the two lecture decks for the 2026/27 Stats 1 block (Weeks 1–4, 207 slides; Weeks 5–7, 109 slides) and the course syllabus (Moore, McCabe & Craig, *Introduction to the Practice of Statistics*, 10th ed., chapters 1–9, in the order 1 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 2; SPSS 29 with five mandatory seminars; a midterm in week 5 on weeks 1–3 and a final in week 9 on everything; **both exams on paper, with the university's formula sheet, printed statistical tables and a basic calculator**). The syllabus already sends students to a named set of site pages every week (its "Online practice" column), so the site is part of the course's delivery now. The question this phase answers is two-sided: where does a student who follows the lectures land on a page that speaks a different dialect, and what does a lecturer want to put on a slide?
+
+### What the comparison found
+
+Verified against the lesson prose (scripts stripped), not the sidebar titles:
+
+1. **Exam dialect vs software dialect.** Three conventions the exam uses that the site does not. *Quartiles:* the textbook takes the median of each half of the sorted data; `descriptives.html` interpolates R's type 7 and SPSS's Frequencies default is the weighted average. On the lecture's 18-value dataset those give Q1/Q3 of **26 / 39**, **26.25 / 38.25** and **26 / 40.75** — three answers to one exam question, and a student who checks their hand work against the site's calculator concludes they got it wrong. *Two-sample df:* the exam's hand rule is the conservative **min(n₁ − 1, n₂ − 1)**; the site says Welch and never names the hand rule. *σ known:* chapter 6 introduces inference with a known σ (the z-interval x̄ ± z*·σ/√n and the one-sample z-test), and the site skips that rung entirely — §1.11 goes straight to t*, and §1.12's explorer takes a z as input and never derives one from μ₀, σ, n and x̄.
+2. **Paper tables.** The exam is Table A (area to the left of z), Table D (t criticals by df and confidence level, z* along the foot) and Table F (χ² criticals). `tables.html` is a calculator. Nothing on the site trains the row-and-column lookup, the three moves (left = read; right = 1 − read, or the symmetry read of −z; between = larger − smaller), or reading a p-value as "between two columns".
+3. **A whole lecture with no home.** Week 2 is probability rules (the general addition rule, independence and the multiplication rule, conditional probability and the general multiplication rule, Bayes with the law of total probability), de Méré's bets, the birthday problem, the prosecutor's fallacy, and the mean and variance of a discrete random variable. §1.7 has the disjoint-only rules, one conditional-probability paragraph and a Bayes FAQ; §1.8 opens on the binomial's four conditions. Zero prose hits sitewide for *disjoint*, *law of total probability*, *birthday*, *prosecutor*, *expected value* in the discrete-random-variable sense.
+4. **Week 4 concepts with zero prose hits:** choosing one-tailed vs two-tailed from the question's wording, statistical vs practical significance, "absence of evidence is not evidence of absence", and β and power worked from a picture of two sampling distributions. §1.12 lists Type I and II in two bullets and sends power to Stats 3, which the syllabus marks optional.
+5. **Chapter 7 details missing from §1.13–1.14:** the name *standard error of the mean*, the one-sample t confidence interval, the robustness rule of thumb (n < 15 / 15–40 / > 40), the two-sample CI, the "compare two one-sample CIs" mistake, Gosset.
+6. **Chapter 9:** the lecture's worked example is a 3 × 4 table computed cell by cell (expected count, component, sum → χ² = 19.86, df = 6, p ≈ .003); the site's explorer is 2 × 2 only and shows no components, and the textbook's conditions (all expected ≥ 1, no more than 20% below 5) are not stated in that form.
+7. **Chapter 2:** r as the mean of standardized products, b₁ = r·sᵧ/sₓ and b₀ = ȳ − b₁x̄, the line through (x̄, ȳ), the residual-plot patterns, scatterplot scaling, and the two class exercises every intro lecture runs (guess the r; a categorical variable hiding two positive trends inside one negative one). The playground exists; the hand formulas do not.
+8. **SPSS.** Five mandatory seminars, and `software.js` has entries for **6 of 18** Stats 1 lessons — none for the descriptives / charts / z-score weeks that the first seminars cover.
+9. **Exam prep.** Exam mode scopes by whole course; the midterm is §1.1–1.12. `problems.html` has 12 Stats 1 problems and none in the shapes the lectures work by hand: σ-known z procedures, probability rules, Bayes, a discrete random variable's mean and SD, power from a picture, an r × c χ², r and the regression line from a small table.
+10. **Teaching surface.** Presets exist on 7 of 18 Stats 1 lessons; no lesson or tool can carry **data** in its URL, so the lecture's own numbers cannot be loaded into a playground live; `teachers.html`'s semester map is a 14-week Stats 1–2 shape, not a 7-week block.
+
+### Rules for the phase
+
+- **The site stays generic and public.** Nothing institution-, platform- or lecturer-specific goes on a page, and no slide text is copied. What crosses over is the textbook's conventions (naming the "textbook" dialect helps every reader of the most-used intro text), public data, and the *shape* of the worked examples, rewritten in the site's voice with the site's own numbers.
+- **Both dialects, labeled.** Where textbook and software disagree (quartiles, df, z vs t) the site shows both, says which is which and why. **Never silently switch a default:** `descriptives.html` keeps type 7 (existing links, verified numbers, math-check anchors) and gains a switch.
+- **Exam-first.** Every new formula appears in the form a formula sheet prints it; every new interactive has a "by hand" reading, the number a student gets with a basic calculator, beside the exact one.
+- **Presets carry lectures.** Every lesson touched gains `SC.preset` params for the controls a lecture would set, documented atop its script and in `teachers.html`'s table (CLAUDE.md's rule). Two surfaces learn `?data=` so a lecturer can load lecture data from the URL without the site shipping it.
+- **The iron rules carry:** frozen noise, `VIZ` math, every number verified with `node -e`, VOICE.md, `prose-lint --strict` green, `audit.js` green, `math-check.js` whenever tool math changes, the editorial checkers clean or `ACKED` with a reason.
+
+### Crosswalk: lecture → site, today and after Phase 17
+
+| Week (textbook ch.) | The lecture covers | On the site today | Phase 17 adds |
+|---|---|---|---|
+| 1 (ch. 1, 3) | population/sample, cases/variables, quantitative vs categorical; mean, median, mode; quartiles, five-number summary, boxplot, 1.5 × IQR; variance and SD by hand, n − 1; density curves, N(μ, σ), 68–95–99.7, z-scores, Table A; validity vs reliability; observational vs experimental vs natural experiment | §1.1–§1.6 all exist; boxplot/IQR live in §1.4; z-explorer + 68–95–99.7 in §1.5; no Table A, no textbook quartiles, no SPSS for §1.2–§1.5 | **P79** textbook-quartile switch + five-number step-through + `?data=` + lecture dataset + SPSS entries; **P80** printed tables + lookup drill + the three table moves |
+| 2 (ch. 4, 5.3) | random phenomena, sample space, the four rules, general addition rule, independence, conditional probability, general multiplication rule, Bayes + total probability; de Méré, birthday, prosecutor's fallacy, the disease-test question; mean/variance of a discrete random variable; the 8-question guessing experiment | §1.7 has LLN + disjoint rules + one conditional paragraph; Bayes only as a FAQ; `distributions.html`'s dice lab already covers the two-dice slide | **P81** §1.7 built out to the full lecture + a base-rate tree viz; §1.8 gains random variables first + the guessing experiment as a preset |
+| 3 (ch. 5.1–5.3, 6.1–6.2) | binomial (n choose k, factorials, B(n, p)); sampling variability, sampling distribution of x̄, σ/√n, CLT; z-interval x̄ ± z*σ/√n, z* from Table D, margin-of-error levers, cautions | §1.8–§1.11 exist and are strong (CLT, sampling-distributions have presets); **no z-interval anywhere** | **P82** z-interval section + Interval Builder viz; formula-sheet rows |
+| 4 (ch. 6.3–6.4, 7) | one-sample z-test, the five-step algorithm, one- vs two-tailed from wording, statistical vs practical significance, absence of evidence, Type I/II, β and power from two curves | §1.12 has the P-Value Explorer (takes a z); Type I/II as two bullets; power sent to Stats 3 | **P82** numbers-to-z panel, tails-from-wording, practical significance, absence of evidence, Two Curves power viz |
+| 4–5 (ch. 7) | Gosset, SE, df, Table D, one-sample t CI and test, matched pairs, robustness rule, two-sample z and t, conservative df, two-sample CI, pooled vs unpooled, the overlapping-CI mistake | §1.13–§1.14 exist (t vs normal, Tug-of-War); Welch named, hand rule not; no two-sample CI; no robustness rule | **P83** SE/CI/robustness/Gosset in §1.13; three-df table + df seg + Overlapping Intervals viz in §1.14 |
+| 6 (ch. 8 + 5.3, 9) | p̂, its mean/SD/SE, conditions (≥ 15 for the CI, ≥ 10 for the test, population ≥ 10× sample), CI and z-test for p, two proportions with pooled p̂; two-way tables, expected counts, components, χ², df = (r − 1)(c − 1), Table F, conditions, χ² = z² | §1.15 thorough (10-rule; χ² = z² section); §1.16 2 × 2 explorer only, no components | **P84** textbook conditions labeled; Build-a-Table r × c explorer with components, Table-F reading and `?t=` presets |
+| 7 (ch. 2) | scatterplots (form/direction/strength), categorical variables in scatterplots, lurking variables, r by hand, facts about r, guess-the-r, least squares, b₁ = r·sᵧ/sₓ, b₀, r², residuals and residual plots, Anscombe, cautions | §1.17 explorer + Anscombe; §1.18 playground with residuals; no hand formulas, no residual plot, no guess-the-r | **P85** r step-through, Guess the r, hand formulas, residual-plot toggle, `?data=` on both |
+| 5 and 9 (exams) | paper exams with formula sheet + tables + basic calculator; mock exams in weeks 4 and 8 | exam mode by whole course; 12 Stats 1 problems; `formulas.html` has t-based rows only | **P86** section-range exam scope + shareable mock-exam URL + 8 exam-style problems; **P87** 7-week block map, present mode, preset-table sweep |
+
+External links the slides use that the site already replaces (a human step, see the checklist): the two-dice roller (slide 79) → `distributions.html#dice-lab`; the sampling-distribution simulator (slide 137) → `stats-1/sampling-distributions/?shape=skewed&n=10` and `stats-1/central-limit-theorem/?n=25&pop=skewed`; the probability-distribution and CLT visualizers in the notes of slides 85–92 → `stats-1/probability-basics/` and the CLT lesson.
+
+### Running order and dates
+
+The block started on 31 Aug 2026; the midterm is 1 Oct, the final 26 Oct. Run one prompt per session, in this order, so each lands before its week is taught or revised:
+
+1. **P81** (probability, the week-2 lecture) — now.
+2. **P80** then **P79** (week-1 material, midterm revision) — by 14 Sep.
+3. **P82** (weeks 3–4: z-interval, z-test, tails, power) — by 18 Sep.
+4. **P86** (section-range mock exams + problems for §1.1–1.12) — by 21 Sep, ahead of the week-4 mock exam.
+5. **P83** (t procedures) — by 28 Sep. **P84** (proportions, χ²) — by 5 Oct. **P85** (correlation, regression) — by 12 Oct.
+6. **P87** (instructor surface) — any time after the others; before the week-8 mock exam is ideal.
+
+P79–P86 all touch shared registries (`faq_data.py`, `glossary-data.js`, `quiz.html`, `problems.html`, `software.js`, `teachers.html`, the search index): **one at a time.** None depends on another except P87, which documents the presets the others add.
+
+### Notes on the slides (for Hakan, not site work)
+
+Found while reading; none affects the plan.
+
+- **Week 7 deck, slide 90:** the five listed points (x = 2, 3.5, 4.5, 3.5, 6; y = 6, 3, 6, 5, 8) give r = 0.68, not the 0.54 printed, and the standardized columns do not match the listed x and y (the table and the chart seem to come from different data).
+- **Weeks 1–4 deck, slide 43:** the outlier rule reads "above the first quartile or below the third quartile"; it should be above Q3 or below Q1 (slides 45 and 48 have it right).
+- **Slide 152:** the fraction is printed upside down (0.45/0.25); the answer 0.556 is right.
+- **Slide 57:** "More on this on slide 40" points at nothing in this deck.
+- **Slide 39:** "1.5+1.6/2" needs parentheses.
+- **Week 5 deck, slide 22:** "15 > n > 40" should read 15 ≤ n < 40.
+- **Slide 2 vs the syllabus:** room 206 vs 208.
+- The tomato example's p = 4.56% comes from the table's 2 × .0228; the exact value is 4.55%. Fine for the lecture; the site's calculator will print the exact one, and P80's drill accepts the table's value.
+
 ## The human-only checklist (no AI can do these)
 
 - [ ] **Google Search Console** — verify statscapybara.com, submit `sitemap.xml`, check weekly. Do this first; it feeds P36/P37.
@@ -142,6 +213,7 @@ The fix is **P73–P78**: P73 tightens VOICE.md + prose-lint (page ≤ 4 dashes 
 - [ ] **Backlinks** — ask colleagues to link it from course pages/syllabi (.edu links are gold); submit to **MERLOT** and **OER Commons**; answer real questions on r/AskStatistics, r/statistics, Cross Validated with links to the *specific* interactive lesson.
 - [ ] **One big launch post** when the Research Toolkit track is live — r/InternetIsBeautiful, Hacker News (Show HN), relevant teaching newsletters.
 - [ ] **Tell your students** — real usage + feedback beats everything above.
+- [ ] **Stats 1 slides (Phase 17, Sep 2026)** — swap the decks' external links for the site's own pages (`distributions.html#dice-lab`, the sampling-distribution and CLT lessons with presets), put the preset URLs P79–P87 create on the relevant slides, and fix the slide slips listed in the Phase 17 addendum (the r = 0.54 that is 0.68, the inverted outlier rule on slide 43, the upside-down fraction on slide 152).
 - [ ] Skim GA4/GSC monthly; paste interesting query data into prompt P37.
 - [ ] **A real photo in the About section** — replace the "HK" initials avatar; nothing says "a human made this" like a face. Consider adding one candid line to the bio about *why* a cognitive scientist built a capybara statistics site.
 - [ ] **The read-aloud test** — after Phase 10 lands, read two or three rewritten lessons aloud (or better: have a colleague or student read them cold) and mark anything that still sounds generated; feed the marks into the next P39 refresh run.
@@ -461,3 +533,12 @@ Tick these as sessions complete them (each prompt ends by updating this list).
   - **Stats 2's assumptions lesson was retitled** "ANOVA & t-Test Assumptions" (slug unchanged), because the course now also holds "Assumptions of Regression" and "Regression Diagnostics" and the three read as duplicates in an index.
   - **`destination-promises.js --strict` was already red before this work started** (one flag, a shape-2 false positive on `plan.html`'s sentence-initial "See regression"), and it is unchanged. Every other checker exits 0.
   - **Note for future readers:** entries above this one cite pre-restructure paths and section numbers. `CLAUDE.md`, `AGENTS.md` and the `tools/*.js` headers were updated to current paths; this file and `PROMPTS.md` were deliberately left as the historical record.
+- [ ] P79 · Stats 1 wk 1 — textbook quartiles switch, five-number step-through, `?data=` URLs, lecture dataset, SPSS for §1.2–1.5 (Powerful · Extra)
+- [ ] P80 · Stats 1 wk 1–2 — printed Tables A/D/F + look-it-up drill in tables.html, the three table moves in §1.5 (Powerful · Extra)
+- [ ] P81 · Stats 1 wk 2 — the probability lecture: general rules, conditional, Bayes + base-rate tree; random variables before the binomial (Extra Powerful · Max)
+- [ ] P82 · Stats 1 wk 3–4 — σ-known z-interval + z-test, tails from wording, practical significance, absence of evidence, Two Curves power viz, formula-sheet rows (Extra Powerful · Max)
+- [ ] P83 · Stats 1 wk 4–5 — t procedures the exam way: SE, t CI, robustness rule, Gosset; three dfs + two-sample CI + overlapping-intervals viz (Extra Powerful · Max)
+- [ ] P84 · Stats 1 wk 6 — textbook conditions for proportions; Build-a-Table r × c χ² explorer with components, Table-F reading, `?t=` (Extra Powerful · Max)
+- [ ] P85 · Stats 1 wk 7 — r step-through, Guess the r, b₁ = r·sᵧ/sₓ by hand, residual-plot toggle, `?data=` on both lessons (Extra Powerful · Max)
+- [ ] P86 · exam prep — section-range exam scope + shareable mock-exam URL; 8 exam-style Stats 1 problems (Powerful · Extra)
+- [ ] P87 · instructor surface — 7-week block map, `?present=1`, preset-table sweep (Powerful · Extra)
