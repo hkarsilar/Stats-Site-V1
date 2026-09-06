@@ -37,11 +37,11 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v48";  /* site.js changed and is precached: injectA11y() now sets a
-                                      canvas's role and aria-label independently, so the nine
-                                      hand-labelled canvases that bailed out before role="img"
-                                      was assigned are announced as images rather than as
-                                      generic elements. Nothing else in the shell changed. */
+const CACHE_VERSION = "sc-v49";  /* site.js changed and is precached: the distribution
+                                      playground's TOOLBOX blurb and SEARCH_PAGES keywords now
+                                      mention the dice lab added to that page, so the nav
+                                      dropdown, the toolbox grid and the site's own search all
+                                      point at it. Nothing else in the shell changed. */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location

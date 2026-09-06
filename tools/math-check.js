@@ -31,6 +31,8 @@
      6. noncentral trio — the four G*Power sample-size anchors
      7. tool-page constants — the effect-size conversions and the
         Fisher-z correlation CI documented in CLAUDE.md
+     8. the dice lab — exact outcome counts behind distributions.html's
+        triangular-distribution demonstration
 
    Note on section 7: the tool pages compute these inline against the DOM,
    so they can't be imported. What is asserted here is that viz.js still
@@ -509,6 +511,198 @@ eq('Fisher-z CI upper (r = .5, n = 30)', Math.tanh(zr + zc * se), 0.73, 5e-3, 'c
 // tables.html's headline criticals, as a student reading the page would see them.
 eq('z critical, two-tailed α = .05', V.normInv(0.975), 1.96, 5e-3, 'tables.html');
 eq('t critical, two-tailed α = .05, df = 20', V.tInv(0.025, 20), 2.086, 5e-4, 'tables.html');
+
+/* ============================================================
+   8 — the dice lab (distributions.html)
+
+   The dice lab computes EXACT outcome counts rather than simulating,
+   so every bar it draws is checkable against a published number. Like
+   section 7 these formulas are transcribed from the page (it computes
+   against the DOM and cannot be imported) and must be kept in step by
+   hand if the page's math changes. Counts are integers throughout: the
+   largest total the page can reach is 20^6 = 64,000,000, far inside the
+   2^53 range where doubles are exact, so these assertions are equalities
+   with a tolerance only for the derived means.
+   ============================================================ */
+head('dice lab (exact counts)');
+
+function diceCounts(mode, n, s) {                 // transcribed from distributions.html
+  let counts = [], k, j, f, i;
+  if (mode === 'sich') {
+    const bag = {}, A = [1, 2, 2, 3, 3, 4], B = [1, 3, 4, 5, 6, 8];
+    for (i = 0; i < 6; i++) for (j = 0; j < 6; j++) bag[A[i] + B[j]] = (bag[A[i] + B[j]] || 0) + 1;
+    for (k = 2; k <= 12; k++) counts.push(bag[k] || 0);
+    return { lo: 2, counts, total: 36 };
+  }
+  if (mode === 'diff') {
+    for (k = -(s - 1); k <= s - 1; k++) counts.push(s - Math.abs(k));
+    return { lo: -(s - 1), counts, total: s * s };
+  }
+  const total = Math.pow(s, n);
+  if (mode === 'sum') {
+    counts = [1];
+    for (i = 0; i < n; i++) {
+      const next = new Array(counts.length + s - 1).fill(0);
+      for (j = 0; j < counts.length; j++) for (f = 0; f < s; f++) next[j + f] += counts[j];
+      counts = next;
+    }
+    return { lo: n, counts, total };
+  }
+  for (k = 1; k <= s; k++) {
+    counts.push(mode === 'max' ? Math.pow(k, n) - Math.pow(k - 1, n)
+                               : Math.pow(s - k + 1, n) - Math.pow(s - k, n));
+  }
+  return { lo: 1, counts, total };
+}
+function diceMoments(d) {
+  let m = 0, v = 0;
+  for (let i = 0; i < d.counts.length; i++) m += (d.lo + i) * d.counts[i] / d.total;
+  for (let i = 0; i < d.counts.length; i++) { const x = d.lo + i - m; v += x * x * d.counts[i] / d.total; }
+  return { mean: m, sd: Math.sqrt(v) };
+}
+
+// Two dice: the triangular distribution, 1..6..1 out of 36.
+const two = diceCounts('sum', 2, 6);
+eq('2d6 outcome range starts at 2', two.lo, 2, 0, 'elementary');
+[1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1].forEach((want, i) => {
+  eq(`2d6 ways to roll ${i + 2}`, two.counts[i], want, 0, 'the 6×6 sample space');
+});
+eq('2d6 P(7)', two.counts[5] / two.total, 1 / 6, 1e-12, "quiz.html's own dice question");
+
+// Three dice: the site prints 27/216 for both modes.
+const three = diceCounts('sum', 3, 6);
+eq('3d6 ways to roll 10', three.counts[10 - 3], 27, 0, 'standard 3d6 table');
+eq('3d6 ways to roll 11', three.counts[11 - 3], 27, 0, 'standard 3d6 table');
+eq('3d6 ways to roll 3', three.counts[0], 1, 0, 'standard 3d6 table');
+eq('3d6 P(10)', three.counts[10 - 3] / three.total, 0.125, 1e-12, 'standard 3d6 table');
+
+// Closed forms for a sum of n independent uniform dice, over the page's whole grid.
+for (const s of [4, 6, 8, 10, 12, 20]) {
+  for (let n = 1; n <= 6; n++) {
+    const d8 = diceCounts('sum', n, s), mo = diceMoments(d8);
+    const tot = d8.counts.reduce((a, b) => a + b, 0);
+    eq(`sum ${n}d${s}: counts add to s^n`, tot, Math.pow(s, n), 0, 'probabilities must sum to 1');
+    eq(`sum ${n}d${s}: mean = n(s+1)/2`, mo.mean, n * (s + 1) / 2, 1e-9, 'closed form for a sum of uniforms');
+    eq(`sum ${n}d${s}: SD = √(n(s²−1)/12)`, mo.sd, Math.sqrt(n * (s * s - 1) / 12), 1e-9, 'closed form for a sum of uniforms');
+  }
+}
+
+// The difference of two dice: triangular again, centered on zero.
+const dif = diceCounts('diff', 2, 6), dm = diceMoments(dif);
+eq('difference of 2d6: P(0)', dif.counts[5] / dif.total, 6 / 36, 1e-12, 'the 6×6 sample space');
+eq('difference of 2d6: P(−5)', dif.counts[0] / dif.total, 1 / 36, 1e-12, 'the 6×6 sample space');
+eq('difference of 2d6: mean 0', dm.mean, 0, 1e-12, 'symmetry');
+eq('difference of 2d6: SD = √(35/6)', dm.sd, Math.sqrt(35 / 6), 1e-9, 'Var(X−Y) = 2 × 35/12');
+
+// Order statistics: highest and lowest of n dice.
+const mx = diceCounts('max', 2, 6);
+[1, 3, 5, 7, 9, 11].forEach((want, i) => {
+  eq(`highest of 2d6, ways to get ${i + 1}`, mx.counts[i], want, 0, 'k² − (k−1)² over 36');
+});
+eq('highest of 2d6: mean = 161/36', diceMoments(mx).mean, 161 / 36, 1e-12, 'order statistic of two uniforms');
+eq('highest of 2d20: mean 13.825', diceMoments(diceCounts('max', 2, 20)).mean, 13.825, 5e-4, 'the published advantage average');
+eq('lowest of 2d20: mean 7.175', diceMoments(diceCounts('min', 2, 20)).mean, 7.175, 5e-4, 'the published disadvantage average');
+for (const s of [4, 6, 8, 10, 12, 20]) {
+  for (let n = 1; n <= 6; n++) {
+    const hi = diceMoments(diceCounts('max', n, s)).mean, lo = diceMoments(diceCounts('min', n, s)).mean;
+    eq(`highest/lowest ${n}d${s} mirror: E[max] + E[min] = s + 1`, hi + lo, s + 1, 1e-9, 'reflection k → s+1−k');
+    eq(`highest ${n}d${s}: counts add to s^n`, diceCounts('max', n, s).counts.reduce((a, b) => a + b, 0), Math.pow(s, n), 0, 'probabilities must sum to 1');
+  }
+}
+
+// Sicherman dice: different faces, identical sum distribution.
+const sich = diceCounts('sich', 2, 6);
+for (let i = 0; i < 11; i++) {
+  eq(`Sicherman dice match 2d6 at total ${i + 2}`, sich.counts[i], two.counts[i], 0, 'Gardner, Scientific American (1978)');
+}
+eq('Sicherman dice: 36 equally likely rolls', sich.total, 36, 0, 'six faces each');
+
+/* ------------------------------------------------------------
+   The block above proves the MATHEMATICS. This proves the PAGE still
+   computes it. distributions.html's dice script is loaded into its own vm
+   context under a DOM shim, its controls are driven the way a reader drives
+   them, and the readouts it prints are compared against the counts above.
+   Without this, section 8 would only be checking a copy: an edit to the
+   page's math could ship while the transcription stayed green.
+   ------------------------------------------------------------ */
+head('dice lab (the shipped page)');
+
+function driveDiceLab() {
+  const html = fs.readFileSync(path.join(ROOT, 'distributions.html'), 'utf8');
+  const src = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)]
+    .map(m => m[1]).filter(s => /dice-canvas/.test(s))[0];
+  if (!src) throw new Error('no inline script mentioning #dice-canvas');
+
+  const els = {};
+  const ctx2d = {};
+  ['clearRect', 'fillRect', 'beginPath', 'moveTo', 'lineTo', 'arcTo', 'arc', 'closePath',
+   'fill', 'stroke', 'setLineDash', 'fillText', 'setTransform'].forEach(n => { ctx2d[n] = () => {}; });
+  ctx2d.measureText = t => ({ width: t.length * 6 });
+  const mk = () => {
+    const on = {};
+    return { innerHTML: '', textContent: '', value: '2', checked: false, style: {},
+      clientWidth: 720, parentElement: { clientWidth: 720 }, getContext: () => ctx2d,
+      addEventListener: (t, f) => { (on[t] = on[t] || []).push(f); },
+      fire: (t, e) => (on[t] || []).forEach(f => f(e)) };
+  };
+  const c2 = { console };
+  c2.window = c2;
+  c2.document = { documentElement: {}, getElementById: id => els[id] || (els[id] = mk()) };
+  c2.getComputedStyle = () => ({ getPropertyValue: () => '#000000' });
+  c2.MutationObserver = function () { this.observe = () => {}; };
+  c2.requestAnimationFrame = cb => cb();
+  c2.addEventListener = () => {};
+  vm.createContext(c2);
+  vm.runInContext(fs.readFileSync(path.join(ROOT, 'assets/js/viz.js'), 'utf8'), c2, { filename: 'viz.js' });
+  vm.runInContext(src, c2, { filename: 'distributions.html#dice-lab' });
+  if (!els['dice-stats'] || !els['dice-stats'].innerHTML) throw new Error('the readout row stayed empty');
+
+  const seg = (id, attr, val) =>
+    els[id].fire('click', { target: { closest: () => ({ getAttribute: () => String(val) }) } });
+  return function read(mode, n, s) {
+    seg('seg-mode', 'data-m', mode);
+    if (s) seg('seg-sides', 'data-s', s);
+    if (n) { els['d-n'].value = String(n); els['d-n'].fire('input', {}); }
+    const vals = [...els['dice-stats'].innerHTML.matchAll(/class="v"[^>]*>([^<]*)</g)].map(m => m[1]);
+    if (vals.length !== 5) throw new Error('expected 5 readouts, found ' + vals.length);
+    return { top: vals[0], chance: vals[1], mean: parseFloat(vals[2]), sd: parseFloat(vals[3]),
+             total: Number(vals[4].replace(/,/g, '')) };
+  };
+}
+
+try {
+  const read = driveDiceLab();
+  const cases = [
+    ['sum', 2, 6, '7', '6/36 (16.7%)'],
+    ['sum', 3, 6, '10 or 11', '27/216 (12.5%)'],
+    ['sum', 5, 6, '17 or 18', null],
+    ['sum', 1, 6, 'all equal', '1/6 (16.7%)'],
+    ['diff', null, 6, '0', '6/36 (16.7%)'],
+    ['max', 2, 20, '20', '39/400 (9.8%)'],
+    ['min', 2, 20, '1', '39/400 (9.8%)'],
+    ['sich', null, null, '7', '6/36 (16.7%)']
+  ];
+  for (const [mode, n, s, top, chance] of cases) {
+    const got = read(mode, n, s);
+    const want = diceMoments(diceCounts(mode, n || 2, s || 6));
+    const tag = `${mode} ${n || 2}d${s || 6}`;
+    // the page prints 2 dp, so half a printed unit is the tolerance (plus float slack:
+    // E[max of 2d20] is exactly 13.825 and toFixed lands on 13.82)
+    eq(`page ${tag}: mean matches the exact counts`, got.mean, want.mean, 5.1e-3, 'section 8 above');
+    eq(`page ${tag}: SD matches the exact counts`, got.sd, want.sd, 5.1e-3, 'section 8 above');
+    eq(`page ${tag}: rolls counted`, got.total, diceCounts(mode, n || 2, s || 6).total, 0, 'section 8 above');
+    if (got.top !== top) failures.push({ section, label: `page ${tag}: most likely outcome`, got: got.top, want: top, tol: 0, err: NaN, src: 'section 8 above' });
+    else passed++;
+    if (chance !== null) {
+      if (got.chance !== chance) failures.push({ section, label: `page ${tag}: printed probability`, got: got.chance, want: chance, tol: 0, err: NaN, src: 'section 8 above' });
+      else passed++;
+    }
+  }
+} catch (e) {
+  failures.push({ section, label: 'the dice lab could not be driven — ids or structure changed?',
+    got: String(e.message), want: 'a runnable #dice-canvas script printing 5 readouts', tol: 0, err: NaN,
+    src: 'distributions.html' });
+}
 
 /* ============================================================
    Report

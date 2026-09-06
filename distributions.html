@@ -15,8 +15,9 @@
   </script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="format-detection" content="telephone=no" />
   <title>Distribution Playground — See Every Probability Distribution Move — StatsCapybara</title>
-  <meta name="description" content="An interactive distribution explorer: drag the parameters of the normal, t, chi-square, F, binomial and more, and watch the shape respond live." />
+  <meta name="description" content="An interactive distribution explorer: drag the parameters of the normal, t, chi-square, F and binomial, then add up dice to turn a flat uniform into a bell." />
   <link rel="canonical" href="https://statscapybara.com/distributions.html" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Distribution Playground — StatsCapybara" />
@@ -72,6 +73,39 @@
           <li><strong>Beta as belief:</strong> Beta(2, 5) says "probably a low proportion"; Beta(20, 50) says the same thing with confidence. This is exactly how Bayesian updating sharpens a prior. (<a href="stats-3/bayesian-thinking/">lesson</a>)</li>
           <li>Poisson's variance equals its mean, so the spread grows with λ. When real count data spread more than that, you've met <strong>overdispersion</strong>. (<a href="stats-3/generalized-linear-models/">lesson</a>)</li>
         </ul>
+
+        <h2 id="dice">Add two dice and you get a triangle</h2>
+        <p>One die is the uniform distribution in its purest form: six faces, six probabilities of 1/6, a plot as flat as a table. Roll two and add them, and the flatness is gone. There is one way to total 2 and there are six ways to total 7, so the 36 equally likely rolls pile up in the middle. That shape has a name. It is the <strong>triangular distribution</strong>, which is what you always get from the sum of two independent uniforms, and it is the reason a 7 turns up six times as often as a 12 in every board game you have ever lost. Keep adding dice and the straight sides begin to curve.</p>
+
+        <div class="viz" id="dice-lab">
+          <p class="viz-title">🎲 Sums, differences and best-of rolls</p>
+          <p class="viz-sub">Every bar is an exact probability, counted from all the equally likely rolls rather than simulated. The dashed orange line marks the mean. Turn on the overlay to compare the bars with a normal curve of the same mean and spread.</p>
+
+          <div class="controls">
+            <div class="control"><label>What you record</label>
+              <span class="seg" id="seg-mode" style="flex-wrap:wrap"></span>
+            </div>
+            <div class="control" id="dctl-n"><label>How many dice <span class="val" id="v-dn">2</span></label>
+              <input type="range" id="d-n" min="1" max="6" step="1" value="2" />
+            </div>
+            <div class="control" id="dctl-s"><label>Sides per die</label>
+              <span class="seg" id="seg-sides"></span>
+            </div>
+            <div class="control"><label>&nbsp;</label><label style="display:inline-flex;align-items:center;gap:.4rem;font-size:.82rem;cursor:pointer">
+              <input type="checkbox" id="d-overlay" style="accent-color:var(--secondary)" /> normal overlay</label>
+            </div>
+          </div>
+
+          <p class="viz-sub" id="dice-caption" style="margin-bottom:.75rem">Add the dice together. One die is flat, two make a triangle, and by four or five the outline is a bell that nobody assumed.</p>
+          <canvas id="dice-canvas"></canvas>
+          <div class="stat-row" id="dice-stats"></div>
+        </div>
+
+        <p>The other settings are the same counting exercise with a different question. The <em>difference</em> between two dice is triangular as well, centered on zero, which is the shape a null distribution takes when the two things you subtracted really are alike. Recording only the <em>highest</em> of two dice breaks the symmetry: the counts climb 1, 3, 5, 7, 9, 11 out of 36, and the average rises from 3.5 to 4.47, which is why a tabletop game hands you a second die as a reward. Lowest-of-two is its mirror image, at 2.53.</p>
+
+        <p>Two dice have room for a surprise, too. Label one of them 1, 2, 2, 3, 3, 4 and the other 1, 3, 4, 5, 6, 8, and the totals follow exactly the same triangle as an ordinary pair. Those are the Sicherman dice, and they are the only other way to do it with positive whole numbers. Flattening the triangle, on the other hand, cannot be done at all: no weighting of two six-sided dice makes the eleven totals equally likely, because the chance of a 7 is always at least twice the square root of P(2) × P(12), and equal totals would need it to be twice its own size.</p>
+
+        <p>None of this is really about dice. Adding independent random quantities blends their distributions, and a few rounds of blending pull the result toward the normal curve whatever the ingredients looked like. That is the <a href="stats-1/central-limit-theorem/">Central Limit Theorem</a> demonstrated on the smallest dataset there is, and it explains why so many named distributions are sums underneath: the <a href="stats-1/binomial-distribution/">binomial</a> counts coin flips, chi-square adds up squared z-scores, and the <a href="stats-1/sampling-distributions/">sampling distribution</a> of a mean is a sum with a division at the end. Switch the playground above to Binomial with the overlay on and you are watching the same machinery run on different parts.</p>
 
         <div class="callout key">
           <p><strong>Need probabilities, not shapes?</strong> The <a href="tables.html">tables &amp; calculators page</a> turns any z, t, χ², or F statistic into an exact p-value or critical value.</p>
@@ -332,6 +366,248 @@
     if (window.ResizeObserver) new ResizeObserver(onResize).observe(canvas);
     V.onTheme(draw);
     renderSeg(); renderParams(); update();
+  })();
+  </script>
+
+  <!-- ============ dice lab ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var V = window.VIZ;
+    var canvas = document.getElementById("dice-canvas");
+    var el = function (id) { return document.getElementById(id); };
+
+    /* The two dice that share the ordinary pair's sum distribution. */
+    var SICHERMAN = [[1, 2, 2, 3, 3, 4], [1, 3, 4, 5, 6, 8]];
+
+    var MODES = {
+      sum: { name: "Sum", dice: true, sides: true, unit: "total",
+        caption: "Add the dice together. One die is flat, two make a triangle, and by four or five the outline is a bell that nobody assumed." },
+      diff: { name: "Difference", dice: false, sides: true, unit: "difference",
+        caption: "Second die subtracted from the first, always two dice. Triangular again, this time centered on zero." },
+      max: { name: "Highest", dice: true, sides: true, unit: "highest die",
+        caption: "Roll them all and keep the highest face. The bars climb, and the average beats what one die can offer." },
+      min: { name: "Lowest", dice: true, sides: true, unit: "lowest die",
+        caption: "Keep the lowest face instead. The mirror image of the highest." },
+      sich: { name: "Sicherman", dice: false, sides: false, unit: "total",
+        caption: "Two unusual dice, faces 1, 2, 2, 3, 3, 4 and 1, 3, 4, 5, 6, 8. Their totals match an ordinary pair exactly." }
+    };
+    var ORDER = ["sum", "diff", "max", "min", "sich"];
+    var SIDES = [4, 6, 8, 10, 12, 20];
+    var mode = "sum", nDice = 2, sides = 6, overlay = false;
+
+    /* ---- exact distributions (counts, never simulation) ---- */
+    function convolve(a, b) {                       // sums of two arbitrary face lists
+      var bag = {}, i, j, s;
+      for (i = 0; i < a.length; i++) for (j = 0; j < b.length; j++) {
+        s = a[i] + b[j]; bag[s] = (bag[s] || 0) + 1;
+      }
+      var keys = Object.keys(bag).map(Number).sort(function (x, y) { return x - y; });
+      var lo = keys[0], hi = keys[keys.length - 1], counts = [];
+      for (s = lo; s <= hi; s++) counts.push(bag[s] || 0);
+      return { lo: lo, counts: counts, total: a.length * b.length };
+    }
+    function dist() {
+      var counts = [], k, j, f, i;
+      if (mode === "sich") return convolve(SICHERMAN[0], SICHERMAN[1]);
+      if (mode === "diff") {                        // first die minus second
+        for (k = -(sides - 1); k <= sides - 1; k++) counts.push(sides - Math.abs(k));
+        return { lo: -(sides - 1), counts: counts, total: sides * sides };
+      }
+      var total = Math.pow(sides, nDice);
+      if (mode === "sum") {                         // repeated convolution with one die
+        counts = [1];
+        for (i = 0; i < nDice; i++) {
+          var next = new Array(counts.length + sides - 1);
+          for (k = 0; k < next.length; k++) next[k] = 0;
+          for (j = 0; j < counts.length; j++) for (f = 0; f < sides; f++) next[j + f] += counts[j];
+          counts = next;
+        }
+        return { lo: nDice, counts: counts, total: total };
+      }
+      for (k = 1; k <= sides; k++) {                // highest / lowest of nDice
+        counts.push(mode === "max" ? Math.pow(k, nDice) - Math.pow(k - 1, nDice)
+                                   : Math.pow(sides - k + 1, nDice) - Math.pow(sides - k, nDice));
+      }
+      return { lo: 1, counts: counts, total: total };
+    }
+    function moments(d) {
+      var i, x, m = 0, v = 0;
+      for (i = 0; i < d.counts.length; i++) m += (d.lo + i) * d.counts[i] / d.total;
+      for (i = 0; i < d.counts.length; i++) { x = d.lo + i - m; v += x * x * d.counts[i] / d.total; }
+      return { mean: m, sd: Math.sqrt(v) };
+    }
+    /* The (first, second) rolls behind one outcome — only used to draw pips. */
+    function pairs(outcome) {
+      var out = [], a, b;
+      for (a = 1; a <= sides; a++) {
+        b = mode === "sum" ? outcome - a : a - outcome;
+        if (b >= 1 && b <= sides) out.push([a, b]);
+      }
+      return out;
+    }
+
+    /* ---- controls ---- */
+    function renderSegs() {
+      el("seg-mode").innerHTML = ORDER.map(function (k) {
+        return '<button data-m="' + k + '" class="' + (k === mode ? "active" : "") + '">' + MODES[k].name + '</button>';
+      }).join("");
+      el("seg-sides").innerHTML = SIDES.map(function (s) {
+        return '<button data-s="' + s + '" class="' + (s === sides ? "active" : "") + '">' + s + '</button>';
+      }).join("");
+      el("dctl-n").style.display = MODES[mode].dice ? "" : "none";
+      el("dctl-s").style.display = MODES[mode].sides ? "" : "none";
+      el("dice-caption").textContent = MODES[mode].caption;
+    }
+    function fmt(x) { var s = x.toFixed(2); return s === "-0.00" ? "0.00" : s; }
+    function commas(x) { return String(x).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+
+    /* ---- readouts ---- */
+    function renderStats() {
+      var d = dist(), mo = moments(d), i;
+      var best = 0, ties = [];
+      for (i = 0; i < d.counts.length; i++) if (d.counts[i] > best) best = d.counts[i];
+      for (i = 0; i < d.counts.length; i++) if (d.counts[i] === best) ties.push(d.lo + i);
+      var top = ties.length === d.counts.length ? "all equal"
+        : ties.length <= 2 ? ties.join(" or ") : ties.length + " tie";
+      var pct = (100 * best / d.total).toFixed(1) + "%";
+      var chance = d.total <= 1296 ? best + "/" + d.total + " (" + pct + ")" : pct;
+      el("dice-stats").innerHTML =
+        '<div class="stat"><span class="k">Most likely ' + MODES[mode].unit + '</span><span class="v">' + top + '</span></div>' +
+        '<div class="stat"><span class="k">Its probability</span><span class="v" style="font-size:1rem">' + chance + '</span></div>' +
+        '<div class="stat"><span class="k">Mean</span><span class="v" style="color:#f97316">' + fmt(mo.mean) + '</span></div>' +
+        '<div class="stat"><span class="k">Standard deviation</span><span class="v">' + fmt(mo.sd) + '</span></div>' +
+        '<div class="stat"><span class="k">Equally likely rolls</span><span class="v" style="font-size:1rem">' + commas(d.total) + '</span></div>';
+    }
+
+    /* ---- drawing ---- */
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+    var PIPS = {
+      1: [[.5, .5]], 2: [[.28, .28], [.72, .72]], 3: [[.28, .28], [.5, .5], [.72, .72]],
+      4: [[.28, .28], [.72, .28], [.28, .72], [.72, .72]],
+      5: [[.28, .28], [.72, .28], [.5, .5], [.28, .72], [.72, .72]],
+      6: [[.28, .27], [.72, .27], [.28, .5], [.72, .5], [.28, .73], [.72, .73]]
+    };
+    function die(ctx, x, y, sz, v, face, ink) {
+      roundRect(ctx, x, y, sz, sz, sz * 0.2);
+      ctx.fillStyle = face; ctx.fill();
+      ctx.strokeStyle = ink; ctx.lineWidth = 1; ctx.stroke();
+      ctx.fillStyle = ink;
+      PIPS[v].forEach(function (p) {
+        ctx.beginPath(); ctx.arc(x + p[0] * sz, y + p[1] * sz, Math.max(1, sz * 0.08), 0, 6.284); ctx.fill();
+      });
+    }
+
+    var H = 280;
+    function draw() {
+      var f = V.fit(canvas, H), ctx = f.ctx, W = f.w;
+      ctx.clearRect(0, 0, W, H);
+      var d = dist(), nb = d.counts.length, i;
+      var pad = 14, baseY = H - 26, top = 20;
+      var bw = (W - 2 * pad) / nb;
+      var pmax = 0;
+      for (i = 0; i < nb; i++) pmax = Math.max(pmax, d.counts[i] / d.total);
+      var ymax = pmax * 1.22;
+      var plotH = baseY - top;
+      var xOf = function (v) { return pad + (v - d.lo + 0.5) * bw; };
+      var barH = function (i2) { return d.counts[i2] / d.total / ymax * plotH; };
+      var cellH = plotH / (ymax * d.total);                       // height of one single roll
+      var pipMode = sides === 6 && (mode === "diff" || (mode === "sum" && nDice === 2)) &&
+                    bw >= 40 && cellH >= 16;
+
+      var ink = V.css("--primary"), face = V.css("--surface");
+      ctx.font = "10px " + V.css("--mono"); ctx.textAlign = "center";
+      // counts above the bars, drawn only when every one of them has room
+      var widest = 0, labels = d.total <= 1296;
+      if (labels) {
+        for (i = 0; i < nb; i++) widest = Math.max(widest, ctx.measureText(d.counts[i] + "/" + d.total).width);
+        labels = widest + 8 <= bw;
+      }
+      for (i = 0; i < nb; i++) {
+        var h = barH(i), x = pad + i * bw;
+        if (pipMode) {
+          var ps = pairs(d.lo + i), sz = Math.min(cellH - 5, (bw * 0.76 - 5) / 2);
+          for (var c = 0; c < ps.length; c++) {
+            var cy = baseY - (c + 1) * cellH;
+            ctx.globalAlpha = 0.1; ctx.fillStyle = ink;
+            ctx.fillRect(x + bw * 0.12, cy + 1, bw * 0.76, cellH - 2); ctx.globalAlpha = 1;
+            var dx = x + bw / 2 - sz - 1.5, dy = cy + (cellH - sz) / 2;
+            die(ctx, dx, dy, sz, ps[c][0], face, ink);
+            die(ctx, dx + sz + 3, dy, sz, ps[c][1], face, ink);
+          }
+        } else {
+          ctx.globalAlpha = 0.75; ctx.fillStyle = ink;
+          ctx.fillRect(x + bw * 0.12, baseY - h, bw * 0.76, h);
+          ctx.globalAlpha = 1;
+        }
+        if (labels) {
+          ctx.fillStyle = V.css("--text-faint");
+          ctx.fillText(d.counts[i] + "/" + d.total, x + bw / 2, baseY - h - 5);
+        }
+      }
+
+      // normal curve of the same mean and SD
+      var mo = moments(d);
+      if (overlay) {
+        ctx.beginPath();
+        for (var j = 0; j <= 300; j++) {
+          var xv = d.lo - 0.5 + nb * j / 300;
+          var y = baseY - V.normPdf(xv, mo.mean, mo.sd) / ymax * plotH;
+          if (j === 0) ctx.moveTo(xOf(xv), y); else ctx.lineTo(xOf(xv), y);
+        }
+        ctx.strokeStyle = V.css("--secondary"); ctx.lineWidth = 2;
+        ctx.setLineDash([6, 4]); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = V.css("--secondary"); ctx.font = "11px " + V.css("--font");
+        ctx.textAlign = "right"; ctx.fillText("normal curve, same mean and SD", W - pad - 4, top - 6);
+      }
+
+      // baseline and outcome labels
+      ctx.strokeStyle = V.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(pad, baseY + 0.5); ctx.lineTo(W - pad, baseY + 0.5); ctx.stroke();
+      ctx.fillStyle = V.css("--text-faint"); ctx.font = "11px " + V.css("--mono"); ctx.textAlign = "center";
+      var every = Math.ceil(nb / Math.max(1, Math.floor((W - 2 * pad) / 34))), lastX = -1e9;
+      for (i = 0; i < nb; i++) {
+        if (i % every !== 0 && i !== nb - 1) continue;
+        var tx = xOf(d.lo + i);
+        if (tx - lastX < 30) continue;
+        ctx.fillText(String(d.lo + i), tx, baseY + 16);
+        lastX = tx;
+      }
+
+      // mean
+      ctx.strokeStyle = "#f97316"; ctx.setLineDash([4, 4]); ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(xOf(mo.mean), top); ctx.lineTo(xOf(mo.mean), baseY); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = "#f97316"; ctx.font = "bold 12px " + V.css("--mono");
+      ctx.fillText("mean " + fmt(mo.mean), Math.min(Math.max(xOf(mo.mean), pad + 34), W - pad - 34), top - 6);
+    }
+
+    function update() { renderStats(); draw(); }
+
+    el("seg-mode").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      mode = b.getAttribute("data-m"); renderSegs(); update();
+    });
+    el("seg-sides").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      sides = +b.getAttribute("data-s"); renderSegs(); update();
+    });
+    el("d-n").addEventListener("input", function () {
+      nDice = +el("d-n").value; el("v-dn").textContent = nDice; update();
+    });
+    el("d-overlay").addEventListener("change", function () { overlay = el("d-overlay").checked; update(); });
+
+    var onResize = V.rafThrottle(draw);
+    window.addEventListener("resize", onResize);
+    if (window.ResizeObserver) new ResizeObserver(onResize).observe(canvas);
+    V.onTheme(draw);
+    renderSegs(); update();
   })();
   </script>
 </body>
