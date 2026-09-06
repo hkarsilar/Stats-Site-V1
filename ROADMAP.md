@@ -535,7 +535,7 @@ Tick these as sessions complete them (each prompt ends by updating this list).
   - **Note for future readers:** entries above this one cite pre-restructure paths and section numbers. `CLAUDE.md`, `AGENTS.md` and the `tools/*.js` headers were updated to current paths; this file and `PROMPTS.md` were deliberately left as the historical record.
 - [ ] P79 · Stats 1 wk 1 — textbook quartiles switch, five-number step-through, `?data=` URLs, lecture dataset, SPSS for §1.2–1.5 (Powerful · Extra)
 - [ ] P80 · Stats 1 wk 1–2 — printed Tables A/D/F + look-it-up drill in tables.html, the three table moves in §1.5 (Powerful · Extra)
-- [ ] P81 · Stats 1 wk 2 — the probability lecture: general rules, conditional, Bayes + base-rate tree; random variables before the binomial (Extra Powerful · Max)
+- [x] P81 · Stats 1 wk 2 — the probability lecture: general rules, conditional, Bayes + base-rate tree; random variables before the binomial (Extra Powerful · Max)
 - [ ] P82 · Stats 1 wk 3–4 — σ-known z-interval + z-test, tails from wording, practical significance, absence of evidence, Two Curves power viz, formula-sheet rows (Extra Powerful · Max)
 - [ ] P83 · Stats 1 wk 4–5 — t procedures the exam way: SE, t CI, robustness rule, Gosset; three dfs + two-sample CI + overlapping-intervals viz (Extra Powerful · Max)
 - [ ] P84 · Stats 1 wk 6 — textbook conditions for proportions; Build-a-Table r × c χ² explorer with components, Table-F reading, `?t=` (Extra Powerful · Max)

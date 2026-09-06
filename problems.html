@@ -137,7 +137,7 @@
         </div>
 
         <ul class="pb-index">
-          <li><a href="#stats-1"><span class="t">📊 Stats 1 · Foundations</span><br><span class="m">12 problems · data types → t-tests</span></a></li>
+          <li><a href="#stats-1"><span class="t">📊 Stats 1 · Foundations</span><br><span class="m">15 problems · data types → probability → t-tests</span></a></li>
           <li><a href="#stats-2"><span class="t">🔗 Stats 2 · Groups &amp; relationships</span><br><span class="m">10 problems · ANOVA → regression</span></a></li>
           <li><a href="#regression"><span class="t">📐 Regression · Several predictors</span><br><span class="m">8 problems · multiple regression → missing data</span></a></li>
           <li><a href="#advanced"><span class="t">🎲 Advanced · Modern methods</span><br><span class="m">7 problems · Bayes → model comparison</span></a></li>
@@ -149,7 +149,7 @@
              ================================================================== -->
         <section class="pb-set" id="stats-1-set">
           <h2 id="stats-1">📊 Stats 1 · Foundations</h2>
-          <p class="pb-set-sub">Twelve problems tracking the <a href="stats-1/">Stats 1 syllabus</a>: what kind of data you have, how to describe it, how far a score sits from average, and how a sample mean turns into a confidence interval and then a <em>t</em>-test.</p>
+          <p class="pb-set-sub">Fifteen problems tracking the <a href="stats-1/">Stats 1 syllabus</a>: what kind of data you have, how to describe it, how far a score sits from average, how a sample mean turns into a confidence interval and then a <em>t</em>-test, and the probability rules the last three run on.</p>
 
           <!-- ---------- 1.1 ----------
                verify: no arithmetic; classification only.
@@ -772,6 +772,200 @@
               </ol>
               <p class="pb-answer"><em>t</em>(22) = 1.87, <em>p</em> = .075, <em>d</em> = 0.76. Not significant, not "no difference": a large point estimate measured with far too little precision. A replication needs at least 29 per group.</p>
               <p class="pb-ref">From <a href="stats-1/independent-samples-t-test/">§1.14 Independent Samples t-Test</a> and <a href="stats-3/effect-size-and-power/">§3.1 Effect Size &amp; Power</a> · redo the sample size in the <a href="power.html">Power calculator</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 1.13 ----------
+               verify: node -e 'const N=400,S=240,M=180,B=120;
+                 console.log(S/N,M/N,B/N, S/N+M/N-B/N, (S+M-B)/N, (N-(S+M-B))/N, (S-B)/N, (M-B)/N, (S/N)*(M/N), B/S)'
+                 → .60 .45 .30 ; or = .75 (count 300) ; neither .25 (100)
+                   stats only .30 (120) ; methods only .15 (60)
+                   .60×.45 = .27 ≠ .30 → dependent ; P(M|S) = 120/240 = .50
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p1-13"><span class="pb-num">13</span>Two electives, one overlap</h3>
+              <span class="pb-chip warm">Warm-up</span>
+            </div>
+            <p class="pb-scenario">A department checks the records of all 400 final-year students. Two electives are on offer, and a student may take either, both, or neither.</p>
+            <div class="pb-given">
+              <span class="lbl">Given</span>
+              <ul>
+                <li>Took the statistics elective: 240</li>
+                <li>Took the research-methods elective: 180</li>
+                <li>Took both: 120</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Pick one student at random. What is P(statistics or methods)?</li>
+              <li>What is P(neither elective)?</li>
+              <li>How many took statistics but not methods?</li>
+              <li>Are the two electives independent?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The three probabilities you are handed</span>
+                  <span class="pb-math">P(S) = 240 / 400 = .60</span>
+                  <span class="pb-math">P(M) = 180 / 400 = .45</span>
+                  <span class="pb-math">P(S and M) = 120 / 400 = .30</span>
+                </li>
+                <li><span class="pb-lbl">General addition rule</span>
+                  <span class="pb-math">P(S or M) = P(S) + P(M) − P(S and M)</span>
+                  <span class="pb-math">= .60 + .45 − .30 = .75</span>
+                  <span class="pb-note">Adding .60 and .45 gives 1.05, which is already impossible. The 120 students in the overlap were counted inside each total, so exactly one copy of them has to come back out.</span>
+                </li>
+                <li><span class="pb-lbl">Check it by counting people</span>
+                  <span class="pb-math">240 + 180 − 120 = 300 students   →   300 / 400 = .75</span>
+                </li>
+                <li><span class="pb-lbl">Neither, by the complement rule</span>
+                  <span class="pb-math">P(neither) = 1 − P(S or M) = 1 − .75 = .25   →   100 students</span>
+                </li>
+                <li><span class="pb-lbl">Statistics but not methods</span>
+                  <span class="pb-math">240 − 120 = 120 students   →   .30</span>
+                  <span class="pb-note">Methods but not statistics is 180 − 120 = 60, and the four groups 120 + 120 + 60 + 100 rebuild the 400.</span>
+                </li>
+                <li><span class="pb-lbl">Independence check</span>
+                  <span class="pb-math">If independent: P(S and M) = P(S) × P(M) = .60 × .45 = .27</span>
+                  <span class="pb-math">Observed: .30 ≠ .27</span>
+                  <span class="pb-math">P(M | S) = 120 / 240 = .50   against   P(M) = .45</span>
+                  <span class="pb-note">Not independent, though the dependence is mild. Taking statistics lifts the chance of taking methods from .45 to .50, which is a real association and a small one.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">.75, .25, 120 students, and no: .30 against the .27 independence would require. The gap is small, so a formal test would be worth running before making anything of it.</p>
+              <p class="pb-ref">From <a href="stats-1/probability-basics/">§1.7 Probability Basics</a> · the same table shape is tested for independence in <a href="stats-1/chi-square-tests/">§1.16 Chi-Square Tests</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 1.14 ----------
+               verify: node -e 'const n=10000,pv=.02,se=.95,sp=.90;
+                 const ill=n*pv,well=n-ill,tp=ill*se,fn=ill-tp,fp=well*(1-sp),tn=well-fp;
+                 console.log(ill,well,tp,fn,fp,tn,tp+fp,tp/(tp+fp),tn/(tn+fn),(tp+tn)/n)'
+                 → ill 200, well 9800, tp 190, fn 10, fp 980, tn 8820
+                   positives 1170 ; PPV 190/1170 = .162393 → 16.2%
+                   NPV 8820/8830 = .998867 → 99.9% ; accuracy .9010
+                 Bayes: (.02×.95)/(.02×.95 + .98×.10) = .019/.117 = .162393
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p1-14"><span class="pb-num">14</span>The screening letter</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A health service offers a screening test for a condition that 2% of the eligible population has. The test detects 95% of the people who have it, and correctly clears 90% of the people who do not. Ten thousand people are screened. One of them opens a letter saying the result was positive.</p>
+            <div class="pb-given">
+              <span class="lbl">Given</span>
+              <ul>
+                <li>Prevalence: P(ill) = .02</li>
+                <li>Sensitivity: P(positive | ill) = .95</li>
+                <li>Specificity: P(negative | healthy) = .90</li>
+                <li>Cohort: 10,000 people</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Fill in the four leaf counts of the tree.</li>
+              <li>What is P(ill | positive)?</li>
+              <li>What is P(healthy | negative)?</li>
+              <li>The leaflet calls the test "95% accurate". What share of all 10,000 results does it actually get right, and is that the number the letter's reader needs?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Split the cohort by the condition</span>
+                  <span class="pb-math">Ill: 10,000 × .02 = 200</span>
+                  <span class="pb-math">Healthy: 10,000 − 200 = 9,800</span>
+                </li>
+                <li><span class="pb-lbl">Split each branch by the test result</span>
+                  <span class="pb-math">Ill and positive: 200 × .95 = 190</span>
+                  <span class="pb-math">Ill and negative: 200 − 190 = 10</span>
+                  <span class="pb-math">Healthy and positive: 9,800 × .10 = 980</span>
+                  <span class="pb-math">Healthy and negative: 9,800 − 980 = 8,820</span>
+                  <span class="pb-note">The four leaves add back to 10,000, which is the arithmetic check worth doing every time.</span>
+                </li>
+                <li><span class="pb-lbl">P(ill | positive): condition on the positives</span>
+                  <span class="pb-math">Positives in total: 190 + 980 = 1,170</span>
+                  <span class="pb-math">P(ill | positive) = 190 / 1,170 = .162   →   16.2%</span>
+                  <span class="pb-note">The same answer from Bayes' rule, with the law of total probability underneath the line: (.02 × .95) / (.02 × .95 + .98 × .10) = .019 / .117 = .162.</span>
+                </li>
+                <li><span class="pb-lbl">P(healthy | negative): condition on the negatives</span>
+                  <span class="pb-math">Negatives in total: 10 + 8,820 = 8,830</span>
+                  <span class="pb-math">P(healthy | negative) = 8,820 / 8,830 = .9989   →   99.9%</span>
+                  <span class="pb-note">A negative result here is close to conclusive, while a positive one is mostly a false alarm. The same test does two very different jobs depending on which way it points.</span>
+                </li>
+                <li><span class="pb-lbl">What "accurate" means, and what it hides</span>
+                  <span class="pb-math">Correct results: 190 + 8,820 = 9,010   →   9,010 / 10,000 = 90.1%</span>
+                  <span class="pb-note">The 95% in the leaflet is the sensitivity, P(positive | ill), which describes the test's behavior on people already known to be ill. The reader of the letter is in the opposite position and needs P(ill | positive), which is 16.2%. Overall accuracy, 90.1% here, is a third number again, and it is flattered by the 8,820 healthy people the test clears without effort.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">190 / 10 / 980 / 8,820. P(ill | positive) = 16.2%, P(healthy | negative) = 99.9%, overall accuracy 90.1%. Roughly five out of six positive letters go to someone who does not have the condition, which is why a positive screen is normally followed by a second, more specific test rather than a diagnosis.</p>
+              <p class="pb-ref">From <a href="stats-1/probability-basics/">§1.7 Probability Basics</a> · rebuild the tree with the sliders in that lesson's <a href="stats-1/probability-basics/?prev=0.02&amp;sens=0.95&amp;spec=0.90">Base-Rate Tree</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 1.15 ----------
+               verify: node -e 'const xs=[0,1,2,3,4],ps=[.10,.25,.35,.20,.10];
+                 let mu=0,ex2=0,v=0; xs.forEach((x,i)=>{mu+=x*ps[i];ex2+=x*x*ps[i]});
+                 xs.forEach((x,i)=>v+=(x-mu)**2*ps[i]);
+                 console.log(ps.reduce((a,b)=>a+b), mu, ex2, v, ex2-mu*mu, Math.sqrt(v))'
+                 → Σp = 1 ; μ = 1.95 ; E[X²] = 5.05 ; σ² = 1.2475 both ways ; σ = 1.1169
+                   P(X ≥ 2) = .35 + .20 + .10 = .65
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p1-15"><span class="pb-num">15</span>Bikes back at the dock</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A bike-share operator records <em>X</em>, the number of bikes returned to one quiet dock in an hour, over a long stretch of weekday mornings. The relative frequencies settle down into the distribution below.</p>
+            <div class="pb-given">
+              <span class="lbl">The distribution of X</span>
+              <table class="ref-table">
+                <thead><tr><th><em>x</em></th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th></tr></thead>
+                <tbody>
+                  <tr><td>P(<em>X</em> = <em>x</em>)</td><td>.10</td><td>.25</td><td>.35</td><td>.20</td><td>.10</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <ol class="pb-ask">
+              <li>Show that this is a legitimate probability distribution.</li>
+              <li>Find the mean μ.</li>
+              <li>Find the variance and standard deviation, by the definition and by the shortcut.</li>
+              <li>What is P(<em>X</em> ≥ 2)?</li>
+              <li>Would μ = <em>np</em> have given the mean more quickly?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Two conditions to check</span>
+                  <span class="pb-math">Every P(<em>X</em> = <em>x</em>) lies between 0 and 1 ✓</span>
+                  <span class="pb-math">.10 + .25 + .35 + .20 + .10 = 1.00 ✓</span>
+                </li>
+                <li><span class="pb-lbl">Mean: μ = Σ x · p</span>
+                  <span class="pb-math">0(.10) + 1(.25) + 2(.35) + 3(.20) + 4(.10)</span>
+                  <span class="pb-math">= 0 + .25 + .70 + .60 + .40 = 1.95 bikes</span>
+                  <span class="pb-note">The mean of a random variable need not be a value the variable can take. No hour ever sees 1.95 bikes returned.</span>
+                </li>
+                <li><span class="pb-lbl">Variance by the definition: σ² = Σ (x − μ)² · p</span>
+                  <span class="pb-math">(0−1.95)²(.10) = 3.8025 × .10 = .380250</span>
+                  <span class="pb-math">(1−1.95)²(.25) = 0.9025 × .25 = .225625</span>
+                  <span class="pb-math">(2−1.95)²(.35) = 0.0025 × .35 = .000875</span>
+                  <span class="pb-math">(3−1.95)²(.20) = 1.1025 × .20 = .220500</span>
+                  <span class="pb-math">(4−1.95)²(.10) = 4.2025 × .10 = .420250</span>
+                  <span class="pb-math">σ² = 1.2475</span>
+                </li>
+                <li><span class="pb-lbl">Variance by the shortcut: σ² = E(X²) − μ²</span>
+                  <span class="pb-math">E(<em>X</em>²) = 0(.10) + 1(.25) + 4(.35) + 9(.20) + 16(.10) = 5.05</span>
+                  <span class="pb-math">σ² = 5.05 − 1.95² = 5.05 − 3.8025 = 1.2475 ✓</span>
+                  <span class="pb-math">σ = √1.2475 = 1.117 bikes</span>
+                  <span class="pb-note">The two routes must agree exactly, and the second is far less error-prone on a calculator, because it never subtracts the mean five separate times.</span>
+                </li>
+                <li><span class="pb-lbl">A tail probability is a sum over the table</span>
+                  <span class="pb-math">P(<em>X</em> ≥ 2) = .35 + .20 + .10 = .65</span>
+                </li>
+                <li><span class="pb-lbl">Why the binomial shortcut does not apply</span>
+                  <span class="pb-note">μ = <em>np</em> and σ = √(<em>np</em>(1 − <em>p</em>)) belong to a binomial count, which needs a fixed number of independent trials each carrying the same success probability. Nothing here supplies an <em>n</em> or a <em>p</em>: the table was measured, not derived from trials. So the general formulas are the only route. Read the other way, the binomial shortcut is what you get when you run these same sums on a distribution that <em>does</em> have that structure.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Valid distribution; μ = 1.95, σ² = 1.2475, σ = 1.117, P(<em>X</em> ≥ 2) = .65. The binomial shortcut needs a fixed <em>n</em> and a constant <em>p</em>, and this distribution has neither.</p>
+              <p class="pb-ref">From <a href="stats-1/binomial-distribution/">§1.8 The Binomial Distribution</a> · the same two sums, run on a binomial, give <em>np</em> and √(<em>np</em>(1 − <em>p</em>)).</p>
             </details>
           </article>
         </section>
