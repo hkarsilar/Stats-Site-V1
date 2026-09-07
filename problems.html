@@ -16,16 +16,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Practice Problems — Worked Statistics Exam Questions — StatsCapybara</title>
-  <meta name="description" content="Forty-seven statistics problems with fully worked solutions: z-scores, t-tests, ANOVA, regression, Bayes and survival analysis, one step at a time." />
+  <meta name="description" content="Forty-nine statistics problems with fully worked solutions: z-scores, t-tests, ANOVA, regression, Bayes and survival analysis, one step at a time." />
   <link rel="canonical" href="https://statscapybara.com/problems.html" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Practice Problems — StatsCapybara" />
-  <meta property="og:description" content="Forty-seven worked statistics problems, from z-scores to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
+  <meta property="og:description" content="Forty-nine worked statistics problems, from z-scores to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
   <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
   <meta property="og:url" content="https://statscapybara.com/problems.html" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Practice Problems — StatsCapybara" />
-  <meta name="twitter:description" content="Forty-seven worked statistics problems, from z-scores to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
+  <meta name="twitter:description" content="Forty-nine worked statistics problems, from z-scores to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="assets/css/styles.css" />
@@ -137,7 +137,7 @@
         </div>
 
         <ul class="pb-index">
-          <li><a href="#stats-1"><span class="t">📊 Stats 1 · Foundations</span><br><span class="m">16 problems · data types → probability → t-tests</span></a></li>
+          <li><a href="#stats-1"><span class="t">📊 Stats 1 · Foundations</span><br><span class="m">18 problems · data types → probability → z and t tests</span></a></li>
           <li><a href="#stats-2"><span class="t">🔗 Stats 2 · Groups &amp; relationships</span><br><span class="m">10 problems · ANOVA → regression</span></a></li>
           <li><a href="#regression"><span class="t">📐 Regression · Several predictors</span><br><span class="m">8 problems · multiple regression → missing data</span></a></li>
           <li><a href="#advanced"><span class="t">🎲 Advanced · Modern methods</span><br><span class="m">7 problems · Bayes → model comparison</span></a></li>
@@ -149,7 +149,7 @@
              ================================================================== -->
         <section class="pb-set" id="stats-1-set">
           <h2 id="stats-1">📊 Stats 1 · Foundations</h2>
-          <p class="pb-set-sub">Sixteen problems tracking the <a href="stats-1/">Stats 1 syllabus</a>: what kind of data you have, how to describe it, how far a score sits from average, how a sample mean turns into a confidence interval and then a <em>t</em>-test, and the probability rules the last three run on.</p>
+          <p class="pb-set-sub">Eighteen problems tracking the <a href="stats-1/">Stats 1 syllabus</a>: what kind of data you have, how to describe it, how far a score sits from average, how a sample mean turns into a confidence interval and then a <em>z</em>-test or a <em>t</em>-test, and the probability rules that three of them run on.</p>
 
           <!-- ---------- 1.1 ----------
                verify: no arithmetic; classification only.
@@ -1036,6 +1036,118 @@
               <p class="pb-answer">Five-number summary 3, 9, 14, 19, 41. Fences at −6 and 34, so the 41 is the single flagged time. Box 9 to 19 with the median at 14, whiskers to 3 and 24, and 41 as a separate point. R's quartiles (9.5 and 18.5) move the fences to −4 and 32 and flag the same value.</p>
               <p class="pb-round">Rounding: none needed. Every quartile here lands on a data value or halfway between two, so the arithmetic is exact.</p>
               <p class="pb-ref">From <a href="stats-1/describing-data/">§1.3 Describing Data</a> and <a href="stats-1/visualizing-data/">§1.4 Visualizing Data</a> · check it in the <a href="descriptives.html?quart=textbook&amp;data=3,6,7,9,10,12,12,14,15,16,18,19,21,24,41">Descriptives calculator, prefilled</a>, where the Quartiles switch turns the textbook answer into R's.</p>
+            </details>
+          </article>
+
+          <!-- Problem 17 verified with node -e (VIZ loaded in a vm context):
+                 SE = 4/√9 = 1.333333
+                 95%: m = 1.960 × 1.333333 = 2.613333 → [135.3867, 140.6133]
+                 99%: m = 2.576 × 1.333333 = 3.434667 → [134.5653, 141.4347]
+                 widths 5.2267 vs 6.8693, ratio 2.576/1.960 = 1.3143 (31% wider)
+                 n for m ≤ 1.5: (1.960 × 4 / 1.5)² = 27.3180 → 28
+                 check: n = 27 gives m = 1.5088 (too wide); n = 28 gives m = 1.4816
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p1-17"><span class="pb-num">17</span>Nine readings, one blood pressure</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A clinic's automatic monitor comes with a calibration certificate: repeated readings on the same person vary with a standard deviation of 4 mmHg, and that figure is treated as known. A patient is measured nine times in one sitting and the readings average 138 mmHg.</p>
+            <div class="pb-given">
+              <span class="lbl">Known σ, sample size, sample mean</span>
+              σ = 4 mmHg · n = 9 · x̄ = 138 mmHg
+            </div>
+            <ol class="pb-ask">
+              <li>Give the standard error and the 95% z-interval for this patient's true mean pressure.</li>
+              <li>Rebuild it at 99% confidence. How much wider is it, and what bought the extra width?</li>
+              <li>The clinic wants a 95% margin of error no larger than 1.5 mmHg. How many readings does that take?</li>
+              <li>A colleague reads the 95% interval as "a 95% probability the true mean lies between those two numbers". Say what is wrong with that sentence.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Standard error, then the margin</span>
+                  <span class="pb-note">σ is known, so this is a z-interval and nothing is estimated in the denominator.</span>
+                  <span class="pb-math">SE = σ/√n = 4/√9 = 4/3 = 1.3333 mmHg</span>
+                  <span class="pb-math">m = z* × SE = 1.960 × 1.3333 = 2.6133 mmHg</span>
+                </li>
+                <li><span class="pb-lbl">The 95% interval</span>
+                  <span class="pb-math">138 ± 2.6133 = [135.39, 140.61] mmHg</span>
+                </li>
+                <li><span class="pb-lbl">The same data at 99%</span>
+                  <span class="pb-math">m = 2.576 × 1.3333 = 3.4347 mmHg</span>
+                  <span class="pb-math">138 ± 3.4347 = [134.57, 141.43] mmHg</span>
+                  <span class="pb-note">The width goes from 5.23 to 6.87 mmHg, about 31% wider, which is exactly the ratio 2.576/1.960. Nothing about the data changed. The extra width is the price of a procedure that misses one time in a hundred instead of one time in twenty.</span>
+                </li>
+                <li><span class="pb-lbl">How many readings for m ≤ 1.5</span>
+                  <span class="pb-note">Rearrange m = z*σ/√n for n.</span>
+                  <span class="pb-math">n = (z*σ/m)² = (1.960 × 4 / 1.5)² = 5.2267² = 27.32</span>
+                  <span class="pb-math">Round up: n = 28 readings</span>
+                  <span class="pb-note">The rounding direction is worth a mark on its own. With 27 readings the margin comes out at 1.5088, which is over the limit; with 28 it is 1.4816. Rounding down breaks the promise the clinic just made.</span>
+                </li>
+                <li><span class="pb-lbl">What the interval does not say</span>
+                  <span class="pb-note">The true mean is a fixed number, not a random one. This particular interval either contains it or it does not, and no probability attaches to that fact once the data are in. The 95% belongs to the procedure: build intervals this way forever and 95% of them capture the truth. Read the number as a statement about the method, and the sentence becomes true.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">SE = 1.3333 mmHg. The 95% interval is 138 ± 2.61 = [135.39, 140.61] and the 99% interval is 138 ± 3.43 = [134.57, 141.43], about 31% wider. A margin of 1.5 mmHg needs n = 28 readings. The "95% probability" reading is wrong because confidence describes the long-run behavior of the procedure, not any one interval.</p>
+              <p class="pb-round">Rounding: z* values taken as the printed 1.960 and 2.576. Intervals given to 2 dp; the sample size is always rounded up.</p>
+              <p class="pb-ref">From <a href="stats-1/confidence-intervals/">§1.11 Confidence Intervals</a> · watch it assemble in the <a href="stats-1/confidence-intervals/?xbar=138&amp;sigma=4&amp;n=9&amp;level=95">Interval Builder, prefilled</a>, and read z* off the printed <a href="tables.html#printed-tables">Table D</a>.</p>
+            </details>
+          </article>
+
+          <!-- Problem 18 verified with node -e (VIZ loaded in a vm context):
+                 SE = 100/√25 = 20 ; z = (1165 − 1200)/20 = −1.75
+                 one-tailed p = normCdf(−1.75) = 0.040059 (normQ(1.75) agrees)
+                 two-tailed p = 2 × normQ(1.75) = 0.080118
+                 one-tailed criticals: z(.05) = −1.6449, z(.01) = −2.3263
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p1-18"><span class="pb-num">18</span>Bulbs that may be dimmer than promised</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A supplier advertises a mean lifetime of 1,200 hours for its LED bulbs. Years of testing across the industry put the standard deviation at 100 hours, and it is treated as known. A consumer group suspects the bulbs do not last as long as claimed, buys 25 of them and burns them out. The 25 last 1,165 hours on average.</p>
+            <div class="pb-given">
+              <span class="lbl">Claim, known σ, sample</span>
+              μ₀ = 1,200 h · σ = 100 h · n = 25 · x̄ = 1,165 h
+            </div>
+            <ol class="pb-ask">
+              <li>Write H₀ and H₁. The wording decides how many tails; say which words did it.</li>
+              <li>Compute the standard error and the test statistic.</li>
+              <li>Find the p-value and give the decision at α = .05 and at α = .01.</li>
+              <li>A colleague argues the test should have been two-sided. Recompute the p-value that way, and say why the tail cannot be picked after the data arrive.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Hypotheses, from the wording</span>
+                  <span class="pb-math">H₀: μ = 1,200 &nbsp;&nbsp; H₁: μ &lt; 1,200</span>
+                  <span class="pb-note">"Do not last as long as claimed" names a direction, so this is a left-tailed test. Had the group asked whether the advertised figure was simply wrong, H₁ would be μ ≠ 1,200.</span>
+                </li>
+                <li><span class="pb-lbl">Standard error and statistic</span>
+                  <span class="pb-math">SE = σ/√n = 100/√25 = 100/5 = 20 h</span>
+                  <span class="pb-math">z = (x̄ − μ₀)/SE = (1,165 − 1,200)/20 = −35/20 = −1.75</span>
+                </li>
+                <li><span class="pb-lbl">The p-value, left tail</span>
+                  <span class="pb-note">One tail, so read the area below −1.75 straight from Table A.</span>
+                  <span class="pb-math">p = P(Z &lt; −1.75) = .0401</span>
+                </li>
+                <li><span class="pb-lbl">Two decisions, two thresholds</span>
+                  <span class="pb-math">At α = .05: .0401 &lt; .05, so reject H₀</span>
+                  <span class="pb-math">At α = .01: .0401 &gt; .01, so fail to reject H₀</span>
+                  <span class="pb-note">The evidence did not change between those two lines. The same z = −1.75 sits past the .05 cutoff of −1.645 and short of the .01 cutoff of −2.326. This is why α belongs in the write-up: "significant" means nothing without the threshold it was judged against.</span>
+                </li>
+                <li><span class="pb-lbl">The two-sided version</span>
+                  <span class="pb-math">p = 2 × P(Z &lt; −1.75) = 2 × .0401 = .0801</span>
+                  <span class="pb-note">Doubling it pushes the result past .05, so a two-sided test keeps H₀ at both thresholds. That is the whole reason the tail has to be fixed in advance. Choosing it once the sample mean is on the table means always taking the half that helps, which turns a nominal 5% false-alarm rate into a real 10% one.</span>
+                </li>
+                <li><span class="pb-lbl">The sentence to write</span>
+                  <span class="pb-note">At α = .05, one-tailed: the 25 bulbs give evidence that mean lifetime falls short of the advertised 1,200 hours, z = −1.75, p = .040. The shortfall estimated here is 35 hours, which is worth reporting beside the p-value, since a 3% shortfall may or may not matter to a buyer.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">H₀: μ = 1,200 against H₁: μ &lt; 1,200, one-tailed because the group suspected a shortfall. SE = 20, z = −1.75, one-tailed p = .0401: reject at α = .05, fail to reject at α = .01. Two-sided the p-value is .0801, which rejects at neither.</p>
+              <p class="pb-round">Rounding: p-values to 4 dp from Table A; a printed table gives .0401 for z = −1.75 directly.</p>
+              <p class="pb-ref">From <a href="stats-1/hypothesis-testing-logic/">§1.12 Hypothesis Testing Logic</a> · load it into the <a href="stats-1/hypothesis-testing-logic/?mu0=1200&amp;sigma=100&amp;n=25&amp;xbar=1165&amp;tail=left&amp;alpha=.05">explorer, prefilled</a>, or look the area up on the printed <a href="tables.html#printed-tables">Table A</a>.</p>
             </details>
           </article>
         </section>

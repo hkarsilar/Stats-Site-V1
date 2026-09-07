@@ -34,7 +34,7 @@
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Hypothesis Testing Logic", "description": "The logic behind p-values, made visual: assume the null, see how surprising your data is, and decide. Drag the observed statistic to see the p-value move.", "url": "https://statscapybara.com/stats-1/hypothesis-testing-logic/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Introduction to Statistics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Hypothesis Testing Logic", "item": "https://statscapybara.com/stats-1/hypothesis-testing-logic/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What does p < 0.05 actually mean?", "acceptedAnswer": {"@type": "Answer", "text": "It means: if there were truly no effect (H₀ true), data this extreme would occur less than 5% of the time by chance alone. Since that's rare, we treat the result as evidence against H₀. It does not mean there's a 95% chance the effect is real, and it says nothing about how large or important the effect is. That's the job of effect sizes."}}, {"@type": "Question", "name": "Why do we say 'fail to reject' the null instead of 'accept' it?", "acceptedAnswer": {"@type": "Answer", "text": "Because a non-significant result means the evidence wasn't strong enough to rule out chance — not that H₀ is true. Like a courtroom's \"not guilty,\" it reflects insufficient evidence, not established innocence. Small studies fail to reject false nulls all the time simply because they lack power."}}, {"@type": "Question", "name": "Why is the significance level set at 0.05?", "acceptedAnswer": {"@type": "Answer", "text": "Convention, not law of nature. R. A. Fisher suggested in the 1920s that one-in-twenty was a convenient benchmark for \"surprising\" (roughly the chance of landing beyond ±2 SDs), and it stuck. Nothing magical happens between p = .049 and p = .051, which is why fields with different stakes choose differently: particle physics demands \"5 sigma\" (about 1 in 3.5 million), genome-wide studies use 5 × 10⁻⁸, and some journals now suggest .005 for new discoveries. What matters is fixing α before you look at the data, and remembering that crossing it says nothing about how large or important the effect is."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What does p < 0.05 actually mean?", "acceptedAnswer": {"@type": "Answer", "text": "It means: if there were truly no effect (H₀ true), data this extreme would occur less than 5% of the time by chance alone. Since that's rare, we treat the result as evidence against H₀. It does not mean there's a 95% chance the effect is real, and it says nothing about how large or important the effect is. That's the job of effect sizes."}}, {"@type": "Question", "name": "Why learn the z-test when σ is almost never known?", "acceptedAnswer": {"@type": "Answer", "text": "It usually isn't, and §1.13 swaps σ for the sample's own s about a week later. The z version earns its place anyway. It isolates one idea at a time: with σ known, the mean is the only thing being estimated, the sampling distribution is exactly normal, and every step of the logic stays visible without the extra layer that estimating a spread adds. It is also less artificial than it sounds, since a long-running measurement process (a calibrated instrument, an assay a lab has run for years, a standardized test whose SD is published) really does have a spread that is known while its mean is the thing in question. The two procedures then converge as n grows, because a t distribution with many degrees of freedom is the normal distribution. That is why the bottom row of a printed Table D reads 1.645, 1.960 and 2.576, the same three z* values the σ-known interval uses."}}, {"@type": "Question", "name": "Why is the significance level set at 0.05?", "acceptedAnswer": {"@type": "Answer", "text": "Convention, not law of nature. R. A. Fisher suggested in the 1920s that one-in-twenty was a convenient benchmark for \"surprising\" (roughly the chance of landing beyond ±2 SDs), and it stuck. Nothing magical happens between p = .049 and p = .051, which is why fields with different stakes choose differently: particle physics demands \"5 sigma\" (about 1 in 3.5 million), genome-wide studies use 5 × 10⁻⁸, and some journals now suggest .005 for new discoveries. What matters is fixing α before you look at the data, and remembering that crossing it says nothing about how large or important the effect is."}}]}
   </script>
 </head>
 <body data-course="stats-1" data-section="hypothesis-testing-logic">
@@ -57,6 +57,32 @@
           <li><strong>Measure surprise.</strong> Find where your actual result falls on that distribution. The <strong>p-value</strong> is the probability of getting a result <em>this extreme or more</em>, just by chance, if H₀ were true.</li>
           <li><strong>Decide.</strong> If the p-value is below a pre-set threshold <strong>α</strong> (usually 0.05), the result is "too surprising to be chance," so you reject H₀. Otherwise, fail to reject it.</li>
         </ol>
+
+        <h2>Where the statistic comes from</h2>
+        <p>The explorer below starts with a z already in hand, which is the right place for a lesson about the logic. An exam hands you a claim and a sample instead, and the first job is turning those into that single number. When the population standard deviation σ (sigma) is known, the arithmetic is short. Take the gap between what you saw and what the claim predicts, then measure that gap in <a href="../../stats-1/sampling-distributions/">standard errors</a>:</p>
+        <p style="text-align:center;font-size:1.2rem;margin:1.25rem 0"><strong>z&nbsp;=&nbsp;(x̄&nbsp;−&nbsp;μ₀)&nbsp;/&nbsp;(σ/√n)</strong></p>
+        <p>μ₀ (mu-nought) is the value the null hypothesis names, so it is a number you are given rather than one you work out. The denominator is the ordinary sample-to-sample wobble of a mean. Dividing by it gives z a scale that travels: however the measurement was made, z answers "how many standard errors of ordinary wobble away from the claim did this sample land?"</p>
+
+        <div class="viz" id="nzviz">
+          <p class="viz-title">🔢 From numbers to z</p>
+          <p class="viz-sub">The four numbers an exam hands you, turned into the statistic the explorer draws. Edit any of them and the explorer below jumps to the z they produce; the button sends the numbers as they stand.</p>
+
+          <div class="controls">
+            <div class="control"><label>Claimed mean μ₀</label><input type="number" id="nz-mu0" class="num" value="227" step="any" /></div>
+            <div class="control"><label>Known σ</label><input type="number" id="nz-sigma" class="num" value="5" step="any" min="0.01" /></div>
+            <div class="control"><label>Sample size n</label><input type="number" id="nz-n" class="num" value="4" step="1" min="2" max="10000" /></div>
+            <div class="control"><label>Sample mean x̄</label><input type="number" id="nz-xbar" class="num" value="222" step="any" /></div>
+            <div class="control"><button class="btn btn-primary btn-sm" id="nz-send" type="button">Send this z to the explorer ↓</button></div>
+          </div>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Standard error of the mean</span><span class="v" id="nz-se">—</span></div>
+            <div class="stat"><span class="k">Gap from the claim</span><span class="v" id="nz-gap">—</span></div>
+            <div class="stat"><span class="k">Test statistic z</span><span class="v" id="nz-z">—</span></div>
+          </div>
+
+          <p class="viz-sub" id="nz-work" style="margin-top:.7rem"></p>
+        </div>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="htviz">
@@ -105,18 +131,92 @@
           <p><strong>"Fail to reject" is NOT "proven true."</strong> A courtroom's "not guilty" doesn't mean "definitely innocent," only "not enough evidence." Likewise, a non-significant result means we couldn't rule out chance, not that H₀ is correct. (Writing that up honestly, without "trend toward significance," is covered in <a href="../../writing/nonsignificant-results/">Writing About Non-Significant Results</a>.)</p>
         </div>
 
-        <h2>Two ways to be wrong</h2>
-        <ul>
-          <li><strong>Type I error (false positive):</strong> rejecting H₀ when it's actually true. Its rate is exactly α: set α = 0.05 and you'll wrongly "find" an effect 5% of the time by chance.</li>
-          <li><strong>Type II error (false negative):</strong> failing to detect a real effect. Lowering α (demanding stronger evidence) guards against Type I errors but makes Type II errors more likely, a genuine trade-off explored in <a href="../../stats-3/effect-size-and-power/">effect size &amp; power</a>.</li>
-        </ul>
+        <h2>The five steps, in exam order</h2>
+        <p>The four moves above are the logic. On paper, an examiner wants them written in a fixed order with the arithmetic in the middle, and marks are given for the steps rather than the answer:</p>
+        <ol>
+          <li>Write H₀ and H₁ as statements about the population parameter, in symbols, before looking at the data. H₀ names one value; H₁ says what "not that value" means for this question.</li>
+          <li>Fix α. It is a decision about how much risk of a false alarm you will accept, and it belongs here, not after the p-value has appeared.</li>
+          <li>Compute the test statistic, showing the substitution as well as the result.</li>
+          <li>Find the p-value from a table or a calculator, matching the tail or tails to H₁.</li>
+          <li>Compare p with α and write the conclusion in the words of the original question, not as "reject H₀" alone.</li>
+        </ol>
+
+        <div class="callout key">
+          <p><strong>The five steps on a cereal line.</strong> A filling machine is set to 227 g a box, and the factory's records give σ = 5 g. Four boxes off this morning's line average 222 g. (1) H₀: μ = 227 against H₁: μ ≠ 227, since "has the machine drifted" does not say which way. (2) α = .05. (3) z = (222 − 227) / (5/√4) = −5 / 2.5 = −2.00. (4) Two-sided, so p = 2 × P(Z &lt; −2.00) = .0455. (5) Because .0455 is below .05, reject H₀: this morning's boxes are lighter than the machine is meant to make them. At α = .01 the same evidence falls short, and an honest report says which threshold it was judged against. The <a href="../../stats-1/confidence-intervals/">95% interval built from these very numbers</a> came out as [217.1, 226.9], which excludes 227 for exactly the reason the test rejects: at a matching α, a two-sided test and a confidence interval always agree.</p>
+        </div>
+
+        <h2>One tail or two, and where the choice comes from</h2>
+        <p>The explorer's alternative setting is not a matter of taste. The question sets it, and it is set before any data arrive.</p>
+        <p>Wording that names a direction points at one tail: "is the new fertilizer <em>better</em>", "does the drug <em>lower</em> blood pressure", H₁: μ &gt; μ₀ or H₁: μ &lt; μ₀. Wording that only asks whether something has moved points at both: "is the machine off target", "is the printed label <em>incorrect</em>", "do the two groups <em>differ</em>", H₁: μ ≠ μ₀. Two-sided is the cautious default, and it is what software prints unless you ask otherwise.</p>
+        <p>Which one you picked also changes how the p-value is read off a printed table. A left-tailed test reads the area below your z straight from Table A. A right-tailed test reads that area and subtracts it from 1, or equivalently looks up −z and reads the area below that. A two-sided test finds one tail and doubles it.</p>
+        <div class="callout key">
+          <p><strong>Picking the tail after seeing which way the result went is cheating.</strong> It halves the p-value for free and lifts the true false-alarm rate from 5% to 10%, which is why it appears on every list of <a href="../../ethics/questionable-research-practices/">questionable research practices</a>. If the direction was not predicted in advance, the test is two-sided. A one-tailed test is a promise made in advance that a result in the other direction, however large, would have counted as nothing.</p>
+        </div>
+
+        <h2>Significant, and possibly trivial</h2>
+        <p>A small p-value says the data would be surprising if nothing were going on. It says nothing whatever about how much is going on, and sample size drives a wedge between the two questions: with enough data, a difference far too small to care about will clear any threshold you like.</p>
+        <p>Picture a weight-loss app tested on forty thousand users, reporting a mean loss 0.2 kg greater than the control group's at p &lt; .001. The p-value is doing its job and the difference is almost certainly real. It is also a fifth of a kilogram. <strong>Statistical significance</strong> is a claim about evidence; <strong>practical significance</strong> is a claim about size, and only the second one answers "should anyone change what they do?"</p>
+        <p>The habit that keeps them apart is reporting an <a href="../../stats-3/effect-size-and-power/">effect size</a> and a confidence interval beside every p-value, so a reader sees a magnitude with its uncertainty instead of a verdict. When a paper reports a metric you do not think in, the <a href="../../effect-sizes.html">effect-size converter</a> will restate it as one you do.</p>
+
+        <h2>Absence of evidence is not evidence of absence</h2>
+        <p>"Study finds no link between X and Y" is a headline written off a p-value above .05, and it almost always claims more than the study earned. Failing to reject H₀ means the data were compatible with no effect. They were also compatible with a small effect, and frequently with a large one, because a test that fails to reject has not measured anything precisely.</p>
+        <p>The confidence interval is what separates those cases. Around a difference, an interval of [−0.1, +0.2] genuinely does rule out anything big. An interval of [−4.0, +4.5] rules out nothing at all and reports only that the study was too small to tell. Both results are non-significant; only the first one supports the headline.</p>
+        <p>Writing this up without overclaiming in either direction has a lesson of its own, <a href="../../writing/nonsignificant-results/">Writing About Non-Significant Results</a>, which also covers equivalence testing: the procedure to reach for when "no meaningful difference" is the claim you actually want to make, rather than the one you fall back on.</p>
+
+        <h2>Two ways to be wrong, and how often</h2>
+        <p>A test can fail in two directions. A <strong>Type I error</strong> rejects a true H₀, announcing an effect that was never there, and its rate is exactly α. That is why α is the one error rate you choose outright: set it at .05 and you will cry wolf on 5% of the occasions when there is nothing to see. A <strong>Type II error</strong> is the opposite failure, missing an effect that is really present, and its rate is written β (beta). Nobody picks β. It falls out of three things at once: how big the real effect is, how variable the measurement is, and how much data you gathered.</p>
+        <p>What gets quoted is β's complement. The <strong>power</strong> of a test, 1 − β, is the probability of detecting an effect of a stated size when that effect genuinely exists. Both quantities become concrete the moment you draw two sampling distributions on one axis: the one H₀ predicts, and the one the truth would actually produce.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="tcviz">
+          <p class="viz-title">🎮 Two Curves</p>
+          <p class="viz-sub">The left curve is what tray means do if the null is right and the true mean is 22.0 cm. The right curve is what they do if the truth is μ₁ instead. Red slivers are α, split across both tails of the null. The gray block is β, the part of the true distribution that still lands inside the keep-H₀ zone. Everything green is power.</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>True mean μ₁ <span class="val" id="tc-mu1val">22.60</span></label>
+              <input type="range" id="tc-mu1" min="2200" max="2320" step="2" value="2260" />
+            </div>
+            <div class="control">
+              <label>Sample size <span class="val" id="tc-nval">n = 5</span></label>
+              <input type="range" id="tc-n" min="2" max="60" step="1" value="5" />
+            </div>
+            <div class="control">
+              <label>Known σ <span class="val" id="tc-sigmaval">0.50</span></label>
+              <input type="range" id="tc-sigma" min="10" max="150" step="5" value="50" />
+            </div>
+            <div class="control">
+              <label>α (two-sided)</label>
+              <div class="seg" id="tc-alpha">
+                <button data-a="0.10">.10</button>
+                <button data-a="0.05" class="active">.05</button>
+                <button data-a="0.01">.01</button>
+              </div>
+            </div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="tc-reset">Back to the seedlings</button></div>
+          </div>
+
+          <canvas id="tc-canvas" style="--viz-ar: 5 / 2"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Power (1 − beta)</span><span class="v" id="tc-power">—</span></div>
+            <div class="stat"><span class="k">Beta, the miss rate</span><span class="v" id="tc-beta">—</span></div>
+            <div class="stat"><span class="k">Reject outside</span><span class="v" id="tc-crit" style="font-size:1rem">—</span></div>
+            <div class="stat"><span class="k">Effect, in standard errors</span><span class="v" id="tc-eff">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>Walk the seedlings through by hand and the number stops being abstract. A nursery's seedlings have averaged 22.0 cm at four weeks for years, with σ = 0.5 cm. A new light schedule might lift the mean to 22.6. Testing five trays at α = .05, two-sided, the cutoffs sit at 22.0 ± 1.960 × 0.5/√5, which is 22.0 ± 0.438, so the test rejects for a tray mean below 21.562 or above 22.438. If 22.6 really is the new mean, the chance of landing beyond that upper cutoff is <strong>.765</strong>. A power of .765 means a study built this way walks past a real effect roughly one time in four.</p>
+        <p>Every lever in the picture behaves the way intuition says it should once the two curves are visible. More data narrows both of them and pulls the overlap apart. A larger true effect slides them further from each other. A smaller α pushes the cutoffs outward and costs power, which is the trade the two error rates make against one another; there is no setting that shrinks both at once. Choosing n so that power reaches .80 before any data exist is the whole business of a power analysis, run here by the <a href="../../power.html">power calculator</a> and taught properly in <a href="../../stats-3/effect-size-and-power/">Effect Size &amp; Power</a>.</p>
+
 
         <div class="callout">
           <p><strong>Why it matters:</strong> every test you'll meet (t-tests, ANOVA, chi-square, regression) runs this exact playbook. Master the logic once here, and the rest is just swapping in different null distributions.</p>
         </div>
 
 
-        <p class="pb-xref"><a href="../../problems.html#p1-9">Problem 9 of the practice problems</a> hands you a newsletter sentence that misreads <em>p</em> = .030 as "a 3% chance the feed makes no difference", and asks you to say what it does mean.</p>
+        <p class="pb-xref">Two practice problems run on this lesson: <a href="../../problems.html#p1-9">Problem 9</a> hands you a newsletter sentence that misreads <em>p</em> = .030 as "a 3% chance the feed makes no difference", and <a href="../../problems.html#p1-18">Problem 18</a> runs a σ-known test end to end, with the tail read off the wording and the verdict flipping between α = .05 and α = .01.</p>
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
           <h2>Common questions</h2>
@@ -125,8 +225,8 @@
             <div class="faq-a"><p>It means: <em>if</em> there were truly no effect (H₀ true), data this extreme would occur less than 5% of the time by chance alone. Since that's rare, we treat the result as evidence against H₀. It does <strong>not</strong> mean there's a 95% chance the effect is real, and it says nothing about how large or important the effect is. That's the job of <a href="../../stats-3/effect-size-and-power/">effect sizes</a>.</p></div>
           </details>
           <details class="faq-item">
-            <summary>Why do we say 'fail to reject' the null instead of 'accept' it?</summary>
-            <div class="faq-a"><p>Because a non-significant result means the evidence wasn't strong enough to rule out chance — not that H₀ is true. Like a courtroom's "not guilty," it reflects insufficient evidence, not established innocence. Small studies fail to reject false nulls all the time simply because they lack power.</p></div>
+            <summary>Why learn the z-test when σ is almost never known?</summary>
+            <div class="faq-a"><p>It usually isn't, and <a href="../../stats-1/one-sample-and-paired-t-tests/">§1.13</a> swaps σ for the sample's own s about a week later. The z version earns its place anyway. It isolates one idea at a time: with σ known, the mean is the only thing being estimated, the sampling distribution is exactly normal, and every step of the logic stays visible without the extra layer that estimating a spread adds. It is also less artificial than it sounds, since a long-running measurement process (a calibrated instrument, an assay a lab has run for years, a standardized test whose SD is published) really does have a spread that is known while its mean is the thing in question. The two procedures then converge as n grows, because a t distribution with many degrees of freedom is the normal distribution. That is why the bottom row of a printed Table D reads 1.645, 1.960 and 2.576, the same three z* values the σ-known interval uses.</p></div>
           </details>
           <details class="faq-item">
             <summary>Why is the significance level set at 0.05?</summary>
@@ -242,6 +342,224 @@
       z: { el: "#z-range", scale: 100 },
       tail: "#tail-seg",
       alpha: "#alpha-seg"
+    });
+  })();
+  </script>
+
+  <!-- ============ From numbers to z ============
+       The one piece of arithmetic that stands between an exam question and the
+       explorer above it. It owns no picture of its own: it computes z and then
+       drives the explorer THROUGH the explorer's own slider, dispatching the
+       same input event a hand would, so there is no second code path and no
+       second copy of the p-value math. Nothing here is random.
+
+       URL presets (SC.preset, applied last):
+         ?mu0=   the claimed mean H0 names   e.g. ?mu0=227
+         ?sigma= the known population SD     e.g. ?sigma=5
+         ?n=     the sample size             e.g. ?n=4
+         ?xbar=  the observed sample mean    e.g. ?xbar=222
+       These four compose with the explorer's ?tail= and ?alpha=. They are
+       applied after ?z=, so a URL carrying both lands on the z these numbers
+       give, which is also the one the panel is showing. The cereal line in the
+       prose is ?mu0=227&sigma=5&n=4&xbar=222&tail=two&alpha=.05.
+       ?n= is shared with the power interactive lower down, which clamps it to
+       its own range.
+  -->
+  <script>
+  (function () {
+    "use strict";
+    var box = document.getElementById("nzviz");
+    if (!box) return;
+    var ZMAX = 4;
+
+    function el(id) { return document.getElementById(id); }
+    function num(id) { var v = parseFloat(el(id).value); return isFinite(v) ? v : null; }
+    function fmt(v) {
+      var a = Math.abs(v);
+      if (a >= 1000) return v.toFixed(1);
+      if (a >= 1) return v.toFixed(2);
+      if (a >= 0.01) return v.toFixed(3);
+      return v === 0 ? "0" : v.toPrecision(3);
+    }
+
+    function state() {
+      var mu0 = num("nz-mu0"), sigma = num("nz-sigma"), n = num("nz-n"), xbar = num("nz-xbar");
+      if (mu0 === null || sigma === null || n === null || xbar === null) return null;
+      if (!(sigma > 0) || !(n >= 2)) return null;
+      var se = sigma / Math.sqrt(n);
+      return { mu0: mu0, sigma: sigma, n: Math.round(n), xbar: xbar, se: se, gap: xbar - mu0, z: (xbar - mu0) / se };
+    }
+
+    /* Move the explorer the way a hand moves it: set its slider and let its own
+       handler recompute everything. The slider carries hundredths of z. */
+    function sendToExplorer(z) {
+      var slider = el("z-range");
+      if (!slider) return;
+      var clipped = Math.max(-ZMAX, Math.min(ZMAX, z));
+      slider.value = String(Math.round(clipped * 100));
+      slider.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+
+    function update(push) {
+      var s = state();
+      el("nz-se").textContent = s ? fmt(s.se) : "—";
+      el("nz-gap").textContent = s ? (s.gap > 0 ? "+" : "") + fmt(s.gap) : "—";
+      el("nz-z").textContent = s ? (s.z >= 0 ? "+" : "") + s.z.toFixed(2) : "—";
+      el("nz-work").textContent = s
+        ? "By hand: z = (" + fmt(s.xbar) + " − " + fmt(s.mu0) + ") / (" + fmt(s.sigma) + "/√" + s.n + ")"
+          + " = " + fmt(s.gap) + " / " + fmt(s.se) + " = " + s.z.toFixed(2) + "."
+          + (Math.abs(s.z) > ZMAX ? " That is past the explorer's scale, so its marker parks at " + (s.z < 0 ? "−" : "+") + ZMAX.toFixed(2) + "." : "")
+        : "Needs a claimed mean, a positive σ, n of at least 2 and a sample mean.";
+      if (push && s) sendToExplorer(s.z);
+    }
+
+    ["nz-mu0", "nz-sigma", "nz-n", "nz-xbar"].forEach(function (id) {
+      el(id).addEventListener("input", function () { update(true); });
+    });
+    el("nz-send").addEventListener("click", function () { update(true); });
+
+    update(false);
+
+    /* URL presets, applied last (see the head comment). */
+    if (window.SC && SC.preset) SC.preset({
+      mu0: "#nz-mu0",
+      sigma: "#nz-sigma",
+      n: "#nz-n",
+      xbar: "#nz-xbar"
+    });
+  })();
+  </script>
+
+  <!-- ============ Two Curves: alpha, beta and power ============
+       The null sampling distribution of x-bar and the one a true mean of mu1
+       would produce, on one axis in the original units. Every area is exact:
+       the critical values come from VIZ.normInv and both halves of power are
+       computed as UPPER tails through VIZ.normQ rather than by subtracting a
+       number close to 1 (CLAUDE.md's far-tail rule), so a tiny power still
+       reads as a tiny number instead of collapsing to zero. Nothing here is
+       random, so there is no seed and no frozen noise to preserve.
+
+       mu0 is fixed at 22.0 cm: the seedling claim the prose works through.
+       Verified anchor: mu1 = 22.6, sigma = 0.5, n = 5, alpha = .05 two-sided
+       gives cutoffs 21.562 / 22.438 and power = .765.
+
+       URL presets (SC.preset, applied last):
+         ?mu1=   the true mean, 22.00 to 23.20   e.g. ?mu1=22.6
+         ?n=     trays per sample, 2 to 60       e.g. ?n=5
+         ?alpha= .10 | .05 | .01                 e.g. ?alpha=.05
+       ?n= and ?alpha= are shared with the panels above; each control clamps a
+       preset to its own range. sigma is deliberately NOT presettable here: the
+       panel above measures grams and this one centimeters, and one query key
+       cannot mean both.
+  -->
+  <script>
+  (function () {
+    "use strict";
+    var MU0 = 22.0, DEF = { mu1: 2260, n: 5, sigma: 50, alpha: 0.05 };
+    var mu1 = DEF.mu1 / 100, n = DEF.n, sigma = DEF.sigma / 100, alpha = DEF.alpha;
+    var cv = document.getElementById("tc-canvas");
+    if (!cv || !window.VIZ) return;
+    var ctx, W = 0, H = 230;
+
+    function el(id) { return document.getElementById(id); }
+    function fit() { var o = VIZ.fit(cv, H); ctx = o.ctx; W = o.w; }
+
+    function state() {
+      var se = sigma / Math.sqrt(n);
+      var zc = VIZ.normInv(1 - alpha / 2), half = zc * se;
+      var lo = MU0 - half, hi = MU0 + half;
+      // both halves as upper tails, so neither is reconstructed by subtraction
+      var power = VIZ.normQ((hi - mu1) / se) + VIZ.normQ((mu1 - lo) / se);
+      return { se: se, zc: zc, lo: lo, hi: hi, power: power, beta: 1 - power, eff: (mu1 - MU0) / se };
+    }
+
+    function draw(s) {
+      ctx.clearRect(0, 0, W, H);
+      var pad = 14, baseY = H - 30;
+      var LO = Math.min(MU0, mu1) - 4.2 * s.se, HI = Math.max(MU0, mu1) + 4.2 * s.se;
+      function px(v) { return pad + ((v - LO) / (HI - LO)) * (W - 2 * pad); }
+      function pk(c, v) { var t = (v - c) / s.se; return Math.exp(-0.5 * t * t); }
+      var scale = baseY - 34;
+
+      function region(center, from, to, color, a) {
+        if (!(to > from)) return;
+        ctx.fillStyle = color; ctx.globalAlpha = a;
+        ctx.beginPath(); ctx.moveTo(px(from), baseY);
+        for (var i = 0; i <= 90; i++) { var v = from + ((to - from) * i) / 90; ctx.lineTo(px(v), baseY - pk(center, v) * scale); }
+        ctx.lineTo(px(to), baseY); ctx.closePath(); ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+      function curve(center, color, dash) {
+        ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.setLineDash(dash || []);
+        ctx.beginPath();
+        for (var q = 0; q <= W; q += 1.5) { var v = LO + (q / W) * (HI - LO); var y = baseY - pk(center, v) * scale; if (q === 0) ctx.moveTo(px(v), y); else ctx.lineTo(px(v), y); }
+        ctx.stroke(); ctx.setLineDash([]);
+      }
+
+      // beta and power under the truth, then alpha under the null on top
+      region(mu1, s.lo, s.hi, VIZ.css("--text-faint"), 0.28);
+      region(mu1, s.hi, HI, "#22c55e", 0.4);
+      region(mu1, LO, s.lo, "#22c55e", 0.4);
+      region(MU0, s.hi, HI, "#ef4444", 0.55);
+      region(MU0, LO, s.lo, "#ef4444", 0.55);
+
+      curve(MU0, VIZ.css("--primary"));
+      curve(mu1, "#f97316", [6, 4]);
+
+      // the two cutoffs
+      ctx.strokeStyle = VIZ.css("--text-faint"); ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.moveTo(px(s.lo), 20); ctx.lineTo(px(s.lo), baseY); ctx.moveTo(px(s.hi), 20); ctx.lineTo(px(s.hi), baseY); ctx.stroke();
+      ctx.setLineDash([]);
+
+      // axis and labels
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(0, baseY); ctx.lineTo(W, baseY); ctx.stroke();
+      ctx.font = "11px ui-monospace, monospace"; ctx.textAlign = "center"; ctx.fillStyle = VIZ.css("--text-faint");
+      ctx.fillText(s.lo.toFixed(3), px(s.lo), baseY + 15);
+      ctx.fillText(s.hi.toFixed(3), px(s.hi), baseY + 15);
+      ctx.font = "600 12px Inter, sans-serif";
+      ctx.fillStyle = VIZ.css("--primary"); ctx.fillText("H₀: μ = " + MU0.toFixed(1), px(MU0), 14);
+      ctx.fillStyle = "#f97316"; ctx.fillText("truth: μ = " + mu1.toFixed(2), px(mu1), Math.abs(px(mu1) - px(MU0)) < 60 ? 30 : 14);
+    }
+
+    function update() {
+      var s = state();
+      el("tc-mu1val").textContent = mu1.toFixed(2);
+      el("tc-nval").textContent = "n = " + n;
+      el("tc-sigmaval").textContent = sigma.toFixed(2);
+      el("tc-power").textContent = s.power.toFixed(3);
+      el("tc-beta").textContent = s.beta.toFixed(3);
+      el("tc-crit").textContent = s.lo.toFixed(3) + " … " + s.hi.toFixed(3);
+      el("tc-eff").textContent = s.eff.toFixed(2) + " SE";
+      draw(s);
+    }
+
+    el("tc-mu1").addEventListener("input", function () { mu1 = this.value / 100; update(); });
+    el("tc-n").addEventListener("input", function () { n = +this.value; update(); });
+    el("tc-sigma").addEventListener("input", function () { sigma = this.value / 100; update(); });
+    el("tc-alpha").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      alpha = +b.dataset.a;
+      Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", +x.dataset.a === alpha); });
+      update();
+    });
+    el("tc-reset").addEventListener("click", function () {
+      el("tc-mu1").value = DEF.mu1; el("tc-n").value = DEF.n; el("tc-sigma").value = DEF.sigma;
+      mu1 = DEF.mu1 / 100; n = DEF.n; sigma = DEF.sigma / 100; alpha = DEF.alpha;
+      Array.prototype.forEach.call(el("tc-alpha").querySelectorAll("button"), function (x) { x.classList.toggle("active", +x.dataset.a === alpha); });
+      update();
+    });
+    window.addEventListener("resize", VIZ.rafThrottle(function () { fit(); update(); }));
+    VIZ.onTheme(function () { draw(state()); });
+
+    fit(); update();
+
+    /* URL presets, applied last (see the head comment). The mu1 slider carries
+       hundredths of the centimeter value the readout prints. */
+    if (window.SC && SC.preset) SC.preset({
+      mu1: { el: "#tc-mu1", scale: 100 },
+      n: "#tc-n",
+      alpha: "#tc-alpha"
     });
   })();
   </script>

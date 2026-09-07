@@ -102,11 +102,62 @@
           <li><strong>Sample size ↑ → narrower.</strong> More data shrinks the standard error, so the margin shrinks. Slide <em>n</em> up and watch the bars tighten around the truth.</li>
         </ul>
 
+        <h2>When σ is known: the z-interval</h2>
+        <p>Textbooks introduce the interval one rung below the playground above, in a setting that is artificial and clarifying at the same time. Suppose the population standard deviation σ (sigma) is already known and only the mean is in doubt. A factory that has measured its filling machine for years knows how much its boxes vary; what shifts from batch to batch is where that variation is centered. With σ in hand the standard error is σ/√n exactly, with nothing estimated, and the critical value comes straight off the normal curve:</p>
+        <p style="text-align:center;font-size:1.2rem;margin:1.25rem 0"><strong>x̄&nbsp;±&nbsp;z*&nbsp;·&nbsp;σ/√n</strong></p>
+        <p>Three values of z* cover almost every question an exam will ask, and they are worth knowing without looking them up: <strong>1.645</strong> for 90% confidence, <strong>1.960</strong> for 95%, <strong>2.576</strong> for 99%. They are printed along the foot of <a href="../../tables.html#printed-tables">Table D</a>, under the confidence levels, and they are also that table's bottom row, the one labeled ∞. A t distribution with infinitely many degrees of freedom <em>is</em> the normal distribution, which is why the same three numbers appear in both places.</p>
+
+        <p>The quantity after the ± sign has a name of its own. The <strong>margin of error</strong>, m = z*·σ/√n, is the half-width of the interval, and it is what a poll means by "±3 points". Only three things move it. Asking for more confidence raises z* and widens the margin, which is the trade the coverage playground makes visible. A noisier population widens it too, and σ is rarely yours to change. Sample size is the lever you actually control, and it works through √n, so halving a margin takes four times the data.</p>
+        <p>Read backwards, that same relationship is how a study gets planned. Fix the margin you are willing to live with, then solve for the sample size that delivers it:</p>
+        <p style="text-align:center;font-size:1.15rem;margin:1.1rem 0"><strong>n = (z* · σ / m)²</strong></p>
+        <p>Round that answer <em>up</em>, always. Rounding down leaves you with a margin slightly wider than the one you promised, and a fraction of a participant is not a participant.</p>
+
+        <div class="callout key">
+          <p><strong>Worked, on a calculator.</strong> A machine is supposed to put 227 g of cereal in a box, and years of records give σ = 5 g. Four boxes off this morning's line average x̄ = 222 g. The standard error is 5/√4 = 2.5, the 95% margin is 1.960 × 2.5 = 4.90, and the interval is 222 ± 4.90, or <strong>[217.1, 226.9]</strong> grams. The target value 227 sits outside it. That is the same evidence a <a href="../../stats-1/hypothesis-testing-logic/">hypothesis test</a> works with, arriving from the other direction.</p>
+        </div>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="ibviz">
+          <p class="viz-title">🎮 Interval Builder</p>
+          <p class="viz-sub">Type in a sample mean, a known σ and a sample size, and watch the interval assemble itself in the original units of the measurement. The curve is what x̄ does from sample to sample, a normal with spread σ/√n, drawn centered on the mean this one sample happened to give. The shaded middle is your confidence level, and the bar underneath its two edges is the interval.</p>
+
+          <div class="controls">
+            <div class="control"><label>Sample mean x̄</label><input type="number" id="ib-xbar" class="num" value="222" step="any" /></div>
+            <div class="control"><label>Known σ</label><input type="number" id="ib-sigma" class="num" value="5" step="any" min="0.01" /></div>
+            <div class="control"><label>Sample size n</label><input type="number" id="ib-n" class="num" value="4" step="1" min="2" max="10000" /></div>
+            <div class="control">
+              <label>Confidence level</label>
+              <div class="seg" id="ib-level">
+                <button data-lvl="90">90%</button>
+                <button data-lvl="95" class="active">95%</button>
+                <button data-lvl="99">99%</button>
+              </div>
+            </div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="ib-reset">Back to the cereal boxes</button></div>
+          </div>
+
+          <canvas id="ib-canvas" style="--viz-ar: 5 / 2"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Standard error of the mean</span><span class="v" id="ib-se">—</span></div>
+            <div class="stat"><span class="k">Critical value z*</span><span class="v" id="ib-z">—</span></div>
+            <div class="stat"><span class="k">Margin of error</span><span class="v" id="ib-margin">—</span></div>
+            <div class="stat"><span class="k">Interval</span><span class="v" id="ib-int" style="font-size:1rem">—</span></div>
+          </div>
+
+          <p class="viz-sub" id="ib-work" style="margin-top:.7rem"></p>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <div class="callout">
+          <p><strong>Three cautions the formula hides.</strong> The data have to come from a simple random sample of the population you mean to describe, because no interval repairs a biased sample and a larger biased sample only states the wrong answer more precisely. σ has to be genuinely known from outside this dataset rather than estimated from the same four boxes. And an interval quantifies sampling variation, nothing else: it says nothing about a miscalibrated scale or a question that measured the wrong thing. The honest everyday case, where σ is unknown and s stands in for it, replaces z* with t* and is what <a href="../../stats-1/one-sample-and-paired-t-tests/">§1.13</a> is about.</p>
+        </div>
+
         <div class="callout">
           <p><strong>Why it matters:</strong> confidence intervals are how good science reports uncertainty: not a false-precision point estimate, but a range plus a stated reliability. They're also two sides of the same coin as <a href="../../stats-1/hypothesis-testing-logic/">hypothesis tests</a>, which come next.</p>
         </div>
 
-        <p class="pb-xref"><a href="../../problems.html#p1-8">Problem 8 of the practice problems</a> builds a 95% interval from 25 students by hand, then shows exactly how much quadrupling the sample narrows it.</p>
+        <p class="pb-xref">Two practice problems run on this lesson: <a href="../../problems.html#p1-8">Problem 8</a> builds a 95% interval from 25 students by hand and shows how much quadrupling the sample narrows it, and <a href="../../problems.html#p1-17">Problem 17</a> works the σ-known version at two confidence levels before solving for the sample size a stated margin needs.</p>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
@@ -138,6 +189,7 @@
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
   <script src="../../assets/js/curriculum.js"></script>
   <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
 
   <!-- ============ Confidence-interval visualization ============
        URL presets (P67):
@@ -226,6 +278,150 @@
 
     /* URL preset, applied last (see the head comment) */
     if (window.SC && SC.preset) SC.preset({ n: "#n-range", level: "#lvl-seg" });
+  })();
+  </script>
+
+  <!-- ============ Interval Builder (σ known) ============
+       The z-interval assembled in the ORIGINAL units of the measurement, so the
+       arithmetic on screen is the arithmetic a calculator does. z* is the value
+       a printed Table D gives (1.645 / 1.960 / 2.576), not a fresh quantile, so
+       the readout and a student's hand answer agree to the last digit. Nothing
+       here is random: there is no seed and no frozen noise to preserve.
+
+       URL presets (SC.preset, applied last):
+         ?xbar=  the sample mean            e.g. ?xbar=222
+         ?sigma= the known population SD    e.g. ?sigma=5
+         ?n=     the sample size            e.g. ?n=4
+         ?level= 90 | 95 | 99
+       The cereal boxes in the prose are ?xbar=222&sigma=5&n=4&level=95.
+       n and level are shared with the coverage interactive above; each control
+       clamps a preset to its own range, so ?n=4 lands the coverage slider on 5.
+  -->
+  <script>
+  (function () {
+    "use strict";
+    var DEF = { xbar: 222, sigma: 5, n: 4, lvl: 95 };
+    var Z = { "90": 1.645, "95": 1.960, "99": 2.576 };
+    var lvl = DEF.lvl;
+    var cv = document.getElementById("ib-canvas");
+    if (!cv || !window.VIZ) return;
+    var ctx, W = 0, H = 210;
+
+    function el(id) { return document.getElementById(id); }
+    function num(id) { var v = parseFloat(el(id).value); return isFinite(v) ? v : null; }
+    function fmt(v) {
+      var a = Math.abs(v);
+      if (a >= 1000) return v.toFixed(1);
+      if (a >= 1) return v.toFixed(2);
+      if (a >= 0.01) return v.toFixed(3);
+      return v === 0 ? "0" : v.toPrecision(3);
+    }
+
+    function state() {
+      var xbar = num("ib-xbar"), sigma = num("ib-sigma"), n = num("ib-n");
+      if (xbar === null || sigma === null || n === null) return null;
+      if (!(sigma > 0) || !(n >= 2)) return null;
+      var se = sigma / Math.sqrt(n), z = Z[lvl], m = z * se;
+      return { xbar: xbar, sigma: sigma, n: Math.round(n), se: se, z: z, m: m, lo: xbar - m, hi: xbar + m };
+    }
+
+    function fit() { var o = VIZ.fit(cv, H); ctx = o.ctx; W = o.w; }
+
+    function draw(s) {
+      ctx.clearRect(0, 0, W, H);
+      if (!s) {
+        ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "13px Inter, sans-serif"; ctx.textAlign = "center";
+        ctx.fillText("Needs a sample mean, a positive σ and n of at least 2.", W / 2, H / 2);
+        return;
+      }
+      var pad = 16, baseY = H - 62, LO = s.xbar - 4 * s.se, HI = s.xbar + 4 * s.se;
+      function px(v) { return pad + ((v - LO) / (HI - LO)) * (W - 2 * pad); }
+      function pdf(v) { var t = (v - s.xbar) / s.se; return Math.exp(-0.5 * t * t); }
+      var scale = baseY - 14;
+
+      // the shaded middle: the confidence level, as area
+      ctx.fillStyle = "#f97316"; ctx.globalAlpha = 0.28;
+      ctx.beginPath(); ctx.moveTo(px(s.lo), baseY);
+      for (var i = 0; i <= 90; i++) { var v = s.lo + (s.m * 2 * i) / 90; ctx.lineTo(px(v), baseY - pdf(v) * scale); }
+      ctx.lineTo(px(s.hi), baseY); ctx.closePath(); ctx.fill();
+      ctx.globalAlpha = 1;
+
+      // the sampling distribution of x̄
+      ctx.strokeStyle = VIZ.css("--primary"); ctx.lineWidth = 2.5; ctx.beginPath();
+      for (var q = 0; q <= W; q += 1.5) {
+        var vv = LO + (q / W) * (HI - LO), y = baseY - pdf(vv) * scale;
+        if (q === 0) ctx.moveTo(px(vv), y); else ctx.lineTo(px(vv), y);
+      }
+      ctx.stroke();
+
+      // axis
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(0, baseY); ctx.lineTo(W, baseY); ctx.stroke();
+
+      // x̄ marker
+      ctx.strokeStyle = VIZ.css("--secondary"); ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(px(s.xbar), baseY - pdf(s.xbar) * scale); ctx.lineTo(px(s.xbar), baseY); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--secondary"); ctx.font = "600 12px Inter, sans-serif"; ctx.textAlign = "center";
+      ctx.fillText("x̄ = " + fmt(s.xbar), px(s.xbar), baseY - pdf(s.xbar) * scale - 6);
+
+      // the interval, on its own line under the axis
+      var barY = baseY + 26;
+      ctx.strokeStyle = "#f97316"; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(px(s.lo), barY); ctx.lineTo(px(s.hi), barY); ctx.stroke();
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(px(s.lo), barY - 7); ctx.lineTo(px(s.lo), barY + 7);
+      ctx.moveTo(px(s.hi), barY - 7); ctx.lineTo(px(s.hi), barY + 7);
+      ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px ui-monospace, monospace";
+      ctx.textAlign = "center";
+      ctx.fillText(fmt(s.lo), px(s.lo), barY + 24);
+      ctx.fillText(fmt(s.hi), px(s.hi), barY + 24);
+      ctx.fillStyle = VIZ.css("--text-muted"); ctx.font = "600 11px Inter, sans-serif";
+      ctx.fillText(lvl + "% confidence interval", (px(s.lo) + px(s.hi)) / 2, barY - 12);
+    }
+
+    function update() {
+      var s = state();
+      el("ib-se").textContent = s ? fmt(s.se) : "—";
+      el("ib-z").textContent = s ? s.z.toFixed(3) : "—";
+      el("ib-margin").textContent = s ? "± " + fmt(s.m) : "—";
+      el("ib-int").textContent = s ? "[" + fmt(s.lo) + ", " + fmt(s.hi) + "]" : "—";
+      el("ib-work").textContent = s
+        ? "By hand: " + fmt(s.xbar) + " ± " + s.z.toFixed(3) + " × " + fmt(s.sigma) + "/√" + s.n
+          + " = " + fmt(s.xbar) + " ± " + s.z.toFixed(3) + " × " + fmt(s.se) + " = " + fmt(s.xbar) + " ± " + fmt(s.m) + "."
+        : "";
+      draw(s);
+    }
+
+    ["ib-xbar", "ib-sigma", "ib-n"].forEach(function (id) {
+      el(id).addEventListener("input", update);
+    });
+    el("ib-level").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      lvl = +b.dataset.lvl;
+      Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", +x.dataset.lvl === lvl); });
+      update();
+    });
+    el("ib-reset").addEventListener("click", function () {
+      el("ib-xbar").value = DEF.xbar; el("ib-sigma").value = DEF.sigma; el("ib-n").value = DEF.n;
+      var seg = el("ib-level");
+      Array.prototype.forEach.call(seg.querySelectorAll("button"), function (x) { x.classList.toggle("active", +x.dataset.lvl === DEF.lvl); });
+      lvl = DEF.lvl;
+      update();
+    });
+    window.addEventListener("resize", VIZ.rafThrottle(function () { fit(); update(); }));
+    VIZ.onTheme(function () { draw(state()); });
+
+    fit(); update();
+
+    /* URL presets, applied last (see the head comment). */
+    if (window.SC && SC.preset) SC.preset({
+      xbar: "#ib-xbar",
+      sigma: "#ib-sigma",
+      n: "#ib-n",
+      level: "#ib-level"
+    });
   })();
   </script>
 </body>

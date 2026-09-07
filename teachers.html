@@ -157,13 +157,13 @@
             </tr>
             <tr>
               <td><a href="stats-1/confidence-intervals/">Confidence Intervals</a></td>
-              <td><code>n</code> 5–100 · <code>level</code> 90·95·99</td>
-              <td><code>?n=10&amp;level=99</code></td>
+              <td><code>n</code> 5–100 · <code>level</code> 90·95·99 · <code>xbar</code> · <code>sigma</code> &gt; 0</td>
+              <td><code>?xbar=222&amp;sigma=5&amp;n=4&amp;level=95</code></td>
             </tr>
             <tr>
               <td><a href="stats-1/hypothesis-testing-logic/">Hypothesis Testing Logic</a></td>
-              <td><code>z</code> −4–4 · <code>tail</code> two·right·left · <code>alpha</code> .10·.05·.01</td>
-              <td><code>?z=1.96&amp;tail=two</code></td>
+              <td><code>z</code> −4–4 · <code>tail</code> two·right·left · <code>alpha</code> .10·.05·.01 · <code>mu0</code> · <code>sigma</code> &gt; 0 · <code>n</code> 2–60 · <code>xbar</code> · <code>mu1</code> 22.00–23.20</td>
+              <td><code>?mu0=227&amp;sigma=5&amp;n=4&amp;xbar=222&amp;tail=two</code></td>
             </tr>
             <tr>
               <td><a href="stats-1/correlation/">Correlation</a></td>
@@ -204,6 +204,7 @@
         </table>
         </div>
         <p>Values outside a listed range are pulled back to the nearest one the control can actually reach, and a value between two slider steps snaps to the nearer step. What you get is always a state a student could have reached by hand.</p>
+        <p>A page with more than one interactive shares its parameter names across them, which is deliberate: <code>n</code> means sample size wherever it appears, so one link configures the whole page. Each control still clamps to its own range, so <code>?n=4</code> lands the coverage playground on its minimum of 5 while the Interval Builder beside it takes the 4. Two pairings are worth knowing on §1.12: <code>mu0</code>, <code>sigma</code>, <code>n</code> and <code>xbar</code> drive the numbers-to-z panel and hand the resulting statistic to the p-value explorer below it, and <code>mu1</code>, <code>n</code> and <code>alpha</code> set the Two Curves power picture at the foot of the page.</p>
         <h3>Put your own numbers in the link</h3>
         <p>Two surfaces read a <code>?data=</code> parameter, so a lecture's own batch of numbers can go into a live playground without anyone typing it in front of a class: the Mean vs. Median Playground in <a href="stats-1/describing-data/">§1.3</a>, where the values become the draggable dots and the axis rebuilds around them, and the <a href="descriptives.html">Descriptives calculator</a>, which fills its box and calculates. Separate the numbers with commas, up to 200 of them. Anything that is not a plain number, and the parameter is ignored, so a mangled paste still loads the ordinary page.</p>
         <div class="try-code" style="margin:1rem 0">

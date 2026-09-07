@@ -66,11 +66,24 @@
             <tr><td>Sample variance</td><td>s² = Σ(xᵢ − x̄)² / (n − 1)</td><td>Average squared distance from the mean (n − 1 because it's a sample).</td></tr>
             <tr><td>Standard deviation</td><td>s = √s²</td><td>Typical distance from the mean, back in the original units.</td></tr>
             <tr><td>Z-score</td><td>z = (x − μ) / σ</td><td>How many SDs a value sits above or below the mean.</td></tr>
+            <tr><td>General addition rule</td><td>P(A or B) = P(A) + P(B) − P(A and B)</td><td>Add both, then take the overlap back out once. Drop the last term only when the events cannot both happen.</td></tr>
+            <tr><td>General multiplication rule</td><td>P(A and B) = P(A) · P(B | A)</td><td>The second factor is a plain P(B) only when the two events are independent.</td></tr>
+            <tr><td>Discrete random variable</td><td>μ = Σ x·p &nbsp;&nbsp; σ² = Σ (x − μ)²·p</td><td>Weight every value by its probability. The SD is √σ², as always.</td></tr>
+            <tr><td>Binomial mean and SD</td><td>μ = np &nbsp;&nbsp; σ = √(np(1 − p))</td><td>The shortcut for X ~ B(n, p). The two rows above reach the same answers the long way.</td></tr>
             <tr><td>Standard error of the mean</td><td>SE = s / √n</td><td>How much x̄ wobbles from sample to sample.</td></tr>
+            <tr><td>z-interval (σ known)</td><td>x̄ ± z* · σ/√n</td><td>z* = 1.645 / 1.960 / 2.576 for 90 / 95 / 99% confidence.</td></tr>
+            <tr><td>Margin of error</td><td>m = z* · σ/√n</td><td>Half the width of the interval. Confidence level, σ and n are the only three things that move it.</td></tr>
+            <tr><td>Sample size for a margin</td><td>n = (z* · σ / m)²</td><td>Round up. Halving the margin costs four times the data.</td></tr>
+            <tr><td>One-sample z (σ known)</td><td>z = (x̄ − μ₀) / (σ/√n)</td><td>The gap between sample and claim, measured in standard errors.</td></tr>
             <tr><td>Confidence interval (mean)</td><td>x̄ ± t* · SE</td><td>Estimate ± margin of error; t* from df = n − 1 (≈ 2 for 95%).</td></tr>
             <tr><td>One-sample t</td><td>t = (x̄ − μ₀) / (s / √n)</td><td>Distance from the reference value, in standard-error units. df = n − 1.</td></tr>
             <tr><td>Paired t</td><td>t = d̄ / (s<sub>d</sub> / √n)</td><td>The one-sample t, run on each person's difference score.</td></tr>
             <tr><td>Independent t</td><td>t = (x̄₁ − x̄₂) / SE<sub>diff</sub></td><td>The gap between two means over its standard error (Welch: no pooling).</td></tr>
+            <tr><td>Two-sample standard error</td><td>SE<sub>diff</sub> = √( s₁²/n₁ + s₂²/n₂ )</td><td>Also the SE in the interval (x̄₁ − x̄₂) ± t*·SE. By hand use the conservative df = min(n₁ − 1, n₂ − 1); software uses Welch–Satterthwaite.</td></tr>
+            <tr><td>SD of a sample proportion</td><td>SD of p̂ = √( p(1 − p) / n )</td><td>The spread of p̂ from sample to sample, centered on the true p.</td></tr>
+            <tr><td>Confidence interval (proportion)</td><td>p̂ ± z* · √( p̂(1 − p̂) / n )</td><td>The interval is estimating p, so p̂ goes into the standard error.</td></tr>
+            <tr><td>One-proportion z test</td><td>z = (p̂ − p₀) / √( p₀(1 − p₀) / n )</td><td>The test assumes H₀ is true, so p₀ goes in instead of p̂.</td></tr>
+            <tr><td>Two proportions, pooled p̂</td><td>p̂ = (x₁ + x₂) / (n₁ + n₂), SE = √( p̂(1 − p̂)(1/n₁ + 1/n₂) )</td><td>Under H₀ there is only one proportion in the world, so both groups estimate it together.</td></tr>
             <tr><td>Cohen's d</td><td>d = (x̄₁ − x̄₂) / s<sub>pooled</sub></td><td>Mean difference in SD units. 0.2 / 0.5 / 0.8 ≈ small / medium / large.</td></tr>
             <tr><td>Empirical rule</td><td>68% · 95% · 99.7%</td><td>Share of a normal distribution within ±1, ±2, ±3 SD.</td></tr>
           </tbody>
