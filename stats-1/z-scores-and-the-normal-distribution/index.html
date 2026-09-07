@@ -53,6 +53,8 @@
         <h2>The normal distribution</h2>
         <p>Lots of measurements (heights, reaction times, test scores, measurement errors) pile up in the same characteristic shape: a symmetric bell, tall in the middle, thinning out toward the edges. It's called the <strong>normal distribution</strong>, and it's fully described by just two numbers: its mean <code>μ</code> (mu, where the peak sits) and its standard deviation <code>σ</code> (sigma, how wide the bell is). It's also just one member of a whole family of shapes. You can meet the others in the <a href="../../distributions.html">Distribution Playground</a>.</p>
 
+        <p>Textbooks call a curve like this one a <strong>density curve</strong>: an idealized histogram, smoothed out and scaled so that the total area beneath it is exactly 1. That scaling is the whole reason it is useful. Any area under the curve is the <em>proportion of observations</em> lying in that stretch, so "what fraction of people score below 130" and "how much of the curve sits left of 130" are one question asked in two vocabularies. Areas are proportions here, and they always add up to 1.</p>
+
         <div class="callout">
           <p><strong>The 68–95–99.7 rule:</strong> in any normal distribution, about <strong>68%</strong> of values fall within 1 SD of the mean, about <strong>95%</strong> within 2 SDs, and about <strong>99.7%</strong> within 3 SDs. Drag the score below past the ±1σ, ±2σ, ±3σ marks and watch the percentile confirm it.</p>
         </div>
@@ -60,18 +62,23 @@
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="zviz">
           <p class="viz-title">🎮 Z-Score Explorer</p>
-          <p class="viz-sub">Example: IQ scores, which are built to have a mean of 100 and a standard deviation of 15. Drag the score and read off its z-score and percentile.</p>
+          <p class="viz-sub">Drag the score and read off its z-score and the share of the curve on each side. It opens on IQ scores, built to have a mean of 100 and a standard deviation of 15, and the URL can point it at any normal distribution you like.</p>
 
           <div class="controls">
-            <div class="control" style="flex:1;min-width:240px">
+            <div class="control" style="flex:1;min-width:min(240px,100%)">
               <label>Score (x) <span class="val" id="x-val">115</span></label>
               <input type="range" id="x-range" min="40" max="160" step="1" value="115" style="width:100%" />
+            </div>
+            <div class="control" id="x2-ctl" style="display:none;flex:1;min-width:min(240px,100%)">
+              <label>Second score <span class="val" id="x2-val">130</span></label>
+              <input type="range" id="x2-range" min="40" max="160" step="1" value="130" style="width:100%" />
             </div>
             <div class="control">
               <label>Shade</label>
               <div class="seg" id="shade-seg">
-                <button data-mode="below" class="active">At or below</button>
-                <button data-mode="above">At or above</button>
+                <button data-mode="left" class="active">At or below</button>
+                <button data-mode="right">At or above</button>
+                <button data-mode="between">Between</button>
               </div>
             </div>
           </div>
@@ -95,6 +102,8 @@
             <div class="stat"><span class="k">Z-score</span><span class="v" id="stat-z">+1.00</span></div>
             <div class="stat"><span class="k">% at or below (percentile)</span><span class="v" id="stat-pct">84.1%</span></div>
             <div class="stat"><span class="k">% at or above</span><span class="v" id="stat-tail">15.9%</span></div>
+            <div class="stat" id="stat-mid-wrap" style="display:none"><span class="k">% between the two</span><span class="v" id="stat-mid">—</span></div>
+            <div class="stat"><span class="k">Distribution</span><span class="v" id="stat-scale" style="font-size:1rem">—</span></div>
           </div>
         </div>
         <!-- ============ /INTERACTIVE ============ -->
@@ -103,6 +112,18 @@
         <p>The recipe is short: take how far the score is from the mean, then express that gap in standard-deviation units.</p>
         <p style="text-align:center;font-size:1.25rem;margin:1.25rem 0"><strong>z&nbsp;=&nbsp;(x&nbsp;−&nbsp;μ)&nbsp;/&nbsp;σ</strong></p>
         <p>An IQ of 115 is <code>(115 − 100) / 15 = +1.0</code>, exactly one SD above average. An IQ of 70 is <code>(70 − 100) / 15 = −2.0</code>, two SDs below. The sign tells you which side of the mean you're on; the size tells you how unusual the value is. A z of 0 is dead average; a z beyond ±2 is genuinely rare (outside the middle 95%).</p>
+
+        <h2>From a z-score to an area</h2>
+        <p>The explorer reads the percentile off the curve for you. On paper you do it in two steps: standardize the value, then look the z up in a table of areas. Adult heights in one population run close to normal with a mean of 164 cm and a standard deviation of 6 cm. What proportion of people are shorter than 170 cm?</p>
+        <p style="text-align:center;font-size:1.25rem;margin:1.25rem 0"><strong>z&nbsp;=&nbsp;(170&nbsp;−&nbsp;164)&nbsp;/&nbsp;6&nbsp;=&nbsp;1.00</strong></p>
+        <p>A standard normal table gives <code>.8413</code> for z = 1.00, so about 84% of people are shorter than 170 cm. The proportion taller is whatever area is left over: <code>1 − .8413 = .1587</code>, a shade under 16%. Point the explorer at that distribution with <a href="?mu=164&amp;sigma=6&amp;x=170">this link</a> and it draws the same picture.</p>
+        <p>Every question of this kind is one of three moves, and the third is built from the first two.</p>
+        <ul>
+          <li><strong>Area to the left</strong> is what the table prints. Standardize, find the cell, read it.</li>
+          <li><strong>Area to the right</strong> is 1 minus that, because the whole curve has area 1. Symmetry gives a second route: the area right of z is the area left of −z, so you can look up the negative instead.</li>
+          <li><strong>Area between two values</strong> is the larger left-area minus the smaller one. Switch the shading above to <em>Between</em> and drag the two scores to watch it happen.</li>
+        </ul>
+        <p>The <a href="../../tables.html#printed-tables">statistical tables page</a> carries a full printed normal table, and a drill that hands you ten of these lookups at a time.</p>
 
         <h2>Why standardizing is so useful</h2>
         <ul>
@@ -177,11 +198,20 @@
   <script src="../../assets/js/curriculum.js"></script>
   <script src="../../assets/js/site.js"></script>
 
-  <!-- ============ Z-score visualization ============ -->
+  <!-- ============ Z-score visualization ============
+       URL presets (P80), applied after boot so the drawing never re-seeds:
+         ?mu=      the mean of the distribution        (?mu=164)
+         ?sigma=   its standard deviation, > 0         (?sigma=6)
+         ?x=       the score, in the distribution's own units
+         ?x2=      the second score, used by the Between shading
+         ?shade=   left | right | between
+       mu and sigma rebuild the sliders' own range, so x and x2 are snapped
+       and clamped by SC.preset against the NEW scale. Anything absent or
+       malformed is ignored and the plain IQ lesson loads. -->
   <script>
   (function () {
     "use strict";
-    var MU = 100, SD = 15, x = 115, mode = "below";
+    var MU = 100, SD = 15, x = 115, x2 = 130, mode = "left", DEC = 0;
     var LO = MU - 4 * SD, HI = MU + 4 * SD;
 
     function erf(z) {
@@ -193,14 +223,31 @@
     function pdf(v) { var z = (v - MU) / SD; return Math.exp(-0.5 * z * z) / (SD * Math.sqrt(2 * Math.PI)); }
     function css(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
     function xToPx(v, w) { return ((v - LO) / (HI - LO)) * w; }
+    function el(id) { return document.getElementById(id); }
+    function fmtX(v) { return v.toFixed(DEC); }
 
-    var canvas = document.getElementById("z-canvas"), ctx;
+    var canvas = el("z-canvas"), ctx;
     var dims = { w: 0, h: 200 };
     function fit() {
       var r = Math.min(window.devicePixelRatio || 1, 2);
       var w = canvas.clientWidth || canvas.parentElement.clientWidth;
       canvas.width = w * r; canvas.height = dims.h * r; canvas.style.height = dims.h + "px";
       ctx = canvas.getContext("2d"); ctx.setTransform(r, 0, 0, r, 0, 0); dims.w = w;
+    }
+
+    /* Point the whole viz at a different normal distribution. The sliders own
+       their bounds, so this is also what lets SC.preset snap ?x= to a grid it
+       never has to restate. */
+    function setScale(mu, sd) {
+      MU = mu; SD = sd; LO = MU - 4 * SD; HI = MU + 4 * SD;
+      var step = sd >= 10 ? 1 : sd >= 2 ? 0.1 : 0.01;
+      DEC = step >= 1 ? 0 : step >= 0.1 ? 1 : 2;
+      [el("x-range"), el("x2-range")].forEach(function (r) {
+        r.min = LO; r.max = HI; r.step = step;
+      });
+      x = MU + SD; x2 = MU + 2 * SD;
+      el("x-range").value = x; el("x2-range").value = x2;
+      update();
     }
 
     function draw() {
@@ -218,16 +265,16 @@
         ctx.fillText(k === 0 ? "μ" : (k > 0 ? "+" : "") + k + "σ", gx, h - 4);
       }
 
-      // shaded area
-      var xpx = xToPx(x, w);
+      // shaded area: left of x, right of x, or between x and x2
+      var lo = mode === "left" ? LO : mode === "right" ? x : Math.min(x, x2);
+      var hi = mode === "left" ? x : mode === "right" ? HI : Math.max(x, x2);
       ctx.fillStyle = css("--primary"); ctx.globalAlpha = 0.25;
-      ctx.beginPath(); ctx.moveTo(mode === "below" ? 0 : xpx, h - 18);
-      var startV = mode === "below" ? LO : x, endV = mode === "below" ? x : HI;
-      for (var px = xToPx(startV, w); px <= xToPx(endV, w); px += 1.5) {
+      ctx.beginPath(); ctx.moveTo(xToPx(lo, w), h - 18);
+      for (var px = xToPx(lo, w); px <= xToPx(hi, w); px += 1.5) {
         var v = LO + (px / w) * (HI - LO);
         ctx.lineTo(px, h - 18 - pdf(v) * scale);
       }
-      ctx.lineTo(xToPx(endV, w), h - 18); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
+      ctx.lineTo(xToPx(hi, w), h - 18); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
 
       // full curve
       ctx.strokeStyle = css("--primary"); ctx.lineWidth = 2.5; ctx.beginPath();
@@ -238,37 +285,60 @@
       }
       ctx.stroke();
 
-      // marker line at x
-      ctx.strokeStyle = "#f97316"; ctx.lineWidth = 2.5;
-      ctx.beginPath(); ctx.moveTo(xpx, pad - 4); ctx.lineTo(xpx, h - 18); ctx.stroke();
-      ctx.fillStyle = "#f97316"; ctx.beginPath(); ctx.arc(xpx, pad - 2, 4, 0, 2 * Math.PI); ctx.fill();
+      // marker line(s)
+      function markAt(v, solid) {
+        var mx = xToPx(v, w);
+        ctx.strokeStyle = "#f97316"; ctx.lineWidth = 2.5; ctx.setLineDash(solid ? [] : [4, 4]);
+        ctx.beginPath(); ctx.moveTo(mx, pad - 4); ctx.lineTo(mx, h - 18); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = "#f97316"; ctx.beginPath(); ctx.arc(mx, pad - 2, 4, 0, 2 * Math.PI); ctx.fill();
+      }
+      markAt(x, true);
+      if (mode === "between") markAt(x2, false);
     }
 
     function update() {
       var z = (x - MU) / SD, below = Phi(z);
-      document.getElementById("x-val").textContent = Math.round(x);
-      document.getElementById("stat-z").textContent = (z >= 0 ? "+" : "") + z.toFixed(2);
-      document.getElementById("stat-pct").textContent = (below * 100).toFixed(1) + "%";
-      document.getElementById("stat-tail").textContent = ((1 - below) * 100).toFixed(1) + "%";
+      el("x-val").textContent = fmtX(x);
+      el("x2-val").textContent = fmtX(x2);
+      el("stat-z").textContent = (z >= 0 ? "+" : "") + z.toFixed(2);
+      el("stat-pct").textContent = (below * 100).toFixed(1) + "%";
+      el("stat-tail").textContent = ((1 - below) * 100).toFixed(1) + "%";
+      el("stat-scale").textContent = "μ " + fmtX(MU) + ", σ " + fmtX(SD);
+      var mid = Math.abs(Phi((Math.max(x, x2) - MU) / SD) - Phi((Math.min(x, x2) - MU) / SD));
+      el("stat-mid").textContent = (mid * 100).toFixed(1) + "%";
+      el("stat-mid-wrap").style.display = mode === "between" ? "" : "none";
+      el("x2-ctl").style.display = mode === "between" ? "" : "none";
       draw();
     }
 
-    var range = document.getElementById("x-range");
+    var range = el("x-range"), range2 = el("x2-range");
     range.addEventListener("input", function () { x = +range.value; update(); });
-    document.getElementById("shade-seg").addEventListener("click", function (e) {
+    range2.addEventListener("input", function () { x2 = +range2.value; update(); });
+    el("shade-seg").addEventListener("click", function (e) {
       var b = e.target.closest("button"); if (!b) return;
       mode = b.dataset.mode;
       Array.prototype.forEach.call(this.querySelectorAll("button"), function (n) { n.classList.toggle("active", n.dataset.mode === mode); });
       update();
     });
-    document.getElementById("preset-seg").addEventListener("click", function (e) {
+    el("preset-seg").addEventListener("click", function (e) {
       var b = e.target.closest("button"); if (!b) return;
-      x = MU + (+b.dataset.z) * SD; range.value = x; update();
+      x = MU + (+b.dataset.z) * SD; range.value = x; x = +range.value; update();
     });
     window.addEventListener("resize", function () { fit(); update(); });
     new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
     fit(); update();
+
+    /* URL presets, applied last (see the head comment). mu and sigma run
+       first because they rebuild the sliders x and x2 are then snapped to;
+       object key order is what SC.preset iterates in. */
+    if (window.SC && SC.preset) SC.preset({
+      mu: function (raw) { var v = parseFloat(raw); if (isFinite(v)) setScale(v, SD); },
+      sigma: function (raw) { var v = parseFloat(raw); if (isFinite(v) && v > 0) setScale(MU, v); },
+      shade: "#shade-seg",
+      x: "#x-range",
+      x2: "#x2-range"
+    });
   })();
   </script>
 

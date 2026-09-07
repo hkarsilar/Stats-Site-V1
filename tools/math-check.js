@@ -33,6 +33,8 @@
         Fisher-z correlation CI documented in CLAUDE.md
      8. the dice lab — exact outcome counts behind distributions.html's
         triangular-distribution demonstration
+     9. the printed tables — every cell of tables.html's Tables A, D and F,
+        read back off the shipped page and recomputed from viz.js
 
    Note on section 7: the tool pages compute these inline against the DOM,
    so they can't be imported. What is asserted here is that viz.js still
@@ -702,6 +704,151 @@ try {
   failures.push({ section, label: 'the dice lab could not be driven — ids or structure changed?',
     got: String(e.message), want: 'a runnable #dice-canvas script printing 5 readouts', tol: 0, err: NaN,
     src: 'distributions.html' });
+}
+
+
+/* ============================================================
+   9 — the printed tables (tables.html)
+
+   P80 put Table A, Table D and Table F on tables.html: the row-and-column
+   lookup a paper exam still asks for, generated at runtime from the same
+   viz.js functions the calculator uses. Every published table value is a
+   claim, so this section drives the SHIPPED page under a DOM shim the way
+   section 8 drives the dice lab, reads the <tbody> markup it generates, and
+   compares every cell against viz.js.
+
+   Table A's rows deserve a note: they run −3.4 up to −0.0 and then 0.0 up to
+   3.4, 70 rows rather than 69, because on a negative row the column digit
+   adds magnitude. Without the −0.0 row there is no cell for z = −0.09.
+   ============================================================ */
+head('printed tables (the shipped page)');
+
+function drivePrintedTables() {
+  const html = fs.readFileSync(path.join(ROOT, 'tables.html'), 'utf8');
+  const src = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)]
+    .map(m => m[1]).filter(s => /tb-a-body/.test(s))[0];
+  if (!src) throw new Error('no inline script mentioning tb-a-body');
+
+  const els = {};
+  const mk = () => {
+    const on = {};
+    const node = {
+      innerHTML: '', textContent: '', value: '', hidden: false, tabIndex: -1, style: {},
+      classList: { add: () => {}, remove: () => {}, toggle: () => {} },
+      getAttribute: () => null, focus: () => {},
+      addEventListener: (t, f) => { (on[t] = on[t] || []).push(f); },
+      insertAdjacentHTML: (pos, h) => { node.innerHTML += h; },
+      fire: (t, e) => (on[t] || []).forEach(f => f(e))
+    };
+    return node;
+  };
+  const c3 = { console };
+  c3.window = c3;
+  c3.document = { documentElement: {}, getElementById: id => els[id] || (els[id] = mk()) };
+  c3.getComputedStyle = () => ({ getPropertyValue: () => '#000000' });
+  c3.MutationObserver = function () { this.observe = () => {}; };
+  c3.requestAnimationFrame = cb => cb();      // chunked build completes in one pass
+  c3.addEventListener = () => {};
+  c3.Event = function () {};
+  vm.createContext(c3);
+  vm.runInContext(fs.readFileSync(path.join(ROOT, 'assets/js/viz.js'), 'utf8'), c3, { filename: 'viz.js' });
+  vm.runInContext(src, c3, { filename: 'tables.html#printed-tables' });
+
+  // the page boots showing Table A; the other two build when their tab is clicked
+  const tab = key => els['seg-table'].fire('click', { target: { closest: () => ({ getAttribute: () => key }) } });
+  tab('d'); tab('f');
+
+  const grid = key => {
+    const body = els['tb-' + key + '-body'];
+    if (!body || !body.innerHTML) throw new Error('Table ' + key.toUpperCase() + ' body stayed empty');
+    return [...body.innerHTML.matchAll(/<tr>([\s\S]*?)<\/tr>/g)].map(m => ({
+      label: (/<th[^>]*>([^<]*)<\/th>/.exec(m[1]) || [, ''])[1],
+      cells: [...m[1].matchAll(/<td[^>]*>([^<]*)<\/td>/g)].map(c => c[1])
+    }));
+  };
+  const heads = key => [...(els['tb-' + key + '-head'].innerHTML)
+    .matchAll(/<th[^>]*>([^<]*)<\/th>/g)].map(m => m[1]);
+  const foot = key => [...(els['tb-' + key + '-foot'].innerHTML)
+    .matchAll(/<th[^>]*>([^<]*)<\/th>/g)].map(m => m[1]);
+  return { grid, heads, foot };
+}
+
+try {
+  const page = drivePrintedTables();
+  const MINUS = '−';
+  const noZero = s => s.replace(/^0\./, '.');
+  const crit4 = x => x < 10 ? x.toFixed(3) : x < 100 ? x.toFixed(2) : x.toFixed(1);
+  const PCOL = [0.25, 0.2, 0.15, 0.1, 0.05, 0.025, 0.02, 0.01, 0.005, 0.0025, 0.001, 0.0005];
+  const DF_T = [...Array(30).keys()].map(i => i + 1).concat([40, 50, 60, 80, 100, 1000, Infinity]);
+  const DF_X = [...Array(30).keys()].map(i => i + 1).concat([40, 50, 60, 80, 100]);
+
+  /* ---- shape: the row and column sets the prompt specifies ---- */
+  const A = page.grid('a'), D = page.grid('d'), F = page.grid('f');
+  is('Table A row count (−3.4…−0.0 then 0.0…3.4)', A.length, 70, 'P80 spec');
+  is('Table A column count (.00….09)', A[0].cells.length, 10, 'P80 spec');
+  is('Table D row count (1–30, 40, 50, 60, 80, 100, 1000, ∞)', D.length, 37, 'P80 spec');
+  is('Table D column count', D[0].cells.length, 12, 'P80 spec');
+  is('Table F row count (1–30, 40, 50, 60, 80, 100)', F.length, 35, 'P80 spec');
+  is('Table F column count', F[0].cells.length, 12, 'P80 spec');
+  is('Table A row 0 is −3.4', A[0].label, MINUS + '3.4', 'P80 spec');
+  is('Table A carries the −0.0 row', A[34].label, MINUS + '0.0', 'P80 spec');
+  is('Table A row 35 is 0.0', A[35].label, '0.0', 'P80 spec');
+  is('Table D last row is ∞', D[36].label, '∞', 'P80 spec');
+  is('Table D foot puts 95% under the .025 column', page.foot('d')[6], '95%', 'Moore Table D');
+  is('Table D head column 6 is .025', page.heads('d')[6], '.025', 'Moore Table D');
+  is('Table F head column 5 is .05', page.heads('f')[5], '.05', 'Moore Table F');
+
+  /* ---- every cell of every table, recomputed from viz.js ---- */
+  let bad = 0, first = '';
+  const flag = (what, got, want) => { if (got !== want) { bad++; if (!first) first = `${what}: page "${got}", viz.js "${want}"`; } };
+  A.forEach((row, r) => row.cells.forEach((got, c) => {
+    const neg = r <= 34, tenth = neg ? 34 - r : r - 35;
+    const z = (neg ? -1 : 1) * (tenth / 10 + c / 100);
+    flag(`A[${row.label}][.0${c}]`, got, noZero(V.normCdf(z).toFixed(4)));
+  }));
+  D.forEach((row, r) => row.cells.forEach((got, c) => {
+    const df = DF_T[r], p = PCOL[c];
+    flag(`D[${row.label}][${p}]`, got, crit4(df === Infinity ? V.normInv(1 - p) : V.tInv(p, df)));
+  }));
+  F.forEach((row, r) => row.cells.forEach((got, c) => {
+    flag(`F[${row.label}][${PCOL[c]}]`, got, V.chiSqInv(PCOL[c], DF_X[r]).toFixed(2));
+  }));
+  is(`all ${A.length * 10 + (D.length + F.length) * 12} table cells match viz.js${first ? ' (first miss: ' + first + ')' : ''}`, bad, 0, 'viz.js');
+
+  /* ---- the published anchors, cell by cell, against PRINTED table values ----
+     These are the numbers P80 named and the ones a student reads off paper. */
+  const cellA = z => {
+    const n = Math.round(z * 100), a = Math.abs(n), tenth = Math.floor(a / 10);
+    return A[n < 0 ? 34 - tenth : 35 + tenth].cells[a % 10];
+  };
+  const cellD = (df, p) => D[DF_T.indexOf(df)].cells[PCOL.indexOf(p)];
+  const cellF = (df, p) => F[DF_X.indexOf(df)].cells[PCOL.indexOf(p)];
+  const printed = [
+    ['Table A: P(Z < −2.40)', cellA(-2.40), '.0082'],
+    ['Table A: P(Z < −2.41)', cellA(-2.41), '.0080'],
+    ['Table A: P(Z < 1.00)', cellA(1.00), '.8413'],
+    ['Table A: P(Z < −2.33)', cellA(-2.33), '.0099'],
+    ['Table A: P(Z < 0.00)', cellA(0), '.5000'],
+    ['Table A: P(Z < 1.96)', cellA(1.96), '.9750'],
+    ['Table A: P(Z < −0.09) off the −0.0 row', cellA(-0.09), '.4641'],
+    ['Table D: z* for 95% (df = ∞)', cellD(Infinity, 0.025), '1.960'],
+    ['Table D: t* at df 5, 95%', cellD(5, 0.025), '2.571'],
+    ['Table D: t* at df 10, one-tail .05', cellD(10, 0.05), '1.812'],
+    ['Table D: t* at df 30, 95%', cellD(30, 0.025), '2.042'],
+    ['Table D: t* at df 1, one-tail .0005', cellD(1, 0.0005), '636.6'],
+    ['Table D: t* at df 100, one-tail .005', cellD(100, 0.005), '2.626'],
+    ['Table F: χ² at df 6, α .05', cellF(6, 0.05), '12.59'],
+    ['Table F: χ² at df 1, α .05', cellF(1, 0.05), '3.84'],
+    ['Table F: χ² at df 1, α .001', cellF(1, 0.001), '10.83'],
+    ['Table F: χ² at df 10, α .01', cellF(10, 0.01), '23.21'],
+    ['Table F: χ² at df 30, α .05', cellF(30, 0.05), '43.77'],
+    ['Table F: χ² at df 100, α .05', cellF(100, 0.05), '124.34']
+  ];
+  for (const [label, got, want] of printed) is(label, got, want, 'Moore, McCabe & Craig Tables A/D/F');
+} catch (e) {
+  failures.push({ section, label: 'the printed tables could not be driven — ids or structure changed?',
+    got: String(e.message), want: 'a runnable tb-a-body script generating three tables', tol: 0, err: NaN,
+    src: 'tables.html' });
 }
 
 /* ============================================================

@@ -29,6 +29,51 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="assets/css/styles.css" />
+  <style>
+    /* ---- printed statistical tables (P80) ------------------------------
+       The calculator above prints exact values; these print what a book
+       prints, so a student can practice the row-and-column lookup an exam
+       still asks for. Cells are <td>, never <button>: the shared print
+       block hides every button inside a .viz, and these have to survive
+       onto paper. ------------------------------------------------------ */
+    .stab-cap { font-size: .9rem; color: var(--text-muted); margin: .6rem 0 .2rem; min-height: 1.35em; }
+    .stab-panel[hidden] { display: none; }
+    .stab-name { font-weight: 700; margin: .4rem 0 .2rem; }
+    .stab-note { color: var(--text-muted); font-size: .9rem; margin: 0 0 .6rem; }
+    .stab { border-collapse: collapse; font-family: var(--mono); font-size: .74rem; width: max-content; min-width: 100%; }
+    .stab th, .stab td { padding: .2rem .42rem; border-bottom: 1px solid var(--border); text-align: right; white-space: nowrap; }
+    .stab thead th { font-size: .7rem; color: var(--text-faint); border-bottom: 2px solid var(--border); }
+    .stab tfoot th { font-size: .7rem; color: var(--text-faint); border-top: 2px solid var(--border); border-bottom: none; }
+    .stab th[data-rh] { text-align: left; font-weight: 700; color: var(--text); border-right: 1px solid var(--border);
+                        position: sticky; left: 0; background: var(--surface); z-index: 1; }
+    .stab td { color: var(--text-muted); cursor: pointer; }
+    .stab th.hl { color: var(--primary); }
+    .stab td.on { background: color-mix(in srgb, var(--primary) 16%, transparent); color: var(--text); }
+    .stab td.mark { background: rgba(249, 115, 22, .32); color: var(--text); font-weight: 700; }
+    .stab td:focus { outline: 2px solid var(--primary); outline-offset: -2px; }
+    .stab-busy { color: var(--text-faint); font-size: .85rem; }
+
+    /* ---- the lookup drill ---- */
+    .dr-moves { font-family: var(--mono); font-size: .8rem; color: var(--text-faint); margin: 0 0 .6rem;
+                border-left: 3px solid var(--primary); padding-left: .6rem; }
+    .dr-q { font-size: 1.15rem; font-weight: 600; margin: .2rem 0 .8rem; }
+    .dr-fb { min-height: 3.2em; margin: .4rem 0 0; font-size: .95rem; color: var(--text-muted); }
+    .dr-fb .ok { color: var(--success); font-weight: 700; }
+    .dr-fb .no { color: #ef4444; font-weight: 700; }
+
+    @media print {
+      /* the drill is interactive and prints as nothing useful; the tables
+         are the handout, one to a page */
+      #drill, .stab-cap { display: none !important; }
+      .stab-panel { display: block !important; break-before: page; }
+      #tb-a { break-before: auto; }
+      .stab { font-size: 6.4pt; width: 100%; }
+      .stab th, .stab td { padding: .035cm .06cm; }
+      .stab th[data-rh] { position: static; }
+      .stab tr { break-inside: avoid; }
+      .stab thead { display: table-header-group; }
+    }
+  </style>
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   {
@@ -96,6 +141,81 @@
 
         <div class="callout key">
           <p><strong>These are exact values, not approximations.</strong> The calculator uses the same special functions (incomplete gamma and beta) that R and Python use under the hood, so the numbers match <code>pnorm</code>, <code>pt</code>, <code>pchisq</code>, and <code>pf</code> to many decimal places.</p>
+        </div>
+
+        <h2 id="printed-tables">Reading a printed table</h2>
+        <p>Most statistics exams are still taken on paper, with a calculator that does arithmetic and nothing else. The probabilities come from tables at the back of the book, and reading one is a skill in its own right: find the row, find the column, read the cell. Here are the three tables an introductory course hands you, generated from the same exact functions the calculator above uses.</p>
+        <p><strong>Table A</strong> gives the area under the standard normal curve to the <em>left</em> of a z. Rows carry z to one decimal place and columns carry the second, so z = −2.41 lives where the −2.4 row meets the .01 column, and the cell reads .0080. <strong>Table D</strong> holds critical values of t: rows are degrees of freedom, columns are the area left in the upper tail, and the confidence levels printed along the foot belong to the two-tailed interval each column builds. Its last row, df = ∞, is the normal distribution, and that row is where z* comes from. <strong>Table F</strong> does the same job for χ².</p>
+
+        <div class="callout key">
+          <p>Almost every Table A question is one of three moves. An area <strong>to the left</strong> is what the table prints, so find the cell and stop. An area <strong>to the right</strong> is 1 minus the printed value, and because the curve is symmetric you can instead look up −z and read that cell as it stands. An area <strong>between two values</strong> is a subtraction: take the smaller of the two left-areas away from the larger.</p>
+          <p>Expect the table and this calculator to disagree in the fourth decimal now and then. A two-tailed p read off Table A as 2 × .0228 = .0456 is .0455 exactly. Both are right answers to slightly different questions, because the table rounds before you double, and your marker knows it.</p>
+        </div>
+
+        <div class="viz" id="tables">
+          <p class="viz-title">📄 Printed tables</p>
+          <p class="viz-sub">Table A, Table D and Table F, laid out the way a book prints them. Point at a cell or arrow into it to light up its row and column, and click one to send it back to the calculator. Whatever the calculator currently holds is marked in orange.</p>
+
+          <div class="controls">
+            <div class="control"><label>Table</label>
+              <span class="seg" id="seg-table">
+                <button data-tb="a" class="active">A · normal</button><button data-tb="d">D · t</button><button data-tb="f">F · χ²</button>
+              </span>
+            </div>
+            <div class="control"><label>On paper</label>
+              <button class="btn btn-ghost btn-sm" id="tb-print" type="button">🖨️ Print all three</button>
+            </div>
+          </div>
+
+          <p class="stab-cap" id="tb-cap"></p>
+
+          <section class="stab-panel" id="tb-a">
+            <p class="stab-name">Table A · standard normal probabilities</p>
+            <p class="stab-note">Every cell is the area to the left of that z. Row gives the first decimal, column adds the second.</p>
+            <div class="hscroll"><table class="stab" id="stab-a"><thead id="tb-a-head"></thead><tbody id="tb-a-body"><tr><td class="stab-busy">Generated in your browser from the same functions the calculator uses.</td></tr></tbody></table></div>
+          </section>
+
+          <section class="stab-panel" id="tb-d" hidden>
+            <p class="stab-name">Table D · t distribution critical values</p>
+            <p class="stab-note">Each cell is the t with that much area above it. Confidence levels along the foot are for the matching two-tailed interval.</p>
+            <div class="hscroll"><table class="stab" id="stab-d"><thead id="tb-d-head"></thead><tbody id="tb-d-body"><tr><td class="stab-busy">Generated in your browser from the same functions the calculator uses.</td></tr></tbody><tfoot id="tb-d-foot"></tfoot></table></div>
+          </section>
+
+          <section class="stab-panel" id="tb-f" hidden>
+            <p class="stab-name">Table F · χ² critical values</p>
+            <p class="stab-note">Each cell is the χ² with that much area above it. Chi-square tests read the upper tail only.</p>
+            <div class="hscroll"><table class="stab" id="stab-f"><thead id="tb-f-head"></thead><tbody id="tb-f-body"><tr><td class="stab-busy">Generated in your browser from the same functions the calculator uses.</td></tr></tbody></table></div>
+          </section>
+        </div>
+
+        <h2>Practice the lookup</h2>
+        <p>Knowing the three moves is not the same as performing them under time pressure with a paper table in front of you. Ten questions, drawn from all three tables. Type what the table gives you; the check accepts the table's rounding as readily as the exact value, because on paper the table's rounding <em>is</em> the answer.</p>
+
+        <div class="viz" id="drill">
+          <p class="viz-title">🎯 Look it up</p>
+          <p class="viz-sub">No timer, no score kept anywhere. Press Enter to check, then Enter again for the next question.</p>
+
+          <p class="dr-moves">left = read the cell &nbsp;·&nbsp; right = 1 − read, or read −z &nbsp;·&nbsp; between = larger − smaller</p>
+
+          <p class="dr-q" id="dr-q">The first question appears here.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:min(220px,100%)">
+              <label>Your answer <span class="val" id="dr-hint"></span></label>
+              <input type="number" id="dr-in" class="num" step="any" style="width:100%" />
+            </div>
+            <div class="control"><label>&nbsp;</label><button class="btn btn-primary btn-sm" id="dr-check" type="button">Check</button></div>
+            <div class="control"><label>&nbsp;</label><button class="btn btn-ghost btn-sm" id="dr-next" type="button">Next</button></div>
+            <div class="control"><label>&nbsp;</label><button class="btn btn-ghost btn-sm" id="dr-again" type="button">Start over</button></div>
+          </div>
+
+          <p class="dr-fb" id="dr-fb" role="status"></p>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Question</span><span class="v" id="dr-num">—</span></div>
+            <div class="stat"><span class="k">Correct so far</span><span class="v" id="dr-score">—</span></div>
+            <div class="stat"><span class="k">Table in play</span><span class="v" id="dr-which" style="font-size:1rem">—</span></div>
+          </div>
         </div>
 
         <h2>Common critical values worth memorizing</h2>
@@ -352,6 +472,435 @@
     if (window.ResizeObserver) new ResizeObserver(onResize).observe(canvas);
     V.onTheme(draw);
     update();
+  })();
+  </script>
+
+  <!-- ============ printed tables A / D / F (P80) ============
+       Rendered from the same VIZ functions the calculator uses, so this page
+       has exactly one source for every number on it. Cells are <td>, never
+       <button>: the shared print block hides every button inside a .viz, and
+       these tables are meant to survive onto paper.
+
+       tools/math-check.js section 9 drives this block under a DOM shim and
+       asserts a grid of the generated cells against viz.js. It finds the
+       block by the literal "tb-a-body", and it needs getElementById,
+       insertAdjacentHTML and a synchronous requestAnimationFrame; the two
+       query helpers below are written to return nothing rather than throw
+       when the shim has no querySelector. -->
+  <script>
+  (function () {
+    "use strict";
+    /* math-check section 9 finds this block by the marker "tb-a-body" */
+    var V = window.VIZ;
+    var el = function (id) { return document.getElementById(id); };
+    var all = function (root, sel) { return root && root.querySelectorAll ? Array.prototype.slice.call(root.querySelectorAll(sel)) : []; };
+    var one = function (root, sel) { return root && root.querySelector ? root.querySelector(sel) : null; };
+    var raf = function (fn) { return (window.requestAnimationFrame || function (f) { return setTimeout(f, 16); })(fn); };
+
+    var MINUS = "−", INF = "∞";
+    /* the twelve upper-tail areas Table D and Table F are printed with, and
+       the two-tailed confidence level each column builds */
+    var P = [0.25, 0.2, 0.15, 0.1, 0.05, 0.025, 0.02, 0.01, 0.005, 0.0025, 0.001, 0.0005];
+    var PLAB = [".25", ".20", ".15", ".10", ".05", ".025", ".02", ".01", ".005", ".0025", ".001", ".0005"];
+    var CONF = ["50%", "60%", "70%", "80%", "90%", "95%", "96%", "98%", "99%", "99.5%", "99.8%", "99.9%"];
+
+    var DF_T = [], DF_X = [], i;
+    for (i = 1; i <= 30; i++) { DF_T.push(i); DF_X.push(i); }
+    [40, 50, 60, 80, 100].forEach(function (d) { DF_T.push(d); DF_X.push(d); });
+    DF_T.push(1000); DF_T.push(Infinity);
+
+    /* Table A rows run −3.4 up to −0.0 and then 0.0 up to 3.4, exactly as a
+       book prints them: on a negative row the column digit adds magnitude,
+       so the −2.4 row and the .01 column is z = −2.41. The −0.0 row is what
+       makes z = −0.09 reachable at all, so it is not a duplicate of 0.0. */
+    var ROWS_A = [];
+    for (i = 34; i >= 0; i--) ROWS_A.push({ t: i, neg: true });
+    for (i = 0; i <= 34; i++) ROWS_A.push({ t: i, neg: false });
+    function zAt(ri, ci) { var r = ROWS_A[ri], m = r.t / 10 + ci / 100; return r.neg ? -m : m; }
+
+    function noZero(s) { return s.replace(/^0\./, "."); }
+    function area4(x) { return noZero(x.toFixed(4)); }
+    // four significant figures, which is how Table D prints t: 2.571, 12.71, 636.6
+    function crit4(x) { return x < 10 ? x.toFixed(3) : x < 100 ? x.toFixed(2) : x.toFixed(1); }
+    function crit2(x) { return x.toFixed(2); }
+    function fz(z) { return (z < 0 ? MINUS : "") + Math.abs(z).toFixed(2); }
+    function trim(x) { return noZero(String(x)); }
+    function pHead() {
+      return function () {
+        var h = '<tr><th>df</th>';
+        for (var j = 0; j < 12; j++) h += '<th data-ch="' + j + '">' + PLAB[j] + '</th>';
+        return h + '</tr>';
+      };
+    }
+
+    var SPEC = {
+      a: {
+        cols: 10, chunk: 12, rows: ROWS_A.length, name: "A",
+        head: function () { var h = '<tr><th>z</th>', j; for (j = 0; j < 10; j++) h += '<th data-ch="' + j + '">.0' + j + '</th>'; return h + '</tr>'; },
+        rowLabel: function (ri) { var r = ROWS_A[ri]; return (r.neg ? MINUS : "") + (r.t / 10).toFixed(1); },
+        cell: function (ri, ci) { return area4(V.normCdf(zAt(ri, ci))); },
+        foot: null
+      },
+      d: {
+        cols: 12, chunk: 4, rows: DF_T.length, name: "D",
+        head: pHead(),
+        rowLabel: function (ri) { return DF_T[ri] === Infinity ? INF : String(DF_T[ri]); },
+        cell: function (ri, ci) { var df = DF_T[ri]; return crit4(df === Infinity ? V.normInv(1 - P[ci]) : V.tInv(P[ci], df)); },
+        foot: function () { var h = '<tr><th>C</th>', j; for (j = 0; j < 12; j++) h += '<th data-ch="' + j + '">' + CONF[j] + '</th>'; return h + '</tr>'; }
+      },
+      f: {
+        cols: 12, chunk: 4, rows: DF_X.length, name: "F",
+        head: pHead(),
+        rowLabel: function (ri) { return String(DF_X[ri]); },
+        cell: function (ri, ci) { return crit2(V.chiSqInv(P[ci], DF_X[ri])); },
+        foot: null
+      }
+    };
+
+    var built = { a: false, d: false, f: false };
+    var cells = {}, rowHeads = {}, colHeads = {}, focusIx = { a: 0, d: 0, f: 0 };
+    var current = "a", hovCell = null, marked = [];
+
+    function rowHtml(key, ri) {
+      var sp = SPEC[key], h = '<tr><th scope="row" data-rh="' + ri + '">' + sp.rowLabel(ri) + '</th>', ci;
+      for (ci = 0; ci < sp.cols; ci++) h += '<td tabindex="-1" data-r="' + ri + '" data-c="' + ci + '">' + sp.cell(ri, ci) + '</td>';
+      return h + '</tr>';
+    }
+    /* Chunked because tInv and chiSqInv are bisections: a whole Table D is
+       ~430 of them and blocks the main thread for the best part of a second.
+       Printing needs the finished table in one go, so it asks for sync. */
+    function build(key, sync) {
+      if (built[key]) return;
+      var sp = SPEC[key], body = el("tb-" + key + "-body"), ri = 0;
+      el("tb-" + key + "-head").innerHTML = sp.head();
+      if (sp.foot) el("tb-" + key + "-foot").innerHTML = sp.foot();
+      body.innerHTML = "";
+      (function step() {
+        var end = sync ? sp.rows : Math.min(sp.rows, ri + sp.chunk), h = "";
+        for (; ri < end; ri++) h += rowHtml(key, ri);
+        body.insertAdjacentHTML("beforeend", h);
+        if (ri < sp.rows) { raf(step); return; }
+        built[key] = true;
+        var panel = el("tb-" + key);
+        cells[key] = all(panel, "td[data-r]");
+        rowHeads[key] = all(panel, "th[data-rh]");
+        colHeads[key] = all(panel, "th[data-ch]");
+        rove(key, focusIx[key]);
+        mark(false);
+      })();
+    }
+
+    function cellAt(key, r, c) { var l = cells[key]; return l && l.length ? l[r * SPEC[key].cols + c] : null; }
+    function cross(key, r, c) {
+      (rowHeads[key] || []).forEach(function (th) { th.classList.toggle("hl", +th.getAttribute("data-rh") === r); });
+      (colHeads[key] || []).forEach(function (th) { th.classList.toggle("hl", +th.getAttribute("data-ch") === c); });
+      if (hovCell) hovCell.classList.remove("on");
+      hovCell = (r >= 0 && c >= 0) ? cellAt(key, r, c) : null;
+      if (hovCell) hovCell.classList.add("on");
+    }
+    function rove(key, ix) {
+      var l = cells[key]; if (!l || !l.length) return;
+      ix = Math.max(0, Math.min(l.length - 1, ix));
+      if (l[focusIx[key]]) l[focusIx[key]].tabIndex = -1;
+      focusIx[key] = ix; l[ix].tabIndex = 0;
+    }
+
+    /* ---- what the calculator currently holds, read off its own controls ---- */
+    function calcState() {
+      var d = one(el("seg-dist"), "button.active"), m = one(el("seg-mode"), "button.active"), t = one(el("seg-tail"), "button.active");
+      if (!d || !m || !t) return null;
+      return {
+        dist: d.getAttribute("data-d"), mode: m.getAttribute("data-m"), tail: t.getAttribute("data-t"),
+        stat: parseFloat(el("in-stat").value), alpha: parseFloat(el("in-alpha").value),
+        df: Math.max(1, Math.round(parseFloat(el("in-df1").value) || 1))
+      };
+    }
+    var critCache = {};
+    function critRow(kind, df) {
+      var k = kind + ":" + df;
+      if (!critCache[k]) critCache[k] = P.map(function (p) {
+        return kind === "t" ? (df === Infinity ? V.normInv(1 - p) : V.tInv(p, df)) : V.chiSqInv(p, df);
+      });
+      return critCache[k];
+    }
+    function nearestRow(list, df) { var best = list[0], j; for (j = 0; j < list.length; j++) if (list[j] <= df) best = list[j]; return best; }
+    function colFor(a) { var j; for (j = 0; j < P.length; j++) if (Math.abs(P[j] - a) < 1e-9) return j; return -1; }
+    function aLoc(z) {
+      var n = Math.round(z * 100), a = Math.abs(n), tenth = Math.floor(a / 10);
+      if (tenth > 34) return null;
+      return { r: n < 0 ? 34 - tenth : 35 + tenth, c: a % 10 };
+    }
+
+    /* Works out which cell the calculator is sitting on, writes the caption,
+       and paints the mark. `follow` switches the visible table to the one
+       that holds the answer, but only when it is already built, so typing in
+       the calculator can never trigger a surprise half-second of bisection. */
+    function mark(follow) {
+      var cap = el("tb-cap"); if (!cap) return;
+      marked.forEach(function (td) { td.classList.remove("mark"); });
+      marked = [];
+      var s = calcState();
+      if (!s) { cap.textContent = ""; return; }
+      var key = null, want = [], txt = "";
+
+      if (s.dist === "f") {
+        txt = "The F distribution is indexed by two degrees of freedom, so it has no one-page printed table here. The calculator above covers it.";
+      } else if (s.mode === "p" && s.dist === "z") {
+        var loc = isFinite(s.stat) ? aLoc(s.stat) : null;
+        if (!loc) {
+          txt = "z = " + (isFinite(s.stat) ? fz(s.stat) : "?") + " runs off the end of Table A, which stops at " + MINUS + "3.49 and 3.49.";
+        } else {
+          key = "a"; want = [[loc.r, loc.c]];
+          txt = "Calculator: z = " + fz(s.stat) + " → Table A, row " + SPEC.a.rowLabel(loc.r) + ", column .0" + loc.c + ".";
+        }
+      } else if (s.mode === "p") {
+        key = s.dist === "t" ? "d" : "f";
+        var list = key === "d" ? DF_T : DF_X, use = nearestRow(list, s.df), ri = list.indexOf(use);
+        var stat = s.dist === "t" ? Math.abs(s.stat) : s.stat;
+        var cr = critRow(key === "d" ? "t" : "x", use), j = -1, q;
+        for (q = 0; q < cr.length; q++) if (isFinite(stat) && stat >= cr[q]) j = q;
+        if (j >= 0) want.push([ri, j]);
+        if (j + 1 < cr.length) want.push([ri, j + 1]);
+        var range = j < 0 ? "greater than " + PLAB[0]
+                  : j === cr.length - 1 ? "less than " + PLAB[cr.length - 1]
+                  : "between " + PLAB[j + 1] + " and " + PLAB[j];
+        txt = "Calculator: " + (key === "d" ? "t = " : "χ² = ") + (isFinite(stat) ? stat.toFixed(2) : "?") +
+              " at df = " + use + " → the upper-tail area is " + range + " on Table " + SPEC[key].name + ".";
+        if (key === "d" && s.tail === "two") txt += " Double it for a two-tailed test.";
+        if (use !== s.df) txt += " There is no df = " + s.df + " row, so this reads df = " + use + ", the conservative one below it.";
+      } else {
+        key = s.dist === "chi2" ? "f" : "d";
+        var two = (s.dist === "z" || s.dist === "t") && s.tail === "two";
+        var pa = two ? s.alpha / 2 : s.alpha, ci = colFor(pa);
+        var list2 = key === "d" ? DF_T : DF_X;
+        var use2 = s.dist === "z" ? Infinity : nearestRow(list2, s.df), ri2 = list2.indexOf(use2);
+        if (ci < 0) {
+          txt = "Table " + SPEC[key].name + " has no column for an upper-tail area of " + trim(pa) + ". Printed tables carry twelve columns; the calculator carries all of them.";
+          key = null;
+        } else {
+          want = [[ri2, ci]];
+          txt = "Calculator: critical value at α = " + trim(s.alpha) + (two ? ", two-tailed" : "") +
+                " → Table " + SPEC[key].name + ", row " + (use2 === Infinity ? INF : use2) + ", column " + PLAB[ci] + ".";
+          if (s.dist === "z") txt += " z* always comes off that bottom row.";
+          if (s.dist !== "z" && use2 !== s.df) txt += " There is no df = " + s.df + " row, so this reads df = " + use2 + ".";
+        }
+      }
+
+      cap.textContent = txt;
+      if (!key) return;
+      if (follow && built[key] && current !== key) activate(key);
+      if (built[key]) want.forEach(function (rc) {
+        var td = cellAt(key, rc[0], rc[1]);
+        if (td) { td.classList.add("mark"); marked.push(td); }
+      });
+    }
+
+    function activate(key) {
+      ["a", "d", "f"].forEach(function (k) { var p = el("tb-" + k); if (p) p.hidden = (k !== key); });
+      all(el("seg-table"), "button").forEach(function (b) { b.classList.toggle("active", b.getAttribute("data-tb") === key); });
+      current = key;
+    }
+    function show(key) { activate(key); build(key, false); mark(false); }
+
+    /* ---- clicking a cell drives the calculator through its OWN controls,
+            so there is no second code path to keep in step ---- */
+    function segPick(id, attr, val) { var b = one(el(id), 'button[' + attr + '="' + val + '"]'); if (b) b.click(); }
+    function setVal(id, v) { var n = el(id); if (!n) return; n.value = String(v); n.dispatchEvent(new Event("input", { bubbles: true })); }
+    function pickCell(key, r, c) {
+      if (key === "a") {
+        segPick("seg-dist", "data-d", "z"); segPick("seg-mode", "data-m", "p");
+        setVal("in-stat", zAt(r, c));
+      } else if (key === "d") {
+        var df = DF_T[r];
+        segPick("seg-dist", "data-d", df === Infinity ? "z" : "t");
+        segPick("seg-mode", "data-m", "crit"); segPick("seg-tail", "data-t", "right");
+        if (df !== Infinity) setVal("in-df1", df);
+        setVal("in-alpha", P[c]);
+      } else {
+        segPick("seg-dist", "data-d", "chi2"); segPick("seg-mode", "data-m", "crit");
+        setVal("in-df1", DF_X[r]); setVal("in-alpha", P[c]);
+      }
+      mark(false);
+    }
+
+    function tdOf(e) { var t = e.target; return t && t.closest ? t.closest("td[data-r]") : null; }
+    function keys(key, e) {
+      var sp = SPEC[key], l = cells[key];
+      if (!l || !l.length) return;
+      var td = tdOf(e); if (!td) return;
+      var r = +td.getAttribute("data-r"), c = +td.getAttribute("data-c"), nr = r, nc = c, k = e.key;
+      if (k === "ArrowRight") nc++;
+      else if (k === "ArrowLeft") nc--;
+      else if (k === "ArrowDown") nr++;
+      else if (k === "ArrowUp") nr--;
+      else if (k === "Home") nc = 0;
+      else if (k === "End") nc = sp.cols - 1;
+      else if (k === "PageDown") nr += 10;
+      else if (k === "PageUp") nr -= 10;
+      else if (k === "Enter" || k === " ") { e.preventDefault(); pickCell(key, r, c); return; }
+      else return;
+      e.preventDefault();
+      nr = Math.max(0, Math.min(sp.rows - 1, nr));
+      nc = Math.max(0, Math.min(sp.cols - 1, nc));
+      var ix = nr * sp.cols + nc;
+      rove(key, ix); l[ix].focus();
+    }
+
+    ["a", "d", "f"].forEach(function (key) {
+      var panel = el("tb-" + key);
+      if (!panel || !panel.addEventListener) return;
+      panel.addEventListener("click", function (e) { var td = tdOf(e); if (td) pickCell(key, +td.getAttribute("data-r"), +td.getAttribute("data-c")); });
+      panel.addEventListener("mouseover", function (e) { var td = tdOf(e); if (td) cross(key, +td.getAttribute("data-r"), +td.getAttribute("data-c")); });
+      panel.addEventListener("mouseleave", function () { cross(key, -1, -1); });
+      panel.addEventListener("focusin", function (e) {
+        var td = tdOf(e); if (!td) return;
+        cross(key, +td.getAttribute("data-r"), +td.getAttribute("data-c"));
+        rove(key, cells[key].indexOf(td));
+      });
+      panel.addEventListener("keydown", function (e) { keys(key, e); });
+    });
+
+    var segT = el("seg-table");
+    if (segT && segT.addEventListener) segT.addEventListener("click", function (e) {
+      var b = e.target.closest ? e.target.closest("button") : e.target;
+      if (!b || !b.getAttribute) return;
+      show(b.getAttribute("data-tb"));
+    });
+
+    var calc = el("calc");
+    if (calc && calc.addEventListener) {
+      calc.addEventListener("input", function () { mark(true); });
+      calc.addEventListener("click", function () { mark(true); });
+    }
+
+    function buildAll() { build("a", true); build("d", true); build("f", true); }
+    var pb = el("tb-print");
+    if (pb && pb.addEventListener) pb.addEventListener("click", function () { buildAll(); window.print(); });
+    window.addEventListener("beforeprint", buildAll);
+
+    show("a");
+  })();
+  </script>
+
+  <!-- ============ the lookup drill (P80) ============
+       Ten generated table tasks. Nothing is stored and nothing is timed:
+       this is a lookup rehearsal, not a graded exercise. The check accepts
+       the table's own rounding as well as the exact value, because on paper
+       the table's rounding IS the answer. -->
+  <script>
+  (function () {
+    "use strict";
+    var V = window.VIZ;
+    var el = function (id) { return document.getElementById(id); };
+    var MINUS = "−", CHI = "χ²";
+    function noZero(s) { return s.replace(/^0\./, "."); }
+    function a4(x) { return noZero(x.toFixed(4)); }
+    function c4(x) { return x < 10 ? x.toFixed(3) : x < 100 ? x.toFixed(2) : x.toFixed(1); }
+    function c2(x) { return x.toFixed(2); }
+    function fz(z) { return (z < 0 ? MINUS : "") + Math.abs(z).toFixed(2); }
+    function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+    function gridZ(lo, hi) {
+      var a = Math.round(lo * 100), b = Math.round(hi * 100);
+      return (a + Math.floor(Math.random() * (b - a + 1))) / 100;
+    }
+    function cellOf(z) {
+      var n = Math.round(z * 100), a = Math.abs(n);
+      return { row: (n < 0 ? MINUS : "") + (Math.floor(a / 10) / 10).toFixed(1), col: ".0" + (a % 10) };
+    }
+
+    var DFT = [], DFX = [], i;
+    for (i = 1; i <= 30; i++) { DFT.push(i); DFX.push(i); }
+    [40, 50, 60, 80, 100].forEach(function (d) { DFT.push(d); DFX.push(d); });
+    var CONF = [[0.9, "90%", ".05"], [0.95, "95%", ".025"], [0.98, "98%", ".02"], [0.99, "99%", ".005"]];
+    var ALPHAS = [[0.1, ".10"], [0.05, ".05"], [0.025, ".025"], [0.01, ".01"], [0.005, ".005"], [0.001, ".001"]];
+
+    function critTol(v) { return Math.max(6e-3, Math.abs(v) * 6e-4); }
+
+    function makeTask(shape) {
+      var z, z2, v, cA, cB, df, cf, al, inf;
+      if (shape === "left") {
+        z = gridZ(-2.99, 2.99); v = V.normCdf(z); cA = cellOf(z);
+        return { q: "Table A: what is P(Z < " + fz(z) + ")?", a: v, tol: 6e-4, show: a4(v),
+                 hint: "an area, 4 decimals", tbl: "Table A",
+                 why: "It sits where row " + cA.row + " meets column " + cA.col + ". A left area is what Table A prints, so that is the whole answer." };
+      }
+      if (shape === "right") {
+        z = gridZ(-2.99, 2.99); v = 1 - V.normCdf(z); cA = cellOf(-z);
+        return { q: "Table A: what is P(Z > " + fz(z) + ")?", a: v, tol: 6e-4, show: a4(v),
+                 hint: "an area, 4 decimals", tbl: "Table A",
+                 why: "Table A prints " + a4(V.normCdf(z)) + " to the left of " + fz(z) + ", and a right area is 1 minus that. By symmetry you can also read " + fz(-z) + " straight off row " + cA.row + ", column " + cA.col + "." };
+      }
+      if (shape === "between") {
+        z = gridZ(-2.5, 2.1); z2 = gridZ(z + 0.3, 2.5); v = V.normCdf(z2) - V.normCdf(z);
+        return { q: "Table A: what is P(" + fz(z) + " < Z < " + fz(z2) + ")?", a: v, tol: 6e-4, show: a4(v),
+                 hint: "an area, 4 decimals", tbl: "Table A",
+                 why: "Larger left area minus smaller: " + a4(V.normCdf(z2)) + " minus " + a4(V.normCdf(z)) + "." };
+      }
+      if (shape === "invz") {
+        z = gridZ(-2.5, 2.5); v = V.normCdf(z); cA = cellOf(z);
+        return { q: "Table A backwards: which z has an area of " + a4(v) + " to its left?", a: z, tol: 6e-3, show: fz(z),
+                 hint: "a z, 2 decimals", tbl: "Table A",
+                 why: "Hunt for " + a4(v) + " in the body of the table. It sits in row " + cA.row + ", column " + cA.col + "." };
+      }
+      if (shape === "tstar") {
+        cf = pick(CONF); inf = Math.random() < 0.25; df = inf ? Infinity : pick(DFT);
+        v = inf ? V.normInv(1 - (1 - cf[0]) / 2) : V.tInv((1 - cf[0]) / 2, df);
+        return {
+          q: inf ? "Table D, bottom row: what is z* for a " + cf[1] + " confidence interval?"
+                 : "Table D: what is t* for a " + cf[1] + " confidence interval with df = " + df + "?",
+          a: v, tol: critTol(v), show: c4(v), hint: "a critical value, as Table D prints it", tbl: "Table D",
+          why: "Find " + cf[1] + " along the foot of Table D, which sits under the " + cf[2] + " column, then run up to the " +
+               (inf ? "∞ row." : "df = " + df + " row.")
+        };
+      }
+      df = pick(DFX); al = pick(ALPHAS); v = V.chiSqInv(al[0], df);
+      return { q: "Table F: what is the " + CHI + " critical value for df = " + df + " at α = " + al[1] + "?",
+               a: v, tol: critTol(v), show: c2(v), hint: "a critical value, as Table F prints it", tbl: "Table F",
+               why: "Row df = " + df + ", column " + al[1] + " on Table F. Anything larger than that critical value is significant at " + al[1] + "." };
+    }
+
+    var PLAN = ["left", "right", "between", "invz", "tstar", "chi", "left", "right", "tstar", "chi"];
+    function shuffle(a) { var j, k, t; for (j = a.length - 1; j > 0; j--) { k = Math.floor(Math.random() * (j + 1)); t = a[j]; a[j] = a[k]; a[k] = t; } return a; }
+
+    var tasks = [], ix = 0, score = 0, done = 0, answered = false;
+
+    function render(focus) {
+      var t = tasks[ix];
+      el("dr-q").textContent = t.q;
+      el("dr-hint").textContent = t.hint;
+      el("dr-which").textContent = t.tbl;
+      el("dr-num").textContent = (ix + 1) + " of " + tasks.length;
+      el("dr-score").textContent = score + " of " + done;
+      el("dr-fb").textContent = "";
+      el("dr-in").value = "";
+      if (focus) el("dr-in").focus();
+    }
+    function check() {
+      if (answered) { next(); return; }
+      var t = tasks[ix], raw = el("dr-in").value.trim();
+      if (raw === "") { el("dr-fb").textContent = "Type a number first, then press Enter."; return; }
+      var got = parseFloat(raw);
+      if (!isFinite(got)) { el("dr-fb").textContent = "That is not a number a table could give you."; return; }
+      answered = true; done++;
+      var ok = Math.abs(got - t.a) <= t.tol;
+      if (ok) score++;
+      el("dr-fb").innerHTML = (ok ? '<span class="ok">Correct.</span> The table gives ' : '<span class="no">Not quite.</span> The table gives ') + t.show + '. ' + t.why +
+        (ix === tasks.length - 1 ? " That was the tenth. Start over for a fresh set." : "");
+      el("dr-score").textContent = score + " of " + done;
+    }
+    function next() { if (ix < tasks.length - 1) { ix++; answered = false; render(true); } }
+    function start(focus) { tasks = shuffle(PLAN.slice()).map(makeTask); ix = 0; score = 0; done = 0; answered = false; render(focus); }
+
+    el("dr-check").addEventListener("click", check);
+    el("dr-next").addEventListener("click", next);
+    el("dr-again").addEventListener("click", function () { start(true); });
+    el("dr-in").addEventListener("keydown", function (e) {
+      if (e.key !== "Enter") return;
+      e.preventDefault();
+      if (answered) next(); else check();
+    });
+
+    start(false);
   })();
   </script>
 </body>
