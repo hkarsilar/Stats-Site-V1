@@ -92,8 +92,61 @@
         <p>Center isn't the whole story: two datasets can share a mean but look completely different. <strong>Spread</strong> captures how tightly the values cluster:</p>
         <ul>
           <li>The <strong>range</strong> is biggest minus smallest. Simple, but driven entirely by the two extremes.</li>
+          <li>The <strong>interquartile range</strong> is the width of the middle half of the data, so it ignores both tails on purpose. The next section builds it.</li>
           <li>The <strong>standard deviation</strong> is, roughly, the <em>typical distance of a value from the mean</em>. Small SD means the data huddles near the center; large SD means it's spread wide.</li>
         </ul>
+
+        <h2>Quartiles, the five-number summary and the 1.5 × IQR rule</h2>
+        <p>The median cuts a sorted batch in half. Cut each half in half again and you have the <strong>quartiles</strong>. Q1 sits a quarter of the way up the sorted values, Q3 three quarters of the way up, and the gap between them is the <strong>interquartile range</strong>. Both quartiles are positions rather than magnitudes, so a runaway value can no more drag them than it can drag the median.</p>
+        <p>The smallest value, Q1, the median, Q3 and the largest value are the <strong>five-number summary</strong>, and they are exactly what a boxplot draws. The step-through below builds one on eleven students' task times, in the order you would work it on paper.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="fnviz">
+          <p class="viz-title">🎯 The Five-Number Summary, Step by Step</p>
+          <p class="viz-sub">Eleven students, and how long each took over the same task. Step through the five buttons to build the summary the textbook way: split the sorted times at the median, then take the median of each half. Then drag the slowest student further out and watch what refuses to move.</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>Build it up</label>
+              <div class="seg" id="fn-steps">
+                <button type="button" data-step="1" class="active">1 · Sort</button>
+                <button type="button" data-step="2">2 · Median</button>
+                <button type="button" data-step="3">3 · Quartiles</button>
+                <button type="button" data-step="4">4 · Fences</button>
+                <button type="button" data-step="5">5 · Boxplot</button>
+              </div>
+            </div>
+            <div class="control" style="flex:1;min-width:min(190px,100%)">
+              <label>Slowest time <span class="val" id="fn-max-val">52</span> min</label>
+              <input type="range" id="fn-max" min="31" max="70" step="1" value="52" style="width:100%" />
+            </div>
+          </div>
+
+          <canvas id="fn-canvas" style="--viz-ar: 12 / 5"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Min</span><span class="v" id="fn-min">—</span></div>
+            <div class="stat"><span class="k">Q1</span><span class="v" id="fn-q1">—</span></div>
+            <div class="stat"><span class="k">Median</span><span class="v" id="fn-med">—</span></div>
+            <div class="stat"><span class="k">Q3</span><span class="v" id="fn-q3">—</span></div>
+            <div class="stat"><span class="k">Max</span><span class="v" id="fn-maxs">—</span></div>
+          </div>
+          <div class="stat-row">
+            <div class="stat"><span class="k">IQR</span><span class="v" id="fn-iqr">—</span></div>
+            <div class="stat"><span class="k">Lower fence</span><span class="v" id="fn-lo">—</span></div>
+            <div class="stat"><span class="k">Upper fence</span><span class="v" id="fn-hi">—</span></div>
+            <div class="stat"><span class="k">Flagged</span><span class="v" id="fn-out">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>Steps 4 and 5 are the <strong>1.5 × IQR rule</strong>. Measure one and a half interquartile ranges below Q1 and the same distance above Q3; those two marks are the <strong>fences</strong>, and any value beyond them gets drawn as its own point instead of being swallowed by a whisker. The whiskers reach only as far as the most extreme value still inside a fence, which is why the two are rarely the same length. Now drag the slowest time and notice what stays put. Q1, Q3, the IQR and both fences hold still all the way to 70 minutes, because not one of them reads how far out that value has gone. Only the flag and the right-hand whisker respond. A flag is a prompt rather than a verdict: it means look at this row, not delete it, and <a href="../../data/outliers-in-practice/">Outliers: Detect, Investigate, Decide</a> takes the question from there.</p>
+
+        <div class="callout key">
+          <p><strong>Which halves? Two answers, and your exam wants one of them.</strong> The textbook method cuts the sorted list at the median and takes the median of each piece. Where <em>n</em> is odd, the middle value belongs to neither piece and sits the round out. That is what to do on paper, and it is what the picture above draws. Software mostly disagrees: R, Python and Excel interpolate between neighboring values, and SPSS's Frequencies menu applies a third rule again. On the eighteen contest totals below, the textbook method gives Q1 = 26 and Q3 = 39, R and Python give 26.25 and 38.25, and SPSS gives 26 and 40.75. All three are defensible and none is a blunder; the only real mistake is mixing them inside one answer. The <a href="../../descriptives.html">descriptives calculator</a> carries a switch for all three, and every other picture on this site is drawn the R/Python way.</p>
+        </div>
+
+        <p>Lined up together, the three centers say which way a batch leans. Eighteen finishing totals from a <a href="../../datasets.html#hotdog">competitive eating contest</a> have a mean of 34.39, a median of 28.75 and a mode of 26. Mean above median above mode is the signature of a <strong>right-skewed</strong> batch: most finishers bunch up low, and a long thin tail runs off toward the winner's 71. Reverse that order and the skew is to the left. When all three land in more or less the same place, the shape is roughly symmetric. The mean travels furthest because it is the only one of the three that reads a value's actual size, so the gap between mean and median is itself a rough measure of how hard the tail is pulling. Better than inferring the shape is seeing it, which is <a href="../../stats-1/visualizing-data/">§1.4</a>'s job: it draws the histogram and works through reading a boxplot.</p>
 
         <h2>Where the standard deviation comes from</h2>
         <p>A value's <strong>deviation</strong> is how far it sits from the mean, with a sign attached: above the mean is positive, below is negative. That is where the name comes from. Add all the deviations up, though, and the total is always zero, because the mean is the balance point of the data. Averaging them directly gets you nowhere. Squaring is the standard way around that, and the four steps below build the rest of the number from there.</p>
@@ -143,7 +196,7 @@
           <p><strong>Why it matters:</strong> "center and spread" is the vocabulary you'll use to describe every dataset for the rest of the course. Choosing the right summary, and knowing when the mean is lying to you, is a real, practical skill.</p>
         </div>
 
-        <p class="pb-xref">Want to work a mean, median and standard deviation out by hand before trusting a calculator with them? <a href="../../problems.html#p1-2">Problem 2 in the practice problems</a> takes a nine-day dataset with one very odd day in it.</p>
+        <p class="pb-xref">Want to work these out by hand before trusting a calculator with them? <a href="../../problems.html#p1-2">Problem 2 in the practice problems</a> takes a mean, a median and a standard deviation over a nine-day dataset with one very odd day in it, and <a href="../../problems.html#p1-16">problem 16</a> builds a five-number summary and a boxplot from fifteen sorted values, textbook quartiles and all.</p>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
@@ -179,12 +232,22 @@
        shared coarse-pointer grab radius (already in the precached shell). -->
   <script src="../../assets/js/viz.js"></script>
 
-  <!-- ============ Describing-data visualization ============ -->
+  <!-- ============ Describing-data visualization ============
+       URL preset (window.SC.preset, applied after boot):
+         ?data=<numbers>   comma- or space-separated, up to 200 values. They
+                           replace the seeded dots and become what Reset
+                           returns to, and the axis rescales around them.
+       Anything that is not a plain number, or more than 200 values, and the
+       parameter is ignored: the plain lesson loads. ==================== -->
   <script>
   (function () {
     "use strict";
-    var LO = 0, HI = 100;
-    var pts = [62, 65, 68, 70, 71, 73, 76];
+    /* The axis is a window rather than a constant, so a ?data= URL can carry
+       reaction times or exam marks and still land on a readable number line.
+       With no parameter these are the 0-100 defaults the lesson shipped with. */
+    var LO = 0, HI = 100, TICKS = [0, 25, 50, 75, 100];
+    var seed = [62, 65, 68, 70, 71, 73, 76];      // what Reset returns to
+    var pts = seed.slice();
     var canvas = document.getElementById("dd-canvas"), ctx, W = 0, H = 200;
     var dragging = -1;
 
@@ -213,16 +276,20 @@
       ctx.strokeStyle = css("--border"); ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(24, baseY); ctx.lineTo(W - 24, baseY); ctx.stroke();
       ctx.fillStyle = css("--text-faint"); ctx.font = "11px ui-monospace, monospace"; ctx.textAlign = "center";
-      for (var t = 0; t <= 100; t += 25) { var tx = valToPx(t); ctx.fillText(t, tx, baseY + 18); ctx.beginPath(); ctx.moveTo(tx, baseY); ctx.lineTo(tx, baseY + 4); ctx.stroke(); }
+      var dp = TICKS.every(function (t) { return Math.abs(t - Math.round(t)) < 1e-9; }) ? 0 : 1;
+      for (var i = 0; i < TICKS.length; i++) { var tx = valToPx(TICKS[i]); ctx.fillText(TICKS[i].toFixed(dp), tx, baseY + 18); ctx.beginPath(); ctx.moveTo(tx, baseY); ctx.lineTo(tx, baseY + 4); ctx.stroke(); }
 
       // stacked dots
       var counts = {};
       var order = pts.map(function (v, i) { return { v: v, i: i }; }).sort(function (a, b) { return a.v - b.v; });
       ctx.fillStyle = css("--primary");
       for (var k = 0; k < order.length; k++) {
-        var key = Math.round(order[k].v);
+        var cx = valToPx(order[k].v);
+        // stack by pixel proximity, not by rounded value: a ?data= set spanning
+        // 0.6 to 3.4 would otherwise pile every dot into three columns
+        var key = Math.round(cx / 12);
         counts[key] = (counts[key] || 0) + 1;
-        var cx = valToPx(order[k].v), cy = baseY - 9 - (counts[key] - 1) * 13;
+        var cy = baseY - 9 - (counts[key] - 1) * 13;
         ctx.globalAlpha = order[k].i === dragging ? 1 : 0.85;
         ctx.beginPath(); ctx.arc(cx, cy, 6, 0, 2 * Math.PI); ctx.fill();
       }
@@ -265,14 +332,217 @@
     canvas.addEventListener("pointerup", endDrag);
     canvas.addEventListener("pointercancel", endDrag);
 
-    document.getElementById("add-pt").addEventListener("click", function () { pts.push(50 + (Math.random() * 20 - 10)); render(); });
+    // the two "add" buttons work in fractions of the current window, so they
+    // land in the same relative places whatever the axis is showing
+    function at(f) { return LO + (HI - LO) * f; }
+    document.getElementById("add-pt").addEventListener("click", function () { pts.push(at(0.40 + Math.random() * 0.20)); render(); });
     document.getElementById("rm-pt").addEventListener("click", function () { if (pts.length > 1) pts.pop(); render(); });
-    document.getElementById("outlier").addEventListener("click", function () { pts.push(96 + Math.random() * 3); render(); });
-    document.getElementById("reset").addEventListener("click", function () { pts = [62, 65, 68, 70, 71, 73, 76]; render(); });
+    document.getElementById("outlier").addEventListener("click", function () { pts.push(at(0.96 + Math.random() * 0.03)); render(); });
+    document.getElementById("reset").addEventListener("click", function () { pts = seed.slice(); render(); });
+
+    /* ?data= : the values become the dots and the seed Reset returns to, and
+       the axis is rebuilt around them with a little padding either side. */
+    function loadData(raw) {
+      var v = window.SC && SC.dataParam ? SC.dataParam(raw, 200) : null;
+      if (!v) return;
+      var mn = Math.min.apply(null, v), mx = Math.max.apply(null, v);
+      var pad = (mx - mn || Math.abs(mx) || 1) * 0.12;
+      LO = mn - pad; HI = mx + pad;
+      TICKS = [0, 1, 2, 3, 4].map(function (i) { return LO + (HI - LO) * i / 4; });
+      seed = v.slice(); pts = v.slice();
+      render();
+    }
 
     window.addEventListener("resize", function () { fit(); render(); });
     new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
     fit(); render();
+
+    if (window.SC && SC.preset) SC.preset({ data: loadData });
+  })();
+  </script>
+
+  <!-- ============ Five-number-summary build-up ============
+       URL presets (window.SC.preset, applied after boot):
+         ?five=1..5        which build step is showing
+         ?slowest=31..70   where the slowest student's time sits
+       Nothing in this interactive is random, so there is no sample to freeze:
+       ten of the eleven times are fixed constants and the eleventh is the
+       slider. The slider's minimum is the tenth value, so the sort order can
+       never change underneath it, which is what lets the quartiles and the
+       fences visibly hold still while the extreme moves. ================= -->
+  <script>
+  (function () {
+    "use strict";
+    var TIMES = [12, 15, 17, 18, 20, 21, 23, 25, 28, 31];    // plus the slider
+    /* A fixed axis, wide enough to hold the LOWER FENCE (0.5) as well as the
+       data: a fence drawn off the edge of the canvas is a label pointing at
+       nothing. Fixed rather than fitted, so the fences visibly hold still
+       while the slider moves the largest value. */
+    var LO = -6, HI = 75, PAD = 26;
+    var TICKS = [0, 10, 20, 30, 40, 50, 60, 70];
+    var canvas = document.getElementById("fn-canvas"), ctx, W = 0, H = 230;
+    var step = 1, slowest = 52;
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function vx(v) { return PAD + ((v - LO) / (HI - LO)) * (W - PAD - 16); }
+    function medOf(a) { var m = a.length >> 1; return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2; }
+    function num(v) { return Math.round(v * 100) / 100; }
+
+    /* The textbook rule: median of each half of the sorted values, with the
+       overall median left out of both halves when n is odd. n = 11 here, so
+       it is always the odd case, which is the one worth showing. */
+    function five() {
+      var s = TIMES.concat([slowest]).sort(function (a, b) { return a - b; });
+      var n = s.length, half = n >> 1;
+      var q1 = medOf(s.slice(0, half)), q3 = medOf(s.slice(n % 2 ? half + 1 : half));
+      var iqr = q3 - q1, lo = q1 - 1.5 * iqr, hi = q3 + 1.5 * iqr;
+      var inside = s.filter(function (v) { return v >= lo && v <= hi; });
+      return { s: s, n: n, min: s[0], max: s[n - 1], med: medOf(s), q1: q1, q3: q3,
+               iqr: iqr, lo: lo, hi: hi,
+               out: s.filter(function (v) { return v < lo || v > hi; }),
+               wLo: inside[0], wHi: inside[inside.length - 1] };
+    }
+
+    function caption(st) {
+      if (step === 1) return "Sorted, smallest to largest. n = " + st.n + ", so the median is the 6th value.";
+      if (step === 2) return "Median = " + num(st.med) + " min. Five times below it, five above.";
+      if (step === 3) return "Q1 = median of the lower five = " + num(st.q1) +
+        ". Q3 = median of the upper five = " + num(st.q3) + ". IQR = " + num(st.iqr) + ".";
+      if (step === 4) return "Fences: " + num(st.q1) + " − 1.5 × " + num(st.iqr) + " = " + num(st.lo) +
+        " and " + num(st.q3) + " + 1.5 × " + num(st.iqr) + " = " + num(st.hi) + ".";
+      return st.out.length
+        ? "Whiskers stop at " + num(st.wLo) + " and " + num(st.wHi) + ". " + num(st.out[0]) + " is past the fence, so it gets its own dot."
+        : "Whiskers stop at " + num(st.wLo) + " and " + num(st.wHi) + ". Nothing is past a fence, so nothing is flagged.";
+    }
+
+    function draw() {
+      var st = five(), i, x;
+      var small = W < 430;
+      var baseY = 96, boxY = 150, boxH = 30;
+      ctx.clearRect(0, 0, W, H);
+
+      /* step 4: the region outside the fences, tinted before anything else */
+      if (step >= 4) {
+        ctx.fillStyle = "#ef4444"; ctx.globalAlpha = 0.07;
+        ctx.fillRect(vx(LO), 8, Math.max(0, vx(st.lo) - vx(LO)), baseY - 8);
+        ctx.fillRect(vx(st.hi), 8, Math.max(0, vx(HI) - vx(st.hi)), baseY - 8);
+        ctx.globalAlpha = 1;
+      }
+      /* step 3: the middle half, shaded */
+      if (step >= 3) {
+        ctx.fillStyle = VIZ.css("--primary"); ctx.globalAlpha = 0.1;
+        ctx.fillRect(vx(st.q1), 26, vx(st.q3) - vx(st.q1), baseY - 26);
+        ctx.globalAlpha = 1;
+      }
+
+      /* axis */
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(PAD, baseY + 0.5); ctx.lineTo(W - 16, baseY + 0.5); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px ui-monospace, monospace"; ctx.textAlign = "center";
+      for (i = 0; i < TICKS.length; i++) {
+        x = vx(TICKS[i]);
+        ctx.beginPath(); ctx.moveTo(x, baseY); ctx.lineTo(x, baseY + 4); ctx.stroke();
+        ctx.fillText(TICKS[i], x, baseY + 17);
+      }
+
+      /* the eleven times, stacked by pixel proximity so a tie is visible */
+      var used = {};
+      ctx.fillStyle = VIZ.css("--primary");
+      for (i = 0; i < st.s.length; i++) {
+        x = vx(st.s[i]);
+        var key = Math.round(x / 12);
+        used[key] = (used[key] || 0) + 1;
+        var flagged = step >= 4 && (st.s[i] < st.lo || st.s[i] > st.hi);
+        ctx.fillStyle = flagged ? "#ef4444" : VIZ.css("--primary");
+        ctx.globalAlpha = 0.9;
+        ctx.beginPath(); ctx.arc(x, baseY - 9 - (used[key] - 1) * 13, 5.5, 0, 2 * Math.PI); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      /* markers */
+      function mark(v, color, label, y, side) {
+        var mx = vx(v);
+        ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.setLineDash([]);
+        ctx.beginPath(); ctx.moveTo(mx, y); ctx.lineTo(mx, baseY); ctx.stroke();
+        ctx.fillStyle = color; ctx.font = "600 " + (small ? 10 : 11) + "px Inter, sans-serif";
+        var right = side < 0 || mx > W - 70;
+        ctx.textAlign = right ? "right" : "left";
+        ctx.fillText(label, mx + (right ? -5 : 5), y + 9);
+      }
+      if (step >= 2) mark(st.med, VIZ.css("--secondary"), "median " + num(st.med), 10, 1);
+      if (step >= 3) {
+        // Q1's label goes to its LEFT so it cannot run under the median line
+        mark(st.q1, VIZ.css("--primary"), "Q1 " + num(st.q1), 30, -1);
+        mark(st.q3, VIZ.css("--primary"), "Q3 " + num(st.q3), 30, 1);
+      }
+      if (step >= 4) {
+        ctx.setLineDash([5, 4]); ctx.lineWidth = 2; ctx.strokeStyle = "#ef4444";
+        [st.lo, st.hi].forEach(function (v) {
+          ctx.beginPath(); ctx.moveTo(vx(v), 8); ctx.lineTo(vx(v), baseY); ctx.stroke();
+        });
+        ctx.setLineDash([]);
+        ctx.fillStyle = "#ef4444"; ctx.font = "600 " + (small ? 10 : 11) + "px Inter, sans-serif";
+        ctx.textAlign = "left"; ctx.fillText("fence", vx(st.lo) + 5, baseY - 6);
+        ctx.textAlign = "right"; ctx.fillText("fence", vx(st.hi) - 5, baseY - 6);
+      }
+
+      /* step 5: the boxplot the summary was building toward */
+      if (step >= 5) {
+        var mid = boxY + boxH / 2;
+        ctx.strokeStyle = VIZ.css("--text-muted"); ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(vx(st.wLo), mid); ctx.lineTo(vx(st.q1), mid);
+        ctx.moveTo(vx(st.q3), mid); ctx.lineTo(vx(st.wHi), mid);
+        ctx.moveTo(vx(st.wLo), boxY + 6); ctx.lineTo(vx(st.wLo), boxY + boxH - 6);
+        ctx.moveTo(vx(st.wHi), boxY + 6); ctx.lineTo(vx(st.wHi), boxY + boxH - 6);
+        ctx.stroke();
+        ctx.fillStyle = VIZ.css("--surface-2");
+        ctx.fillRect(vx(st.q1), boxY, vx(st.q3) - vx(st.q1), boxH);
+        ctx.strokeRect(vx(st.q1), boxY, vx(st.q3) - vx(st.q1), boxH);
+        ctx.strokeStyle = VIZ.css("--secondary"); ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.moveTo(vx(st.med), boxY); ctx.lineTo(vx(st.med), boxY + boxH); ctx.stroke();
+        ctx.fillStyle = "#ef4444";
+        st.out.forEach(function (v) { ctx.beginPath(); ctx.arc(vx(v), mid, 4, 0, 2 * Math.PI); ctx.fill(); });
+      }
+
+      ctx.fillStyle = VIZ.css("--text-muted");
+      ctx.font = (small ? 10 : 11.5) + "px Inter, sans-serif"; ctx.textAlign = "left";
+      ctx.fillText(caption(st), PAD, H - 8);
+    }
+
+    function readouts() {
+      var st = five();
+      document.getElementById("fn-min").textContent = num(st.min);
+      document.getElementById("fn-q1").textContent = num(st.q1);
+      document.getElementById("fn-med").textContent = num(st.med);
+      document.getElementById("fn-q3").textContent = num(st.q3);
+      document.getElementById("fn-maxs").textContent = num(st.max);
+      document.getElementById("fn-iqr").textContent = num(st.iqr);
+      document.getElementById("fn-lo").textContent = num(st.lo);
+      document.getElementById("fn-hi").textContent = num(st.hi);
+      var o = document.getElementById("fn-out");
+      o.textContent = st.out.length ? st.out.map(num).join(", ") : "none";
+      o.style.color = st.out.length ? "#ef4444" : "#22c55e";
+    }
+    function render() { draw(); readouts(); }
+
+    document.getElementById("fn-steps").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      step = +b.dataset.step;
+      Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x === b); });
+      render();
+    });
+    document.getElementById("fn-max").addEventListener("input", function () {
+      slowest = +this.value;
+      document.getElementById("fn-max-val").textContent = slowest;
+      render();
+    });
+
+    window.addEventListener("resize", VIZ.rafThrottle(function () { fit(); render(); }));
+    VIZ.onTheme(draw);
+    fit(); render();
+
+    if (window.SC && SC.preset) SC.preset({ five: "#fn-steps", slowest: "#fn-max" });
   })();
   </script>
 

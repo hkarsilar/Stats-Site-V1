@@ -14,6 +14,95 @@
 window.SOFTWARE = {
 
   /* ---------------- Stats 1 ---------------- */
+  "types-of-data": {
+    spss: [
+      "Open <b>Variable View</b> (the second tab at the bottom of the data window). Every row there is one variable, and the columns are its settings.",
+      "Set <b>Type</b> first. <b>Numeric</b> for anything you will do arithmetic on; <b>String</b> only for free text you will never analyze as a number. A variable typed as String cannot enter a test, and changing it later loses nothing but is easy to forget.",
+      "Set <b>Measure</b> next: <b>Nominal</b> for unordered labels (blood group, condition), <b>Ordinal</b> for ordered categories with uneven gaps (a five-point agreement scale), <b>Scale</b> for anything measured on a genuine number line.",
+      "Note what <b>Scale</b> covers. It is one setting for both interval and ratio data, because the two differ only in whether zero means none of the thing, and no procedure in SPSS needs to know that. Ratio data licenses one extra sentence in your write-up, not one extra menu: only there can you say one score is twice another.",
+      "Code categories as numbers and label them: type <code>1</code> and <code>2</code> in the data, then click the <b>Values</b> cell and enter <code>1 = control</code>, <code>2 = treatment</code>. Output then reads in words while the file stays numeric.",
+      "Measure is not decoration. It decides which variables SPSS offers you in Chart Builder, which tests accept them, and whether it will silently average a set of arbitrary group codes for you."
+    ],
+    jasp: [
+      "In the <b>Data</b> tab, click the small icon beside a column name to cycle its type: three circles for <b>nominal</b>, a bar chart for <b>ordinal</b>, a ruler for <b>scale</b>.",
+      "JASP reads the file and guesses, and it guesses badly whenever categories are stored as numbers, so check every column once before analyzing.",
+      "An analysis will not accept a variable of the wrong type, which is a feature: if a variable refuses to drop into a box, the type is usually the reason.",
+      "Text values force a column to nominal automatically, so a stray comment typed into a numeric column turns the whole variable categorical."
+    ]
+  },
+  "describing-data": {
+    spss: [
+      "<b>Analyze &rsaquo; Descriptive Statistics &rsaquo; Frequencies</b>, move your variable across, and untick <b>Display frequency tables</b> unless you want one row per distinct value.",
+      "Click <b>Statistics</b> and tick <b>Mean</b>, <b>Median</b>, <b>Mode</b>, <b>Std. deviation</b>, <b>Minimum</b>, <b>Maximum</b> and, under Percentile Values, <b>Quartiles</b>.",
+      "Read Q1 and Q3 off the 25 and 75 rows. Frequencies computes them by a weighted average, which is not the hand method a textbook teaches, so the number here can differ from the one you worked out on paper.",
+      "<b>Analyze &rsaquo; Descriptive Statistics &rsaquo; Explore</b> gives the five-number summary and a boxplot in one pass, plus the trimmed mean. Under <b>Statistics &rsaquo; Percentiles</b> it prints two versions of the quartiles side by side: the weighted average again, and Tukey's hinges, which split at the median the way a textbook does but keep the middle value in both halves when <em>n</em> is odd.",
+      "Explore's boxplot labels its flagged points with case numbers, which is what you want. Go back to those rows in Data View and find out what they are before deciding anything.",
+      "For groups, put the grouping variable in Explore's <b>Factor List</b> and you get one summary and one boxplot per group, lined up on a shared axis."
+    ],
+    jasp: [
+      "<b>Descriptives &rsaquo; Descriptive Statistics</b>, and drop the variable into <b>Variables</b>.",
+      "Open <b>Statistics</b> and tick <b>Median</b>, <b>Mode</b>, <b>Quartiles</b>, <b>Minimum</b>, <b>Maximum</b> and <b>Skewness</b>. Mean and standard deviation are on by default.",
+      "Open <b>Basic plots</b> for a boxplot or a distribution plot, and tick <b>Label outliers</b> so the flagged points carry their row numbers.",
+      "Split by a grouping variable with the <b>Split</b> box to get the same table one column per group.",
+      "JASP interpolates its quartiles the way R does, so expect its Q1 and Q3 to sit slightly inside the ones SPSS prints on the same data."
+    ],
+    apa: '<p>Response times were positively skewed (skewness = 1.71), so both summaries are reported. Times averaged 512.40 ms (<em>SD</em> = 48.30, <em>n</em> = 42), with a median of 505.00 ms, an interquartile range of 478.00 to 541.00 ms, and a range of 431 to 662 ms. One participant at 662 ms fell beyond the upper fence of the 1.5 &times; IQR rule; their data were retained, as the session log gave no reason to treat the trial as invalid.</p>',
+    tips: [
+      "Pair the center with its own spread. Mean goes with <em>SD</em>, median goes with the interquartile range, and reporting a mean beside an IQR reads as though you could not decide.",
+      "Give both when the data is skewed, and say which one your conclusion rests on. Reporting only the friendlier of the two is the oldest trick in descriptive statistics.",
+      "Italicize <em>M</em>, <em>SD</em>, <em>Mdn</em> and <em>n</em>; leave the units upright and give them once per sentence rather than after every number.",
+      "State the outlier rule you used and what you did about it. \"Two values were excluded as outliers\" with no rule and no reason is unreproducible, and a reader cannot tell whether it changed the answer.",
+      "Round to one more decimal place than the raw data carries, and use the same number of places for a mean and its standard deviation."
+    ]
+  },
+  "visualizing-data": {
+    spss: [
+      "<b>Graphs &rsaquo; Chart Builder</b>. Pick a gallery type at the bottom left, drag it onto the canvas, then drag variables onto the axes.",
+      "For a histogram, choose <b>Histogram</b> and drag the quantitative variable to the X axis. SPSS picks the bins, and its choice is a guess about your data rather than a fact about it.",
+      "To set the bin width yourself, double-click the finished chart to open the Chart Editor, double-click the X axis, and use the <b>Binning</b> tab: choose <b>Custom</b>, then either a number of intervals or an interval width. Round widths (5, 10, 25) read far better than whatever the automatic rule produced.",
+      "For a bar chart of a categorical variable, choose <b>Simple Bar</b> and drag the category to X. Leave the Y axis as <b>Count</b> unless you genuinely want a mean per category, in which case drag the quantitative variable there and change the statistic.",
+      "For a boxplot, choose <b>Simple Boxplot</b>, drag the categorical variable to X and the quantitative one to Y. One box per group on a shared scale is the comparison a table cannot make.",
+      "Add axis titles and a figure caption in the Chart Editor before exporting. A chart pasted into a report with SPSS's default axis labels still on it announces that nobody looked at it."
+    ],
+    jasp: [
+      "Most plots live inside the analysis that produced them. <b>Descriptives &rsaquo; Basic plots</b> holds the distribution plot, the boxplot and the dot plot.",
+      "Tick <b>Distribution plot</b> for the histogram and <b>Display density</b> to lay a smoothed curve over it, which makes a lumpy histogram easier to read as a shape.",
+      "Put a grouping variable in <b>Split</b> and every plot repeats per group on a shared axis.",
+      "Right-click any plot to copy or export it at publication size, and set the whole document's figure style once under <b>Preferences</b>."
+    ],
+    apa: '<p><em>Figure 1</em>. Distribution of response times (<em>n</em> = 42), in bins of 25 ms. The distribution is unimodal and right-skewed, with a long upper tail and one value at 662 ms lying beyond the upper fence of the 1.5 &times; IQR rule. The dashed line marks the median (505 ms).</p>',
+    tips: [
+      "A figure needs a number, a caption that says what is plotted, and enough of the method that a reader could redraw it. Bin width belongs in the caption, because a histogram is not reproducible without it.",
+      "Every axis gets a label with its units. An axis reading <code>VAR00003</code> is the single most common giveaway that a figure was exported and never looked at again.",
+      "Say in the text what the reader should see in the figure. A figure that carries a finding nobody states is decoration, and a finding stated with no figure is harder to check.",
+      "Do not draw the same numbers twice. If a table already gives the group means, the bar chart of those means is redundant, and one of the two should go.",
+      "Check the figure in grayscale before you submit it. Color that carries the whole meaning disappears the moment somebody prints your paper."
+    ]
+  },
+  "z-scores-and-the-normal-distribution": {
+    spss: [
+      "<b>Analyze &rsaquo; Descriptive Statistics &rsaquo; Descriptives</b>, move the variable across, and tick <b>Save standardized values as variables</b> at the bottom left.",
+      "SPSS writes a new column at the right-hand end of the data file named <code>Z</code> plus the original name, so <code>score</code> becomes <code>Zscore</code>. Nothing is printed; the column is the output.",
+      "The standardizing uses the <b>sample</b> mean and standard deviation of the cases present, so the new column has a mean of 0 and a standard deviation of 1 by construction. Adding cases later and rerunning gives different z-scores for the same raw values, which is correct and worth expecting.",
+      "Missing values stay missing, and a variable with no variation gives an empty column rather than an error, because the division is by zero.",
+      "To turn a z back into an area, use <b>Transform &rsaquo; Compute Variable</b> with <code>CDF.NORMAL(z,0,1)</code>. That returns the area to the LEFT, the same quantity a printed Table A gives you.",
+      "Sort by the new z column to bring the most extreme cases to the top of the file, which is a faster way to find them than reading a histogram."
+    ],
+    jasp: [
+      "In the <b>Data</b> tab click <b>+</b> at the right of the last column to add a computed column, choose the R mode, and enter <code>scale(score)</code>.",
+      "For the area to the left of a z, a second computed column with <code>pnorm(z)</code> gives the Table A value directly.",
+      "<b>Descriptives</b> on the new column is the check: the mean should print as 0 and the standard deviation as 1.",
+      "Under <b>Basic plots</b>, a Q-Q plot of the standardized column shows how far the data departs from the normal shape you are about to assume."
+    ],
+    apa: '<p>Raw scores were standardized against the sample mean and standard deviation (<em>M</em> = 164.00, <em>SD</em> = 6.00). A height of 170 cm therefore corresponds to <em>z</em> = 1.00, one standard deviation above the mean, which places it at approximately the 84th percentile of the sample.</p>',
+    tips: [
+      "Italicize <em>z</em>, and give it to two decimal places. That is exactly the precision a printed normal table indexes, so more decimals promise an accuracy the lookup does not have.",
+      "Say what the z was computed against. A z from the sample's own mean and standard deviation is a different claim from a z against a published norm, and the two get confused constantly.",
+      "A z-score is a position, not a probability. Convert it to a percentile before telling a reader how unusual something is, and name which tail you converted.",
+      "Standardizing changes the units and nothing else. It does not make skewed data normal, so a Q-Q plot is still worth a look before you lean on the 68 to 95 to 99.7 figures.",
+      "Reserve <em>z</em> for standardized values and test statistics both, but never in the same sentence without saying which is which."
+    ]
+  },
   "nonlinear-relationships-and-transformations": {
     spss: [
       "Look before you transform: <b>Analyze &rsaquo; Regression &rsaquo; Linear</b>, then <b>Plots</b>, and put <b>*ZRESID</b> on Y against <b>*ZPRED</b> on X. An arch or a valley there is curvature.",

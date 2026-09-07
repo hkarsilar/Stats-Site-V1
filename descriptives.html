@@ -59,13 +59,22 @@
               <textarea id="dc-input" rows="4" spellcheck="false" style="font-family:var(--mono);font-size:.85rem;padding:.6rem .7rem;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);resize:vertical" placeholder="e.g.  512 486 530 601 478 495 512 549 507 462"></textarea>
             </div>
           </div>
-          <div class="controls" style="margin:-.25rem 0 1rem">
+          <div class="controls" style="margin:-.25rem 0 .4rem">
             <div class="control" style="flex-direction:row;align-items:center;gap:.6rem">
               <button class="btn btn-primary btn-sm" id="dc-go">Calculate</button>
               <button class="btn btn-ghost btn-sm" id="dc-demo">Load example data</button>
               <span id="dc-msg" style="font-size:.84rem;color:var(--text-faint)"></span>
             </div>
+            <div class="control">
+              <label>Quartiles</label>
+              <div class="seg" id="dc-quart">
+                <button type="button" data-q="textbook">Textbook</button>
+                <button type="button" data-q="spss">SPSS</button>
+                <button type="button" data-q="r" class="active">R/Python</button>
+              </div>
+            </div>
           </div>
+          <p class="viz-sub" style="margin:0 0 1rem">Three conventions, three answers to one exam question. <strong>Textbook</strong> splits the sorted values at the median and takes the median of each half, leaving the middle value out of both halves when <em>n</em> is odd; that is the hand method Moore, McCabe and Craig teach and the one a paper exam marks. <strong>SPSS</strong> uses the weighted average that its Frequencies menu produces by default. <strong>R/Python</strong> interpolates the way R, NumPy, pandas and Excel's <code>QUARTILE.INC</code> all do, and it stays the default here. The switch moves Q1, Q3, the IQR, the fences, the outlier flags and the boxplot with it; the median never moves, because all three agree on that one.</p>
 
           <canvas id="dc-canvas"></canvas>
 
@@ -116,7 +125,14 @@
   <script src="assets/js/site.js"></script>
   <script src="assets/js/viz.js"></script>
 
-  <!-- ============ descriptives calculator ============ -->
+  <!-- ============ descriptives calculator ============
+       URL params (window.SC.preset, applied after boot):
+         ?quart=textbook|spss|r     which quartile convention the page uses
+         ?data=<numbers>            comma- or space-separated, up to 200 values;
+                                    prefills the box and calculates
+       ?quart= is listed first because SC.preset applies keys in insertion
+       order, so the convention is already set when the data lands. Anything
+       unparseable is ignored and the plain page loads. ================== -->
   <script>
   (function () {
     "use strict";
@@ -128,16 +144,45 @@
     function parse(txt) {
       return txt.split(/[,;\s]+/).map(parseFloat).filter(isFinite);
     }
-    /* quantile, linear interpolation (R's default type 7) */
+    /* ---- three quartile conventions, three answers to one exam question ----
+       q7        linear interpolation at 1 + (n - 1)p: R's default, and NumPy's,
+                 pandas', and Excel's QUARTILE.INC. The page's default, and the
+                 convention every picture on this site is drawn with.
+       q6        the weighted average at (n + 1)p, which is what SPSS's
+                 Frequencies menu prints unless you ask Explore instead.
+       qTextbook the median of each half of the sorted data, with the overall
+                 median left out of both halves when n is odd. The hand method
+                 Moore, McCabe & Craig teach, and the one a paper exam marks.
+       All three agree on the median itself, so only Q1 and Q3 move. */
     function q(sorted, p) {
       var h = (sorted.length - 1) * p, lo = Math.floor(h);
       return sorted[lo] + (h - lo) * (sorted[Math.min(lo + 1, sorted.length - 1)] - sorted[lo]);
+    }
+    function q6(s, p) {
+      var n = s.length, h = (n + 1) * p;
+      if (h <= 1) return s[0];
+      if (h >= n) return s[n - 1];
+      var lo = Math.floor(h);
+      return s[lo - 1] + (h - lo) * (s[lo] - s[lo - 1]);
+    }
+    function medOf(a) { var m = a.length >> 1; return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2; }
+    function qTextbook(s, p) {
+      var n = s.length, half = n >> 1;
+      var part = p < 0.5 ? s.slice(0, half) : s.slice(n % 2 ? half + 1 : half);
+      return part.length ? medOf(part) : medOf(s);
+    }
+    var QUART = { r: q, spss: q6, textbook: qTextbook };
+    function convention() {
+      var b = document.querySelector("#dc-quart button.active");
+      var k = b && b.dataset.q;
+      return QUART[k] ? k : "r";
     }
     function stats() {
       var n = data.length, m = VIZ.mean(data);
       var sd = VIZ.sd(data) * Math.sqrt(n / Math.max(1, n - 1));       // sample SD
       var s = data.slice().sort(function (a, b) { return a - b; });
-      var med = q(s, 0.5), q1 = q(s, 0.25), q3 = q(s, 0.75), iqr = q3 - q1;
+      var qf = QUART[convention()];
+      var med = q(s, 0.5), q1 = qf(s, 0.25), q3 = qf(s, 0.75), iqr = q3 - q1;
       var se = sd / Math.sqrt(n);
       var tcrit = n > 1 ? VIZ.tInv(0.025, n - 1) : NaN;
       var g1 = 0;
@@ -282,9 +327,25 @@
         });
       } catch (e) {}
     });
+    document.getElementById("dc-quart").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x === b); });
+      update();
+    });
+    /* ?data= : the shared parser enforces the 200-value cap and rejects any
+       token that is not a plain number, so a mangled URL loads the empty page
+       rather than a half-read dataset. */
+    function loadData(raw) {
+      var v = window.SC && SC.dataParam ? SC.dataParam(raw, 200) : null;
+      if (!v) return;
+      document.getElementById("dc-input").value = v.join(" ");
+      update();
+    }
     window.addEventListener("resize", VIZ.rafThrottle(function () { fit(); update(); }));
     VIZ.onTheme(update);
     fit(); update();
+
+    if (window.SC && SC.preset) SC.preset({ quart: "#dc-quart", data: loadData });
   })();
   </script>
 </body>

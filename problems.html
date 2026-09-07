@@ -16,16 +16,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Practice Problems — Worked Statistics Exam Questions — StatsCapybara</title>
-  <meta name="description" content="Forty-three statistics problems with fully worked solutions: z-scores, t-tests, ANOVA, regression, Bayes and survival analysis, one step at a time." />
+  <meta name="description" content="Forty-seven statistics problems with fully worked solutions: z-scores, t-tests, ANOVA, regression, Bayes and survival analysis, one step at a time." />
   <link rel="canonical" href="https://statscapybara.com/problems.html" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Practice Problems — StatsCapybara" />
-  <meta property="og:description" content="Forty-three worked statistics problems, from z-scores to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
+  <meta property="og:description" content="Forty-seven worked statistics problems, from z-scores to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
   <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
   <meta property="og:url" content="https://statscapybara.com/problems.html" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Practice Problems — StatsCapybara" />
-  <meta name="twitter:description" content="Forty-three worked statistics problems, from z-scores to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
+  <meta name="twitter:description" content="Forty-seven worked statistics problems, from z-scores to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="assets/css/styles.css" />
@@ -137,7 +137,7 @@
         </div>
 
         <ul class="pb-index">
-          <li><a href="#stats-1"><span class="t">📊 Stats 1 · Foundations</span><br><span class="m">15 problems · data types → probability → t-tests</span></a></li>
+          <li><a href="#stats-1"><span class="t">📊 Stats 1 · Foundations</span><br><span class="m">16 problems · data types → probability → t-tests</span></a></li>
           <li><a href="#stats-2"><span class="t">🔗 Stats 2 · Groups &amp; relationships</span><br><span class="m">10 problems · ANOVA → regression</span></a></li>
           <li><a href="#regression"><span class="t">📐 Regression · Several predictors</span><br><span class="m">8 problems · multiple regression → missing data</span></a></li>
           <li><a href="#advanced"><span class="t">🎲 Advanced · Modern methods</span><br><span class="m">7 problems · Bayes → model comparison</span></a></li>
@@ -149,7 +149,7 @@
              ================================================================== -->
         <section class="pb-set" id="stats-1-set">
           <h2 id="stats-1">📊 Stats 1 · Foundations</h2>
-          <p class="pb-set-sub">Fifteen problems tracking the <a href="stats-1/">Stats 1 syllabus</a>: what kind of data you have, how to describe it, how far a score sits from average, how a sample mean turns into a confidence interval and then a <em>t</em>-test, and the probability rules the last three run on.</p>
+          <p class="pb-set-sub">Sixteen problems tracking the <a href="stats-1/">Stats 1 syllabus</a>: what kind of data you have, how to describe it, how far a score sits from average, how a sample mean turns into a confidence interval and then a <em>t</em>-test, and the probability rules the last three run on.</p>
 
           <!-- ---------- 1.1 ----------
                verify: no arithmetic; classification only.
@@ -966,6 +966,76 @@
               </ol>
               <p class="pb-answer">Valid distribution; μ = 1.95, σ² = 1.2475, σ = 1.117, P(<em>X</em> ≥ 2) = .65. The binomial shortcut needs a fixed <em>n</em> and a constant <em>p</em>, and this distribution has neither.</p>
               <p class="pb-ref">From <a href="stats-1/binomial-distribution/">§1.8 The Binomial Distribution</a> · the same two sums, run on a binomial, give <em>np</em> and √(<em>np</em>(1 − <em>p</em>)).</p>
+            </details>
+          </article>
+
+          <!-- ---------- 1.16 ----------
+               verify: node -e '
+                 const s=[3,6,7,9,10,12,12,14,15,16,18,19,21,24,41];
+                 const n=s.length,half=n>>1;
+                 const med=a=>{const m=a.length>>1;return a.length%2?a[m]:(a[m-1]+a[m])/2;};
+                 const q1=med(s.slice(0,half)),q3=med(s.slice(half+1)),iqr=q3-q1;
+                 console.log(s.reduce((a,b)=>a+b),med(s),q1,q3,iqr,q1-1.5*iqr,q3+1.5*iqr,
+                   s.filter(v=>v<q1-1.5*iqr||v>q3+1.5*iqr));
+                 const q7=(a,p)=>{const h=(a.length-1)*p,lo=Math.floor(h);
+                   return a[lo]+(h-lo)*(a[Math.min(lo+1,a.length-1)]-a[lo]);};
+                 console.log(q7(s,.25),q7(s,.75))'
+                 → Σx = 227, mean 227/15 = 15.1333 ; median = 8th value = 14
+                   textbook Q1 = median of the lower seven = 9 ; Q3 = median of the upper seven = 19
+                   IQR 10 ; fences 9 − 15 = −6 and 19 + 15 = 34 ; one flag, the 41
+                   whiskers run to 3 and to 24 (the largest value inside a fence)
+                   R/Python type 7: Q1 9.5, Q3 18.5, IQR 9, fences −4 and 32 — same single flag
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p1-16"><span class="pb-num">16</span>Fifteen visitors in one room</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A museum times how long each of fifteen visitors spends in one small exhibition room, to the nearest minute. The times are already sorted.</p>
+            <div class="pb-given">
+              <span class="lbl">Minutes in the room, fifteen visitors</span>
+              3, 6, 7, 9, 10, 12, 12, 14, 15, 16, 18, 19, 21, 24, 41
+            </div>
+            <ol class="pb-ask">
+              <li>Give the five-number summary, using the textbook rule for the quartiles.</li>
+              <li>Apply the 1.5 × IQR rule. Where are the fences, and which times fall outside them?</li>
+              <li>Sketch the boxplot: say where the box edges, the median line, the two whisker ends and any separate points go.</li>
+              <li>The same data in R returns Q1 = 9.5 and Q3 = 18.5. Does the flagged set change?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Median first, because the quartiles are built from it</span>
+                  <span class="pb-note"><em>n</em> = 15 is odd, so the median is the 8th value.</span>
+                  <span class="pb-math">Median = 14 min</span>
+                </li>
+                <li><span class="pb-lbl">Quartiles: median of each half, the median itself left out</span>
+                  <span class="pb-math">Lower half (7 values): 3, 6, 7, 9, 10, 12, 12 → Q1 = 4th = 9</span>
+                  <span class="pb-math">Upper half (7 values): 15, 16, 18, 19, 21, 24, 41 → Q3 = 4th = 19</span>
+                  <span class="pb-math">IQR = 19 − 9 = 10 min</span>
+                  <span class="pb-note">With an odd <em>n</em> the middle value belongs to neither half. Include it in both and you get different quartiles, which is one of the two or three most common ways to lose a mark here.</span>
+                </li>
+                <li><span class="pb-lbl">Five-number summary</span>
+                  <span class="pb-math">Min = 3 · Q1 = 9 · Median = 14 · Q3 = 19 · Max = 41</span>
+                </li>
+                <li><span class="pb-lbl">Fences, then flags</span>
+                  <span class="pb-math">Lower: Q1 − 1.5 × IQR = 9 − 15 = −6</span>
+                  <span class="pb-math">Upper: Q3 + 1.5 × IQR = 19 + 15 = 34</span>
+                  <span class="pb-math">Only 41 lies outside [−6, 34]</span>
+                  <span class="pb-note">A negative lower fence is fine and quite common. It says nothing in this batch could have been low enough to flag, since the times cannot go below zero.</span>
+                </li>
+                <li><span class="pb-lbl">The boxplot</span>
+                  <span class="pb-note">Box from 9 to 19, with the median line at 14, sitting left of center inside the box. The left whisker runs to the minimum, 3. The right whisker stops at 24, the largest value still inside the upper fence, not at the maximum. The 41 is drawn as its own point beyond the whisker.</span>
+                </li>
+                <li><span class="pb-lbl">The software answer</span>
+                  <span class="pb-math">R: Q1 = 9.5, Q3 = 18.5, IQR = 9</span>
+                  <span class="pb-math">Fences: 9.5 − 13.5 = −4 and 18.5 + 13.5 = 32</span>
+                  <span class="pb-note">The quartiles differ because R interpolates between neighboring values instead of taking the median of a half. The box would be drawn very slightly narrower, and 41 is still the only flagged time. Different convention, same conclusion here, which is the usual outcome and exactly why it is worth knowing that both exist.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Five-number summary 3, 9, 14, 19, 41. Fences at −6 and 34, so the 41 is the single flagged time. Box 9 to 19 with the median at 14, whiskers to 3 and 24, and 41 as a separate point. R's quartiles (9.5 and 18.5) move the fences to −4 and 32 and flag the same value.</p>
+              <p class="pb-round">Rounding: none needed. Every quartile here lands on a data value or halfway between two, so the arithmetic is exact.</p>
+              <p class="pb-ref">From <a href="stats-1/describing-data/">§1.3 Describing Data</a> and <a href="stats-1/visualizing-data/">§1.4 Visualizing Data</a> · check it in the <a href="descriptives.html?quart=textbook&amp;data=3,6,7,9,10,12,12,14,15,16,18,19,21,24,41">Descriptives calculator, prefilled</a>, where the Quartiles switch turns the textbook answer into R's.</p>
             </details>
           </article>
         </section>

@@ -127,8 +127,8 @@
           <tbody>
             <tr>
               <td><a href="stats-1/describing-data/">Describing Data</a></td>
-              <td><code>step</code> 1·2·3·4 · <code>spread</code> 2–12</td>
-              <td><code>?step=4&amp;spread=11</code></td>
+              <td><code>data</code> up to 200 numbers · <code>five</code> 1–5 · <code>slowest</code> 31–70 · <code>step</code> 1·2·3·4 · <code>spread</code> 2–12</td>
+              <td><code>?five=5&amp;slowest=60</code></td>
             </tr>
             <tr>
               <td><a href="stats-1/z-scores-and-the-normal-distribution/">Z-Scores &amp; the Normal Distribution</a></td>
@@ -204,6 +204,16 @@
         </table>
         </div>
         <p>Values outside a listed range are pulled back to the nearest one the control can actually reach, and a value between two slider steps snaps to the nearer step. What you get is always a state a student could have reached by hand.</p>
+        <h3>Put your own numbers in the link</h3>
+        <p>Two surfaces read a <code>?data=</code> parameter, so a lecture's own batch of numbers can go into a live playground without anyone typing it in front of a class: the Mean vs. Median Playground in <a href="stats-1/describing-data/">§1.3</a>, where the values become the draggable dots and the axis rebuilds around them, and the <a href="descriptives.html">Descriptives calculator</a>, which fills its box and calculates. Separate the numbers with commas, up to 200 of them. Anything that is not a plain number, and the parameter is ignored, so a mangled paste still loads the ordinary page.</p>
+        <div class="try-code" style="margin:1rem 0">
+          <div class="tc-head"><span class="tc-title">A dataset in a URL</span><button class="tc-copy" id="data-copy" type="button">Copy</button></div>
+          <pre id="data-snippet">https://statscapybara.com/descriptives.html?quart=textbook&amp;data=22,22,26,26,26,27,27,28.5,28.5,29,34,34,36,39,46,47,50,71
+
+https://statscapybara.com/stats-1/describing-data/?data=22,22,26,26,26,27,27,28.5,28.5,29,34,34,36,39,46,47,50,71</pre>
+        </div>
+        <p>Those eighteen numbers are the hot-dog contest file from the <a href="datasets.html#hotdog">practice datasets</a>, chosen because they are small enough to work by hand and lopsided enough to be worth working. The calculator also takes <code>?quart=</code> as <code>textbook</code>, <code>spss</code> or <code>r</code>, which is the fastest way to show a class that a paper exam and a statistics package do not compute Q1 the same way.</p>
+
         <p>One thing to expect: a preset fixes the <em>setting</em>, not the sample. On lessons that simulate data, every visit draws a fresh random sample, so a scatter set to <em>r</em>&nbsp;=&nbsp;.30 will look a little different each time you open the slide and the observed coefficient will wobble around the target. That is the sampling variability the lesson is teaching, and it is worth pointing at rather than hiding.</p>
 
         <div class="callout">
@@ -256,8 +266,8 @@
   <script>
   (function () {
     "use strict";
-    /* the plain embed snippet and the preset one copy identically */
-    [["embed-copy", "embed-snippet"], ["preset-copy", "preset-snippet"]].forEach(function (pair) {
+    /* the embed snippets and the data-URL snippet all copy identically */
+    [["embed-copy", "embed-snippet"], ["preset-copy", "preset-snippet"], ["data-copy", "data-snippet"]].forEach(function (pair) {
       var btn = document.getElementById(pair[0]);
       var pre = document.getElementById(pair[1]);
       if (!btn || !pre) return;

@@ -676,12 +676,37 @@
     });
   }
 
+  /* ---------- ?data=<numbers> : a URL that carries a batch of values ----------
+     The preset helper above configures a widget; this one loads its DATA, so a
+     lecturer can put their own numbers into a playground or a calculator from
+     a link, without the site shipping the dataset. Two surfaces use it today
+     (stats-1/describing-data's Mean vs. Median Playground and
+     descriptives.html), and both pass their own cap.
+
+     It follows SC.preset's rules rather than inventing new ones: garbage is
+     ignored outright, so a mangled URL still loads the plain page. Returns an
+     array of at least two numbers, or null. Rejecting the WHOLE parameter on a
+     single bad token is deliberate: a silently half-read dataset would give a
+     reader a wrong mean with no sign that anything went missing. */
+  function dataParam(raw, max) {
+    if (typeof raw !== "string") return null;
+    var toks = raw.split(/[,;\s]+/).filter(function (t) { return t !== ""; });
+    if (toks.length < 2 || toks.length > (max || 200)) return null;
+    var out = [];
+    for (var i = 0; i < toks.length; i++) {
+      var v = numeric(toks[i]);                 // the same strict test presets use
+      if (v === null) return null;
+      out.push(v);
+    }
+    return out;
+  }
+
   /* expose the ring + mascot so a standalone page (progress.html) can reuse the
      exact same drawing instead of duplicating it — the copy feedback so
      tool pages share one "Copied!" pattern, preset() for lesson URLs, and
      track()/scoreBucket() so the three tool pages that own an event fire it
      through the shared layer instead of reaching for gtag themselves */
-  window.SC = { ring: ring, capy: capy, copied: flashCopied, preset: preset, track: track, scoreBucket: scoreBucket };
+  window.SC = { ring: ring, capy: capy, copied: flashCopied, preset: preset, dataParam: dataParam, track: track, scoreBucket: scoreBucket };
 
   /* ---------- homepage curriculum grid ---------- */
   function courseCard(c) {

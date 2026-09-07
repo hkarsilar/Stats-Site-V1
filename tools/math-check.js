@@ -35,6 +35,8 @@
         triangular-distribution demonstration
      9. the printed tables — every cell of tables.html's Tables A, D and F,
         read back off the shipped page and recomputed from viz.js
+    10. the quartile conventions — textbook vs SPSS vs R/Python on
+        descriptives.html, derived here and read back off the shipped page
 
    Note on section 7: the tool pages compute these inline against the DOM,
    so they can't be imported. What is asserted here is that viz.js still
@@ -850,6 +852,176 @@ try {
     got: String(e.message), want: 'a runnable tb-a-body script generating three tables', tol: 0, err: NaN,
     src: 'tables.html' });
 }
+
+/* ============================================================
+   10 — the three quartile conventions (descriptives.html)
+
+   P79 gave descriptives.html a Quartiles switch, because a paper exam and a
+   statistics package disagree about what Q1 even is and a student who checks
+   their hand work against this page used to conclude they had got it wrong.
+   Three conventions:
+
+     Textbook  the median of each half of the sorted data, with the overall
+               median left out of both halves when n is odd (Moore, McCabe &
+               Craig, and every hand method an intro exam marks)
+     SPSS      the weighted average at (n + 1)p, what Frequencies prints
+     R/Python  linear interpolation at 1 + (n - 1)p (R's type 7, NumPy,
+               pandas, Excel's QUARTILE.INC) — this page's default, unchanged
+
+   The section derives each convention independently here and then drives the
+   SHIPPED page under a DOM shim, the way section 8 drives the dice lab and
+   section 9 the printed tables: the transcription alone would only prove a
+   copy of the arithmetic, not that the page still does it.
+
+   The two datasets are the ones P79 published. The 18 contest totals give
+   26.25/38.25, 26/39 and 26/40.75 — three answers to one question, which is
+   the whole reason the switch exists. The 13 values are the odd-n case, where
+   the textbook rule drops the median itself and lands somewhere type 7 never
+   does.
+   ============================================================ */
+head('quartile conventions (the shipped page)');
+
+const HOTDOG = [22, 22, 26, 26, 26, 27, 27, 28.5, 28.5, 29, 34, 34, 36, 39, 46, 47, 50, 71];
+const THIRTEEN = [0.6, 1.2, 1.5, 1.6, 1.9, 2.1, 2.3, 2.5, 2.5, 2.8, 2.9, 3.3, 3.4];
+
+const medOf = a => { const m = a.length >> 1; return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2; };
+const q7 = (s, p) => { const h = (s.length - 1) * p, lo = Math.floor(h);
+  return s[lo] + (h - lo) * (s[Math.min(lo + 1, s.length - 1)] - s[lo]); };
+const q6 = (s, p) => { const n = s.length, h = (n + 1) * p;
+  if (h <= 1) return s[0];
+  if (h >= n) return s[n - 1];
+  const lo = Math.floor(h);
+  return s[lo - 1] + (h - lo) * (s[lo] - s[lo - 1]); };
+const qTb = (s, p) => { const n = s.length, half = n >> 1;
+  const part = p < 0.5 ? s.slice(0, half) : s.slice(n % 2 ? half + 1 : half);
+  return part.length ? medOf(part) : medOf(s); };
+
+/* ---- the published pairs, straight from the three definitions ---- */
+eq('18 totals, textbook Q1', qTb(HOTDOG, 0.25), 26, 0, 'P79: median of the lower nine');
+eq('18 totals, textbook Q3', qTb(HOTDOG, 0.75), 39, 0, 'P79: median of the upper nine');
+eq('18 totals, SPSS Q1', q6(HOTDOG, 0.25), 26, 0, 'weighted average at (n+1)p');
+eq('18 totals, SPSS Q3', q6(HOTDOG, 0.75), 40.75, 1e-12, 'weighted average at (n+1)p');
+eq('18 totals, R/Python Q1', q7(HOTDOG, 0.25), 26.25, 1e-12, 'R type 7');
+eq('18 totals, R/Python Q3', q7(HOTDOG, 0.75), 38.25, 1e-12, 'R type 7');
+eq('18 totals, median agrees across conventions', medOf(HOTDOG), 28.75, 0, 'the middle pair, 28.5 and 29');
+eq('18 totals, textbook IQR', qTb(HOTDOG, 0.75) - qTb(HOTDOG, 0.25), 13, 0, 'P79');
+eq('18 totals, textbook lower fence', qTb(HOTDOG, 0.25) - 1.5 * 13, 6.5, 0, 'Q1 − 1.5 × IQR');
+eq('18 totals, textbook upper fence', qTb(HOTDOG, 0.75) + 1.5 * 13, 58.5, 0, 'Q3 + 1.5 × IQR');
+is('18 totals, exactly one value past a textbook fence',
+   HOTDOG.filter(v => v < 6.5 || v > 58.5).length, 1, 'the 71');
+eq('13 values (odd n), textbook Q1', qTb(THIRTEEN, 0.25), 1.55, 1e-12, 'P79: median of the lower six');
+eq('13 values (odd n), textbook Q3', qTb(THIRTEEN, 0.75), 2.85, 1e-12, 'P79: median of the upper six');
+eq('13 values (odd n), R/Python Q1', q7(THIRTEEN, 0.25), 1.6, 1e-12, 'R type 7');
+eq('13 values (odd n), R/Python Q3', q7(THIRTEEN, 0.75), 2.8, 1e-12, 'R type 7');
+
+/* ---- and now the page itself ---- */
+function driveDescriptives() {
+  const html = fs.readFileSync(path.join(ROOT, 'descriptives.html'), 'utf8');
+  const src = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)]
+    .map(m => m[1]).filter(s => /dc-quart/.test(s))[0];
+  if (!src) throw new Error('no inline script mentioning dc-quart');
+
+  const ctx2d = {};
+  ['clearRect', 'fillRect', 'strokeRect', 'beginPath', 'moveTo', 'lineTo', 'arc', 'closePath',
+   'fill', 'stroke', 'setLineDash', 'fillText', 'setTransform', 'save', 'restore'].forEach(n => { ctx2d[n] = () => {}; });
+  ctx2d.measureText = t => ({ width: t.length * 6 });
+
+  const els = {};
+  const mk = () => {
+    const on = {};
+    const node = {
+      innerHTML: '', textContent: '', value: '', style: {}, dataset: {},
+      clientWidth: 720, parentElement: { clientWidth: 720 }, getContext: () => ctx2d,
+      classList: { add: () => {}, remove: () => {}, toggle: () => {} },
+      addEventListener: (t, f) => { (on[t] = on[t] || []).push(f); },
+      // bound to the node, because the page's own handlers use `this`
+      fire: (t, e) => (on[t] || []).forEach(f => f.call(node, e))
+    };
+    return node;
+  };
+
+  /* The Quartiles seg is built from the page's OWN markup, not from a list
+     written here: which button carries class="active" in the HTML is the
+     page's default, and a default switched quietly is exactly the change this
+     section has to catch. The buttons really track the class, so the page's
+     own convention() lookup is what gets tested. */
+  const segHtml = /<div class="seg" id="dc-quart">([\s\S]*?)<\/div>/.exec(html);
+  if (!segHtml) throw new Error('no #dc-quart seg markup');
+  const btns = [...segHtml[1].matchAll(/<button([^>]*)>/g)].map(m => ({
+    dataset: { q: (/data-q="([^"]*)"/.exec(m[1]) || [, ''])[1] },
+    active: /class="[^"]*\bactive\b/.test(m[1]),
+    closest: function () { return this; },
+    classList: { toggle: function () {} }
+  }));
+  if (btns.length !== 3) throw new Error('expected 3 quartile buttons, found ' + btns.length);
+  btns.forEach(b => { b.classList.toggle = (cls, on) => { if (cls === 'active') b.active = on; }; });
+  const seg = mk();
+  seg.querySelectorAll = () => btns;
+
+  const c4 = { console };
+  c4.window = c4;
+  c4.document = {
+    documentElement: {},
+    getElementById: id => (id === 'dc-quart' ? seg : (els[id] || (els[id] = mk()))),
+    querySelector: sel => (sel === '#dc-quart button.active' ? btns.find(b => b.active) || null : null)
+  };
+  c4.getComputedStyle = () => ({ getPropertyValue: () => '#000000' });
+  c4.MutationObserver = function () { this.observe = () => {}; };
+  c4.requestAnimationFrame = cb => cb();
+  c4.addEventListener = () => {};
+  vm.createContext(c4);
+  vm.runInContext(fs.readFileSync(path.join(ROOT, 'assets/js/viz.js'), 'utf8'), c4, { filename: 'viz.js' });
+  vm.runInContext(src, c4, { filename: 'descriptives.html#calculator' });
+
+  /* `which` is optional: passing nothing reads the page at its BOOT default,
+     which is the only way to catch a default silently switched in the markup.
+     Clicks are sticky, so the default read has to happen first. */
+  return function read(values, which) {
+    if (which) seg.fire('click', { target: btns.find(b => b.dataset.q === which) });
+    els['dc-input'].value = values.join(' ');
+    els['dc-input'].fire('input', {});
+    els['dc-go'].fire('click', {});
+    return {
+      n: els['s-n'].textContent, mean: els['s-mean'].textContent, sd: els['s-sd'].textContent,
+      med: els['s-med'].textContent, iqr: els['s-iqr'].textContent, out: els['s-out'].textContent
+    };
+  };
+}
+
+try {
+  const read = driveDescriptives();
+  const fmt = v => {           // the page's own significant-digit formatter
+    const a = Math.abs(v);
+    return v.toFixed(a >= 1000 ? 0 : a >= 100 ? 1 : a >= 1 ? 2 : 3);
+  };
+  // FIRST, before any tab is clicked: the default must not have moved. R/Python
+  // is what every existing link, every worked number on the site and every
+  // picture is drawn with, and P79's rule is never to switch a default quietly.
+  const boot = read(HOTDOG);
+  is('page boots on R/Python', boot.iqr, '26.25 – 38.25', 'P79 rule: never silently switch a default');
+  is('page mean of the 18 totals', boot.mean, '34.39', 'Σx / n = 619 / 18');
+  is('page SD of the 18 totals', boot.sd, '12.43', 'SS 2627.78, s² 154.58');
+
+  const cases = [
+    ['18 contest totals', HOTDOG, { textbook: [26, 39], spss: [26, 40.75], r: [26.25, 38.25] }],
+    ['13 values (odd n)', THIRTEEN, { textbook: [1.55, 2.85], spss: [1.55, 2.85], r: [1.6, 2.8] }]
+  ];
+  for (const [tag, values, want] of cases) {
+    for (const which of ['textbook', 'spss', 'r']) {
+      const got = read(values, which);
+      is(`page ${tag}, ${which}: Q1 – Q3`, got.iqr, fmt(want[which][0]) + ' – ' + fmt(want[which][1]),
+         'the three definitions above');
+      is(`page ${tag}, ${which}: n`, String(got.n), String(values.length), 'the pasted values');
+    }
+  }
+  is('page median is the same under every convention', read(HOTDOG, 'textbook').med, boot.med, 'all three agree on the median');
+  is('page flags the 71 as an outlier under the textbook rule', read(HOTDOG, 'textbook').out, '71.00', 'fences 6.5 and 58.5');
+} catch (e) {
+  failures.push({ section, label: 'the descriptives calculator could not be driven — ids or structure changed?',
+    got: String(e.message), want: 'a runnable dc-quart script printing the stat row', tol: 0, err: NaN,
+    src: 'descriptives.html' });
+}
+
 
 /* ============================================================
    Report
