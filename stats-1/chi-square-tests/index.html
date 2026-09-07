@@ -29,12 +29,33 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-1.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <style>
+    /* Build a Table: an editable r × c contingency grid. Every cell carries the
+       count you can type over, the count independence expects, and that cell's
+       component of χ². The tint grows with a cell's share of the total. */
+    .ctab { border-collapse: collapse; font-size: .84rem; margin: .1rem 0 .35rem; }
+    .ctab th, .ctab td { border: 1px solid var(--border); padding: .3rem .4rem; text-align: center; }
+    .ctab th { background: var(--surface-2); font-weight: 600; color: var(--text-muted); }
+    .ctab td.ct-cell { min-width: 104px; }
+    .ct-in { width: 62px; font: inherit; font-weight: 700; text-align: center;
+      padding: .16rem .2rem; border: 1.5px solid var(--border); border-radius: 6px;
+      background: var(--surface); color: var(--text); }
+    .ct-lab { width: 94px; font: inherit; font-size: .78rem; font-weight: 600; text-align: center;
+      padding: .18rem .25rem; border: 1px solid transparent; border-radius: 6px;
+      background: transparent; color: var(--text); }
+    .ct-lab:hover { border-color: var(--border); }
+    .ct-e, .ct-k { display: block; font-family: var(--mono); font-size: .68rem; line-height: 1.4; }
+    .ct-e { color: var(--text-faint); }
+    .ct-k { color: #f97316; font-weight: 700; }
+    .ct-tot { background: var(--surface-2); font-weight: 700; color: var(--text-muted); }
+    .ct-legend { font-size: .78rem; color: var(--text-muted); margin: .1rem 0 .75rem; }
+  </style>
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Chi-Square Tests", "description": "Chi-square tests work on counts, not means. Pull a contingency table away from independence and see chi-square climb as p falls.", "url": "https://statscapybara.com/stats-1/chi-square-tests/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Introduction to Statistics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Chi-Square Tests", "item": "https://statscapybara.com/stats-1/chi-square-tests/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "My chi-square is significant. Which cell is responsible?", "acceptedAnswer": {"@type": "Answer", "text": "The test itself will not tell you, because it pools every cell into one number. Ask the table for adjusted standardized residuals, which SPSS offers under Crosstabs → Cells and R returns as chisq.test(tab)$stdres. Each one is roughly a z-score for its cell under independence, so a value beyond about ±2 marks a cell holding noticeably more or fewer cases than independence predicts, and the sign tells you which direction. Read the pattern before you write the sentence: a significant χ² on a 3 × 4 table usually comes from one or two cells, not from the whole table drifting at once. With many cells, treat the residuals as exploratory rather than as a stack of formal tests."}}, {"@type": "Question", "name": "What if my expected counts are less than 5?", "acceptedAnswer": {"@type": "Answer", "text": "The χ² p-value is an approximation that degrades with small expected counts. The standard rule: all (or at least 80% of) expected counts should be ≥ 5. Below that, use Fisher's exact test for 2×2 tables (exact, no approximation) — or collapse sparse categories together when it makes conceptual sense."}}, {"@type": "Question", "name": "Can a chi-square test tell me how strong the association is?", "acceptedAnswer": {"@type": "Answer", "text": "χ² itself can't; it grows with sample size, so a huge study can produce an enormous χ² from a trivial association. Pair the test with an effect size: Cramér's V (0 = none, 1 = perfect) for general tables, or the odds ratio for 2×2 tables, which our effect-size converter can translate into other metrics."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "My chi-square is significant. Which cell is responsible?", "acceptedAnswer": {"@type": "Answer", "text": "The test itself will not tell you, because it pools every cell into one number. Ask the table for adjusted standardized residuals, which SPSS offers under Crosstabs → Cells and R returns as chisq.test(tab)$stdres. Each one is roughly a z-score for its cell under independence, so a value beyond about ±2 marks a cell holding noticeably more or fewer cases than independence predicts, and the sign tells you which direction. Read the pattern before you write the sentence: a significant χ² on a 3 × 4 table usually comes from one or two cells, not from the whole table drifting at once. With many cells, treat the residuals as exploratory rather than as a stack of formal tests."}}, {"@type": "Question", "name": "Should I use Yates' continuity correction on a 2 × 2 table?", "acceptedAnswer": {"@type": "Answer", "text": "Yates' correction subtracts 0.5 from each |O − E| before squaring, which shrinks χ² and raises the p-value. The idea is to compensate for describing discrete counts with a continuous curve, and SPSS prints it on every 2 × 2 table as Continuity Correction, one row under Pearson. On this lesson's trial table the uncorrected statistic is 12.38 with p = .00043 and the corrected one is 11.17 with p = .00083. Fisher's exact test, which uses no approximation at all, gives .00076, so the correction has overshot the exact answer rather than landed on it. That is the usual pattern, and it is why most current advice is to leave the correction off when the expected counts are large enough and to use Fisher's exact test when they are not. If your course asks for the corrected value, report it and name which one you quoted."}}, {"@type": "Question", "name": "Can a chi-square test tell me how strong the association is?", "acceptedAnswer": {"@type": "Answer", "text": "χ² itself can't; it grows with sample size, so a huge study can produce an enormous χ² from a trivial association. Pair the test with an effect size: Cramér's V (0 = none, 1 = perfect) for general tables, or the odds ratio for 2×2 tables, which our effect-size converter can translate into other metrics."}}]}
   </script>
 </head>
 <body data-course="stats-1" data-section="chi-square-tests">
@@ -56,36 +77,61 @@
         <p>The Σ (sigma) is an instruction to add: work the fraction out for one cell, then do it for every cell and total them.</p>
         <p>That formula, the expected-count rule, the df and Cramér's V are four consecutive rows on the printable <a href="../../formulas.html">formula sheet</a>, worth having beside you the first few times.</p>
 
+        <h2>Work one cell, then the next, then add</h2>
+        <p>The formula asks for a sum, and the way to get that sum right on paper is to postpone it. Take the cells in whatever order you like. For each one write down its expected count, subtract, square, divide. You end up with a small pile of numbers called the <strong>components</strong>, and χ² is their total.</p>
+        <p>Start with the trial in the builder below. Its first cell holds 45 recoveries where independence expects 65 × 70 ÷ 130 = 35.0, so that cell contributes (45 − 35.0)² ÷ 35.0 = 2.86. The other three come to 3.33, 2.86 and 3.33, and χ² = 12.38.</p>
+        <p>Two things make this worth the extra line of working. An arithmetic slip stays trapped in one cell instead of vanishing into the total with nothing to mark it, and the components are a finding in their own right: the largest ones mark the cells where the table has drifted furthest from independence, and those are the cells a results paragraph should name.</p>
+
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="chiviz">
-          <p class="viz-title">🎮 Contingency Table Explorer</p>
-          <p class="viz-sub">A treatment trial. Each bar shows the recovery split for one group. When the two splits match the dashed "no-association" line, χ² is tiny. Pull them apart and watch χ² climb.</p>
+          <p class="viz-title">🎮 Build a Table</p>
+          <p class="viz-sub">A treatment trial to start with. Type over any count, rename any row or column, and grow the table to four rows by four columns. Every cell prints the count you observed, the count independence expects, and that cell's component of χ². The bars underneath show each row's split alongside the split of everybody together, which is what independence predicts for every row.</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>Rows</label>
+              <div class="seg" id="ct-rows">
+                <button type="button" data-r="2" class="active">2</button><button type="button" data-r="3">3</button><button type="button" data-r="4">4</button>
+              </div>
+            </div>
+            <div class="control">
+              <label>Columns</label>
+              <div class="seg" id="ct-cols">
+                <button type="button" data-c="2" class="active">2</button><button type="button" data-c="3">3</button><button type="button" data-c="4">4</button>
+              </div>
+            </div>
+            <div class="control">
+              <label>Start over</label>
+              <button type="button" id="ct-reset" class="btn btn-ghost btn-sm">Back to the trial</button>
+            </div>
+          </div>
+
+          <div class="hscroll"><table class="ctab" id="ct-table"></table></div>
+          <p class="ct-legend">Each cell reads: the observed count you can edit, then <span class="ct-e" style="display:inline">E</span> the expected count, then <span class="ct-k" style="display:inline">the component</span> (O − E)² ÷ E. The orange tint grows with a cell's share of χ².</p>
 
           <canvas id="chi-canvas"></canvas>
 
-          <div class="controls" style="margin-top:.75rem">
-            <div class="control" style="flex:1;min-width:200px"><label style="color:var(--primary)">Treatment · recovered <span class="val" id="va">45</span></label><input type="range" id="a" min="2" max="120" step="1" value="45" /></div>
-            <div class="control" style="flex:1;min-width:200px"><label>Treatment · did not <span class="val" id="vb">20</span></label><input type="range" id="b" min="2" max="120" step="1" value="20" /></div>
-          </div>
-          <div class="controls">
-            <div class="control" style="flex:1;min-width:200px"><label style="color:var(--primary)">Placebo · recovered <span class="val" id="vc">25</span></label><input type="range" id="c" min="2" max="120" step="1" value="25" /></div>
-            <div class="control" style="flex:1;min-width:200px"><label>Placebo · did not <span class="val" id="vd">40</span></label><input type="range" id="d" min="2" max="120" step="1" value="40" /></div>
-          </div>
-
           <div class="stat-row">
             <div class="stat"><span class="k">χ² statistic</span><span class="v" id="stat-chi">—</span></div>
-            <div class="stat"><span class="k">Degrees of freedom</span><span class="v" id="stat-df">1</span></div>
+            <div class="stat"><span class="k">Degrees of freedom</span><span class="v" id="stat-df">—</span></div>
             <div class="stat"><span class="k">p-value</span><span class="v" id="stat-p">—</span></div>
-            <div class="stat"><span class="k">Association?</span><span class="v" id="stat-dec" style="font-size:1rem">—</span></div>
+            <div class="stat"><span class="k">Table F reads</span><span class="v" id="stat-tab" style="font-size:.95rem">—</span></div>
+            <div class="stat"><span class="k">Conditions</span><span class="v" id="stat-cond" style="font-size:.95rem">—</span></div>
           </div>
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
         <h2>Reading the result</h2>
-        <p>The degrees of freedom for a table are (rows − 1) × (columns − 1), just 1 for our 2×2. A χ² statistic far from zero, with p &lt; 0.05, means the observed counts would be surprising if the variables were truly independent, so you conclude they're <strong>associated</strong>. In the trial: treatment and recovery are related.</p>
+        <p>Degrees of freedom for a table are (rows − 1) × (columns − 1), which is 1 for the 2×2 trial and 6 for a three-by-four. A χ² far from zero, with p &lt; 0.05, means counts like these would be surprising if the two variables were truly independent, so you conclude they are <strong>associated</strong>. In the trial: treatment and recovery are related.</p>
+        <p>The bars under the table say the same thing without any arithmetic. Each row's split across the columns is that row's <strong>conditional distribution</strong>, and the faint bar at the foot is the split of everybody together. Independence is exactly the claim that every row's conditional distribution matches that bottom bar, so χ² is measuring how far the rows have wandered from it. Rows that sit on top of one another give a χ² near zero however many cases the table holds.</p>
+        <p>On paper the p-value arrives as a bracket rather than a number. Take χ² and its df to <a href="../../tables.html#printed-tables">Table F</a>, find the df row, and walk along it until your statistic falls between two entries; the p-value lies between those two column headings. The builder prints that reading beside the exact one, so you can check a hand answer against the machine answer without leaving the page.</p>
+        <p>Here is a bigger one to try it on. Three neighborhoods by four ways of getting to work, 300 people in all: <a href="./?t=27,18,27,18;18,20,35,27;12,16,37,45">load it into the builder</a>, and type the names in over the generic ones a loaded table arrives with, rows center, inner ring, outer ring and columns walk, bike, transit, car. χ² comes to 18.77 on 6 degrees of freedom. Table F's df 6 row carries 18.55 under .005 and 20.25 under .0025, so the paper answer is "between .005 and .0025" and the exact p is .0046. The tint says where it came from: walking in the center and driving in the outer ring account for more than half of χ² between them, while the middle row contributes almost nothing.</p>
         <div class="callout key">
           <p><strong>Association, not amount.</strong> Like <a href="../../stats-1/correlation/">correlation</a>, a significant χ² tells you a relationship exists, not how strong it is. For strength, report an effect size such as <em>Cramér's V</em> or the odds ratio alongside the test; the <a href="../../effect-sizes.html">effect-size converter</a> will turn an odds ratio into the more familiar <em>d</em> or <em>r</em> if you need to compare it with the rest of your results.</p>
         </div>
+
+        <h2>Where the curve comes from</h2>
+        <p>χ² is not an invention for tables. Square a standard normal variable and you have a χ² distribution on one degree of freedom; add k independent squares and you have χ² on k. A contingency table's statistic is a sum of squared, standardized discrepancies, so the same family describes it. That parentage explains the rest of its behavior. χ² can never be negative, a table sitting exactly on its expected counts returns zero, and every p-value here is a right-tail area, because only large values are evidence against independence. The <a href="../../distributions.html">distribution playground</a> holds the family among its nine curves, and moving the df slider shows the shape drifting right and turning symmetric as df grows.</p>
 
         <h2>Two flavors of chi-square</h2>
         <ul>
@@ -94,10 +140,17 @@
         </ul>
 
         <h2>What you're assuming</h2>
+        <p>Counts have to be <strong>independent</strong>: each observation falls in exactly one cell, and one person's category does not affect another's. Sixty people should produce sixty entries in the table.</p>
+        <p>The expected counts also have to be big enough for the χ² curve to describe the statistic well. Textbooks state that in three parts, and the builder checks all three live as you type:</p>
         <ul>
-          <li>Counts are <strong>independent</strong>: each observation falls in exactly one cell, and one person's category doesn't affect another's.</li>
-          <li><strong>Expected counts are large enough.</strong> A common rule is every expected count ≥ 5. For small 2×2 tables, use Yates' continuity correction or <strong>Fisher's exact test</strong> instead. Counts are cheap to collect and easy to under-collect, so if the study is still ahead of you, the <a href="../../power.html?sc=chisq">power calculator</a> will tell you how many observations a given association needs.</li>
+          <li>every expected count is at least 1;</li>
+          <li>no more than 20% of the expected counts fall below 5;</li>
+          <li>on a 2×2 table, where 20% of four cells rounds down to none of them, all four expected counts reach 5.</li>
         </ul>
+        <p>The rule is about expected counts, not observed ones, which is the part that catches people out. An observed zero is not by itself a problem. A cell that independence expected to hold two people is. When a table fails, the honest moves are to merge categories that genuinely belong together, collect more data, or on a 2×2 switch to <strong>Fisher's exact test</strong>, which computes the probability of the table directly and needs no approximation at all. Counts are cheap to collect and easy to under-collect, so if the study is still ahead of you, the <a href="../../power.html?sc=chisq">power calculator</a> will say how many observations a given association needs.</p>
+
+        <h2>The 2×2 table you have already met</h2>
+        <p>Cross a two-group variable with a yes/no outcome and you have exactly the data a two-proportion test uses. The two procedures are not merely similar, they are algebraically the same test, with χ² = z² on one degree of freedom and the same p-value to every decimal. <a href="../../stats-1/inference-for-proportions/">Inference for proportions</a> works that identity through on 270 people and says why the z version is usually the one to report: it hands you a signed difference and a confidence interval for it, where χ² hands you a positive number and nothing else. Past 2×2 the z test is no longer available, and χ² is the tool.</p>
 
         <h2 id="same-person-twice">When the same person appears twice</h2>
         <p>Two different meanings of "independent" meet in this test, and only one of them is the null hypothesis. The test asks whether the two <em>variables</em> are independent. The assumption above is about the <em>observations</em>: sixty people should produce sixty entries, not a hundred and twenty.</p>
@@ -118,7 +171,7 @@
           <p><strong>Why it matters:</strong> survey responses, A/B test conversions, medical outcomes, demographic breakdowns: categorical data is everywhere, and chi-square is the workhorse for testing whether the categories hang together. Its neighbors in the association family, and when each one applies, sit in the third panel of the printable <a href="../../cheat-test-chooser.html">test-chooser poster</a>.</p>
         </div>
 
-        <p class="pb-xref"><a href="../../problems.html#p2-7">Problem 19 in the practice problems</a> works a 2 × 3 table from expected counts through to Cramér's <em>V</em>, and shows how to find the cell that is doing the damage.</p>
+        <p class="pb-xref"><a href="../../problems.html#p1-21">Problem 21 in the practice problems</a> runs a 2 × 3 table the paper-exam way, from its margins through six components to a bracket off Table F and the two row percentages that turn it into a sentence. <a href="../../problems.html#p2-7">Problem 19</a> takes a different 2 × 3 on to Cramér's <em>V</em>.</p>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
@@ -128,8 +181,8 @@
             <div class="faq-a"><p>The test itself will not tell you, because it pools every cell into one number. Ask the table for <strong>adjusted standardized residuals</strong>, which SPSS offers under Crosstabs → Cells and R returns as <code>chisq.test(tab)$stdres</code>. Each one is roughly a z-score for its cell under independence, so a value beyond about ±2 marks a cell holding noticeably more or fewer cases than independence predicts, and the sign tells you which direction. Read the pattern before you write the sentence: a significant χ² on a 3 × 4 table usually comes from one or two cells, not from the whole table drifting at once. With many cells, treat the residuals as exploratory rather than as a stack of formal tests.</p></div>
           </details>
           <details class="faq-item">
-            <summary>What if my expected counts are less than 5?</summary>
-            <div class="faq-a"><p>The χ² p-value is an approximation that degrades with small expected counts. The standard rule: all (or at least 80% of) expected counts should be ≥ 5. Below that, use <strong>Fisher's exact test</strong> for 2×2 tables (exact, no approximation) — or collapse sparse categories together when it makes conceptual sense.</p></div>
+            <summary>Should I use Yates' continuity correction on a 2 × 2 table?</summary>
+            <div class="faq-a"><p>Yates' correction subtracts 0.5 from each |O − E| before squaring, which shrinks χ² and raises the p-value. The idea is to compensate for describing discrete counts with a continuous curve, and SPSS prints it on every 2 × 2 table as <em>Continuity Correction</em>, one row under Pearson. On this lesson's trial table the uncorrected statistic is 12.38 with p = .00043 and the corrected one is 11.17 with p = .00083. Fisher's exact test, which uses no approximation at all, gives .00076, so the correction has overshot the exact answer rather than landed on it. That is the usual pattern, and it is why most current advice is to leave the correction off when the expected counts are large enough and to use Fisher's exact test when they are not. If your course asks for the corrected value, report it and name which one you quoted.</p></div>
           </details>
           <details class="faq-item">
             <summary>Can a chi-square test tell me how strong the association is?</summary>
@@ -152,58 +205,314 @@
   <script src="../../assets/js/site.js"></script>
   <script src="../../assets/js/viz.js"></script>
 
-  <!-- ============ chi-square contingency visualization ============ -->
+  <!-- ============ Build a Table: an r x c contingency explorer ============
+       Entirely deterministic: every number below is a closed-form function of
+       the counts in the grid, so there is no noise to freeze. The p-value comes
+       from VIZ.chiSqUpper and the Table F criticals from VIZ.chiSqInv, the same
+       functions tables.html prints its Table F from, so the bracket the page
+       reads out and the bracket a student reads off paper cannot disagree.
+
+       URL presets (SC.preset, applied last):
+         ?t=<counts>  the whole table, row-major: commas within a row and
+                      semicolons between rows, 2 to 4 rows by 2 to 4 columns of
+                      whole numbers. ?t=45,20;25,40 is the trial it boots with;
+                      ?t=27,18,27,18;18,20,35,27;12,16,37,45 is the 3 x 4 table
+                      the prose works through. A ragged, oversized or
+                      non-integer table is rejected whole rather than half-read,
+                      the way SC.dataParam rejects a bad ?data=, because a
+                      silently truncated table would print a confident wrong
+                      chi-square. A loaded table takes generic row and column
+                      names, since the trial's labels would not describe it.
+  -->
   <script>
   (function () {
     "use strict";
-    var ids = ["a", "b", "c", "d"];
-    var canvas = document.getElementById("chi-canvas"), ctx, W = 0, H = 150, padL = 70, padR = 60;
-    function val(id) { return +document.getElementById(id).value; }
-    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    var MAXR = 4, MAXC = 4, MAXV = 9999;
+    var EM = "—";                       // the readout placeholder
+    var LR0 = ["Treatment", "Placebo", "Group 3", "Group 4"];
+    var LC0 = ["Recovered", "Did not", "Outcome 3", "Outcome 4"];
+    var T0 = [[45, 20, 10, 10], [25, 40, 10, 10], [10, 10, 10, 10], [10, 10, 10, 10]];
 
-    function draw() {
-      var a = val("a"), b = val("b"), c = val("c"), d = val("d");
-      var n1 = a + b, n2 = c + d, N = a + b + c + d, overall = (a + c) / N;
-      ctx.clearRect(0, 0, W, H);
-      var x0 = padL, x1 = W - padR, barW = x1 - x0;
-      function bar(y, recov, tot, label) {
-        var p = recov / tot, split = x0 + p * barW;
-        ctx.fillStyle = VIZ.css("--primary"); ctx.globalAlpha = 0.85; ctx.fillRect(x0, y, split - x0, 30);
-        ctx.fillStyle = VIZ.css("--surface-2"); ctx.globalAlpha = 1; ctx.fillRect(split, y, x1 - split, 30);
-        ctx.strokeStyle = VIZ.css("--border"); ctx.strokeRect(x0, y, barW, 30);
-        ctx.fillStyle = VIZ.css("--text"); ctx.font = "600 12px Inter,sans-serif"; ctx.textAlign = "right";
-        ctx.fillText(label, x0 - 8, y + 19);
-        ctx.textAlign = "left"; ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px ui-monospace,monospace";
-        ctx.fillText((p * 100).toFixed(0) + "%", x1 + 6, y + 19);
-      }
-      bar(28, a, n1, "Treatment");
-      bar(86, c, n2, "Placebo");
-      // overall (expected) split line
-      var ex = x0 + overall * barW;
-      ctx.strokeStyle = "#f97316"; ctx.setLineDash([5, 4]); ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(ex, 18); ctx.lineTo(ex, 128); ctx.stroke(); ctx.setLineDash([]);
-      ctx.fillStyle = "#f97316"; ctx.textAlign = "center"; ctx.font = "10px Inter,sans-serif";
-      ctx.fillText("no-association split", ex, 12);
-      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px Inter,sans-serif"; ctx.textAlign = "left";
-      ctx.fillText("■ recovered", x0, H - 4);
+    var host = document.getElementById("ct-table");
+    var canvas = document.getElementById("chi-canvas");
+    if (!host || !canvas) return;
 
-      // chi-square
-      var ea = n1 * (a + c) / N, eb = n1 * (b + d) / N, ec = n2 * (a + c) / N, ed = n2 * (b + d) / N;
-      var chi = (a - ea) * (a - ea) / ea + (b - eb) * (b - eb) / eb + (c - ec) * (c - ec) / ec + (d - ed) * (d - ed) / ed;
-      var p = VIZ.chiSqUpper(chi, 1);
-      ids.forEach(function (id) { document.getElementById("v" + id).textContent = val(id); });
-      document.getElementById("stat-chi").textContent = chi.toFixed(2);
-      document.getElementById("stat-p").textContent = p < 0.001 ? "< 0.001" : p.toFixed(3);
-      var dec = document.getElementById("stat-dec");
-      dec.textContent = p < 0.05 ? "Yes — associated" : "No — independent";
-      dec.style.color = p < 0.05 ? "#22c55e" : VIZ.css("--text");
+    var R = 2, C = 2, LR = LR0.slice(), LC = LC0.slice(), T = T0.map(function (r) { return r.slice(); });
+    var ctx = null, W = 0, H = 160;
+
+    function $(id) { return document.getElementById(id); }
+    function esc(t) {
+      return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;")
+                      .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
 
-    ids.forEach(function (id) { document.getElementById(id).addEventListener("input", draw); });
-    window.addEventListener("resize", function () { fit(); draw(); });
-    VIZ.onTheme(draw);
-    fit(); draw();
+    /* ---------- the arithmetic ---------- */
+    function stats() {
+      var i, j, rt = [], ct = [], N = 0;
+      for (i = 0; i < R; i++) { rt[i] = 0; for (j = 0; j < C; j++) rt[i] += T[i][j]; N += rt[i]; }
+      for (j = 0; j < C; j++) { ct[j] = 0; for (i = 0; i < R; i++) ct[j] += T[i][j]; }
+      var E = [], K = [], chi = 0, minE = Infinity, below5 = 0;
+      for (i = 0; i < R; i++) {
+        E[i] = []; K[i] = [];
+        for (j = 0; j < C; j++) {
+          var e = N > 0 ? rt[i] * ct[j] / N : 0;
+          var k = e > 0 ? (T[i][j] - e) * (T[i][j] - e) / e : 0;
+          E[i][j] = e; K[i][j] = k; chi += k;
+          if (e < minE) minE = e;
+          if (e < 5) below5++;
+        }
+      }
+      var df = (R - 1) * (C - 1), ok = N > 0 && minE > 0;
+      return { rt: rt, ct: ct, N: N, E: E, K: K, chi: chi, df: df,
+               p: ok ? VIZ.chiSqUpper(chi, df) : NaN,
+               minE: minE, below5: below5, cells: R * C, ok: ok };
+    }
+
+    /* Table F's twelve upper-tail columns, in the order tables.html prints
+       them. The criticals are recomputed rather than transcribed, so the
+       bracket can never drift away from the printed table. */
+    var PCOL = [0.25, 0.2, 0.15, 0.1, 0.05, 0.025, 0.02, 0.01, 0.005, 0.0025, 0.001, 0.0005];
+    var PLAB = [".25", ".20", ".15", ".10", ".05", ".025", ".02", ".01", ".005", ".0025", ".001", ".0005"];
+    function bracket(chi, df) {
+      var crit = PCOL.map(function (p) { return VIZ.chiSqInv(p, df); });
+      if (chi < crit[0]) return "above " + PLAB[0];
+      for (var i = 0; i < crit.length - 1; i++) {
+        if (chi >= crit[i] && chi < crit[i + 1]) return "between " + PLAB[i] + " and " + PLAB[i + 1];
+      }
+      return "below " + PLAB[PLAB.length - 1];
+    }
+
+    function conditions(s) {
+      if (!s.ok) return { text: "a row or a column is empty", ok: false };
+      if (s.cells === 4) {
+        return s.minE >= 5 ? { text: "met", ok: true }
+          : { text: "a 2×2 needs all four expected at 5, lowest is " + s.minE.toFixed(1), ok: false };
+      }
+      if (s.minE < 1) return { text: "an expected count of " + s.minE.toFixed(2) + " is below 1", ok: false };
+      if (s.below5 / s.cells > 0.2)
+        return { text: s.below5 + " of " + s.cells + " expected counts are below 5", ok: false };
+      return { text: "met", ok: true };
+    }
+
+    /* ---------- the grid ---------- */
+    function buildTable() {
+      var i, j;
+      var h = "<thead><tr><th></th>";
+      for (j = 0; j < C; j++) {
+        h += '<th><input type="text" class="ct-lab" id="ct-lc-' + j + '" maxlength="16" value="' +
+             esc(LC[j]) + '" aria-label="Name of column ' + (j + 1) + '" /></th>';
+      }
+      h += '<th class="ct-tot">Total</th></tr></thead><tbody>';
+      for (i = 0; i < R; i++) {
+        h += '<tr><th><input type="text" class="ct-lab" id="ct-lr-' + i + '" maxlength="16" value="' +
+             esc(LR[i]) + '" aria-label="Name of row ' + (i + 1) + '" /></th>';
+        for (j = 0; j < C; j++) {
+          h += '<td class="ct-cell" id="ct-td-' + i + '-' + j + '">' +
+               '<input type="number" class="ct-in" id="ct-in-' + i + '-' + j + '" min="0" max="' + MAXV +
+               '" step="1" value="' + T[i][j] + '" aria-label="Observed count in row ' + (i + 1) +
+               ', column ' + (j + 1) + '" />' +
+               '<span class="ct-e" id="ct-e-' + i + '-' + j + '"></span>' +
+               '<span class="ct-k" id="ct-k-' + i + '-' + j + '"></span></td>';
+        }
+        h += '<td class="ct-tot" id="ct-rt-' + i + '">0</td></tr>';
+      }
+      h += '<tr><th class="ct-tot">Total</th>';
+      for (j = 0; j < C; j++) h += '<td class="ct-tot" id="ct-ct-' + j + '">0</td>';
+      h += '<td class="ct-tot" id="ct-n">0</td></tr></tbody>';
+      host.innerHTML = h;
+    }
+
+    function update() {
+      var s = stats(), i, j, el;
+      var even = s.cells ? 1 / s.cells : 0;    // a cell's share of chi-square if every cell shared alike
+      for (i = 0; i < R; i++) {
+        for (j = 0; j < C; j++) {
+          el = $("ct-e-" + i + "-" + j);
+          if (el) el.textContent = s.ok ? "E " + s.E[i][j].toFixed(1) : "E " + EM;
+          el = $("ct-k-" + i + "-" + j);
+          if (el) el.textContent = s.ok ? s.K[i][j].toFixed(2) : EM;
+          el = $("ct-td-" + i + "-" + j);
+          if (el) {
+            var share = (s.ok && s.chi > 0) ? (s.K[i][j] / s.chi) / even : 0;
+            var a = Math.max(0, Math.min(1, (share - 1) / 2)) * 0.42;
+            el.style.backgroundColor = a > 0.01 ? "rgba(249,115,22," + a.toFixed(3) + ")" : "";
+          }
+        }
+        el = $("ct-rt-" + i); if (el) el.textContent = s.rt[i];
+      }
+      for (j = 0; j < C; j++) { el = $("ct-ct-" + j); if (el) el.textContent = s.ct[j]; }
+      el = $("ct-n"); if (el) el.textContent = s.N;
+
+      $("stat-chi").textContent = s.ok ? s.chi.toFixed(2) : EM;
+      $("stat-df").textContent = String(s.df);
+      $("stat-p").textContent = !s.ok ? EM : (s.p < 0.0001 ? "< 0.0001" : s.p.toFixed(4));
+      $("stat-tab").textContent = s.ok ? bracket(s.chi, s.df) : EM;
+      var cond = conditions(s);
+      el = $("stat-cond");
+      el.textContent = cond.text;
+      el.style.color = cond.ok ? "" : "#f97316";
+      draw(s);
+    }
+
+    /* ---------- the bars: one conditional distribution per row ---------- */
+    function colOf(j) {
+      if (j === 0) return VIZ.css("--primary") || "#6366f1";
+      if (j === 1) return VIZ.css("--secondary") || "#14b8a6";
+      return j === 2 ? "#f97316" : "#64748b";
+    }
+    function trunc(t, max) {
+      if (ctx.measureText(t).width <= max) return t;
+      var out = String(t);
+      while (out.length > 1 && ctx.measureText(out + "…").width > max) out = out.slice(0, -1);
+      return out + "…";
+    }
+
+    function draw(s) {
+      s = (s && s.rt) ? s : stats();
+      H = 16 + (R + 1) * 34 + 12 + 22;
+      var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w;
+      if (!ctx) return;
+      var font = VIZ.css("--font") || "sans-serif";
+      ctx.clearRect(0, 0, W, H);
+      var padL = Math.min(104, Math.max(56, Math.round(W * 0.22))), padR = 12;
+      var x0 = padL, bw = Math.max(40, W - padR - padL);
+      var y = 16, i, j;
+      for (i = 0; i <= R; i++) {
+        var last = (i === R), tot = last ? s.N : s.rt[i];
+        ctx.font = (last ? "italic " : "") + "12px " + font;
+        ctx.fillStyle = VIZ.css(last ? "--text-muted" : "--text") || "#111827";
+        ctx.textAlign = "right";
+        ctx.fillText(trunc(last ? "everybody" : LR[i], padL - 12), padL - 10, y + 17);
+        var x = x0;
+        for (j = 0; j < C; j++) {
+          var v = last ? s.ct[j] : T[i][j];
+          var w = tot > 0 ? bw * v / tot : 0;
+          ctx.globalAlpha = last ? 0.42 : 0.9;
+          ctx.fillStyle = colOf(j);
+          ctx.fillRect(x, y, w, 26);
+          ctx.globalAlpha = 1;
+          if (w > 32 && tot > 0) {
+            ctx.fillStyle = last ? (VIZ.css("--text") || "#111827") : "#ffffff";
+            ctx.textAlign = "center";
+            ctx.font = "600 11px " + font;
+            ctx.fillText(Math.round(100 * v / tot) + "%", x + w / 2, y + 17);
+          }
+          x += w;
+        }
+        ctx.strokeStyle = VIZ.css("--border") || "#d5dbe4";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x0, y, bw, 26);
+        y += 34;
+      }
+      ctx.textAlign = "left";
+      ctx.font = "11px " + font;
+      var lx = x0, ly = H - 6;
+      for (j = 0; j < C; j++) {
+        var lab = trunc(LC[j], 96);
+        var wd = ctx.measureText(lab).width;
+        if (lx + 14 + wd > W - padR) break;
+        ctx.fillStyle = colOf(j);
+        ctx.fillRect(lx, ly - 9, 10, 10);
+        ctx.fillStyle = VIZ.css("--text-muted") || "#5f6e86";
+        ctx.fillText(lab, lx + 14, ly);
+        lx += 14 + wd + 16;
+      }
+    }
+
+    /* ---------- wiring ---------- */
+    function setSeg(id, attr, val) {
+      var box = $(id);
+      if (!box || !box.querySelectorAll) return;
+      var bs = box.querySelectorAll("button");
+      for (var i = 0; i < bs.length; i++) {
+        bs[i].classList.toggle("active", bs[i].getAttribute(attr) === String(val));
+      }
+    }
+
+    host.addEventListener("input", function (e) {
+      var el = e.target, m;
+      if (!el || !el.id) return;
+      if ((m = /^ct-in-(\d)-(\d)$/.exec(el.id))) {
+        var v = parseInt(el.value, 10);
+        if (!isFinite(v) || v < 0) v = 0;
+        if (v > MAXV) v = MAXV;
+        T[+m[1]][+m[2]] = v;                 // read only: never write the field a finger is in
+        update();
+      } else if ((m = /^ct-l([rc])-(\d)$/.exec(el.id))) {
+        (m[1] === "r" ? LR : LC)[+m[2]] = el.value;
+        draw();
+      }
+    });
+
+    function resize(which, n) {
+      if (which === "r") R = n; else C = n;
+      setSeg("ct-rows", "data-r", R);
+      setSeg("ct-cols", "data-c", C);
+      buildTable();
+      update();
+    }
+    function segClick(box, attr, which) {
+      var el = $(box);
+      if (!el) return;
+      el.addEventListener("click", function (e) {
+        var b = e.target && e.target.closest ? e.target.closest("button[" + attr + "]") : null;
+        if (!b) return;
+        resize(which, +b.getAttribute(attr));
+      });
+    }
+    segClick("ct-rows", "data-r", "r");
+    segClick("ct-cols", "data-c", "c");
+
+    function reset() {
+      R = 2; C = 2;
+      LR = LR0.slice(); LC = LC0.slice();
+      T = T0.map(function (r) { return r.slice(); });
+      setSeg("ct-rows", "data-r", R);
+      setSeg("ct-cols", "data-c", C);
+      buildTable();
+      update();
+    }
+    if ($("ct-reset")) $("ct-reset").addEventListener("click", reset);
+
+    /* ?t= : the whole table in the URL. Rejected outright unless every token is
+       a whole number and every row is the same length, so a mangled link loads
+       the plain trial rather than a half-read table. */
+    function loadTable(raw) {
+      var rows = String(raw).split(";");
+      if (rows.length < 2 || rows.length > MAXR) return;
+      var next = [], i, j;
+      for (i = 0; i < rows.length; i++) {
+        var toks = rows[i].split(",");
+        if (i === 0) { if (toks.length < 2 || toks.length > MAXC) return; }
+        else if (toks.length !== next[0].length) return;
+        var row = [];
+        for (j = 0; j < toks.length; j++) {
+          if (!/^\s*\d{1,4}\s*$/.test(toks[j])) return;
+          row.push(parseInt(toks[j], 10));
+        }
+        next.push(row);
+      }
+      R = next.length; C = next[0].length;
+      for (i = 0; i < R; i++) for (j = 0; j < C; j++) T[i][j] = next[i][j];
+      for (i = 0; i < MAXR; i++) LR[i] = "Row " + (i + 1);
+      for (j = 0; j < MAXC; j++) LC[j] = "Column " + (j + 1);
+      setSeg("ct-rows", "data-r", R);
+      setSeg("ct-cols", "data-c", C);
+      buildTable();
+      update();
+    }
+
+    var redraw = VIZ.rafThrottle(function () { draw(); });
+    window.addEventListener("resize", redraw);
+    if (window.ResizeObserver) { new ResizeObserver(redraw).observe(canvas); }
+    VIZ.onTheme(function () { draw(); });
+
+    buildTable();
+    update();
+
+    if (window.SC && SC.preset) SC.preset({ t: loadTable });
   })();
   </script>
+
 </body>
 </html>

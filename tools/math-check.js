@@ -1024,6 +1024,201 @@ try {
 
 
 /* ============================================================
+   11 — Build a Table (stats-1/chi-square-tests)
+
+   P84 grew §1.16's 2×2 explorer into an r × c builder. Every cell prints its
+   observed count, its expected count and its (O − E)²/E component; the block
+   then prints the sum, the df, the exact p and the bracket a printed Table F
+   gives. All of those are published claims, so this section derives them here
+   from the counts alone and then drives the SHIPPED page under the same DOM
+   shim sections 8, 9 and 10 use. Deriving them without driving the page would
+   only prove a copy of the arithmetic.
+
+   The page is driven through its OWN ?t= applier: the shim hands it a fake
+   window.SC, captures the map the page registers with SC.preset, and calls the
+   applier. So the widget is loaded the way a reader's URL loads it, and the
+   page carries no test-only hook.
+
+   Two anchors. The 2×2 default is the treatment trial the lesson's prose walks
+   through cell by cell (χ² = 12.38, df 1). The 3 × 4 table is the commuting
+   example the prose loads with ?t=, chosen so its p falls inside Table F
+   rather than off the end of it: χ² = 18.77 on df 6 sits between the .005
+   column (18.548) and the .0025 column (20.249), which is the bracket reading
+   an exam wants and the one the readout has to reproduce.
+   ============================================================ */
+head('Build a Table (the shipped page)');
+
+/* Expected counts, components and the statistic, from the counts alone. */
+function chiTable(T) {
+  const R = T.length, C = T[0].length;
+  const rt = T.map(r => r.reduce((a, b) => a + b, 0));
+  const ct = T[0].map((_, j) => T.reduce((a, r) => a + r[j], 0));
+  const N = rt.reduce((a, b) => a + b, 0);
+  const E = [], K = [];
+  let chi = 0;
+  for (let i = 0; i < R; i++) {
+    E[i] = []; K[i] = [];
+    for (let j = 0; j < C; j++) {
+      const e = rt[i] * ct[j] / N;
+      const k = (T[i][j] - e) * (T[i][j] - e) / e;
+      E[i][j] = e; K[i][j] = k; chi += k;
+    }
+  }
+  const df = (R - 1) * (C - 1);
+  return { rt, ct, N, E, K, chi, df, p: V.chiSqUpper(chi, df) };
+}
+
+/* Table F's twelve upper-tail columns, in the order tables.html prints them. */
+const CHI_P = [0.25, 0.2, 0.15, 0.1, 0.05, 0.025, 0.02, 0.01, 0.005, 0.0025, 0.001, 0.0005];
+const CHI_L = ['.25', '.20', '.15', '.10', '.05', '.025', '.02', '.01', '.005', '.0025', '.001', '.0005'];
+function chiBracket(chi, df) {
+  const crit = CHI_P.map(p => V.chiSqInv(p, df));
+  if (chi < crit[0]) return 'above ' + CHI_L[0];
+  for (let i = 0; i < crit.length - 1; i++) {
+    if (chi >= crit[i] && chi < crit[i + 1]) return 'between ' + CHI_L[i] + ' and ' + CHI_L[i + 1];
+  }
+  return 'below ' + CHI_L[CHI_L.length - 1];
+}
+
+const TRIAL = [[45, 20], [25, 40]];
+const COMMUTE = [[27, 18, 27, 18], [18, 20, 35, 27], [12, 16, 37, 45]];
+
+/* ---- the arithmetic, independent of the page ---- */
+const trial = chiTable(TRIAL);
+eq('trial 2×2: expected count in the first cell', trial.E[0][0], 35, 1e-12, '65 × 70 / 130');
+eq('trial 2×2: first component', trial.K[0][0], 100 / 35, 1e-12, '(45 − 35)² / 35');
+eq('trial 2×2: χ²', trial.chi, 12.380952380952381, 1e-9, 'the four components, 2.857 + 3.333 twice');
+is('trial 2×2: df', trial.df, 1, '(2 − 1)(2 − 1)');
+rel('trial 2×2: p', trial.p, 4.337e-4, 2e-3, 'VIZ.chiSqUpper(12.381, 1)');
+
+const comm = chiTable(COMMUTE);
+eq('3 × 4 commute: χ²', comm.chi, 18.769479, 5e-6, 'P84, recomputed from the twelve counts');
+is('3 × 4 commute: df', comm.df, 6, '(3 − 1)(4 − 1)');
+eq('3 × 4 commute: exact p', comm.p, 0.004571, 5e-7, 'VIZ.chiSqUpper(18.7695, 6)');
+eq('3 × 4 commute: N', comm.N, 300, 0, 'the twelve counts');
+eq('3 × 4 commute: largest component is the centre walkers', comm.K[0][0], 5.7316, 5e-5, '(27 − 17.1)² / 17.1');
+// the components must add to the statistic, which is what makes "work the
+// cells, then add" a legitimate hand method rather than an approximation
+eq('3 × 4 commute: components add to χ²',
+   comm.K.reduce((a, r) => a + r.reduce((x, y) => x + y, 0), 0), comm.chi, 1e-12, 'definition of χ²');
+// expected counts always reproduce the observed margins
+for (let i = 0; i < 3; i++) {
+  eq(`3 × 4 commute: expected row ${i + 1} sums to its observed total`,
+     comm.E[i].reduce((a, b) => a + b, 0), comm.rt[i], 1e-9, 'Σⱼ rᵢcⱼ/N = rᵢ');
+}
+// the bracket the prose publishes, against the criticals Table F prints
+eq('Table F df 6, .005 column', V.chiSqInv(0.005, 6), 18.5476, 5e-5, 'printed Table F');
+eq('Table F df 6, .0025 column', V.chiSqInv(0.0025, 6), 20.2494, 5e-5, 'printed Table F');
+is('3 × 4 commute: Table F reading', chiBracket(comm.chi, comm.df), 'between .005 and .0025',
+   'P84: 18.55 < 18.77 < 20.25');
+
+/* ---- and now the page itself ---- */
+function driveBuildATable() {
+  const html = fs.readFileSync(path.join(ROOT, 'stats-1/chi-square-tests/index.html'), 'utf8');
+  const src = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)]
+    .map(m => m[1]).filter(s => /ct-table/.test(s))[0];
+  if (!src) throw new Error('no inline script mentioning ct-table');
+
+  const ctx2d = {};
+  ['clearRect', 'fillRect', 'strokeRect', 'beginPath', 'moveTo', 'lineTo', 'arc', 'closePath',
+   'fill', 'stroke', 'setLineDash', 'fillText', 'setTransform', 'save', 'restore'].forEach(n => { ctx2d[n] = () => {}; });
+  ctx2d.measureText = t => ({ width: String(t).length * 6 });
+
+  const els = {};
+  const mk = () => {
+    const on = {};
+    const node = {
+      innerHTML: '', textContent: '', value: '', style: {}, dataset: {},
+      clientWidth: 720, parentElement: { clientWidth: 720 }, getContext: () => ctx2d,
+      classList: { add: () => {}, remove: () => {}, toggle: () => {} },
+      querySelectorAll: () => [],
+      addEventListener: (t, f) => { (on[t] = on[t] || []).push(f); },
+      fire: (t, e) => (on[t] || []).forEach(f => f.call(node, e))
+    };
+    return node;
+  };
+
+  let applier = null;
+  const c5 = { console };
+  c5.window = c5;
+  c5.document = { documentElement: {}, getElementById: id => els[id] || (els[id] = mk()) };
+  c5.getComputedStyle = () => ({ getPropertyValue: () => '#000000' });
+  c5.MutationObserver = function () { this.observe = () => {}; };
+  c5.requestAnimationFrame = cb => cb();
+  c5.addEventListener = () => {};
+  c5.location = { search: '?t=1' };
+  // the page's own opt-in path: whatever it registers here is what a URL drives
+  c5.SC = { preset: map => { applier = map && map.t; } };
+  vm.createContext(c5);
+  vm.runInContext(fs.readFileSync(path.join(ROOT, 'assets/js/viz.js'), 'utf8'), c5, { filename: 'viz.js' });
+  vm.runInContext(src, c5, { filename: 'stats-1/chi-square-tests#build-a-table' });
+  if (typeof applier !== 'function') throw new Error('the page registered no ?t= applier with SC.preset');
+
+  const readout = () => ({
+    chi: els['stat-chi'].textContent, df: els['stat-df'].textContent,
+    p: els['stat-p'].textContent, tab: els['stat-tab'].textContent,
+    cond: els['stat-cond'].textContent, N: String(els['ct-n'].textContent),
+    cell: (i, j) => ({ e: els['ct-e-' + i + '-' + j].textContent,
+                       k: els['ct-k-' + i + '-' + j].textContent })
+  });
+  if (!readout().chi) throw new Error('the readout row stayed empty on boot');
+  // the BOOT state is read before anything is loaded: the default table is the
+  // trial the lesson's prose works through, and a default changed quietly in
+  // the markup is exactly what this has to catch
+  return { boot: readout(), load: t => { applier(t); return readout(); } };
+}
+
+try {
+  const page = driveBuildATable();
+  const fmt2 = v => v.toFixed(2);
+
+  is('page boots on the 2×2 trial: χ²', page.boot.chi, fmt2(trial.chi), 'the components above');
+  is('page boots on the 2×2 trial: df', page.boot.df, '1', '(2 − 1)(2 − 1)');
+  is('page boots on the 2×2 trial: N', page.boot.N, '130', '45 + 20 + 25 + 40');
+  is('page boots on the 2×2 trial: expected in the first cell', page.boot.cell(0, 0).e, 'E 35.0', '65 × 70 / 130');
+  is('page boots on the 2×2 trial: first component', page.boot.cell(0, 0).k, fmt2(trial.K[0][0]), '(45 − 35)² / 35');
+  is('page boots on the 2×2 trial: conditions met', page.boot.cond, 'met', 'every expected count is 30 or 35');
+
+  const got = page.load('27,18,27,18;18,20,35,27;12,16,37,45');
+  is('page 3 × 4: χ²', got.chi, fmt2(comm.chi), 'the twelve components above');
+  is('page 3 × 4: df', got.df, '6', '(3 − 1)(4 − 1)');
+  is('page 3 × 4: N', got.N, '300', 'the twelve counts');
+  is('page 3 × 4: exact p', got.p, comm.p.toFixed(4), 'VIZ.chiSqUpper(18.7695, 6)');
+  is('page 3 × 4: Table F reading', got.tab, chiBracket(comm.chi, comm.df), 'the criticals above');
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 4; j++) {
+      is(`page 3 × 4: expected count in cell ${i + 1},${j + 1}`,
+         got.cell(i, j).e, 'E ' + comm.E[i][j].toFixed(1), 'rᵢcⱼ/N');
+      is(`page 3 × 4: component in cell ${i + 1},${j + 1}`,
+         got.cell(i, j).k, comm.K[i][j].toFixed(2), '(O − E)²/E');
+    }
+  }
+
+  // the three textbook conditions, each on a table that trips exactly one of them
+  is('page flags a 2×2 whose expected counts miss 5', page.load('2,3;3,2').cond,
+     'a 2×2 needs all four expected at 5, lowest is 2.5', 'the 2×2 clause of the textbook rule');
+  is('page flags an expected count below 1', page.load('1,1,1;1,1,1;1,1,20').cond,
+     'an expected count of 0.32 is below 1', 'the "every expected count ≥ 1" clause');
+  // 3,3,3;3,3,3;3,3,30 has expected counts 1.5, 1.5, 6 / 1.5, 1.5, 6 / 6, 6, 24:
+  // four of nine below 5 while every one of them still clears 1, so it trips the
+  // 20% clause on its own rather than the "at least 1" clause above it
+  is('page flags more than 20% of expected counts below 5', page.load('3,3,3;3,3,3;3,3,30').cond,
+     '4 of 9 expected counts are below 5', 'the 20% clause');
+
+  // a mangled ?t= must leave the page on its default rather than half-read it
+  for (const bad of ['1,2;3', '1,2,x;3,4,5', '1,2,3,4,5;1,2,3,4,5', '9,9', 'nonsense', '-4,5;6,7']) {
+    const after = page.load('45,20;25,40');            // known-good state first
+    is(`page ignores a mangled ?t=${bad}`, page.load(bad).chi, after.chi,
+       'SC.dataParam\'s rule: reject the whole parameter, never half-read it');
+  }
+} catch (e) {
+  failures.push({ section, label: 'Build a Table could not be driven — ids or structure changed?',
+    got: String(e.message), want: 'a runnable ct-table script printing the stat row', tol: 0, err: NaN,
+    src: 'stats-1/chi-square-tests' });
+}
+
+
+/* ============================================================
    Report
    ============================================================ */
 const line = '─'.repeat(60);

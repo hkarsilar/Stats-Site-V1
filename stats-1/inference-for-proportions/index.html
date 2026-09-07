@@ -56,8 +56,14 @@
         <p>So <em>p̂</em> is unbiased, and its spread shrinks with √<em>n</em> exactly as the sample mean's does. The shape is the part that needs care. A binomial count turns normal as <em>n</em> grows, but a proportion near 0 or 1 is squeezed against a boundary and stays lopsided far longer than one near the middle.</p>
 
         <h2>Conditions for inference</h2>
-        <p>Two things have to hold before any of the machinery below is trustworthy. The data must come from a <a href="../../stats-1/producing-data-and-sampling-design/">random sample</a> of the population you want to describe, which no formula can rescue. And the sample must contain <strong>at least 10 successes and at least 10 failures</strong>, so that the normal approximation has room on both sides. When you are testing a hypothesized value the count is checked against that value instead: <em>np</em>₀ ≥ 10 and <em>n</em>(1 − <em>p</em>₀) ≥ 10.</p>
+        <p>Three things have to hold before any of the machinery below is trustworthy, and the first one is not a formula at all. The data must come from a <a href="../../stats-1/producing-data-and-sampling-design/">random sample</a> of the population you want to describe. Nothing further down this page can rescue a sample that was not random, and nothing on this page pretends to.</p>
+        <p>The sample must also be small next to the population, so that drawing people without replacing them barely changes the spread. The usual bar is a population at least ten times the sample, and Moore, McCabe and Craig set it at twenty. Survey 400 people in a town of 900 and you have broken it; the real standard error is then smaller than the formula reports, and the interval you print is wider than it needs to be.</p>
+        <p>Third, the counts have to be large enough on both sides for the normal approximation to have room. Here the interval and the test part company, and so do the textbooks.</p>
+        <p>For a <strong>confidence interval</strong>, count what you actually observed. <em>Introduction to the Practice of Statistics</em> asks for at least <strong>15 successes and 15 failures</strong>. <em>OpenIntro Statistics</em> and the AP-style texts ask for 10 of each. Both numbers are in wide use, so answer with the one your own course teaches, and read the gap between them as a warning: an interval built on twelve successes is doing more work than it can comfortably support.</p>
+        <p>For a <strong>test</strong>, count what H₀ predicts instead, since a test assumes H₀ is true: <em>np</em>₀ ≥ 10 and <em>n</em>(1 − <em>p</em>₀) ≥ 10. The two texts agree on that one.</p>
+        <p>The interactive below keeps its condition light on the 10 rule in both directions. Every worked number on this page and every link into it was drawn that way, and moving a threshold without saying so is how a page loses a reader's trust. So read the light as a floor rather than a certificate. Amber means you have failed even the loosest rule in circulation; green means you have cleared it, not that your course's rule is met.</p>
         <p>The condition is about both counts, never about <em>n</em> alone. A sample of 500 with 4 successes fails it, which is why a rare outcome needs a large study before you can say anything with a <em>z</em>.</p>
+        <p>One honest footnote on the interval. Even with the counts well clear of any of these bars, <em>p̂</em> ± <em>z</em>*√(<em>p̂</em>(1 − <em>p̂</em>)/<em>n</em>) covers the true proportion slightly less often than its label promises, and the shortfall does not fade away as <em>n</em> grows so much as oscillate with it. The cheapest repair is the <strong>plus-four</strong> interval: add two successes and two failures to the data, then run the same formula on the padded counts. The questions at the foot of this page say more about that repair and about the Wilson interval, which is the version most software now reports.</p>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="ipviz">
@@ -148,6 +154,8 @@
           <p><strong>Why it matters:</strong> proportions are what surveys, clinical trials and A/B tests actually produce. The interval says how precisely you know the percentage; the test says whether a difference is worth talking about. Both need the same two conditions, and neither can repair a sample that was not random.</p>
         </div>
 
+        <p class="pb-xref"><a href="../../problems.html#p1-22">Problem 22 in the practice problems</a> carries 450 clinic reminders through the pooled test and the unpooled interval side by side, and its fourth part asks the question this lesson keeps circling: why the two standard errors are not the same number.</p>
+
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
           <h2>Common questions</h2>
@@ -185,6 +193,15 @@
        slider values, so there is no noise to freeze. The p-values come from
        VIZ.normQ (the far-tail-safe normal) and VIZ.chiSqUpper rather than
        from 1 - normCdf, so a large z does not collapse to zero.
+
+       URL presets (SC.preset, applied last):
+         one proportion   ?n= sample size   ?x= successes   ?p0= the null value
+                          as a proportion (0.5, not 50); that slider moves in
+                          steps of 5 percentage points, so the helper snaps to
+                          the nearest value it can actually reach.
+         two proportions  ?n1= ?x1= ?n2= ?x2=   Any one of these four switches
+                          the view to two proportions on its own.
+         e.g. ?n=400&x=232&p0=0.5   or   ?n1=120&x1=45&n2=150&x2=72
   -->
   <script>
   (function () {
@@ -418,6 +435,23 @@
     $("ip-x1").max = n1; $("ip-ax").max = an; $("ip-bx").max = bn;
     showGroups();
     render();
+
+    /* URL presets, applied last so the lesson has already booted. Any of the
+       two-group keys means the reader wants that view, so the mode button is
+       clicked first: its own handler unhides the second set of controls, and
+       there is no second code path. n comes before x in the map because
+       SC.preset walks the keys in insertion order and the successes slider's
+       max is set from the sample size. */
+    if (window.SC && SC.preset) {
+      if (/[?&](n1|x1|n2|x2)=/.test(window.location.search)) {
+        var twoBtn = document.querySelector('#ip-mode button[data-m="two"]');
+        if (twoBtn) twoBtn.click();
+      }
+      SC.preset({
+        n: "#ip-n1", x: "#ip-x1", p0: { el: "#ip-p0", scale: 100 },
+        n1: "#ip-an", x1: "#ip-ax", n2: "#ip-bn", x2: "#ip-bx"
+      });
+    }
   })();
   </script>
 

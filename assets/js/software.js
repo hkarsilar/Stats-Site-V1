@@ -149,7 +149,8 @@ window.SOFTWARE = {
   },
   "inference-for-proportions": {
     spss: [
-      "One proportion: <b>Analyze &rsaquo; Nonparametric Tests &rsaquo; One Sample</b>, choose <b>Customize analysis</b>, and under Settings pick <b>Compare observed binary probability to hypothesized (Binomial test)</b>. Set the test proportion and choose the normal approximation if you want the z.",
+      "One proportion, SPSS 29 and later: the <b>Compare Means</b> menu was renamed <b>Compare Means and Proportions</b>, and the test now has its own dialog at <b>Analyze &rsaquo; Compare Means and Proportions &rsaquo; One-Sample Proportions</b>. Set the success category and the test value; the dialog offers several interval formulas, including Wilson and Clopper-Pearson, so pick the one your course names.",
+      "One proportion, SPSS 28 and earlier: <b>Analyze &rsaquo; Nonparametric Tests &rsaquo; One Sample</b>, choose <b>Customize analysis</b>, and under Settings pick <b>Compare observed binary probability to hypothesized (Binomial test)</b>. Set the test proportion and choose the normal approximation if you want the z.",
       "Two proportions from raw data: <b>Analyze &rsaquo; Descriptive Statistics &rsaquo; Crosstabs</b>, group in Rows and outcome in Columns.",
       "Click <b>Statistics</b> and tick <b>Chi-square</b>; click <b>Cells</b> and tick <b>Row percentages</b> so both proportions are printed beside the counts.",
       "Read the <b>Pearson Chi-Square</b> row. On a 2&times;2 table its value is the pooled z squared, and its <b>Asymptotic Sig. (2-sided)</b> is the two-sided p.",
@@ -166,7 +167,8 @@ window.SOFTWARE = {
       "Report the counts, not only the percentages. \"45 of 120 (37.5%)\" lets a reader check your arithmetic; \"37.5%\" alone does not.",
       "Give the interval for the DIFFERENCE, not two separate intervals. Whether two intervals overlap is not the same question as whether the difference clears zero, and the overlap version is the more conservative of the two.",
       "Check both counts before running anything: at least 10 successes and 10 failures per group. Below that, ask for an exact binomial test rather than the normal approximation.",
-      "On a 2&times;2 table, SPSS's Pearson chi-square and the two-proportion z are the same test. Report one of them, and prefer the z, since it carries a direction and an interval."
+      "On a 2&times;2 table, SPSS's Pearson chi-square and the two-proportion z are the same test. Report one of them, and prefer the z, since it carries a direction and an interval.",
+      "SPSS 29's proportions dialogs default to an interval formula that is not the textbook one, so a hand answer and the printout can differ in the third decimal without either being wrong. Say which formula you used."
     ]
   },
   "one-sample-and-paired-t-tests": {
@@ -358,7 +360,8 @@ window.SOFTWARE = {
       '<strong>Analyze → Descriptive Statistics → Crosstabs…</strong> (SPSS 31+ also offers a direct <strong>Analyze → Descriptive Statistics → Chi-Square</strong> dialog; Crosstabs is still the route that gives you the table of counts to interpret).',
       'One variable into <em>Row(s)</em>, the other into <em>Column(s)</em>.',
       '<em>Statistics…</em>: tick <em>Chi-square</em> and <em>Phi and Cramér’s V</em>.',
-      '<em>Cells…</em>: tick <em>Expected</em> counts (check none are below 5) and <em>Column</em> percentages for interpretation.',
+      '<em>Cells…</em>: tick <em>Expected</em> counts and, under <em>Residuals</em>, <em>Unstandardized</em>. Every cell of the Crosstab then prints the same three numbers the lesson\'s builder shows: the count, the expected count, and O minus E. Square that residual and divide by the expected count and you have the cell\'s χ² component.',
+      'Also tick <em>Column</em> percentages for interpretation, and <em>Adjusted standardized</em> residuals when the table is bigger than 2×2 and you need to say which cell drove the result.',
       'Goodness-of-fit against fixed proportions: <strong>Analyze → Nonparametric Tests → Legacy Dialogs → Chi-square…</strong>'
     ],
     jasp: [
@@ -371,7 +374,8 @@ window.SOFTWARE = {
     apa: '<p>Recovery was associated with treatment condition, χ²(1, <em>N</em> = 120) = 6.65, <em>p</em> = .010, φ = .24, 90% CI [.09, .39]: 41 of 60 treated patients recovered (68%) versus 27 of 60 controls (45%).</p>',
     tips: [
       'Chi-square reporting includes the sample size inside the parentheses: χ²(df, <em>N</em> = …) = ….',
-      'χ² and φ are Greek, so no italics. Follow the statistic with the actual percentages so the reader sees what happened.'
+      'χ² and φ are Greek, so no italics. Follow the statistic with the actual percentages so the reader sees what happened.',
+      'Read the Expected Count row before the p-value. SPSS prints a footnote counting the cells with an expected count below 5, and on a table bigger than 2×2 the textbook rule allows up to 20% of them.'
     ]
   },
   "correlation": {

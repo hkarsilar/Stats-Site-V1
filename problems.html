@@ -16,16 +16,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Practice Problems — Worked Statistics Exam Questions — StatsCapybara</title>
-  <meta name="description" content="Fifty-nine statistics problems with fully worked solutions: z-scores, t-tests, ANOVA, regression, Bayes and survival analysis, one step at a time." />
+  <meta name="description" content="Sixty-one statistics problems with worked solutions: z-scores, t-tests, proportions, chi-square, regression and Bayes, one step at a time." />
   <link rel="canonical" href="https://statscapybara.com/problems.html" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Practice Problems — StatsCapybara" />
-  <meta property="og:description" content="Fifty-nine worked statistics problems, from z-scores to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
+  <meta property="og:description" content="Sixty-one worked statistics problems, from z-scores and chi-square to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
   <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
   <meta property="og:url" content="https://statscapybara.com/problems.html" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Practice Problems — StatsCapybara" />
-  <meta name="twitter:description" content="Fifty-nine worked statistics problems, from z-scores to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
+  <meta name="twitter:description" content="Sixty-one worked statistics problems, from z-scores and chi-square to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="assets/css/styles.css" />
@@ -137,7 +137,7 @@
         </div>
 
         <ul class="pb-index">
-          <li><a href="#stats-1"><span class="t">📊 Stats 1 · Foundations</span><br><span class="m">20 problems · data types → probability → z and t tests</span></a></li>
+          <li><a href="#stats-1"><span class="t">📊 Stats 1 · Foundations</span><br><span class="m">22 problems · data types → probability → z, t, proportions and χ²</span></a></li>
           <li><a href="#exam-style"><span class="t">📝 Exam-style · A Stats 1 midterm</span><br><span class="m">8 problems · §1.1 to §1.12, worked off the printed tables</span></a></li>
           <li><a href="#stats-2"><span class="t">🔗 Stats 2 · Groups &amp; relationships</span><br><span class="m">10 problems · ANOVA → regression</span></a></li>
           <li><a href="#regression"><span class="t">📐 Regression · Several predictors</span><br><span class="m">8 problems · multiple regression → missing data</span></a></li>
@@ -150,7 +150,7 @@
              ================================================================== -->
         <section class="pb-set" id="stats-1-set">
           <h2 id="stats-1">📊 Stats 1 · Foundations</h2>
-          <p class="pb-set-sub">Twenty problems tracking the <a href="stats-1/">Stats 1 syllabus</a>: what kind of data you have, how to describe it, how far a score sits from average, how a sample mean turns into a confidence interval and then a <em>z</em>-test or a <em>t</em>-test, and the probability rules that three of them run on.</p>
+          <p class="pb-set-sub">Twenty-two problems tracking the <a href="stats-1/">Stats 1 syllabus</a>: what kind of data you have, how to describe it, how far a score sits from average, how a sample mean turns into a confidence interval and then a <em>z</em>-test or a <em>t</em>-test, the probability rules that three of them run on, and finally a proportion and a two-way table of counts.</p>
 
           <!-- ---------- 1.1 ----------
                verify: no arithmetic; classification only.
@@ -1272,6 +1272,133 @@
               <p class="pb-ref">From <a href="stats-1/independent-samples-t-test/#three-dfs">§1.14 Independent Samples t-Test</a> · compare the three rules live in the <a href="stats-1/independent-samples-t-test/?gap=8&amp;sd=10&amp;n=20&amp;df=cons">Tug-of-War with the conservative df selected</a>, or look t* up on the printed <a href="tables.html#printed-tables">Table D</a>.</p>
             </details>
           </article>
+
+          <!-- P84 · verified:
+               verify: node -e 'const t=[[70,32,18],[30,28,22]];
+                 rt=[120,80]; ct=[100,60,40]; N=200;
+                 E=[[60,36,24],[40,24,16]];
+                 comps=[[100/60,16/36,36/24],[100/40,16/24,36/16]]
+                      =[[1.6667,0.4444,1.5],[2.5,0.6667,2.25]];
+                 chi2=9.027778, df=2, VIZ.chiSqUpper(9.027778,2)=0.010956;
+                 row %: 70/120=.5833 32/120=.2667 18/120=.1500;
+                        30/80=.3750 28/80=.3500 22/80=.2750'
+                 Table F df 2: .02 column = 7.824, .01 column = 9.210,
+                 so chi2 = 9.03 brackets p between .01 and .02
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p1-21"><span class="pb-num">21</span>Two hundred riders, three verdicts</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A bike-share operator has replaced the docking stations across a city and asks 200 riders whether the new ones are better, about the same, or worse than the old. The riders split into 120 annual members and 80 casual users. The operator wants to know whether the two kinds of rider are answering differently.</p>
+            <div class="pb-given">
+              <span class="lbl">A 2 × 3 table of counts</span>
+              Members: better 70 · same 32 · worse 18 &nbsp;&nbsp;|&nbsp;&nbsp; Casual: better 30 · same 28 · worse 22
+            </div>
+            <ol class="pb-ask">
+              <li>Give the row totals, the column totals and the grand total, then the six expected counts. Do the textbook conditions hold?</li>
+              <li>Compute the six components and add them to get χ².</li>
+              <li>State the degrees of freedom, bracket the p-value off Table F, and give the decision at α = .05.</li>
+              <li>Which cell contributes most, and what does that cell say about the two kinds of rider?</li>
+              <li>Give each row's conditional distribution as percentages, and write the finding in one sentence.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Margins first, then the expected counts</span>
+                  <span class="pb-note">Every expected count is its own row total times its own column total, divided by the grand total. Doing the margins first means each one is a single multiplication and a single division.</span>
+                  <span class="pb-math">Rows: 70 + 32 + 18 = 120 &nbsp; 30 + 28 + 22 = 80 &nbsp;&nbsp; Columns: 100, 60, 40 &nbsp;&nbsp; N = 200</span>
+                  <span class="pb-math">Members: 120 × 100/200 = 60 &nbsp; 120 × 60/200 = 36 &nbsp; 120 × 40/200 = 24</span>
+                  <span class="pb-math">Casual: 80 × 100/200 = 40 &nbsp; 80 × 60/200 = 24 &nbsp; 80 × 40/200 = 16</span>
+                  <span class="pb-note">Check the margins of the expected table before going on: 60 + 36 + 24 = 120 and 40 + 24 + 16 = 80, so the expected counts reproduce the observed totals, which they always must. The smallest expected count is 16, so every one clears 1, none is below 5, and the conditions hold comfortably.</span>
+                </li>
+                <li><span class="pb-lbl">One component per cell</span>
+                  <span class="pb-note">Subtract, square, divide by the expected count. Keep four decimal places until the final addition.</span>
+                  <span class="pb-math">Members: (70 − 60)²/60 = 1.6667 &nbsp; (32 − 36)²/36 = 0.4444 &nbsp; (18 − 24)²/24 = 1.5000</span>
+                  <span class="pb-math">Casual: (30 − 40)²/40 = 2.5000 &nbsp; (28 − 24)²/24 = 0.6667 &nbsp; (22 − 16)²/16 = 2.2500</span>
+                  <span class="pb-math">χ² = 1.6667 + 0.4444 + 1.5000 + 2.5000 + 0.6667 + 2.2500 = 9.0278</span>
+                </li>
+                <li><span class="pb-lbl">Degrees of freedom, then Table F</span>
+                  <span class="pb-math">df = (2 − 1) × (3 − 1) = 2</span>
+                  <span class="pb-note">On the df 2 row, 9.0278 sits between the .02 column (7.824) and the .01 column (9.210), so the p-value is between .01 and .02. Since that whole range is below .05, reject the hypothesis that rider type and verdict are independent. Exactly, p = .0110.</span>
+                </li>
+                <li><span class="pb-lbl">Where the 9.03 came from</span>
+                  <span class="pb-note">The largest component is 2.50, casual riders who said better. Independence expects 40 of them and only 30 said so. The second largest, 2.25, is its mirror image: 22 casual riders called the stations worse where 16 were expected. Members run the other way in both cells. So the finding is not that riders are split on the docks in general, it is that casual users are markedly less enthusiastic than members, and both ends of their answer distribution show it. The smallest component, 0.44, says the middle option is answered almost identically by the two groups.</span>
+                </li>
+                <li><span class="pb-lbl">The two conditional distributions</span>
+                  <span class="pb-note">A significant χ² is a claim that these two rows differ. Divide each row by its own total and the claim becomes readable.</span>
+                  <span class="pb-math">Members: 70/120 = 58.3% &nbsp; 32/120 = 26.7% &nbsp; 18/120 = 15.0%</span>
+                  <span class="pb-math">Casual: 30/80 = 37.5% &nbsp; 28/80 = 35.0% &nbsp; 22/80 = 27.5%</span>
+                  <span class="pb-math">Everybody: 100/200 = 50% &nbsp; 60/200 = 30% &nbsp; 40/200 = 20%</span>
+                  <span class="pb-note">Members split 58 / 27 / 15 and casual users 38 / 35 / 28, against the 50 / 30 / 20 of the survey as a whole. Independence would have both rows sitting on that last line. The sentence to write: members are the ones happy with the new docks, and approval falls off steeply among casual users, a quarter of whom call the stations worse.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Expected counts 60, 36, 24 for members and 40, 24, 16 for casual riders; all conditions met. Components 1.6667, 0.4444, 1.5000, 2.5000, 0.6667 and 2.2500 give χ² = 9.03 on 2 df. Table F brackets p between .01 and .02 (p = .0110 exactly), so rider type and verdict are associated at α = .05. The biggest contributor is casual riders who chose "better", 30 against an expected 40. Row percentages: members 58.3 / 26.7 / 15.0, casual 37.5 / 35.0 / 27.5.</p>
+              <p class="pb-round">Rounding: components to 4 dp so the sum is right in the second decimal; χ² to 2 dp and percentages to 1 dp in the report. Reporting it: χ²(2, <em>N</em> = 200) = 9.03, <em>p</em> = .011. <a href="problems.html#p2-7">Problem 19</a> takes a different 2 × 3 table on to Cramér's <em>V</em>.</p>
+              <p class="pb-ref">From <a href="stats-1/chi-square-tests/">§1.16 Chi-Square Tests</a> · type the table into the <a href="stats-1/chi-square-tests/?t=70,32,18;30,28,22">Build a Table explorer</a> to see the same components, the same row percentages and the tint, or look the critical values up on the printed <a href="tables.html#printed-tables">Table F</a>.</p>
+            </details>
+          </article>
+
+          <!-- P84 · verified:
+               verify: node -e 'const n1=250,x1=205,n2=200,x2=148;
+                 p1=0.82, p2=0.74, d=0.08;
+                 pooled=(205+148)/450=0.784444; pooled*(1-pooled)=0.169091;
+                 1/250+1/200=0.009; seP=sqrt(0.169091*0.009)=0.039011;
+                 z=0.08/0.039011=2.0507; 2*VIZ.normQ(2.0507)=0.0403;
+                 seU=sqrt(0.82*0.18/250 + 0.74*0.26/200)
+                    =sqrt(0.0005904+0.0009620)=0.039401;
+                 margin=1.96*0.039401=0.0772; CI=[0.0028,0.1572];
+                 chi2 on the 2x2 [[205,45],[148,52]] = 4.2055 = z^2, p=0.0403'
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p1-22"><span class="pb-num">22</span>Two reminders, one gap in attendance</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A clinic sends appointment reminders two ways and records who turns up. Of 250 patients reminded by text message, 205 attended. Of 200 reminded by email, 148 attended. The practice manager wants to know whether the text reminder really does better, and by how much.</p>
+            <div class="pb-given">
+              <span class="lbl">Two independent groups, counts of successes</span>
+              n₁ = 250 · x₁ = 205 (text) &nbsp;&nbsp;|&nbsp;&nbsp; n₂ = 200 · x₂ = 148 (email)
+            </div>
+            <ol class="pb-ask">
+              <li>Check the conditions, then give the two sample proportions and their difference.</li>
+              <li>Compute the pooled proportion and the standard error the test uses, then the <em>z</em> statistic and its two-sided p-value.</li>
+              <li>Give the 95% confidence interval for the difference.</li>
+              <li>The interval's standard error is not the test's. Why not, and which one belongs where?</li>
+              <li>Write the result as a sentence, and say what χ² on the same 2 × 2 table would give.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Conditions, then the proportions</span>
+                  <span class="pb-note">Each group needs at least 10 successes and 10 failures. Here it is 205 and 45 in one group, 148 and 52 in the other, so there is nothing to worry about on that front. Both samples are also tiny next to the population of patients a clinic sees.</span>
+                  <span class="pb-math">p̂₁ = 205/250 = 0.820 &nbsp;&nbsp; p̂₂ = 148/200 = 0.740 &nbsp;&nbsp; p̂₁ − p̂₂ = 0.080</span>
+                </li>
+                <li><span class="pb-lbl">The test, which believes H₀</span>
+                  <span class="pb-note">H₀ says the two population proportions are equal. If that is true there is only one proportion to estimate, and every one of the 450 patients helps estimate it. That single pooled value goes into both halves of the standard error.</span>
+                  <span class="pb-math">p̂ = (205 + 148)/(250 + 200) = 353/450 = 0.7844</span>
+                  <span class="pb-math">SE = √(0.7844 × 0.2156 × (1/250 + 1/200)) = √(0.16909 × 0.00900) = √0.0015218 = 0.03901</span>
+                  <span class="pb-math">z = 0.080 / 0.03901 = 2.051 &nbsp;&nbsp; two-sided p = 2 × P(Z &gt; 2.05) = .0403</span>
+                  <span class="pb-note">Table A gives the area left of 2.05 as .9798, so the upper tail is .0202 and doubling it gives .0404. Reject H₀ at α = .05, though not at .01.</span>
+                </li>
+                <li><span class="pb-lbl">The interval, which believes nothing</span>
+                  <span class="pb-note">An interval has no hypothesized value to lean on, so each group estimates its own spread from its own data and the two variances add.</span>
+                  <span class="pb-math">SE = √(0.82 × 0.18/250 + 0.74 × 0.26/200) = √(0.0005904 + 0.0009620) = √0.0015524 = 0.03940</span>
+                  <span class="pb-math">0.080 ± 1.96 × 0.03940 = 0.080 ± 0.077</span>
+                  <span class="pb-math">95% CI = [0.003, 0.157]</span>
+                </li>
+                <li><span class="pb-lbl">Why the two standard errors differ</span>
+                  <span class="pb-note">A proportion's spread is decided by the proportion itself, so choosing a value for p also chooses a standard error. The test assumes H₀ is true and H₀ hands it one shared proportion, so it would be inconsistent to test that hypothesis using two separate estimates. The interval assumes nothing at all and has only the two observed proportions to work with. The two standard errors come out at 0.03901 and 0.03940 here, close enough that the conclusion is safe either way, but the two formulas answer different questions and swapping them costs marks.</span>
+                </li>
+                <li><span class="pb-lbl">The sentence, and the same test in its other costume</span>
+                  <span class="pb-note">Text reminders were followed by attendance more often than email reminders, 82.0% against 74.0%, <em>z</em> = 2.05, <em>p</em> = .040, 95% CI of the difference [0.3%, 15.7%]. Laid out as a 2 × 2 table of attended against missed, the same 450 patients give χ²(1, <em>N</em> = 450) = 4.21, and 4.2055 is 2.0507 squared. The p-value is .040 either way. The z version is the one to report, because the interval it comes with is the part the practice manager can act on: the advantage could be as small as a third of a percentage point.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">p̂₁ = .820, p̂₂ = .740, difference .080. Pooled p̂ = .7844, test SE = .03901, z = 2.05, two-sided p = .040, so reject H₀ at α = .05. The 95% interval uses the unpooled SE = .03940 and runs [0.003, 0.157]. χ² on the same table is 4.21 on 1 df, which is z² exactly, with the same p.</p>
+              <p class="pb-round">Rounding: proportions to 3 dp, standard errors to 5 dp so the z survives to two decimals, interval limits to 3 dp. Reading z = 2.05 off Table A gives p = .0404 rather than .0403; both round to .040.</p>
+              <p class="pb-ref">From <a href="stats-1/inference-for-proportions/">§1.15 Inference for Proportions</a> · set the counts in the <a href="stats-1/inference-for-proportions/?n1=250&amp;x1=205&amp;n2=200&amp;x2=148">One Proportion, or Two explorer</a>, or check the areas on the printed <a href="tables.html#printed-tables">Table A</a>.</p>
+            </details>
+          </article>
         </section>
 
 
@@ -1283,10 +1410,12 @@
              step when P79 and P82 appended problems 13–18 to the Stats 1 set
              without renumbering the four sets below it, so the Stats 2 set
              still starts its own count at 13. P83 added two more Stats 1
-             problems and moved this set's badges from 19–26 to 21–28 to keep
-             the two Stats 1 sets running 1 to 28 without a gap; that was safe
-             because no page names an exam-style problem by its number. The
-             remaining drift is the 31 cards below, and fixing it means
+             problems and moved this set's badges from 19–26 to 21–28, and
+             P84 added two more and moved them again to 23–30, so the two
+             Stats 1 sets run 1 to 30 without a gap. Both renumbers were safe
+             because no page names an exam-style problem by its number, and
+             P84 also brought this set's stale "Problem N" source comments
+             into step with the badges. The remaining drift is the 31 cards below, and fixing it means
              renumbering them AND the 72 "Problem N" mentions in 57 lesson
              pages, which is its own session; the #pX-Y anchors every lesson
              links to are unaffected either way.
@@ -1295,14 +1424,14 @@
           <h2 id="exam-style">📝 Exam-style · A midterm on §1.1–§1.12</h2>
           <p class="pb-set-sub">Eight problems written the way a paper exam asks them: one short scenario, several parts that build on each other, numbers a basic calculator can hold, and every area read off the printed tables rather than out of software. They span the first twelve sections of <a href="stats-1/">Stats 1</a>, which is the usual reach of a week 4 or week 5 midterm. The set above teaches one idea per problem; this one chains them.</p>
 
-          <!-- ---------- Problem 19 ----------
+          <!-- ---------- Problem 23 ----------
                verify: node -e 'console.log(63/175, 175/250, 250/18400, 18400/250)'
                        → p-hat 0.36 exactly, response rate 0.70, sampling fraction 0.0135870 (1.36%),
                          population/sample ratio 73.6
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p6-1"><span class="pb-num">21</span>Four words that must not be swapped</h3>
+              <h3 id="p6-1"><span class="pb-num">23</span>Four words that must not be swapped</h3>
               <span class="pb-chip warm">Warm-up</span>
             </div>
             <p class="pb-scenario">A university with 18,400 undergraduates wants to know how much sleep its students get on a weeknight. The registry draws a simple random sample of 250 names from the enrollment list and emails them a one-question form. 175 forms come back usable.</p>
@@ -1352,7 +1481,7 @@
             </details>
           </article>
 
-          <!-- ---------- Problem 20 ----------
+          <!-- ---------- Problem 24 ----------
                verify: node -e 'const d=[14,6,22,9,31,11,7,18,12,8,26,10,47].sort((a,b)=>a-b);
                         const lo=d.slice(0,6),hi=d.slice(7);
                         const Q1=(lo[2]+lo[3])/2,Q3=(hi[2]+hi[3])/2;
@@ -1365,7 +1494,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p6-2"><span class="pb-num">22</span>Thirteen calls to the help desk</h3>
+              <h3 id="p6-2"><span class="pb-num">24</span>Thirteen calls to the help desk</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A university IT help desk logs how long each caller waited before a person picked up, to the nearest minute. Here are thirteen calls from one morning, in the order they arrived.</p>
@@ -1415,7 +1544,7 @@
             </details>
           </article>
 
-          <!-- ---------- Problem 21 ----------
+          <!-- ---------- Problem 25 ----------
                verify: node -e with VIZ in a vm context —
                  normCdf(-0.50) = 0.308538 → Table A .3085
                  normCdf( 1.50) = 0.933193 → upper tail .0668
@@ -1426,7 +1555,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p6-3"><span class="pb-num">23</span>Bags that say 500 grams</h3>
+              <h3 id="p6-3"><span class="pb-num">25</span>Bags that say 500 grams</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A machine fills bags of coffee labeled 500 g. The weight it actually delivers is normally distributed with a mean of 502 g and a standard deviation of 4 g. One shift produces 240 bags. Work every part from the printed Table A, and give the answer the table gives.</p>
@@ -1476,7 +1605,7 @@
             </details>
           </article>
 
-          <!-- ---------- Problem 22 ----------
+          <!-- ---------- Problem 26 ----------
                verify: node -e 'let s=0,x=0,b=0;for(let a=1;a<=6;a++)for(let c=1;c<=6;c++){
                         const S=a+c===7,X=(a===6||c===6);if(S)s++;if(X)x++;if(S&&X)b++;}
                         console.log(s,x,b,(s+x-b)/36, 1-(5/6)**4, 1-(35/36)**24,
@@ -1487,7 +1616,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p6-4"><span class="pb-num">24</span>What de Méré got wrong</h3>
+              <h3 id="p6-4"><span class="pb-num">26</span>What de Méré got wrong</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">Two fair six-sided dice are rolled and both faces are recorded, so there are 36 equally likely outcomes. The second half of this problem is the pair of bets a seventeenth-century gambler took to Pascal, having noticed that one of them made money and the other did not.</p>
@@ -1535,7 +1664,7 @@
             </details>
           </article>
 
-          <!-- ---------- Problem 23 ----------
+          <!-- ---------- Problem 27 ----------
                verify: node -e 'console.log(4/12*3/11, 8/12*7/11, 1-8/12*7/11, (1/3)*(3/11)+(2/3)*(4/11),
                         (1/3)**2, 1-(2/3)**2, 2*(1/3)*(2/3))'
                        → 1/11 = .090909 ; 14/33 = .424242 ; 19/33 = .575758 ; P(2nd flat) = 1/3
@@ -1544,7 +1673,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p6-5"><span class="pb-num">25</span>Two batteries out of the drawer</h3>
+              <h3 id="p6-5"><span class="pb-num">27</span>Two batteries out of the drawer</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A drawer holds 12 identical-looking AA batteries. Four of them are flat and eight still work. Two are taken out at random, one after the other, and the first is not put back.</p>
@@ -1590,7 +1719,7 @@
             </details>
           </article>
 
-          <!-- ---------- Problem 24 ----------
+          <!-- ---------- Problem 28 ----------
                verify: node -e 'function C(n,k){let r=1;for(let i=1;i<=k;i++)r=r*(n-i+1)/i;return Math.round(r)}
                         let t=0;for(let k=0;k<=8;k++){const p=C(8,k)*0.25**k*0.75**(8-k);
                         console.log(k,C(8,k),p.toFixed(7));t+=p}console.log("sum",t,
@@ -1602,7 +1731,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p6-6"><span class="pb-num">26</span>Eight questions, four options, no revision</h3>
+              <h3 id="p6-6"><span class="pb-num">28</span>Eight questions, four options, no revision</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A short class test has 8 multiple-choice questions with 4 options each and exactly one right answer per question. A student who has done no revision at all answers every question by guessing. Let X be the number correct. The pass mark is 5.</p>
@@ -1651,7 +1780,7 @@
             </details>
           </article>
 
-          <!-- ---------- Problem 25 ----------
+          <!-- ---------- Problem 29 ----------
                verify: node -e with VIZ in a vm context —
                  z = (244 − 250)/15 = −0.40 → normCdf = .344578 → Table A .3446
                  n = 9  → SE = 5   → z = −1.20 → normCdf = .115070 → .1151
@@ -1659,7 +1788,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p6-7"><span class="pb-num">27</span>One cup, then nine, then thirty-six</h3>
+              <h3 id="p6-7"><span class="pb-num">29</span>One cup, then nine, then thirty-six</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A vending machine is set to pour 250 ml of coffee. The amount it actually pours varies normally, with a mean of 250 ml and a standard deviation of 15 ml. The campus office treats anything under 244 ml as a short pour.</p>
@@ -1706,7 +1835,7 @@
             </details>
           </article>
 
-          <!-- ---------- Problem 26 ----------
+          <!-- ---------- Problem 30 ----------
                verify: node -e with VIZ in a vm context —
                  SE = 6/√36 = 1 ; z = (102.2 − 100)/1 = 2.20
                  normCdf(2.20) = .986097 → upper tail .013903 → Table A .0139, two-sided p = .0278
@@ -1717,7 +1846,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p6-8"><span class="pb-num">28</span>The interval and the test, on one delivery</h3>
+              <h3 id="p6-8"><span class="pb-num">30</span>The interval and the test, on one delivery</h3>
               <span class="pb-chip stretch">Stretch</span>
             </div>
             <p class="pb-scenario">A supplier certifies its resistors at a mean of 100 Ω, and the factory's long production records put the standard deviation at 6 Ω, treated as known. A buyer measures 36 resistors from one delivery and gets a mean of 102.2 Ω. The contract lets the buyer reject a delivery whose mean is off spec in either direction.</p>
