@@ -37,7 +37,8 @@
     .exam-lab { font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-faint); }
     .exam-quick { display: flex; flex-wrap: wrap; gap: .4rem; }
     .exam-track { font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-faint); margin: .6rem 0 .35rem; }
-    .exam-checks { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: .5rem; }
+    .exam-checks { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: .5rem; }
+    .exam-course { display: flex; flex-direction: column; }
     .exam-check { display: grid; grid-template-columns: auto 1fr; column-gap: .55rem; align-items: center;
       padding: .55rem .7rem; border: 1px solid var(--border); border-radius: 10px; background: var(--surface);
       cursor: pointer; transition: border-color .12s, transform .12s; }
@@ -47,6 +48,20 @@
     .exam-check .ec-sub { grid-column: 2; font-size: .74rem; color: var(--text-muted); }
     .exam-check-single { max-width: 24rem; }
     .exam-avail { font-size: .78rem; color: var(--text-muted); margin: 0; }
+
+    /* section range: the "from §a to §b" strip under a course's checkbox */
+    .exam-range { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem;
+      padding: .35rem .7rem .1rem; font-size: .76rem; color: var(--text-muted); }
+    /* the two selects share whatever the column has, shrinking rather than
+       wrapping; the section NUMBER leads each option, so a clipped label keeps
+       the part that identifies it */
+    .exam-range select { flex: 1 1 5rem; min-width: 0; max-width: 9.5rem; padding: .2rem .35rem;
+      font-size: .76rem; font-family: inherit; color: var(--text); background: var(--surface);
+      border: 1px solid var(--border); border-radius: 6px; }
+    .exam-range select:disabled { opacity: .5; cursor: not-allowed; }
+    .exam-range.er-off { opacity: .55; }
+    .exam-range .er-all { font-style: italic; }
+    .exam-note { font-size: .78rem; color: var(--text-muted); margin: .55rem 0 0; }
     #exam-start { align-self: flex-start; }
 
     .exam-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: .5rem; }
@@ -178,6 +193,7 @@
                     <button type="button" class="btn btn-ghost btn-sm" data-pick="none">Clear</button>
                   </div>
                   <div id="exam-scope"></div>
+                  <p class="exam-note" id="exam-scope-note" aria-live="polite"></p>
                 </div>
 
                 <div class="exam-field">
@@ -263,122 +279,122 @@
     // Question bank — each tagged with its course (s1..s4).
     var BANK = [
       /* ---------- Stats 1 — Foundations ---------- */
-      { c: "stats-1", q: "A poll invites readers to click a link and give their view. This is a…", o: ["simple random sample", "stratified sample", "voluntary response sample", "census"], a: 2, why: "People who feel strongly are the ones who bother to click, so the respondents are self-selected on the opinion being measured. More clicks do not help." },
-      { c: "stats-1", q: "Which feature of a study is what licenses a claim about CAUSE?", o: ["a large sample", "random assignment to conditions", "random selection from the population", "a low p-value"], a: 1, why: "Random ASSIGNMENT makes the groups comparable on every variable at once, so the treatment is the only systematic difference left. Random SELECTION is a different thing: it licenses generalizing to the population." },
-      { c: "stats-1", q: "You draw a proper random sample of 400 and 90 people reply. The worry is…", o: ["undercoverage", "non-response bias", "response bias", "nothing, the sample was random"], a: 1, why: "Selection was random but participation was not. The 90 who replied are self-selected, and they differ from the 310 who did not on whatever made them reply." },
-      { c: "stats-1", q: "In a class of 200, 120 study French and 90 study German; 45 study both. P(French or German) is…", o: ["1.05", "0.825", "0.75", "0.225"], a: 1, why: "The general addition rule: .60 + .45 − .225 = .825. Adding the two on their own gives 1.05, which is already impossible, because the 45 students in the overlap were counted inside each total and one copy has to come back out." },
-      { c: "stats-1", q: "A condition affects 1 person in 100. A test flags 90% of people who have it and 5% of people who do not. Of everyone who tests positive, roughly what share is actually ill?", o: ["90%", "about 15%", "about 50%", "95%"], a: 1, why: "Out of 10,000 people: 100 are ill and 90 of them are flagged, while 9,900 are healthy and 495 of them are flagged anyway. That is 90 out of 585, or 15.4%. The test answers P(positive | ill); the person reading the result wants P(ill | positive), and a low base rate keeps those two far apart." },
-      { c: "stats-1", q: "A discrete random variable takes values 0, 1, 2 with probabilities .5, .3, .2. Its mean is…", o: ["1.0", "0.7", "1.5", "0.33"], a: 1, why: "μ = Σ x · p = 0(.5) + 1(.3) + 2(.2) = 0.7. Each value is weighted by its own probability, so the answer leans toward 0 because that is the likeliest value. Averaging 0, 1 and 2 without weights would give 1.0, which ignores the distribution entirely." },
-      { c: "stats-1", q: "A fair coin is tossed 10 times. The probability of exactly 5 heads is closest to…", o: ["0.50", "0.25", "0.10", "0.75"], a: 1, why: "C(10,5) × 0.5^10 = 252/1024 = 0.246. Five is the most likely single count and still happens under a quarter of the time, which is worth remembering before reading much into an average result." },
-      { c: "stats-1", q: "For a binomial count with n = 12 and p = 0.25, the mean and SD are…", o: ["3 and 1.5", "3 and 2.25", "4 and 1.5", "3 and 0.75"], a: 0, why: "μ = np = 3 and σ = √(np(1−p)) = √2.25 = 1.5. The variance is 2.25; the standard deviation is its square root." },
-      { c: "stats-1", q: "Which of these breaks the binomial conditions?", o: ["tossing a biased coin 20 times", "counting defective items in 50 independent inspections", "drawing 5 cards from a deck without replacement and counting hearts", "asking 30 unrelated people a yes/no question"], a: 2, why: "Without replacement, removing a heart changes the probability for the next draw, so p is not constant and the trials are not independent. A biased coin is fine: p just has to be the SAME every trial, not 0.5." },
-      { c: "stats-1", q: "232 of 400 students say yes. The 95% confidence interval for the population proportion is closest to…", o: ["[.53, .63]", "[.55, .61]", "[.50, .66]", "[.57, .59]"], a: 0, why: "p̂ = .58, SE = √(.58 × .42 / 400) = .0247, and 1.96 × .0247 = .048. So .58 ± .048 gives [.532, .628]." },
-      { c: "stats-1", q: "Inference on a proportion requires…", o: ["n of at least 30", "at least 10 successes AND at least 10 failures", "a normal population", "equal variances"], a: 1, why: "The condition is on both counts, so the normal approximation has room on both sides. A sample of 500 with only 4 successes fails it however large n gets." },
-      { c: "stats-1", q: "For a 2×2 table, the relationship between the chi-square statistic and the two-proportion z is…", o: ["χ² = 2z", "χ² = z²", "χ² = |z|", "there is no fixed relationship"], a: 1, why: "They are algebraically the same test on 1 df, so χ² = z² exactly and the p-values agree. Only the z version reports a signed difference and a confidence interval." },
-      { c: "stats-1", q: "Which measure of center gets dragged the most by a single extreme outlier?", o: ["The mean", "The median", "The mode", "They're affected equally"], a: 0, why: "The mean uses every value, so one extreme number pulls it; the median only cares about the middle position." },
-      { c: "stats-1", q: "A value with a z-score of 0 is…", o: ["An outlier", "Exactly at the mean", "Two SDs below the mean", "Impossible"], a: 1, why: "z = (x − μ)/σ, so z = 0 means x equals the mean." },
-      { c: "stats-1", q: "The Central Limit Theorem says the distribution of sample means is approximately normal…", o: ["only if the population is normal", "regardless of the population's shape (for large enough n)", "only for n below 30", "never"], a: 1, why: "That's the surprise of the CLT — even skewed populations produce bell-shaped sampling distributions of the mean." },
-      { c: "stats-1", q: "A p-value is the probability of…", o: ["the null hypothesis being true", "the alternative being true", "data at least this extreme, assuming the null is true", "making a Type II error"], a: 2, why: "It's P(data this extreme | H₀ true), NOT the probability that H₀ is true." },
-      { c: "stats-1", q: "\"95% confidence\" means…", o: ["there's a 95% chance the true value is in this one interval", "about 95% of such intervals, over many studies, contain the true value", "the result is 95% accurate", "p = 0.95"], a: 1, why: "Confidence is a property of the procedure across repeated samples, not of any single interval." },
-      { c: "stats-1", q: "Holding the effect size fixed, increasing the sample size…", o: ["decreases statistical power", "has no effect on power", "increases statistical power", "increases the p-value"], a: 2, why: "More data shrinks the standard error, making a real effect easier to detect, so power goes up." },
-      { c: "stats-1", q: "Which of these is an ordinal variable?", o: ["Reaction time in milliseconds", "Finishing place in a race (1st, 2nd, 3rd)", "Blood type", "Temperature in °C"], a: 1, why: "Finishing place has a clear order but unequal, undefined gaps between ranks, which is the definition of ordinal." },
-      { c: "stats-1", q: "The standard error of the mean measures…", o: ["the spread of the raw data", "how much the sample mean varies from sample to sample", "the full range of the population", "the bias of the estimate"], a: 1, why: "The standard error is the standard deviation of the sampling distribution of the mean: its sample-to-sample wobble." },
-      { c: "stats-1", q: "A Type I error is…", o: ["a false positive — rejecting a true null", "a false negative — missing a real effect", "a correct rejection", "using a biased sample"], a: 0, why: "Type I = false positive; its long-run rate is your significance level, alpha." },
-      { c: "stats-1", q: "In a normal distribution, about 68% of values fall within…", o: ["1 standard deviation of the mean", "2 standard deviations", "3 standard deviations", "the interquartile range"], a: 0, why: "The 68–95–99.7 rule: ~68% within ±1 SD, ~95% within ±2 SD, ~99.7% within ±3 SD." },
-      { c: "stats-1", q: "You add 10 points to every student's exam score. What happens?", o: ["Mean and SD both rise by 10", "Mean rises by 10; the SD is unchanged", "Mean unchanged; SD rises by 10", "Neither changes"], a: 1, why: "Shifting every value moves the center but not the spread. The distances between scores stay identical." },
-      { c: "stats-1", q: "A distribution with a long tail stretching toward the low values is…", o: ["positively skewed", "negatively skewed", "normal", "bimodal"], a: 1, why: "Skew is named for the tail's direction: a long left (low-value) tail is negative skew, and it drags the mean below the median." },
-      { c: "stats-1", q: "Two independent events have P(A) = 0.5 and P(B) = 0.4. P(A and B) is…", o: ["0.9", "0.1", "0.2", "impossible to say"], a: 2, why: "For independent events, multiply: 0.5 × 0.4 = 0.20. (The 0.9 would be the addition rule's upper bound for 'A or B'.)" },
-      { c: "stats-1", q: "Loosening your significance level from α = .05 to α = .10 gives you…", o: ["fewer false positives and less power", "more false positives and more power", "fewer false positives and more power", "no change to either"], a: 1, why: "A looser α rejects more readily, so real effects are caught more often (power up), but so are flukes (Type I rate up). It's a trade, not a free lunch." },
+      { c: "stats-1", s: "1.6", q: "A poll invites readers to click a link and give their view. This is a…", o: ["simple random sample", "stratified sample", "voluntary response sample", "census"], a: 2, why: "People who feel strongly are the ones who bother to click, so the respondents are self-selected on the opinion being measured. More clicks do not help." },
+      { c: "stats-1", s: "1.6", q: "Which feature of a study is what licenses a claim about CAUSE?", o: ["a large sample", "random assignment to conditions", "random selection from the population", "a low p-value"], a: 1, why: "Random ASSIGNMENT makes the groups comparable on every variable at once, so the treatment is the only systematic difference left. Random SELECTION is a different thing: it licenses generalizing to the population." },
+      { c: "stats-1", s: "1.6", q: "You draw a proper random sample of 400 and 90 people reply. The worry is…", o: ["undercoverage", "non-response bias", "response bias", "nothing, the sample was random"], a: 1, why: "Selection was random but participation was not. The 90 who replied are self-selected, and they differ from the 310 who did not on whatever made them reply." },
+      { c: "stats-1", s: "1.7", q: "In a class of 200, 120 study French and 90 study German; 45 study both. P(French or German) is…", o: ["1.05", "0.825", "0.75", "0.225"], a: 1, why: "The general addition rule: .60 + .45 − .225 = .825. Adding the two on their own gives 1.05, which is already impossible, because the 45 students in the overlap were counted inside each total and one copy has to come back out." },
+      { c: "stats-1", s: "1.7", q: "A condition affects 1 person in 100. A test flags 90% of people who have it and 5% of people who do not. Of everyone who tests positive, roughly what share is actually ill?", o: ["90%", "about 15%", "about 50%", "95%"], a: 1, why: "Out of 10,000 people: 100 are ill and 90 of them are flagged, while 9,900 are healthy and 495 of them are flagged anyway. That is 90 out of 585, or 15.4%. The test answers P(positive | ill); the person reading the result wants P(ill | positive), and a low base rate keeps those two far apart." },
+      { c: "stats-1", s: "1.8", q: "A discrete random variable takes values 0, 1, 2 with probabilities .5, .3, .2. Its mean is…", o: ["1.0", "0.7", "1.5", "0.33"], a: 1, why: "μ = Σ x · p = 0(.5) + 1(.3) + 2(.2) = 0.7. Each value is weighted by its own probability, so the answer leans toward 0 because that is the likeliest value. Averaging 0, 1 and 2 without weights would give 1.0, which ignores the distribution entirely." },
+      { c: "stats-1", s: "1.8", q: "A fair coin is tossed 10 times. The probability of exactly 5 heads is closest to…", o: ["0.50", "0.25", "0.10", "0.75"], a: 1, why: "C(10,5) × 0.5^10 = 252/1024 = 0.246. Five is the most likely single count and still happens under a quarter of the time, which is worth remembering before reading much into an average result." },
+      { c: "stats-1", s: "1.8", q: "For a binomial count with n = 12 and p = 0.25, the mean and SD are…", o: ["3 and 1.5", "3 and 2.25", "4 and 1.5", "3 and 0.75"], a: 0, why: "μ = np = 3 and σ = √(np(1−p)) = √2.25 = 1.5. The variance is 2.25; the standard deviation is its square root." },
+      { c: "stats-1", s: "1.8", q: "Which of these breaks the binomial conditions?", o: ["tossing a biased coin 20 times", "counting defective items in 50 independent inspections", "drawing 5 cards from a deck without replacement and counting hearts", "asking 30 unrelated people a yes/no question"], a: 2, why: "Without replacement, removing a heart changes the probability for the next draw, so p is not constant and the trials are not independent. A biased coin is fine: p just has to be the SAME every trial, not 0.5." },
+      { c: "stats-1", s: "1.15", q: "232 of 400 students say yes. The 95% confidence interval for the population proportion is closest to…", o: ["[.53, .63]", "[.55, .61]", "[.50, .66]", "[.57, .59]"], a: 0, why: "p̂ = .58, SE = √(.58 × .42 / 400) = .0247, and 1.96 × .0247 = .048. So .58 ± .048 gives [.532, .628]." },
+      { c: "stats-1", s: "1.15", q: "Inference on a proportion requires…", o: ["n of at least 30", "at least 10 successes AND at least 10 failures", "a normal population", "equal variances"], a: 1, why: "The condition is on both counts, so the normal approximation has room on both sides. A sample of 500 with only 4 successes fails it however large n gets." },
+      { c: "stats-1", s: "1.16", q: "For a 2×2 table, the relationship between the chi-square statistic and the two-proportion z is…", o: ["χ² = 2z", "χ² = z²", "χ² = |z|", "there is no fixed relationship"], a: 1, why: "They are algebraically the same test on 1 df, so χ² = z² exactly and the p-values agree. Only the z version reports a signed difference and a confidence interval." },
+      { c: "stats-1", s: "1.3", q: "Which measure of center gets dragged the most by a single extreme outlier?", o: ["The mean", "The median", "The mode", "They're affected equally"], a: 0, why: "The mean uses every value, so one extreme number pulls it; the median only cares about the middle position." },
+      { c: "stats-1", s: "1.5", q: "A value with a z-score of 0 is…", o: ["An outlier", "Exactly at the mean", "Two SDs below the mean", "Impossible"], a: 1, why: "z = (x − μ)/σ, so z = 0 means x equals the mean." },
+      { c: "stats-1", s: "1.10", q: "The Central Limit Theorem says the distribution of sample means is approximately normal…", o: ["only if the population is normal", "regardless of the population's shape (for large enough n)", "only for n below 30", "never"], a: 1, why: "That's the surprise of the CLT — even skewed populations produce bell-shaped sampling distributions of the mean." },
+      { c: "stats-1", s: "1.12", q: "A p-value is the probability of…", o: ["the null hypothesis being true", "the alternative being true", "data at least this extreme, assuming the null is true", "making a Type II error"], a: 2, why: "It's P(data this extreme | H₀ true), NOT the probability that H₀ is true." },
+      { c: "stats-1", s: "1.11", q: "\"95% confidence\" means…", o: ["there's a 95% chance the true value is in this one interval", "about 95% of such intervals, over many studies, contain the true value", "the result is 95% accurate", "p = 0.95"], a: 1, why: "Confidence is a property of the procedure across repeated samples, not of any single interval." },
+      { c: "stats-1", s: "1.12", q: "Holding the effect size fixed, increasing the sample size…", o: ["decreases statistical power", "has no effect on power", "increases statistical power", "increases the p-value"], a: 2, why: "More data shrinks the standard error, making a real effect easier to detect, so power goes up." },
+      { c: "stats-1", s: "1.2", q: "Which of these is an ordinal variable?", o: ["Reaction time in milliseconds", "Finishing place in a race (1st, 2nd, 3rd)", "Blood type", "Temperature in °C"], a: 1, why: "Finishing place has a clear order but unequal, undefined gaps between ranks, which is the definition of ordinal." },
+      { c: "stats-1", s: "1.9", q: "The standard error of the mean measures…", o: ["the spread of the raw data", "how much the sample mean varies from sample to sample", "the full range of the population", "the bias of the estimate"], a: 1, why: "The standard error is the standard deviation of the sampling distribution of the mean: its sample-to-sample wobble." },
+      { c: "stats-1", s: "1.12", q: "A Type I error is…", o: ["a false positive — rejecting a true null", "a false negative — missing a real effect", "a correct rejection", "using a biased sample"], a: 0, why: "Type I = false positive; its long-run rate is your significance level, alpha." },
+      { c: "stats-1", s: "1.5", q: "In a normal distribution, about 68% of values fall within…", o: ["1 standard deviation of the mean", "2 standard deviations", "3 standard deviations", "the interquartile range"], a: 0, why: "The 68–95–99.7 rule: ~68% within ±1 SD, ~95% within ±2 SD, ~99.7% within ±3 SD." },
+      { c: "stats-1", s: "1.3", q: "You add 10 points to every student's exam score. What happens?", o: ["Mean and SD both rise by 10", "Mean rises by 10; the SD is unchanged", "Mean unchanged; SD rises by 10", "Neither changes"], a: 1, why: "Shifting every value moves the center but not the spread. The distances between scores stay identical." },
+      { c: "stats-1", s: "1.4", q: "A distribution with a long tail stretching toward the low values is…", o: ["positively skewed", "negatively skewed", "normal", "bimodal"], a: 1, why: "Skew is named for the tail's direction: a long left (low-value) tail is negative skew, and it drags the mean below the median." },
+      { c: "stats-1", s: "1.7", q: "Two independent events have P(A) = 0.5 and P(B) = 0.4. P(A and B) is…", o: ["0.9", "0.1", "0.2", "impossible to say"], a: 2, why: "For independent events, multiply: 0.5 × 0.4 = 0.20. (The 0.9 would be the addition rule's upper bound for 'A or B'.)" },
+      { c: "stats-1", s: "1.12", q: "Loosening your significance level from α = .05 to α = .10 gives you…", o: ["fewer false positives and less power", "more false positives and more power", "fewer false positives and more power", "no change to either"], a: 1, why: "A looser α rejects more readily, so real effects are caught more often (power up), but so are flukes (Type I rate up). It's a trade, not a free lunch." },
 
       /* P62 — additional Stats 1 questions */
-      { c: "stats-1", q: "A company measures the salary of every one of its 40 employees and computes the average. That average is…", o: ["a sample statistic", "a parameter", "an inferential estimate", "biased"], a: 1, why: "You measured the entire population, so the mean is a parameter, a fact about the whole group, and describing a group you fully measured needs no inference." },
-      { c: "stats-1", q: "US zip codes are stored as numbers like 90210. As a variable, zip code is…", o: ["ratio", "interval", "ordinal", "nominal"], a: 3, why: "The digits are labels, not quantities: 90210 isn't 'more' than 10001, and averaging zip codes is meaningless. That makes it nominal." },
-      { c: "stats-1", q: "Which of these is measured on a ratio scale?", o: ["IQ score", "temperature in °C", "reaction time in milliseconds", "agreement on a 1–5 Likert item"], a: 2, why: "Reaction time has a true zero (0 ms = no time) and equal intervals, so 'twice as fast' is meaningful, the signature of a ratio scale." },
-      { c: "stats-1", q: "A dataset has mean 50 and median 50 but two clear peaks. It is best described as…", o: ["normal", "bimodal", "right-skewed", "uniform"], a: 1, why: "A matching mean and median hint at symmetry without guaranteeing it, and neither number says anything about peaks. Two modes make it bimodal, which is why you plot the shape instead of trusting the summaries." },
-      { c: "stats-1", q: "The variance of a set of exam scores is reported in…", o: ["the same units as the scores", "squared units of the scores", "standard deviations", "percentages"], a: 1, why: "Variance averages squared deviations, so its units are the data's units squared, which is why the SD, its square root, is usually reported instead." },
-      { c: "stats-1", q: "To compare the distribution of one numeric variable across four groups at once, the natural plot is…", o: ["a pie chart", "side-by-side boxplots", "a single combined histogram", "a line chart"], a: 1, why: "Boxplots line up each group's median, spread, and outliers in one view; a single histogram would blur the groups together." },
-      { c: "stats-1", q: "IQ is normal with mean 100 and SD 15. Using the 68–95–99.7 rule, about what percent of people score above 130?", o: ["about 2.5%", "about 5%", "about 16%", "about 0.5%"], a: 0, why: "130 is z = +2; the rule puts ~95% within ±2 SD, leaving ~5% beyond, split as ~2.5% in each tail (the exact normal value is 2.3%)." },
-      { c: "stats-1", q: "Roll two fair dice. The probability the two faces sum to 7 is…", o: ["1/6", "1/12", "1/7", "1/36"], a: 0, why: "Six of the 36 equally likely outcomes sum to 7 (1-6, 2-5, 3-4 and their reverses), so P = 6/36 = 1/6, the most likely dice total." },
-      { c: "stats-1", q: "Plot the total of two fair dice against its probability. What shape appears?", o: ["A triangle peaking at 7", "A flat line, since each die is fair", "A normal curve, exactly", "A right-skewed curve"], a: 0, why: "The counts run 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1 out of 36, which is the triangular distribution you always get by adding two uniforms. Fair dice make each ROLL equally likely, not each total. Adding a third and fourth die rounds the triangle toward a normal curve, but two dice give straight sides." },
-      { c: "stats-1", q: "Two mutually exclusive events have P(A) = 0.3 and P(B) = 0.4. P(A or B) is…", o: ["0.12", "0.7", "0.58", "0.1"], a: 1, why: "Mutually exclusive events can't co-occur, so P(A or B) = P(A) + P(B) = 0.7, with nothing to subtract for overlap." },
-      { c: "stats-1", q: "A population has SD = 20. For samples of n = 100, the standard error of the mean is…", o: ["2", "20", "0.2", "200"], a: 0, why: "SE = σ/√n = 20/√100 = 20/10 = 2; the sample mean varies about a tenth as much as individual scores do." },
-      { c: "stats-1", q: "The Central Limit Theorem gives a nearly normal sampling distribution at SMALLER sample sizes when the population is…", o: ["heavily skewed", "already roughly symmetric", "bimodal", "full of extreme outliers"], a: 1, why: "The more symmetric the population, the faster the sampling distribution of the mean approaches normal; heavy skew needs a larger n before the CLT bites." },
-      { c: "stats-1", q: "A 95% confidence interval for a mean difference is [−1.5, 4.0]. The matching two-sided test at α = .05 will be…", o: ["significant", "non-significant, because the interval includes 0", "significant, because it includes positive values", "impossible to determine"], a: 1, why: "A 95% CI that spans zero means zero is a plausible value, so the two-sided test at α = .05 fails to reject. The CI and the test agree by construction." },
-      { c: "stats-1", q: "To halve the width of a confidence interval (everything else fixed), you must…", o: ["double the sample size", "quadruple the sample size", "halve the confidence level", "double the SD"], a: 1, why: "Width scales with SE = σ/√n, so cutting it in half takes four times the data, the same √n tax that governs the standard error." },
-      { c: "stats-1", q: "Why do statisticians say 'fail to reject H₀' rather than 'accept H₀'?", o: ["the null can never be tested", "not rejecting isn't the same as proving the null true, since the data just weren't strong enough", "it should say 'accept the alternative'", "accepting is always a Type I error"], a: 1, why: "A non-significant result means the data didn't provide enough evidence against H₀, not that H₀ is true — absence of evidence isn't evidence of absence." },
-      { c: "stats-1", q: "Which change REDUCES the chance of a Type II error?", o: ["lowering α from .05 to .01", "increasing the sample size", "using a smaller sample", "studying a smaller true effect"], a: 1, why: "Type II errors (misses) shrink as power rises; a larger sample raises power, while a stricter α actually makes misses more likely." },
-      { c: "stats-1", q: "Boxes are filled to a target of 227 g, with σ = 5 g known from the factory's records. Four boxes average 222 g. The one-sample z statistic is…", o: ["z = −1.00", "z = −2.00", "z = −5.00", "z = −0.40"], a: 1, why: "The standard error is σ/√n = 5/√4 = 2.5, so z = (222 − 227)/2.5 = −2.00. Two-sided that gives p = .0455, which rejects at α = .05 and falls short at α = .01." },
-      { c: "stats-1", q: "A trial on 40,000 users reports mean weight loss 0.2 kg greater than control, p < .001. The right reading is…", o: ["the effect must be large, because p is tiny", "the difference is almost certainly real and almost certainly too small to matter", "the study is invalid because the sample is too large", "there is a 0.1% chance the true effect is zero"], a: 1, why: "A p-value answers 'is there a difference', never 'is it big enough to act on'. Large samples make trivial differences significant, which is why an effect size and a confidence interval belong beside every p-value." },
-      { c: "stats-1", q: "A study is designed with power = .70 for the effect it cares about. If that effect is real, the study will…", o: ["detect it about 70% of the time", "detect it about 30% of the time", "produce a false positive 70% of the time", "have α = .30"], a: 0, why: "Power is 1 − β, the chance of detecting a real effect of the stated size, so β = .30 and the study walks past it roughly three times in ten. α controls false alarms and is a separate dial." },
-      { c: "stats-1", q: "A one-sample t-test reports t(24) = 2.80. The sample size was…", o: ["24", "25", "26", "23"], a: 1, why: "For a one-sample t-test df = n − 1, so df = 24 means n = 25, a quick consistency check a grader will make." },
-      { c: "stats-1", q: "An independent-samples t-test compares two groups of 30. Its (equal-variance) degrees of freedom are…", o: ["58", "59", "60", "29"], a: 0, why: "Pooled df = n₁ + n₂ − 2 = 30 + 30 − 2 = 58; each group spends one df estimating its own mean." },
-      { c: "stats-1", q: "A study is powered at 80%. If the effect is real, the probability the study MISSES it is…", o: ["80%", "20%", "5%", "50%"], a: 1, why: "Power is P(detect | effect real) = .80, so β = 1 − power = .20 is the chance of a miss, a Type II error." },
+      { c: "stats-1", s: "1.1", q: "A company measures the salary of every one of its 40 employees and computes the average. That average is…", o: ["a sample statistic", "a parameter", "an inferential estimate", "biased"], a: 1, why: "You measured the entire population, so the mean is a parameter, a fact about the whole group, and describing a group you fully measured needs no inference." },
+      { c: "stats-1", s: "1.2", q: "US zip codes are stored as numbers like 90210. As a variable, zip code is…", o: ["ratio", "interval", "ordinal", "nominal"], a: 3, why: "The digits are labels, not quantities: 90210 isn't 'more' than 10001, and averaging zip codes is meaningless. That makes it nominal." },
+      { c: "stats-1", s: "1.2", q: "Which of these is measured on a ratio scale?", o: ["IQ score", "temperature in °C", "reaction time in milliseconds", "agreement on a 1–5 Likert item"], a: 2, why: "Reaction time has a true zero (0 ms = no time) and equal intervals, so 'twice as fast' is meaningful, the signature of a ratio scale." },
+      { c: "stats-1", s: "1.4", q: "A dataset has mean 50 and median 50 but two clear peaks. It is best described as…", o: ["normal", "bimodal", "right-skewed", "uniform"], a: 1, why: "A matching mean and median hint at symmetry without guaranteeing it, and neither number says anything about peaks. Two modes make it bimodal, which is why you plot the shape instead of trusting the summaries." },
+      { c: "stats-1", s: "1.3", q: "The variance of a set of exam scores is reported in…", o: ["the same units as the scores", "squared units of the scores", "standard deviations", "percentages"], a: 1, why: "Variance averages squared deviations, so its units are the data's units squared, which is why the SD, its square root, is usually reported instead." },
+      { c: "stats-1", s: "1.4", q: "To compare the distribution of one numeric variable across four groups at once, the natural plot is…", o: ["a pie chart", "side-by-side boxplots", "a single combined histogram", "a line chart"], a: 1, why: "Boxplots line up each group's median, spread, and outliers in one view; a single histogram would blur the groups together." },
+      { c: "stats-1", s: "1.5", q: "IQ is normal with mean 100 and SD 15. Using the 68–95–99.7 rule, about what percent of people score above 130?", o: ["about 2.5%", "about 5%", "about 16%", "about 0.5%"], a: 0, why: "130 is z = +2; the rule puts ~95% within ±2 SD, leaving ~5% beyond, split as ~2.5% in each tail (the exact normal value is 2.3%)." },
+      { c: "stats-1", s: "1.7", q: "Roll two fair dice. The probability the two faces sum to 7 is…", o: ["1/6", "1/12", "1/7", "1/36"], a: 0, why: "Six of the 36 equally likely outcomes sum to 7 (1-6, 2-5, 3-4 and their reverses), so P = 6/36 = 1/6, the most likely dice total." },
+      { c: "stats-1", s: "1.7", q: "Plot the total of two fair dice against its probability. What shape appears?", o: ["A triangle peaking at 7", "A flat line, since each die is fair", "A normal curve, exactly", "A right-skewed curve"], a: 0, why: "The counts run 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1 out of 36, which is the triangular distribution you always get by adding two uniforms. Fair dice make each ROLL equally likely, not each total. Adding a third and fourth die rounds the triangle toward a normal curve, but two dice give straight sides." },
+      { c: "stats-1", s: "1.7", q: "Two mutually exclusive events have P(A) = 0.3 and P(B) = 0.4. P(A or B) is…", o: ["0.12", "0.7", "0.58", "0.1"], a: 1, why: "Mutually exclusive events can't co-occur, so P(A or B) = P(A) + P(B) = 0.7, with nothing to subtract for overlap." },
+      { c: "stats-1", s: "1.9", q: "A population has SD = 20. For samples of n = 100, the standard error of the mean is…", o: ["2", "20", "0.2", "200"], a: 0, why: "SE = σ/√n = 20/√100 = 20/10 = 2; the sample mean varies about a tenth as much as individual scores do." },
+      { c: "stats-1", s: "1.10", q: "The Central Limit Theorem gives a nearly normal sampling distribution at SMALLER sample sizes when the population is…", o: ["heavily skewed", "already roughly symmetric", "bimodal", "full of extreme outliers"], a: 1, why: "The more symmetric the population, the faster the sampling distribution of the mean approaches normal; heavy skew needs a larger n before the CLT bites." },
+      { c: "stats-1", s: "1.12", q: "A 95% confidence interval for a mean difference is [−1.5, 4.0]. The matching two-sided test at α = .05 will be…", o: ["significant", "non-significant, because the interval includes 0", "significant, because it includes positive values", "impossible to determine"], a: 1, why: "A 95% CI that spans zero means zero is a plausible value, so the two-sided test at α = .05 fails to reject. The CI and the test agree by construction." },
+      { c: "stats-1", s: "1.11", q: "To halve the width of a confidence interval (everything else fixed), you must…", o: ["double the sample size", "quadruple the sample size", "halve the confidence level", "double the SD"], a: 1, why: "Width scales with SE = σ/√n, so cutting it in half takes four times the data, the same √n tax that governs the standard error." },
+      { c: "stats-1", s: "1.12", q: "Why do statisticians say 'fail to reject H₀' rather than 'accept H₀'?", o: ["the null can never be tested", "not rejecting isn't the same as proving the null true, since the data just weren't strong enough", "it should say 'accept the alternative'", "accepting is always a Type I error"], a: 1, why: "A non-significant result means the data didn't provide enough evidence against H₀, not that H₀ is true — absence of evidence isn't evidence of absence." },
+      { c: "stats-1", s: "1.12", q: "Which change REDUCES the chance of a Type II error?", o: ["lowering α from .05 to .01", "increasing the sample size", "using a smaller sample", "studying a smaller true effect"], a: 1, why: "Type II errors (misses) shrink as power rises; a larger sample raises power, while a stricter α actually makes misses more likely." },
+      { c: "stats-1", s: "1.12", q: "Boxes are filled to a target of 227 g, with σ = 5 g known from the factory's records. Four boxes average 222 g. The one-sample z statistic is…", o: ["z = −1.00", "z = −2.00", "z = −5.00", "z = −0.40"], a: 1, why: "The standard error is σ/√n = 5/√4 = 2.5, so z = (222 − 227)/2.5 = −2.00. Two-sided that gives p = .0455, which rejects at α = .05 and falls short at α = .01." },
+      { c: "stats-1", s: "1.12", q: "A trial on 40,000 users reports mean weight loss 0.2 kg greater than control, p < .001. The right reading is…", o: ["the effect must be large, because p is tiny", "the difference is almost certainly real and almost certainly too small to matter", "the study is invalid because the sample is too large", "there is a 0.1% chance the true effect is zero"], a: 1, why: "A p-value answers 'is there a difference', never 'is it big enough to act on'. Large samples make trivial differences significant, which is why an effect size and a confidence interval belong beside every p-value." },
+      { c: "stats-1", s: "1.12", q: "A study is designed with power = .70 for the effect it cares about. If that effect is real, the study will…", o: ["detect it about 70% of the time", "detect it about 30% of the time", "produce a false positive 70% of the time", "have α = .30"], a: 0, why: "Power is 1 − β, the chance of detecting a real effect of the stated size, so β = .30 and the study walks past it roughly three times in ten. α controls false alarms and is a separate dial." },
+      { c: "stats-1", s: "1.13", q: "A one-sample t-test reports t(24) = 2.80. The sample size was…", o: ["24", "25", "26", "23"], a: 1, why: "For a one-sample t-test df = n − 1, so df = 24 means n = 25, a quick consistency check a grader will make." },
+      { c: "stats-1", s: "1.14", q: "An independent-samples t-test compares two groups of 30. Its (equal-variance) degrees of freedom are…", o: ["58", "59", "60", "29"], a: 0, why: "Pooled df = n₁ + n₂ − 2 = 30 + 30 − 2 = 58; each group spends one df estimating its own mean." },
+      { c: "stats-1", s: "1.12", q: "A study is powered at 80%. If the effect is real, the probability the study MISSES it is…", o: ["80%", "20%", "5%", "50%"], a: 1, why: "Power is P(detect | effect real) = .80, so β = 1 − power = .20 is the chance of a miss, a Type II error." },
       { c: "stats-3", q: "Cohen's rough benchmark for a 'medium' standardized effect size (d) is about…", o: ["0.1", "0.2", "0.5", "0.8"], a: 2, why: "Cohen's conventions are d ≈ 0.2 (small), 0.5 (medium), 0.8 (large). They are guidelines for interpreting an effect, not hard laws, and they vary by field." },
 
       /* ---------- Stats 2 — Comparing Groups & Relationships ---------- */
-      { c: "stats-1", q: "A correlation of r = 0 tells you there is…", o: ["no relationship of any kind", "no linear relationship (a curved one is still possible)", "a perfect relationship", "a negative relationship"], a: 1, why: "r only measures straight-line association; a strong U-shaped relationship can have r ≈ 0." },
-      { c: "stats-2", q: "In simple linear regression, the slope's t test uses degrees of freedom equal to…", o: ["n − 1", "n − 2", "n − 3", "1"], a: 1, why: "The line costs two parameters, a slope and an intercept, so the residual standard error divides SSE by n − 2 and the t inherits those df." },
-      { c: "stats-2", q: "At a given x, a PREDICTION interval for one new case compared with the CONFIDENCE interval for the mean is…", o: ["narrower", "wider, and it stays wide as n grows", "the same width", "wider only for small n"], a: 1, why: "The prediction interval also carries the new case's own deviation from the line, an extra 1 under the root that does not shrink with n. More data pins down the line, never the individual." },
-      { c: "stats-2", q: "A simple regression's ANOVA table reports F(1, 48) = 9.00. The slope's t was…", o: ["±3.00", "9.00", "±4.50", "±81.0"], a: 0, why: "With one predictor F = t², so |t| = √9 = 3. Its sign comes from the direction of the slope, which F throws away." },
-      { c: "stats-2", q: "A residual-versus-fitted plot shows a clear arch. The problem is…", o: ["unequal variance", "curvature: the true relationship bends", "non-normal residuals", "an influential outlier"], a: 1, why: "An arch or valley is the signature of a curved relationship fitted with a straight line. Unequal variance shows as a funnel that widens or narrows; an outlier is one stray point, not a pattern." },
-      { c: "stats-2", q: "In ln(y) = 2.1 + 0.20x, a one-unit increase in x multiplies y by about…", o: ["0.20", "1.22", "2.0", "1.02"], a: 1, why: "e^0.20 = 1.221, a 22% increase. The 100b shortcut would say 20%, which is already 2 points off at this size and gets worse as b grows." },
-      { c: "stats-2", q: "Comparing R² between a model of y and a model of log y is…", o: ["fine, higher is better", "not valid, because they explain variation in different quantities", "only valid for large n", "the standard way to choose a transformation"], a: 1, why: "The two totals are computed on different scales, so the ratios are not comparable. Back-transform the log model's predictions into the original units first, and choose from the residual plot and the mechanism rather than from a leaderboard." },
-      { c: "stats-2", q: "One-way ANOVA decides whether groups differ by comparing…", o: ["each pair of means with a t-test", "variance between groups to variance within groups", "the medians", "the sample sizes"], a: 1, why: "The F-ratio is between-group variance over within-group variance — signal over noise." },
-      { c: "stats-2", q: "Why run a post-hoc test after a significant ANOVA?", o: ["to increase power", "to find which specific groups differ", "to check normality", "to compute the grand mean"], a: 1, why: "ANOVA only says 'somewhere there's a difference'; post-hoc tests locate which pairs differ while controlling error." },
-      { c: "stats-1", q: "A chi-square test of independence is used for…", o: ["two continuous variables", "the association between two categorical variables", "comparing three means", "predicting a number"], a: 1, why: "It compares observed cell counts to those expected if the two categorical variables were independent." },
-      { c: "stats-1", q: "Ice-cream sales and drownings rise together across the year. The most likely explanation is…", o: ["ice cream causes drowning", "a confounder — hot weather drives both", "pure coincidence", "a calculation error"], a: 1, why: "Correlation isn't causation: a lurking variable (summer heat) raises both. Watch for confounders." },
-      { c: "stats-1", q: "In the regression line ŷ = 2 + 3x, the number 3 is…", o: ["the value of y when x = 0", "the slope: y rises by 3 for each 1-unit rise in x", "the correlation", "the residual"], a: 1, why: "The slope is the change in ŷ per one-unit change in x; the 2 is the intercept (y at x = 0)." },
-      { c: "stats-2", q: "You'd reach for a Mann-Whitney U test instead of a t-test when…", o: ["the data are perfectly normal", "assumptions like normality are badly violated", "you have three or more groups", "the outcome is a date"], a: 1, why: "Non-parametric tests work on ranks, so they hold up when the t-test's distributional assumptions fail." },
-      { c: "stats-2", q: "Levene's test checks the assumption of…", o: ["normality", "equal variances across groups", "independence of observations", "linearity"], a: 1, why: "Levene's test targets homogeneity of variance: whether the groups have similar spread." },
-      { c: "stats-1", q: "An R² of 0.40 in a regression means…", o: ["a correlation of 40%", "40% of the variance in Y is explained by the model", "the slope equals 0.40", "40% of predictions are wrong"], a: 1, why: "R² is the proportion of the outcome's variance the model accounts for, here 40%." },
-      { c: "stats-2", q: "Eta-squared (η²) reported with an ANOVA tells you…", o: ["the probability the null is true", "the share of outcome variance explained by group membership", "how many pairs differ significantly", "the largest mean difference"], a: 1, why: "η² = SS-between / SS-total, ANOVA's effect size and the group-membership counterpart of R²." },
-      { c: "stats-2", q: "A university's admissions look biased overall, yet every single department shows no bias. This reversal is…", o: ["regression to the mean", "Simpson's paradox", "heteroscedasticity", "a Type II error"], a: 1, why: "Aggregated data can contradict every subgroup when a lurking variable (which department people apply to) is ignored — the classic Berkeley example." },
-      { c: "stats-1", q: "You compute a correlation using only students with high GPAs. Compared to the full range, your r will usually be…", o: ["inflated", "weakened", "reversed in sign", "unchanged"], a: 1, why: "Restriction of range clips the very spread that correlation feeds on, attenuating r toward 0. That is a big reason selective-sample correlations look surprisingly small." },
-      { c: "stats-1", q: "In ŷ = a + bx, the intercept a is…", o: ["the predicted y when x = 0", "the change in y per unit of x", "the strength of the relationship", "the residual variance"], a: 0, why: "The intercept anchors the line at x = 0 (which may or may not be a meaningful value of x); the slope b carries the per-unit change." },
-      { c: "stats-2", q: "Repeated-measures ANOVA flags a sphericity violation. The standard remedy is…", o: ["dropping one condition", "a Greenhouse–Geisser correction to the degrees of freedom", "doubling the sample size", "switching to chi-square"], a: 1, why: "Greenhouse–Geisser (or Huynh–Feldt) shrinks the df to compensate, keeping the F-test's error rate honest." },
+      { c: "stats-1", s: "1.17", q: "A correlation of r = 0 tells you there is…", o: ["no relationship of any kind", "no linear relationship (a curved one is still possible)", "a perfect relationship", "a negative relationship"], a: 1, why: "r only measures straight-line association; a strong U-shaped relationship can have r ≈ 0." },
+      { c: "stats-2", s: "2.7", q: "In simple linear regression, the slope's t test uses degrees of freedom equal to…", o: ["n − 1", "n − 2", "n − 3", "1"], a: 1, why: "The line costs two parameters, a slope and an intercept, so the residual standard error divides SSE by n − 2 and the t inherits those df." },
+      { c: "stats-2", s: "2.7", q: "At a given x, a PREDICTION interval for one new case compared with the CONFIDENCE interval for the mean is…", o: ["narrower", "wider, and it stays wide as n grows", "the same width", "wider only for small n"], a: 1, why: "The prediction interval also carries the new case's own deviation from the line, an extra 1 under the root that does not shrink with n. More data pins down the line, never the individual." },
+      { c: "stats-2", s: "2.7", q: "A simple regression's ANOVA table reports F(1, 48) = 9.00. The slope's t was…", o: ["±3.00", "9.00", "±4.50", "±81.0"], a: 0, why: "With one predictor F = t², so |t| = √9 = 3. Its sign comes from the direction of the slope, which F throws away." },
+      { c: "stats-2", s: "2.8", q: "A residual-versus-fitted plot shows a clear arch. The problem is…", o: ["unequal variance", "curvature: the true relationship bends", "non-normal residuals", "an influential outlier"], a: 1, why: "An arch or valley is the signature of a curved relationship fitted with a straight line. Unequal variance shows as a funnel that widens or narrows; an outlier is one stray point, not a pattern." },
+      { c: "stats-2", s: "2.17", q: "In ln(y) = 2.1 + 0.20x, a one-unit increase in x multiplies y by about…", o: ["0.20", "1.22", "2.0", "1.02"], a: 1, why: "e^0.20 = 1.221, a 22% increase. The 100b shortcut would say 20%, which is already 2 points off at this size and gets worse as b grows." },
+      { c: "stats-2", s: "2.17", q: "Comparing R² between a model of y and a model of log y is…", o: ["fine, higher is better", "not valid, because they explain variation in different quantities", "only valid for large n", "the standard way to choose a transformation"], a: 1, why: "The two totals are computed on different scales, so the ratios are not comparable. Back-transform the log model's predictions into the original units first, and choose from the residual plot and the mechanism rather than from a leaderboard." },
+      { c: "stats-2", s: "2.2", q: "One-way ANOVA decides whether groups differ by comparing…", o: ["each pair of means with a t-test", "variance between groups to variance within groups", "the medians", "the sample sizes"], a: 1, why: "The F-ratio is between-group variance over within-group variance — signal over noise." },
+      { c: "stats-2", s: "2.3", q: "Why run a post-hoc test after a significant ANOVA?", o: ["to increase power", "to find which specific groups differ", "to check normality", "to compute the grand mean"], a: 1, why: "ANOVA only says 'somewhere there's a difference'; post-hoc tests locate which pairs differ while controlling error." },
+      { c: "stats-1", s: "1.16", q: "A chi-square test of independence is used for…", o: ["two continuous variables", "the association between two categorical variables", "comparing three means", "predicting a number"], a: 1, why: "It compares observed cell counts to those expected if the two categorical variables were independent." },
+      { c: "stats-1", s: "1.17", q: "Ice-cream sales and drownings rise together across the year. The most likely explanation is…", o: ["ice cream causes drowning", "a confounder — hot weather drives both", "pure coincidence", "a calculation error"], a: 1, why: "Correlation isn't causation: a lurking variable (summer heat) raises both. Watch for confounders." },
+      { c: "stats-1", s: "1.18", q: "In the regression line ŷ = 2 + 3x, the number 3 is…", o: ["the value of y when x = 0", "the slope: y rises by 3 for each 1-unit rise in x", "the correlation", "the residual"], a: 1, why: "The slope is the change in ŷ per one-unit change in x; the 2 is the intercept (y at x = 0)." },
+      { c: "stats-2", s: "2.1", q: "You'd reach for a Mann-Whitney U test instead of a t-test when…", o: ["the data are perfectly normal", "assumptions like normality are badly violated", "you have three or more groups", "the outcome is a date"], a: 1, why: "Non-parametric tests work on ranks, so they hold up when the t-test's distributional assumptions fail." },
+      { c: "stats-2", s: "2.6", q: "Levene's test checks the assumption of…", o: ["normality", "equal variances across groups", "independence of observations", "linearity"], a: 1, why: "Levene's test targets homogeneity of variance: whether the groups have similar spread." },
+      { c: "stats-1", s: "1.18", q: "An R² of 0.40 in a regression means…", o: ["a correlation of 40%", "40% of the variance in Y is explained by the model", "the slope equals 0.40", "40% of predictions are wrong"], a: 1, why: "R² is the proportion of the outcome's variance the model accounts for, here 40%." },
+      { c: "stats-2", s: "2.2", q: "Eta-squared (η²) reported with an ANOVA tells you…", o: ["the probability the null is true", "the share of outcome variance explained by group membership", "how many pairs differ significantly", "the largest mean difference"], a: 1, why: "η² = SS-between / SS-total, ANOVA's effect size and the group-membership counterpart of R²." },
+      { c: "stats-2", s: "2.9", q: "A university's admissions look biased overall, yet every single department shows no bias. This reversal is…", o: ["regression to the mean", "Simpson's paradox", "heteroscedasticity", "a Type II error"], a: 1, why: "Aggregated data can contradict every subgroup when a lurking variable (which department people apply to) is ignored — the classic Berkeley example." },
+      { c: "stats-1", s: "1.17", q: "You compute a correlation using only students with high GPAs. Compared to the full range, your r will usually be…", o: ["inflated", "weakened", "reversed in sign", "unchanged"], a: 1, why: "Restriction of range clips the very spread that correlation feeds on, attenuating r toward 0. That is a big reason selective-sample correlations look surprisingly small." },
+      { c: "stats-1", s: "1.18", q: "In ŷ = a + bx, the intercept a is…", o: ["the predicted y when x = 0", "the change in y per unit of x", "the strength of the relationship", "the residual variance"], a: 0, why: "The intercept anchors the line at x = 0 (which may or may not be a meaningful value of x); the slope b carries the per-unit change." },
+      { c: "stats-2", s: "2.5", q: "Repeated-measures ANOVA flags a sphericity violation. The standard remedy is…", o: ["dropping one condition", "a Greenhouse–Geisser correction to the degrees of freedom", "doubling the sample size", "switching to chi-square"], a: 1, why: "Greenhouse–Geisser (or Huynh–Feldt) shrinks the df to compensate, keeping the F-test's error rate honest." },
 
       /* P62 — additional Stats 2 questions */
-      { c: "stats-2", q: "An ANOVA reports F(2, 87) = 5.4. How many groups and how many total participants?", o: ["3 groups, 88 people", "2 groups, 87 people", "3 groups, 90 people", "3 groups, 89 people"], a: 2, why: "Between df = k − 1 = 2 gives k = 3 groups; within df = N − k = 87 gives N = 90. The df read straight back to the design." },
-      { c: "stats-2", q: "A few comparisons chosen BEFORE seeing the data (planned contrasts) differ from post-hoc tests because they…", o: ["are always more powerful", "carry a smaller multiple-testing burden, so they need less correction", "require the ANOVA to be non-significant", "test the same thing as the omnibus F"], a: 1, why: "A handful of comparisons specified in advance risk fewer false positives than trawling every pair afterward, so planned contrasts keep more power." },
-      { c: "stats-2", q: "In a 2×2 factorial ANOVA, a significant MAIN effect of Factor A means that…", o: ["A and B interact", "averaged over the levels of B, the levels of A differ", "both factors matter equally", "A causes B"], a: 1, why: "A main effect is one factor's effect averaged across the levels of the other; it says nothing about whether the two factors interact." },
-      { c: "stats-2", q: "You measured three separate groups once each. Analyzing them with a repeated-measures ANOVA would be…", o: ["correct", "wrong, since the groups are independent, so use a one-way between-subjects ANOVA", "correct only if the groups are equal-sized", "wrong, use a paired t-test"], a: 1, why: "Repeated measures needs the same participants across conditions; three separate groups are independent, so a one-way between-subjects ANOVA is the right test." },
-      { c: "stats-2", q: "The independence-of-observations assumption is violated when…", o: ["the two groups have unequal variances", "observations are linked, e.g. repeated measures or students clustered in classes", "the data are skewed", "the sample is large"], a: 1, why: "Independence fails when observations are related (the same people measured twice, pupils within classrooms), and it's the assumption the output can't flag for you." },
-      { c: "stats-2", q: "The non-parametric alternative to a one-way ANOVA (3+ independent groups) is the…", o: ["Wilcoxon signed-rank test", "Kruskal–Wallis test", "Friedman test", "Mann–Whitney U test"], a: 1, why: "Kruskal–Wallis is the rank-based test for three or more independent groups; Friedman is its repeated-measures cousin, and Mann–Whitney handles just two groups." },
-      { c: "stats-2", q: "The non-parametric counterpart of the PAIRED t-test is the…", o: ["Mann–Whitney U test", "Wilcoxon signed-rank test", "Kruskal–Wallis test", "Spearman correlation"], a: 1, why: "Wilcoxon signed-rank ranks the within-pair differences, so it is the rank-based version of the paired t-test." },
-      { c: "stats-1", q: "A chi-square test can be untrustworthy when…", o: ["all observed counts are equal", "expected counts are very small (a common rule is at least ~5 in most cells)", "the outcome is normally distributed", "row and column totals are equal"], a: 1, why: "The χ² approximation breaks down with tiny expected cell counts; Fisher's exact test is the usual small-sample fix." },
-      { c: "stats-1", q: "A researcher compares observed genotype counts to Mendel's predicted 1:2:1 ratio. The right test is a chi-square test of…", o: ["independence", "goodness-of-fit", "homogeneity", "association"], a: 1, why: "Comparing one categorical variable's counts to a theoretical distribution is a goodness-of-fit test; a test of independence checks whether two categorical variables are related." },
-      { c: "stats-1", q: "Study time and grades correlate at r = .5. The proportion of variance in grades shared with study time is…", o: ["50%", "25%", "5%", "70%"], a: 1, why: "Shared variance is r² = .5² = .25, so 25%. For any correlation between 0 and 1 that lands below r itself, which is why r = .5 explains less than it looks like it should." },
-      { c: "stats-1", q: "A student finds that children's shoe size correlates with reading ability (r = .6) and concludes bigger feet improve reading. The flaw is…", o: ["the sample was too small", "a confound: age drives both foot size and reading", "r should have been negative", "correlation proves causation here"], a: 1, why: "Older children have both bigger feet and better reading, so age is a lurking variable inflating the link. Correlation flags association, not cause." },
-      { c: "stats-1", q: "For the regression line ŷ = 50 + 4x (x = hours studied), a student who studies 5 hours is predicted to score…", o: ["70", "54", "90", "20"], a: 0, why: "Plug in: ŷ = 50 + 4(5) = 70. The intercept 50 is the predicted score at zero hours, and each hour adds 4 points." },
-      { c: "stats-2", q: "On a normal Q–Q plot of a regression's residuals, the points bend away from the diagonal at both ends. This suggests…", o: ["perfect normality", "non-normal residuals, often heavy tails or outliers", "multicollinearity", "a coding error in the outcome"], a: 1, why: "Normal residuals track the diagonal on a Q–Q plot; systematic curvature at the tails flags non-normality, commonly heavy tails or outliers." },
+      { c: "stats-2", s: "2.2", q: "An ANOVA reports F(2, 87) = 5.4. How many groups and how many total participants?", o: ["3 groups, 88 people", "2 groups, 87 people", "3 groups, 90 people", "3 groups, 89 people"], a: 2, why: "Between df = k − 1 = 2 gives k = 3 groups; within df = N − k = 87 gives N = 90. The df read straight back to the design." },
+      { c: "stats-2", s: "2.3", q: "A few comparisons chosen BEFORE seeing the data (planned contrasts) differ from post-hoc tests because they…", o: ["are always more powerful", "carry a smaller multiple-testing burden, so they need less correction", "require the ANOVA to be non-significant", "test the same thing as the omnibus F"], a: 1, why: "A handful of comparisons specified in advance risk fewer false positives than trawling every pair afterward, so planned contrasts keep more power." },
+      { c: "stats-2", s: "2.4", q: "In a 2×2 factorial ANOVA, a significant MAIN effect of Factor A means that…", o: ["A and B interact", "averaged over the levels of B, the levels of A differ", "both factors matter equally", "A causes B"], a: 1, why: "A main effect is one factor's effect averaged across the levels of the other; it says nothing about whether the two factors interact." },
+      { c: "stats-2", s: "2.5", q: "You measured three separate groups once each. Analyzing them with a repeated-measures ANOVA would be…", o: ["correct", "wrong, since the groups are independent, so use a one-way between-subjects ANOVA", "correct only if the groups are equal-sized", "wrong, use a paired t-test"], a: 1, why: "Repeated measures needs the same participants across conditions; three separate groups are independent, so a one-way between-subjects ANOVA is the right test." },
+      { c: "stats-2", s: "2.6", q: "The independence-of-observations assumption is violated when…", o: ["the two groups have unequal variances", "observations are linked, e.g. repeated measures or students clustered in classes", "the data are skewed", "the sample is large"], a: 1, why: "Independence fails when observations are related (the same people measured twice, pupils within classrooms), and it's the assumption the output can't flag for you." },
+      { c: "stats-2", s: "2.1", q: "The non-parametric alternative to a one-way ANOVA (3+ independent groups) is the…", o: ["Wilcoxon signed-rank test", "Kruskal–Wallis test", "Friedman test", "Mann–Whitney U test"], a: 1, why: "Kruskal–Wallis is the rank-based test for three or more independent groups; Friedman is its repeated-measures cousin, and Mann–Whitney handles just two groups." },
+      { c: "stats-2", s: "2.1", q: "The non-parametric counterpart of the PAIRED t-test is the…", o: ["Mann–Whitney U test", "Wilcoxon signed-rank test", "Kruskal–Wallis test", "Spearman correlation"], a: 1, why: "Wilcoxon signed-rank ranks the within-pair differences, so it is the rank-based version of the paired t-test." },
+      { c: "stats-1", s: "1.16", q: "A chi-square test can be untrustworthy when…", o: ["all observed counts are equal", "expected counts are very small (a common rule is at least ~5 in most cells)", "the outcome is normally distributed", "row and column totals are equal"], a: 1, why: "The χ² approximation breaks down with tiny expected cell counts; Fisher's exact test is the usual small-sample fix." },
+      { c: "stats-1", s: "1.16", q: "A researcher compares observed genotype counts to Mendel's predicted 1:2:1 ratio. The right test is a chi-square test of…", o: ["independence", "goodness-of-fit", "homogeneity", "association"], a: 1, why: "Comparing one categorical variable's counts to a theoretical distribution is a goodness-of-fit test; a test of independence checks whether two categorical variables are related." },
+      { c: "stats-1", s: "1.17", q: "Study time and grades correlate at r = .5. The proportion of variance in grades shared with study time is…", o: ["50%", "25%", "5%", "70%"], a: 1, why: "Shared variance is r² = .5² = .25, so 25%. For any correlation between 0 and 1 that lands below r itself, which is why r = .5 explains less than it looks like it should." },
+      { c: "stats-1", s: "1.17", q: "A student finds that children's shoe size correlates with reading ability (r = .6) and concludes bigger feet improve reading. The flaw is…", o: ["the sample was too small", "a confound: age drives both foot size and reading", "r should have been negative", "correlation proves causation here"], a: 1, why: "Older children have both bigger feet and better reading, so age is a lurking variable inflating the link. Correlation flags association, not cause." },
+      { c: "stats-1", s: "1.18", q: "For the regression line ŷ = 50 + 4x (x = hours studied), a student who studies 5 hours is predicted to score…", o: ["70", "54", "90", "20"], a: 0, why: "Plug in: ŷ = 50 + 4(5) = 70. The intercept 50 is the predicted score at zero hours, and each hour adds 4 points." },
+      { c: "stats-2", s: "2.13", q: "On a normal Q–Q plot of a regression's residuals, the points bend away from the diagonal at both ends. This suggests…", o: ["perfect normality", "non-normal residuals, often heavy tails or outliers", "multicollinearity", "a coding error in the outcome"], a: 1, why: "Normal residuals track the diagonal on a Q–Q plot; systematic curvature at the tails flags non-normality, commonly heavy tails or outliers." },
 
       /* ---------- Stats 3 — Advanced Modeling ---------- */
-      { c: "stats-2", q: "In multiple regression, a coefficient is the effect of its predictor…", o: ["ignoring all other predictors", "holding the other predictors constant", "only if predictors are uncorrelated", "on the sample size"], a: 1, why: "Each coefficient is a partial effect — 'all else equal,' which is what lets regression control for confounders." },
-      { c: "stats-2", q: "You'd reach for logistic regression when the outcome variable is…", o: ["a continuous number", "binary (yes/no)", "always normally distributed", "a date"], a: 1, why: "Logistic regression models the probability of a yes/no outcome with an S-curve bounded between 0 and 1." },
-      { c: "stats-2", q: "Multicollinearity in a regression means…", o: ["the predictors are highly correlated with each other", "the outcome is skewed", "the residuals are non-normal", "the sample is too small"], a: 0, why: "When predictors overlap heavily, their individual coefficients become unstable and standard errors inflate." },
-      { c: "stats-2", q: "An interaction between two predictors means…", o: ["they are correlated", "the effect of one depends on the level of the other", "both are statistically significant", "both are categorical"], a: 1, why: "Interaction = the slope for one variable changes across levels of another; effects aren't simply additive." },
+      { c: "stats-2", s: "2.9", q: "In multiple regression, a coefficient is the effect of its predictor…", o: ["ignoring all other predictors", "holding the other predictors constant", "only if predictors are uncorrelated", "on the sample size"], a: 1, why: "Each coefficient is a partial effect — 'all else equal,' which is what lets regression control for confounders." },
+      { c: "stats-2", s: "2.16", q: "You'd reach for logistic regression when the outcome variable is…", o: ["a continuous number", "binary (yes/no)", "always normally distributed", "a date"], a: 1, why: "Logistic regression models the probability of a yes/no outcome with an S-curve bounded between 0 and 1." },
+      { c: "stats-2", s: "2.12", q: "Multicollinearity in a regression means…", o: ["the predictors are highly correlated with each other", "the outcome is skewed", "the residuals are non-normal", "the sample is too small"], a: 0, why: "When predictors overlap heavily, their individual coefficients become unstable and standard errors inflate." },
+      { c: "stats-2", s: "2.11", q: "An interaction between two predictors means…", o: ["they are correlated", "the effect of one depends on the level of the other", "both are statistically significant", "both are categorical"], a: 1, why: "Interaction = the slope for one variable changes across levels of another; effects aren't simply additive." },
       { c: "stats-3", q: "In mediation, the indirect effect is the path…", o: ["X → Y directly", "X → M → Y, through a mediator", "Y → X", "the residual error"], a: 1, why: "Mediation decomposes an effect into direct (X→Y) and indirect (X→M→Y) routes through the mediator." },
-      { c: "stats-2", q: "In logistic regression, an odds ratio of 2 for a predictor means…", o: ["the probability of the outcome doubles", "the odds of the outcome double for each one-unit increase", "predictions are twice as accurate", "the correlation is 2"], a: 1, why: "Coefficients act on the odds: an OR of 2 multiplies the odds (not the probability) by 2 per unit." },
-      { c: "stats-2", q: "Adjusted R² differs from ordinary R² because it…", o: ["is always larger", "penalizes adding predictors that don't earn their keep", "ignores the sample size", "measures correlation instead of variance"], a: 1, why: "Plain R² never falls when you add predictors; adjusted R² docks you for useless ones, discouraging overfitting." },
-      { c: "stats-2", q: "Standardized coefficients (betas) are handy because they…", o: ["are always statistically significant", "let you compare predictors measured in different units", "remove multicollinearity", "guarantee linearity"], a: 1, why: "Everything is re-expressed in SD units, so 'a 1-SD change in X predicts β SDs of change in Y' is comparable across predictors." },
-      { c: "stats-2", q: "\"Does the therapy work better for women than for men?\" is a question about…", o: ["mediation", "moderation (an interaction)", "multicollinearity", "a main effect"], a: 1, why: "'For whom / under what conditions' is moderation; 'how / through what mechanism' is mediation." },
-      { c: "stats-2", q: "Which model-comparison criterion punishes extra parameters more harshly as the sample grows?", o: ["AIC", "BIC", "R²", "the F-test"], a: 1, why: "BIC's penalty is k·ln(n), which rises with n; AIC's is a flat 2k. With big samples BIC favors leaner models." },
+      { c: "stats-2", s: "2.16", q: "In logistic regression, an odds ratio of 2 for a predictor means…", o: ["the probability of the outcome doubles", "the odds of the outcome double for each one-unit increase", "predictions are twice as accurate", "the correlation is 2"], a: 1, why: "Coefficients act on the odds: an OR of 2 multiplies the odds (not the probability) by 2 per unit." },
+      { c: "stats-2", s: "2.9", q: "Adjusted R² differs from ordinary R² because it…", o: ["is always larger", "penalizes adding predictors that don't earn their keep", "ignores the sample size", "measures correlation instead of variance"], a: 1, why: "Plain R² never falls when you add predictors; adjusted R² docks you for useless ones, discouraging overfitting." },
+      { c: "stats-2", s: "2.9", q: "Standardized coefficients (betas) are handy because they…", o: ["are always statistically significant", "let you compare predictors measured in different units", "remove multicollinearity", "guarantee linearity"], a: 1, why: "Everything is re-expressed in SD units, so 'a 1-SD change in X predicts β SDs of change in Y' is comparable across predictors." },
+      { c: "stats-2", s: "2.11", q: "\"Does the therapy work better for women than for men?\" is a question about…", o: ["mediation", "moderation (an interaction)", "multicollinearity", "a main effect"], a: 1, why: "'For whom / under what conditions' is moderation; 'how / through what mechanism' is mediation." },
+      { c: "stats-2", s: "2.14", q: "Which model-comparison criterion punishes extra parameters more harshly as the sample grows?", o: ["AIC", "BIC", "R²", "the F-test"], a: 1, why: "BIC's penalty is k·ln(n), which rises with n; AIC's is a flat 2k. With big samples BIC favors leaner models." },
       { c: "stats-3", q: "A quick (if rough) rule for how many factors to retain in a factor analysis is…", o: ["keep components with eigenvalues above 1", "keep everything with p < .05", "keep predictors with VIF above 10", "always keep exactly three"], a: 0, why: "The Kaiser criterion: an eigenvalue over 1 means the component explains more than a single original variable would. Use it alongside the scree plot, not instead of thought." },
-      { c: "stats-2", q: "In an experiment, adding a covariate that strongly predicts the outcome (but is unrelated to treatment) mainly…", o: ["biases the treatment effect", "increases power by soaking up error variance", "causes multicollinearity", "shrinks the sample"], a: 1, why: "Explained noise leaves the error term, so the same treatment effect stands out more clearly — power for free." },
-      { c: "stats-2", q: "Logistic regression's predicted probabilities are guaranteed to…", o: ["be normally distributed", "stay between 0 and 1", "exceed 0.5 for significant predictors", "equal the odds ratio"], a: 1, why: "The S-shaped (logistic) curve squashes any linear predictor into the 0–1 range, the very reason plain linear regression is the wrong tool for binary outcomes." },
-      { c: "stats-2", q: "ANCOVA differs from ANOVA in that it…", o: ["needs no assumptions", "compares adjusted means after removing a covariate's influence", "works only with two groups", "tests variances instead of means"], a: 1, why: "ANCOVA regresses the outcome on the covariate within groups, then compares the groups at the same covariate value, giving the adjusted means." },
-      { c: "stats-2", q: "For ANCOVA's adjustment to be trustworthy, the covariate should be…", o: ["measured after the treatment", "affected by the treatment", "measured before treatment and unaffected by it", "binary"], a: 2, why: "Adjusting for a variable the treatment itself changed removes part of the very effect you're testing. Covariates belong upstream of treatment." },
+      { c: "stats-2", s: "2.15", q: "In an experiment, adding a covariate that strongly predicts the outcome (but is unrelated to treatment) mainly…", o: ["biases the treatment effect", "increases power by soaking up error variance", "causes multicollinearity", "shrinks the sample"], a: 1, why: "Explained noise leaves the error term, so the same treatment effect stands out more clearly — power for free." },
+      { c: "stats-2", s: "2.16", q: "Logistic regression's predicted probabilities are guaranteed to…", o: ["be normally distributed", "stay between 0 and 1", "exceed 0.5 for significant predictors", "equal the odds ratio"], a: 1, why: "The S-shaped (logistic) curve squashes any linear predictor into the 0–1 range, the very reason plain linear regression is the wrong tool for binary outcomes." },
+      { c: "stats-2", s: "2.15", q: "ANCOVA differs from ANOVA in that it…", o: ["needs no assumptions", "compares adjusted means after removing a covariate's influence", "works only with two groups", "tests variances instead of means"], a: 1, why: "ANCOVA regresses the outcome on the covariate within groups, then compares the groups at the same covariate value, giving the adjusted means." },
+      { c: "stats-2", s: "2.15", q: "For ANCOVA's adjustment to be trustworthy, the covariate should be…", o: ["measured after the treatment", "affected by the treatment", "measured before treatment and unaffected by it", "binary"], a: 2, why: "Adjusting for a variable the treatment itself changed removes part of the very effect you're testing. Covariates belong upstream of treatment." },
       { c: "stats-3", q: "You measured anxiety, depression, and stress in three therapy groups. Testing all outcomes at once calls for…", o: ["three separate ANOVAs", "MANOVA", "a chi-square test", "three correlations"], a: 1, why: "MANOVA tests the outcome profile jointly, controlling alpha across outcomes and exploiting their correlations." },
       { c: "stats-3", q: "Among the multivariate test statistics, the one usually recommended for its robustness is…", o: ["Roy's largest root", "Wilks' lambda", "Pillai's trace", "Hotelling's T²"], a: 2, why: "Pillai's trace holds its error rate best under assumption violations and unequal groups; Wilks' Λ is the most traditional to report." },
 
       /* P62 — additional Stats 3 questions */
-      { c: "stats-2", q: "In a multiple regression, the overall (omnibus) F-test asks whether…", o: ["each predictor is individually significant", "the predictors as a SET explain significant variance in the outcome", "the residuals are normal", "R² equals 1"], a: 1, why: "The omnibus F tests the whole model at once (do the predictors jointly beat an intercept-only model), separate from each coefficient's own t-test." },
-      { c: "stats-2", q: "To turn a logistic-regression coefficient (b) into an odds ratio, you…", o: ["square it", "exponentiate it (e^b)", "divide it by its standard error", "take its logarithm"], a: 1, why: "Coefficients are on the log-odds scale, so e^b gives the odds ratio: b > 0 → OR > 1 (odds rise), b < 0 → OR < 1 (odds fall)." },
-      { c: "stats-2", q: "Two predictors correlate at r = .95. Putting both in a regression will most likely…", o: ["improve interpretation", "inflate their standard errors and make the coefficients unstable", "lower the model's R²", "bias the predictions"], a: 1, why: "Near-duplicate predictors can't be told apart, so their standard errors balloon and coefficients swing. Prediction may be fine, but 'which one matters' becomes unanswerable." },
+      { c: "stats-2", s: "2.9", q: "In a multiple regression, the overall (omnibus) F-test asks whether…", o: ["each predictor is individually significant", "the predictors as a SET explain significant variance in the outcome", "the residuals are normal", "R² equals 1"], a: 1, why: "The omnibus F tests the whole model at once (do the predictors jointly beat an intercept-only model), separate from each coefficient's own t-test." },
+      { c: "stats-2", s: "2.16", q: "To turn a logistic-regression coefficient (b) into an odds ratio, you…", o: ["square it", "exponentiate it (e^b)", "divide it by its standard error", "take its logarithm"], a: 1, why: "Coefficients are on the log-odds scale, so e^b gives the odds ratio: b > 0 → OR > 1 (odds rise), b < 0 → OR < 1 (odds fall)." },
+      { c: "stats-2", s: "2.12", q: "Two predictors correlate at r = .95. Putting both in a regression will most likely…", o: ["improve interpretation", "inflate their standard errors and make the coefficients unstable", "lower the model's R²", "bias the predictions"], a: 1, why: "Near-duplicate predictors can't be told apart, so their standard errors balloon and coefficients swing. Prediction may be fine, but 'which one matters' becomes unanswerable." },
       { c: "stats-3", q: "The key conceptual difference between PCA and factor analysis is that…", o: ["PCA is a Bayesian method", "PCA summarizes total variance into components, while factor analysis models latent factors as the cause of the items' shared variance", "they are mathematically identical", "factor analysis needs no correlations among items"], a: 1, why: "PCA is a variance-summarizing transform (components are just combinations of items); factor analysis posits latent factors that cause the shared variance: a model, not merely a rotation." },
       { c: "stats-3", q: "Adding a mediator M makes the direct effect of X on Y (c′) drop to near zero while the indirect effect a×b stays strong. This pattern indicates…", o: ["no mediation", "full mediation, with M appearing to carry the whole effect", "moderation", "multicollinearity"], a: 1, why: "If the X→Y path collapses once M is in the model and a×b is significant, M seems to transmit the entire effect, i.e. full mediation (though 'full' is rarely literal)." },
-      { c: "stats-2", q: "Model A has AIC = 210 and Model B has AIC = 202 on the same data. You should prefer…", o: ["Model A", "Model B, since lower AIC is better", "neither; AIC can't compare them", "whichever has the higher R²"], a: 1, why: "Lower AIC wins: B balances fit against complexity better. A gap of about 8 is substantial (rules of thumb call a difference over 10 decisive)." },
-      { c: "stats-2", q: "Mean-centering continuous predictors before building an interaction term mainly helps because it…", o: ["removes the interaction", "reduces the correlation between the product term and its components and makes the lower-order terms interpretable at the mean", "is required for significance", "normalizes the residuals"], a: 1, why: "Centering makes each lower-order coefficient the effect at the other variable's mean (not at a possibly-meaningless zero) and cuts the product term's correlation with its parts." },
+      { c: "stats-2", s: "2.14", q: "Model A has AIC = 210 and Model B has AIC = 202 on the same data. You should prefer…", o: ["Model A", "Model B, since lower AIC is better", "neither; AIC can't compare them", "whichever has the higher R²"], a: 1, why: "Lower AIC wins: B balances fit against complexity better. A gap of about 8 is substantial (rules of thumb call a difference over 10 decisive)." },
+      { c: "stats-2", s: "2.11", q: "Mean-centering continuous predictors before building an interaction term mainly helps because it…", o: ["removes the interaction", "reduces the correlation between the product term and its components and makes the lower-order terms interpretable at the mean", "is required for significance", "normalizes the residuals"], a: 1, why: "Centering makes each lower-order coefficient the effect at the other variable's mean (not at a possibly-meaningless zero) and cuts the product term's correlation with its parts." },
 
       /* ------ Stats 3 — the ex-Stats-4 lessons ------ */
       { c: "stats-3", q: "The bootstrap estimates uncertainty by…", o: ["assuming a normal distribution", "resampling your data with replacement many times", "always collecting a bigger sample", "deleting the outliers"], a: 1, why: "By resampling the data thousands of times, the bootstrap builds a sampling distribution without a formula." },
@@ -544,6 +560,30 @@
       for (var i = 0; i < COURSES.length; i++) if (COURSES[i].slug === slug) return COURSES[i].title;
       return slug;
     }
+
+    // P86 — SECTION RANGES. An intro course examines in halves, so exam scope
+    // is a course PLUS a span of its sections. The spans come from the
+    // curriculum (the single source of truth for what sections exist and in
+    // what order) and the questions carry an optional s tag naming their own
+    // section. A course whose questions carry no s tags simply has no range
+    // control and comes in whole — that is the documented fallback, not a bug.
+    var SECTIONS = {};      // slug -> [{ n, title }] of its ready sections, in order
+    var TAGGED = {};        // slug -> true when at least one of its questions carries s
+    COURSES.forEach(function (c) {
+      SECTIONS[c.slug] = (c.sections || []).filter(function (x) { return x.ready; })
+        .map(function (x) { return { n: String(x.n), title: x.title }; });
+      TAGGED[c.slug] = SECTIONS[c.slug].length > 1 && BANK.some(function (x) {
+        return courseOf(x) === c.slug && x.s;
+      });
+    });
+    // Index of a section number within its course's list, or -1. Ranges compare
+    // INDICES, never the numbers themselves: "1.10" sorts below "1.9" both as a
+    // string and as a float, so the printed order is the only ordering there is.
+    function secIndex(slug, n) {
+      var list = SECTIONS[slug] || [];
+      for (var i = 0; i < list.length; i++) if (list[i].n === String(n)) return i;
+      return -1;
+    }
     function esc(s) {
       return String(s).replace(/[&<>"]/g, function (ch) {
         return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch];
@@ -678,15 +718,35 @@
        options are shuffled (with the answer index remapped).
        ============================================================ */
     var examSel = {}, examLen = 10, examTimed = false;
+    var examRange = {};   // slug -> { from, to } as indices into SECTIONS[slug]
     var exam = [], examPos = 0, examPicks = [], examMeta = null;
     var clockId = null, clockT0 = 0, examElapsed = 0;
+
+    COURSES.forEach(function (c) {
+      examRange[c.slug] = { from: 0, to: Math.max(0, SECTIONS[c.slug].length - 1) };
+    });
 
     function selectedCourses() {
       return COURSES.map(function (c) { return c.slug; }).filter(function (s) { return examSel[s]; });
     }
+    // A range that spans everything is the same thing as no range at all: the
+    // default, the pre-P86 behaviour, and the plain course slug in the signature.
+    function fullSpan(slug, r) {
+      r = r || examRange[slug];
+      return !TAGGED[slug] || !r || (r.from === 0 && r.to === SECTIONS[slug].length - 1);
+    }
+    function inScope(x, sel, ranges) {
+      var slug = courseOf(x);
+      if (sel.indexOf(slug) < 0) return false;
+      var r = (ranges || examRange)[slug];
+      if (fullSpan(slug, r)) return true;
+      if (!x.s) return false;   // narrowed course: an untagged question can't be placed
+      var i = secIndex(slug, x.s);
+      return i >= 0 && i >= r.from && i <= r.to;
+    }
     function examPool() {
       var sel = selectedCourses();
-      return BANK.filter(function (x) { return sel.indexOf(courseOf(x)) >= 0; });
+      return BANK.filter(function (x) { return inScope(x, sel); });
     }
 
     // Scope picker, generated from the curriculum and grouped by track.
@@ -701,26 +761,94 @@
         if (!cs.length) return "";
         return (multi ? '<p class="exam-track">' + esc(t.title) + "</p>" : "") +
           '<div class="exam-checks">' + cs.map(function (c) {
-            return '<label class="exam-check"><input type="checkbox" data-course="' + esc(c.slug) + '"' +
+            return '<div class="exam-course">' +
+              '<label class="exam-check"><input type="checkbox" data-course="' + esc(c.slug) + '"' +
               (examSel[c.slug] ? " checked" : "") + ">" +
               '<span class="ec-name">' + esc(c.title) + "</span>" +
-              '<span class="ec-sub">' + esc(c.subtitle) + "</span></label>";
+              '<span class="ec-sub">' + esc(c.subtitle) + "</span></label>" +
+              rangeHTML(c) + "</div>";
           }).join("") + "</div>";
       }).join("");
       Array.prototype.forEach.call(el("exam-scope").querySelectorAll("input[type=checkbox]"), function (cb) {
         cb.addEventListener("change", function () {
           examSel[cb.getAttribute("data-course")] = cb.checked;
+          syncRanges();
           updateAvail();
+        });
+      });
+      Array.prototype.forEach.call(el("exam-scope").querySelectorAll(".exam-range select"), function (sel) {
+        sel.addEventListener("change", function () {
+          var slug = sel.getAttribute("data-course"), r = examRange[slug], v = +sel.value;
+          if (sel.getAttribute("data-end") === "from") { r.from = v; if (r.to < v) r.to = v; }
+          else { r.to = v; if (r.from > v) r.from = v; }
+          syncRanges();
+          updateAvail();
+        });
+      });
+      syncRanges();
+    }
+
+    // The "from §a to §b" strip. Rendered only for a course whose questions
+    // carry section tags; every other course keeps exactly its pre-P86 row.
+    function rangeHTML(c) {
+      if (!TAGGED[c.slug]) return "";
+      var list = SECTIONS[c.slug], r = examRange[c.slug];
+      function opts(chosen) {
+        return list.map(function (x, i) {
+          return '<option value="' + i + '"' + (i === chosen ? " selected" : "") + ">§" +
+            esc(x.n) + " " + esc(x.title) + "</option>";
+        }).join("");
+      }
+      function box(end, chosen, label) {
+        return '<select data-course="' + esc(c.slug) + '" data-end="' + end + '" aria-label="' +
+          esc(c.title + ": " + label) + '">' + opts(chosen) + "</select>";
+      }
+      return '<div class="exam-range" data-course="' + esc(c.slug) + '">' +
+        "<span>from</span>" + box("from", r.from, "first section in the exam") +
+        "<span>to</span>" + box("to", r.to, "last section in the exam") + "</div>";
+    }
+
+    // A course's range is live only while that course is in the exam.
+    function syncRanges() {
+      Array.prototype.forEach.call(el("exam-scope").querySelectorAll(".exam-range"), function (row) {
+        var slug = row.getAttribute("data-course"), on = !!examSel[slug];
+        row.classList.toggle("er-off", !on);
+        Array.prototype.forEach.call(row.querySelectorAll("select"), function (sel) {
+          sel.disabled = !on;
+          sel.value = String(sel.getAttribute("data-end") === "from" ? examRange[slug].from : examRange[slug].to);
         });
       });
     }
 
+    // Wording for one course's span: the plain course title when it is the
+    // whole course, "Stats 1 §1.1–§1.12" when it is not.
+    function rangeLabel(slug, ranges) {
+      var r = (ranges || examRange)[slug];
+      if (fullSpan(slug, r)) return courseTitle(slug);
+      var list = SECTIONS[slug];
+      return courseTitle(slug) + " §" + list[r.from].n + "–§" + list[r.to].n;
+    }
+
     function updateAvail() {
-      var n = examPool().length, use = Math.min(examLen, n);
+      var sel = selectedCourses(), n = examPool().length, use = Math.min(examLen, n);
       el("exam-avail").textContent = n === 0
         ? "Pick at least one course to begin."
         : n + " questions in scope · this exam draws " + use;
       el("exam-start").disabled = n === 0;
+
+      // A selected course with no section tags comes in whole. Say so, rather
+      // than leaving a reader to wonder why it has no range control.
+      var whole = sel.filter(function (x) { return !TAGGED[x]; }).map(courseTitle);
+      var narrowed = sel.filter(function (x) { return TAGGED[x] && !fullSpan(x); })
+        .map(function (x) { return rangeLabel(x); });
+      var bits = [];
+      if (narrowed.length) bits.push("Scope: " + narrowed.join(", ") + ".");
+      if (whole.length) {
+        bits.push(whole.length === 1
+          ? whole[0] + " has no section tags yet, so it comes in whole."
+          : whole.join(", ") + " have no section tags yet, so they come in whole.");
+      }
+      el("exam-scope-note").textContent = bits.join(" ");
     }
 
     function startClock() {
@@ -756,7 +884,9 @@
       exam = items.map(shuffleOpts);
       examPicks = exam.map(function () { return -1; });
       examPos = 0;
-      examMeta = { scope: selectedCourses(), timed: examTimed, retry: !!(retryItems && retryItems.length) };
+      var sel = selectedCourses(), snap = {};
+      sel.forEach(function (x) { snap[x] = { from: examRange[x].from, to: examRange[x].to }; });
+      examMeta = { scope: sel, ranges: snap, timed: examTimed, retry: !!(retryItems && retryItems.length) };
       clockT0 = 0; examElapsed = 0;
       el("start").style.display = "none";
       el("exam-results").style.display = "none";
@@ -799,8 +929,19 @@
     function readExam() {
       try { return JSON.parse(localStorage.getItem("sc-exam") || "{}") || {}; } catch (e) { return {}; }
     }
-    function scopeSig(scope) {
-      return scope.length === COURSES.length ? "all" : scope.slice().sort().join("+");
+    // The sc-exam key. A whole course is still its bare slug and every course
+    // at full span is still "all", so bests stored before P86 keep matching and
+    // there is nothing to migrate; a narrowed course adds ":<from>-<to>", e.g.
+    // "stats-1:1.1-1.12".
+    function scopeSig(scope, ranges) {
+      var parts = scope.map(function (slug) {
+        var r = (ranges || examRange)[slug];
+        if (fullSpan(slug, r)) return slug;
+        var list = SECTIONS[slug];
+        return slug + ":" + list[r.from].n + "-" + list[r.to].n;
+      });
+      var allWhole = parts.every(function (x) { return x.indexOf(":") < 0; });
+      return (allWhole && scope.length === COURSES.length) ? "all" : parts.sort().join("+");
     }
     function saveBest(sig, correct, total) {
       try {
@@ -829,7 +970,7 @@
         if (examPicks[i] === it.a) { correct++; by[c].c++; }
         else missed.push(it);
       });
-      var sig = examMeta.retry ? null : scopeSig(examMeta.scope);
+      var sig = examMeta.retry ? null : scopeSig(examMeta.scope, examMeta.ranges);
       var prev = sig ? readExam()[sig] : null;
       var isBest = sig ? saveBest(sig, correct, exam.length) : false;
       renderExamResults(correct, exam.length, by, missed, prev, isBest);
@@ -856,6 +997,11 @@
         : "Early days. Everything you missed is explained below, with the course to revisit.";
 
       var meta = [Math.round(pct * 100) + "% correct"];
+      // With one course there is no "By course" list below, so the scope — the
+      // section range included — has to be readable here or nowhere.
+      if (!examMeta.retry && Object.keys(by).length === 1) {
+        meta.push(rangeLabel(Object.keys(by)[0], examMeta.ranges));
+      }
       if (examMeta.timed) meta.push("time " + fmtTime(examElapsed));
       if (prev) meta.push("previous best here " + Math.round(prev.pct * 100) + "%");
       if (isBest && prev) meta.push("new best");
@@ -869,7 +1015,8 @@
         h += '<div class="exam-break"><p class="exam-sub">By course</p><ul>';
         COURSES.forEach(function (c) {
           if (!by[c.slug]) return;
-          h += "<li><span>" + esc(c.title) + '</span><span class="eb-n">' + by[c.slug].c + " / " + by[c.slug].t + "</span></li>";
+          h += "<li><span>" + esc(rangeLabel(c.slug, examMeta.ranges)) + '</span><span class="eb-n">' +
+            by[c.slug].c + " / " + by[c.slug].t + "</span></li>";
         });
         h += "</ul></div>";
       }
@@ -905,15 +1052,16 @@
     Array.prototype.forEach.call(el("mode-seg").querySelectorAll("button"), function (b) {
       b.addEventListener("click", function () { setMode(b.getAttribute("data-mode")); });
     });
-    Array.prototype.forEach.call(el("exam-len").querySelectorAll("button"), function (b) {
-      b.addEventListener("click", function () {
-        examLen = +b.getAttribute("data-len");
-        Array.prototype.forEach.call(el("exam-len").querySelectorAll("button"), function (o) {
-          o.classList.toggle("active", o === b);
-          o.setAttribute("aria-selected", o === b ? "true" : "false");
-        });
-        updateAvail();
+    function setLen(b) {
+      examLen = +b.getAttribute("data-len");
+      Array.prototype.forEach.call(el("exam-len").querySelectorAll("button"), function (o) {
+        o.classList.toggle("active", o === b);
+        o.setAttribute("aria-selected", o === b ? "true" : "false");
       });
+      updateAvail();
+    }
+    Array.prototype.forEach.call(el("exam-len").querySelectorAll("button"), function (b) {
+      b.addEventListener("click", function () { setLen(b); });
     });
     Array.prototype.forEach.call(el("exam-pane").querySelectorAll("[data-pick]"), function (b) {
       b.addEventListener("click", function () {
@@ -937,9 +1085,53 @@
       if (window.confirm("Leave this exam? Your answers so far won't be marked.")) showStart();
     });
 
+    /* ------------------------------------------------------------------
+       A SHAREABLE MOCK EXAM. quiz.html?exam=stats-1&from=1.1&to=1.12&n=20
+       opens exam mode with that scope and length already set; the exam
+       still starts on the button, so a link never drops anyone straight
+       into a paper. Params follow SC.preset's rules: anything absent,
+       unknown or malformed is ignored in silence, and what is left is the
+       plain default start screen.
+
+         exam  one course slug, several comma-separated, or "all"
+         from  first section number, e.g. 1.1   (one named course only)
+         to    last section number,  e.g. 1.12  (one named course only)
+         n     paper length; 10, 20 or 40
+       ------------------------------------------------------------------ */
+    function applyQuery() {
+      var q;
+      try { q = new URLSearchParams(window.location.search); } catch (e) { return; }
+      var raw = q.get("exam");
+      if (!raw) return;
+      var all = COURSES.map(function (c) { return c.slug; });
+      var want = raw === "all" ? all : raw.split(",").map(function (x) { return x.trim(); })
+        .filter(function (x) { return all.indexOf(x) >= 0; });
+      if (!want.length) return;
+      all.forEach(function (slug) { examSel[slug] = want.indexOf(slug) >= 0; });
+
+      // from/to name sections of ONE course, so they are read only when the
+      // link names one. Either end may be given on its own.
+      if (want.length === 1 && TAGGED[want[0]]) {
+        var slug = want[0], r = examRange[slug];
+        var fi = secIndex(slug, q.get("from") || ""), ti = secIndex(slug, q.get("to") || "");
+        if (fi >= 0) r.from = fi;
+        if (ti >= 0) r.to = ti;
+        if (r.from > r.to) { var t = r.from; r.from = r.to; r.to = t; }
+      }
+
+      var n = q.get("n");
+      Array.prototype.forEach.call(el("exam-len").querySelectorAll("button"), function (b) {
+        if (n && b.getAttribute("data-len") === n) setLen(b);
+      });
+
+      setMode("exam");
+      renderScope();
+    }
+
     setMode("practice");
     renderPicker();
     renderScope();
+    applyQuery();
     updateAvail();
   })();
   </script>

@@ -16,16 +16,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Practice Problems — Worked Statistics Exam Questions — StatsCapybara</title>
-  <meta name="description" content="Forty-nine statistics problems with fully worked solutions: z-scores, t-tests, ANOVA, regression, Bayes and survival analysis, one step at a time." />
+  <meta name="description" content="Fifty-seven statistics problems with fully worked solutions: z-scores, t-tests, ANOVA, regression, Bayes and survival analysis, one step at a time." />
   <link rel="canonical" href="https://statscapybara.com/problems.html" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Practice Problems — StatsCapybara" />
-  <meta property="og:description" content="Forty-nine worked statistics problems, from z-scores to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
+  <meta property="og:description" content="Fifty-seven worked statistics problems, from z-scores to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
   <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
   <meta property="og:url" content="https://statscapybara.com/problems.html" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Practice Problems — StatsCapybara" />
-  <meta name="twitter:description" content="Forty-nine worked statistics problems, from z-scores to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
+  <meta name="twitter:description" content="Fifty-seven worked statistics problems, from z-scores to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="assets/css/styles.css" />
@@ -138,6 +138,7 @@
 
         <ul class="pb-index">
           <li><a href="#stats-1"><span class="t">📊 Stats 1 · Foundations</span><br><span class="m">18 problems · data types → probability → z and t tests</span></a></li>
+          <li><a href="#exam-style"><span class="t">📝 Exam-style · A Stats 1 midterm</span><br><span class="m">8 problems · §1.1 to §1.12, worked off the printed tables</span></a></li>
           <li><a href="#stats-2"><span class="t">🔗 Stats 2 · Groups &amp; relationships</span><br><span class="m">10 problems · ANOVA → regression</span></a></li>
           <li><a href="#regression"><span class="t">📐 Regression · Several predictors</span><br><span class="m">8 problems · multiple regression → missing data</span></a></li>
           <li><a href="#advanced"><span class="t">🎲 Advanced · Modern methods</span><br><span class="m">7 problems · Bayes → model comparison</span></a></li>
@@ -1148,6 +1149,497 @@
               <p class="pb-answer">H₀: μ = 1,200 against H₁: μ &lt; 1,200, one-tailed because the group suspected a shortfall. SE = 20, z = −1.75, one-tailed p = .0401: reject at α = .05, fail to reject at α = .01. Two-sided the p-value is .0801, which rejects at neither.</p>
               <p class="pb-round">Rounding: p-values to 4 dp from Table A; a printed table gives .0401 for z = −1.75 directly.</p>
               <p class="pb-ref">From <a href="stats-1/hypothesis-testing-logic/">§1.12 Hypothesis Testing Logic</a> · load it into the <a href="stats-1/hypothesis-testing-logic/?mu0=1200&amp;sigma=100&amp;n=25&amp;xbar=1165&amp;tail=left&amp;alpha=.05">explorer, prefilled</a>, or look the area up on the printed <a href="tables.html#printed-tables">Table A</a>.</p>
+            </details>
+          </article>
+        </section>
+
+
+        <!-- ==================================================================
+             EXAM-STYLE (P86)
+             A second Stats 1 set, written in the shapes a paper midterm asks
+             over §1.1–§1.12. Numbering continues the Stats 1 set above it.
+             Note for a later session: the page's .pb-num badges drifted out of
+             step when P79 and P82 appended problems 13–18 to the Stats 1 set
+             without renumbering the four sets below it, so the Stats 2 set
+             still starts its own count at 13. Fixing that means renumbering 31
+             cards here AND the 72 "Problem N" mentions in 57 lesson pages,
+             which is its own session; the #pX-Y anchors every lesson links to
+             are unaffected either way.
+             ================================================================== -->
+        <section class="pb-set" id="exam-style-set">
+          <h2 id="exam-style">📝 Exam-style · A midterm on §1.1–§1.12</h2>
+          <p class="pb-set-sub">Eight problems written the way a paper exam asks them: one short scenario, several parts that build on each other, numbers a basic calculator can hold, and every area read off the printed tables rather than out of software. They span the first twelve sections of <a href="stats-1/">Stats 1</a>, which is the usual reach of a week 4 or week 5 midterm. The set above teaches one idea per problem; this one chains them.</p>
+
+          <!-- ---------- Problem 19 ----------
+               verify: node -e 'console.log(63/175, 175/250, 250/18400, 18400/250)'
+                       → p-hat 0.36 exactly, response rate 0.70, sampling fraction 0.0135870 (1.36%),
+                         population/sample ratio 73.6
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p6-1"><span class="pb-num">19</span>Four words that must not be swapped</h3>
+              <span class="pb-chip warm">Warm-up</span>
+            </div>
+            <p class="pb-scenario">A university with 18,400 undergraduates wants to know how much sleep its students get on a weeknight. The registry draws a simple random sample of 250 names from the enrollment list and emails them a one-question form. 175 forms come back usable.</p>
+            <div class="pb-given">
+              <span class="lbl">What the registry has</span>
+              <ul>
+                <li>Undergraduates enrolled: 18,400</li>
+                <li>Names sampled: 250 · usable replies: 175</li>
+                <li>Reported sleep: mean 6.8 hours, standard deviation 1.3 hours</li>
+                <li>Replies reporting under 7 hours: 63</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Name the population, the sample, the parameter and the statistic for the sleep question.</li>
+              <li>Write the right symbol for each of four quantities: the mean weeknight sleep of all 18,400; the 6.8; the true share of students sleeping under 7 hours; the share observed here.</li>
+              <li>Compute the observed share.</li>
+              <li>75 of the 250 never replied. What does that put at risk, and would sampling 2,000 names instead of 250 repair it?</li>
+              <li>Is the sample small enough, relative to the university, for the usual standard-error formulas to apply?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The four words</span>
+                  <span class="pb-note">Population: all 18,400 enrolled undergraduates. Sample: the 175 who returned a usable form. Parameter: the mean weeknight sleep of the whole population, one fixed number nobody has measured. Statistic: the 6.8 hours, computed from the sample, and a different number in every sample the registry could have drawn.</span>
+                </li>
+                <li><span class="pb-lbl">Notation</span>
+                  <span class="pb-math">μ = mean sleep of all 18,400 (parameter, unknown)</span>
+                  <span class="pb-math">x̄ = 6.8 hours (statistic, computed)</span>
+                  <span class="pb-math">p = true share sleeping under 7 hours (parameter, unknown)</span>
+                  <span class="pb-math">p̂ = observed share (statistic, computed)</span>
+                  <span class="pb-note">The population gets a Greek letter or a plain <em>p</em>; the sample gets a bar or a hat. Writing μ where you mean x̄ is the single most expensive slip on an early exam, because every sentence after it is then about the wrong quantity.</span>
+                </li>
+                <li><span class="pb-lbl">The observed share</span>
+                  <span class="pb-math">p̂ = 63 / 175 = 0.36</span>
+                  <span class="pb-note">36% of the students who replied sleep under 7 hours. Note the denominator: 175, the people who answered, not the 250 who were asked.</span>
+                </li>
+                <li><span class="pb-lbl">The 75 who did not reply</span>
+                  <span class="pb-note">The selection was random, but the participation was not. The 75 silent students chose themselves out, and whatever kept them from answering may well be related to sleep, so the 175 are no longer a random slice of the university. Raising the sample to 2,000 buys a more precise estimate of the same biased quantity: a bigger sample shrinks the standard error and leaves the bias exactly where it was. The repair is chasing the non-respondents, not adding more names.</span>
+                </li>
+                <li><span class="pb-lbl">Sample size against population size</span>
+                  <span class="pb-math">18,400 / 250 = 73.6, so the sample is about 1.4% of the university</span>
+                  <span class="pb-note">The usual caution is that the population should be at least ten or twenty times the sample. At 73.6 times, this one clears it comfortably, which is why the standard error depends on <em>n</em> alone and the size of the university never enters the formula.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Population: all 18,400 undergraduates. Sample: the 175 usable replies. Parameter: μ, their true mean sleep. Statistic: x̄ = 6.8 hours. The observed share is p̂ = 63/175 = 0.36. The 30% non-response is a bias that a larger sample cannot fix, and at 1.4% of the population the sampling fraction is small enough to ignore.</p>
+              <p class="pb-ref">From <a href="stats-1/what-is-statistics/">§1.1 What Is Statistics?</a> and <a href="stats-1/producing-data-and-sampling-design/">§1.6 Producing Data &amp; Sampling Design</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- Problem 20 ----------
+               verify: node -e 'const d=[14,6,22,9,31,11,7,18,12,8,26,10,47].sort((a,b)=>a-b);
+                        const lo=d.slice(0,6),hi=d.slice(7);
+                        const Q1=(lo[2]+lo[3])/2,Q3=(hi[2]+hi[3])/2;
+                        console.log(d.join(","),d[6],Q1,Q3,Q3-Q1,Q1-1.5*(Q3-Q1),Q3+1.5*(Q3-Q1),
+                                    d.reduce((a,b)=>a+b)/13)'
+                       → sorted 6,7,8,9,10,11,12,14,18,22,26,31,47 ; median 12 ; Q1 8.5 ; Q3 24 ;
+                         IQR 15.5 ; fences −14.75 and 47.25 ; mean 17 exactly
+                       R type 7: Q1 = 9, Q3 = 22, IQR 13, fences −10.5 and 41.5 (47 flags)
+                       SPSS type 6 at (n+1)p: Q1 = 8.5, Q3 = 24, same as the textbook rule here
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p6-2"><span class="pb-num">20</span>Thirteen calls to the help desk</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A university IT help desk logs how long each caller waited before a person picked up, to the nearest minute. Here are thirteen calls from one morning, in the order they arrived.</p>
+            <div class="pb-given">
+              <span class="lbl">Waiting time in minutes, thirteen calls</span>
+              14, 6, 22, 9, 31, 11, 7, 18, 12, 8, 26, 10, 47
+            </div>
+            <ol class="pb-ask">
+              <li>Sort the values and give the five-number summary, using the textbook rule for the quartiles.</li>
+              <li>Apply the 1.5 × IQR rule. Where do the fences fall, and is the 47-minute call an outlier?</li>
+              <li>The same thirteen numbers in R return Q1 = 9 and Q3 = 22. Redo part 2 with those and say what changes.</li>
+              <li>The desk manager wants one number for a typical wait. Mean or median, and why?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Sort first; nothing else works until you have</span>
+                  <span class="pb-math">6, 7, 8, 9, 10, 11, 12, 14, 18, 22, 26, 31, 47</span>
+                  <span class="pb-note"><em>n</em> = 13 is odd, so the median is the 7th value.</span>
+                  <span class="pb-math">Median = 12 min</span>
+                </li>
+                <li><span class="pb-lbl">Quartiles: median of each half, the middle value in neither</span>
+                  <span class="pb-math">Lower half (6 values): 6, 7, 8, 9, 10, 11 → Q1 = (8 + 9)/2 = 8.5</span>
+                  <span class="pb-math">Upper half (6 values): 14, 18, 22, 26, 31, 47 → Q3 = (22 + 26)/2 = 24</span>
+                  <span class="pb-math">IQR = 24 − 8.5 = 15.5 min</span>
+                  <span class="pb-math">Five-number summary: 6 · 8.5 · 12 · 24 · 47</span>
+                </li>
+                <li><span class="pb-lbl">Fences under the textbook quartiles</span>
+                  <span class="pb-math">1.5 × IQR = 1.5 × 15.5 = 23.25</span>
+                  <span class="pb-math">Lower: 8.5 − 23.25 = −14.75</span>
+                  <span class="pb-math">Upper: 24 + 23.25 = 47.25</span>
+                  <span class="pb-note">47 sits inside the upper fence by a quarter of a minute, so this rule flags nothing at all. The longest wait of the morning is, by this convention, an ordinary long wait.</span>
+                </li>
+                <li><span class="pb-lbl">The same rule on R's quartiles</span>
+                  <span class="pb-math">IQR = 22 − 9 = 13, so 1.5 × IQR = 19.5</span>
+                  <span class="pb-math">Fences: 9 − 19.5 = −10.5 and 22 + 19.5 = 41.5</span>
+                  <span class="pb-note">Now 47 is outside, and the boxplot draws it as a separate point. Two defensible conventions, one dataset, opposite verdicts on the one call the manager cares about. It happens when a value sits near a fence, which is exactly where the argument always is. SPSS, incidentally, returns 8.5 and 24 here and agrees with the textbook rule, so the disagreement is not a simple hand-versus-software split.</span>
+                </li>
+                <li><span class="pb-lbl">One number for a typical wait</span>
+                  <span class="pb-math">Mean = 221 / 13 = 17.0 min · Median = 12 min</span>
+                  <span class="pb-note">Five minutes apart on thirteen calls. The mean is carrying the 47 and the 31, and no caller that morning waited 17 minutes; the median is a wait a caller actually had. Report the median for a typical wait, and the maximum alongside it, since a 47-minute hold is the thing a manager needs to hear about and a median is designed not to mention it.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Five-number summary 6, 8.5, 12, 24, 47. Textbook fences −14.75 and 47.25 flag nothing; R's quartiles put the fences at −10.5 and 41.5 and flag the 47. Mean 17.0 against a median of 12: report the median, with the longest wait beside it.</p>
+              <p class="pb-round">Rounding: none. Every quartile lands halfway between two whole values, and 221/13 is exactly 17.</p>
+              <p class="pb-ref">From <a href="stats-1/describing-data/">§1.3 Describing Data</a> and <a href="stats-1/visualizing-data/">§1.4 Visualizing Data</a> · load it into the <a href="descriptives.html?quart=textbook&amp;data=14,6,22,9,31,11,7,18,12,8,26,10,47">Descriptives calculator, prefilled</a> and flip the Quartiles switch to watch the flag appear.</p>
+            </details>
+          </article>
+
+          <!-- ---------- Problem 21 ----------
+               verify: node -e with VIZ in a vm context —
+                 normCdf(-0.50) = 0.308538 → Table A .3085
+                 normCdf( 1.50) = 0.933193 → upper tail .0668
+                 normCdf( 1.00) = 0.841345 ; normCdf(-0.75) = 0.226627 → between = .614718 → .6147
+                 240 × .3085 = 74.04
+                 normInv(.01) = −2.32635 → exact x = 492.6946 ; table z = −2.33 → x = 492.68
+                 normCdf(-2.33) = .009903 and normCdf(-2.32) = .010170, so −2.33 is the nearer entry
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p6-3"><span class="pb-num">21</span>Bags that say 500 grams</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A machine fills bags of coffee labeled 500 g. The weight it actually delivers is normally distributed with a mean of 502 g and a standard deviation of 4 g. One shift produces 240 bags. Work every part from the printed Table A, and give the answer the table gives.</p>
+            <div class="pb-given">
+              <span class="lbl">The fill distribution</span>
+              X ~ N(μ = 502 g, σ = 4 g) · 240 bags on the shift · label weight 500 g
+            </div>
+            <ol class="pb-ask">
+              <li>What proportion of bags weigh less than the labeled 500 g?</li>
+              <li>What proportion weigh more than 508 g?</li>
+              <li>What proportion fall between 499 g and 506 g?</li>
+              <li>About how many bags on this shift are under the label?</li>
+              <li>Below what weight do the lightest 1% of bags sit?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Under the label</span>
+                  <span class="pb-math">z = (500 − 502) / 4 = −0.50</span>
+                  <span class="pb-math">Table A at z = −0.50 gives .3085</span>
+                  <span class="pb-note">Table A always reports the area to the LEFT, which is what this question wants, so the entry is the answer with no arithmetic after it. About 30.85% of bags are under the label.</span>
+                </li>
+                <li><span class="pb-lbl">Above 508 g</span>
+                  <span class="pb-math">z = (508 − 502) / 4 = 1.50</span>
+                  <span class="pb-math">Table A at 1.50 gives .9332, the area BELOW</span>
+                  <span class="pb-math">P(X &gt; 508) = 1 − .9332 = .0668</span>
+                </li>
+                <li><span class="pb-lbl">Between 499 g and 506 g</span>
+                  <span class="pb-math">z₁ = (499 − 502)/4 = −0.75 → .2266</span>
+                  <span class="pb-math">z₂ = (506 − 502)/4 = 1.00 → .8413</span>
+                  <span class="pb-math">P(499 &lt; X &lt; 506) = .8413 − .2266 = .6147</span>
+                  <span class="pb-note">A "between" question is two lookups and one subtraction, larger area first. Subtracting the z-scores instead of the areas is the standard way to lose this mark.</span>
+                </li>
+                <li><span class="pb-lbl">How many of the 240</span>
+                  <span class="pb-math">240 × .3085 = 74.04, so about 74 bags</span>
+                  <span class="pb-note">A proportion becomes a count by multiplying, and the answer is rounded to a whole bag because bags are whole.</span>
+                </li>
+                <li><span class="pb-lbl">The lightest 1%: read the table backwards</span>
+                  <span class="pb-note">Hunt inside the body of Table A for the area nearest .0100. It carries .0099 at z = −2.33 and .0102 at z = −2.32, so −2.33 is the nearer entry.</span>
+                  <span class="pb-math">x = μ + zσ = 502 + (−2.33)(4) = 502 − 9.32 = 492.68 g</span>
+                  <span class="pb-note">The lightest 1% of bags weigh under about 492.7 g, roughly 7 g short of the label. Software solving for the exact quantile returns z = −2.3263 and x = 492.69 g; on paper the table's entry is the answer, and the gap between the two is a hundredth of a gram.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">.3085 under the label, .0668 above 508 g, .6147 between 499 g and 506 g, about 74 of the 240 bags under the label, and the lightest 1% below 492.68 g.</p>
+              <p class="pb-round">Rounding: Table A carries four decimal places, so the three proportions are exact as read. The 1% cutoff inherits the table's two-decimal z and lands 0.01 g from the exact value.</p>
+              <p class="pb-ref">From <a href="stats-1/z-scores-and-the-normal-distribution/">§1.5 Z-Scores &amp; The Normal Distribution</a> · every area here is on the <a href="tables.html#printed-tables">printed Table A</a>, and the look-it-up drill below it sets the same three moves at random.</p>
+            </details>
+          </article>
+
+          <!-- ---------- Problem 22 ----------
+               verify: node -e 'let s=0,x=0,b=0;for(let a=1;a<=6;a++)for(let c=1;c<=6;c++){
+                        const S=a+c===7,X=(a===6||c===6);if(S)s++;if(X)x++;if(S&&X)b++;}
+                        console.log(s,x,b,(s+x-b)/36, 1-(5/6)**4, 1-(35/36)**24,
+                        Math.log(.5)/Math.log(35/36), 1-(35/36)**25)'
+                       → 6, 11, 2 ; P(A or B) = 15/36 = .416667
+                         1 − (5/6)⁴ = 671/1296 = .517747
+                         1 − (35/36)²⁴ = .491404 ; crossover at n = 24.605 → 25 gives .505532
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p6-4"><span class="pb-num">22</span>What de Méré got wrong</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">Two fair six-sided dice are rolled and both faces are recorded, so there are 36 equally likely outcomes. The second half of this problem is the pair of bets a seventeenth-century gambler took to Pascal, having noticed that one of them made money and the other did not.</p>
+            <div class="pb-given">
+              <span class="lbl">Two events on one roll of two dice</span>
+              A = the two faces sum to 7 · B = at least one face shows a 6
+            </div>
+            <ol class="pb-ask">
+              <li>Find P(A), P(B), P(A and B), and P(A or B).</li>
+              <li>De Méré's first bet was at least one 6 in four rolls of a single die, which he priced at 4 × 1/6 = 2/3. Say why that reasoning cannot be right, then give the correct probability.</li>
+              <li>His second bet was at least one double 6 in 24 rolls of two dice. Compute it.</li>
+              <li>How many rolls of two dice would the second bet have needed to be worth taking?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Count outcomes, then apply the general addition rule</span>
+                  <span class="pb-math">A: (1,6) (2,5) (3,4) (4,3) (5,2) (6,1) → P(A) = 6/36</span>
+                  <span class="pb-math">B: six rolls with a 6 first, six with a 6 second, the double 6 counted twice → 11/36</span>
+                  <span class="pb-math">A and B: (1,6) and (6,1) → 2/36</span>
+                  <span class="pb-math">P(A or B) = 6/36 + 11/36 − 2/36 = 15/36 = 5/12 = .4167</span>
+                  <span class="pb-note">The overlap has to come back out once, because the two outcomes in it were counted inside both totals. Notice that B itself needed the same correction while it was being counted.</span>
+                </li>
+                <li><span class="pb-lbl">Why 4 × 1/6 is not a probability</span>
+                  <span class="pb-note">Multiplying a probability by the number of trials is not one of the rules. Follow it to six rolls and it returns 6 × 1/6 = 1, certainty, though six rolls plainly can miss; follow it to seven and it returns more than 1. The reasoning is the addition rule applied to events that are not disjoint, since two of the four rolls can both show a 6.</span>
+                  <span class="pb-math">P(no 6 in four rolls) = (5/6)⁴ = 625/1296 = .4823</span>
+                  <span class="pb-math">P(at least one 6) = 1 − 625/1296 = 671/1296 = .5177</span>
+                  <span class="pb-note">"At least one" is the signal to work with the complement: one multiplication and one subtraction, instead of adding up four overlapping cases.</span>
+                </li>
+                <li><span class="pb-lbl">The second bet</span>
+                  <span class="pb-math">P(no double 6 on one roll of two dice) = 35/36</span>
+                  <span class="pb-math">P(no double 6 in 24 rolls) = (35/36)²⁴ = .5086</span>
+                  <span class="pb-math">P(at least one double 6) = 1 − .5086 = .4914</span>
+                  <span class="pb-note">Just under a half, where the first bet was just over. De Méré lost slowly on one and won slowly on the other, and the two probabilities differ by less than three points, which is why it took him a long run of evenings to notice.</span>
+                </li>
+                <li><span class="pb-lbl">How many rolls he needed</span>
+                  <span class="pb-math">Want (35/36)ⁿ &lt; .5, so n &gt; ln(.5) / ln(35/36) = 24.6</span>
+                  <span class="pb-math">n = 25: 1 − (35/36)²⁵ = .5055</span>
+                  <span class="pb-note">One more roll turns the bet from a slow loss into a slow win. His mistake was a proportional one: four rolls of one die out of six faces felt like it should scale to 24 rolls of two dice out of 36 pairs, and that scaling is not what the complement rule does.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">P(A) = 6/36, P(B) = 11/36, P(A and B) = 2/36, P(A or B) = 15/36 = .4167. The first bet pays .5177, not 2/3. The second pays .4914, and would have needed 25 rolls to clear a half.</p>
+              <p class="pb-round">Rounding: probabilities to 4 dp. The two exact fractions are 671/1296 and 1 − (35/36)²⁴.</p>
+              <p class="pb-ref">From <a href="stats-1/probability-basics/">§1.7 Probability Basics</a> · all 36 outcomes are laid out in the <a href="distributions.html#dice-lab">dice lab</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- Problem 23 ----------
+               verify: node -e 'console.log(4/12*3/11, 8/12*7/11, 1-8/12*7/11, (1/3)*(3/11)+(2/3)*(4/11),
+                        (1/3)**2, 1-(2/3)**2, 2*(1/3)*(2/3))'
+                       → 1/11 = .090909 ; 14/33 = .424242 ; 19/33 = .575758 ; P(2nd flat) = 1/3
+                         with replacement: 1/9 = .111111 ; 5/9 = .555556 ; mixed 4/9 = .444444
+                       leaf counts out of 132: 12, 32, 32, 56 (sum 132)
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p6-5"><span class="pb-num">23</span>Two batteries out of the drawer</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A drawer holds 12 identical-looking AA batteries. Four of them are flat and eight still work. Two are taken out at random, one after the other, and the first is not put back.</p>
+            <div class="pb-given">
+              <span class="lbl">The drawer</span>
+              12 batteries · 4 flat, 8 good · two drawn without replacement
+            </div>
+            <ol class="pb-ask">
+              <li>Draw the probability tree and give P(both flat), P(neither flat) and P(at least one flat).</li>
+              <li>What is P(the second is flat, given the first was flat)? What is P(the second is flat) if you know nothing about the first?</li>
+              <li>Are the two draws independent? Say how you can tell before doing any arithmetic.</li>
+              <li>Redo part 1 with the first battery put back. Which answers move, and which way?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The tree, with the second layer conditioned on the first</span>
+                  <span class="pb-math">Flat then flat: (4/12)(3/11) = 12/132 = 1/11 = .0909</span>
+                  <span class="pb-math">Flat then good: (4/12)(8/11) = 32/132</span>
+                  <span class="pb-math">Good then flat: (8/12)(4/11) = 32/132</span>
+                  <span class="pb-math">Good then good: (8/12)(7/11) = 56/132 = 14/33 = .4242</span>
+                  <span class="pb-note">The four leaves come to 12 + 32 + 32 + 56 = 132 out of 132, which is the check worth doing before going any further.</span>
+                  <span class="pb-math">P(at least one flat) = 1 − 14/33 = 19/33 = .5758</span>
+                </li>
+                <li><span class="pb-lbl">Two probabilities that look alike and are not</span>
+                  <span class="pb-math">P(2nd flat | 1st flat) = 3/11 = .2727</span>
+                  <span class="pb-math">P(2nd flat) = 12/132 + 32/132 = 44/132 = 1/3 = .3333</span>
+                  <span class="pb-note">The unconditional answer is 1/3, exactly what the first draw was. Before you look at the first battery, the second one is just as likely to be flat as the first; once you have seen the first come out flat, the drawer holds one fewer flat battery and the odds shorten.</span>
+                </li>
+                <li><span class="pb-lbl">Independence, by inspection</span>
+                  <span class="pb-note">Not independent. Taking a battery out changes what is left, so the second draw runs on a different drawer depending on how the first went. You can say that without arithmetic: sampling without replacement from a finite pile is dependent by construction. The numbers confirm it, since .2727 is not .3333.</span>
+                </li>
+                <li><span class="pb-lbl">With replacement</span>
+                  <span class="pb-math">P(both flat) = (1/3)² = 1/9 = .1111</span>
+                  <span class="pb-math">P(neither flat) = (2/3)² = 4/9 = .4444</span>
+                  <span class="pb-math">P(at least one flat) = 1 − 4/9 = 5/9 = .5556</span>
+                  <span class="pb-note">Both matching outcomes get more likely and the mixed outcome gets less likely, because replacing removes the pull back toward balance: without replacement, drawing a flat one leaves the drawer richer in good ones. Every second-layer branch becomes 4/12 or 8/12 again, which is what independence means here.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Without replacement: P(both flat) = 1/11 = .0909, P(neither) = 14/33 = .4242, P(at least one flat) = 19/33 = .5758. P(2nd flat | 1st flat) = 3/11 against an unconditional 1/3, so the draws are dependent. With replacement the three become 1/9, 4/9 and 5/9.</p>
+              <p class="pb-round">Rounding: probabilities to 4 dp; every value here is an exact fraction.</p>
+              <p class="pb-ref">From <a href="stats-1/probability-basics/">§1.7 Probability Basics</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- Problem 24 ----------
+               verify: node -e 'function C(n,k){let r=1;for(let i=1;i<=k;i++)r=r*(n-i+1)/i;return Math.round(r)}
+                        let t=0;for(let k=0;k<=8;k++){const p=C(8,k)*0.25**k*0.75**(8-k);
+                        console.log(k,C(8,k),p.toFixed(7));t+=p}console.log("sum",t,
+                        Math.sqrt(8*.25*.75))'
+                       → C(8,3) = 56 ; P(X=3) = .2076416 ; P(X=0) = .1001129 ; P(X=1) = .2669678
+                         P(X≤1) = .3670807 ; P(X≥5) = .0230713+.0038452+.0003662+.0000153 = .0272980
+                         μ = 2, σ = √1.5 = 1.224745 ; (5 − 2)/1.224745 = 2.449
+                         exact fractions: P(X=3) = 13608/65536, P(X=0) = 6561/65536
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p6-6"><span class="pb-num">24</span>Eight questions, four options, no revision</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A short class test has 8 multiple-choice questions with 4 options each and exactly one right answer per question. A student who has done no revision at all answers every question by guessing. Let X be the number correct. The pass mark is 5.</p>
+            <div class="pb-given">
+              <span class="lbl">The guessing student</span>
+              8 questions · 4 options each · X = number correct · pass mark 5 of 8
+            </div>
+            <ol class="pb-ask">
+              <li>Check the binomial conditions and name the distribution of X.</li>
+              <li>Work out C(8, 3) by hand and use it for P(X = 3).</li>
+              <li>Compute P(X ≤ 1).</li>
+              <li>Give the mean and standard deviation of X.</li>
+              <li>What is the probability of passing by guessing?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The four conditions</span>
+                  <span class="pb-note">A fixed number of trials, <em>n</em> = 8. Two outcomes per trial, right or wrong. The guesses are independent, since one answer tells the student nothing about the next. And the success probability is the same each time, <em>p</em> = 1/4, because every question has four options. All four hold.</span>
+                  <span class="pb-math">X ~ B(n = 8, p = 0.25)</span>
+                </li>
+                <li><span class="pb-lbl">C(8, 3), then the probability</span>
+                  <span class="pb-math">C(8,3) = 8! / (3! 5!) = (8 × 7 × 6) / (3 × 2 × 1) = 336 / 6 = 56</span>
+                  <span class="pb-math">P(X = 3) = 56 × (0.25)³ × (0.75)⁵</span>
+                  <span class="pb-math">= 56 × 0.015625 × 0.2373047 = .2076</span>
+                  <span class="pb-note">Cancel before multiplying: 8 × 7 × 6 over 3 × 2 × 1 is three factors on top and three underneath, never the full 40,320. The three pieces are the number of ways to choose which questions come out right, the probability of getting those three right, and the probability of getting the other five wrong.</span>
+                </li>
+                <li><span class="pb-lbl">P(X ≤ 1) is two terms</span>
+                  <span class="pb-math">P(X = 0) = (0.75)⁸ = .1001</span>
+                  <span class="pb-math">P(X = 1) = 8 × (0.25) × (0.75)⁷ = 8 × 0.25 × 0.1334839 = .2670</span>
+                  <span class="pb-math">P(X ≤ 1) = .1001 + .2670 = .3671</span>
+                  <span class="pb-note">C(8,0) = 1 and C(8,1) = 8, so neither term needs the formula written out.</span>
+                </li>
+                <li><span class="pb-lbl">Center and spread</span>
+                  <span class="pb-math">μ = np = 8 × 0.25 = 2</span>
+                  <span class="pb-math">σ = √(np(1 − p)) = √(8 × 0.25 × 0.75) = √1.5 = 1.2247</span>
+                </li>
+                <li><span class="pb-lbl">Passing by guessing</span>
+                  <span class="pb-math">P(X ≥ 5) = .0230713 + .0038452 + .0003662 + .0000153 = .0273</span>
+                  <span class="pb-note">About 1 in 37. The pass mark of 5 sits (5 − 2)/1.2247 = 2.45 standard deviations above what guessing delivers on average, which is what a test designer is buying with four options rather than two: at two options the mean guess score would be 4 and half the room would pass on luck.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">X ~ B(8, 0.25). C(8,3) = 56 and P(X = 3) = .2076. P(X ≤ 1) = .3671. μ = 2 correct, σ = 1.2247. The chance of passing by guessing is .0273, about 1 in 37.</p>
+              <p class="pb-round">Rounding: probabilities to 4 dp. The exact values are 13608/65536 for P(X = 3) and 6561/65536 for P(X = 0), and σ = √1.5 exactly.</p>
+              <p class="pb-ref">From <a href="stats-1/binomial-distribution/">§1.8 The Binomial Distribution</a> · see the whole distribution at <a href="stats-1/binomial-distribution/?n=8&amp;p=0.25&amp;k=3">n = 8, p = .25</a>, and its shape beside the others in the <a href="distributions.html">distribution playground</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- Problem 25 ----------
+               verify: node -e with VIZ in a vm context —
+                 z = (244 − 250)/15 = −0.40 → normCdf = .344578 → Table A .3446
+                 n = 9  → SE = 5   → z = −1.20 → normCdf = .115070 → .1151
+                 n = 36 → SE = 2.5 → z = −2.40 → normCdf = .008198 → .0082
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p6-7"><span class="pb-num">25</span>One cup, then nine, then thirty-six</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A vending machine is set to pour 250 ml of coffee. The amount it actually pours varies normally, with a mean of 250 ml and a standard deviation of 15 ml. The campus office treats anything under 244 ml as a short pour.</p>
+            <div class="pb-given">
+              <span class="lbl">The machine</span>
+              Pour ~ N(μ = 250 ml, σ = 15 ml) · short pour means under 244 ml
+            </div>
+            <ol class="pb-ask">
+              <li>A student buys one cup. What is the probability it is short?</li>
+              <li>An inspector buys 9 cups and averages them. What is the probability that average is under 244 ml?</li>
+              <li>Repeat with 36 cups.</li>
+              <li>Put the three probabilities side by side and say in one sentence why they fall the way they do.</li>
+              <li>Which of the three answers needs the individual pours to be normally distributed, and which would survive a skewed machine?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">One cup: standardize the cup</span>
+                  <span class="pb-math">z = (244 − 250) / 15 = −0.40</span>
+                  <span class="pb-math">P = .3446</span>
+                  <span class="pb-note">The denominator is σ itself, because a single pour is what varies.</span>
+                </li>
+                <li><span class="pb-lbl">Nine cups: standardize the mean</span>
+                  <span class="pb-math">SE = σ/√n = 15/√9 = 5 ml</span>
+                  <span class="pb-math">z = (244 − 250) / 5 = −1.20</span>
+                  <span class="pb-math">P = .1151</span>
+                  <span class="pb-note">Same 6 ml shortfall, divided by a smaller denominator, so it counts as a bigger departure. Using σ = 15 here instead of SE = 5 is the classic error, and it returns the answer to part 1.</span>
+                </li>
+                <li><span class="pb-lbl">Thirty-six cups</span>
+                  <span class="pb-math">SE = 15/√36 = 2.5 ml</span>
+                  <span class="pb-math">z = −6 / 2.5 = −2.40</span>
+                  <span class="pb-math">P = .0082</span>
+                </li>
+                <li><span class="pb-lbl">Why .3446, .1151 and .0082</span>
+                  <span class="pb-note">Averaging cancels: one stingy cup is unremarkable, nine cups averaging 6 ml low means nine pours leaned the same way at once, and thirty-six doing it is close to evidence that the machine itself has drifted rather than that the day was unlucky. Quadrupling <em>n</em> halves the standard error, which is why the step from 9 to 36 costs more than the step from 1 to 9 bought.</span>
+                </li>
+                <li><span class="pb-lbl">Which answer leans on normality</span>
+                  <span class="pb-note">Part 1 is about a single observation, so it needs the pours themselves to be normal; there is no averaging to rescue it and no theorem that helps. Parts 2 and 3 are about a sample mean, where the central limit theorem does the work, but <em>n</em> = 9 is small enough to still lean on the population being roughly normal. At <em>n</em> = 36 the sampling distribution of the mean would be near normal even from a moderately skewed machine.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">.3446 for one cup, .1151 for the mean of 9, .0082 for the mean of 36. The shortfall is the same 6 ml every time; what shrinks is the standard error, from 15 to 5 to 2.5. Only the first answer depends on the individual pours being normal.</p>
+              <p class="pb-round">Rounding: areas to 4 dp as Table A carries them. All three z-scores land on exact two-decimal table rows.</p>
+              <p class="pb-ref">From <a href="stats-1/sampling-distributions/">§1.9 Sampling Distributions</a> and <a href="stats-1/central-limit-theorem/">§1.10 Central Limit Theorem</a> · the three areas are on the <a href="tables.html#printed-tables">printed Table A</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- Problem 26 ----------
+               verify: node -e with VIZ in a vm context —
+                 SE = 6/√36 = 1 ; z = (102.2 − 100)/1 = 2.20
+                 normCdf(2.20) = .986097 → upper tail .013903 → Table A .0139, two-sided p = .0278
+                 95%: 102.2 ± 1.96 → [100.24, 104.16]   (excludes 100)
+                 99%: 102.2 ± 2.576 → [99.624, 104.776] (includes 100)
+                 exact z*: normInv(.975) = 1.95996, normInv(.995) = 2.57583, moving each
+                 endpoint by under 0.01 Ω
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p6-8"><span class="pb-num">26</span>The interval and the test, on one delivery</h3>
+              <span class="pb-chip stretch">Stretch</span>
+            </div>
+            <p class="pb-scenario">A supplier certifies its resistors at a mean of 100 Ω, and the factory's long production records put the standard deviation at 6 Ω, treated as known. A buyer measures 36 resistors from one delivery and gets a mean of 102.2 Ω. The contract lets the buyer reject a delivery whose mean is off spec in either direction.</p>
+            <div class="pb-given">
+              <span class="lbl">One delivery</span>
+              Claimed μ₀ = 100 Ω · known σ = 6 Ω · n = 36 · x̄ = 102.2 Ω · two-sided
+            </div>
+            <ol class="pb-ask">
+              <li>Build the 95% confidence interval for this delivery's mean.</li>
+              <li>Run the two-sided z-test of H₀: μ = 100 at α = .05, taking the tail area from Table A.</li>
+              <li>The interval and the test have to agree. Show that they do, and say why they must.</li>
+              <li>Redo both at the 1% level. Do they still agree?</li>
+              <li>Name the error the buyer could be making after each of the two decisions, and what it would cost.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The 95% interval</span>
+                  <span class="pb-math">SE = σ/√n = 6/√36 = 1.0 Ω</span>
+                  <span class="pb-math">z* = 1.96, from the ∞ row of Table D</span>
+                  <span class="pb-math">margin = 1.96 × 1.0 = 1.96 Ω</span>
+                  <span class="pb-math">102.2 ± 1.96 → [100.24, 104.16]</span>
+                  <span class="pb-note">100 is not in that interval, which is already the answer to part 3 in disguise.</span>
+                </li>
+                <li><span class="pb-lbl">The test</span>
+                  <span class="pb-math">z = (x̄ − μ₀)/SE = (102.2 − 100)/1.0 = 2.20</span>
+                  <span class="pb-math">Table A at 2.20 gives .9861 below, so the upper tail is .0139</span>
+                  <span class="pb-math">Two-sided p = 2 × .0139 = .0278</span>
+                  <span class="pb-math">.0278 &lt; .05, so reject H₀</span>
+                  <span class="pb-note">Two-sided, because the contract lets the buyer complain about resistors that are too high or too low, and that decision was made by the contract rather than by looking at the 102.2.</span>
+                </li>
+                <li><span class="pb-lbl">Why they cannot disagree</span>
+                  <span class="pb-note">The 95% interval is precisely the set of claimed means that a two-sided test at α = .05 would not reject. Both are asking whether μ₀ sits more than 1.96 standard errors from x̄: the interval measures that distance outward from the sample mean, the test measures the same distance inward from the claim. Here 100 is 2.20 standard errors away, which is past 1.96, so 100 falls outside the interval and the test rejects it. One piece of arithmetic, read two ways.</span>
+                </li>
+                <li><span class="pb-lbl">The same delivery at the 1% level</span>
+                  <span class="pb-math">z* = 2.576 → 102.2 ± 2.576 → [99.62, 104.78]</span>
+                  <span class="pb-math">100 IS inside this interval</span>
+                  <span class="pb-math">p = .0278 &gt; .01, so fail to reject H₀</span>
+                  <span class="pb-note">They agree again, in the other direction. Demanding 99% confidence widens the interval until it swallows the claim, and demanding a 1% significance level raises the bar until the same evidence no longer clears it. Nothing about the resistors changed between those two lines.</span>
+                </li>
+                <li><span class="pb-lbl">Which error is live after each decision</span>
+                  <span class="pb-note">At α = .05 the buyer rejected, so the only error available is Type I: sending back a delivery that was on spec all along, and paying for a return and a delay over a batch that was fine. At α = .01 the buyer did not reject, so the live error is Type II: accepting a delivery whose mean really is about 2 Ω high, and building it into a product. Tightening α from .05 to .01 does not reduce the chance of being wrong; it trades one way of being wrong for the other, and which trade is right depends on which mistake costs more here.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">SE = 1.0 Ω. The 95% interval is [100.24, 104.16] and excludes 100; z = 2.20 with a two-sided p of .0278 rejects at α = .05. At the 1% level the interval [99.62, 104.78] contains 100 and the test fails to reject, because .0278 &gt; .01. Rejecting risks a Type I error, failing to reject risks a Type II.</p>
+              <p class="pb-round">Rounding: z* taken as 1.96 and 2.576, the values printed under Table D. The exact quantiles are 1.95996 and 2.57583, which shift each endpoint by under a hundredth of an ohm. The tail area .0139 is Table A's entry at z = 2.20.</p>
+              <p class="pb-ref">From <a href="stats-1/confidence-intervals/">§1.11 Confidence Intervals</a> and <a href="stats-1/hypothesis-testing-logic/">§1.12 Hypothesis Testing Logic</a> · build the interval in the <a href="stats-1/confidence-intervals/?xbar=102.2&amp;sigma=6&amp;n=36&amp;level=95">Interval Builder, prefilled</a>, then run the same numbers through the <a href="stats-1/hypothesis-testing-logic/?mu0=100&amp;sigma=6&amp;n=36&amp;xbar=102.2&amp;tail=two&amp;alpha=.05">test explorer, prefilled</a>.</p>
             </details>
           </article>
         </section>

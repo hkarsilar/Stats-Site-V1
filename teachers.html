@@ -91,11 +91,20 @@
 
         <h2>Problem sheets you can hand out</h2>
         <p>The <a href="problems.html">practice problems</a> page is the pencil-and-calculator half of the same idea: exam-style scenarios with numbers small enough to work by hand, each followed by a full solution that shows the formula, the substitution, the arithmetic and the reporting sentence. Every value in every step was verified before it shipped.</p>
-        <p>Two print buttons at the top of that page make it a ready-made handout. <strong>Print problems</strong> suppresses every solution, whatever a student has left open on screen, so you get a clean problem sheet. <strong>Print with solutions</strong> forces all of them open for a marking key. Problems are tagged warm-up, exam-level or stretch, so you can pull a seminar's worth from one course without reading all forty-three. The last set is different in kind: six studies, figures and results sentences with something wrong in them, and no arithmetic to do. They work well as a seminar discussion or a take-home critique exercise.</p>
+        <p>Two print buttons at the top of that page make it a ready-made handout. <strong>Print problems</strong> suppresses every solution, whatever a student has left open on screen, so you get a clean problem sheet. <strong>Print with solutions</strong> forces all of them open for a marking key. Problems are tagged warm-up, exam-level or stretch, so you can pull a seminar's worth from one course without reading all fifty-seven. The last set is different in kind: six studies, figures and results sentences with something wrong in them, and no arithmetic to do. They work well as a seminar discussion or a take-home critique exercise. The <a href="problems.html#exam-style">Exam-style set</a> is the other one worth knowing about: eight multi-part questions over §1.1 to §1.12, written to be worked with a calculator and the printed tables, which makes it a ready revision sheet for a midterm.</p>
 
         <h2>Revision: quiz, mock exams and flashcards</h2>
         <p>For review weeks, the <a href="quiz.html">quiz</a> runs two ways. Practice mode gives instant feedback one question at a time. Exam mode sets a mock paper over whichever courses you choose, at 10, 20 or 40 questions, then marks it at the end and hands back every miss with an explanation and a link to the course to revisit. There is an optional timer, and it counts up rather than down. The <a href="flashcards.html">glossary flashcards</a> run a spaced-repetition drill over every term the course defines. All of it is self-paced and, like everything else, keeps its state in the student's browser.</p>
         <p>The exam results screen prints cleanly, so a student can hand you a marked mock paper, or keep it as a revision list.</p>
+
+        <h3>Set a mock exam over the sections you have taught</h3>
+        <p>A midterm rarely covers a whole course, so exam scope is a course plus a span of its sections. Under each course in the scope picker sits a <em>from</em> and <em>to</em> pair, filled from that course's own section list, and narrowing it narrows the paper. Stats 1 and Stats 2 carry section tags on every question today; a course without them has no range control and comes in whole, which the line under the picker says out loud.</p>
+        <p>The same scope fits in a link, so you can post one URL and every student sits the same paper. It opens exam mode with the scope and the length already set, and leaves the Start button to them.</p>
+        <div class="try-code" style="margin:1rem 0">
+          <div class="tc-head"><span class="tc-title">A mock exam in a link</span><button class="tc-copy" id="exam-copy" type="button">Copy</button></div>
+          <pre id="exam-snippet">https://statscapybara.com/quiz.html?exam=stats-1&amp;from=1.1&amp;to=1.12&amp;n=20</pre>
+        </div>
+        <p><code>exam=</code> takes one course slug, several separated by commas, or <code>all</code>. <code>from=</code> and <code>to=</code> take section numbers and apply when the link names a single course; either can be given on its own, and reversed ends are read the sensible way round. <code>n=</code> is 10, 20 or 40. Anything unrecognized is ignored and the page opens on its ordinary start screen, so a typo in front of a class costs nothing.</p>
 
         <h2>Embed a live visualization</h2>
         <p>Any lesson can render as a bare interactive widget by adding <code>?embed=1</code> to its URL. That hides the navigation, sidebar, prose, and footer, leaving the eyebrow, the title, and the interactive itself with its controls. It is meant for an <code>&lt;iframe&gt;</code> in your slides, notes, or LMS page.</p>
@@ -268,7 +277,8 @@ https://statscapybara.com/stats-1/describing-data/?data=22,22,26,26,26,27,27,28.
   (function () {
     "use strict";
     /* the embed snippets and the data-URL snippet all copy identically */
-    [["embed-copy", "embed-snippet"], ["preset-copy", "preset-snippet"], ["data-copy", "data-snippet"]].forEach(function (pair) {
+    [["embed-copy", "embed-snippet"], ["preset-copy", "preset-snippet"], ["data-copy", "data-snippet"],
+     ["exam-copy", "exam-snippet"]].forEach(function (pair) {
       var btn = document.getElementById(pair[0]);
       var pre = document.getElementById(pair[1]);
       if (!btn || !pre) return;

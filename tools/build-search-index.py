@@ -37,10 +37,22 @@ MAX_CHARS = 20_000
 # indexes only the first ~10% of it. glossary.html: same reasoning — reaching
 # one specific term is the whole point of a glossary, and the old MAX_CHARS * 2
 # cap stopped at term 69 of 252 (source order), so most of the deck was
-# silently unsearchable. Both are cheap: full indexing costs ~40 KB and ~7 KB
-# on an index that is lazy-loaded only when the search overlay opens. The
-# headroom also covers P64's Stats 3-4 problem sets and future glossary growth.
-PAGE_MAX_CHARS = {"problems.html": 120_000, "glossary.html": 120_000}
+# silently unsearchable. Both are cheap on an index that is lazy-loaded only
+# when the search overlay opens.
+#
+# problems.html went from 120,000 to 300,000 in P86, because the 120,000 was
+# no longer headroom: the page had reached 133,255 characters and was ALREADY
+# losing 10% of itself before P86 touched it (P79 and P82 added six problems),
+# and P86's eight more took it to 157,018 and a 24% loss. Everything past the
+# middle of the Advanced set, the whole Research Toolkit set included, was
+# unfindable by the site's own search. Found the way runs 13, 20 and 24 were
+# found: by searching the rebuilt index for text the page plainly contains.
+# 300,000 indexes it whole with room for roughly another page's worth, and
+# costs ~37 KB, about 3%, on a 1,120 KB index. Per run 20's lesson this is a
+# runaway guard, not a budget, and a guard that a growing page keeps catching
+# up with was set too tight. glossary.html was re-measured in the same pass
+# and sits at 66,910, comfortably inside its own cap, so it is left alone.
+PAGE_MAX_CHARS = {"problems.html": 300_000, "glossary.html": 120_000}
 
 # Lessons get their own, much larger cap (P39 run 13). The 4,500-char default
 # was truncating 87 of the 97 lessons, dropping 27% of the site's lesson prose
