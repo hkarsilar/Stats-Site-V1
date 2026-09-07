@@ -175,18 +175,22 @@ window.SOFTWARE = {
       'One-sample: move your variable into <em>Test Variable(s)</em> and type the comparison value into <em>Test Value</em>.',
       'Paired: click the two variables (e.g. <em>before</em>, <em>after</em>) so they appear as one pair.',
       'In current SPSS versions, tick <em>Estimate effect sizes</em> to get Cohen’s d in the output.',
-      'Read the <em>Sig. (2-tailed)</em> column for p, and the <em>95% Confidence Interval of the Difference</em> for the CI.'
+      'Read the <em>Sig. (2-tailed)</em> column for p, and the <em>95% Confidence Interval of the Difference</em> for the CI.',
+      'Careful with that interval: One-Sample T Test brackets the difference from your test value, not the mean itself. Add the test value back to both limits to get the interval on the mean, or take it straight from <strong>Analyze → Descriptive Statistics → Explore</strong>, which prints the mean with its own 95% interval.',
+      'Change the confidence level in <em>Options…</em> if you want 90% or 99% rather than the 95% default.'
     ],
     jasp: [
       '<strong>T-Tests → One Sample T-Test</strong> (or <strong>Paired Samples T-Test</strong>).',
       'Drag the variable(s) across; for one-sample, set <em>Test value</em>.',
       'Tick <em>Effect size</em> (Cohen’s d), <em>Confidence interval</em>, and <em>Descriptives</em>.',
+      'The <em>Descriptives</em> table carries the interval on the mean; the <em>Confidence interval</em> box under Tests carries the one on the difference from the test value. They differ by exactly the test value.',
       'Optional but great for teaching: tick <em>Descriptives plots</em> to get a means-with-CI figure.'
     ],
     apa: '<p>Participants scored higher (<em>M</em> = 105.3, <em>SD</em> = 9.6) than the population norm of 100, <em>t</em>(24) = 2.76, <em>p</em> = .011, <em>d</em> = 0.55, 95% CI of the difference [1.3, 9.3]. In the paired design, reaction times were faster after training (<em>M</em> = 412 ms, <em>SD</em> = 38) than before (<em>M</em> = 435 ms, <em>SD</em> = 41), <em>t</em>(29) = 3.21, <em>p</em> = .003, <em>d</em> = 0.59.</p>',
     tips: [
       'Italicize the Latin statistical symbols: <em>t</em>, <em>p</em>, <em>d</em>, <em>M</em>, <em>SD</em>. Degrees of freedom go in parentheses right after <em>t</em>.',
-      'Give means and SDs (or the CI of the difference) so the reader sees the direction and size, not just significance. No leading zero for <em>p</em> (it can’t exceed 1): write <em>p</em> = .011, not 0.011.'
+      'Give means and SDs (or the CI of the difference) so the reader sees the direction and size, not just significance. No leading zero for <em>p</em> (it can’t exceed 1): write <em>p</em> = .011, not 0.011.',
+      'On paper you build the same interval by hand as x̄ ± t*·s/√n, reading t* off the printed Table D at df = n − 1. Software and Table D agree to the table’s rounding, so the two answers should match to about three decimals.'
     ]
   },
   "independent-samples-t-test": {
@@ -194,7 +198,7 @@ window.SOFTWARE = {
       '<strong>Analyze → Compare Means → Independent-Samples T Test…</strong> (in SPSS 29+ the submenu is named <em>Compare Means and Proportions</em>).',
       'Move the outcome into <em>Test Variable(s)</em> and the group variable into <em>Grouping Variable</em>; click <em>Define Groups…</em> and enter the two codes.',
       'Tick <em>Estimate effect sizes</em> for Cohen’s d. <strong>In SPSS 31+ also tick the homogeneity-of-variance option</strong> in the same dialog: Levene’s test used to print automatically and is now opt-in.',
-      'Output shows two rows: check Levene’s test first. If it’s significant (unequal variances), read the <em>Equal variances not assumed</em> (Welch) row. Many statisticians recommend simply always using that row.',
+      'Output shows two rows, and they are two degrees-of-freedom conventions rather than two tests: <em>Equal variances assumed</em> is the pooled t with df = n₁ + n₂ − 2, and <em>Equal variances not assumed</em> is Welch, with a fractional df of its own. Check Levene’s test first; if it is significant, read the Welch row. Many statisticians recommend simply always reading that row.',
       'Scroll right in that same table for <em>Mean Difference</em> and the <em>95% Confidence Interval of the Difference</em>. That interval is the one APA asks you to report beside the effect size.'
     ],
     jasp: [
@@ -206,6 +210,7 @@ window.SOFTWARE = {
     apa: '<p>The treatment group (<em>M</em> = 34.1, <em>SD</em> = 8.2, <em>n</em> = 30) outperformed the control group (<em>M</em> = 29.4, <em>SD</em> = 7.6, <em>n</em> = 30), Welch’s <em>t</em>(57.7) = 2.30, <em>p</em> = .025, <em>d</em> = 0.59, 95% CI of the difference [0.6, 8.8].</p>',
     tips: [
       'Welch’s df is usually fractional (57.7) — report it as the software gives it; that’s the signal you used the robust version.',
+      'The conservative df an exam asks for, min(n₁ − 1, n₂ − 1), appears on neither row, so a hand answer and an SPSS answer will not match. Both are right. The hand rule deliberately uses fewer degrees of freedom, so its p is a little larger and its interval a little wider than either printed row.',
       'Report both group <em>M</em>s and <em>SD</em>s, the test, <em>p</em>, and an effect size with its CI. Significance alone is never enough.'
     ]
   },

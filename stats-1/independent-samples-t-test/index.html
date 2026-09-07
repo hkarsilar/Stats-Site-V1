@@ -54,6 +54,9 @@
         <p>The logic is a ratio. On top, the <strong>signal</strong>: how far apart the two sample means are. On the bottom, the <strong>noise</strong>: how much the scores bounce around <em>within</em> each group, adjusted for sample size. That ratio is the t-statistic:</p>
         <p style="text-align:center;font-size:1.15rem;margin:1.25rem 0"><strong>t = (x̄₁ − x̄₂) / (standard error of the difference)</strong></p>
         <p>A big t, a clear signal sticking out of the noise, means the groups probably really differ. A small t means the gap could easily be chance. Crucially, the same mean difference can be convincing or meaningless depending on the noise and the sample size. The playground makes that tug-of-war visible.</p>
+        <p>Written out, that standard error is assembled from each group's own spread and its own sample size:</p>
+        <p style="text-align:center;font-size:1.15rem;margin:1.25rem 0"><strong>SE = √( s₁²/n₁ + s₂²/n₂ )</strong></p>
+        <p>Each group hands over its variance divided by its sample size, the two contributions add, and the square root is taken at the end. What never happens is adding the two standard errors themselves. That distinction looks like bookkeeping and it is the source of the most common mistake in this chapter, which the second interactive on this page is built around.</p>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="itviz">
@@ -73,6 +76,14 @@
               <label>Sample size per group <span class="val" id="n-val">n = 20</span></label>
               <input type="range" id="n-range" min="5" max="80" step="1" value="20" style="width:100%" />
             </div>
+            <div class="control">
+              <label>Degrees of freedom</label>
+              <div class="seg" id="df-seg">
+                <button data-df="cons">Conservative</button>
+                <button data-df="welch">Welch</button>
+                <button data-df="pool" class="active">Pooled</button>
+              </div>
+            </div>
             <div class="control"><button class="btn btn-primary btn-sm" id="resample">New samples</button></div>
           </div>
 
@@ -81,9 +92,13 @@
           <div class="stat-row">
             <div class="stat"><span class="k">Observed mean difference</span><span class="v" id="stat-diff">—</span></div>
             <div class="stat"><span class="k">t-statistic</span><span class="v" id="stat-t">—</span></div>
+            <div class="stat"><span class="k">Degrees of freedom</span><span class="v" id="stat-df">—</span></div>
+            <div class="stat"><span class="k">Critical t* (two-tailed, .05)</span><span class="v" id="stat-crit">—</span></div>
             <div class="stat"><span class="k">p-value</span><span class="v" id="stat-p">—</span></div>
             <div class="stat"><span class="k">Decision (α = .05)</span><span class="v" id="stat-dec" style="font-size:1rem">—</span></div>
           </div>
+
+          <p class="viz-sub" id="it-work" style="margin-top:.7rem"></p>
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
@@ -95,6 +110,68 @@
         </ul>
         <p>Try this: set a gap of 8 with high noise and small n: likely not significant. Now slide n up. The means barely move, but the p-value tumbles past 0.05. Same effect, more evidence. This is exactly why sample size and <a href="../../stats-3/effect-size-and-power/">power</a> matter so much.</p>
 
+
+        <h2 id="three-dfs">Three degrees of freedom for one test</h2>
+        <p>The standard error is settled by the formula above. What is not settled is which t-distribution to hold the answer against, and there are three defensible replies. They are not three tests; they are three ways of deciding how much the estimate of the noise should be trusted.</p>
+        <ul>
+          <li><strong>The conservative hand rule</strong> takes df = min(n₁ − 1, n₂ − 1). It is the smaller group's degrees of freedom, which is deliberately pessimistic, and it is the rule an exam expects because you can write it down without a calculator.</li>
+          <li><strong>Welch–Satterthwaite</strong> works the two variances and two sample sizes into a fractional df that usually lands well above the conservative one. Statistics software computes it for you, and the reasoning behind it belongs with the <a href="../../stats-2/one-way-anova/">Welch's ANOVA</a> section that generalizes it, so it is not repeated here.</li>
+          <li><strong>The pooled rule</strong> takes df = n₁ + n₂ − 2, which is the largest of the three, and it comes with a condition: the two populations must share one variance, so that both samples can be combined into a single estimate of it. Then the standard error is rebuilt from that pooled estimate as well.</li>
+        </ul>
+        <p>Numbers make the differences concrete. Ten students taught one way average 78.0 with s = 9.0; sixteen taught another way average 70.0 with s = 7.0. The unpooled standard error is √(81/10 + 49/16) = √11.163 = 3.341, so t = 8.0/3.341 = 2.394.</p>
+        <table class="ref-table">
+          <thead>
+            <tr><th>Rule for <em>df</em></th><th><em>df</em> here</th><th>Critical <em>t</em>*</th><th><em>t</em></th><th><em>p</em></th><th>95% CI for the difference</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Conservative, min(n₁ − 1, n₂ − 1)</td><td>9</td><td>2.262</td><td>2.394</td><td>.040</td><td>[0.44, 15.56]</td></tr>
+            <tr><td>Welch–Satterthwaite</td><td>15.74</td><td>2.123</td><td>2.394</td><td>.030</td><td>[0.91, 15.09]</td></tr>
+            <tr><td>Pooled, n₁ + n₂ − 2</td><td>24</td><td>2.064</td><td>2.541</td><td>.018</td><td>[1.50, 14.50]</td></tr>
+          </tbody>
+        </table>
+        <p>The first two rows share a standard error and a t, and differ only in the curve those numbers are read against. The third row changes the statistic too, because pooling rebuilds the standard error from one combined variance: s<sub>p</sub> = 7.810 gives SE = 3.148 and t = 2.541.</p>
+        <p>Read down the p column and the pattern is the whole argument for the hand rule. Fewer degrees of freedom mean fatter tails, a larger critical value, a wider interval and a larger p-value, so the conservative rule can only ever make you more cautious than the software would be. If your test clears α with df = 9, it clears it with df = 15.74 as well. An exam therefore accepts the conservative answer without qualification: it cannot manufacture a significant result, only forgo one. Report the software's df when you have software, and expect it not to match the number you would have written by hand.</p>
+
+        <h2 id="two-sample-ci">The interval for the difference</h2>
+        <p>Everything above also builds an interval, and it is the same move the <a href="../../stats-1/one-sample-and-paired-t-tests/#one-sample-ci">one-sample interval</a> made: keep the estimate, keep the standard error, and put the critical value on the other side.</p>
+        <p style="text-align:center;font-size:1.15rem;margin:1.25rem 0"><strong>(x̄₁ − x̄₂)&nbsp;±&nbsp;t*&nbsp;·&nbsp;SE</strong></p>
+        <p>The estimate being bracketed is the <em>difference</em>, so a zero inside the interval says the data are compatible with no difference at all, which is the same message a non-significant test sends. In the worked numbers above, the conservative interval [0.44, 15.56] misses zero by a little and the pooled interval [1.50, 14.50] misses it by more, which is the p column saying the same thing in other units. The width is worth as much as the verdict: an interval running from half a point to fifteen and a half is not evidence of a big effect, it is evidence that the study was too small to say how big the effect is.</p>
+        <p>One rung below all of this sits a test you will meet only in a textbook. If σ₁ and σ₂ were both known, nothing would be estimated in the denominator, the SE would be √(σ₁²/n₁ + σ₂²/n₂) exactly, the critical value would come off the normal curve, and the whole df question would disappear; that is the <a href="../../stats-1/confidence-intervals/#z-interval">two-sample z</a>, and real data almost never hands you the two σ values it needs.</p>
+
+        <h2 id="overlap">Two intervals that overlap, one difference that does not</h2>
+        <p>Journal figures often show each group's mean with its own 95% interval, and readers pick up a shortcut from them: if the bars overlap, the groups do not differ. The shortcut is wrong often enough to matter, and it is wrong for a reason that follows directly from how the standard error of a difference is built.</p>
+
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="ovviz">
+          <p class="viz-title">🎮 Overlapping Intervals, Different Means</p>
+          <p class="viz-sub">Twenty people per group, each group's own 95% interval drawn around its mean, and underneath them the interval for the difference between the two. Slide the groups apart and watch the moment the bottom interval clears zero, which is not the moment the two top intervals stop touching.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:min(260px,100%)">
+              <label>Gap between the group means <span class="val" id="ov-gapval">8</span></label>
+              <input type="range" id="ov-gap" min="0" max="16" step="1" value="8" style="width:100%" />
+            </div>
+          </div>
+
+          <canvas id="ov-canvas" style="--viz-ar: 5 / 3"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Group 1, 95% CI</span><span class="v" id="ov-ci1">—</span></div>
+            <div class="stat"><span class="k">Group 2, 95% CI</span><span class="v" id="ov-ci2">—</span></div>
+            <div class="stat"><span class="k">Do they overlap?</span><span class="v" id="ov-lap" style="font-size:1rem">—</span></div>
+            <div class="stat"><span class="k">Two-sample p</span><span class="v" id="ov-p">—</span></div>
+            <div class="stat"><span class="k">95% CI for the difference</span><span class="v" id="ov-cid">—</span></div>
+          </div>
+
+          <p class="viz-sub" id="ov-work" style="margin-top:.7rem"></p>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>At the default gap of 8 points the two intervals overlap by 3.23 points, and a reader applying the shortcut would stop there. The test does not: <em>t</em>(38) = 2.11, <em>p</em> = .042, and the interval for the difference runs [0.32, 15.68], nowhere near zero. Both pictures are drawn from the same twenty-plus-twenty numbers, so one of them is being read wrongly, and it is the top one.</p>
+        <p>The arithmetic says why. Each group's margin here is 2.093 × 2.683 = 5.62, so laid end to end the two margins span 11.23 points, and the bars keep touching until the means are that far apart. The margin on the difference is 2.024 × 3.795 = 7.68, and 3.795 is not 2.683 + 2.683. Standard errors combine in quadrature, as √(SE₁² + SE₂²), because the two errors are independent: about as often as one group's mean runs high while the other runs low and the gap is exaggerated, both run the same way together and the gap is barely touched. Adding the two outright would be right only if every high in one group came paired with a low in the other, which is the one pattern independence rules out.</p>
+        <p>The asymmetry is worth remembering in the form an exam can use. Intervals that do <em>not</em> overlap do mean a significant difference, at least whenever the two groups are of comparable size and spread, which covers the figure above and nearly every one you will meet. Intervals that do overlap mean nothing on their own, and the range where they overlap while the test rejects is wide: on these numbers it runs from a gap of 7.7 points to a gap of 11.2. So if a figure hands you per-group intervals and no test, and the bars touch, the honest reading is that you cannot tell.</p>
+
         <div class="callout key">
           <p><strong>Report the effect size too.</strong> A significant t with a huge sample might reflect a difference too small to care about. Always pair the p-value with <a href="../../stats-3/effect-size-and-power/">Cohen's d</a> (the gap measured in standard deviations) to judge whether the difference actually matters.</p>
         </div>
@@ -105,6 +182,9 @@
           <li>Each group is roughly normal, or both samples are large enough for the <a href="../../stats-1/central-limit-theorem/">CLT</a>. When neither is true, the <a href="../../stats-2/non-parametric-alternatives/">Mann-Whitney test</a> asks a closely related question without needing normality at all.</li>
           <li>Similar spread in both groups. If not, the <strong>Welch</strong> version of the test relaxes that requirement.</li>
         </ul>
+        <div class="callout key">
+          <p><strong>Two rules for planning a two-group study.</strong> Make the groups the same size whenever the design allows it. Equal n buys the most precision for a fixed total number of participants, and it also makes the test far less sensitive to unequal spreads, which is the pairing that does real damage. Then aim for a combined n₁ + n₂ of at least 40 if the data are likely to be badly skewed, at least 15 in total if both distributions look roughly symmetric, and anything from about 5 per group upward if they look close to normal with no outliers. These bands are the two-sample version of the <a href="../../stats-1/one-sample-and-paired-t-tests/">robustness rule of thumb</a>, and they are more forgiving than the one-sample bands because averaging over two groups smooths two skews instead of one.</p>
+        </div>
 
         <div class="callout">
           <p><strong>Why it matters:</strong> comparing two group means is one of the most common tasks in all of research. When you have <em>more</em> than two groups, the move is not a pile of t-tests but a step up to <a href="../../stats-2/one-way-anova/">ANOVA</a>, which is where Stats 2 begins. And when it's time to run this test on real thesis data, the guide <a href="../../guides/analyze-thesis-data-jasp/">Analyze Your Thesis Data in JASP</a> walks this exact analysis from CSV import to APA sentence.</p>
@@ -112,7 +192,7 @@
 
         <p class="pb-xref">The same test on real data: <a href="../../datasets.html#sleep">sleep-experiment.csv</a> gives 80 volunteers split across a normal and a restricted night, with <em>t</em>, <em>p</em> and <em>d</em> worked out for you to check against.</p>
 
-        <p class="pb-xref"><a href="../../problems.html#p1-12">Problem 12 of the practice problems</a> runs this test on twenty-four children, then asks you to judge the researcher who read a non-significant result as proof the two methods work equally well.</p>
+        <p class="pb-xref">Two practice problems run on this lesson: <a href="../../problems.html#p1-12">Problem 12</a> runs the test on twenty-four children, then asks you to judge the researcher who read a non-significant result as proof the two methods work equally well, and <a href="../../problems.html#p1-20">Problem 20</a> works the same test twice, once at the conservative degrees of freedom and once at the Welch ones.</p>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
@@ -147,10 +227,20 @@
   <script src="../../assets/js/viz.js"></script>
 
   <!-- ============ two-sample t-test visualization ============ -->
+  <!-- URL presets (SC.preset, applied last):
+         ?gap=  distance between the group means, 0 to 25   e.g. ?gap=8
+         ?sd=   within-group noise, 3 to 25                 e.g. ?sd=10
+         ?n=    sample size per group, 5 to 80              e.g. ?n=20
+         ?df=   cons | welch | pool                         e.g. ?df=cons
+       A preset moves the controls; it never reseeds, so the frozen dots stay
+       the same dots. The groups here are always the same size, so all three
+       df rules share one standard error and one t, and only the curve the
+       p-value is read from changes.
+  -->
   <script>
   (function () {
     "use strict";
-    var gap = 8, sd = 10, n = 20, A = [], B = [];
+    var gap = 8, sd = 10, n = 20, dfMode = "pool", A = [], B = [];
     var LO = 20, HI = 80, BASE = 50;
     var canvas = document.getElementById("it-canvas"), ctx, W = 0, H = 190;
 
@@ -171,13 +261,16 @@
     }
     function resample() { seed(); rebuild(); }
 
-    // numeric two-tailed p-value from the t-distribution
-    function pValue(t, dfv) {
-      t = Math.abs(t);
-      function pdfUn(x) { return Math.pow(1 + x * x / dfv, -(dfv + 1) / 2); }
-      var half = 0, tail = 0, step = 0.005;
-      for (var x = step / 2; x < 16; x += step) { var f = pdfUn(x) * step; half += f; if (x >= t) tail += f; }
-      return Math.min(1, tail / half);
+    /* Three df conventions over one standard error. With equal group sizes the
+       pooled SE and the unpooled SE are algebraically the same number, so the
+       statistic never moves and only the reference curve does. */
+    var DF_LABEL = { cons: "conservative min(n₁ − 1, n₂ − 1)", welch: "Welch–Satterthwaite", pool: "pooled n₁ + n₂ − 2" };
+    var DF_SHORT = { cons: "the conservative rule", welch: "Welch–Satterthwaite", pool: "the pooled rule" };
+    function dfFor(mode, s1, s2) {
+      var v1 = s1 * s1 / n, v2 = s2 * s2 / n;
+      if (mode === "cons") return n - 1;
+      if (mode === "pool") return 2 * n - 2;
+      return Math.pow(v1 + v2, 2) / (v1 * v1 / (n - 1) + v2 * v2 / (n - 1));
     }
 
     function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
@@ -203,18 +296,30 @@
     function update() {
       var m1 = VIZ.mean(A), m2 = VIZ.mean(B);
       var s1 = VIZ.sd(A) * Math.sqrt(n / (n - 1)), s2 = VIZ.sd(B) * Math.sqrt(n / (n - 1)); // sample SD
-      var sp = Math.sqrt(((n - 1) * s1 * s1 + (n - 1) * s2 * s2) / (2 * n - 2));
-      var se = sp * Math.sqrt(2 / n), tval = (m2 - m1) / se, dfv = 2 * n - 2;
-      var p = pValue(tval, dfv), reject = p < 0.05;
+      var se = Math.sqrt(s1 * s1 / n + s2 * s2 / n), tval = (m2 - m1) / se;
+      var dfv = dfFor(dfMode, s1, s2), crit = VIZ.tInv(0.025, dfv);
+      var p = 2 * VIZ.tUpper(Math.abs(tval), dfv), reject = p < 0.05;
       document.getElementById("gap-val").textContent = gap;
       document.getElementById("sd-val").textContent = sd;
       document.getElementById("n-val").textContent = "n = " + n;
       document.getElementById("stat-diff").textContent = (m2 - m1).toFixed(1);
       document.getElementById("stat-t").textContent = tval.toFixed(2);
+      document.getElementById("stat-df").textContent = dfv % 1 === 0 ? String(dfv) : dfv.toFixed(2);
+      document.getElementById("stat-crit").textContent = "±" + crit.toFixed(3);
       document.getElementById("stat-p").textContent = p < 0.001 ? "< 0.001" : p.toFixed(3);
       var dec = document.getElementById("stat-dec");
       dec.textContent = reject ? "Significant difference" : "Not significant";
       dec.style.color = reject ? "#22c55e" : VIZ.css("--text");
+      var others = ["cons", "welch", "pool"].filter(function (m) { return m !== dfMode; });
+      var txt = "Reading t = " + tval.toFixed(2) + " against the " + DF_LABEL[dfMode] + " rule: df = " +
+                (dfv % 1 === 0 ? dfv : dfv.toFixed(2)) + ", so p = " + (p < 0.001 ? "< .001" : p.toFixed(3).replace(/^0/, "")) + ". ";
+      txt += "The other two leave the statistic alone and change only the curve it is read against: ";
+      txt += others.map(function (m) {
+        var d = dfFor(m, s1, s2), q = 2 * VIZ.tUpper(Math.abs(tval), d);
+        return DF_SHORT[m] + " gives df = " + (d % 1 === 0 ? d : d.toFixed(2)) + " and p = " + (q < 0.001 ? "< .001" : q.toFixed(3).replace(/^0/, ""));
+      }).join(", ");
+      txt += ". The conservative rule always has the fewest degrees of freedom and so the largest p, which is why an exam accepts it.";
+      document.getElementById("it-work").textContent = txt;
       draw();
     }
 
@@ -222,10 +327,169 @@
     document.getElementById("sd-range").addEventListener("input", function () { sd = +this.value; rebuild(); });
     document.getElementById("n-range").addEventListener("input", function () { n = +this.value; rebuild(); });
     document.getElementById("resample").addEventListener("click", resample);
+    document.getElementById("df-seg").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      [].forEach.call(this.querySelectorAll("button"), function (x) { x.classList.remove("active"); });
+      b.classList.add("active"); dfMode = b.getAttribute("data-df"); update();
+    });
     window.addEventListener("resize", function () { fit(); draw(); });
     VIZ.onTheme(draw);
 
     fit(); resample();
+
+    if (window.SC && SC.preset) SC.preset({
+      gap: "#gap-range",
+      sd: "#sd-range",
+      n: "#n-range",
+      df: "#df-seg"
+    });
+  })();
+  </script>
+
+  <!-- ============ overlapping-intervals visualization ============ -->
+  <!-- URL preset (SC.preset, applied last):
+         ?sep=  gap between the two group means, 0 to 16   e.g. ?sep=8
+       A separate key from the Tug-of-War's ?gap= on purpose: the two sliders
+       carry different scales, and one query key cannot mean both.
+
+       Nothing here is estimated from a random draw. The frozen z-scores are
+       standardized at boot, so each group's sample SD is exactly 12 and its
+       mean is exactly where the slider puts it; every number the block prints
+       therefore follows from N = 20, s = 12 and the gap alone.
+       Verified with node -e against viz.js, at the default gap of 8:
+         SE of one mean 12/√20 = 2.6833 ; t*(19) = 2.0930 ; margin 5.6161
+         CIs [94.38, 105.62] and [102.38, 113.62], overlapping by 3.232
+         SE of the difference √(2·144/20) = 3.7947 ; t = 2.1082 on df 38
+         p = .0417 ; t*(38) = 2.0244 ; CI of the difference [0.32, 15.68]
+         bars touch until the gap reaches 11.232; the test rejects from 7.682
+  -->
+  <script>
+  (function () {
+    "use strict";
+    var cv = document.getElementById("ov-canvas");
+    if (!cv || !window.VIZ) return;
+    var ctx, W = 0, H = 244;
+    var N = 20, S = 12, M1 = 100, gap = 8;
+    var LO = 60, HI = 155, DLO = -12, DHI = 26, PAD = 18;
+    var zA = [], zB = [];
+
+    function el(id) { return document.getElementById(id); }
+    function fit() { var o = VIZ.fit(cv, H); ctx = o.ctx; W = o.w; }
+    function vx(v) { return PAD + ((v - LO) / (HI - LO)) * (W - 2 * PAD); }
+    function dx(v) { return PAD + ((v - DLO) / (DHI - DLO)) * (W - 2 * PAD); }
+    function f1(v) { return v.toFixed(1); }
+    function f2(v) { return v.toFixed(2); }
+    function pf(p) { return p < 0.001 ? "< .001" : p.toFixed(3).replace(/^0/, ""); }
+
+    function std(v) {
+      var m = 0, ss = 0, i;
+      for (i = 0; i < v.length; i++) m += v[i];
+      m /= v.length;
+      for (i = 0; i < v.length; i++) ss += (v[i] - m) * (v[i] - m);
+      var sd = Math.sqrt(ss / (v.length - 1)), out = [];
+      for (i = 0; i < v.length; i++) out.push((v[i] - m) / sd);
+      return out;
+    }
+    function seed() {
+      var raw = [], i;
+      for (i = 0; i < 2 * N; i++) raw.push(VIZ.randn());
+      zA = std(raw.slice(0, N)); zB = std(raw.slice(N));
+    }
+
+    function state() {
+      var seEach = S / Math.sqrt(N), mE = VIZ.tInv(0.025, N - 1) * seEach;
+      var dfP = 2 * N - 2, seD = Math.sqrt(2 * S * S / N), mD = VIZ.tInv(0.025, dfP) * seD;
+      var t = gap / seD;
+      return { m1: M1, m2: M1 + gap, seEach: seEach, mE: mE, seD: seD, mD: mD,
+               dfP: dfP, t: t, p: 2 * VIZ.tUpper(Math.abs(t), dfP),
+               lap: (M1 + mE) - (M1 + gap - mE) };
+    }
+
+    var Y1 = 34, C1 = 56, Y2 = 92, C2 = 114, AX = 140, SEP = 160, DLAB = 178, DBAR = 202, DAX = 222;
+
+    function bar(y, lo, hi, mid, color, mapx) {
+      ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.lineCap = "butt";
+      ctx.beginPath(); ctx.moveTo(mapx(lo), y); ctx.lineTo(mapx(hi), y); ctx.stroke();
+      ctx.lineWidth = 2;
+      [lo, hi].forEach(function (v) { ctx.beginPath(); ctx.moveTo(mapx(v), y - 6); ctx.lineTo(mapx(v), y + 6); ctx.stroke(); });
+      ctx.fillStyle = color; ctx.beginPath(); ctx.arc(mapx(mid), y, 4, 0, 2 * Math.PI); ctx.fill();
+    }
+
+    function axis(y, lo, hi, step, mapx) {
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(mapx(lo), y); ctx.lineTo(mapx(hi), y); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace, monospace"; ctx.textAlign = "center";
+      for (var v = Math.ceil(lo / step) * step; v <= hi; v += step) {
+        ctx.beginPath(); ctx.moveTo(mapx(v), y); ctx.lineTo(mapx(v), y + 4); ctx.stroke();
+        ctx.fillText(String(Math.round(v)), mapx(v), y + 15);
+      }
+    }
+
+    function dots(z, mean, y, color) {
+      ctx.fillStyle = color; ctx.globalAlpha = 0.55;
+      for (var i = 0; i < z.length; i++) {
+        var v = mean + S * z[i];
+        if (v < LO || v > HI) continue;
+        ctx.beginPath(); ctx.arc(vx(v), y + ((i % 5) - 2) * 4.5, 2.6, 0, 2 * Math.PI); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    function draw(st) {
+      var c1 = VIZ.css("--primary"), c2 = "#f97316", cd = VIZ.css("--secondary");
+      ctx.clearRect(0, 0, W, H);
+
+      ctx.font = "600 11px Inter, sans-serif"; ctx.textAlign = "left";
+      ctx.fillStyle = c1; ctx.fillText("group 1", PAD, 14);
+      ctx.fillStyle = c2; ctx.fillText("group 2", PAD, Y2 - 20);
+
+      dots(zA, st.m1, Y1, c1); bar(C1, st.m1 - st.mE, st.m1 + st.mE, st.m1, c1, vx);
+      dots(zB, st.m2, Y2, c2); bar(C2, st.m2 - st.mE, st.m2 + st.mE, st.m2, c2, vx);
+      axis(AX, LO, HI, 20, vx);
+
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.globalAlpha = 0.7;
+      ctx.beginPath(); ctx.moveTo(PAD, SEP); ctx.lineTo(W - PAD, SEP); ctx.stroke(); ctx.globalAlpha = 1;
+
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "600 11px Inter, sans-serif"; ctx.textAlign = "left";
+      ctx.fillText("difference (group 2 − group 1)", PAD, DLAB);
+
+      // zero, the value the difference interval is judged against
+      ctx.strokeStyle = VIZ.css("--text-faint"); ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
+      ctx.beginPath(); ctx.moveTo(dx(0), DBAR - 18); ctx.lineTo(dx(0), DAX); ctx.stroke(); ctx.setLineDash([]);
+
+      bar(DBAR, gap - st.mD, gap + st.mD, gap, cd, dx);
+      axis(DAX, DLO, DHI, 5, dx);
+    }
+
+    function update() {
+      var st = state();
+      el("ov-gapval").textContent = String(gap);
+      el("ov-ci1").textContent = "[" + f1(st.m1 - st.mE) + ", " + f1(st.m1 + st.mE) + "]";
+      el("ov-ci2").textContent = "[" + f1(st.m2 - st.mE) + ", " + f1(st.m2 + st.mE) + "]";
+      var lap = el("ov-lap");
+      lap.textContent = st.lap > 0 ? "Yes, by " + f2(st.lap) : "No";
+      el("ov-p").textContent = pf(st.p);
+      el("ov-cid").textContent = "[" + f2(gap - st.mD) + ", " + f2(gap + st.mD) + "]";
+
+      var head;
+      if (st.lap > 0 && st.p < 0.05) head = "The two intervals overlap by " + f2(st.lap) + " points, and the test rejects anyway.";
+      else if (st.lap > 0) head = "The two intervals overlap by " + f2(st.lap) + " points, and this time the test agrees with the picture.";
+      else head = "The two intervals are clear of each other, and the test rejects, which on two groups this evenly matched it always must once the bars separate.";
+      el("ov-work").textContent = head + " t = " + f2(st.t) + " on " + st.dfP + " degrees of freedom, p = " + pf(st.p) +
+        ", and the interval for the difference is [" + f2(gap - st.mD) + ", " + f2(gap + st.mD) + "]. " +
+        "Each group's margin is " + f2(st.mE) + ", so the two together reach " + f2(2 * st.mE) +
+        "; the margin on the difference is only " + f2(st.mD) + ", because its standard error is √(" +
+        f2(st.seEach) + "² + " + f2(st.seEach) + "²) = " + f2(st.seD) + " rather than the sum of the two.";
+      draw(st);
+    }
+
+    document.getElementById("ov-gap").addEventListener("input", function () { gap = +this.value; update(); });
+    window.addEventListener("resize", function () { fit(); update(); });
+    VIZ.onTheme(function () { update(); });
+
+    fit(); seed(); update();
+
+    if (window.SC && SC.preset) SC.preset({ sep: "#ov-gap" });
   })();
   </script>
 </body>

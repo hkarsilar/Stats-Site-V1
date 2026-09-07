@@ -53,10 +53,12 @@
         <h2>The test statistic</h2>
         <p>You compare your sample mean x̄ to a hypothesized value μ₀, scaled by the standard error:</p>
         <p style="text-align:center;font-size:1.2rem;margin:1.25rem 0"><strong>t = (x̄ − μ₀) / (s / √n)</strong></p>
+        <p>The quantity underneath the line has a name that comes back in every chapter from here on. <strong>s/√n is the standard error of the mean</strong>, written SE, and it estimates how far a sample mean of this size typically lands from the population mean it is trying to measure. Two things go into it: how spread out the data are, and how many observations were averaged. More data shrinks it, which is why a larger study pins a mean down more tightly, and because the square root is doing the shrinking, quadrupling the sample only halves the SE. With the name in place the statistic reads t = (x̄ − μ₀)/SE, and what it counts is standard errors between your mean and the claim.</p>
         <p>All three members of the family (one-sample, paired, independent) sit next to each other on the <a href="../../formulas.html">formula sheet</a>, which is the quickest way to see how little actually changes between them.</p>
         <p>This looks just like a <a href="../../stats-1/z-scores-and-the-normal-distribution/">z-score</a>, except for one thing. We almost never know the population standard deviation, so we estimate it with the sample's <code>s</code>. That estimate is itself uncertain, especially with small samples, and that extra wobble means the statistic no longer follows the normal curve. It follows the <strong>t-distribution</strong> instead.</p>
 
         <h2>The t-distribution</h2>
+        <p>The curve has an unusual byline. William Sealy Gosset joined the Guinness brewery in Dublin in 1899, and the work handed him a problem the statistics of the day did not solve: barley yields and malt extracts arrived in batches of four or five, not the hundreds that make the normal curve safe. He worked out how (x̄ − μ)/(s/√n) behaves at small n and published it in <em>Biometrika</em> in 1908 under the pen name <strong>Student</strong>, his employer having barred staff from publishing under their own names after an earlier paper gave away production detail. R. A. Fisher later recast the result in the form used today and gave the statistic its letter. Both the pen name and the letter stuck, which is why an introductory course teaches Student's t rather than Gosset's.</p>
         <p>The t-distribution looks like the normal's slightly nervous cousin: same bell shape, centered at zero, but with <strong>heavier tails</strong>. Those fat tails say "with a small sample, extreme values are more common than the normal would predict." Its shape is governed by the <strong>degrees of freedom</strong> (df = n − 1). The smaller the sample, the fatter the tails, and the further out you must go to call a result significant.</p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -65,9 +67,13 @@
           <p class="viz-sub">Shrink the degrees of freedom and watch the t-curve's tails fatten and its 5% critical value drift out past the normal's 1.96.</p>
 
           <div class="controls">
-            <div class="control" style="flex:1;min-width:260px">
+            <div class="control" style="flex:1;min-width:min(260px,100%)">
               <label>Degrees of freedom (n − 1) <span class="val" id="df-val">df = 5</span></label>
               <input type="range" id="df-range" min="1" max="60" step="1" value="5" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:min(260px,100%)">
+              <label>Mark a t-statistic <span class="val" id="t-val">off</span></label>
+              <input type="range" id="t-range" min="0" max="5" step="0.01" value="0" style="width:100%" />
             </div>
           </div>
 
@@ -78,14 +84,33 @@
             <div class="stat"><span class="k">Critical t* (two-tailed, .05)</span><span class="v" id="stat-tstar">—</span></div>
             <div class="stat"><span class="k">Normal's z* (for comparison)</span><span class="v">1.96</span></div>
             <div class="stat"><span class="k">Extra margin from fat tails</span><span class="v" id="stat-extra">—</span></div>
+            <div class="stat"><span class="k">Two-tailed p, exact</span><span class="v" id="stat-p">—</span></div>
+            <div class="stat"><span class="k">Two-tailed p, off Table D</span><span class="v" id="stat-bracket">—</span></div>
           </div>
+
+          <p class="viz-sub" id="t-work" style="margin-top:.7rem">Slide the second control off zero to mark a t you have computed. The shaded area becomes its two-tailed p-value, and the readouts give both the exact number and the bracket a printed table lets you quote.</p>
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
         <p>Notice how at df = 5 you need a t beyond about ±2.57 to reach significance, but by df = 60 the critical value has shrunk back toward the familiar 1.96. <strong>As samples grow, the t-distribution becomes the normal distribution.</strong> That's why, with large n, the t-test and a z-test give nearly identical answers. For the exact critical value at any df and α, and for the p-value behind a t you have already computed, use the <a href="../../tables.html">statistical tables calculator</a>.</p>
 
+        <h2 id="reading-table-d">Reading a t off a printed table</h2>
+        <p>In an exam there is no calculator that returns a p-value, only <a href="../../tables.html#printed-tables">Table D</a>, and it prints critical values rather than areas. That changes the answer you are expected to give. Find the row for your df, run along it until your t falls between two entries, and read the two column headings: those are upper-tail areas, so your one-tail area lies between them. Double both ends for a two-tailed test. A t of 2.60 on 14 degrees of freedom sits between the .02 column (2.264) and the .01 column (2.624), so the upper-tail area is between .01 and .02 and the two-tailed p is between .02 and .04. That bracket is enough to reject at α = .05 and not at α = .01, which is all a decision ever needs. The exact value is .0210, and the marker in the interactive above shows both readings side by side.</p>
+
+        <h2 id="one-sample-ci">The interval that goes with the test</h2>
+        <p>A test returns a verdict on one candidate value. An interval returns every value the data leave standing, which is the more useful object and the one a journal asks for beside the test. Building it takes nothing new. Keep the same x̄, the same s and the same n, and move the critical value to the other side of the arithmetic:</p>
+        <p style="text-align:center;font-size:1.2rem;margin:1.25rem 0"><strong>x̄&nbsp;±&nbsp;t*&nbsp;·&nbsp;s/√n</strong></p>
+        <p>t* is read off <a href="../../tables.html#printed-tables">Table D</a> at df = n − 1, in the column under the confidence level you want. It plays the part z* played in the <a href="../../stats-1/confidence-intervals/#z-interval">z-interval</a>, and at every finite df it is the larger of the two. The extra width is what estimating σ costs, and it shrinks as the sample grows: for 95% confidence t* is 2.145 at df = 14, 2.045 at df = 29, and 1.984 at df = 100, closing in on the normal's 1.960 without ever quite reaching it.</p>
+        <div class="callout key">
+          <p><strong>Worked, on a calculator.</strong> A monitoring station takes fifteen water samples from a river over one week and measures dissolved oxygen. The readings average x̄ = 7.8 mg/L with s = 1.24 mg/L. The standard error is 1.24/√15 = 0.320, Table D at df = 14 gives t* = 2.145 for 95% confidence, and the margin is 2.145 × 0.320 = 0.687. The interval is 7.8 ± 0.69, or <strong>[7.11, 8.49] mg/L</strong>. A common guideline puts healthy water at 6 mg/L or more, and the whole interval clears that line, so the week's readings are comfortably on the right side of it. To skip the arithmetic on your own column of numbers, the <a href="../../descriptives.html">descriptives calculator</a> prints the same interval.</p>
+        </div>
+        <p>Test and interval are two views of one calculation, so they cannot disagree. A 95% interval that excludes μ₀ is exactly a two-sided test rejecting μ₀ at α = .05, and an interval that contains it is a test that fails to reject. The interval carries more information for the same effort, since it also says how precisely you have measured the thing, which is why reporting only the p-value throws away work you have already done.</p>
+
         <h2>The paired t-test: a clever reframe</h2>
         <p>What about before-and-after measurements on the <em>same</em> people: a weight-loss program, a training intervention, a drug trial? Those two columns aren't independent; each person is measured twice. The trick is to collapse them: compute each person's <strong>difference</strong> (after − before), and run a one-sample t-test on those differences against μ₀ = 0.</p>
+        <p>Written out, the hypotheses are about a single mean, the mean of the differences in the population:</p>
+        <p style="text-align:center;font-size:1.1rem;margin:1.1rem 0"><strong>H₀: μ<sub>difference</sub> = 0&nbsp;&nbsp;&nbsp;&nbsp;H₁: μ<sub>difference</sub> ≠ 0</strong></p>
+        <p>Decide which way you are subtracting before you start, and say so in the write-up. Take after − before and a positive mean difference means scores rose; take before − after and the same data give the same evidence with every sign flipped, including the sign of t. Nothing about the p-value changes, but a reader who is not told the direction cannot tell an improvement from a decline, and neither can you three months later. The confidence interval above applies here unchanged, on the differences: it is the interval for the average change, and reporting it upgrades "the training worked" to a sentence that names how much it worked and how precisely you know that.</p>
         <div class="callout key">
           <p><strong>Why pairing is powerful:</strong> by looking at within-person change, you cancel out the huge person-to-person variability ("Ana is just heavier than Ben") and isolate the effect of the treatment. A paired design often detects an effect that an independent-groups design would miss, which is why <a href="../../methods/between-vs-within-designs/">choosing between the two</a> is a design decision, not an analysis one.</p>
         </div>
@@ -95,12 +120,15 @@
           <li>The data (or the differences, for a paired test) are roughly normal, or the sample is large enough for the <a href="../../stats-1/central-limit-theorem/">CLT</a> to rescue you.</li>
           <li>Observations are independent (for the paired test, the <em>pairs</em> are independent).</li>
         </ul>
+        <div class="callout key">
+          <p><strong>How normal does it actually have to be?</strong> Textbooks answer this with a rule of thumb in three sample-size bands, and it is worth carrying in your head, because exam questions hang on it. Under n = 15, use t only when the data look close to normal and contain no outliers. From 15 up to 40, mild skewness is acceptable, though outliers still are not. Past 40, t is safe even when the data are clearly skewed. That last line is the <a href="../../stats-1/central-limit-theorem/">central limit theorem</a> speaking: the test never needed the data to be normal, it needed the sampling distribution of x̄ to be, and by 40 observations the averaging has taken care of that whatever shape the raw numbers had. Outliers stay barred at every sample size because one extreme value shifts x̄ and inflates s at the same time, moving both halves of the statistic in ways that no amount of data averages away.</p>
+        </div>
 
         <div class="callout">
           <p><strong>Why it matters:</strong> the one-sample and paired t-tests are the simplest members of a family that runs through the entire course. Understand the t-distribution here and the <a href="../../stats-1/independent-samples-t-test/">independent-samples t-test</a> next is a short step.</p>
         </div>
 
-        <p class="pb-xref">Both tests are worked end to end in the practice problems: <a href="../../problems.html#p1-10">Problem 10</a> from summary statistics, <a href="../../problems.html#p1-11">Problem 11</a> from a column of difference scores.</p>
+        <p class="pb-xref">Three practice problems run on this lesson: <a href="../../problems.html#p1-10">Problem 10</a> works the test from summary statistics, <a href="../../problems.html#p1-11">Problem 11</a> from a column of difference scores, and <a href="../../problems.html#p1-19">Problem 19</a> builds the confidence interval at two levels and asks whether sixteen mildly skewed observations are enough to allow a t procedure at all.</p>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
@@ -135,10 +163,33 @@
   <script src="../../assets/js/viz.js"></script>
 
   <!-- ============ t-distribution visualization ============ -->
+  <!-- URL presets (SC.preset, applied last):
+         ?df=   degrees of freedom, 1 to 60           e.g. ?df=14
+         ?t=    mark a t-statistic, 0 to 5 (0 = off)  e.g. ?t=2.60
+       The marker shades both tails, so the shaded area IS the two-tailed
+       p-value; the readouts print the exact p beside the bracket a printed
+       Table D gives. Nothing here is random, so there is no frozen noise to
+       preserve. Verified: df 14, t 2.60 sits between the .025 column (2.145)
+       and the .01 column (2.625), two-tailed bracket .02 to .05, exact .0210.
+  -->
   <script>
   (function () {
     "use strict";
-    var df = 5, LO = -5, HI = 5;
+    var df = 5, mark = 0, LO = -5, HI = 5;
+
+    /* Table D as it is printed: rows the table carries below df = 60, and the
+       twelve upper-tail columns. Criticals come from VIZ.tInv, so the reading
+       and the exact p-value are computed from one source. */
+    var DF_ROWS = [], PCOL = [0.25, 0.20, 0.15, 0.10, 0.05, 0.025, 0.02, 0.01, 0.005, 0.0025, 0.001, 0.0005];
+    var PLAB = [".25", ".20", ".15", ".10", ".05", ".025", ".02", ".01", ".005", ".0025", ".001", ".0005"];
+    var TWOLAB = [".50", ".40", ".30", ".20", ".10", ".05", ".04", ".02", ".01", ".005", ".002", ".001"];
+    (function () { for (var i = 1; i <= 30; i++) DF_ROWS.push(i); DF_ROWS.push(40, 50, 60); })();
+    var critCache = {};
+    function tableRow(d) { var use = DF_ROWS[0], i; for (i = 0; i < DF_ROWS.length; i++) if (DF_ROWS[i] <= d) use = DF_ROWS[i]; return use; }
+    function crits(row) {
+      if (!critCache[row]) critCache[row] = PCOL.map(function (a) { return VIZ.tInv(a, row); });
+      return critCache[row];
+    }
     var canvas = document.getElementById("t-canvas"), ctx, W = 0, H = 220;
 
     function pdfUn(t) { return Math.pow(1 + t * t / df, -(df + 1) / 2); }
@@ -155,6 +206,43 @@
     function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
     function vx(v) { return ((v - LO) / (HI - LO)) * W; }
 
+    /* The reading a printed Table D actually gives: which two columns the
+       statistic falls between on its own row, doubled for a two-tailed test. */
+    function tableRead(t, d) {
+      var row = tableRow(d), cr = crits(row), j = -1, i;
+      for (i = 0; i < cr.length; i++) if (t >= cr[i]) j = i;
+      var one, two, where;
+      if (j < 0) {
+        one = "greater than " + PLAB[0]; two = "greater than " + TWOLAB[0];
+        where = "it falls short of the first column (" + PLAB[0] + ", at " + cr[0].toFixed(3) + ")";
+      } else if (j === cr.length - 1) {
+        one = "less than " + PLAB[j]; two = "less than " + TWOLAB[j];
+        where = "it runs past the last column (" + PLAB[j] + ", at " + cr[j].toFixed(3) + ")";
+      } else {
+        one = "between " + PLAB[j + 1] + " and " + PLAB[j]; two = "between " + TWOLAB[j + 1] + " and " + TWOLAB[j];
+        where = "it falls between the " + PLAB[j] + " column (" + cr[j].toFixed(3) + ") and the " + PLAB[j + 1] + " column (" + cr[j + 1].toFixed(3) + ")";
+      }
+      return { row: row, one: one, two: two, where: where };
+    }
+
+    function report(tstar) {
+      var pEl = document.getElementById("stat-p"), bEl = document.getElementById("stat-bracket"), wEl = document.getElementById("t-work");
+      document.getElementById("t-val").textContent = mark > 0 ? "t = " + mark.toFixed(2) : "off";
+      if (!(mark > 0)) {
+        pEl.textContent = "—"; bEl.textContent = "—";
+        wEl.textContent = "Slide the second control off zero to mark a t you have computed. The shaded area becomes its two-tailed p-value, and the readouts give both the exact number and the bracket a printed table lets you quote.";
+        return;
+      }
+      var p = 2 * VIZ.tUpper(mark, df), r = tableRead(mark, df);
+      pEl.textContent = p < 0.0001 ? "< .0001" : p.toFixed(4).replace(/^0/, "");
+      bEl.textContent = r.two;
+      var txt = "t = " + mark.toFixed(2) + " on " + df + " degrees of freedom. On Table D";
+      if (r.row !== df) txt += ", which has no df = " + df + " row and so reads the conservative df = " + r.row + " row";
+      txt += ", " + r.where;
+      txt += ", so the upper-tail area is " + r.one + " and the two-tailed p-value is " + r.two + ". Exactly, it is " + p.toFixed(4).replace(/^0/, "") + ".";
+      wEl.textContent = txt;
+    }
+
     function draw() {
       var H2 = halfArea(), tstar = critical(H2);
       var baseY = H - 20, normPeak = VIZ.normPdf(0, 0, 1), scale = (H - 26) / normPeak;
@@ -164,9 +252,10 @@
       ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px ui-monospace, monospace"; ctx.textAlign = "center";
       for (var g = -4; g <= 4; g += 2) ctx.fillText(g, vx(g), baseY + 16);
 
-      // shaded t critical tails
+      // shaded tails: the marked t's p-value when a marker is set, else the .05 criticals
+      var edge = mark > 0 ? mark : tstar;
       ctx.fillStyle = "#f97316"; ctx.globalAlpha = 0.28;
-      [[tstar, HI], [LO, -tstar]].forEach(function (seg) {
+      [[edge, HI], [LO, -edge]].forEach(function (seg) {
         if (!(seg[1] > seg[0])) return;
         // fixed step count: the last point lands exactly on seg[1], so the
         // closing edge is perfectly vertical for every df
@@ -178,6 +267,25 @@
         ctx.lineTo(vx(seg[1]), baseY); ctx.closePath(); ctx.fill();
       });
       ctx.globalAlpha = 1;
+
+      /* With a marker set, the shaded area IS the p-value, and far out in the
+         tail that area is too thin to locate by eye. So draw the statistic as a
+         solid rule and keep the .05 critical value beside it as a dashed one. */
+      if (mark > 0) {
+        if (tstar < HI) {
+          ctx.strokeStyle = "#f97316"; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]); ctx.globalAlpha = 0.75;
+          [tstar, -tstar].forEach(function (v) { ctx.beginPath(); ctx.moveTo(vx(v), baseY); ctx.lineTo(vx(v), 34); ctx.stroke(); });
+          ctx.setLineDash([]); ctx.globalAlpha = 1;
+          ctx.fillStyle = "#f97316"; ctx.font = "600 11px Inter, sans-serif"; ctx.textAlign = "center";
+          ctx.fillText("t*", vx(tstar), 28);
+        }
+        if (mark <= HI) {
+          ctx.strokeStyle = "#f97316"; ctx.lineWidth = 2;
+          [mark, -mark].forEach(function (v) { ctx.beginPath(); ctx.moveTo(vx(v), baseY); ctx.lineTo(vx(v), 52); ctx.stroke(); });
+          ctx.fillStyle = "#f97316"; ctx.font = "600 11px Inter, sans-serif"; ctx.textAlign = "center";
+          ctx.fillText("t", vx(mark), 46);
+        }
+      }
 
       // normal (faint dashed)
       ctx.strokeStyle = VIZ.css("--text-faint"); ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]); ctx.beginPath();
@@ -197,13 +305,17 @@
       document.getElementById("stat-n").textContent = df + 1;
       document.getElementById("stat-tstar").textContent = "±" + tstar.toFixed(2);
       document.getElementById("stat-extra").textContent = "+" + (tstar - 1.96).toFixed(2);
+      report(tstar);
     }
 
     document.getElementById("df-range").addEventListener("input", function () { df = +this.value; document.getElementById("df-val").textContent = "df = " + df; draw(); });
+    document.getElementById("t-range").addEventListener("input", function () { mark = +this.value; draw(); });
     window.addEventListener("resize", function () { fit(); draw(); });
     VIZ.onTheme(draw);
 
     fit(); draw();
+
+    if (window.SC && SC.preset) SC.preset({ df: "#df-range", t: "#t-range" });
   })();
   </script>
 </body>

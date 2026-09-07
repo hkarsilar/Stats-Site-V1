@@ -16,16 +16,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Practice Problems — Worked Statistics Exam Questions — StatsCapybara</title>
-  <meta name="description" content="Fifty-seven statistics problems with fully worked solutions: z-scores, t-tests, ANOVA, regression, Bayes and survival analysis, one step at a time." />
+  <meta name="description" content="Fifty-nine statistics problems with fully worked solutions: z-scores, t-tests, ANOVA, regression, Bayes and survival analysis, one step at a time." />
   <link rel="canonical" href="https://statscapybara.com/problems.html" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Practice Problems — StatsCapybara" />
-  <meta property="og:description" content="Fifty-seven worked statistics problems, from z-scores to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
+  <meta property="og:description" content="Fifty-nine worked statistics problems, from z-scores to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
   <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
   <meta property="og:url" content="https://statscapybara.com/problems.html" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Practice Problems — StatsCapybara" />
-  <meta name="twitter:description" content="Fifty-seven worked statistics problems, from z-scores to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
+  <meta name="twitter:description" content="Fifty-nine worked statistics problems, from z-scores to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="assets/css/styles.css" />
@@ -137,7 +137,7 @@
         </div>
 
         <ul class="pb-index">
-          <li><a href="#stats-1"><span class="t">📊 Stats 1 · Foundations</span><br><span class="m">18 problems · data types → probability → z and t tests</span></a></li>
+          <li><a href="#stats-1"><span class="t">📊 Stats 1 · Foundations</span><br><span class="m">20 problems · data types → probability → z and t tests</span></a></li>
           <li><a href="#exam-style"><span class="t">📝 Exam-style · A Stats 1 midterm</span><br><span class="m">8 problems · §1.1 to §1.12, worked off the printed tables</span></a></li>
           <li><a href="#stats-2"><span class="t">🔗 Stats 2 · Groups &amp; relationships</span><br><span class="m">10 problems · ANOVA → regression</span></a></li>
           <li><a href="#regression"><span class="t">📐 Regression · Several predictors</span><br><span class="m">8 problems · multiple regression → missing data</span></a></li>
@@ -150,7 +150,7 @@
              ================================================================== -->
         <section class="pb-set" id="stats-1-set">
           <h2 id="stats-1">📊 Stats 1 · Foundations</h2>
-          <p class="pb-set-sub">Eighteen problems tracking the <a href="stats-1/">Stats 1 syllabus</a>: what kind of data you have, how to describe it, how far a score sits from average, how a sample mean turns into a confidence interval and then a <em>z</em>-test or a <em>t</em>-test, and the probability rules that three of them run on.</p>
+          <p class="pb-set-sub">Twenty problems tracking the <a href="stats-1/">Stats 1 syllabus</a>: what kind of data you have, how to describe it, how far a score sits from average, how a sample mean turns into a confidence interval and then a <em>z</em>-test or a <em>t</em>-test, and the probability rules that three of them run on.</p>
 
           <!-- ---------- 1.1 ----------
                verify: no arithmetic; classification only.
@@ -1151,6 +1151,127 @@
               <p class="pb-ref">From <a href="stats-1/hypothesis-testing-logic/">§1.12 Hypothesis Testing Logic</a> · load it into the <a href="stats-1/hypothesis-testing-logic/?mu0=1200&amp;sigma=100&amp;n=25&amp;xbar=1165&amp;tail=left&amp;alpha=.05">explorer, prefilled</a>, or look the area up on the printed <a href="tables.html#printed-tables">Table A</a>.</p>
             </details>
           </article>
+
+          <!-- Problem 19 verified with node -e (viz.js loaded in a vm context):
+                 SE = 3.2/√16 = 0.800 ; df = 15
+                 t*(15, .025) = 2.1314 → m = 1.7052 → [25.695, 29.105]
+                 t*(15, .005) = 2.9467 → m = 2.3574 → [25.043, 29.757]
+                 t = (27.4 − 25)/0.8 = 3.000 ; two-tailed p = .00897
+                 Table D df 15: .005 column = 2.947, .0025 column = 3.286,
+                 so t = 3.00 brackets the two-tailed p between .005 and .01
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p1-19"><span class="pb-num">19</span>Sixteen shots off one machine</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A café is checking whether its espresso machine is pulling shots to the recipe, which calls for an extraction time of 25 seconds. Over one morning the barista times sixteen shots. They average 27.4 seconds with a sample standard deviation of 3.2 seconds. A histogram of the sixteen times leans mildly to the right and holds no unusual values.</p>
+            <div class="pb-given">
+              <span class="lbl">Sample size, mean, sample SD, recipe value</span>
+              n = 16 · x̄ = 27.4 s · s = 3.2 s · μ₀ = 25 s
+            </div>
+            <ol class="pb-ask">
+              <li>Give the standard error of the mean and the 95% confidence interval for the true mean extraction time.</li>
+              <li>Read the verdict of a two-sided test at α = .05 off that interval, then confirm it by computing t and bracketing its p-value on Table D.</li>
+              <li>Rebuild the interval at 99% confidence. Does the conclusion change?</li>
+              <li>The times are mildly skewed. Is a t procedure defensible on sixteen observations, and which band of the rule of thumb decides it?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Standard error, then the multiplier</span>
+                  <span class="pb-note">σ is unknown and s has been estimated from the same sixteen shots, so this is a t procedure with df = n − 1 = 15.</span>
+                  <span class="pb-math">SE = s/√n = 3.2/√16 = 3.2/4 = 0.800 s</span>
+                  <span class="pb-math">Table D, row 15, 95% column: t* = 2.131</span>
+                </li>
+                <li><span class="pb-lbl">The 95% interval</span>
+                  <span class="pb-math">m = t* × SE = 2.131 × 0.800 = 1.705 s</span>
+                  <span class="pb-math">27.4 ± 1.705 = [25.70, 29.11] s</span>
+                </li>
+                <li><span class="pb-lbl">The verdict, read off the interval</span>
+                  <span class="pb-note">25 lies below 25.70, so it is outside the interval. A 95% interval holds exactly the values a two-sided test at α = .05 would not reject, so the test rejects H₀: μ = 25.</span>
+                  <span class="pb-math">t = (x̄ − μ₀)/SE = (27.4 − 25)/0.800 = 3.00</span>
+                  <span class="pb-note">On row 15 of Table D, 3.00 falls between the .005 column (2.947) and the .0025 column (3.286), so the upper-tail area is between .0025 and .005 and the two-tailed p is between .005 and .01. Exactly, p = .0090. The interval and the test agree, as they must.</span>
+                </li>
+                <li><span class="pb-lbl">The same data at 99%</span>
+                  <span class="pb-math">t*(15, 99%) = 2.947 → m = 2.947 × 0.800 = 2.357 s</span>
+                  <span class="pb-math">27.4 ± 2.357 = [25.04, 29.76] s</span>
+                  <span class="pb-note">Still above 25, though only just. The two-tailed p of .0090 is under .01, which says the same thing: this result also clears the stricter threshold. Had p landed at, say, .03, the 99% interval would have swallowed 25 while the 95% one did not.</span>
+                </li>
+                <li><span class="pb-lbl">Is t allowed here</span>
+                  <span class="pb-note">Sixteen observations put this in the middle band of the rule of thumb, 15 to 40, where mild skewness is acceptable and outliers are not. The description gives mild skew and no unusual values, so the procedure is defensible. Under 15 observations the same data would have needed a shape much closer to normal, and a single wild shot would have been a problem at any sample size, because it moves the mean and inflates s at once.</span>
+                </li>
+                <li><span class="pb-lbl">The sentence to write</span>
+                  <span class="pb-note">Sixteen shots averaged 27.4 s (SD = 3.2), significantly longer than the 25 s the recipe calls for, t(15) = 3.00, p = .009, 95% CI [25.70, 29.11]. The interval is the useful half of that sentence: the machine is running long by somewhere between 0.7 and 4.1 seconds, and whether that matters is a question about coffee rather than about statistics.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">SE = 0.800 s. The 95% interval is 27.4 ± 1.71 = [25.70, 29.11], which excludes 25, so a two-sided test rejects at α = .05; t(15) = 3.00 with p between .005 and .01 on Table D (.0090 exactly). At 99% the interval is [25.04, 29.76] and still excludes 25. With n = 16, mild skew and no outliers, the middle band of the rule of thumb allows the t procedure.</p>
+              <p class="pb-round">Rounding: t* values as Table D prints them (2.131 and 2.947); interval limits to 2 dp.</p>
+              <p class="pb-ref">From <a href="stats-1/one-sample-and-paired-t-tests/#one-sample-ci">§1.13 One-Sample &amp; Paired t-Tests</a> · mark t = 3.00 on the <a href="stats-1/one-sample-and-paired-t-tests/?df=15&amp;t=3.00">t-distribution viz</a>, read t* off the printed <a href="tables.html#printed-tables">Table D</a>, or paste a column into the <a href="descriptives.html">descriptives calculator</a>.</p>
+            </details>
+          </article>
+
+          <!-- Problem 20 verified with node -e (viz.js loaded in a vm context):
+                 s₁²/n₁ = 29.16/12 = 2.4300 ; s₂²/n₂ = 16.81/15 = 1.1207
+                 SE = √3.5507 = 1.8843 ; diff = 4.90 ; t = 2.6004
+                 conservative df = min(11, 14) = 11: t* = 2.2010, p = .02468,
+                   95% CI [0.753, 9.047]
+                 Welch–Satterthwaite df = 20.12: t* = 2.0851, p = .01706,
+                   95% CI [0.971, 8.829]
+                 pooled (for the note): sp = 4.7164, SE = 1.8266, t = 2.6825,
+                   df = 25, p = .01276
+                 Table D row 11: .02 column = 2.328, .01 column = 2.718
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p1-20"><span class="pb-num">20</span>Two warm-ups, two degrees of freedom</h3>
+              <span class="pb-chip stretch">Stretch</span>
+            </div>
+            <p class="pb-scenario">A sports scientist compares two warm-up routines by measuring vertical jump height. Twelve athletes do the dynamic routine and fifteen do the static one; nobody does both. The dynamic group averages 46.8 cm with a sample standard deviation of 5.4 cm, the static group 41.9 cm with a standard deviation of 4.1 cm. Working by hand, then checking the result in software, produces two different degrees of freedom.</p>
+            <div class="pb-given">
+              <span class="lbl">Two independent groups, summary statistics only</span>
+              n₁ = 12 · x̄₁ = 46.8 · s₁ = 5.4 &nbsp;&nbsp;|&nbsp;&nbsp; n₂ = 15 · x̄₂ = 41.9 · s₂ = 4.1
+            </div>
+            <ol class="pb-ask">
+              <li>Compute the standard error of the difference between the two means, and the t statistic.</li>
+              <li>Using the conservative degrees of freedom, give the critical value at α = .05 two-tailed, the decision, and the bracket Table D puts the p-value in.</li>
+              <li>Software reports Welch degrees of freedom of 20.12 for the same data. Give the p-value there. Do the two answers agree, and would they always?</li>
+              <li>Give the 95% confidence interval for the difference, using the conservative rule.</li>
+              <li>Which answer should you write in an exam, and what makes the conservative rule safe to accept?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Standard error of the difference</span>
+                  <span class="pb-note">Each group contributes its own variance over its own n. The two contributions add before the square root; the two standard errors are never added.</span>
+                  <span class="pb-math">s₁²/n₁ = 29.16/12 = 2.4300 &nbsp;&nbsp; s₂²/n₂ = 16.81/15 = 1.1207</span>
+                  <span class="pb-math">SE = √(2.4300 + 1.1207) = √3.5507 = 1.884 cm</span>
+                  <span class="pb-math">t = (46.8 − 41.9)/1.884 = 4.90/1.884 = 2.600</span>
+                </li>
+                <li><span class="pb-lbl">The conservative degrees of freedom</span>
+                  <span class="pb-math">df = min(n₁ − 1, n₂ − 1) = min(11, 14) = 11</span>
+                  <span class="pb-math">Table D, row 11, 95% column: t* = 2.201</span>
+                  <span class="pb-note">2.600 is beyond 2.201, so H₀ of equal means is rejected at α = .05. On the same row, 2.600 sits between the .02 column (2.328) and the .01 column (2.718). Those headings are one-tail areas, so the one-tail figure lands between .01 and .02, and doubling puts the two-tailed p between .02 and .04. Exactly, p = .0247.</span>
+                </li>
+                <li><span class="pb-lbl">The same statistic on the software's curve</span>
+                  <span class="pb-note">Nothing about the data changed: the standard error is still 1.884 and t is still 2.600. Only the curve those numbers are read against moves, from 11 degrees of freedom to 20.12.</span>
+                  <span class="pb-math">df = 20.12 → p = .0171</span>
+                  <span class="pb-note">Both reject at α = .05, so the two answers agree here. They would not always. A statistic sitting between the two critical values, anywhere from 2.085 to 2.201 on this data, clears the software's threshold and misses the hand rule's, which is exactly the direction the conservative rule is designed to err in.</span>
+                </li>
+                <li><span class="pb-lbl">The interval for the difference</span>
+                  <span class="pb-math">4.90 ± 2.201 × 1.884 = 4.90 ± 4.147</span>
+                  <span class="pb-math">95% CI = [0.75, 9.05] cm</span>
+                  <span class="pb-note">Zero is outside it, which is the rejection restated. The width is the more honest finding: twenty-seven athletes locate the advantage of the dynamic routine somewhere between three quarters of a centimeter and nine, and only the top of that range would interest a coach. At the Welch df the interval tightens slightly, to [0.97, 8.83].</span>
+                </li>
+                <li><span class="pb-lbl">Which one to write down</span>
+                  <span class="pb-note">In an exam, the conservative one. It needs nothing beyond a square root, and every error it makes runs the same way: holding the fewest degrees of freedom of the three, it draws the fattest tails, so its critical value is the highest and its p the biggest. A result that clears that bar would have cleared either of the others too, which is why a marker can take it on trust. Away from the exam hall, quote whichever df your software printed and name which one it was.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">SE = 1.884 cm and t = 2.600. At the conservative df = 11, t* = 2.201, so H₀ is rejected at α = .05, with Table D bracketing the two-tailed p between .02 and .04 (.0247 exactly). At the Welch df of 20.12 the p is .0171; both reject, though they need not always. The conservative 95% CI for the difference is [0.75, 9.05] cm. Write the conservative answer in an exam, because it errs only toward caution.</p>
+              <p class="pb-round">Rounding: SE and t to three decimal places as a calculator gives them; t* as Table D prints it; interval limits to 2 dp. Pooling instead, which these unequal spreads do not obviously justify, would give s<sub>p</sub> = 4.716, t = 2.683 on 25 df and p = .0128.</p>
+              <p class="pb-ref">From <a href="stats-1/independent-samples-t-test/#three-dfs">§1.14 Independent Samples t-Test</a> · compare the three rules live in the <a href="stats-1/independent-samples-t-test/?gap=8&amp;sd=10&amp;n=20&amp;df=cons">Tug-of-War with the conservative df selected</a>, or look t* up on the printed <a href="tables.html#printed-tables">Table D</a>.</p>
+            </details>
+          </article>
         </section>
 
 
@@ -1161,10 +1282,14 @@
              Note for a later session: the page's .pb-num badges drifted out of
              step when P79 and P82 appended problems 13–18 to the Stats 1 set
              without renumbering the four sets below it, so the Stats 2 set
-             still starts its own count at 13. Fixing that means renumbering 31
-             cards here AND the 72 "Problem N" mentions in 57 lesson pages,
-             which is its own session; the #pX-Y anchors every lesson links to
-             are unaffected either way.
+             still starts its own count at 13. P83 added two more Stats 1
+             problems and moved this set's badges from 19–26 to 21–28 to keep
+             the two Stats 1 sets running 1 to 28 without a gap; that was safe
+             because no page names an exam-style problem by its number. The
+             remaining drift is the 31 cards below, and fixing it means
+             renumbering them AND the 72 "Problem N" mentions in 57 lesson
+             pages, which is its own session; the #pX-Y anchors every lesson
+             links to are unaffected either way.
              ================================================================== -->
         <section class="pb-set" id="exam-style-set">
           <h2 id="exam-style">📝 Exam-style · A midterm on §1.1–§1.12</h2>
@@ -1177,7 +1302,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p6-1"><span class="pb-num">19</span>Four words that must not be swapped</h3>
+              <h3 id="p6-1"><span class="pb-num">21</span>Four words that must not be swapped</h3>
               <span class="pb-chip warm">Warm-up</span>
             </div>
             <p class="pb-scenario">A university with 18,400 undergraduates wants to know how much sleep its students get on a weeknight. The registry draws a simple random sample of 250 names from the enrollment list and emails them a one-question form. 175 forms come back usable.</p>
@@ -1240,7 +1365,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p6-2"><span class="pb-num">20</span>Thirteen calls to the help desk</h3>
+              <h3 id="p6-2"><span class="pb-num">22</span>Thirteen calls to the help desk</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A university IT help desk logs how long each caller waited before a person picked up, to the nearest minute. Here are thirteen calls from one morning, in the order they arrived.</p>
@@ -1301,7 +1426,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p6-3"><span class="pb-num">21</span>Bags that say 500 grams</h3>
+              <h3 id="p6-3"><span class="pb-num">23</span>Bags that say 500 grams</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A machine fills bags of coffee labeled 500 g. The weight it actually delivers is normally distributed with a mean of 502 g and a standard deviation of 4 g. One shift produces 240 bags. Work every part from the printed Table A, and give the answer the table gives.</p>
@@ -1362,7 +1487,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p6-4"><span class="pb-num">22</span>What de Méré got wrong</h3>
+              <h3 id="p6-4"><span class="pb-num">24</span>What de Méré got wrong</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">Two fair six-sided dice are rolled and both faces are recorded, so there are 36 equally likely outcomes. The second half of this problem is the pair of bets a seventeenth-century gambler took to Pascal, having noticed that one of them made money and the other did not.</p>
@@ -1419,7 +1544,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p6-5"><span class="pb-num">23</span>Two batteries out of the drawer</h3>
+              <h3 id="p6-5"><span class="pb-num">25</span>Two batteries out of the drawer</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A drawer holds 12 identical-looking AA batteries. Four of them are flat and eight still work. Two are taken out at random, one after the other, and the first is not put back.</p>
@@ -1477,7 +1602,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p6-6"><span class="pb-num">24</span>Eight questions, four options, no revision</h3>
+              <h3 id="p6-6"><span class="pb-num">26</span>Eight questions, four options, no revision</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A short class test has 8 multiple-choice questions with 4 options each and exactly one right answer per question. A student who has done no revision at all answers every question by guessing. Let X be the number correct. The pass mark is 5.</p>
@@ -1534,7 +1659,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p6-7"><span class="pb-num">25</span>One cup, then nine, then thirty-six</h3>
+              <h3 id="p6-7"><span class="pb-num">27</span>One cup, then nine, then thirty-six</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A vending machine is set to pour 250 ml of coffee. The amount it actually pours varies normally, with a mean of 250 ml and a standard deviation of 15 ml. The campus office treats anything under 244 ml as a short pour.</p>
@@ -1592,7 +1717,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p6-8"><span class="pb-num">26</span>The interval and the test, on one delivery</h3>
+              <h3 id="p6-8"><span class="pb-num">28</span>The interval and the test, on one delivery</h3>
               <span class="pb-chip stretch">Stretch</span>
             </div>
             <p class="pb-scenario">A supplier certifies its resistors at a mean of 100 Ω, and the factory's long production records put the standard deviation at 6 Ω, treated as known. A buyer measures 36 resistors from one delivery and gets a mean of 102.2 Ω. The contract lets the buyer reject a delivery whose mean is off spec in either direction.</p>
