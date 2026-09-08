@@ -63,6 +63,7 @@ This file is the master plan. The copy-paste prompts that execute it live in **[
 | **15 — Footing** | P69–P72 | privacy page + honest claims + README rewrite · GA interaction events for the loops · search v2 (typo tolerance, glossary answers) · capstone worked-project guide |
 | **16 — De-AI round two** | P73–P78 | tightened voice budgets + prose-lint v2 · em-dash paydown across every prose surface (pages, FAQs, injected JS strings) · list/shape variance · filtered Pages deploy so the planning docs stop being publicly served |
 | **17 — Teaching alongside Stats 1** | P79–P87 | textbook-dialect conventions labeled (quartiles, conservative df, σ-known z procedures) · printed Tables A/D/F + lookup drill · the probability lecture built out (rules, conditional, Bayes, random variables) · tails/practical significance/power in Stats 1 terms · t, χ² and regression by hand · section-range mock exams + exam-style problems · `?data=` presets, 7-week block map, present mode |
+| **18 — Teaching alongside Stats 2** | P88–P96 | the ANOVA table as the interface (one-way, contrasts, two-way, repeated measures, each built cell by cell with `?g=` presets) · non-parametric tests by hand + U/W/ρₛ critical tables · omitted-variable bias with its sign rule, n − p − 1, general-to-specific labeled · Stats 2 exam-style set + the problem-numbering repair · the ANOVA-and-regression project guide · Stats 2 block map |
 
 **Recommended order** (content and tools interleaved so the site visibly improves every week):
 
@@ -75,6 +76,8 @@ Hard dependencies: **P2 before any new course** (P4+). **P32 after at least two 
 **De-AI round two order (Phase 16, added 15 Aug 2026):** P73 first (it resets the budgets — `prose-lint --strict` is *expected red* from P73 until P77; `audit.js` stays the commit gate), then P74–P76 in any order, **P77 last of the editing passes** (the sitewide finisher), P78 independent — it can run any time, including first.
 
 **Teaching-alongside order (Phase 17, added 6 Sep 2026):** P81 first (the week-2 lecture is being taught now), then P80, P79, P82, P86 before the 1 Oct midterm, then P83, P84, P85 before the 26 Oct final, P87 last. One at a time: they share `faq_data.py`, `glossary-data.js`, `quiz.html`, `problems.html`, `software.js`, `teachers.html` and the search index. Dates in the Phase 17 addendum.
+
+**Teaching-alongside order (Phase 18, added 8 Sep 2026):** P89 → P90 → P88 → P91 → P92 → P94 → P93 → P95 → P96, all before block 2 starts in mid-November; one at a time (shared registries), P96 last. Dates and the reasoning in the Phase 18 addendum.
 
 ---
 
@@ -206,6 +209,73 @@ Found while reading; none affects the plan.
 - **Slide 2 vs the syllabus:** room 206 vs 208.
 - The tomato example's p = 4.56% comes from the table's 2 × .0228; the exact value is 4.55%. Fine for the lecture; the site's calculator will print the exact one, and P80's drill accepts the table's value.
 
+## Phase 18 addendum (8 Sep 2026) — teaching alongside Stats 2
+
+**Source:** the two Stats 2 lecture decks (Part 1: intro, non-parametric tests, one-way ANOVA, contrasts and multiple comparisons, factorial ANOVA — 155 slides; Part 2: repeated-measures ANOVA, inference for regression, multiple regression — 120 slides) and the 2025/26 syllabus for the block-2 course (Moore, McCabe & Craig chapters 10–14 taught in the order 12 → 13 → an open repeated-measures chapter → 10 → 11 → 14, plus an open non-parametric chapter in week 1; SPSS 29; a **midterm on weeks 1–4** and a **final on everything**, 35% each, **both on paper with the university's formula sheet and a basic calculator**; and a **group research project worth 30%**: a four-person team collects its own data and analyzes one question with both an ANOVA of at least three conditions and a multivariate regression that includes control variables, then writes it up). Weeks 1–4 are Hakan's lectures. The week-7 lecture (logistic regression and non-linearities, chapter 14) was not in either deck, so §2.16–§2.17 get only the formula-sheet treatment here; revisit when those slides exist. The next run is block 2 of 2026/27, from mid-November, so every prompt below can land in September and October.
+
+Phase 17's lesson carries over whole: the site teaches the software dialect, the course examines the textbook dialect by hand. The Stats 2 version of that gap has one dominant shape — **the ANOVA table** — and it recurs in every week.
+
+### What the comparison found
+
+Verified against the lesson prose (scripts stripped), not the sidebar titles:
+
+1. **The ANOVA table by hand is nowhere.** Every week of the course fills one in: SSG, SSE, SST with their df (I − 1, N − I, N − 1), MS = SS/df, F = MSG/MSE, sₚ = √MSE, η² = SSG/SST. §2.2's viz prints "Between-group MS" and "Within-group MS" and the prose never builds a sum of squares; "sum of squares" has zero hits across the seventeen Stats 2 lessons. Also missing from §2.2: F = t² when there are two groups, the data = fit + residual model, and the Type I inflation formula 1 − (1 − α)^k that motivates the omnibus test.
+2. **Planned contrasts are absent.** The lecture spends fifteen slides on ψ = Σaᵢx̄ᵢ, coefficients summing to zero, SE_ψ = √(MSE·Σaᵢ²/nᵢ), t on the error df, the CI ψ ± t*·SE and one-tailed tests for planned comparisons; §2.3 gives "planned vs. post-hoc" one paragraph and no arithmetic. The pairwise t with the pooled sₚ and df = N − I, the Bonferroni critical t** and simultaneous confidence intervals are likewise absent, and so is the reporting convention the course uses ("t(73) = 6.62, p < .017").
+3. **Factorial ANOVA:** the two-way table and its df (I − 1, J − 1, (I − 1)(J − 1), N − IJ); marginal means and **simple main effects computed from the four cell means** (§2.4 has one sentence on "simple effects"); the words *moderator* and *moderation* (zero hits in §2.4, four in §2.11); the efficiency argument (a 3 × 3 with 14 per cell is 126 people where two one-way studies need 252); and the variance-partition picture the lecture draws twice, in which adding a second factor moves variance out of the error term.
+4. **Repeated measures:** the RM table with SS_total = SS_conditions + SS_subjects + SS_error and df (n − 1)(k − 1); the identity Var(X − Y) = Var(X) + Var(Y) − 2·Cov(X, Y) that explains why pairing works (a five-person example with SDs of 25.5 and 25.6 whose difference scores have SD 2.0 — verified); **mixed between × within designs** (the only "mixed" in §2.5 is the multilevel model), with their df table and the interpret-the-interaction-first rule; and order effects, carryover and counterbalancing, all zero hits.
+5. **Non-parametric tests by hand and by table.** The course's week-1 chapter computes U from rank sums (U₁ = n₁n₂ + n₁(n₁ + 1)/2 − R₁, take the smaller U, reject when U ≤ U*), W from signed ranks (discard zeros, T₊ and T₋, take the smaller), and Spearman's ρₛ = 1 − 6Σd²/(n(n² − 1)), each against a **critical-value table**, with one-tailed tests done by doubling α. §2.1 teaches the logic of U and W well and prints exact p-values; it never shows the arithmetic, has no tables, and gives Spearman one line. The exam is on paper.
+6. **Inference for regression** is well covered (§2.7 has the model, s on n − 2, SE(b₁), t, the CI, the ANOVA table and F = t²). Missing: b₁ = cov(x, y)/var(x) and the word *covariance* itself, SE(b₀), and the *exogeneity* / *BLUE* vocabulary the course attaches to the conditions.
+7. **Multiple regression:** omitted-variable bias has a formula in the lecture (E[b₁] = β₁ + β₂·δ, where δ is the slope of the omitted variable on the included one) and a sign table; §2.9 says a left-out predictor "can bias" the others. The df n − p − 1 has zero hits sitewide; the overall F(p, n − p − 1) test, the multiple correlation R, and the adjusted-R² formula are not written out; the course teaches general-to-specific model selection (t, adjusted R², AIC) as a procedure with cautions where §2.12 warns against stepwise — two dialects that need labeling, not a winner; and the poets-die-young demonstration that a one-way ANOVA is a regression on k − 1 dummies, with software dropping the collinear k-th, is the lecture's closing argument and §2.10 makes it in one sentence.
+8. **Exam prep.** The Stats 2 problem sets (18 problems) are concept-shaped; none is a "complete the table" item, which is what an ANOVA exam asks. `formulas.html` has the F-ratio, df, η² and Bonferroni rows and none of the hand rows above. P86's section-range scope already covers the midterm (§2.1–§2.5). **And the P86 tick recorded a drift it did not fix:** `problems.html`'s visible problem numbers duplicate across sets since P79/P82 appended to the Stats 1 set, and lesson prose cites problems by number.
+9. **The research project (30%)** has no guide with its exact shape. The capstone guide carries a 2 × 2 factorial through to APA; the course's project is a one-way ANOVA of three or more self-collected conditions *and* a multiple regression of the same question with control variables, in SPSS, written as a research paper. The syllabus's own AI policy forbids AI help with the dataset and the analysis, so the guide must teach the method on a shipped dataset and never do a student's work.
+10. **Teaching surface.** Presets on 2 of 17 Stats 2 lessons; no lesson can carry group data in its URL; `teachers.html`'s block map is Stats 1 only; `software.js` covers 16 of 17 lessons but has no SPSS **Contrasts** dialog steps and no "which row is which" tips for the repeated-measures and mixed-design output tables the lecture shows.
+
+**One implementation fact every ANOVA prompt must know:** `VIZ.sd` divides by *n* (a population SD). Every exam-dialect readout of *s*, MSE or sₚ needs the n − 1 form, so the sessions must use a sample-SD helper rather than `VIZ.sd`, and math-check should assert the divisor on one hand-computed table.
+
+### Rules for the phase
+
+Phase 17's rules carry unchanged: the site stays generic and public (nothing institution-specific, no slide text copied, the shape of examples rewritten with the site's own numbers); both dialects labeled and no default silently switched; exam-first (every formula in the form a formula sheet prints it, every interactive with a by-hand readout beside the exact one); presets carry lectures; the iron rules. Two additions for Stats 2:
+
+- **The table is the interface.** Wherever a lesson gains hand arithmetic, the viz shows the ANOVA table itself, cell by cell, and the "complete the missing cells" exam shape is a mode of that same table, not a separate widget.
+- **Group data in the URL** uses one convention everywhere: `?g=` with commas inside a group and semicolons between groups (the P84 `?t=` shape), parsed by one shared helper beside `SC.dataParam` and `SC.pairParam`.
+
+### Crosswalk: lecture → site, today and after Phase 18
+
+| Week (textbook ch.) | The lecture covers | On the site today | Phase 18 adds |
+|---|---|---|---|
+| 1 (open ch.) | parametric vs non-parametric; the equivalence table; rank-based steps; Mann–Whitney U by hand and by table (smaller U, U ≤ U*); Wilcoxon signed-ranks (T₊/T₋, W ≤ W*); Spearman's ρₛ by hand and by table; one-tailed by doubling α; when they lose power | §2.1 has the logic of U, W, Kruskal–Wallis and Friedman with a rank-ledger viz and exact p's; Spearman one line | **P88** the arithmetic and the three critical-value tables in `tables.html`, a Spearman section, the by-hand readouts |
+| 1–2 (ch. 12) | explained vs unexplained variance, the ANOVA table, df, MS, F(dfG, dfE), sₚ = √MSE, η² = SSG/SST, fit + residual, 1 − (1 − α)^k, F = t² for two groups, SPSS output | §2.2 has the F-ratio viz and Welch; no table, no SS | **P89** Build the ANOVA Table viz with `?g=`, the model, the identities, formula rows |
+| 2 (ch. 12) | planned contrasts (ψ, SE, t, CI, one-tailed), multiple comparisons with the pooled sₚ, Bonferroni t**, simultaneous CIs, reporting | §2.3 has the error pile-up viz, Bonferroni/Tukey/Holm/Games–Howell/Dunnett/BH conceptually | **P90** contrasts section + Contrast Builder viz, pairwise t by hand, Bonferroni t**, SPSS Contrasts steps |
+| 2–3 (ch. 13) | factorial designs, interaction = moderation, crossover vs spreading, the four patterns, marginal means and simple main effects, the two-way table and df, efficiency, variance partition, interpret interaction first | §2.4 has the 2 × 2 interaction-plot explorer | **P91** cell-means table with marginal means and simple main effects, the two-way table, Where the Variance Goes viz |
+| 3–4 (open ch.) | RM extends the paired t; the covariance identity; SS partition with subjects removed; the RM table and df; mixed designs and their df; order/carryover/counterbalancing; advantages and disadvantages | §2.5 has the subject-centering viz, sphericity and ε | **P92** RM table + partition readout, the identity worked, mixed-design section, counterbalancing |
+| 4–5 (ch. 10) | regression refresher with a dummy; b₁ = cov/var; the model and conditions incl. exogeneity/BLUE; residual plots; s, SE(b₁), SE(b₀); t and CI on n − 2; the regression ANOVA table; r² from the table | §2.7 strong; §2.8 residual plots | **P93** covariance form, SE(b₀), BLUE vocabulary, SPSS coefficients-table reading |
+| 5–7 (ch. 11) | omitted-variable bias with formula and sign table; the multiple model; t(n − p − 1); F(p, n − p − 1); R² and R; adjusted R²; interpreting mixed continuous + dummy models; multicollinearity, VIF > 10; theory vs general-to-specific selection; ANOVA as regression on dummies | §2.9 "controlling for" and adjusted-R² vizzes; §2.10 dummies; §2.12 VIF + stepwise warning; §2.14 AIC | **P93** OVB formula + sign quadrant in the viz, df, the overall F, R, adjusted R² formula, G2S labeled beside the warning, the dropped-dummy demonstration |
+| 7–8 (ch. 14) | logistic regression and non-linearities (slides not provided) | §2.16–§2.17 exist | formula-sheet rows only (P94); revisit with the slides |
+| exams + project | paper midterm on weeks 1–4, paper final; a group research project (ANOVA ≥ 3 conditions + multivariate regression, own data, SPSS, paper) | P86 range scope works for §2.1–§2.5; 18 concept-shaped Stats 2 problems; capstone guide is a 2 × 2 | **P94** exam-style Stats 2 set + numbering fix + formula-sheet pass; **P95** the ANOVA-and-regression project guide; **P96** Stats 2 block map, presets, SPSS output tips |
+
+### Running order and dates
+
+Block 2 of 2026/27 starts in mid-November (last year: week 1 on 10 Nov, midterm 9 Dec on weeks 1–4, final 22 Jan). Run one prompt per session, in this order, all of it before the block starts:
+
+1. **P89** (the ANOVA table) then **P90** (contrasts and multiple comparisons) — these are the week-1 and week-2 lectures Hakan gives.
+2. **P88** (non-parametric by hand and by table — also week 1), **P91** (factorial), **P92** (repeated measures) — the rest of the midterm's scope.
+3. **P94** (exam-style problems + the numbering fix) — before the first mock exam.
+4. **P93** (regression inference and multiple regression), **P95** (the project guide — students meet their supervisor about the research question in week 3, so this is wanted early), **P96** (instructor surface) last.
+
+P88–P95 all touch shared registries (`faq_data.py`, `glossary-data.js`, `quiz.html`, `problems.html`, `software.js`, `formulas.html`, `teachers.html`, the search index): **one at a time.** P96 documents the presets the others add.
+
+### Notes on the slides (for Hakan, not site work)
+
+- **Part 1, slide 63:** 1 − (1 − .05)³ = .142625, not .142525.
+- **Part 1, slide 49:** the exact two-tailed .05 critical value of Spearman's ρₛ for n = 9 is .683; .60 is the one-tailed value in most printed tables. Check which table the open chapter prints before the example says "0.68 > 0.60, reject".
+- **Part 1, slide 109:** the Bonferroni critical t for df = 73 at α/3 two-sided is 2.450 (the slide prints 2.43; the plain t* of 1.993 is right).
+- **Part 1, slide 111:** both post-hoc t values read 6.62, and "Midsize vehicles were larger" should say they were more fuel-efficient (higher mpg).
+- **Part 1, slide 141:** titled "The One-Way ANOVA Table" but shows the two-way table, with the error df printed as N − I; slide 142 has the corrected N − IJ.
+- **Part 2, slides 37–38:** "29 participants" in each meditation group, but the output's df (27 for the between-subjects error, 81 = 3 × 27 for the within error) imply 29 participants in total.
+- **Part 2, slide 19:** verified — the five pairs give SDs of 25.5 and 25.6 with difference-score SD 2.0, a paired t of 5.59 against an independent t of 0.31.
+- Cosmetic: the Part 1 title slides carry three different academic years (24/25, 25/26, 23/24 on the factorial title).
+- **External links the site can replace** (a human step, see the checklist): the Wolfram Visual ANOVA demonstration (slide 68) → `stats-2/one-way-anova/` with a `?g=` preset once P89 lands; the open RM chapter's partition figures → §2.5's Where-the-variance-goes readout once P92 lands.
+
 ## The human-only checklist (no AI can do these)
 
 - [ ] **Google Search Console** — verify statscapybara.com, submit `sitemap.xml`, check weekly. Do this first; it feeds P36/P37.
@@ -214,6 +284,7 @@ Found while reading; none affects the plan.
 - [ ] **One big launch post** when the Research Toolkit track is live — r/InternetIsBeautiful, Hacker News (Show HN), relevant teaching newsletters.
 - [ ] **Tell your students** — real usage + feedback beats everything above.
 - [ ] **Stats 1 slides (Phase 17, Sep 2026)** — swap the decks' external links for the site's own pages (`distributions.html#dice-lab`, the sampling-distribution and CLT lessons with presets), put the preset URLs P79–P87 create on the relevant slides, and fix the slide slips listed in the Phase 17 addendum (the r = 0.54 that is 0.68, the inverted outlier rule on slide 43, the upside-down fraction on slide 152).
+- [ ] **Stats 2 slides (Phase 18, Sep 2026)** — fix the slide slips listed in the Phase 18 addendum (the .142525 arithmetic, the Spearman critical value, the duplicated 6.62, the 29-vs-58 participants), swap the Wolfram ANOVA demo for §2.2 with a `?g=` preset once P89 lands, and put the new preset URLs on the week 1–4 slides.
 - [ ] Skim GA4/GSC monthly; paste interesting query data into prompt P37.
 - [ ] **A real photo in the About section** — replace the "HK" initials avatar; nothing says "a human made this" like a face. Consider adding one candid line to the bio about *why* a cognitive scientist built a capybara statistics site.
 - [ ] **The read-aloud test** — after Phase 10 lands, read two or three rewritten lessons aloud (or better: have a colleague or student read them cold) and mark anything that still sounds generated; feed the marks into the next P39 refresh run.
@@ -594,3 +665,12 @@ Tick these as sessions complete them (each prompt ends by updating this list).
   - **Found and fixed on the way out: `teachers.html` had crossed its own search-index cap.** Rebuilding the index and searching it for the text just written is the run-13 discipline, and the block map plus the present-mode section took the page from 18,255 to 23,035 characters, past the 20,000 default, losing 13% of itself (and 18,255 was already only 9% under the guard, so it was one section away either way) — everything from the block map's table onward. Same defect class as runs 13, 20 and 24 and P86's `problems.html`. Given a `PAGE_MAX_CHARS` entry of **60,000** rather than 25,000, on P86's reading that a runaway guard is not a budget; costs about 3 KB on a lazily loaded index. Proved by reintroducing it: at 20,000 the indexed text stops at 20,001 characters and "Mock exam" returns nothing; at 60,000 the page is whole and every tail phrase is reachable.
   - **`CACHE_VERSION` → `sc-v52`** (both `site.js` and `styles.css` changed and both are precached).
   - Gates: `audit.js` 0 errors, `math-check.js` 684/684 (`viz.js` untouched), `prose-lint.js --strict` green, and widget-terms, link-promises, advice-terms, untaught-names, prescription-terms, destination-promises, worked-examples and search-reach all clean with nothing added to any `ACKED`. `teachers.html` still lints at 0 em-dashes. Keyboard: the print button is a real `<button>`, focusable and activated by Enter; present mode keeps the shared a11y layer (canvas `role="img"` with its generated label, the `aria-live` stat row, the skip link) because `injectA11y()` runs before the embed branch returns.
+- [ ] P88 · Stats 2 wk 1 — non-parametric tests by hand: U, W and ρₛ arithmetic, U/W/ρₛ critical tables in tables.html, a Spearman section (Extra Powerful · Max)
+- [ ] P89 · Stats 2 wk 1–2 — the ANOVA table by hand: Build the ANOVA Table viz with exam mode and `?g=`, SS/df/MS/sₚ/η², F = t², the model, formula rows (Extra Powerful · Max)
+- [ ] P90 · Stats 2 wk 2 — planned contrasts (ψ, SE, t, CI) + pairwise t with pooled sₚ, Bonferroni t**, simultaneous CIs, Contrast Builder viz, SPSS Contrasts steps (Extra Powerful · Max)
+- [ ] P91 · Stats 2 wk 2–3 — factorial: cell-means table with marginal means and simple main effects, the two-way table, moderation vocabulary, Where the Variance Goes viz (Extra Powerful · Max)
+- [ ] P92 · Stats 2 wk 3–4 — repeated measures: the RM table and partition readout, the covariance identity, mixed designs, counterbalancing (Extra Powerful · Max)
+- [ ] P93 · Stats 2 wk 4–7 — regression inference and multiple regression: covariance form, SE(b₀), BLUE; omitted-variable bias formula + sign quadrant, n − p − 1, overall F, R, adjusted R², G2S labeled, ANOVA-as-regression in full (Extra Powerful · Max)
+- [ ] P94 · exam prep — Stats 2 exam-style set (8), the problems.html numbering repair + audit check, the formula sheet read as one (Powerful · Extra)
+- [ ] P95 · guide — the ANOVA-and-regression research project, one question two analyses, on a shipped dataset (Extra Powerful · Ultra)
+- [ ] P96 · instructor surface — Stats 2 eight-week block map, `?g=` documented, preset-table sweep (Powerful · Extra)
