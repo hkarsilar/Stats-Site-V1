@@ -15,6 +15,33 @@
 # to take effect. Rolling back is flipping that setting back to the
 # branch; nothing in the repository has to change.
 
+# ---------------------------------------------------------------------
+# Recovering a failed deploy — read this before pressing "Re-run".
+#
+# On 7 Sep 2026 (run #24, P83) the deploy job failed with "No artifacts
+# named github-pages were found for this workflow run", eleven seconds
+# after the build job had uploaded that artifact successfully. The
+# artifact existed; deploy-pages' one-shot metadata lookup did not see
+# it yet. That is a transient Actions/Pages API fault, it has no fix in
+# this file (the lookup runs once and has no retry input — its timeout
+# and error_count inputs govern deployment polling, not this call), and
+# the recovery is simply to run the workflow again.
+#
+# But use "Re-run all jobs", NEVER "Re-run failed jobs". Artifacts from
+# upload-artifact v4, which upload-pages-artifact v3 wraps, are scoped
+# to one workflow RUN ATTEMPT. Re-running only the failed job re-runs
+# deploy without re-running build, so the new attempt has no artifact at
+# all and fails with the identical message — which is exactly what that
+# run's second attempt did, 96 minutes later, in nine seconds. Re-running
+# all jobs rebuilds the artifact and succeeds.
+#
+# Simplest of all: a later push to main supersedes a failed deploy
+# outright. The artifact is the whole committed tree at the new head, so
+# the next successful deploy carries the stranded commit's content with
+# it. That is what happened here — P84's deploy published P83's work,
+# and nothing had to be reverted or re-pushed.
+# ---------------------------------------------------------------------
+
 name: Deploy site to GitHub Pages
 
 on:
