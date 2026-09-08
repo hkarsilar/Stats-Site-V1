@@ -701,12 +701,46 @@
     return out;
   }
 
+  /* ---------- ?data=x:y,… : a URL that carries a batch of PAIRS ----------
+     dataParam's two-column sibling, for the surfaces that plot one variable
+     against another: stats-1/correlation and stats-1/simple-linear-regression
+     today. Both lessons call this ONE helper rather than each parsing the
+     string themselves, so what counts as a valid ?data= cannot drift apart
+     between a scatter and the line drawn through it.
+
+     It inherits dataParam's rules rather than inventing new ones. A single
+     bad token rejects the WHOLE parameter, because half a scatter would
+     report an r nobody asked for with nothing on screen to say values went
+     missing. Three pairs is the floor: two points always sit exactly on a
+     line, so r is ±1 whatever the numbers were. And a column that never
+     varies is rejected too, since sx or sy of zero leaves both r and the
+     slope undefined. Returns an array of {x, y}, or null. */
+  function pairParam(raw, max) {
+    if (typeof raw !== "string") return null;
+    var toks = raw.split(/[,;\s]+/).filter(function (t) { return t !== ""; });
+    if (toks.length < 3 || toks.length > (max || 100)) return null;
+    var out = [];
+    for (var i = 0; i < toks.length; i++) {
+      var half = toks[i].split(":");
+      if (half.length !== 2) return null;
+      var px = numeric(half[0]), py = numeric(half[1]);
+      if (px === null || py === null) return null;
+      out.push({ x: px, y: py });
+    }
+    var movesX = false, movesY = false;
+    for (var j = 1; j < out.length; j++) {
+      if (out[j].x !== out[0].x) movesX = true;
+      if (out[j].y !== out[0].y) movesY = true;
+    }
+    return (movesX && movesY) ? out : null;
+  }
+
   /* expose the ring + mascot so a standalone page (progress.html) can reuse the
      exact same drawing instead of duplicating it — the copy feedback so
      tool pages share one "Copied!" pattern, preset() for lesson URLs, and
      track()/scoreBucket() so the three tool pages that own an event fire it
      through the shared layer instead of reaching for gtag themselves */
-  window.SC = { ring: ring, capy: capy, copied: flashCopied, preset: preset, dataParam: dataParam, track: track, scoreBucket: scoreBucket };
+  window.SC = { ring: ring, capy: capy, copied: flashCopied, preset: preset, dataParam: dataParam, pairParam: pairParam, track: track, scoreBucket: scoreBucket };
 
   /* ---------- homepage curriculum grid ---------- */
   function courseCard(c) {

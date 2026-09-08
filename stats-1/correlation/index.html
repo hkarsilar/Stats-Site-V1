@@ -55,6 +55,10 @@
           <li><strong>Sign = direction.</strong> Positive <em>r</em>: as one goes up, so does the other. Negative <em>r</em>: as one goes up, the other goes down.</li>
           <li><strong>Size = strength.</strong> Near ±1 the points hug a straight line; near 0 they're a shapeless blob with no linear trend.</li>
         </ul>
+        <h2>What to look at in the picture</h2>
+        <p>Before the number comes the scatterplot, and four things are worth saying out loud about every one you meet, in this order. The <strong>form</strong>: straight, curved, or broken into clumps. The <strong>direction</strong>: up to the right or down to the right. The <strong>strength</strong>: a tight band around that form, or a loose haze. Then, last, the <strong>deviations from the pattern</strong>, meaning the points that refuse to join in. Only the first three describe the crowd. The fourth is where most of the interesting questions live, and giving it a name of its own stops it being waved away.</p>
+        <p>The drawing itself needs some care as well. Stretch a plot tall and a limp relationship starts to look convincing; flatten it and a real one turns into a smear. Keep the plotting area roughly square, let each axis cover about the range its variable actually occupies, and leave no wide bands of empty paper at the edges. Then what you are reacting to is the relationship rather than the aspect ratio.</p>
+
         <p>Numbers are abstract, though. The fastest way to build intuition is to <em>see</em> what an <em>r</em> of 0.3 versus 0.9 actually looks like, and to break a tidy relationship by dragging a single point.</p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -81,7 +85,7 @@
             </div>
           </div>
 
-          <canvas id="corr-canvas" style="touch-action:none;cursor:grab"></canvas>
+          <canvas id="corr-canvas" style="--viz-ar: 2 / 1;touch-action:none;cursor:grab"></canvas>
 
           <div class="stat-row">
             <div class="stat"><span class="k">Correlation r</span><span class="v" id="stat-r">+0.70</span></div>
@@ -90,6 +94,48 @@
           </div>
         </div>
         <!-- ============ /INTERACTIVE ============ -->
+
+        <h2 id="computing-r-by-hand">Computing r by hand</h2>
+        <p>The coefficient is not a black box, and on a small table it is a five-minute job with a basic calculator. The definition says: turn every value into a <a href="../../stats-1/z-scores-and-the-normal-distribution/">z-score</a>, multiply each pair of them together, and average the results.</p>
+        <p style="text-align:center;font-family:var(--mono);font-size:1rem"><em>r</em> = 1 / (<em>n</em> − 1) &nbsp;·&nbsp; Σ [(x − x̄) / s<sub>x</sub>] · [(y − ȳ) / s<sub>y</sub>]</p>
+        <p>Standardizing is what makes the two columns comparable: after it, both are measured in standard deviations from their own mean, so a person above average on both contributes a positive product, as does a person below average on both, while a person high on one and low on the other contributes a negative one. Add the products up and the sign of the total tells you which kind of person dominates. Divide by <em>n</em> − 1, the same divisor the <a href="../../stats-1/describing-data/">standard deviation</a> uses, and the answer can never leave the range −1 to +1.</p>
+        <p>Five music students below, with the hours each spent practicing in a week and the mark their teacher gave the piece. Step through the four buttons and the table fills in column by column.</p>
+
+        <!-- ============ INTERACTIVE 1b ============ -->
+        <div class="viz" id="csviz">
+          <p class="viz-title">📏 Correlation, Step by Step</p>
+          <p class="viz-sub">Five students, their practice hours and their marks. Step 1 measures how far each student sits from the two means, step 2 puts those distances in standard deviations, step 3 multiplies each pair, and step 4 averages the products into <em>r</em>.</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>Build it up</label>
+              <div class="seg" id="cs-steps">
+                <button data-step="1" class="active">1 · Deviations</button>
+                <button data-step="2">2 · Standardized</button>
+                <button data-step="3">3 · Products</button>
+                <button data-step="4">4 · The mean</button>
+              </div>
+            </div>
+          </div>
+
+          <canvas id="cs-canvas" style="--viz-ar: 5 / 3"></canvas>
+
+          <div class="hscroll"><table class="ref-table" id="cs-table"></table></div>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Means</span><span class="v" id="cs-means" style="font-size:.95rem">—</span></div>
+            <div class="stat"><span class="k">Standard deviations</span><span class="v" id="cs-sds" style="font-size:.95rem">—</span></div>
+            <div class="stat"><span class="k">Sum of products</span><span class="v" id="cs-sum">—</span></div>
+            <div class="stat"><span class="k">Correlation r</span><span class="v" id="cs-r">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE 1b ============ -->
+
+        <p>The arithmetic runs: x̄ = 3.0 hours and ȳ = 66.0 marks, s<sub>x</sub> = 1.58 and s<sub>y</sub> = 9.62, and the five products come out as 1.447, −0.263, 0.000, −0.066 and 1.841. Their total is 2.959, and 2.959 divided by 4 gives <strong><em>r</em> = 0.740</strong>. Look at where that total comes from. The two students at the ends of the practice range contribute 3.288 between them, which is more than the whole total, because the two in the middle pull against the trend and take some of it back. One of those two practiced an hour above average and scored a mark just below it. And the student who practiced exactly the average three hours contributes a flat zero however well or badly they did, because their standardized x is zero and zero times anything is zero. Distance from the mean is what buys influence here, which is the arithmetic underneath the outlier warning below.</p>
+
+        <h2>Facts about r</h2>
+        <p>Several useful properties fall straight out of that formula. Because it is built from standardized values, <em>r</em> carries <strong>no units</strong> and does not move if you change them: measure practice in minutes instead of hours, or marks out of 20 instead of 100, and the coefficient is identical. Because x and y enter the product symmetrically, <strong>correlating y with x gives exactly the same number</strong> as correlating x with y, which is the first sign that <em>r</em> is a description rather than a prediction. The mean of standardized products cannot escape <strong>−1 to +1</strong>, and it reaches an endpoint only when every point lies on one straight line. Both columns have to be <strong>quantitative</strong>: there is no correlation between eye color and blood type, however the software behaves when you feed it numbered categories.</p>
+        <p>Two more facts matter enough to have earned the next section. The formula sees straight lines and nothing else, and a single unusual point can move the answer a long way.</p>
 
         <h2>Three things people get wrong</h2>
         <div class="callout key">
@@ -133,6 +179,37 @@
 
         <p>Every dataset above reports r = 0.82 and the exact same line, yet only the first is the tidy linear relationship that number implies. The second is a smooth curve, the third is a perfect line derailed by one outlier, and the fourth has no trend at all until a single far-flung point invents one. Summary statistics are a compression; the scatter is the truth.</p>
 
+        <p>Which raises the obvious question in the other direction: how good is your eye? Reading a strength off a cloud is a skill, it is trained by feedback rather than by reading about it, and almost everybody starts out guessing too high. The ten plots below are fixed, so a whole class gets the same ten in the same order and can compare notes afterwards.</p>
+
+        <!-- ============ INTERACTIVE 3 ============ -->
+        <div class="viz" id="grviz">
+          <p class="viz-title">🎮 Guess the r</p>
+          <p class="viz-sub">Ten scatterplots, the same ten every visit. Type the correlation you think you are looking at, press Enter to check, then press Enter again for the next one.</p>
+
+          <canvas id="gr-canvas" style="--viz-ar: 2 / 1"></canvas>
+
+          <div class="controls">
+            <div class="control" style="min-width:min(210px,100%)">
+              <label for="gr-guess">Your guess, between −1 and 1</label>
+              <input type="number" id="gr-guess" min="-1" max="1" step="0.05" placeholder="e.g. 0.6" style="width:100%" />
+            </div>
+            <div class="control"><button class="btn btn-primary btn-sm" id="gr-check">Check</button></div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="gr-next">Next plot</button></div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="gr-reset">Start over</button></div>
+          </div>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Plot</span><span class="v" id="gr-idx">1 of 10</span></div>
+            <div class="stat"><span class="k">Your guess</span><span class="v" id="gr-your">—</span></div>
+            <div class="stat"><span class="k">True r</span><span class="v" id="gr-true">—</span></div>
+            <div class="stat"><span class="k">Mean absolute error</span><span class="v" id="gr-mae">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE 3 ============ -->
+
+        <p>The running score is a <strong>mean absolute error</strong>: for each plot you have checked, the distance between your guess and the true value, with the sign thrown away, averaged over the plots so far. It answers "how far off am I, typically?" rather than "am I too high or too low?", and because the misses never cancel, a run of overestimates cannot hide inside it. Under about .10 by the end of the ten is a genuinely good eye. Most people land nearer .15 on their first pass and improve quickly, which is the point of doing it rather than reading about it.</p>
+        <p>Two habits come out of this exercise. A cloud that looks like a clear relationship is often around .5 rather than the .8 it feels like, and the visual difference between .0 and .3 is much smaller than the difference between .6 and .9. Both are reasons to report the number instead of describing the picture in words.</p>
+
         <h2>Two reasons r comes out too small</h2>
         <p>A weak correlation sometimes means the relationship is weak. Two duller explanations come first, and both make an honest relationship look smaller than it is.</p>
         <p><strong>Restriction of range.</strong> Correlation feeds on spread, so looking at only part of the range starves it. Suppose an admissions test correlates .60 with later grades across all applicants. Compute that correlation inside the students you actually admitted, the top quarter of the test distribution, and .60 shows up as roughly .35; in the top 10% it falls to about .30. Nothing about the underlying relationship changed. You removed the variation that made it visible. This is why selective samples (admitted students, hired employees, patients sick enough to be referred) return correlations that look disappointing, and why a validity study run inside the selected group understates the very test that did the selecting.</p>
@@ -162,6 +239,8 @@
         <p class="pb-xref">Want a real cloud to try this on? <a href="../../datasets.html#screen">screen-time.csv</a> holds 60 people, one influential point, and the worked answer for what <em>r</em> does when you drop it.</p>
 
         <p class="pb-xref"><a href="../../problems.html#p2-8">Problem 20 of the practice problems</a> computes <em>r</em> from six pairs of numbers by hand, then asks what besides causation could have produced it.</p>
+
+        <p class="pb-xref"><a href="../../problems.html#p1-23">Problem 23</a> runs the standardized-product table above on five hospital wards, ending on a negative <em>r</em> and the ward that contributes nothing to it.</p>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
@@ -196,23 +275,43 @@
   <script src="../../assets/js/viz.js"></script>
 
   <!-- ============ Correlation visualization ============
-       URL presets (P67):
+       URL presets (P67, P85):
          ?r=<-1–1>        target correlation, written as the readout prints it
          ?line=1|0        show the best-fitting line
          ?ellipse=1|0     show the ellipse
+         ?data=x:y,…     3–100 of the reader's own pairs, replacing the cloud
        e.g.  ?embed=1&r=0.3&ellipse=1  →  "this is what r = .30 actually looks like"
+             ?data=1:55,2:65,3:60,4:70,5:80  →  a lecture's own numbers, live
+
+       ?data= is listed LAST in the preset map on purpose: SC.preset walks the
+       map in insertion order, and moving the target slider regenerates the
+       cloud, so a URL carrying both must end on the reader's own points.
   -->
   <script>
   (function () {
     "use strict";
     var LO = -3.4, HI = 3.4, N = 40, rho = 0.7, pts = [], drag = -1;
     var canvas = document.getElementById("corr-canvas"), ctx, W = 0, H = 320, pad = 30;
+    /* The plot region is a centered SQUARE, and it has to be. This lesson tells
+       readers to keep a scatterplot roughly square because a stretched one
+       misreports strength by eye, and the ellipse below only means what its
+       caption says when both axes get the same amount of space: on a 2:1
+       canvas an r of 0 draws as a wide oval rather than a beach ball. */
+    var box = { side: 0, x0: 0, y0: 0 };
 
-    function vx(v) { return pad + ((v - LO) / (HI - LO)) * (W - 2 * pad); }
-    function vy(v) { return (H - pad) - ((v - LO) / (HI - LO)) * (H - 2 * pad); }
-    function px2x(p) { return LO + ((p - pad) / (W - 2 * pad)) * (HI - LO); }
-    function py2y(p) { return LO + (((H - pad) - p) / (H - 2 * pad)) * (HI - LO); }
-    function clamp(v) { return v < LO ? LO : v > HI ? HI : v; }
+    /* The generated cloud is standardized, so it lives in the ±3.4 box and its
+       two axes cross at (0, 0). A ?data= load swaps in the reader's own units,
+       so the window and the crosshair are variables rather than constants:
+       they follow the data, and the crosshair sits at the two means, which is
+       where every deviation on this page is measured from. */
+    var xLO = LO, xHI = HI, yLO = LO, yHI = HI, axX = 0, axY = 0, loaded = false;
+
+    function vx(v) { return box.x0 + ((v - xLO) / (xHI - xLO)) * box.side; }
+    function vy(v) { return (box.y0 + box.side) - ((v - yLO) / (yHI - yLO)) * box.side; }
+    function px2x(p) { return xLO + ((p - box.x0) / box.side) * (xHI - xLO); }
+    function py2y(p) { return yLO + (((box.y0 + box.side) - p) / box.side) * (yHI - yLO); }
+    function clampX(v) { return v < xLO ? xLO : v > xHI ? xHI : v; }
+    function clampY(v) { return v < yLO ? yLO : v > yHI ? yHI : v; }
 
     /* Frozen noise: each point keeps a fixed (x, error) pair, so dragging
        the ρ slider morphs the SAME cloud — points slide toward or away from
@@ -227,7 +326,7 @@
       for (var i = 0; i < N; i++) {
         var x = zx[i];
         var y = rho * x + Math.sqrt(Math.max(0, 1 - rho * rho)) * ze[i];
-        pts.push({ x: clamp(x), y: clamp(y) });
+        pts.push({ x: clampX(x), y: clampY(y) });
       }
     }
     function cloudStats() {
@@ -251,19 +350,28 @@
       return "very strong " + dir;
     }
 
-    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function fit() {
+      // track the width so the square gets as much room as the canvas allows,
+      // capped so a wide desktop does not hand this one widget half a screen
+      var cw = canvas.clientWidth || canvas.parentElement.clientWidth || 640;
+      H = Math.round(Math.max(300, Math.min(cw, 440)));
+      var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w;
+      box.side = Math.min(W - 2 * pad, H - 2 * pad);
+      box.x0 = (W - box.side) / 2; box.y0 = (H - box.side) / 2;
+    }
     function draw() {
       ctx.clearRect(0, 0, W, H);
       // axes through the means (origin ~ 0,0 here)
       ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(vx(0), pad - 6); ctx.lineTo(vx(0), H - pad + 6); ctx.moveTo(pad - 6, vy(0)); ctx.lineTo(W - pad + 6, vy(0)); ctx.stroke();
+      var L = box.x0, R = box.x0 + box.side, T = box.y0, B = box.y0 + box.side;
+      ctx.beginPath(); ctx.moveTo(vx(axX), T - 6); ctx.lineTo(vx(axX), B + 6); ctx.moveTo(L - 6, vy(axY)); ctx.lineTo(R + 6, vy(axY)); ctx.stroke();
       ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px Inter, sans-serif";
-      ctx.textAlign = "right"; ctx.fillText("y", vx(0) - 6, pad);
-      ctx.textAlign = "left"; ctx.fillText("x", W - pad, vy(0) + 14);
+      ctx.textAlign = "right"; ctx.fillText("y", vx(axX) - 6, T);
+      ctx.textAlign = "left"; ctx.fillText("x", R, vy(axY) + 14);
 
       var s = cloudStats();
       ctx.save();
-      ctx.beginPath(); ctx.rect(pad - 8, pad - 8, W - 2 * pad + 16, H - 2 * pad + 16); ctx.clip();
+      ctx.beginPath(); ctx.rect(L - 8, T - 8, box.side + 16, box.side + 16); ctx.clip();
       // covariance ellipse (~95% region): its shape IS the correlation —
       // a cigar means strong r, a beach ball means r ≈ 0
       if (document.getElementById("show-ellipse").checked && s.sxx > 0 && s.syy > 0) {
@@ -286,7 +394,7 @@
       if (document.getElementById("show-line").checked && s.sxx > 0) {
         var slope = s.sxy / s.sxx, icpt = s.my - slope * s.mx;
         ctx.strokeStyle = "#f97316"; ctx.lineWidth = 2.5;
-        ctx.beginPath(); ctx.moveTo(vx(LO), vy(icpt + slope * LO)); ctx.lineTo(vx(HI), vy(icpt + slope * HI)); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(vx(xLO), vy(icpt + slope * xLO)); ctx.lineTo(vx(xHI), vy(icpt + slope * xHI)); ctx.stroke();
       }
       ctx.restore();
       // points
@@ -310,15 +418,37 @@
       return best;
     }
     canvas.addEventListener("pointerdown", function (e) { drag = nearest(e.offsetX, e.offsetY); if (drag >= 0) { canvas.setPointerCapture(e.pointerId); canvas.style.cursor = "grabbing"; update(); } });
-    canvas.addEventListener("pointermove", function (e) { if (drag < 0) return; pts[drag] = { x: clamp(px2x(e.offsetX)), y: clamp(py2y(e.offsetY)) }; update(); });
+    canvas.addEventListener("pointermove", function (e) { if (drag < 0) return; pts[drag] = { x: clampX(px2x(e.offsetX)), y: clampY(py2y(e.offsetY)) }; update(); });
     function end() { drag = -1; canvas.style.cursor = "grab"; update(); }
     canvas.addEventListener("pointerup", end);
     canvas.addEventListener("pointercancel", end);
 
+    /* ?data= : the reader's own pairs replace the generated cloud, and the
+       window is rebuilt around them with a margin so no point lands on the
+       frame. Moving the target slider or asking for a new cloud goes back to
+       generated mode, because both of those exist to reshape a simulated
+       cloud and there is nothing simulated left to reshape. */
+    function loadPairs(list) {
+      var xs = [], ys = [];
+      for (var i = 0; i < list.length; i++) { xs.push(list[i].x); ys.push(list[i].y); }
+      var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs);
+      var y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
+      var mx = (x1 - x0) * 0.08, my = (y1 - y0) * 0.08;
+      xLO = x0 - mx; xHI = x1 + mx; yLO = y0 - my; yHI = y1 + my;
+      axX = xs.reduce(function (a, b) { return a + b; }, 0) / xs.length;
+      axY = ys.reduce(function (a, b) { return a + b; }, 0) / ys.length;
+      pts = list.map(function (q) { return { x: q.x, y: q.y }; });
+      loaded = true; update();
+    }
+    function unload() {
+      if (!loaded) return;
+      xLO = LO; xHI = HI; yLO = LO; yHI = HI; axX = 0; axY = 0; loaded = false;
+    }
+
     document.getElementById("rho-range").addEventListener("input", function () {
-      rho = this.value / 100; document.getElementById("rho-val").textContent = (rho >= 0 ? "+" : "") + rho.toFixed(2); gen(); update();
+      rho = this.value / 100; document.getElementById("rho-val").textContent = (rho >= 0 ? "+" : "") + rho.toFixed(2); unload(); gen(); update();
     });
-    document.getElementById("newcloud").addEventListener("click", function () { seed(); gen(); update(); });
+    document.getElementById("newcloud").addEventListener("click", function () { unload(); seed(); gen(); update(); });
     document.getElementById("show-line").addEventListener("change", draw);
     document.getElementById("show-ellipse").addEventListener("change", draw);
     window.addEventListener("resize", function () { fit(); update(); });
@@ -331,7 +461,8 @@
     if (window.SC && SC.preset) SC.preset({
       r: { el: "#rho-range", scale: 100 },
       line: "#show-line",
-      ellipse: "#show-ellipse"
+      ellipse: "#show-ellipse",
+      data: function (raw) { var d = SC.pairParam(raw, 100); if (d) loadPairs(d); }
     });
   })();
   </script>
@@ -394,5 +525,325 @@
     fit(); draw();
   })();
   </script>
+
+  <!-- ============ Correlation, Step by Step ============
+       Five fixed points (no simulation, so nothing to reseed). The table and
+       the picture are both computed from the same PTS array, so the numbers a
+       reader copies off the screen cannot drift from the ones the canvas draws.
+       URL preset: ?step=1|2|3|4
+  -->
+  <script>
+  (function () {
+    "use strict";
+    /* Practice hours and the teacher's mark, five students. Chosen so the
+       hand arithmetic lands exactly: Sxx = 10, Syy = 370, Sxy = 45, giving
+       r = 0.740 and (in section 1.18) the line y = 52.5 + 4.5x. */
+    var PTS = [{ x: 1, y: 55 }, { x: 2, y: 70 }, { x: 3, y: 60 }, { x: 4, y: 65 }, { x: 5, y: 80 }];
+    var step = 1;
+    var canvas = document.getElementById("cs-canvas"), ctx, W = 0, H = 300;
+    var padL = 62, padR = 18, padT = 16, padB = 46;
+    var XMIN = 0.35, XMAX = 5.65, YMIN = 50, YMAX = 85;
+
+    var n = PTS.length;
+    var mx = 0, my = 0;
+    PTS.forEach(function (p) { mx += p.x; my += p.y; });
+    mx /= n; my /= n;
+    var sxx = 0, syy = 0;
+    PTS.forEach(function (p) { sxx += (p.x - mx) * (p.x - mx); syy += (p.y - my) * (p.y - my); });
+    var sx = Math.sqrt(sxx / (n - 1)), sy = Math.sqrt(syy / (n - 1));
+    var ZX = PTS.map(function (p) { return (p.x - mx) / sx; });
+    var ZY = PTS.map(function (p) { return (p.y - my) / sy; });
+    var PROD = ZX.map(function (v, i) { return v * ZY[i]; });
+    var SUM = PROD.reduce(function (a, b) { return a + b; }, 0);
+    var R = SUM / (n - 1);
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function sxp(v) { return padL + (v - XMIN) / (XMAX - XMIN) * (W - padL - padR); }
+    function syp(v) { return (H - padB) - (v - YMIN) / (YMAX - YMIN) * (H - padT - padB); }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      var L = sxp(XMIN), Rt = sxp(XMAX), T = syp(YMAX), B = syp(YMIN);
+
+      /* Step 3 onward: tint the quadrants around the two means. A point in an
+         indigo quadrant is above or below average on BOTH variables, so its
+         two standardized values share a sign and the product is positive; an
+         orange quadrant is one of each, and the product comes out negative. */
+      if (step >= 3) {
+        var cx = sxp(mx), cy = syp(my);
+        ctx.globalAlpha = 0.10;
+        ctx.fillStyle = VIZ.css("--primary");
+        ctx.fillRect(cx, T, Rt - cx, cy - T);
+        ctx.fillRect(L, cy, cx - L, B - cy);
+        ctx.fillStyle = "#f97316";
+        ctx.fillRect(L, T, cx - L, cy - T);
+        ctx.fillRect(cx, cy, Rt - cx, B - cy);
+        ctx.globalAlpha = 1;
+        ctx.font = "600 14px Inter, sans-serif"; ctx.textAlign = "center";
+        ctx.fillStyle = VIZ.css("--primary");
+        ctx.fillText("+", Rt - 14, T + 20); ctx.fillText("+", L + 14, B - 10);
+        ctx.fillStyle = "#f97316";
+        ctx.fillText("−", L + 14, T + 20); ctx.fillText("−", Rt - 14, B - 10);
+      }
+
+      // frame
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.strokeRect(L, T, Rt - L, B - T);
+
+      // ticks: raw units at every step, the standardized scale added at step 2
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace, monospace";
+      ctx.textAlign = "center";
+      for (var gx = 1; gx <= 5; gx++) ctx.fillText(gx, sxp(gx), B + 14);
+      ctx.textAlign = "right";
+      for (var gy = 55; gy <= 80; gy += 5) ctx.fillText(gy, L - 6, syp(gy) + 3);
+      /* Step 2 draws the standard-deviation scale as dotted gridlines at one SD
+         either side of each mean, rather than as a second row of bare numbers.
+         A bare "+1" printed beside the raw tick "75" reads as a second value
+         for the same row; a labeled line at 75.6 cannot be mistaken for one. */
+      if (step >= 2) {
+        ctx.strokeStyle = VIZ.css("--secondary"); ctx.globalAlpha = 0.55;
+        ctx.setLineDash([2, 4]); ctx.lineWidth = 1;
+        [-1, 1].forEach(function (k) {
+          ctx.beginPath(); ctx.moveTo(sxp(mx + k * sx), T); ctx.lineTo(sxp(mx + k * sx), B); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(L, syp(my + k * sy)); ctx.lineTo(Rt, syp(my + k * sy)); ctx.stroke();
+        });
+        ctx.setLineDash([]); ctx.globalAlpha = 1;
+        ctx.fillStyle = VIZ.css("--secondary"); ctx.font = "10px ui-monospace, monospace";
+        ctx.textAlign = "center";
+        [-1, 1].forEach(function (k) {
+          ctx.fillText((k > 0 ? "+1" : "−1") + " s", sxp(mx + k * sx), B + 28);
+        });
+        ctx.textAlign = "right";
+        [-1, 1].forEach(function (k) {
+          ctx.fillText((k > 0 ? "+1" : "−1") + " s", L - 30, syp(my + k * sy) + 3);
+        });
+      }
+
+      // the two mean lines: everything on this page is measured from here
+      ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([5, 4]); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(sxp(mx), T); ctx.lineTo(sxp(mx), B); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(L, syp(my)); ctx.lineTo(Rt, syp(my)); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = VIZ.css("--text-muted"); ctx.font = "11px Inter, sans-serif";
+      ctx.textAlign = "left"; ctx.fillText("x̄", sxp(mx) + 4, T + 12);
+      ctx.fillText("ȳ", L + 4, syp(my) - 5);
+
+      // step 1: the two deviations, drawn as the offsets they are
+      if (step === 1) {
+        ctx.strokeStyle = "#f97316"; ctx.lineWidth = 1.5;
+        for (var d = 0; d < n; d++) {
+          ctx.beginPath();
+          ctx.moveTo(sxp(PTS[d].x), syp(PTS[d].y)); ctx.lineTo(sxp(mx), syp(PTS[d].y));
+          ctx.moveTo(sxp(PTS[d].x), syp(PTS[d].y)); ctx.lineTo(sxp(PTS[d].x), syp(my));
+          ctx.stroke();
+        }
+      }
+
+      // points; from step 3 the radius carries |product|, so the two students
+      // doing the work are visibly the two doing the work
+      for (var i = 0; i < n; i++) {
+        var rad = 5;
+        if (step >= 3) rad = 4 + 4 * Math.min(1, Math.abs(PROD[i]) / 1.9);
+        ctx.fillStyle = (step >= 3 && PROD[i] < 0) ? "#f97316" : VIZ.css("--primary");
+        ctx.beginPath(); ctx.arc(sxp(PTS[i].x), syp(PTS[i].y), rad, 0, 6.2832); ctx.fill();
+      }
+
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px Inter, sans-serif";
+      ctx.textAlign = "center"; ctx.fillText("practice hours", (L + Rt) / 2, H - 4);
+    }
+
+    function f3(v) { var t = v.toFixed(3); return t === "-0.000" ? "0.000" : t.replace("-", "−"); }
+    function sgn(v) { return (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v); }
+
+    function table() {
+      var head = "<thead><tr><th>Student</th><th>Hours x</th><th>Mark y</th><th>x − x̄</th><th>y − ȳ</th>";
+      if (step >= 2) head += "<th>(x − x̄)/s<sub>x</sub></th><th>(y − ȳ)/s<sub>y</sub></th>";
+      if (step >= 3) head += "<th>product</th>";
+      head += "</tr></thead>";
+      var body = "";
+      for (var i = 0; i < n; i++) {
+        body += "<tr><td>" + (i + 1) + "</td><td>" + PTS[i].x + "</td><td>" + PTS[i].y + "</td>" +
+                "<td>" + sgn(PTS[i].x - mx) + "</td><td>" + sgn(PTS[i].y - my) + "</td>";
+        if (step >= 2) body += "<td>" + f3(ZX[i]) + "</td><td>" + f3(ZY[i]) + "</td>";
+        if (step >= 3) body += "<td>" + f3(PROD[i]) + "</td>";
+        body += "</tr>";
+      }
+      if (step >= 4) {
+        var cols = step >= 3 ? 7 : 5;
+        body += '<tr><td colspan="' + cols + '" style="text-align:right"><strong>Total of the products</strong></td>' +
+                "<td><strong>" + f3(SUM) + "</strong></td></tr>";
+      }
+      document.getElementById("cs-table").innerHTML = head + "<tbody>" + body + "</tbody>";
+    }
+
+    function update() {
+      document.getElementById("cs-means").textContent = "x̄ = " + mx.toFixed(1) + " · ȳ = " + my.toFixed(1);
+      document.getElementById("cs-sds").textContent = step >= 2 ? ("s" + "ₓ" + " = " + sx.toFixed(2) + " · s" + "ᵧ" + " = " + sy.toFixed(2)) : "—";
+      document.getElementById("cs-sum").textContent = step >= 3 ? f3(SUM) : "—";
+      document.getElementById("cs-r").textContent = step >= 4 ? f3(R) : "—";
+      table(); draw();
+    }
+
+    document.getElementById("cs-steps").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      step = +b.dataset.step;
+      Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", +x.dataset.step === step); });
+      update();
+    });
+    window.addEventListener("resize", function () { fit(); draw(); });
+    VIZ.onTheme(draw);
+    fit(); update();
+
+    if (window.SC && SC.preset) SC.preset({ step: "#cs-steps" });
+  })();
+  </script>
+
+  <!-- ============ Guess the r ============
+       Ten scatterplots from a FIXED seed, so every visit and every student in
+       a class sees the same ten in the same order. The true r is computed from
+       the points on screen rather than stored beside them, so the answer key
+       cannot drift from the picture. Nothing is stored and nothing is timed.
+       URL preset: ?plot=1–10
+  -->
+  <script>
+  (function () {
+    "use strict";
+    /* mulberry32: four lines of deterministic PRNG. VIZ.randn() draws from
+       Math.random(), which is exactly what must not happen here — the whole
+       exercise depends on the ten plots being the same ten for everybody. */
+    function mulberry32(a) {
+      return function () {
+        a |= 0; a = a + 0x6D2B79F5 | 0;
+        var t = Math.imul(a ^ a >>> 15, 1 | a);
+        t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      };
+    }
+    var SEED = 19416, NPTS = 24;
+    var TARGET = [0.85, -0.35, 0.15, -0.92, 0.55, 0.72, -0.60, 0.30, -0.05, 0.45];
+    var SETS = (function () {
+      var rnd = mulberry32(SEED), spare = null;
+      function randn() {
+        if (spare !== null) { var s = spare; spare = null; return s; }
+        var u, v, q;
+        do { u = 2 * rnd() - 1; v = 2 * rnd() - 1; q = u * u + v * v; } while (q >= 1 || q === 0);
+        var m = Math.sqrt(-2 * Math.log(q) / q);
+        spare = v * m; return u * m;
+      }
+      return TARGET.map(function (rho) {
+        var pts = [];
+        for (var i = 0; i < NPTS; i++) {
+          var zx = randn(), ze = randn();
+          pts.push({ x: zx, y: rho * zx + Math.sqrt(1 - rho * rho) * ze });
+        }
+        return pts;
+      });
+    })();
+    function pearson(pts) {
+      var k = pts.length, ax = 0, ay = 0;
+      pts.forEach(function (p) { ax += p.x; ay += p.y; });
+      ax /= k; ay /= k;
+      var sxy = 0, sxx = 0, syy = 0;
+      pts.forEach(function (p) { var dx = p.x - ax, dy = p.y - ay; sxy += dx * dy; sxx += dx * dx; syy += dy * dy; });
+      return sxy / Math.sqrt(sxx * syy);
+    }
+    var TRUE = SETS.map(pearson);
+
+    var idx = 0, shown = false, errors = [];
+    var canvas = document.getElementById("gr-canvas"), ctx, W = 0, H = 300, pad = 22;
+    var LO = -3.2, HI = 3.2;
+    var guessEl = document.getElementById("gr-guess");
+    /* Square, and non-negotiably so: this exercise asks a reader to judge
+       strength by eye, and a stretched box is exactly the distortion the
+       section above warns them about. Both axes therefore get the same
+       number of pixels per unit inside a centered square. */
+    var box = { side: 0, x0: 0, y0: 0 };
+
+    function fit() {
+      var cw = canvas.clientWidth || canvas.parentElement.clientWidth || 640;
+      H = Math.round(Math.max(300, Math.min(cw, 440)));
+      var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w;
+      box.side = Math.min(W - 2 * pad, H - 2 * pad);
+      box.x0 = (W - box.side) / 2; box.y0 = (H - box.side) / 2;
+    }
+    function gx(v) { return box.x0 + (v - LO) / (HI - LO) * box.side; }
+    function gy(v) { return (box.y0 + box.side) - (v - LO) / (HI - LO) * box.side; }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.strokeRect(box.x0, box.y0, box.side, box.side);
+      var pts = SETS[idx];
+      ctx.fillStyle = VIZ.css("--primary"); ctx.globalAlpha = 0.75;
+      for (var i = 0; i < pts.length; i++) { ctx.beginPath(); ctx.arc(gx(pts[i].x), gy(pts[i].y), 4.5, 0, 6.2832); ctx.fill(); }
+      ctx.globalAlpha = 1;
+      /* The answer's line is drawn only once the guess is in, so it cannot be
+         used to read the strength off before committing to a number. */
+      if (shown) {
+        var k = pts.length, ax = 0, ay = 0;
+        pts.forEach(function (p) { ax += p.x; ay += p.y; });
+        ax /= k; ay /= k;
+        var sxy = 0, sxx = 0;
+        pts.forEach(function (p) { sxy += (p.x - ax) * (p.y - ay); sxx += (p.x - ax) * (p.x - ax); });
+        var b = sxy / sxx, a0 = ay - b * ax;
+        ctx.save();
+        ctx.beginPath(); ctx.rect(box.x0, box.y0, box.side, box.side); ctx.clip();
+        ctx.strokeStyle = "#f97316"; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.moveTo(gx(LO), gy(a0 + b * LO)); ctx.lineTo(gx(HI), gy(a0 + b * HI)); ctx.stroke();
+        ctx.restore();
+      }
+    }
+    function fmt(v) { return (v < 0 ? "−" : "") + Math.abs(v).toFixed(2); }
+    function update() {
+      document.getElementById("gr-idx").textContent = (idx + 1) + " of " + SETS.length;
+      document.getElementById("gr-true").textContent = shown ? fmt(TRUE[idx]) : "—";
+      document.getElementById("gr-mae").textContent = errors.length
+        ? fmt(errors.reduce(function (a, b) { return a + b; }, 0) / errors.length) + " over " + errors.length
+        : "—";
+      draw();
+    }
+    function check() {
+      if (shown) { next(); return; }
+      var g = parseFloat(guessEl.value);
+      if (!isFinite(g)) { guessEl.focus(); return; }
+      g = Math.max(-1, Math.min(1, g));
+      shown = true;
+      errors.push(Math.abs(g - TRUE[idx]));
+      document.getElementById("gr-your").textContent = fmt(g);
+      update();
+    }
+    function next() {
+      idx = (idx + 1) % SETS.length;
+      shown = false;
+      guessEl.value = "";
+      document.getElementById("gr-your").textContent = "—";
+      update(); guessEl.focus();
+    }
+    function reset() {
+      idx = 0; shown = false; errors = []; guessEl.value = "";
+      document.getElementById("gr-your").textContent = "—";
+      update();
+    }
+    document.getElementById("gr-check").addEventListener("click", check);
+    document.getElementById("gr-next").addEventListener("click", next);
+    document.getElementById("gr-reset").addEventListener("click", reset);
+    guessEl.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); check(); } });
+    window.addEventListener("resize", function () { fit(); draw(); });
+    VIZ.onTheme(draw);
+    fit(); update();
+
+    /* ?plot=n lands on one of the ten, for a slide that wants a particular
+       cloud. The guess box stays empty: presetting an answer would be odd. */
+    if (window.SC && SC.preset) SC.preset({
+      plot: function (raw) {
+        var v = parseFloat(raw);
+        if (!isFinite(v) || !/^\d+$/.test(String(raw).trim())) return;
+        if (v < 1 || v > SETS.length) return;
+        idx = v - 1; shown = false; update();
+      }
+    });
+  })();
+  </script>
+
 </body>
 </html>

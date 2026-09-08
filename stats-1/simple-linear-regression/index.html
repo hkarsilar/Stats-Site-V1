@@ -79,9 +79,17 @@
           <div class="controls" style="margin-bottom:.5rem">
             <div class="control"><button class="btn btn-primary btn-sm" id="bestfit">Snap to best fit</button></div>
             <div class="control"><button class="btn btn-ghost btn-sm" id="newdata">New data</button></div>
+            <div class="control" style="flex-direction:row;align-items:center;gap:.45rem">
+              <input type="checkbox" id="show-resid" style="accent-color:#f97316;width:1rem;height:1rem" />
+              <label for="show-resid" style="cursor:pointer">Show the residual plot</label>
+            </div>
           </div>
 
           <canvas id="reg-canvas" style="--viz-ar: 4 / 3"></canvas>
+
+          <div id="resid-wrap" hidden>
+            <canvas id="resid-canvas" style="--viz-ar: 4 / 1;margin-top:.6rem" role="img" aria-label="A residual plot: the same points again, with the horizontal axis unchanged and the vertical axis showing each point's residual from the line currently drawn above. A dashed line marks zero. A good fit leaves the points scattered evenly above and below that line with no pattern; a bad line tilts them, and a curved relationship bends them into an arch."></canvas>
+          </div>
 
           <div class="stat-row">
             <div class="stat"><span class="k">Your line</span><span class="v" id="stat-eq" style="font-size:1rem">ŷ = 2.0 + 0.50x</span></div>
@@ -98,12 +106,32 @@
           <li><strong>Intercept b₀:</strong> the predicted <code>y</code> when <code>x = 0</code>. Sometimes meaningful, sometimes just where the line crosses the axis.</li>
         </ul>
 
+        <h2>Finding the line by hand</h2>
+        <p>Sliding two sliders until the error stops falling is the idea. You would not want to do it on paper. There is a formula, and it needs nothing you have not already computed in <a href="../../stats-1/correlation/">§1.17</a>: the two means, the two standard deviations, and the correlation.</p>
+        <p style="text-align:center;font-family:var(--mono);font-size:1rem">b₁ = <em>r</em> · s<sub>y</sub> / s<sub>x</sub> &nbsp;&nbsp;&nbsp; b₀ = ȳ − b₁ x̄</p>
+        <p>Read the slope formula as a translation. The correlation says how many standard deviations of y you get per standard deviation of x, and multiplying by s<sub>y</sub> / s<sub>x</sub> converts that exchange rate back into the units the variables were measured in. The intercept formula is then a rearrangement of one fact worth remembering on its own: <strong>the least-squares line always passes through (x̄, ȳ)</strong>, the point of means. Whatever the slope turns out to be, the line is pinned to that point, which is also why a line fitted to data centered on zero in both variables has an intercept of zero.</p>
+        <p>Take the five music students from §1.17: x̄ = 3.0 practice hours, ȳ = 66.0 marks, s<sub>x</sub> = 1.58, s<sub>y</sub> = 9.62 and <em>r</em> = 0.740. Then b₁ = 0.740 × 9.62 / 1.58 = <strong>4.5</strong> marks per hour (the rounded inputs give 4.506; the unrounded ones give exactly 4.5), and b₀ = 66.0 − 4.5 × 3.0 = <strong>52.5</strong>, so the line is ŷ = 52.5 + 4.5x. Substituting a value of x gives the <strong>predicted value ŷ</strong>: a student practicing 4 hours is predicted 52.5 + 18 = 70.5, and since the fourth student actually scored 65, their residual is 65 − 70.5 = −5.5, five and a half marks below what the line expected of them.</p>
+        <div class="callout key">
+          <p>Predict inside the range you observed, and stop there. This line was fitted to students practicing between one and five hours a week; ask it about someone practicing twenty and it will cheerfully answer 142.5 marks out of 100. <strong>Extrapolation</strong> is the name for reading a fitted line outside the range of the data, and the model gives no warning when you do it, because a straight line has no idea it was only ever an approximation over a stretch.</p>
+        </div>
+
         <h2>R²: how much the line explains</h2>
         <p>Once you've got the best line, <strong>R²</strong> (which is just the correlation <em>r</em> squared) says what fraction of the variation in <code>y</code> the line accounts for. R² = 0.7 means the line explains 70% of the ups and downs in <code>y</code>; the rest is scatter the line can't capture. Generate new data a few times and watch SSR and R² move together: tighter clouds give smaller SSR and bigger R².</p>
+        <p>The textbook phrasing is worth memorizing because it names both halves: R² is <em>the fraction of the variation in the values of y that is explained by the least-squares regression of y on x</em>. The variation being divided up is the spread of y around its own mean, and the comparison is against the flat line at ȳ, which is the best you could do knowing nothing about x. The five music students give R² = 0.740² = 0.547, so knowing how long somebody practiced accounts for about 55% of the differences between their marks and leaves 45% to everything else.</p>
 
         <div class="callout key">
           <p><strong>The key idea:</strong> "best fit" has an exact meaning: the unique line that minimizes the total squared error. The sliders let you hunt for it; the math finds it instantly. They land in the same place.</p>
         </div>
+
+        <h2>Reading a residual plot</h2>
+        <p>R² is one number for the whole fit, and one number cannot say <em>where</em> a line goes wrong. That job belongs to the <strong>residual plot</strong>: the same points again, with each one's residual on the vertical axis instead of its y value, and a line at zero for reference. Tick "Show the residual plot" in the playground above and it appears under the scatter, drawn against whatever line the sliders are currently holding.</p>
+        <p>Subtracting the line is what makes the plot useful. A scatter with a steep trend in it is dominated by the trend, and small departures from it are hard to see against that slope. Take the line away and those departures are all that is left, magnified across the full height of the panel. Three shapes are worth knowing.</p>
+        <ol>
+          <li>A shapeless band of points scattered evenly above and below zero, with no drift and no fanning. That is the picture a straight line is entitled to, and it means the line has taken everything systematic out of the data.</li>
+          <li>An arch or a valley, all the residuals positive in the middle and negative at both ends or the other way round. The relationship bends and the line does not; the fix is a curve or a transformed variable rather than a better straight line, which is what <a href="../../stats-2/nonlinear-relationships-and-transformations/">Non-Linear Relationships &amp; Transformations</a> is for.</li>
+          <li>A wedge, narrow at one end and wide at the other. The scatter around the line grows with x, so predictions are much more reliable at one end of the range than the other, and the standard errors that Stats 2 computes from a single shared spread will be wrong.</li>
+        </ol>
+        <p>Move the sliders off the best fit and a fourth shape appears that is not about the data at all: the residuals tilt, sloping up or down across the plot. A tilt means the line still has a trend left in it to absorb, which is exactly what "least squares" removes. Snap back to the best fit and the tilt disappears every time, because the residuals from the least-squares line always sum to zero and always have zero correlation with x. <a href="../../stats-2/regression-diagnostics/">Regression Diagnostics</a> in Stats 2 turns these readings into a full procedure, standardized residuals and influence measures included.</p>
 
         <h2>Where the name comes from</h2>
         <p>Francis Galton measured the heights of parents and their grown children in 1886 and found something he called <em>regression toward mediocrity</em>: unusually tall parents had tall children, but on average less tall than themselves. The word stuck to the method, and the effect it names is still one of the easiest ways to fool yourself.</p>
@@ -112,12 +140,37 @@
           <p>This is why "we gave extra tutoring to the lowest-scoring students and their scores went up" proves so little on its own. Selecting a group <em>because</em> it sits at an extreme guarantees movement toward the mean at the next measurement, treatment or no treatment. The repair is a design question rather than a statistical one: a control group selected the same way, which <a href="../../methods/quasi-experiments/">quasi-experimental designs</a> exist to arrange. The same shrinkage shows up deliberately in <a href="../../stats-3/mixed-and-multilevel-models/">multilevel models</a>, where pulling small groups toward the overall mean is a feature rather than a trap.</p>
         </div>
 
+        <h2>When a third variable flips the line</h2>
+        <p>A fitted line describes the points you gave it, and it has no way of knowing which of them belong together. <a href="../../stats-1/correlation/">§1.17</a> introduces the <strong>lurking variable</strong>, a third quantity nobody measured that is driving both of the two that were. When that third quantity is <em>categorical</em>, a group label rather than a number, it can do something more dramatic than weaken a relationship. It can reverse it.</p>
+        <p>Two clinics treat the same condition with the same drug and record, for each patient, the dose given and how well they recovered. Inside each clinic the relationship is clear and positive: more drug, better recovery. The second clinic is a specialist referral center, so its patients arrive sicker, recover less well whatever is done for them, and are given larger doses because they are sicker. Pool the two clinics into one scatter and the picture inverts.</p>
+
+        <div style="text-align:center;margin:1.2rem 0">
+          <svg viewBox="0 0 360 210" width="360" height="210" style="max-width:100%;height:auto" role="img" aria-label="A scatterplot of dose against recovery holding two clusters of five points. The upper-left cluster is clinic A and the lower-right cluster is clinic B. Each cluster has its own short fitted line sloping upward, but the single gray line fitted to all ten points slopes downward, so the pooled data reverses the relationship that holds inside both groups.">
+            <line x1="44" y1="20" x2="44" y2="180" stroke="var(--border)" stroke-width="1" />
+            <line x1="36" y1="170" x2="344" y2="170" stroke="var(--border)" stroke-width="1" />
+            <text x="20" y="100" text-anchor="middle" font-size="11" fill="var(--text-faint)" transform="rotate(-90 20 100)">recovery</text>
+            <text x="194" y="200" text-anchor="middle" font-size="11" fill="var(--text-faint)">dose</text>
+            <line x1="59.0" y1="60.0" x2="329.0" y2="130.0" stroke="var(--text-faint)" stroke-width="2.5" stroke-dasharray="7 5" />
+            <line x1="59.0" y1="82.4" x2="186.5" y2="41.6" stroke="var(--primary)" stroke-width="2.5" />
+            <line x1="201.5" y1="147.8" x2="329.0" y2="108.2" stroke="#f97316" stroke-width="2.5" />
+            <circle cx="62.8" cy="80.0" r="4.5" fill="var(--primary)" /><circle cx="92.8" cy="74.0" r="4.5" fill="var(--primary)" /><circle cx="122.8" cy="59.0" r="4.5" fill="var(--primary)" /><circle cx="152.8" cy="56.0" r="4.5" fill="var(--primary)" /><circle cx="182.8" cy="41.0" r="4.5" fill="var(--primary)" />
+            <circle cx="205.3" cy="146.0" r="4.5" fill="#f97316" /><circle cx="235.3" cy="137.0" r="4.5" fill="#f97316" /><circle cx="265.3" cy="131.0" r="4.5" fill="#f97316" /><circle cx="295.3" cy="116.0" r="4.5" fill="#f97316" /><circle cx="325.3" cy="110.0" r="4.5" fill="#f97316" />
+            <text x="120" y="30" text-anchor="middle" font-size="11.5" fill="var(--primary)">clinic A</text>
+            <text x="284" y="98" text-anchor="middle" font-size="11.5" fill="#f97316">clinic B</text>
+            <text x="150" y="120" text-anchor="middle" font-size="11.5" fill="var(--text-muted)">both clinics pooled</text>
+          </svg>
+        </div>
+
+        <p>Fitted separately, clinic A gives a slope of +4.0 and clinic B a slope of +3.9, both with correlations above .98. Fitted to all ten patients at once, the slope is <strong>−3.2</strong> and the correlation is −.60. Nothing in the pooled numbers hints at the problem, and no amount of care with the arithmetic would find it. What finds it is plotting the points with the group marked, which costs one extra column in the data file. This reversal has a name, <a href="../../stats-2/multiple-regression/">Simpson's paradox</a>, and the general repair is to put the group into the model as a predictor of its own, which is where <a href="../../stats-2/multiple-regression/">multiple regression</a> begins.</p>
+
         <div class="callout">
           <p><strong>Why it matters:</strong> simple regression is the foundation of nearly everything that follows. Add more predictors and you've got <a href="../../stats-2/multiple-regression/">multiple regression</a> in Stats 2, the workhorse of modern data analysis.</p>
           <p style="margin-top:.6rem">Fit a line to your own data on the <a href="../../correlation.html">Correlation &amp; Regression Calculator</a> — scatterplot, least-squares equation, R², a residual plot, and a copy-ready APA sentence for the slope.</p>
         </div>
 
         <p class="pb-xref"><a href="../../problems.html#p2-9">Problem 21 in the practice problems</a> fits a line to that same six-person dataset, predicts a value, and checks the residual against it.</p>
+
+        <p class="pb-xref"><a href="../../problems.html#p1-24">Problem 24</a> builds a line from five summary numbers alone, the way an exam gives them, and <a href="../../problems.html#p1-25">problem 25</a> reads a residual plot whose R² of .500 hides a curve.</p>
 
         <p>Everything on this page is description: the line that fits these points best, and how well it fits. Whether the slope would survive another sample is a separate question with its own machinery, and <a href="../../stats-2/inference-for-regression/">Inference for Regression</a> in Stats 2 supplies it: the standard error of the slope, its <em>t</em> test and confidence interval, the regression ANOVA table, and the two bands around the fitted line.</p>
 
@@ -154,11 +207,21 @@
   <script src="../../assets/js/viz.js"></script>
 
   <!-- ============ Regression visualization ============
-       URL presets (P67):
-         ?b0=<0–10>        intercept
-         ?b1=<-1.5–2>      slope
+       URL presets (P67, P85):
+         ?data=x:y,…      3–100 of the reader's own pairs, replacing the cloud
+         ?b0=<0–10>        intercept   (range rebuilt when ?data= is used)
+         ?b1=<-1.5–2>      slope       (range rebuilt when ?data= is used)
          ?mode=lines|squares   residuals drawn as lines or as squared errors
+         ?resid=1|0        show the residual plot under the scatter
        e.g.  ?embed=1&mode=squares&b1=0  →  "what least squares is minimizing"
+             ?data=1:55,2:70,3:60,4:65,5:80&resid=1  →  the section 1.17 five
+
+       ?data= is listed FIRST in the preset map: it rebuilds both sliders'
+       min/max/step around the loaded points, and SC.preset walks the map in
+       insertion order, so b0 and b1 are snapped against the new scale rather
+       than the default 0–10 one. (Section 1.17 lists its ?data= last, for the
+       opposite reason: there the target-correlation slider regenerates the
+       cloud, so the reader's own points have to be applied after it.)
   -->
   <script>
   (function () {
@@ -166,6 +229,13 @@
     var DMIN = 0, DMAX = 10, b0 = 2, b1 = 0.5, mode = "lines", data = [];
     var canvas = document.getElementById("reg-canvas"), ctx, W = 0, H = 360, pad = 28;
     var plot = { side: 0, x0: 0, y0: 0 };
+
+    /* The generated data lives in the 0–10 box on both axes; a ?data= load
+       swaps in the reader's own units, so the window is four variables rather
+       than two constants. With the defaults xLO/xHI/yLO/yHI ARE 0 and 10, so
+       every drawing below is unchanged for a reader who never passes ?data=. */
+    var xLO = DMIN, xHI = DMAX, yLO = DMIN, yHI = DMAX, loaded = false;
+    var rCanvas = document.getElementById("resid-canvas"), rCtx, rW = 0, rH = 130;
 
     function newData() {
       var a = 1 + Math.random() * 3, b = 0.3 + Math.random() * 0.9, k = 12;
@@ -199,9 +269,25 @@
       plot.side = Math.min(W - 2 * pad, H - 2 * pad);
       plot.x0 = (W - plot.side) / 2; plot.y0 = (H - plot.side) / 2;
     }
-    function vx(x) { return plot.x0 + (x / DMAX) * plot.side; }
-    function vy(y) { return (plot.y0 + plot.side) - (y / DMAX) * plot.side; }
-    var ppu = function () { return plot.side / DMAX; };
+    function vx(x) { return plot.x0 + ((x - xLO) / (xHI - xLO)) * plot.side; }
+    function vy(y) { return (plot.y0 + plot.side) - ((y - yLO) / (yHI - yLO)) * plot.side; }
+    /* Pixels per unit of Y. The squared-error patches are drawn as squares of
+       side |residual| in these pixels, so their AREA is the squared error. On
+       the default box the two axes share a scale and this is the old ppu(). */
+    var ppu = function () { return plot.side / (yHI - yLO); };
+    function tick(v) { return Math.abs(v - Math.round(v)) < 1e-9 ? String(Math.round(v)) : v.toFixed(Math.abs(v) < 10 ? 1 : 0); }
+    /* Ticks at round numbers inside the window rather than five equal slices of
+       it: the padded window a ?data= load produces runs 0.44 to 8.56, and
+       slicing that gives labels like 2.1 and 6.9. On the default 0–10 box the
+       step comes out at 2 and the labels are the same 0, 2, 4, 6, 8, 10 the
+       page has always drawn. */
+    function ticksIn(lo, hi) {
+      var raw = (hi - lo) / 5, mag = Math.pow(10, Math.floor(Math.log(raw) / Math.LN10));
+      var norm = raw / mag, st = (norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 5 ? 5 : 10) * mag;
+      var out = [], v = Math.ceil(lo / st) * st;
+      for (; v <= hi + 1e-9 && out.length < 12; v += st) out.push(Math.abs(v) < 1e-9 ? 0 : v);
+      return out;
+    }
 
     function draw() {
       ctx.clearRect(0, 0, W, H);
@@ -209,7 +295,10 @@
       ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
       ctx.strokeRect(plot.x0, plot.y0, plot.side, plot.side);
       ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace, monospace"; ctx.textAlign = "center";
-      for (var g = 0; g <= 10; g += 2) { ctx.fillText(g, vx(g), plot.y0 + plot.side + 14); ctx.textAlign = "right"; ctx.fillText(g, plot.x0 - 6, vy(g) + 3); ctx.textAlign = "center"; }
+      ticksIn(xLO, xHI).forEach(function (gv) { ctx.fillText(tick(gv), vx(gv), plot.y0 + plot.side + 14); });
+      ctx.textAlign = "right";
+      ticksIn(yLO, yHI).forEach(function (gv) { ctx.fillText(tick(gv), plot.x0 - 6, vy(gv) + 3); });
+      ctx.textAlign = "center";
 
       // squared-error patches (drawn under the line/points)
       if (mode === "squares") {
@@ -238,7 +327,7 @@
       ctx.save();
       ctx.beginPath(); ctx.rect(plot.x0, plot.y0, plot.side, plot.side); ctx.clip();
       ctx.strokeStyle = VIZ.css("--primary"); ctx.lineWidth = 2.5;
-      ctx.beginPath(); ctx.moveTo(vx(DMIN), vy(b0 + b1 * DMIN)); ctx.lineTo(vx(DMAX), vy(b0 + b1 * DMAX)); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(vx(xLO), vy(b0 + b1 * xLO)); ctx.lineTo(vx(xHI), vy(b0 + b1 * xHI)); ctx.stroke();
       ctx.restore();
 
       // points
@@ -246,35 +335,148 @@
       for (var i = 0; i < data.length; i++) { ctx.beginPath(); ctx.arc(vx(data[i].x), vy(data[i].y), 5, 0, 2 * Math.PI); ctx.fill(); }
     }
 
+    /* ---- residual plot: the same x, with the line subtracted out ---- */
+    var rPad = { l: 40, r: 14, t: 12, b: 24 };
+    function residOpen() { return !document.getElementById("resid-wrap").hidden; }
+    // never size a hidden canvas: clientWidth is 0 while the wrapper is closed
+    function fitResid() { if (!residOpen()) return; var o = VIZ.fit(rCanvas, rH); rCtx = o.ctx; rW = o.w; }
+    function drawResid() {
+      if (!rCtx || !residOpen()) return;
+      var L = rPad.l, R = rW - rPad.r, T = rPad.t, B = rH - rPad.b;
+      rCtx.clearRect(0, 0, rW, rH);
+      var e = [], big = 0;
+      for (var i = 0; i < data.length; i++) {
+        var v = data[i].y - (b0 + b1 * data[i].x);
+        e.push(v); if (Math.abs(v) > big) big = Math.abs(v);
+      }
+      var lim = big * 1.2 || 1;
+      function rx(x) { return L + ((x - xLO) / (xHI - xLO)) * (R - L); }
+      function ry(v) { return (T + B) / 2 - (v / lim) * ((B - T) / 2); }
+      rCtx.strokeStyle = VIZ.css("--border"); rCtx.lineWidth = 1;
+      rCtx.strokeRect(L, T, R - L, B - T);
+      rCtx.strokeStyle = VIZ.css("--text-faint"); rCtx.setLineDash([5, 4]);
+      rCtx.beginPath(); rCtx.moveTo(L, ry(0)); rCtx.lineTo(R, ry(0)); rCtx.stroke();
+      rCtx.setLineDash([]);
+      rCtx.fillStyle = VIZ.css("--text-faint"); rCtx.font = "10px ui-monospace, monospace";
+      rCtx.textAlign = "right";
+      rCtx.fillText(tick(lim), L - 6, T + 10); rCtx.fillText("0", L - 6, ry(0) + 3); rCtx.fillText(tick(-lim), L - 6, B - 2);
+      rCtx.font = "11px Inter, sans-serif"; rCtx.textAlign = "center";
+      rCtx.fillText("residual against x", (L + R) / 2, rH - 6);
+      rCtx.fillStyle = "#f97316";
+      for (var j = 0; j < data.length; j++) {
+        rCtx.beginPath(); rCtx.moveTo(rx(data[j].x), ry(0)); rCtx.lineTo(rx(data[j].x), ry(e[j]));
+        rCtx.strokeStyle = "#f97316"; rCtx.lineWidth = 1; rCtx.stroke();
+        rCtx.beginPath(); rCtx.arc(rx(data[j].x), ry(e[j]), 4.5, 0, 2 * Math.PI); rCtx.fill();
+      }
+    }
+
     var best = null;
     function update() {
       var ssr = ssrOf(b0, b1);
       document.getElementById("b0-val").textContent = b0.toFixed(1);
       document.getElementById("b1-val").textContent = b1.toFixed(2);
-      document.getElementById("stat-eq").textContent = "ŷ = " + b0.toFixed(1) + (b1 >= 0 ? " + " : " − ") + Math.abs(b1).toFixed(2) + "x";
+      // decide the sign from the number as PRINTED: a ?data= range can leave the
+      // slider holding −1e-16 for what a reader set to zero, and "ŷ = 26.0 − 0.00x"
+      // is not a line anybody wrote
+      var b1p = +b1.toFixed(2);
+      document.getElementById("stat-eq").textContent = "ŷ = " + b0.toFixed(1) + (b1p >= 0 ? " + " : " − ") + Math.abs(b1p).toFixed(2) + "x";
       document.getElementById("stat-ssr").textContent = ssr.toFixed(1);
       document.getElementById("stat-best").textContent = best.ssr.toFixed(1);
       document.getElementById("stat-r2").textContent = best.r2.toFixed(2);
-      draw();
+      draw(); drawResid();
     }
 
     var b0R = document.getElementById("b0-range"), b1R = document.getElementById("b1-range");
+
+    /* ?data= : the reader's own pairs replace the generated scatter. Both
+       sliders are rebuilt around the fit those points imply, because the
+       default ranges (b0 0–10, b1 −1.5–2) cannot reach a line through marks
+       out of 100. The line starts flat at ȳ, which is the null the R² readout
+       compares against, so the hunt still has somewhere to travel from. */
+    /* Build a slider range around two values a reader will actually want: where
+       the line STARTS (val) and where least squares puts it (alsoHit). A range
+       input snaps to min + k·step, so a grid that contains neither opens the
+       widget on "ŷ = 25.9 − 0.02x" instead of the flat line at ȳ, and leaves
+       "Snap to best fit" a notch off after a round trip. Choosing a step that
+       divides the gap between the two, then anchoring the grid on val, puts
+       both exactly on it. */
+    function setRange(el, lo, hi, val, alsoHit) {
+      var raw = (hi - lo) / 200, step;
+      var gap = Math.abs((alsoHit === undefined ? val : alsoHit) - val);
+      if (gap > raw) {
+        step = gap / Math.max(1, Math.round(gap / raw));
+      } else {
+        var mag = Math.pow(10, Math.floor(Math.log(raw) / Math.LN10) - 2);
+        step = Math.round(raw / mag) * mag;
+      }
+      var min = val - Math.ceil((val - lo) / step) * step;
+      var max = min + Math.ceil((hi - min) / step) * step;
+      el.min = String(min); el.max = String(max); el.step = String(step);
+      el.value = String(val);
+      return +el.value;
+    }
+    function loadPairs(list) {
+      data = list.map(function (q) { return { x: q.x, y: q.y }; });
+      var xs = [], ys = [];
+      for (var i = 0; i < data.length; i++) { xs.push(data[i].x); ys.push(data[i].y); }
+      var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs);
+      var y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
+      var mgx = (x1 - x0) * 0.08, mgy = (y1 - y0) * 0.12;
+      xLO = x0 - mgx; xHI = x1 + mgx; yLO = y0 - mgy; yHI = y1 + mgy;
+      loaded = true;
+      best = ols();
+      var ybar = ys.reduce(function (a, b) { return a + b; }, 0) / ys.length;
+      var sSpan = 1.5 * Math.max(Math.abs(best.b1), (yHI - yLO) / (xHI - xLO));
+      var iSpan = 1.2 * Math.max(yHI - yLO, Math.abs(ybar - best.b0));
+      b1 = setRange(b1R, best.b1 - sSpan, best.b1 + sSpan, 0, best.b1);
+      b0 = setRange(b0R, best.b0 - iSpan, best.b0 + iSpan, ybar, best.b0);
+      fit(); update();
+    }
+    function unload() {
+      if (!loaded) return;
+      xLO = DMIN; xHI = DMAX; yLO = DMIN; yHI = DMAX; loaded = false;
+      // back to the ranges and the starting line the markup ships with
+      b1R.min = "-1.5"; b1R.max = "2"; b1R.step = "0.05"; b1R.value = "0.5"; b1 = 0.5;
+      b0R.min = "0"; b0R.max = "10"; b0R.step = "0.1"; b0R.value = "2"; b0 = 2;
+    }
+
     b0R.addEventListener("input", function () { b0 = +this.value; update(); });
     b1R.addEventListener("input", function () { b1 = +this.value; update(); });
     document.getElementById("mode-seg").addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; mode = b.dataset.mode; Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x.dataset.mode === mode); }); draw(); });
+    function clampTo(el, v) {
+      var lo = parseFloat(el.min), hi = parseFloat(el.max);
+      if (isFinite(lo)) v = Math.max(lo, v);
+      if (isFinite(hi)) v = Math.min(hi, v);
+      return v;
+    }
     document.getElementById("bestfit").addEventListener("click", function () {
-      b0 = Math.max(0, Math.min(10, best.b0)); b1 = Math.max(-1.5, Math.min(2, best.b1));
+      // clamp into whatever range the sliders currently carry, so this still
+      // reaches the least-squares line after ?data= has rebuilt them
+      b0 = clampTo(b0R, best.b0); b1 = clampTo(b1R, best.b1);
       b0R.value = b0; b1R.value = b1; update();
     });
-    document.getElementById("newdata").addEventListener("click", function () { newData(); best = ols(); update(); });
-    window.addEventListener("resize", function () { fit(); update(); });
-    VIZ.onTheme(draw);
+    document.getElementById("newdata").addEventListener("click", function () { unload(); newData(); best = ols(); update(); });
+    document.getElementById("show-resid").addEventListener("change", function () {
+      var wrap = document.getElementById("resid-wrap");
+      wrap.hidden = !this.checked;
+      if (this.checked) { fitResid(); drawResid(); }
+    });
+    window.addEventListener("resize", function () { fit(); fitResid(); update(); });
+    VIZ.onTheme(function () { draw(); drawResid(); });
 
     fit(); newData(); best = ols(); update();
 
-    /* URL preset, applied last: it moves the sliders, it never regenerates
-       the scatter, so the frozen-noise law holds (see the head comment) */
-    if (window.SC && SC.preset) SC.preset({ b0: "#b0-range", b1: "#b1-range", mode: "#mode-seg" });
+    /* URL preset: ?data= comes first because it rebuilds both slider ranges,
+       and SC.preset walks the map in insertion order, so b0 and b1 land on the
+       new scale. None of them reseeds anything, so the frozen-noise law holds
+       (see the head comment). */
+    if (window.SC && SC.preset) SC.preset({
+      data: function (raw) { var d = SC.pairParam(raw, 100); if (d) loadPairs(d); },
+      b0: "#b0-range",
+      b1: "#b1-range",
+      mode: "#mode-seg",
+      resid: "#show-resid"
+    });
   })();
   </script>
 </body>

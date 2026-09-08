@@ -383,13 +383,15 @@ window.SOFTWARE = {
       '<strong>Analyze → Correlate → Bivariate…</strong>',
       'Move both variables across; <em>Pearson</em> is ticked by default, add <em>Spearman</em> if the data are ordinal or outlier-ridden.',
       'Newer SPSS versions offer a <em>Confidence interval</em> option. Use it.',
-      'Always inspect the scatterplot first: <strong>Graphs → Chart Builder → Scatter/Dot</strong>.'
+      'Always inspect the scatterplot first: <strong>Graphs → Chart Builder → Scatter/Dot</strong>.',
+      'To see the residuals behind that scatter, send the same pair through <strong>Analyze → Regression → Linear…</strong> and tick <em>Save → Residuals → Unstandardized</em>. A RES_1 column appears in the data file, and plotting it against x gives the residual plot from section 1.18.'
     ],
     jasp: [
       '<strong>Regression → Correlation</strong>.',
       'Drag in the variables; tick <em>Pearson</em> (and/or <em>Spearman</em>).',
       'Tick <em>Confidence intervals</em> and, under <em>Plots</em>, <em>Scatter plots</em> with densities.',
-      'The correlation matrix output scales to any number of variables.'
+      'The correlation matrix output scales to any number of variables.',
+      'For the residuals, run <strong>Regression → Linear Regression</strong> on the same two variables and tick <em>Residuals</em> under <em>Save</em>.'
     ],
     apa: '<p>Study hours were positively correlated with exam scores, <em>r</em>(58) = .42, 95% CI [.19, .61], <em>p</em> &lt; .001. Where assumptions failed we report Spearman’s rank correlation, <em>r</em><sub>s</sub>(58) = .39, <em>p</em> = .002.</p>',
     tips: [
@@ -404,13 +406,15 @@ window.SOFTWARE = {
       'Outcome into <em>Dependent</em>, predictor into <em>Independent(s)</em>.',
       '<em>Statistics…</em>: tick <em>Confidence intervals</em> for the coefficients.',
       'Read: <em>Model Summary</em> (R²), <em>ANOVA</em> (overall F), <em>Coefficients</em> (b, SE, β, t, p).',
-      '<em>Plots…</em>: ZRESID against ZPRED for a quick assumptions check.'
+      '<em>Plots…</em>: ZRESID against ZPRED for a quick assumptions check.',
+      '<em>Save…</em>: tick <em>Residuals → Unstandardized</em>, and <em>Predicted values → Unstandardized</em> if you want those too. SPSS writes RES_1 and PRE_1 into the data file, and <strong>Graphs → Chart Builder</strong> then plots RES_1 against the predictor, which is the residual plot section 1.18 draws.'
     ],
     jasp: [
       '<strong>Regression → Linear Regression</strong>.',
       'Outcome into <em>Dependent Variable</em>, predictor into <em>Covariates</em>.',
       'Under <em>Statistics</em>, tick <em>Estimates</em>, <em>Confidence intervals</em>, and <em>R squared change</em>.',
-      'Under <em>Plots</em>, tick <em>Residuals vs. predicted</em> and the <em>Q-Q plot</em>.'
+      'Under <em>Plots</em>, tick <em>Residuals vs. predicted</em>, <em>Residuals vs. covariates</em> (the residual-against-x version) and the <em>Q-Q plot</em>.',
+      'Under <em>Save</em>, tick <em>Residuals</em> to write them back into the data sheet, so you can plot or inspect them yourself.'
     ],
     apa: '<p>Hours of study predicted exam scores, <em>b</em> = 2.31, <em>SE</em> = 0.57, 95% CI [1.16, 3.46], β = .50, <em>t</em>(48) = 4.05, <em>p</em> &lt; .001. The model explained a quarter of the variance, <em>R</em>² = .25, 90% CI [.09, .40], <em>F</em>(1, 48) = 16.40, <em>p</em> &lt; .001.</p>',
     tips: [

@@ -136,11 +136,11 @@ window.CHECKS = {
   ],
   "correlation": [
     { q: "Which r describes the STRONGEST linear relationship?", o: ["r = +0.55", "r = −0.80", "r = +0.10", "r = 0"], a: 1, why: "Strength is the absolute value: |−0.80| > |+0.55|. The sign only gives the direction." },
-    { q: "Study time and exam score correlate at r = .60. This shows that…", o: ["studying causes higher scores", "the two variables tend to rise together", "60% of scores are explained", "everyone who studies scores high"], a: 1, why: "Correlation is association, not causation, and r² (= .36) rather than r gives shared variance." },
+    { q: "Practice time is re-recorded in minutes instead of hours. The correlation with exam marks…", o: ["is divided by 60", "is unchanged", "is multiplied by 60", "becomes negative"], a: 1, why: "r is built from standardized values, so it carries no units and does not move when either variable is rescaled. The regression slope is not so lucky: it changes from marks per hour to marks per minute." },
     { q: "One wild outlier in a small dataset can…", o: ["not affect r", "drastically inflate or deflate r", "only change r's sign", "make r exceed 1"], a: 1, why: "Pearson's r is built from means and SDs, all outlier-sensitive — always scatterplot before you trust r." }
   ],
   "simple-linear-regression": [
-    { q: "In ŷ = 12 + 0.8x (hours studied → exam score), the 0.8 means…", o: ["the score for zero hours", "each extra hour predicts 0.8 more points", "80% of variance explained", "the correlation is 0.8"], a: 1, why: "The slope is the predicted change in y per one-unit change in x; 12 is the intercept (predicted score at x = 0)." },
+    { q: "Whatever the data, the least-squares line is guaranteed to pass through…", o: ["the point of means (x̄, ȳ)", "the origin (0, 0)", "the largest data point", "the median of x and the median of y"], a: 0, why: "The intercept formula b₀ = ȳ − b₁x̄ is that guarantee rearranged. The line pivots about (x̄, ȳ) as the slope changes, which is why a slope of zero leaves a flat line at ȳ." },
     { q: "Least squares picks the line that minimizes…", o: ["the sum of residuals", "the sum of squared residuals", "the number of outliers", "the slope"], a: 1, why: "Squaring keeps misses from canceling and penalizes big misses heavily. That criterion defines THE regression line." },
     { q: "A residual is…", o: ["observed y minus predicted y", "predicted y minus the mean", "the slope error", "an outlier"], a: 0, why: "Residual = what the model missed for that point. Positive = the point sits above the line." }
   ],

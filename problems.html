@@ -16,16 +16,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Practice Problems — Worked Statistics Exam Questions — StatsCapybara</title>
-  <meta name="description" content="Sixty-one statistics problems with worked solutions: z-scores, t-tests, proportions, chi-square, regression and Bayes, one step at a time." />
+  <meta name="description" content="Sixty-four statistics problems with worked solutions: z-scores, t-tests, proportions, chi-square, regression and Bayes, one step at a time." />
   <link rel="canonical" href="https://statscapybara.com/problems.html" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Practice Problems — StatsCapybara" />
-  <meta property="og:description" content="Sixty-one worked statistics problems, from z-scores and chi-square to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
+  <meta property="og:description" content="Sixty-four worked statistics problems, from z-scores and chi-square to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
   <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
   <meta property="og:url" content="https://statscapybara.com/problems.html" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Practice Problems — StatsCapybara" />
-  <meta name="twitter:description" content="Sixty-one worked statistics problems, from z-scores and chi-square to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
+  <meta name="twitter:description" content="Sixty-four worked statistics problems, from z-scores and chi-square to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="assets/css/styles.css" />
@@ -137,7 +137,7 @@
         </div>
 
         <ul class="pb-index">
-          <li><a href="#stats-1"><span class="t">📊 Stats 1 · Foundations</span><br><span class="m">22 problems · data types → probability → z, t, proportions and χ²</span></a></li>
+          <li><a href="#stats-1"><span class="t">📊 Stats 1 · Foundations</span><br><span class="m">25 problems · data types → probability → z, t, proportions, χ², correlation and regression</span></a></li>
           <li><a href="#exam-style"><span class="t">📝 Exam-style · A Stats 1 midterm</span><br><span class="m">8 problems · §1.1 to §1.12, worked off the printed tables</span></a></li>
           <li><a href="#stats-2"><span class="t">🔗 Stats 2 · Groups &amp; relationships</span><br><span class="m">10 problems · ANOVA → regression</span></a></li>
           <li><a href="#regression"><span class="t">📐 Regression · Several predictors</span><br><span class="m">8 problems · multiple regression → missing data</span></a></li>
@@ -150,7 +150,7 @@
              ================================================================== -->
         <section class="pb-set" id="stats-1-set">
           <h2 id="stats-1">📊 Stats 1 · Foundations</h2>
-          <p class="pb-set-sub">Twenty-two problems tracking the <a href="stats-1/">Stats 1 syllabus</a>: what kind of data you have, how to describe it, how far a score sits from average, how a sample mean turns into a confidence interval and then a <em>z</em>-test or a <em>t</em>-test, the probability rules that three of them run on, and finally a proportion and a two-way table of counts.</p>
+          <p class="pb-set-sub">Twenty-five problems tracking the <a href="stats-1/">Stats 1 syllabus</a>: what kind of data you have, how to describe it, how far a score sits from average, how a sample mean turns into a confidence interval and then a <em>z</em>-test or a <em>t</em>-test, the probability rules that three of them run on, then a proportion and a two-way table of counts, and finally a correlation and a fitted line worked by hand.</p>
 
           <!-- ---------- 1.1 ----------
                verify: no arithmetic; classification only.
@@ -1399,6 +1399,178 @@
               <p class="pb-ref">From <a href="stats-1/inference-for-proportions/">§1.15 Inference for Proportions</a> · set the counts in the <a href="stats-1/inference-for-proportions/?n1=250&amp;x1=205&amp;n2=200&amp;x2=148">One Proportion, or Two explorer</a>, or check the areas on the printed <a href="tables.html#printed-tables">Table A</a>.</p>
             </details>
           </article>
+
+          <!-- Problem 23 verified:
+               node -e 'x=[2,4,6,8,10];y=[45,34,40,30,31];
+                 xbar=6; ybar=36; Sxx=40; Syy=162; Sxy=-64;
+                 sx=Math.sqrt(40/4)=3.16228; sy=Math.sqrt(162/4)=6.36396;
+                 r=-64/Math.sqrt(40*162)=-0.795001; r^2=0.632026;
+                 standardized products = -1.789,0.199,0.000,-0.596,-0.994, sum -3.18000,
+                 /4 = -0.795001 (the same r, both routes);
+                 b1 = -64/40 = -1.6; b0 = 36 - (-1.6)(6) = 45.6'
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p1-23"><span class="pb-num">23</span>Five wards, one waiting room</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A hospital records, for five wards on the same weekday evening, how many nurses were on shift and the average time a patient waited to be seen. The manager wants a number for how strongly the two go together, computed by hand, because the report is due before anyone can get to a computer.</p>
+            <div class="pb-given">
+              <span class="lbl">Five wards</span>
+              <table class="ref-table">
+                <thead><tr><th>Nurses on shift (x)</th><th>2</th><th>4</th><th>6</th><th>8</th><th>10</th></tr></thead>
+                <tbody><tr><td>Mean wait, minutes (y)</td><td>45</td><td>34</td><td>40</td><td>30</td><td>31</td></tr></tbody>
+              </table>
+            </div>
+            <ol class="pb-ask">
+              <li>Compute both means and both sample standard deviations.</li>
+              <li>Build the table of deviations, standardized values and their products, and compute <em>r</em> as the average of the products.</li>
+              <li>Interpret the sign and the size, and state what <em>r</em>² adds.</li>
+              <li>Which ward contributes nothing to <em>r</em>, and why?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Means and standard deviations</span>
+                  <span class="pb-math">x̄ = 30 / 5 = 6.0 nurses &nbsp;&nbsp; ȳ = 180 / 5 = 36.0 minutes</span>
+                  <span class="pb-math">Σ(x − x̄)² = 16 + 4 + 0 + 4 + 16 = 40 &nbsp;&nbsp; s<sub>x</sub> = √(40/4) = √10 = 3.162</span>
+                  <span class="pb-math">Σ(y − ȳ)² = 81 + 4 + 16 + 36 + 25 = 162 &nbsp;&nbsp; s<sub>y</sub> = √(162/4) = √40.5 = 6.364</span>
+                </li>
+                <li><span class="pb-lbl">The table the formula asks for</span>
+                  <table class="ref-table">
+                    <thead><tr><th>x</th><th>y</th><th>x − x̄</th><th>y − ȳ</th><th>(x − x̄)/s<sub>x</sub></th><th>(y − ȳ)/s<sub>y</sub></th><th>product</th></tr></thead>
+                    <tbody>
+                      <tr><td>2</td><td>45</td><td>−4</td><td>+9</td><td>−1.265</td><td>+1.414</td><td>−1.789</td></tr>
+                      <tr><td>4</td><td>34</td><td>−2</td><td>−2</td><td>−0.632</td><td>−0.314</td><td>+0.199</td></tr>
+                      <tr><td>6</td><td>40</td><td>0</td><td>+4</td><td>0.000</td><td>+0.629</td><td>0.000</td></tr>
+                      <tr><td>8</td><td>30</td><td>+2</td><td>−6</td><td>+0.632</td><td>−0.943</td><td>−0.596</td></tr>
+                      <tr><td>10</td><td>31</td><td>+4</td><td>−5</td><td>+1.265</td><td>−0.786</td><td>−0.994</td></tr>
+                    </tbody>
+                  </table>
+                  <span class="pb-math">Σ products = −3.180 &nbsp;&nbsp; r = −3.180 / (5 − 1) = <strong>−0.795</strong></span>
+                  <span class="pb-note">The shortcut route agrees, and is faster if you trust it: Σ(x − x̄)(y − ȳ) = −64, so r = −64 / √(40 × 162) = −64 / 96.00 = −0.795. Use whichever the question asks for; the standardized table is the one that shows your working.</span>
+                </li>
+                <li><span class="pb-lbl">Interpretation</span>
+                  <span class="pb-note">The sign is negative, so more nurses goes with shorter waits. The size, |r| = .80, is a strong linear association by any of the usual benchmarks, though five wards is a very thin basis for it. r² = (−0.795)² = 0.632, so about 63% of the variation in waiting times across these five wards lines up with the variation in staffing, leaving 37% to everything else: how sick the arriving patients were, how the ward is laid out, and plain chance.</span>
+                </li>
+                <li><span class="pb-lbl">The ward that contributes nothing</span>
+                  <span class="pb-note">The six-nurse ward. Its standardized x is exactly zero, because it sits on the mean staffing level, and zero times its standardized y of +0.629 is zero. It waited four minutes longer than average and the coefficient never hears about it. Influence in a correlation comes from distance from BOTH means, which is the same arithmetic that makes r so easy for a single far-out point to move.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">x̄ = 6.0, ȳ = 36.0, s<sub>x</sub> = 3.162, s<sub>y</sub> = 6.364. The five standardized products are −1.789, +0.199, 0.000, −0.596 and −0.994, totalling −3.180, so r = −3.180/4 = −0.795. r² = 0.632. The six-nurse ward contributes nothing, because its standardized x is zero.</p>
+              <p class="pb-round">Rounding: standardized values and products to 3 dp, r to 3 dp. Carrying only 2 dp through the table gives −0.794, which still rounds to −0.79.</p>
+              <p class="pb-ref">From <a href="stats-1/correlation/">§1.17 Correlation</a> · step the same shape through the <a href="stats-1/correlation/#computing-r-by-hand">📏 Correlation, Step by Step</a> viz, or load these five wards straight into the explorer: <a href="stats-1/correlation/?data=2:45,4:34,6:40,8:30,10:31">?data=2:45,4:34,6:40,8:30,10:31</a>.</p>
+            </details>
+          </article>
+
+          <!-- Problem 24 verified:
+               node -e 'r=0.42; sx=1.2; sy=11.4; xbar=6.8; ybar=63.5;
+                 b1 = 0.42*11.4/1.2 = 3.99 exactly (11.4/1.2 = 9.5);
+                 b0 = 63.5 - 3.99*6.8 = 63.5 - 27.132 = 36.368;
+                 yhat(8) = 36.368 + 31.92 = 68.288;
+                 yhat(2) = 36.368 + 7.98  = 44.348;
+                 r^2 = 0.1764;
+                 reverse slope = 0.42*1.2/11.4 = 0.0442105, and 1/3.99 = 0.2506266'
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p1-24"><span class="pb-num">24</span>The line from five summary numbers</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A study of 60 first-year students records how many hours each slept the night before an exam and the mark they went on to get. The raw data is not in the report; the five numbers below are all the report prints. Sleep in the sample ranged from 4.5 to 9.0 hours.</p>
+            <div class="pb-given">
+              <span class="lbl">Summary statistics, n = 60</span>
+              x = hours slept: x̄ = 6.8, s<sub>x</sub> = 1.2 &nbsp;&nbsp;|&nbsp;&nbsp; y = exam mark: ȳ = 63.5, s<sub>y</sub> = 11.4 &nbsp;&nbsp;|&nbsp;&nbsp; r = .42
+            </div>
+            <ol class="pb-ask">
+              <li>Find the least-squares line for predicting mark from sleep.</li>
+              <li>Predict the mark for a student who slept 8 hours, and interpret the slope in the study's own units.</li>
+              <li>What does the intercept mean here, and how much should anyone rely on it?</li>
+              <li>A colleague wants the line for predicting sleep from mark instead, and suggests inverting the slope you already have. Give the right answer and say why the shortcut fails.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Slope, then intercept</span>
+                  <span class="pb-math">b₁ = r · s<sub>y</sub> / s<sub>x</sub> = 0.42 × 11.4 / 1.2 = 0.42 × 9.5 = 3.99</span>
+                  <span class="pb-math">b₀ = ȳ − b₁ x̄ = 63.5 − 3.99 × 6.8 = 63.5 − 27.132 = 36.368</span>
+                  <span class="pb-math">ŷ = 36.37 + 3.99x</span>
+                </li>
+                <li><span class="pb-lbl">Prediction and slope in words</span>
+                  <span class="pb-math">ŷ = 36.368 + 3.99 × 8 = 36.368 + 31.92 = 68.29</span>
+                  <span class="pb-note">A student sleeping 8 hours is predicted to score about 68 marks. The slope says that one extra hour of sleep goes with about 4 more marks, on average, across these 60 students. It is an association and not a promise: nobody was assigned a bedtime, so a student who sleeps well may differ in other ways that also help.</span>
+                </li>
+                <li><span class="pb-lbl">The intercept</span>
+                  <span class="pb-note">b₀ = 36.4 is the mark the line predicts for a student who slept zero hours. Nobody in this sample slept less than 4.5, so that value sits well outside the data and the line has no evidence behind it there. Read it as the arithmetic that pins the line to (x̄, ȳ) rather than as a claim about sleepless students. The honest range for prediction is 4.5 to 9.0 hours, where the line runs from 54.3 to 72.3 marks.</span>
+                </li>
+                <li><span class="pb-lbl">Swapping x and y</span>
+                  <span class="pb-math">b₁′ = r · s<sub>x</sub> / s<sub>y</sub> = 0.42 × 1.2 / 11.4 = 0.0442 hours per mark</span>
+                  <span class="pb-note">The inversion would have given 1/3.99 = 0.251, nearly six times too big. Correlation is symmetric and regression is not: the two slopes multiply to r² = 0.1764, not to 1, and they agree only when r = 1. Least squares minimizes vertical distances, and swapping the axes changes which direction "vertical" points, so it is genuinely a different line.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">ŷ = 36.37 + 3.99x. At 8 hours the prediction is 68.3 marks, and each extra hour of sleep is worth about 4 marks. The intercept 36.4 is the predicted mark at zero hours, far outside the observed 4.5 to 9.0 range and not interpretable. Reversing the roles gives b₁′ = 0.0442 hours per mark, not 1/3.99 = 0.251, because b₁ · b₁′ = r² = .1764.</p>
+              <p class="pb-round">Rounding: the slope is exact at 3.99 because 11.4/1.2 = 9.5 exactly; carry the intercept to 3 dp (36.368) before rounding the printed line to 2 dp.</p>
+              <p class="pb-ref">From <a href="stats-1/simple-linear-regression/">§1.18 Simple Linear Regression</a> · the same identity is in the fourth block of the <a href="formulas.html">formula sheet</a>, and the <a href="correlation.html">Correlation &amp; Regression Calculator</a> fits a line to raw columns when you have them.</p>
+            </details>
+          </article>
+
+          <!-- Problem 25 verified:
+               node -e 'x=[1..8]; y=[12,20,26,30,32,32,30,26];
+                 xbar=4.5; ybar=26; Sxx=42; Syy=336; Sxy=84;
+                 b1 = 84/42 = 2 exactly; b0 = 26 - 2*4.5 = 17 exactly;
+                 r^2 = 84^2/(42*336) = 7056/14112 = 0.5 exactly, r = 0.70711;
+                 residuals = -7,-1,3,5,5,3,-1,-7 (sum exactly 0);
+                 SSE = 49+1+9+25+25+9+1+49 = 168 = Syy/2, consistent with r^2 = .5'
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p1-25"><span class="pb-num">25</span>Half the variation, and still the wrong shape</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A grower tests eight doses of fertilizer, one pot per dose, and counts the tomatoes each pot produces. Software fits the least-squares line ŷ = 17.0 + 2.0x and reports R² = .500, which the grower takes as a decent result and starts writing up.</p>
+            <div class="pb-given">
+              <span class="lbl">Eight pots, and the fitted line ŷ = 17.0 + 2.0x</span>
+              <table class="ref-table">
+                <thead><tr><th>Dose, grams (x)</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th></tr></thead>
+                <tbody><tr><td>Tomatoes (y)</td><td>12</td><td>20</td><td>26</td><td>30</td><td>32</td><td>32</td><td>30</td><td>26</td></tr></tbody>
+              </table>
+            </div>
+            <ol class="pb-ask">
+              <li>Compute the eight predicted values and the eight residuals, and check their total.</li>
+              <li>Sketch the residuals against dose. Name the pattern and say what it means about the line.</li>
+              <li>R² is .500. Reconcile that with your answer to part 2.</li>
+              <li>A second grower's residual plot is a wedge instead, narrow at low doses and wide at high ones. Name that pattern and say what it costs.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Predictions and residuals</span>
+                  <table class="ref-table">
+                    <thead><tr><th>x</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th></tr></thead>
+                    <tbody>
+                      <tr><td>ŷ = 17 + 2x</td><td>19</td><td>21</td><td>23</td><td>25</td><td>27</td><td>29</td><td>31</td><td>33</td></tr>
+                      <tr><td>y</td><td>12</td><td>20</td><td>26</td><td>30</td><td>32</td><td>32</td><td>30</td><td>26</td></tr>
+                      <tr><td>residual y − ŷ</td><td>−7</td><td>−1</td><td>+3</td><td>+5</td><td>+5</td><td>+3</td><td>−1</td><td>−7</td></tr>
+                    </tbody>
+                  </table>
+                  <span class="pb-math">Σ residuals = (−7 − 1 + 3 + 5) + (5 + 3 − 1 − 7) = 0</span>
+                  <span class="pb-note">The total is zero, and it always is for a least-squares line, so it confirms the arithmetic without saying anything about the fit.</span>
+                </li>
+                <li><span class="pb-lbl">The pattern</span>
+                  <span class="pb-note">Plotted against dose, the residuals rise from −7 to +5 and fall back to −7: a clean arch, negative at both ends and positive through the middle. That is the signature of a curved relationship fitted with a straight line. Yield climbs with dose, flattens, then falls off as the dose becomes too much, and no straight line can bend to follow it. The line is too high at both ends and too low in the middle, by up to seven tomatoes.</span>
+                </li>
+                <li><span class="pb-lbl">Why R² does not notice</span>
+                  <span class="pb-note">R² measures how much of the variation the line removes, not whether what is left has a shape. Here Σ(y − ȳ)² = 336 and the residuals leave 49 + 1 + 9 + 25 + 25 + 9 + 1 + 49 = 168, exactly half, so R² = 1 − 168/336 = .500 and r = .707. A rising line does capture the general upward drift over most of the range, which is enough for half the variation. The half it leaves behind is not noise; it is the curve. This is exactly why a residual plot is worth drawing even when the summary number looks acceptable, and it is Anscombe's second dataset in a different costume.</span>
+                </li>
+                <li><span class="pb-lbl">The other grower's wedge</span>
+                  <span class="pb-note">A wedge is non-constant spread, which regression calls heteroscedasticity. The line's shape may be perfectly right; what fails is the assumption that the scatter around it is the same size everywhere. Predictions at the wide end are much less reliable than the narrow end, and the standard errors, confidence intervals and p-values that Stats 2 computes all rest on one shared spread, so they come out wrong for both ends at once. The usual repairs are a transformation of the outcome or a standard error that does not assume constant spread.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Predicted values 19, 21, 23, 25, 27, 29, 31, 33; residuals −7, −1, +3, +5, +5, +3, −1, −7, summing to zero. The residual plot is an arch, so the true relationship is curved and a straight line is the wrong shape. R² = .500 anyway, because R² measures variation removed rather than pattern left behind. The wedge is heteroscedasticity, which invalidates the standard errors rather than the shape of the line.</p>
+              <p class="pb-round">Rounding: none needed. Every predicted value and every residual is a whole number here, and R² is exactly .500 because Σ residual² = 168 is exactly half of Σ(y − ȳ)² = 336.</p>
+              <p class="pb-ref">From <a href="stats-1/simple-linear-regression/">§1.18 Simple Linear Regression</a> · see the arch for yourself by loading these eight pots with the residual plot open: <a href="stats-1/simple-linear-regression/?data=1:12,2:20,3:26,4:30,5:32,6:32,7:30,8:26&amp;resid=1">?data=…&amp;resid=1</a>, then press "Snap to best fit". The full treatment is <a href="stats-2/regression-diagnostics/">§2.4 Regression Diagnostics</a>.</p>
+            </details>
+          </article>
         </section>
 
 
@@ -1410,15 +1582,17 @@
              step when P79 and P82 appended problems 13–18 to the Stats 1 set
              without renumbering the four sets below it, so the Stats 2 set
              still starts its own count at 13. P83 added two more Stats 1
-             problems and moved this set's badges from 19–26 to 21–28, and
-             P84 added two more and moved them again to 23–30, so the two
-             Stats 1 sets run 1 to 30 without a gap. Both renumbers were safe
-             because no page names an exam-style problem by its number, and
-             P84 also brought this set's stale "Problem N" source comments
-             into step with the badges. The remaining drift is the 31 cards below, and fixing it means
-             renumbering them AND the 72 "Problem N" mentions in 57 lesson
-             pages, which is its own session; the #pX-Y anchors every lesson
-             links to are unaffected either way.
+             problems and moved this set's badges from 19–26 to 21–28, P84
+             added two more and moved them to 23–30, and P85 added three
+             (r by hand, the line from summary statistics, a residual plot)
+             and moved them to 26–33, so the two Stats 1 sets run 1 to 33
+             without a gap. Every one of those renumbers was safe because no
+             page names an exam-style problem by its number, and P84 also
+             brought this set's stale "Problem N" source comments into step
+             with the badges. The remaining drift is the 31 cards below, and
+             fixing it means renumbering them AND the 72 "Problem N" mentions
+             in 57 lesson pages, which is its own session; the #pX-Y anchors
+             every lesson links to are unaffected either way.
              ================================================================== -->
         <section class="pb-set" id="exam-style-set">
           <h2 id="exam-style">📝 Exam-style · A midterm on §1.1–§1.12</h2>
@@ -1431,7 +1605,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p6-1"><span class="pb-num">23</span>Four words that must not be swapped</h3>
+              <h3 id="p6-1"><span class="pb-num">26</span>Four words that must not be swapped</h3>
               <span class="pb-chip warm">Warm-up</span>
             </div>
             <p class="pb-scenario">A university with 18,400 undergraduates wants to know how much sleep its students get on a weeknight. The registry draws a simple random sample of 250 names from the enrollment list and emails them a one-question form. 175 forms come back usable.</p>
@@ -1494,7 +1668,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p6-2"><span class="pb-num">24</span>Thirteen calls to the help desk</h3>
+              <h3 id="p6-2"><span class="pb-num">27</span>Thirteen calls to the help desk</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A university IT help desk logs how long each caller waited before a person picked up, to the nearest minute. Here are thirteen calls from one morning, in the order they arrived.</p>
@@ -1555,7 +1729,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p6-3"><span class="pb-num">25</span>Bags that say 500 grams</h3>
+              <h3 id="p6-3"><span class="pb-num">28</span>Bags that say 500 grams</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A machine fills bags of coffee labeled 500 g. The weight it actually delivers is normally distributed with a mean of 502 g and a standard deviation of 4 g. One shift produces 240 bags. Work every part from the printed Table A, and give the answer the table gives.</p>
@@ -1616,7 +1790,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p6-4"><span class="pb-num">26</span>What de Méré got wrong</h3>
+              <h3 id="p6-4"><span class="pb-num">29</span>What de Méré got wrong</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">Two fair six-sided dice are rolled and both faces are recorded, so there are 36 equally likely outcomes. The second half of this problem is the pair of bets a seventeenth-century gambler took to Pascal, having noticed that one of them made money and the other did not.</p>
@@ -1673,7 +1847,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p6-5"><span class="pb-num">27</span>Two batteries out of the drawer</h3>
+              <h3 id="p6-5"><span class="pb-num">30</span>Two batteries out of the drawer</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A drawer holds 12 identical-looking AA batteries. Four of them are flat and eight still work. Two are taken out at random, one after the other, and the first is not put back.</p>
@@ -1731,7 +1905,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p6-6"><span class="pb-num">28</span>Eight questions, four options, no revision</h3>
+              <h3 id="p6-6"><span class="pb-num">31</span>Eight questions, four options, no revision</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A short class test has 8 multiple-choice questions with 4 options each and exactly one right answer per question. A student who has done no revision at all answers every question by guessing. Let X be the number correct. The pass mark is 5.</p>
@@ -1788,7 +1962,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p6-7"><span class="pb-num">29</span>One cup, then nine, then thirty-six</h3>
+              <h3 id="p6-7"><span class="pb-num">32</span>One cup, then nine, then thirty-six</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A vending machine is set to pour 250 ml of coffee. The amount it actually pours varies normally, with a mean of 250 ml and a standard deviation of 15 ml. The campus office treats anything under 244 ml as a short pour.</p>
@@ -1846,7 +2020,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p6-8"><span class="pb-num">30</span>The interval and the test, on one delivery</h3>
+              <h3 id="p6-8"><span class="pb-num">33</span>The interval and the test, on one delivery</h3>
               <span class="pb-chip stretch">Stretch</span>
             </div>
             <p class="pb-scenario">A supplier certifies its resistors at a mean of 100 Ω, and the factory's long production records put the standard deviation at 6 Ω, treated as known. A buyer measures 36 resistors from one delivery and gets a mean of 102.2 Ω. The contract lets the buyer reject a delivery whose mean is off spec in either direction.</p>
