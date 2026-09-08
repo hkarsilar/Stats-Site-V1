@@ -1211,6 +1211,41 @@ body.embed-mode .lesson { max-width: none; margin: 0 auto; }
 .embed-foot a:hover { text-decoration: underline; }
 
 /* ============================================================
+   PRESENT MODE — the same bare widget, scaled for a projector
+   (?present=1). site.js adds body.present-mode on top of embed-mode, so
+   everything above still applies and only the sizes change here. The
+   readouts, control labels, tab strips and buttons grow, the column
+   widens so a 1280 × 720 room uses its space, and the back-link stays.
+   The PNG button is not injected at all in this mode.
+
+   Scaled behind a min-width query on purpose: present mode is a URL, not
+   a device, and a lecturer checking the link on a phone should get the
+   ordinary widget rather than four words per line.
+   ============================================================ */
+@media (min-width: 900px) {
+  /* mirror the embed-mode rule above: a lesson page's column is the
+     .lesson-wrap, tool and guide pages use .container. */
+  body.present-mode .lesson-wrap,
+  body.present-mode .container { max-width: 1120px; }
+  body.present-mode .lesson-eyebrow { font-size: .9rem; }
+  body.present-mode .lesson h1 { font-size: 2.4rem; }
+  body.present-mode .viz { padding: 1.75rem; }
+  body.present-mode .viz-title { font-size: 1.45rem; }
+  body.present-mode .viz-sub { font-size: 1.1rem; margin-bottom: 1.25rem; }
+  body.present-mode .controls { gap: 1.2rem 1.75rem; }
+  body.present-mode .control label { font-size: 1.05rem; }
+  body.present-mode .control input[type="range"] { width: 15rem; }
+  body.present-mode .control input.num { font-size: 1.15rem; width: 9rem; padding: .55rem .7rem; }
+  body.present-mode .seg button { font-size: 1.05rem; padding: .55rem 1.1rem; }
+  body.present-mode .viz .btn,
+  body.present-mode .viz .btn-sm { font-size: 1.02rem; padding: .6rem 1.15rem; }
+  body.present-mode .stat-row { gap: 1.5rem 2.5rem; }
+  body.present-mode .stat .k { font-size: .95rem; }
+  body.present-mode .stat .v { font-size: 2.1rem; }
+  body.present-mode .embed-foot { max-width: 1120px; font-size: 1rem; }
+}
+
+/* ============================================================
    QUIZ — start-screen picker
    ============================================================ */
 .quiz-picker { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .75rem; margin-top: .5rem; }

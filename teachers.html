@@ -30,6 +30,40 @@
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="assets/css/styles.css" />
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <style>
+    /* ---- the seven-week block map ---- */
+    .bm-map td { vertical-align:top; }
+    /* .ref-table sets column 2 in the mono face, which suits a formula sheet
+       and a two-word topic label. This column is a sentence, so it reads in
+       the body face and prints narrower. */
+    .bm-map td:nth-child(2) { font-family:var(--font); color:var(--text-muted); }
+    .bm-map .bm-topic { display:block; margin-top:.15rem; font-size:.82rem; font-weight:600; color:var(--text-muted); }
+    .tm-printbar { display:flex; flex-wrap:wrap; gap:.5rem; align-items:center; margin:1rem 0 .2rem; }
+    .tm-printbar .tm-hint { color:var(--text-faint); font-size:.83rem; }
+
+    /* ============================================================
+       PRINT — the block map on its own sheet. The button sets
+       body.tm-print-map, which drops every other part of the page so
+       the map is the whole print job; it reverts on afterprint. The
+       shared block in styles.css already hides the chrome, forces the
+       light palette and underlines links, so only the sizing and the
+       link decoration are set here.
+       ============================================================ */
+    @media print {
+      body.tm-print-map .lesson > *:not(#block-map) { display:none !important; }
+      .tm-printbar { display:none !important; }   /* never print the button or its hint */
+      body.tm-print-map #block-map > p { display:none !important; }
+      body.tm-print-map #block-map h3 { font-size:13pt; margin:0 0 .3cm; }
+      body.tm-print-map .bm-map { font-size:8pt; margin:0; }
+      body.tm-print-map .bm-map th,
+      body.tm-print-map .bm-map td { padding:.14cm .18cm; line-height:1.35; }
+      body.tm-print-map .bm-map th { font-size:7pt; }
+      body.tm-print-map .bm-map .bm-topic { font-size:7.5pt; }
+      /* a table of links reads as a wall of rules once every one is
+         underlined, so this one prints in plain black text */
+      body.tm-print-map .bm-map a { text-decoration:none !important; }
+    }
+  </style>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -250,6 +284,14 @@ https://statscapybara.com/stats-1/simple-linear-regression/?data=1:12,2:20,3:26,
         </div>
         <p>Those eighteen numbers are the hot-dog contest file from the <a href="datasets.html#hotdog">practice datasets</a>, chosen because they are small enough to work by hand and lopsided enough to be worth working. The calculator also takes <code>?quart=</code> as <code>textbook</code>, <code>spss</code> or <code>r</code>, which is the fastest way to show a class that a paper exam and a statistics package do not compute Q1 the same way. The two paired links are the datasets behind <a href="problems.html#p1-23">problem 23</a> and <a href="problems.html#p1-25">problem 25</a>: five wards with a negative correlation, and eight fertilizer doses whose residual plot arches even though R² reads .500.</p>
 
+        <h3>Put it on the projector</h3>
+        <p>A lecture hall is not an iframe. Adding <code>?present=1</code> to a lesson URL gives you the same bare widget at projector scale: larger readouts, larger control labels and tab strips, and a wider column so a 1280&nbsp;&times;&nbsp;720 room is actually used. The download button goes, since nobody saves a PNG mid-lecture, and the back-link stays, so one click opens the full lesson when a question needs the prose.</p>
+        <p>It composes with everything above. A preset still arrives set, and <code>?embed=1</code> beside it is fine if you want the scaled widget inside a frame. On a narrow screen the scaling switches itself off, so checking the link on your phone the night before shows you the ordinary lesson widget rather than four words to a line.</p>
+        <div class="try-code" style="margin:1rem 0">
+          <div class="tc-head"><span class="tc-title">A configured lesson, sized for the room</span><button class="tc-copy" id="present-copy" type="button">Copy</button></div>
+          <pre id="present-snippet">https://statscapybara.com/stats-1/hypothesis-testing-logic/?present=1&amp;mu0=227&amp;sigma=5&amp;n=4&amp;xbar=222&amp;tail=two</pre>
+        </div>
+
         <p>One thing to expect: a preset fixes the <em>setting</em>, not the sample. On lessons that simulate data, every visit draws a fresh random sample, so a scatter set to <em>r</em>&nbsp;=&nbsp;.30 will look a little different each time you open the slide and the observed coefficient will wobble around the target. That is the sampling variability the lesson is teaching, and it is worth pointing at rather than hiding.</p>
 
         <div class="callout">
@@ -281,6 +323,86 @@ https://statscapybara.com/stats-1/simple-linear-regression/?data=1:12,2:20,3:26,
         </div>
         <p>Teaching research methods too? The <strong>Research Toolkit</strong> track adds full courses on <a href="methods/from-question-to-hypothesis/">Methods</a>, <a href="data/tidy-data/">Data</a>, <a href="writing/imrad-structure/">Writing</a>, and <a href="ethics/why-research-ethics/">Ethics</a>, which map neatly onto a dissertation or capstone module. For a quantitative-methods sequel, <a href="ml/prediction-vs-explanation/">ML &amp; AI</a> closes the <strong>Statistics Core</strong> and picks up where regression leaves off.</p>
 
+        <section id="block-map">
+        <h3>A seven-week block</h3>
+        <p>Plenty of intro courses are not a semester at all. They run as a short block that follows the textbook's own order, data before probability and probability before inference, with a mock paper partway through and the real one at the end. This is that shape, laid over Stats 1 alone.</p>
+        <p>Every lesson link below carries a preset, so opening one from your slides lands on the configuration the week is about rather than on the lesson's default. The tools column is what students should have open beside the lecture, and the problems column is what they can work by hand afterward.</p>
+        <div class="tm-printbar">
+          <button class="btn btn-primary btn-sm" id="print-blockmap" type="button">🖨️ Print the block map</button>
+          <span class="tm-hint">Prints on its own, one page, ready for a course handbook.</span>
+        </div>
+        <div class="hscroll">
+        <table class="ref-table sem-map bm-map">
+          <thead><tr><th>Week</th><th>What it covers</th><th>Lessons</th><th>Tools</th><th>Problems</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>1</strong><br><span class="bm-topic">Looking at data, and producing it</span></td>
+              <td>Cases and variables, mean and median, quartiles and the five-number summary, variance and SD by hand, density curves and z-scores, samples against experiments</td>
+              <td><a href="stats-1/what-is-statistics/">§1.1 What Is Statistics?</a> · <a href="stats-1/types-of-data/">§1.2 Types of Data</a> · <a href="stats-1/describing-data/?data=22,22,26,26,26,27,27,28.5,28.5,29,34,34,36,39,46,47,50,71">§1.3 Describing Data</a> · <a href="stats-1/visualizing-data/">§1.4 Visualizing Data</a> · <a href="stats-1/z-scores-and-the-normal-distribution/?mu=164&amp;sigma=6&amp;x=170">§1.5 Z-Scores &amp; the Normal Distribution</a> · <a href="stats-1/producing-data-and-sampling-design/">§1.6 Producing Data &amp; Sampling Design</a></td>
+              <td><a href="descriptives.html?quart=textbook">Descriptives</a> on the textbook quartiles · <a href="tables.html#printed-tables">Table A</a> · <a href="which-chart.html">Which chart?</a></td>
+              <td><a href="problems.html#p1-1">1&ndash;4</a>, <a href="problems.html#p1-16">16</a>, <a href="problems.html#p6-1">26&ndash;28</a></td>
+            </tr>
+            <tr>
+              <td><strong>2</strong><br><span class="bm-topic">Probability</span></td>
+              <td>Sample spaces, the addition and multiplication rules, conditional probability and Bayes, the mean and SD of a discrete random variable, then the binomial</td>
+              <td><a href="stats-1/probability-basics/?prev=0.20&amp;sens=0.90&amp;spec=0.90">§1.7 Probability Basics</a> · <a href="stats-1/binomial-distribution/?n=8&amp;p=0.25&amp;k=5">§1.8 The Binomial Distribution</a></td>
+              <td><a href="distributions.html#dice-lab">Dice lab</a> · <a href="distributions.html">Distribution playground</a></td>
+              <td><a href="problems.html#p1-5">5</a>, <a href="problems.html#p1-13">13&ndash;15</a>, <a href="problems.html#p6-4">29&ndash;31</a></td>
+            </tr>
+            <tr>
+              <td><strong>3</strong><br><span class="bm-topic">Sampling distributions, and the first interval</span></td>
+              <td>Sampling variability, the distribution of x&#772;, &sigma;/&radic;n and the central limit theorem, then the z-interval and what moves its margin</td>
+              <td><a href="stats-1/sampling-distributions/?shape=skewed&amp;n=10">§1.9 Sampling Distributions</a> · <a href="stats-1/central-limit-theorem/?n=25&amp;pop=skewed">§1.10 Central Limit Theorem</a> · <a href="stats-1/confidence-intervals/?n=25&amp;level=95">§1.11 Confidence Intervals</a></td>
+              <td><a href="tables.html#printed-tables">Table D</a> for z* along the foot · <a href="tables.html#drill">Look-it-up drill</a></td>
+              <td><a href="problems.html#p1-6">6&ndash;8</a>, <a href="problems.html#p1-17">17</a>, <a href="problems.html#p6-7">32</a></td>
+            </tr>
+            <tr>
+              <td><strong>4</strong><br><span class="bm-topic">Testing, and inference for a mean</span></td>
+              <td>The five-step test with &sigma; known, one tail or two from the wording, statistical against practical significance, Type I and Type II, then t and its degrees of freedom</td>
+              <td><a href="stats-1/hypothesis-testing-logic/?mu0=227&amp;sigma=5&amp;n=4&amp;xbar=222&amp;tail=two">§1.12 Hypothesis Testing Logic</a> · <a href="stats-1/one-sample-and-paired-t-tests/?df=14&amp;t=2.60">§1.13 One-Sample &amp; Paired t-Tests</a></td>
+              <td><a href="tables.html#printed-tables">Tables A and D</a> · <a href="apa.html">APA formatter</a></td>
+              <td><a href="problems.html#p1-9">9</a>, <a href="problems.html#p1-10">10</a>, <a href="problems.html#p1-18">18</a>, <a href="problems.html#p6-8">33</a></td>
+            </tr>
+            <tr>
+              <td><strong>5</strong><br><span class="bm-topic">Means, continued</span></td>
+              <td>Matched pairs, the robustness rule of thumb, two samples with the conservative degrees of freedom, and why two overlapping intervals settle nothing</td>
+              <td><a href="stats-1/one-sample-and-paired-t-tests/?df=9&amp;t=2.26">§1.13 One-Sample &amp; Paired t-Tests</a> · <a href="stats-1/independent-samples-t-test/?gap=8&amp;n=20&amp;df=cons">§1.14 Independent Samples t-Test</a></td>
+              <td><a href="apa.html">APA formatter</a> · <a href="effect-sizes.html">Effect-size converter</a> · <a href="power.html">Power calculator</a></td>
+              <td><a href="problems.html#p1-11">11</a>, <a href="problems.html#p1-12">12</a>, <a href="problems.html#p1-19">19&ndash;20</a></td>
+            </tr>
+            <tr>
+              <td><strong>6</strong><br><span class="bm-topic">Proportions and categorical data</span></td>
+              <td>p&#770; and the counts it needs, one proportion and two, then two-way tables: expected counts, components, degrees of freedom and the textbook conditions</td>
+              <td><a href="stats-1/inference-for-proportions/?n=200&amp;x=124&amp;p0=0.5">§1.15 Inference for Proportions</a> · <a href="stats-1/chi-square-tests/?t=70,32,18;30,28,22">§1.16 Chi-Square Tests</a></td>
+              <td><a href="tables.html#printed-tables">Table F</a> · <a href="apa.html">APA formatter</a></td>
+              <td><a href="problems.html#p1-21">21&ndash;22</a></td>
+            </tr>
+            <tr>
+              <td><strong>7</strong><br><span class="bm-topic">Correlation and regression</span></td>
+              <td>Form, direction and strength, r as the mean of standardized products, the least-squares line from r and the two SDs, r&sup2;, and what a residual plot shows that r hides</td>
+              <td><a href="stats-1/correlation/?r=0.6&amp;step=3">§1.17 Correlation</a> · <a href="stats-1/simple-linear-regression/?b1=0&amp;mode=squares">§1.18 Simple Linear Regression</a></td>
+              <td><a href="correlation.html">Correlation &amp; regression calculator</a> · <a href="descriptives.html">Descriptives</a></td>
+              <td><a href="problems.html#p1-23">23&ndash;25</a></td>
+            </tr>
+            <tr>
+              <td><strong>Mock</strong><br><span class="bm-topic">Halfway, on paper</span></td>
+              <td>A marked paper over the first four weeks, in the shapes the real one asks: a five-number summary, three areas off Table A, a tree, a binomial, an interval and a test</td>
+              <td colspan="2"><a href="quiz.html?exam=stats-1&amp;from=1.1&amp;to=1.12&amp;n=20">Mock exam, §1.1 to §1.12, 20 questions</a> · <a href="formulas.html">Formula sheet</a> · <a href="tables.html#printed-tables">Printed tables</a></td>
+              <td><a href="problems.html#exam-style">26&ndash;33</a></td>
+            </tr>
+            <tr>
+              <td><strong>Exam</strong><br><span class="bm-topic">All eighteen sections</span></td>
+              <td>Everything above, with the formula sheet, the printed tables and a basic calculator</td>
+              <td colspan="2"><a href="quiz.html?exam=stats-1&amp;n=40">Full mock, 40 questions</a> · the three posters: <a href="cheat-test-chooser.html">which test</a>, <a href="cheat-apa.html">APA</a>, <a href="cheat-assumptions.html">assumptions</a></td>
+              <td><a href="problems.html#stats-1">All 33</a></td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <p>Two of those presets are worth a word. The §1.3 link loads eighteen real numbers into the playground rather than a simulated cloud, which is the fastest way to show a class that the mean and the median part company; pair it with the calculator link beside it and flip the quartile switch to watch Q1 move between conventions. The §1.16 link types a whole 2&nbsp;&times;&nbsp;3 table into the builder, so the expected counts, the components and the Table F bracket all appear at once.</p>
+        </section>
+
+
         <h2>Use it freely</h2>
         <p>StatsCapybara is free and stays free. There is no institutional license to sign, no seat count, and no ambiguity to resolve: link it, embed it, print it, and assign from it in any class, at any institution, at no cost.</p>
         <p>The one ask is a small one. If it helps your students, a visible link back (from your syllabus, your course page, or your notes) helps other teachers find it, and helps keep the lights on. If you build something with it, spot an error, or wish a certain tool existed, <a href="./#about">say hi</a>. I read every message.</p>
@@ -304,7 +426,7 @@ https://statscapybara.com/stats-1/simple-linear-regression/?data=1:12,2:20,3:26,
     "use strict";
     /* the embed snippets and the data-URL snippet all copy identically */
     [["embed-copy", "embed-snippet"], ["preset-copy", "preset-snippet"], ["data-copy", "data-snippet"],
-     ["exam-copy", "exam-snippet"]].forEach(function (pair) {
+     ["exam-copy", "exam-snippet"], ["present-copy", "present-snippet"]].forEach(function (pair) {
       var btn = document.getElementById(pair[0]);
       var pre = document.getElementById(pair[1]);
       if (!btn || !pre) return;
@@ -321,6 +443,24 @@ https://statscapybara.com/stats-1/simple-linear-regression/?data=1:12,2:20,3:26,
           } catch (e) {}
         }
       });
+    });
+  })();
+
+  /* The block map prints on its own: body.tm-print-map hides the rest of the
+     page, and the class comes off again on afterprint (with a timeout for the
+     browsers that never fire it). Mirrors problems.html's two print modes. */
+  (function () {
+    "use strict";
+    var btn = document.getElementById("print-blockmap");
+    if (!btn) return;
+    var on = false;
+    function end() { if (!on) return; on = false; document.body.classList.remove("tm-print-map"); }
+    window.addEventListener("afterprint", end);
+    btn.addEventListener("click", function () {
+      on = true;
+      document.body.classList.add("tm-print-map");
+      window.print();
+      setTimeout(end, 1500);
     });
   })();
   </script>

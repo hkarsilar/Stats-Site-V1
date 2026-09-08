@@ -45,16 +45,25 @@
     var m = new RegExp("[?&]" + n + "=([^&]*)").exec(window.location.search);
     return m ? decodeURIComponent(m[1].replace(/\+/g, " ")) : null;
   }
-  var EMBED = !!HERE && qparam("embed") === "1";
+  var IFRAMED = !!HERE && qparam("embed") === "1";
+  /* ---------- present mode (?present=1 on a lesson page) ----------
+     The same bare widget, scaled for a projector rather than an iframe:
+     styles.css body.present-mode enlarges the readouts, control labels and
+     tab strips so the back row can read them, and the PNG button is dropped
+     (nobody downloads a picture mid-lecture). The back-link stays, since it
+     is how a lecturer opens the full lesson when a question needs the prose.
+     It composes with ?embed=1 and with any preset params. */
+  var PRESENT = !!HERE && qparam("present") === "1";
+  var EMBED = IFRAMED || PRESENT;
   /* Did this URL carry lesson preset params (P67)? Everything that is not
-     one of the two reserved keys counts. Answered from the URL alone, so it
-     is knowable before the lesson's own boot calls SC.preset(). */
+     one of the three reserved keys counts. Answered from the URL alone, so
+     it is knowable before the lesson's own boot calls SC.preset(). */
   function hasPresetParams() {
     var s = window.location.search.replace(/^\?/, "");
     if (!s) return false;
     return s.split("&").some(function (pair) {
       var k = pair.split("=")[0];
-      return k && k !== "embed" && k !== "q";
+      return k && k !== "embed" && k !== "present" && k !== "q";
     });
   }
 
@@ -606,10 +615,11 @@
        2. It is called after the lesson's own init, so the frozen-noise law
           holds: a preset moves the controls a hand would move, it never
           reseeds the data.
-       3. It composes with ?embed=1 (which site.js handles separately) — the
-          two are independent query params.
+       3. It composes with ?embed=1 and ?present=1 (which site.js handles
+          separately) — all of them are independent query params.
 
-     Reserved keys a lesson must NOT use: "embed" and "q" (search deep link). */
+     Reserved keys a lesson must NOT use: "embed", "present" and "q" (the
+     search deep link). */
   function numeric(s) {
     var v = parseFloat(s);
     return (isFinite(v) && /^[-+]?(\d+\.?\d*|\.\d+)([eE][-+]?\d+)?$/.test(String(s).trim())) ? v : null;
@@ -2259,7 +2269,12 @@
     // The viz still runs (its inline script is independent of site.js).
     if (EMBED) {
       document.body.classList.add("embed-mode");
-      injectVizExport();
+      // Added before the lesson's own inline script runs, so VIZ.fit() sizes
+      // the canvas to the wider projector column on its first paint.
+      if (PRESENT) document.body.classList.add("present-mode");
+      // No download button on a projector; present mode drops it entirely
+      // rather than hiding it, so there is nothing to tab onto either.
+      if (!PRESENT) injectVizExport();
       renderEmbedFooter();
       registerSW();
       trackPrint();
@@ -2267,7 +2282,10 @@
       // i.e. whether instructors configure the widget or just drop it in.
       // Read from the URL rather than from preset(), which runs later (at
       // the end of the lesson's own boot) and only on lessons that opt in.
-      track("lesson_embed_view", { with_preset: hasPresetParams() });
+      // A present-mode load is a room, not an iframe: it is deliberately not
+      // counted here rather than inflating the embed number, and it earns no
+      // event of its own (P70's ten-event ceiling).
+      if (IFRAMED) track("lesson_embed_view", { with_preset: hasPresetParams() });
       return;
     }
     renderNav();

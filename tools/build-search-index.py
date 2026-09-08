@@ -52,7 +52,16 @@ MAX_CHARS = 20_000
 # runaway guard, not a budget, and a guard that a growing page keeps catching
 # up with was set too tight. glossary.html was re-measured in the same pass
 # and sits at 66,910, comfortably inside its own cap, so it is left alone.
-PAGE_MAX_CHARS = {"problems.html": 300_000, "glossary.html": 120_000}
+#
+# teachers.html joined them in P87, the same defect on a much smaller page and
+# found the same way. The block map and the ?present=1 section took it from
+# 18,255 characters to 23,035, so it crossed the 20,000 default and lost 13%
+# of itself: everything from the block map's own table onward, including the
+# week rows a lecturer would search for. A page that is one section away from
+# its guard has the wrong guard, so this is 60,000 rather than 25,000 — real
+# slack, on the P86 reading that a runaway guard is not a budget. It costs
+# about 3 KB on a lazily loaded index.
+PAGE_MAX_CHARS = {"problems.html": 300_000, "glossary.html": 120_000, "teachers.html": 60_000}
 
 # Lessons get their own, much larger cap (P39 run 13). The 4,500-char default
 # was truncating 87 of the 97 lessons, dropping 27% of the site's lesson prose

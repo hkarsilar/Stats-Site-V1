@@ -37,11 +37,12 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v51";  /* site.js changed and is precached: P85 added
-                                      window.SC.pairParam, dataParam's two-column sibling
-                                      behind the new ?data=x:y,… URLs on stats-1/correlation
-                                      and stats-1/simple-linear-regression. Nothing else in
-                                      the shell changed. */
+const CACHE_VERSION = "sc-v52";  /* site.js AND styles.css changed, both precached:
+                                      P87 added present mode (?present=1 on a lesson =
+                                      embed mode plus a projector scale), which is a
+                                      branch in site.js's init and a body.present-mode
+                                      block in styles.css. Nothing else in the shell
+                                      changed. */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location
