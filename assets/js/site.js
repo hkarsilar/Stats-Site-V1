@@ -745,12 +745,49 @@
     return (movesX && movesY) ? out : null;
   }
 
+  /* ---------- ?g=<groups> : a URL that carries GROUPED data ----------
+     dataParam's and pairParam's third sibling, for everything that compares
+     several groups at once. Commas separate the values inside a group and
+     semicolons separate the groups, which is the shape ?t= already uses for a
+     contingency table, so a reader who has met one URL can read the other.
+
+     Phase 18 fixes this as the site's one convention for group data, because
+     the alternative is every ANOVA surface inventing its own separator and a
+     lecturer having to remember which page wants which. It inherits the rules
+     of its two siblings rather than restating them: strict numeric parsing,
+     and a single bad token rejects the WHOLE parameter, since half a dataset
+     would print a confident mean square for a study nobody ran.
+
+     Two floors of its own, both forced by the arithmetic rather than by
+     taste. Two groups, because one group has nothing to compare against. And
+     two values in every group, because a group of one contributes no
+     within-group deviation at all, which leaves the error term describing
+     fewer groups than the design has. Returns an array of arrays, or null. */
+  function groupParam(raw, maxGroups, maxPer) {
+    if (typeof raw !== "string") return null;
+    var parts = raw.split(";");
+    if (parts.length < 2 || parts.length > (maxGroups || 6)) return null;
+    var out = [];
+    for (var i = 0; i < parts.length; i++) {
+      var toks = parts[i].split(/[,\s]+/).filter(function (t) { return t !== ""; });
+      if (toks.length < 2 || toks.length > (maxPer || 20)) return null;
+      var col = [];
+      for (var j = 0; j < toks.length; j++) {
+        var v = numeric(toks[j]);               // the same strict test presets use
+        if (v === null) return null;
+        col.push(v);
+      }
+      out.push(col);
+    }
+    return out;
+  }
+
   /* expose the ring + mascot so a standalone page (progress.html) can reuse the
      exact same drawing instead of duplicating it — the copy feedback so
      tool pages share one "Copied!" pattern, preset() for lesson URLs, and
      track()/scoreBucket() so the three tool pages that own an event fire it
      through the shared layer instead of reaching for gtag themselves */
-  window.SC = { ring: ring, capy: capy, copied: flashCopied, preset: preset, dataParam: dataParam, pairParam: pairParam, track: track, scoreBucket: scoreBucket };
+  window.SC = { ring: ring, capy: capy, copied: flashCopied, preset: preset, dataParam: dataParam, pairParam: pairParam, groupParam: groupParam, track: track, scoreBucket: scoreBucket };
 
   /* ---------- homepage curriculum grid ---------- */
   function courseCard(c) {

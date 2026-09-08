@@ -1589,10 +1589,15 @@
              without a gap. Every one of those renumbers was safe because no
              page names an exam-style problem by its number, and P84 also
              brought this set's stale "Problem N" source comments into step
-             with the badges. The remaining drift is the 31 cards below, and
-             fixing it means renumbering them AND the 72 "Problem N" mentions
-             in 57 lesson pages, which is its own session; the #pX-Y anchors
-             every lesson links to are unaffected either way.
+             with the badges. The remaining drift is the 33 cards below, and
+             fixing it means renumbering them AND the "Problem N" mentions in
+             the lesson pages, which is its own session; the #pX-Y anchors
+             every lesson links to are unaffected either way. P89 appended two
+             ANOVA problems to the Stats 2 set and gave them 23 and 24, which
+             continues that set's own run rather than the page's, so those two
+             numbers now appear twice on the page. Deliberate: the alternative
+             was renumbering the sets below inside a prompt that is not the one
+             that owns the sweep.
              ================================================================== -->
         <section class="pb-set" id="exam-style-set">
           <h2 id="exam-style">📝 Exam-style · A midterm on §1.1–§1.12</h2>
@@ -2077,7 +2082,7 @@
              ================================================================== -->
         <section class="pb-set" id="stats-2-set">
           <h2 id="stats-2">🔗 Stats 2 · Groups &amp; relationships</h2>
-          <p class="pb-set-sub">Ten problems on comparing groups and reading a relationship: three or more groups, factorial designs, the assumptions that decide which test you are allowed to run, and the two ways of describing a straight line. The group tests are <a href="stats-2/">Stats 2</a>; correlation and regression are taught in <a href="stats-1/">Stats 1</a>.</p>
+          <p class="pb-set-sub">Twelve problems on comparing groups and reading a relationship: three or more groups, factorial designs, the assumptions that decide which test you are allowed to run, the two ways of describing a straight line, and two ANOVA tables built by hand. The group tests are <a href="stats-2/">Stats 2</a>; correlation and regression are taught in <a href="stats-1/">Stats 1</a>.</p>
 
           <!-- ---------- 2.1 ----------
                verify: groups [3,5,4,2,6],[4,7,6,5,8],[9,6,8,10,7]; means 4,6,8; grand 6
@@ -2718,6 +2723,133 @@
               </ol>
               <p class="pb-answer">Three problems, three different fixes: heteroscedasticity invalidates the standard errors, case 31 has both the leverage and the influence to bend the line, and a VIF of 6.51 means the two predictors are nearly the same variable. None of them is a reason to abandon the model, and all three change what the coefficients mean.</p>
               <p class="pb-ref">From <a href="stats-2/regression-diagnostics/">§2.8 Regression Diagnostics</a> and <a href="stats-2/assumptions-of-regression/">§2.13 Assumptions of Regression</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 2.11 (P89) ----------
+               verify: n=8 per group, means 12,15,18, SDs 3.2,2.9,3.5 ; grand mean 15
+                       SSG = 8*((12-15)^2+(15-15)^2+(18-15)^2) = 8*18 = 144
+                       SSE = 7*(3.2^2+2.9^2+3.5^2) = 7*30.90 = 216.30
+                       SST = 360.30 ; df 2, 21, 23 ; MSG = 72.00 ; MSE = 10.30
+                       V.fInv(.05,2,21) = 3.4668 ; F = 6.9903 ; V.fUpper(6.9903,2,21) = .004711
+                       eta2 = 144/360.30 = .3997 ; sp = sqrt(10.3) = 3.2094
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p2-11"><span class="pb-num">23</span>A table from three lines of output</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A sports scientist compares three warm-up routines on how far athletes can reach in a sit-and-reach test, eight athletes per routine. The paper reports only the descriptive statistics, so the ANOVA table has to be rebuilt from them.</p>
+            <div class="pb-given">
+              <span class="lbl">Descriptives, centimeters</span>
+              <ul>
+                <li>Static: <em>n</em> = 8, <em>M</em> = 12.0, <em>SD</em> = 3.2</li>
+                <li>Dynamic: <em>n</em> = 8, <em>M</em> = 15.0, <em>SD</em> = 2.9</li>
+                <li>Ballistic: <em>n</em> = 8, <em>M</em> = 18.0, <em>SD</em> = 3.5</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Find the grand mean, then SS<sub>G</sub>, SS<sub>E</sub> and SS<sub>T</sub>.</li>
+              <li>Fill in the three degrees of freedom and both mean squares.</li>
+              <li>Compute <em>F</em> and decide at α = .05 against the critical value 3.47.</li>
+              <li>Report η² and the pooled standard deviation.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Grand mean</span>
+                  <span class="pb-math">Equal group sizes, so it is the mean of the three means</span>
+                  <span class="pb-math">x̄ = (12.0 + 15.0 + 18.0) / 3 = 15.0 cm</span>
+                  <span class="pb-note">With unequal group sizes this shortcut fails and the grand mean has to be the weighted average Σnᵢx̄ᵢ / N.</span>
+                </li>
+                <li><span class="pb-lbl">Between groups</span>
+                  <span class="pb-math">SS<sub>G</sub> = Σ nᵢ(x̄ᵢ − x̄)²</span>
+                  <span class="pb-math">= 8(12 − 15)² + 8(15 − 15)² + 8(18 − 15)²</span>
+                  <span class="pb-math">= 8(9) + 8(0) + 8(9) = 144.00</span>
+                </li>
+                <li><span class="pb-lbl">Within groups, from the SDs</span>
+                  <span class="pb-math">SS<sub>E</sub> = Σ (nᵢ − 1)sᵢ² = 7(3.2² + 2.9² + 3.5²)</span>
+                  <span class="pb-math">= 7(10.24 + 8.41 + 12.25) = 7(30.90) = 216.30</span>
+                  <span class="pb-note">This is the form to reach for whenever a question hands you standard deviations instead of raw scores. It works because each group's SD is already built on nᵢ − 1, so multiplying by that df undoes the division and returns the group's own sum of squares.</span>
+                </li>
+                <li><span class="pb-lbl">Total, and the check</span>
+                  <span class="pb-math">SS<sub>T</sub> = 144.00 + 216.30 = 360.30</span>
+                  <span class="pb-note">Nothing else was available to compute SS<sub>T</sub> from here, since the raw scores are gone. When you do have them, computing all three separately and seeing them add up is the cheapest error check there is.</span>
+                </li>
+                <li><span class="pb-lbl">Degrees of freedom and mean squares</span>
+                  <span class="pb-math">df<sub>G</sub> = I − 1 = 2   df<sub>E</sub> = N − I = 24 − 3 = 21   df<sub>T</sub> = 23</span>
+                  <span class="pb-math">MS<sub>G</sub> = 144.00 / 2 = 72.00</span>
+                  <span class="pb-math">MS<sub>E</sub> = 216.30 / 21 = 10.30</span>
+                </li>
+                <li><span class="pb-lbl">The F ratio</span>
+                  <span class="pb-math">F = 72.00 / 10.30 = 6.99 on (2, 21)</span>
+                  <span class="pb-math">6.99 &gt; 3.47, so reject H₀ at α = .05 (exact p = .005)</span>
+                </li>
+                <li><span class="pb-lbl">Effect size and pooled SD</span>
+                  <span class="pb-math">η² = 144.00 / 360.30 = .40</span>
+                  <span class="pb-math">s<sub>p</sub> = √10.30 = 3.21 cm</span>
+                  <span class="pb-note">Two of these numbers do different jobs. η² says the routine accounts for about 40% of the variation in reach. s<sub>p</sub> is the error term any follow-up comparison between two routines will use, and it is close to the individual group SDs, which is what you would hope given the ANOVA assumes they are estimating the same thing.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">SS<sub>G</sub> = 144.00 on 2 df, SS<sub>E</sub> = 216.30 on 21, SS<sub>T</sub> = 360.30 on 23. MS<sub>G</sub> = 72.00, MS<sub>E</sub> = 10.30, <em>F</em>(2, 21) = 6.99, <em>p</em> = .005. Warm-up routine affected reach, η² = .40, s<sub>p</sub> = 3.21 cm.</p>
+              <p class="pb-ref">From <a href="stats-2/one-way-anova/">§2.2 One-Way ANOVA</a>. Check it in <a href="stats-2/one-way-anova/#atviz">Build the ANOVA Table</a> or in the <a href="apa.html?a=anova">APA formatter</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 2.12 (P89) ----------
+               verify: given SSE = 216, SST = 396, dfG = 3, dfT = 39
+                       SSG = 396 - 216 = 180 ; dfE = 39 - 3 = 36
+                       MSG = 180/3 = 60 ; MSE = 216/36 = 6 ; F = 10.00
+                       V.fInv(.05,3,36) = 2.8663 ; V.fUpper(10,3,36) = 6.2023e-5
+                       eta2 = 180/396 = .4545 ; sp = sqrt(6) = 2.4495
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p2-12"><span class="pb-num">24</span>The table with four cells missing</h3>
+              <span class="pb-chip warm">Warm-up</span>
+            </div>
+            <p class="pb-scenario">A printout has been photocopied badly and four cells of the ANOVA table are unreadable. Forty participants were assigned to four versions of an instruction leaflet, and the outcome is a comprehension score.</p>
+            <div class="pb-given">
+              <span class="lbl">What survived the photocopier</span>
+              <ul>
+                <li>Between groups: SS = ?, df = 3, MS = ?</li>
+                <li>Within groups: SS = 216.00, df = ?, MS = ?</li>
+                <li>Total: SS = 396.00, df = 39</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Recover the four missing cells and the <em>F</em> ratio.</li>
+              <li>Decide at α = .05 against the critical value <em>F</em>*(3, 36) = 2.87.</li>
+              <li>Report η² and the pooled standard deviation.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The two sums of squares</span>
+                  <span class="pb-math">SS<sub>T</sub> = SS<sub>G</sub> + SS<sub>E</sub>, so SS<sub>G</sub> = 396.00 − 216.00 = 180.00</span>
+                  <span class="pb-note">The partition identity is doing all the work here. Two of the three sums of squares always determine the third.</span>
+                </li>
+                <li><span class="pb-lbl">The missing df</span>
+                  <span class="pb-math">df<sub>T</sub> = df<sub>G</sub> + df<sub>E</sub>, so df<sub>E</sub> = 39 − 3 = 36</span>
+                  <span class="pb-note">Read the design back out of the df while you are here: df<sub>G</sub> = I − 1 = 3 means four groups, and df<sub>T</sub> = N − 1 = 39 means forty participants. Both match the scenario, which is a check worth making every time.</span>
+                </li>
+                <li><span class="pb-lbl">Mean squares</span>
+                  <span class="pb-math">MS<sub>G</sub> = 180.00 / 3 = 60.00</span>
+                  <span class="pb-math">MS<sub>E</sub> = 216.00 / 36 = 6.00</span>
+                </li>
+                <li><span class="pb-lbl">The F ratio and the decision</span>
+                  <span class="pb-math">F = 60.00 / 6.00 = 10.00 on (3, 36)</span>
+                  <span class="pb-math">10.00 &gt; 2.87, so reject H₀ (exact p = .00006)</span>
+                  <span class="pb-note">A common slip is to divide the sums of squares instead: 180.00 / 216.00 = 0.83, which would have said the opposite. F is a ratio of mean squares, so each sum of squares has to meet its own df first.</span>
+                </li>
+                <li><span class="pb-lbl">Effect size and pooled SD</span>
+                  <span class="pb-math">η² = 180.00 / 396.00 = .45</span>
+                  <span class="pb-math">s<sub>p</sub> = √6.00 = 2.45</span>
+                  <span class="pb-note">The leaflet version accounts for about 45% of the variation in comprehension. What the table cannot say is which versions differ, and the pooled SD is exactly what the follow-up comparisons will need to find out.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">SS<sub>G</sub> = 180.00, df<sub>E</sub> = 36, MS<sub>G</sub> = 60.00, MS<sub>E</sub> = 6.00, <em>F</em>(3, 36) = 10.00, <em>p</em> &lt; .001. Reject H₀: the four leaflets are not equally well understood, η² = .45, s<sub>p</sub> = 2.45.</p>
+              <p class="pb-ref">From <a href="stats-2/one-way-anova/">§2.2 One-Way ANOVA</a>. The exam mode of <a href="stats-2/one-way-anova/#atviz">Build the ANOVA Table</a> generates more of these.</p>
             </details>
           </article>
         </section>

@@ -37,12 +37,11 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v52";  /* site.js AND styles.css changed, both precached:
-                                      P87 added present mode (?present=1 on a lesson =
-                                      embed mode plus a projector scale), which is a
-                                      branch in site.js's init and a body.present-mode
-                                      block in styles.css. Nothing else in the shell
-                                      changed. */
+const CACHE_VERSION = "sc-v53";  /* site.js changed and is precached: P89 added
+                                      SC.groupParam, the shared ?g= parser for group
+                                      data that sits beside dataParam and pairParam.
+                                      styles.css is unchanged this time; nothing else
+                                      in the shell moved. */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location

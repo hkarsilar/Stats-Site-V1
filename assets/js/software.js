@@ -242,19 +242,24 @@ window.SOFTWARE = {
       'Outcome into <em>Dependent List</em>, group into <em>Factor</em>.',
       '<em>Options…</em>: tick <em>Descriptive</em>, <em>Homogeneity of variance test</em> (Levene), and <em>Welch</em> (robust F for unequal variances). Recent SPSS also offers effect-size estimates here.',
       '<em>Post Hoc…</em>: tick <em>Tukey</em> for pairwise follow-ups.',
-      'Alternative with η² built in: <strong>Analyze → General Linear Model → Univariate</strong>, then <em>Options → Estimates of effect size</em>.'
+      'Alternative with η² built in: <strong>Analyze → General Linear Model → Univariate</strong>, then <em>Options → Estimates of effect size</em>.',
+      'Reading the ANOVA table it prints, row by row: <em>Between Groups</em> is the group effect, so its <em>Sum of Squares</em> is SS<sub>G</sub> and its <em>df</em> is the number of groups minus one. <em>Within Groups</em> is the error term, giving SS<sub>E</sub> on N minus the number of groups, and its <em>Mean Square</em> is the MSE every follow-up test reuses. <em>Total</em> carries SS<sub>T</sub> on N minus one and prints no mean square, because nothing uses it. The <em>F</em> column is the two mean squares divided, and <em>Sig.</em> is the p-value.',
+      'η² is not in that table, but it is one division away from it: SS<sub>G</sub> divided by SS<sub>T</sub>, both read off the rows above. That is worth knowing, since the One-Way ANOVA dialog in older versions offers no effect size at all.',
+      'The <em>Descriptives</em> box is the one to keep if you plan to check the arithmetic by hand. Its per-group <em>N</em>, <em>Mean</em> and <em>Std. Deviation</em> are everything SS<sub>G</sub> and SS<sub>E</sub> need, the second of them through SS<sub>E</sub> = Σ (n − 1)s². SPSS reports the sample standard deviation, on n − 1, which is the form that identity wants.'
     ],
     jasp: [
       '<strong>ANOVA → ANOVA</strong>.',
       'Outcome into <em>Dependent Variable</em>, group into <em>Fixed Factors</em>.',
       'Open <em>Additional Options</em> → tick <em>Estimates of effect size</em> (η², ω²), and tick <em>Confidence intervals</em> beside them: JASP builds the interval on the effect size, which most packages leave you to compute yourself. It defaults to <strong>90%</strong>, which is the right level for η² and not a typo.',
       '<em>Post Hoc Tests</em>: move the factor across and tick <em>Tukey</em>.',
-      '<em>Assumption Checks</em>: tick <em>Homogeneity tests</em> and <em>Q-Q plot of residuals</em>.'
+      '<em>Assumption Checks</em>: tick <em>Homogeneity tests</em> and <em>Q-Q plot of residuals</em>.',
+      'JASP labels the same three rows <em>Cases</em>, <em>Residuals</em> and (with <em>Descriptives</em> ticked) the group summaries, so <em>Cases</em> is SPSS\'s Between Groups and <em>Residuals</em> is its Within Groups. It prints no Total row, so if you want SS<sub>T</sub> for a hand η², add the two sums of squares yourself.'
     ],
     apa: '<p>Study method affected exam scores, <em>F</em>(2, 87) = 5.42, <em>p</em> = .006, η² = .11, 90% CI [.02, .21]. Tukey-corrected comparisons showed that method C outperformed method A, <em>M</em><sub>diff</sub> = 6.8, 95% CI [1.9, 11.7], <em>p</em> = .004; no other pairwise differences were significant.</p>',
     tips: [
       '<em>F</em> takes two dfs: between-groups and within-groups — <em>F</em>(2, 87).',
-      'η² is Greek (not italicized) and can’t exceed 1, so no leading zero: η² = .11.'
+      'η² is Greek (not italicized) and can’t exceed 1, so no leading zero: η² = .11.',
+      'The two df in that bracket are also a free check on the output: the first is the number of groups minus one, the second is your sample size minus the number of groups. If they do not match the study you ran, something was miscoded before the test.'
     ]
   },
   "post-hoc-tests": {

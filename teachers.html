@@ -244,6 +244,11 @@
               <td><code>?outlier=100&amp;tab=mw</code></td>
             </tr>
             <tr>
+              <td><a href="stats-2/one-way-anova/">One-Way ANOVA</a></td>
+              <td><code>g</code> a whole dataset, commas inside a group and semicolons between groups, 2&ndash;4 groups of 2&ndash;10 numbers &middot; <code>step</code> 1&ndash;8</td>
+              <td><code>?g=15,14,12,11;20,18,16,14;21,17,19,19;25,24,22,21&amp;step=5</code></td>
+            </tr>
+            <tr>
               <td><a href="stats-2/logistic-regression/">Logistic Regression</a></td>
               <td><code>x0</code> 20–80 · <code>b1</code> 0.02–0.50</td>
               <td><code>?x0=50&amp;b1=0.5</code></td>
@@ -272,6 +277,7 @@
         <p>Four surfaces read a <code>?data=</code> parameter, so a lecture's own batch of numbers can go into a live playground without anyone typing it in front of a class. Two of them take a single column: the Mean vs. Median Playground in <a href="stats-1/describing-data/">§1.3</a>, where the values become the draggable dots and the axis rebuilds around them, and the <a href="descriptives.html">Descriptives calculator</a>, which fills its box and calculates. Separate those numbers with commas, up to 200 of them.</p>
         <p>The other two take <strong>pairs</strong>, written <code>x:y</code> and separated by commas, up to 100 of them: the Correlation Explorer in <a href="stats-1/correlation/">§1.17</a>, which replaces its simulated cloud with your points and rebuilds both axes around them, and the Least-Squares Playground in <a href="stats-1/simple-linear-regression/">§1.18</a>, which does the same and also rescales the two slope sliders so the least-squares line is reachable. Add <code>&amp;resid=1</code> there to open the residual plot underneath. In §1.17 the points stay until somebody moves the target-correlation slider or asks for a new cloud, which returns the widget to simulated data; in §1.18 the "New data" button does the same.</p>
         <p>All four follow one rule about bad input: anything that is not a plain number, and the whole parameter is ignored, so a mangled paste still loads the ordinary page rather than half a dataset. Pairs additionally need at least three of them, and both columns have to vary, since a correlation and a slope are undefined otherwise.</p>
+        <p>A fifth surface takes <strong>groups</strong> rather than a single batch, under its own name. Build the ANOVA Table in <a href="stats-2/one-way-anova/">&sect;2.2</a> reads <code>?g=</code>, where commas separate the values inside a group and semicolons separate the groups, up to four groups of ten numbers. That is the same shape the contingency builder in <a href="stats-1/chi-square-tests/">&sect;1.16</a> uses for <code>?t=</code>, and it is the convention every group-data surface on the site will use, so a class's own three or four conditions can go straight into the table with the rest of the lecture's links. Pair it with <code>?step=</code> to open on the sums of squares rather than on the finished table, or switch the widget to exam mode and let it blank four cells for the room to fill in.</p>
         <div class="try-code" style="margin:1rem 0">
           <div class="tc-head"><span class="tc-title">A dataset in a URL</span><button class="tc-copy" id="data-copy" type="button">Copy</button></div>
           <pre id="data-snippet">https://statscapybara.com/descriptives.html?quart=textbook&amp;data=22,22,26,26,26,27,27,28.5,28.5,29,34,34,36,39,46,47,50,71

@@ -100,7 +100,7 @@ window.CHECKS = {
 
   /* ---------- Stats 2 — Comparing Groups & Relationships ---------- */
   "one-way-anova": [
-    { q: "With 4 groups, why not just run six t-tests between every pair?", o: ["t-tests can't handle 4 groups", "each extra test inflates the overall Type I error rate", "ANOVA is easier to compute", "t-tests need bigger samples"], a: 1, why: "Six tests at α = .05 give ≈ 26% chance of at least one false positive. ANOVA asks one omnibus question at one α." },
+    { q: "An ANOVA table reads SS-between = 208, SS-within = 48, df 3 and 12. η² and the pooled SD are…", o: [".81 and 4.00", ".81 and 2.00", ".19 and 2.00", "4.33 and 2.00"], a: 1, why: "η² = SS-between / SS-total = 208 / (208 + 48) = .81, and sₚ = √MS-within = √(48/12) = 2.00. Both fall out of the table with no extra data." },
     { q: "The F-ratio compares…", o: ["the largest mean to the smallest", "between-group variance to within-group variance", "the sample sizes", "the medians"], a: 1, why: "F = signal/noise: how much means differ from each other vs. how much people differ within groups." },
     { q: "A significant one-way ANOVA tells you…", o: ["which groups differ", "at least one group mean differs from the others", "all groups differ from each other", "the effect is large"], a: 1, why: "It's an omnibus test — 'a difference exists somewhere.' Post-hoc tests find where." }
   ],

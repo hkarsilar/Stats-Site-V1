@@ -37,6 +37,10 @@
         read back off the shipped page and recomputed from viz.js
     10. the quartile conventions — textbook vs SPSS vs R/Python on
         descriptives.html, derived here and read back off the shipped page
+    11. Build a Table — the r × c contingency builder in stats-1/chi-square-tests
+    12. Build the ANOVA Table — the one-way table in stats-2/one-way-anova,
+        derived here and read back off the shipped page, including the
+        sample-SD divisor the exam dialect needs
 
    Note on section 7: the tool pages compute these inline against the DOM,
    so they can't be imported. What is asserted here is that viz.js still
@@ -1215,6 +1219,211 @@ try {
   failures.push({ section, label: 'Build a Table could not be driven — ids or structure changed?',
     got: String(e.message), want: 'a runnable ct-table script printing the stat row', tol: 0, err: NaN,
     src: 'stats-1/chi-square-tests' });
+}
+
+
+/* ============================================================
+   12 — Build the ANOVA Table (stats-2/one-way-anova)
+
+   P89 made the ANOVA table the interface: the widget derives SSG, SSE, SST,
+   the three df, the two mean squares, F, p, the pooled SD and eta squared from
+   an editable dataset, and blanks four of those cells in exam mode. Every one
+   of them is a published claim, so this section derives the whole table from
+   the sixteen numbers alone and then drives the SHIPPED page under the same
+   DOM shim sections 8 to 11 use, through the page's OWN ?g= applier: the shim
+   hands it a fake window.SC carrying groupParam lifted out of site.js, so the
+   widget is loaded exactly the way a reader's URL loads it and the page needs
+   no test-only hook.
+
+   THE DIVISOR IS THE POINT. VIZ.sd divides by n, which is a population SD; the
+   exam dialect's s, MSE and pooled SD all divide by n − 1. The frozen default
+   was chosen so the two answers are far apart and both are round: with the
+   sample form MSE is exactly 4 and sp exactly 2, and feeding the same formula
+   VIZ.sd's population SDs would give 3 and 1.732. Both are asserted, so a
+   future edit that reaches for VIZ.sd here fails rather than passing quietly.
+
+   The frozen default is four fertilizer doses, four seedlings each: group
+   means 13, 17, 19 and 23 against a grand mean of 18, SSG 208, SSE 48,
+   SST 256, F(3, 12) = 17.33. The two-group anchor is the same first and last
+   group, where F(1, 6) = 60.00 must equal the square of the pooled t of
+   7.7460, since squaring a t on v df gives an F on (1, v).
+   ============================================================ */
+head('Build the ANOVA Table (the shipped page)');
+
+const SEED = [[15, 14, 12, 11], [20, 18, 16, 14], [21, 17, 19, 19], [25, 24, 22, 21]];
+
+const avg = a => a.reduce((x, y) => x + y, 0) / a.length;
+const ssOf = a => { const m = avg(a); return a.reduce((s, v) => s + (v - m) * (v - m), 0); };
+/* the exam dialect: n − 1 under the root */
+const sampleSD = a => Math.sqrt(ssOf(a) / (a.length - 1));
+
+function anovaTable(G) {
+  const all = [].concat(...G), N = all.length, I = G.length, gm = avg(all);
+  const means = G.map(avg);
+  const ssb = G.reduce((s, g, i) => s + g.length * (means[i] - gm) * (means[i] - gm), 0);
+  const ssw = G.reduce((s, g) => s + ssOf(g), 0);
+  const sst = all.reduce((s, v) => s + (v - gm) * (v - gm), 0);
+  const dfb = I - 1, dfw = N - I, dft = N - 1;
+  const msb = ssb / dfb, msw = ssw / dfw, f = msb / msw;
+  return { all, N, I, gm, means, ssb, ssw, sst, dfb, dfw, dft, msb, msw, f,
+           p: V.fUpper(f, dfb, dfw), sp: Math.sqrt(msw), eta: ssb / sst };
+}
+
+const seed = anovaTable(SEED);
+
+/* ---- the arithmetic, independent of the page ---- */
+is('seed: group means', seed.means.join(','), '13,17,19,23', 'the sixteen heights');
+eq('seed: grand mean', seed.gm, 18, 1e-12, '(52 + 68 + 76 + 92) / 16');
+eq('seed: SSG', seed.ssb, 208, 1e-12, '4 × (25 + 1 + 1 + 25)');
+eq('seed: SSE', seed.ssw, 48, 1e-12, '10 + 20 + 8 + 10');
+eq('seed: SST', seed.sst, 256, 1e-12, 'every height against the grand mean');
+eq('seed: SST = SSG + SSE', seed.ssb + seed.ssw, seed.sst, 1e-12, 'the partition identity');
+is('seed: df', [seed.dfb, seed.dfw, seed.dft].join(','), '3,12,15', 'I − 1, N − I, N − 1');
+is('seed: df add', seed.dfb + seed.dfw, seed.dft, '(I − 1) + (N − I) = N − 1');
+eq('seed: MSG', seed.msb, 208 / 3, 1e-12, 'SSG / dfG');
+eq('seed: MSE', seed.msw, 4, 1e-12, 'SSE / dfE = 48 / 12');
+eq('seed: F', seed.f, 52 / 3, 1e-12, 'MSG / MSE');
+rel('seed: p', seed.p, 1.1672856e-4, 1e-6, 'VIZ.fUpper(17.3333, 3, 12)');
+eq('seed: pooled SD', seed.sp, 2, 1e-12, '√MSE');
+eq('seed: eta squared', seed.eta, 0.8125, 1e-12, 'SSG / SST = 208 / 256');
+eq('seed: F* at .05 on (3, 12)', V.fInv(0.05, 3, 12), 3.4903, 5e-5, 'printed F table');
+
+/* the divisor, asserted in both directions */
+const sdsSample = SEED.map(sampleSD);
+const sdsPopulation = SEED.map(g => V.sd(g));
+eq('sample SD of the untreated group is on n − 1', sdsSample[0], Math.sqrt(10 / 3), 1e-12, 'SS 10, df 3');
+eq('VIZ.sd of the same group is on n, and is smaller', sdsPopulation[0], Math.sqrt(10 / 4), 1e-12,
+   'VIZ.sd divides by n — documented in CLAUDE.md');
+const mseFromSampleSDs = SEED.reduce((s, g, i) => s + (g.length - 1) * sdsSample[i] * sdsSample[i], 0) / seed.dfw;
+const mseFromPopulationSDs = SEED.reduce((s, g, i) => s + (g.length - 1) * sdsPopulation[i] * sdsPopulation[i], 0) / seed.dfw;
+eq('MSE from Σ(nᵢ − 1)sᵢ² with the SAMPLE s', mseFromSampleSDs, 4, 1e-12, 'the exam-dialect identity');
+eq('the same formula fed VIZ.sd gives 3, not 4', mseFromPopulationSDs, 3, 1e-12,
+   'the defect this assertion exists to catch');
+
+/* the two-group anchor: F = t² */
+const pair = anovaTable([SEED[0], SEED[3]]);
+const tPooled = (avg(SEED[3]) - avg(SEED[0])) /
+  Math.sqrt(((ssOf(SEED[0]) + ssOf(SEED[3])) / 6) * (1 / 4 + 1 / 4));
+eq('two groups: pooled t', tPooled, 7.745966692414834, 1e-9, '10 / √(3.3333 × 0.5)');
+eq('two groups: F', pair.f, 60, 1e-9, 'MSG / MSE');
+eq('two groups: F = t²', pair.f, tPooled * tPooled, 1e-9, 'squaring a t on v df gives an F on (1, v)');
+eq('two groups: the two p-values agree', pair.p, 2 * V.tUpper(Math.abs(tPooled), 6), 1e-15,
+   'the same test written twice');
+rel('two groups: p', pair.p, 2.4325611e-4, 1e-6, 'VIZ.fUpper(60, 1, 6)');
+
+/* ---- and now the page itself ---- */
+function driveAnovaTable() {
+  const html = fs.readFileSync(path.join(ROOT, 'stats-2/one-way-anova/index.html'), 'utf8');
+  const src = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)]
+    .map(m => m[1]).filter(s => /at-table/.test(s))[0];
+  if (!src) throw new Error('no inline script mentioning at-table');
+
+  const ctx2d = {};
+  ['clearRect', 'fillRect', 'strokeRect', 'beginPath', 'moveTo', 'lineTo', 'arc', 'closePath',
+   'fill', 'stroke', 'setLineDash', 'fillText', 'setTransform', 'save', 'restore'].forEach(n => { ctx2d[n] = () => {}; });
+  ctx2d.measureText = t => ({ width: String(t).length * 6 });
+
+  const els = {};
+  const mk = () => {
+    const on = {};
+    const node = {
+      innerHTML: '', textContent: '', value: '', style: {}, dataset: {}, hidden: false,
+      clientWidth: 720, parentElement: { clientWidth: 720 }, getContext: () => ctx2d,
+      classList: { add: () => {}, remove: () => {}, toggle: () => {} },
+      querySelectorAll: () => [], getAttribute: () => null,
+      addEventListener: (t, f) => { (on[t] = on[t] || []).push(f); },
+      fire: (t, e) => (on[t] || []).forEach(f => f.call(node, e))
+    };
+    return node;
+  };
+
+  /* the shared ?g= parser, lifted out of site.js rather than reimplemented:
+     the question here is what the SHIPPED helper does with a URL */
+  const siteSrc = fs.readFileSync(path.join(ROOT, 'assets/js/site.js'), 'utf8');
+  const grab = (name) => {
+    const i = siteSrc.indexOf('function ' + name);
+    const j = siteSrc.indexOf('\n  }\n', i);
+    if (i < 0 || j < 0) throw new Error('site.js no longer defines ' + name);
+    return siteSrc.slice(i, j + 4);
+  };
+  const groupParam = new Function(grab('numeric') + grab('groupParam') + ';return groupParam;')();
+
+  let map = null;
+  const c6 = { console };
+  c6.window = c6;
+  c6.document = { documentElement: {}, getElementById: id => els[id] || (els[id] = mk()) };
+  c6.getComputedStyle = () => ({ getPropertyValue: () => '#000000' });
+  c6.MutationObserver = function () { this.observe = () => {}; };
+  c6.requestAnimationFrame = cb => cb();
+  c6.addEventListener = () => {};
+  c6.location = { search: '?g=1' };
+  c6.SC = { preset: m => { map = m; }, groupParam: groupParam };
+  vm.createContext(c6);
+  vm.runInContext(fs.readFileSync(path.join(ROOT, 'assets/js/viz.js'), 'utf8'), c6, { filename: 'viz.js' });
+  vm.runInContext(src, c6, { filename: 'stats-2/one-way-anova#build-the-anova-table' });
+  if (!map || typeof map.g !== 'function') throw new Error('the page registered no ?g= applier with SC.preset');
+
+  /* the table is written as markup, so it is read back as markup — the same
+     way section 9 reads tables.html's <tbody> rather than trusting a copy */
+  const cell = id => {
+    const m = els['at-table'].innerHTML.match(new RegExp('<td id="' + id + '"[^>]*>([^<]*)<'));
+    return m ? m[1] : null;
+  };
+  const readout = () => ({
+    f: els['at-f'].textContent, p: els['at-p'].textContent, sp: els['at-sp'].textContent,
+    eta: els['at-eta'].textContent, dec: els['at-dec'].textContent,
+    sum: els['at-sum'].textContent,
+    ssb: cell('at-c-ssb'), ssw: cell('at-c-ssw'), sst: cell('at-c-sst'),
+    dfb: cell('at-c-dfb'), dfw: cell('at-c-dfw'), dft: cell('at-c-dft'),
+    msb: cell('at-c-msb'), msw: cell('at-c-msw'), fc: cell('at-c-f'), pc: cell('at-c-p')
+  });
+  if (!readout().ssb) throw new Error('the table stayed empty on boot');
+  // the BOOT state is read before any dataset is loaded: a frozen default
+  // changed quietly in the markup is exactly what this has to catch
+  return { boot: readout(), load: g => { map.g(g); return readout(); } };
+}
+
+try {
+  const page = driveAnovaTable();
+  const f2 = v => v.toFixed(2);
+
+  is('page boots on the frozen seedlings: SSG', page.boot.ssb, f2(seed.ssb), '4 × Σ(x̄ᵢ − x̄)²');
+  is('page boots on the frozen seedlings: SSE', page.boot.ssw, f2(seed.ssw), 'Σ(x − x̄ᵢ)²');
+  is('page boots on the frozen seedlings: SST', page.boot.sst, f2(seed.sst), 'Σ(x − x̄)²');
+  is('page boots on the frozen seedlings: dfG', page.boot.dfb, '3', 'I − 1');
+  is('page boots on the frozen seedlings: dfE', page.boot.dfw, '12', 'N − I');
+  is('page boots on the frozen seedlings: dfT', page.boot.dft, '15', 'N − 1');
+  is('page boots on the frozen seedlings: MSG', page.boot.msb, f2(seed.msb), 'SSG / dfG');
+  is('page boots on the frozen seedlings: MSE', page.boot.msw, f2(seed.msw), 'SSE / dfE');
+  is('page boots on the frozen seedlings: F in the table', page.boot.fc, f2(seed.f), 'MSG / MSE');
+  is('page boots on the frozen seedlings: F in the readout', page.boot.f, f2(seed.f), 'the same ratio');
+  is('page boots on the frozen seedlings: pooled SD', page.boot.sp, f2(seed.sp), '√MSE');
+  is('page boots on the frozen seedlings: eta squared', page.boot.eta, '.813', 'SSG / SST = .8125');
+  is('page boots on the frozen seedlings: verdict', page.boot.dec, 'Group means differ', 'p = .0001');
+  // the per-group s the page prints is the SAMPLE SD: 1.83, not VIZ.sd's 1.58
+  is('page prints the untreated group\'s s on n − 1',
+     /None: n = 4, mean 13\.00, s = 1\.83/.test(page.boot.sum), true,
+     '√(10/3) = 1.826, where VIZ.sd would print 1.58');
+
+  const t2 = page.load('15,14,12,11;25,24,22,21');
+  is('page two-group ?g=: SSG', t2.ssb, f2(pair.ssb), 'the eight heights');
+  is('page two-group ?g=: SSE', t2.ssw, f2(pair.ssw), 'the eight heights');
+  is('page two-group ?g=: dfG', t2.dfb, '1', 'two groups');
+  is('page two-group ?g=: dfE', t2.dfw, '6', 'N − I = 8 − 2');
+  is('page two-group ?g=: F', t2.f, f2(pair.f), 'and 7.746² = 60.00');
+  is('page two-group ?g=: eta squared', t2.eta, '.909', '200 / 220');
+
+  // a mangled ?g= must leave the widget on its previous dataset rather than
+  // half-read it — SC.groupParam's rule, asserted through the page
+  for (const bad of ['1,2;3', '1,2', 'nonsense', '1,2;3,x', '1,2;;3,4', '1,2;3,4;5,6;7,8;9,10']) {
+    const good = page.load('15,14,12,11;25,24,22,21');
+    is(`page ignores a mangled ?g=${bad}`, page.load(bad).ssb, good.ssb,
+       'reject the whole parameter, never half-read it');
+  }
+} catch (e) {
+  failures.push({ section, label: 'Build the ANOVA Table could not be driven — ids or structure changed?',
+    got: String(e.message), want: 'a runnable at-table script printing the ANOVA table', tol: 0, err: NaN,
+    src: 'stats-2/one-way-anova' });
 }
 
 

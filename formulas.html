@@ -93,9 +93,14 @@
         <table class="ref-table">
           <thead><tr><th>Concept</th><th>Formula</th><th>Read it as</th></tr></thead>
           <tbody>
-            <tr><td>F-ratio (ANOVA)</td><td>F = MS<sub>between</sub> / MS<sub>within</sub></td><td>Signal over noise; each MS = SS / df.</td></tr>
-            <tr><td>ANOVA df</td><td>df<sub>b</sub> = k − 1, df<sub>w</sub> = N − k</td><td>k groups, N total observations.</td></tr>
-            <tr><td>Eta-squared</td><td>η² = SS<sub>between</sub> / SS<sub>total</sub></td><td>Share of outcome variance explained by group membership.</td></tr>
+            <tr><td>Between-groups SS</td><td>SS<sub>G</sub> = Σ n<sub>i</sub>(x̄<sub>i</sub> − x̄)²</td><td>Each group mean’s squared distance from the grand mean, weighted by group size.</td></tr>
+            <tr><td>Within-groups SS</td><td>SS<sub>E</sub> = Σ (x − x̄<sub>i</sub>)² = Σ (n<sub>i</sub> − 1)s<sub>i</sub>²</td><td>Every score against its own group mean. The right-hand form works straight from group SDs.</td></tr>
+            <tr><td>Total SS</td><td>SS<sub>T</sub> = Σ (x − x̄)² = SS<sub>G</sub> + SS<sub>E</sub></td><td>Every score against the grand mean; the identity is the arithmetic check.</td></tr>
+            <tr><td>ANOVA df</td><td>df<sub>G</sub> = I − 1, df<sub>E</sub> = N − I, df<sub>T</sub> = N − 1</td><td>I groups (some books write k), N observations in total. They add up.</td></tr>
+            <tr><td>Mean square</td><td>MS = SS / df</td><td>A sum of squares turned into a variance.</td></tr>
+            <tr><td>F-ratio (ANOVA)</td><td>F = MS<sub>G</sub> / MS<sub>E</sub>, on F(I − 1, N − I)</td><td>Signal over noise. With two groups, F = t².</td></tr>
+            <tr><td>Pooled SD</td><td>s<sub>p</sub> = √MS<sub>E</sub></td><td>The one spread every follow-up comparison reuses.</td></tr>
+            <tr><td>Eta-squared</td><td>η² = SS<sub>G</sub> / SS<sub>T</sub></td><td>Share of outcome variance explained by group membership.</td></tr>
             <tr><td>Bonferroni correction</td><td>α<sub>each</sub> = α / m</td><td>Split your alpha across m comparisons.</td></tr>
             <tr><td>Chi-square</td><td>χ² = Σ (O − E)² / E</td><td>How far observed counts stray from what independence expects.</td></tr>
             <tr><td>Expected count</td><td>E = (row total × column total) / N</td><td>Each cell's count if the two variables were unrelated.</td></tr>

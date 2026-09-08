@@ -29,6 +29,36 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-2.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <style>
+    /* Build the ANOVA Table: the editable dataset, the partition picture, and
+       the table itself, which fills in cell by cell as the build steps run. */
+    .at-data { display:flex; flex-wrap:wrap; gap:.45rem .9rem; margin:.2rem 0 .35rem; }
+    .at-field { display:flex; align-items:center; gap:.4rem; }
+    .at-field label { font-size:.8rem; font-weight:600; color:var(--text-muted); }
+    .at-in { width:min(180px,50vw); font:inherit; font-size:.82rem; font-family:var(--mono);
+      padding:.2rem .4rem; border:1.5px solid var(--border); border-radius:6px;
+      background:var(--surface); color:var(--text); }
+    .at-in.bad { border-color:#e24b4a; }
+    .at-sum { display:flex; flex-wrap:wrap; gap:.3rem .8rem; font-family:var(--mono);
+      font-size:.75rem; color:var(--text-faint); margin:.1rem 0 .5rem; }
+    .at-note { font-size:.78rem; color:var(--text-muted); margin:.1rem 0 .6rem; }
+    .atab { border-collapse:collapse; font-size:.86rem; margin:.4rem 0 .3rem; min-width:430px; }
+    .atab th, .atab td { border:1px solid var(--border); padding:.3rem .55rem;
+      text-align:right; font-family:var(--mono); }
+    .atab th { background:var(--surface-2); font-weight:600; color:var(--text-muted);
+      font-family:inherit; }
+    .atab th.at-src, .atab td.at-src { text-align:left; font-family:inherit; font-weight:600; }
+    .atab td.at-fresh { color:#f97316; font-weight:700; }
+    .at-cell-in { width:72px; font:inherit; font-family:var(--mono); font-size:.8rem;
+      text-align:right; padding:.12rem .25rem; border:1.5px solid #f97316; border-radius:5px;
+      background:var(--surface); color:var(--text); }
+    .at-cell-in.ok { border-color:#22c55e; }
+    .at-cell-in.no { border-color:#e24b4a; }
+    .at-cap { font-size:.82rem; color:var(--text-muted); margin:.35rem 0 .2rem; }
+    .at-exam { display:flex; flex-wrap:wrap; gap:.5rem; align-items:center; margin:.3rem 0 .2rem; }
+    #at-exam[hidden], #at-stepwrap[hidden] { display:none; }
+    .at-verdict { font-size:.84rem; font-weight:600; margin:0; }
+  </style>
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "One-Way ANOVA", "description": "ANOVA compares three or more group means by weighing the variation between groups against the variation within them. Adjust both to see the F-ratio respond.", "url": "https://statscapybara.com/stats-2/one-way-anova/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: ANOVA & Regression", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "One-Way ANOVA", "item": "https://statscapybara.com/stats-2/one-way-anova/"}]}]
@@ -52,6 +82,9 @@
 
         <h2>Why not just run lots of t-tests?</h2>
         <p>With four groups there are six possible pairwise t-tests. Each carries a 5% false-positive risk, and those risks pile up: run enough and you're almost guaranteed a "significant" result by chance alone. ANOVA sidesteps this with a single <strong>omnibus test</strong>: one verdict on whether <em>any</em> of the groups differ.</p>
+        <p>The pile-up has a size, and it is worth working out once. With <em>I</em> groups there are <em>I</em>(<em>I</em> &minus; 1)/2 pairs, so three groups give three tests and four groups give six. If the tests were independent and every null were true, the chance of at least one false alarm across <em>k</em> of them is 1 &minus; (1 &minus; &alpha;)<sup>k</sup>:</p>
+        <p style="text-align:center;font-family:var(--mono);font-size:1rem;margin:1rem 0">1 &minus; (1 &minus; .05)<sup>3</sup> = .1426 &nbsp;&nbsp; 1 &minus; (1 &minus; .05)<sup>6</sup> = .2649</p>
+        <p>Six comparisons advertised at 5% deliver something closer to 26%. Pairwise tests on the same data are not really independent, so the true rate sits a little below those figures, but the size of the problem is right and it grows fast. The omnibus test buys one verdict at one <a href="../../stats-1/hypothesis-testing-logic/">&alpha;</a>, and <a href="../../stats-2/post-hoc-tests/">post-hoc tests</a> pay a controlled price afterwards for the comparisons you actually want.</p>
 
         <h2>The F-ratio: signal vs. noise, again</h2>
         <p>ANOVA splits the total variation in the data into two pieces and takes their ratio:</p>
@@ -92,10 +125,115 @@
         <!-- ============ /INTERACTIVE ============ -->
 
         <h2>Reading the result</h2>
-        <p>The F-ratio comes with two degrees of freedom, one for the between part (number of groups minus 1) and one for the within part (total observations minus number of groups), which together give the p-value. As usual, p &lt; 0.05 means "this much separation would be surprising if all the groups were really identical." If you are still designing the study rather than reading one, the <a href="../../power.html?sc=anova">power calculator</a> runs the same numbers backwards: tell it how many groups and how big an effect you care about, and it returns the n per group you need.</p>
+        <p>The F-ratio comes with two degrees of freedom, one for each half of the ratio, and together they give the p-value. As usual, p &lt; 0.05 means "this much separation would be surprising if all the groups were really identical." If you are still designing the study rather than reading one, the <a href="../../power.html?sc=anova">power calculator</a> runs the same numbers backwards: tell it how many groups and how big an effect you care about, and it returns the n per group you need.</p>
         <div class="callout key">
           <p><strong>ANOVA is an omnibus test.</strong> A significant F says the group means are not all the same. It stays silent about which pair is responsible: group A might tower over the rest while B, C, and D are identical. To find out where the differences actually are, you follow up with <a href="../../stats-2/post-hoc-tests/">post-hoc tests</a>.</p>
         </div>
+
+        <h2 id="explained-unexplained">Explained and unexplained variation</h2>
+        <p>Sixteen seedlings, and no two of them the same height. That variation came from somewhere, and the whole method of ANOVA is to sort it into two piles.</p>
+        <p>Ask two questions about any single seedling. How far is <em>its group's</em> mean from the mean of everybody? That distance is what the fertilizer dose might account for. And how far is the seedling itself from its own group's mean? Nothing in the design accounts for that, because two seedlings on the same dose were treated identically. The first pile is <strong>explained</strong>, or between-group, variation: the signal. The second is <strong>unexplained</strong>, or within-group, variation: the noise, and the technical name for one of those distances is a <strong>residual</strong>.</p>
+        <p>Each question is answered against a different mean, which is the detail most hand calculations get wrong. Between-group variation is measured from the <strong>grand mean</strong>, written x&#772; with no subscript: the mean of all <em>N</em> observations pooled together, ignoring which group they came from. Within-group variation is measured from each observation's <em>own</em> group mean x&#772;<sub>i</sub>.</p>
+
+        <h2 id="sums-of-squares">The three sums of squares</h2>
+        <p>Distances either side of a mean cancel to zero by construction, so ANOVA squares them before adding, the same move the <a href="../../stats-1/describing-data/">standard deviation</a> makes for the same reason. A total of squared distances is a <strong>sum of squares</strong>, written SS, and each pile has one:</p>
+        <table class="ref-table">
+          <thead><tr><th>Sum of squares</th><th>Formula</th><th>Read it as</th></tr></thead>
+          <tbody>
+            <tr><td>Between groups, SS<sub>G</sub></td><td>&Sigma; n<sub>i</sub>(x&#772;<sub>i</sub> &minus; x&#772;)&sup2;</td><td>Each group mean's squared distance from the grand mean, weighted by the group's size.</td></tr>
+            <tr><td>Within groups, SS<sub>E</sub></td><td>&Sigma; (x &minus; x&#772;<sub>i</sub>)&sup2; = &Sigma; (n<sub>i</sub> &minus; 1)s<sub>i</sub>&sup2;</td><td>Every score's squared distance from its own group mean.</td></tr>
+            <tr><td>Total, SS<sub>T</sub></td><td>&Sigma; (x &minus; x&#772;)&sup2;</td><td>Every score's squared distance from the grand mean.</td></tr>
+          </tbody>
+        </table>
+        <p>&Sigma; (sigma) is an instruction to add up whatever follows it. In SS<sub>G</sub> the sum runs over the <em>I</em> groups, and each squared distance is weighted by n<sub>i</sub>, that group's own size, because a mean built from twenty observations speaks for twenty of them. In SS<sub>E</sub> and SS<sub>T</sub> the sum runs over all <em>N</em> observations.</p>
+        <p>The second form of SS<sub>E</sub> is the one to reach for when a question hands you summary statistics rather than raw scores: multiply each group's variance by its own degrees of freedom, n<sub>i</sub> &minus; 1, and add. Every s<sub>i</sub> here is a sample standard deviation on n<sub>i</sub> &minus; 1, which is what SPSS prints and what a calculator's <em>s</em> key returns.</p>
+        <p>These are not three separate calculations. They satisfy an identity that holds for any data at all:</p>
+        <p style="text-align:center;font-size:1.15rem;margin:1.1rem 0"><strong>SS<sub>T</sub> = SS<sub>G</sub> + SS<sub>E</sub></strong></p>
+        <p>which is the algebra of the sentence above. Every scrap of variation is either between the groups or inside them, and the two pieces add back to the whole. It is also the cheapest arithmetic check available: work out all three, and if they do not add up, one of them is wrong.</p>
+
+        <h2 id="df-ms-f">Degrees of freedom, mean squares, and F</h2>
+        <p>A sum of squares grows with the number of things summed, so on its own it says nothing about size. Dividing by the count of independent pieces of information behind it fixes that, and that count is the <strong>degrees of freedom</strong>:</p>
+        <p style="text-align:center;font-family:var(--mono);font-size:1rem;margin:1rem 0">df<sub>G</sub> = <em>I</em> &minus; 1 &nbsp;&nbsp; df<sub>E</sub> = <em>N</em> &minus; <em>I</em> &nbsp;&nbsp; df<sub>T</sub> = <em>N</em> &minus; 1</p>
+        <p>with <em>I</em> the number of groups and <em>N</em> the total number of observations. Some books write <em>k</em> where this one writes <em>I</em>; the arithmetic is the same either way. The three add up exactly as the sums of squares do, since (<em>I</em> &minus; 1) + (<em>N</em> &minus; <em>I</em>) = <em>N</em> &minus; 1, and each comes from the same argument used everywhere else: <em>I</em> group means free to move around a grand mean they themselves fix leaves <em>I</em> &minus; 1, and each group of n<sub>i</sub> scores around its own mean leaves n<sub>i</sub> &minus; 1, which adds across groups to <em>N</em> &minus; <em>I</em>.</p>
+        <p>Divide a sum of squares by its degrees of freedom and you have a <strong>mean square</strong>, which is a variance:</p>
+        <p style="text-align:center;font-family:var(--mono);font-size:1rem;margin:1rem 0">MS<sub>G</sub> = SS<sub>G</sub> / df<sub>G</sub> &nbsp;&nbsp; MS<sub>E</sub> = SS<sub>E</sub> / df<sub>E</sub> &nbsp;&nbsp; <em>F</em> = MS<sub>G</sub> / MS<sub>E</sub></p>
+        <p>and the ratio is read against <em>F</em>(<em>I</em> &minus; 1, <em>N</em> &minus; <em>I</em>). There is no MS<sub>T</sub> row worth printing, because SS<sub>T</sub>/df<sub>T</sub> is just the variance of the whole sample and no test uses it.</p>
+        <p>MS<sub>E</sub> is the more useful of the two once the omnibus test is over. It is the pooled estimate of within-group variance, the same pooled variance the <a href="../../stats-1/independent-samples-t-test/">two-sample t-test</a> builds from two groups, generalized to <em>I</em>. Its square root is the <strong>pooled standard deviation</strong>,</p>
+        <p style="text-align:center;font-family:var(--mono);font-size:1rem;margin:1rem 0">s<sub>p</sub> = &radic;MS<sub>E</sub></p>
+        <p>and every follow-up comparison in the <a href="../../stats-2/post-hoc-tests/">next section</a> reuses it instead of recomputing a spread from the two groups in front of it. That is the practical argument for building the omnibus table even when you already know which pairs interest you: the table hands the follow-ups their error term.</p>
+        <p>One more number falls out of the same table, from two of its cells. The share of the total variation the grouping accounts for is</p>
+        <p style="text-align:center;font-family:var(--mono);font-size:1rem;margin:1rem 0">&eta;&sup2; = SS<sub>G</sub> / SS<sub>T</sub></p>
+        <p>read <strong>eta squared</strong>, an effect size on the same 0-to-1 scale as R&sup2;, and the reason <a href="../../effect-sizes.html">effect sizes</a> belong in the same sentence as the <em>F</em>. Because it is Greek it stays upright in <a href="../../writing/reporting-statistics-apa/">APA style</a>, and because it cannot exceed 1 it takes no leading zero.</p>
+
+        <!-- ============ INTERACTIVE 2 ============ -->
+        <div class="viz" id="atviz">
+          <p class="viz-title">🎮 Build the ANOVA Table</p>
+          <p class="viz-sub">Four fertilizer doses, four seedlings each, height in centimeters after six weeks. Step through the build and the table fills in cell by cell, from the group means to the sums of squares to the F ratio. Type over any group's numbers to work with your own, or switch to exam mode, which blanks four cells and asks you to complete them from the rest.</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>Groups</label>
+              <div class="seg" id="at-groups">
+                <button type="button" data-k="2">2</button><button type="button" data-k="3">3</button><button type="button" data-k="4" class="active">4</button>
+              </div>
+            </div>
+            <div class="control">
+              <label>Mode</label>
+              <div class="seg" id="at-mode">
+                <button type="button" data-m="build" class="active">Build it up</button><button type="button" data-m="exam">Exam mode</button>
+              </div>
+            </div>
+            <div class="control">
+              <label>Start over</label>
+              <button type="button" id="at-reset" class="btn btn-ghost btn-sm">Back to the seedlings</button>
+            </div>
+          </div>
+
+          <div class="at-data" id="at-data"></div>
+          <div class="at-sum" id="at-sum"></div>
+          <p class="at-note" id="at-note">Separate the values in a group with commas. Two to ten numbers per group.</p>
+
+          <div class="controls" id="at-stepwrap">
+            <div class="control">
+              <label>Build it up</label>
+              <div class="seg" id="at-steps">
+                <button type="button" data-step="1">1</button><button type="button" data-step="2">2</button><button type="button" data-step="3">3</button><button type="button" data-step="4">4</button><button type="button" data-step="5">5</button><button type="button" data-step="6">6</button><button type="button" data-step="7">7</button><button type="button" data-step="8" class="active">8</button>
+              </div>
+            </div>
+          </div>
+
+          <canvas id="at-canvas"></canvas>
+          <p class="at-cap" id="at-cap">&nbsp;</p>
+
+          <div class="hscroll"><table class="atab" id="at-table"></table></div>
+
+          <div class="at-exam" id="at-exam" hidden>
+            <button type="button" id="at-check" class="btn btn-primary btn-sm">Check the table</button>
+            <button type="button" id="at-new" class="btn btn-ghost btn-sm">Blank a different four</button>
+            <p class="at-verdict" id="at-verdict" role="status">&nbsp;</p>
+          </div>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">F ratio</span><span class="v" id="at-f">—</span></div>
+            <div class="stat"><span class="k">p-value</span><span class="v" id="at-p">—</span></div>
+            <div class="stat"><span class="k">Pooled SD</span><span class="v" id="at-sp">—</span></div>
+            <div class="stat"><span class="k">Eta squared</span><span class="v" id="at-eta">—</span></div>
+            <div class="stat"><span class="k">Verdict (&alpha; = .05)</span><span class="v" id="at-dec" style="font-size:1rem">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE 2 ============ -->
+
+        <p>On the seedlings it boots with, the four doses are None, Low, Medium and High, and their means are 13, 17, 19 and 23 centimeters against a grand mean of 18, and the table comes out as SS<sub>G</sub> = 208 on 3 degrees of freedom, SS<sub>E</sub> = 48 on 12, SS<sub>T</sub> = 256 on 15. That gives MS<sub>G</sub> = 69.33, MS<sub>E</sub> = 4.00, <em>F</em>(3, 12) = 17.33 and <em>p</em> = .0001, which an APA sentence reports as <em>p</em> &lt; .001, with s<sub>p</sub> = 2.00 and &eta;&sup2; = .813. Four seedlings a group is smaller than any study you would run; it is the size that fits on a page and on an exam paper, which is the job it is doing here.</p>
+
+        <h2 id="fit-plus-residual">Every score is its group mean plus a residual</h2>
+        <p>Write one seedling's height out in full and the partition stops being an accounting trick:</p>
+        <p style="text-align:center;font-family:var(--mono);font-size:1rem;margin:1rem 0">x = x&#772; + (x&#772;<sub>i</sub> &minus; x&#772;) + (x &minus; x&#772;<sub>i</sub>)</p>
+        <p>The three terms are the grand mean, the group's effect, and the residual. Fold the first two together and the sentence gets shorter: <strong>data = fit + residual</strong>. The fitted value for any observation is simply its own group mean, which is all this model has to offer, since it knows nothing about a seedling except which dose it received. Square each term, add over all <em>N</em> observations, and the cross-products vanish; what survives is SS<sub>T</sub> = SS<sub>G</sub> + SS<sub>E</sub>.</p>
+        <p>That is the same decomposition <a href="../../stats-1/simple-linear-regression/">regression</a> uses, with a fitted line where this has a set of group means, which is why the two procedures print the same shape of output table. <a href="../../stats-2/categorical-predictors-and-dummy-coding/">Categorical predictors and dummy coding</a> makes the connection exact, by fitting the same group means as a regression on dummies.</p>
+
+        <h2 id="f-equals-t-squared">Two groups, and F = t&sup2;</h2>
+        <p>Nothing stops you running an ANOVA on two groups, and doing it once is worth the trouble. Load the builder with the untreated and high-dose seedlings alone, <a href="./?g=15,14,12,11;25,24,22,21">eight numbers and two groups</a>, and the table returns <em>F</em>(1, 6) = 60.00 with <em>p</em> = .0002. Run the pooled <a href="../../stats-1/independent-samples-t-test/">two-sample t-test</a> on those same eight numbers and it returns <em>t</em>(6) = 7.746, whose two-tailed <em>p</em> is the same number to every digit a calculator will show you. And 7.746&sup2; = 60.00.</p>
+        <p>The identity <em>F</em> = <em>t</em>&sup2; holds whenever df<sub>G</sub> = 1, which is no coincidence: squaring a <em>t</em> on v degrees of freedom gives an <em>F</em> on (1, v), so the two tests are one test written twice. What the <em>t</em> version adds is a signed difference and a confidence interval for it, which is why it stays the one to report when there are two groups. ANOVA earns its keep from three groups upward.</p>
 
         <h2>What you're assuming</h2>
         <ul>
@@ -126,7 +264,7 @@
 
         <p class="pb-xref">For a run on real data, <a href="../../datasets.html#study">study-methods.csv</a> compares three revision techniques across 105 students, with group SDs deliberately unequal so Levene's test has something to say.</p>
 
-        <p class="pb-xref"><a href="../../problems.html#p2-1">Problem 13 of the practice problems</a> builds a complete ANOVA table from fifteen raw scores, and Problem 14 carries the same data into the follow-up comparisons.</p>
+        <p class="pb-xref"><a href="../../problems.html#p2-1">Problem 13 of the practice problems</a> builds a complete ANOVA table from fifteen raw scores, and Problem 14 carries the same data into the follow-up comparisons. Two more work the shapes an exam prefers: <a href="../../problems.html#p2-11">Problem 23 in the Stats 2 set</a> rebuilds a whole table from three groups' means, SDs and n, and <a href="../../problems.html#p2-12">Problem 24</a> hands you a table with four cells missing.</p>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
@@ -255,6 +393,458 @@
     VIZ.onTheme(draw);
 
     fit(); resample();
+  })();
+  </script>
+
+  <!-- ============ Build the ANOVA Table (P89) ============
+       Entirely deterministic: every number below is a closed-form function of
+       the values in the boxes, so there is no noise to freeze and nothing is
+       ever reseeded. The p comes from VIZ.fUpper, the same function
+       tables.html's calculator uses, so the page and the table cannot disagree.
+
+       VIZ.sd divides by n. Every s, MSE and pooled SD printed here is the exam
+       dialect and needs the n minus 1 form, so this script carries its own
+       sampleSD() and never calls VIZ.sd; math-check section 12 asserts the
+       divisor on the frozen default.
+
+       URL presets (SC.preset, applied last):
+         ?g=<groups>  the dataset: commas inside a group, semicolons between
+                      groups, 2 to 4 groups of 2 to 10 numbers, parsed by
+                      SC.groupParam (the shared ?g= helper, which rejects a
+                      mangled parameter whole rather than half-reading it).
+                      ?g=15,14,12,11;25,24,22,21 is the two-group case the
+                      prose works through, where F equals t squared. A loaded
+                      dataset takes generic group names, since the fertilizer
+                      doses would not describe it.
+         ?step=1..8   which build step is showing.
+       g is listed first in the map because loading a dataset rebuilds the
+       group boxes the step captions read from.
+  -->
+  <script>
+  (function () {
+    "use strict";
+    /* Four fertilizer doses, four seedlings each, height in cm after six weeks.
+       Chosen so the whole table is hand-checkable: group means 13, 17, 19, 23
+       against a grand mean of 18, SSG 208, SSE 48, SST 256, MSE exactly 4 and
+       sp exactly 2. */
+    var LABELS = ["None", "Low", "Medium", "High"];
+    var D0 = [[15, 14, 12, 11], [20, 18, 16, 14], [21, 17, 19, 19], [25, 24, 22, 21]];
+    var EM = "—";
+    var IND = "#6366f1", ORA = "#f97316";
+
+    var host = document.getElementById("at-data");
+    var canvas = document.getElementById("at-canvas");
+    var tableHost = document.getElementById("at-table");
+    if (!host || !canvas || !tableHost) return;
+
+    var K = 4, step = 8, mode = "build";
+    var labels = LABELS.slice();
+    var text = D0.map(function (g) { return g.join(", "); });
+    var G = D0.map(function (g) { return g.slice(); });
+    var blanks = [], patIx = -1, solved = false;
+    var ctx, W = 0, H = 300;
+
+    function $(id) { return document.getElementById(id); }
+    function mean(a) { var s = 0, i; for (i = 0; i < a.length; i++) s += a[i]; return s / a.length; }
+    /* VIZ.sd divides by n, so it is never called here: every s, MSE and pooled
+       SD this widget prints is the exam dialect, on n minus 1. */
+    function sampleSD(a) {
+      if (a.length < 2) return 0;
+      var m = mean(a), s = 0, i;
+      for (i = 0; i < a.length; i++) s += (a[i] - m) * (a[i] - m);
+      return Math.sqrt(s / (a.length - 1));
+    }
+    function f2(v) { return isFinite(v) ? v.toFixed(2) : EM; }
+    function pTxt(v) {
+      if (!isFinite(v)) return EM;
+      if (v < 0.0001) return "< .0001";
+      return v.toFixed(4).replace(/^0/, "");
+    }
+
+    function stats() {
+      var all = [], i, j;
+      for (i = 0; i < K; i++) for (j = 0; j < G[i].length; j++) all.push(G[i][j]);
+      var N = all.length, gm = mean(all), ssb = 0, ssw = 0, sst = 0, ms = [];
+      for (i = 0; i < K; i++) {
+        var m = mean(G[i]);
+        ms.push(m);
+        ssb += G[i].length * (m - gm) * (m - gm);
+        for (j = 0; j < G[i].length; j++) ssw += (G[i][j] - m) * (G[i][j] - m);
+      }
+      for (i = 0; i < N; i++) sst += (all[i] - gm) * (all[i] - gm);
+      var dfb = K - 1, dfw = N - K, dft = N - 1;
+      var msb = ssb / dfb, msw = dfw > 0 ? ssw / dfw : NaN;
+      var F = (isFinite(msw) && msw > 0) ? msb / msw : NaN;
+      return { all: all, N: N, gm: gm, means: ms, ssb: ssb, ssw: ssw, sst: sst,
+               dfb: dfb, dfw: dfw, dft: dft, msb: msb, msw: msw, f: F,
+               p: isFinite(F) ? VIZ.fUpper(F, dfb, dfw) : NaN,
+               sp: (isFinite(msw) && msw >= 0) ? Math.sqrt(msw) : NaN,
+               eta: sst > 0 ? ssb / sst : NaN };
+    }
+
+    /* ---------- the editable dataset ---------- */
+    function buildData() {
+      var h = "", i;
+      for (i = 0; i < K; i++) {
+        h += '<div class="at-field"><label for="at-g' + i + '">' + labels[i] + '</label>' +
+             '<input type="text" class="at-in" id="at-g' + i + '" inputmode="decimal" spellcheck="false" value="' + text[i] + '" /></div>';
+      }
+      host.innerHTML = h;
+      for (i = 0; i < K; i++) {
+        var el = $("at-g" + i);
+        if (el) el.addEventListener("input", readData);
+      }
+    }
+    /* One parser for the boxes and for the URL: the boxes are joined with
+       semicolons and handed to SC.groupParam, so what counts as a valid
+       dataset cannot drift between the editor and a lecturer's link. */
+    function parseBoxes() {
+      var raw = [], i;
+      for (i = 0; i < K; i++) {
+        var el = $("at-g" + i);
+        raw.push(el ? el.value : text[i]);
+      }
+      return (window.SC && SC.groupParam) ? SC.groupParam(raw.join(";"), 4, 10) : null;
+    }
+    function readData() {
+      var got = parseBoxes(), i;
+      var note = $("at-note");
+      for (i = 0; i < K; i++) { var el = $("at-g" + i); if (el) el.classList.remove("bad"); }
+      if (!got || got.length !== K) {
+        if (note) note.textContent = "That set of numbers cannot be read. Every group needs between two and ten values, separated by commas.";
+        for (i = 0; i < K; i++) { var e2 = $("at-g" + i); if (e2) e2.classList.add("bad"); }
+        return;
+      }
+      G = got;
+      for (i = 0; i < K; i++) { var e3 = $("at-g" + i); if (e3) text[i] = e3.value; }
+      if (note) note.textContent = "Separate the values in a group with commas. Two to ten numbers per group.";
+      dataChanged();
+      update();
+    }
+
+    /* ---------- the table ---------- */
+    var CELLS = ["ssb", "ssw", "sst", "dfb", "dfw", "dft", "msb", "msw", "f"];
+    /* Each pattern blanks four cells that the remaining ones determine. A
+       random four would not do: blanking all three sums of squares at once
+       leaves a table nobody could complete. */
+    var PATTERNS = [
+      ["ssb", "dfw", "msw", "f"],
+      ["ssw", "msb", "msw", "f"],
+      ["sst", "dft", "msb", "f"],
+      ["dfb", "msb", "msw", "f"],
+      ["ssb", "msb", "dfw", "msw"],
+      ["ssw", "dfw", "msw", "msb"]
+    ];
+    function shown(key, st) {
+      if (mode === "exam") return true;
+      if (key === "ssb") return step >= 3;
+      if (key === "ssw") return step >= 4;
+      if (key === "sst") return step >= 5;
+      if (key === "dfb" || key === "dfw" || key === "dft") return step >= 6;
+      if (key === "msb" || key === "msw" || key === "f") return step >= 7;
+      return step >= 8;
+    }
+    function freshAt(key) {
+      if (mode === "exam") return false;
+      return (key === "ssb" && step === 3) || (key === "ssw" && step === 4) ||
+             (key === "sst" && step === 5) ||
+             ((key === "dfb" || key === "dfw" || key === "dft") && step === 6) ||
+             ((key === "msb" || key === "msw" || key === "f") && step === 7) ||
+             (key === "p" && step === 8);
+    }
+    function trueVal(key, st) {
+      return { ssb: st.ssb, ssw: st.ssw, sst: st.sst, dfb: st.dfb, dfw: st.dfw,
+               dft: st.dft, msb: st.msb, msw: st.msw, f: st.f }[key];
+    }
+    function isDf(key) { return key === "dfb" || key === "dfw" || key === "dft"; }
+    /* Spoken names for the blanked cells, since "DFW cell" tells a screen
+       reader nothing. */
+    var CELL_NAME = {
+      ssb: "Between-groups sum of squares", ssw: "Within-groups sum of squares",
+      sst: "Total sum of squares", dfb: "Between-groups degrees of freedom",
+      dfw: "Within-groups degrees of freedom", dft: "Total degrees of freedom",
+      msb: "Between-groups mean square", msw: "Within-groups mean square", f: "F ratio"
+    };
+    /* Table cells carry an at-c- prefix so they cannot collide with the
+       stat-row readouts below, which own at-f, at-p and the rest. */
+    function cellHTML(key, st) {
+      var id = 'id="at-c-' + key + '"';
+      if (blanks.indexOf(key) >= 0 && mode === "exam") {
+        return '<td ' + id + '><input type="text" class="at-cell-in" inputmode="decimal" ' +
+               'id="at-in-' + key + '" aria-label="' + CELL_NAME[key] + '" /></td>';
+      }
+      if (!shown(key, st)) return '<td ' + id + '></td>';
+      var v = trueVal(key, st);
+      var txt = isDf(key) ? String(v) : f2(v);
+      return '<td ' + id + (freshAt(key) ? ' class="at-fresh"' : '') + '>' + txt + '</td>';
+    }
+    function drawTable() {
+      var st = stats();
+      var pCell = shown("p", st) ? pTxt(st.p) : "";
+      var h = '<thead><tr><th class="at-src">Source</th><th>SS</th><th>df</th><th>MS</th><th>F</th><th>p</th></tr></thead><tbody>';
+      h += '<tr><td class="at-src">Between groups</td>' + cellHTML("ssb", st) + cellHTML("dfb", st) + cellHTML("msb", st) + cellHTML("f", st) +
+           '<td id="at-c-p"' + (freshAt("p") ? ' class="at-fresh"' : '') + '>' + pCell + '</td></tr>';
+      h += '<tr><td class="at-src">Within groups</td>' + cellHTML("ssw", st) + cellHTML("dfw", st) + cellHTML("msw", st) + '<td></td><td></td></tr>';
+      h += '<tr><td class="at-src">Total</td>' + cellHTML("sst", st) + cellHTML("dft", st) + '<td></td><td></td><td></td></tr>';
+      h += '</tbody>';
+      tableHost.innerHTML = h;
+      if (mode === "exam") {
+        blanks.forEach(function (key) {
+          var el = $("at-in-" + key);
+          if (el) el.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); check(); } });
+        });
+      }
+    }
+
+    /* ---------- exam mode ---------- */
+    /* New numbers invalidate whatever was typed into the blanked cells, so the
+       reveal and the verdict go with them rather than standing over new data. */
+    function dataChanged() {
+      if (mode !== "exam") return;
+      solved = false;
+      var v = $("at-verdict");
+      if (v) { v.textContent = "The numbers changed, so the blanks are worth working out again."; v.style.color = ""; }
+    }
+    function newBlanks() {
+      var ix = Math.floor(Math.random() * PATTERNS.length);
+      if (ix === patIx) ix = (ix + 1) % PATTERNS.length;
+      patIx = ix;
+      blanks = PATTERNS[ix].slice();
+      solved = false;
+      var v = $("at-verdict");
+      if (v) { v.textContent = "Four cells are blank. Work them out from the ones that are left, then check."; v.style.color = ""; }
+      drawTable();
+      fillStats(stats());
+    }
+    function check() {
+      var st = stats(), right = 0;
+      blanks.forEach(function (key) {
+        var el = $("at-in-" + key);
+        if (!el) return;
+        el.classList.remove("ok", "no");
+        var want = trueVal(key, st);
+        var got = parseFloat(String(el.value).replace(",", "."));
+        var tol = isDf(key) ? 0 : Math.max(0.02, Math.abs(want) * 0.005);
+        var ok = isFinite(got) && Math.abs(got - want) <= tol;
+        el.classList.add(ok ? "ok" : "no");
+        if (ok) right++;
+      });
+      solved = right === blanks.length;
+      fillStats(st);          // the readouts stay hidden until the table is right
+      var v = $("at-verdict");
+      if (!v) return;
+      if (solved) {
+        v.textContent = "All four cells check out. The readouts below are now filled in.";
+        v.style.color = "#22c55e";
+      } else {
+        v.textContent = right + " of " + blanks.length + " right. The red boxes are still off.";
+        v.style.color = ORA;
+      }
+    }
+
+    /* ---------- the partition picture ---------- */
+    var padL = 40, padB = 24, padT = 12;
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function draw() {
+      if (!ctx) return;
+      var st = stats(), i, j;
+      var lo = Math.min.apply(null, st.all), hi = Math.max.apply(null, st.all);
+      var pad = (hi - lo) * 0.18 || 1;
+      lo -= pad; hi += pad;
+      function vy(v) { return (H - padB) - ((v - lo) / (hi - lo)) * (H - padB - padT); }
+      function gx(g) { return padL + (g + 0.5) * ((W - padL) / K); }
+      var colW = (W - padL) / K;
+
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "right";
+      var ticks = 5;
+      for (i = 0; i <= ticks; i++) {
+        var tv = lo + (hi - lo) * i / ticks, y = vy(tv);
+        ctx.globalAlpha = 0.35; ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W, y); ctx.stroke(); ctx.globalAlpha = 1;
+        ctx.fillText(tv.toFixed(0), padL - 5, y + 3);
+      }
+      /* the grand mean, from step 2 on */
+      if (step >= 2 || mode === "exam") {
+        var gy = vy(st.gm);
+        ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([5, 4]); ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(padL, gy); ctx.lineTo(W, gy); ctx.stroke(); ctx.setLineDash([]);
+        ctx.textAlign = "left"; ctx.fillStyle = VIZ.css("--text-faint");
+        ctx.fillText("grand mean " + f2(st.gm), padL + 4, gy - 5);
+      }
+      for (i = 0; i < K; i++) {
+        var cx = gx(i), m = st.means[i], my = vy(m);
+        /* step 5: every score against the grand mean */
+        if (step === 5 && mode === "build") {
+          ctx.strokeStyle = VIZ.css("--text-faint"); ctx.lineWidth = 1;
+          for (j = 0; j < G[i].length; j++) {
+            var jx5 = cx + (j - (G[i].length - 1) / 2) * Math.min(14, colW / (G[i].length + 1));
+            ctx.beginPath(); ctx.moveTo(jx5, vy(st.gm)); ctx.lineTo(jx5, vy(G[i][j])); ctx.stroke();
+          }
+        }
+        /* step 4: every score against its own group mean */
+        if (step >= 4 && step < 5 && mode === "build") {
+          ctx.strokeStyle = ORA; ctx.lineWidth = 1.5;
+          for (j = 0; j < G[i].length; j++) {
+            var jx4 = cx + (j - (G[i].length - 1) / 2) * Math.min(14, colW / (G[i].length + 1));
+            ctx.beginPath(); ctx.moveTo(jx4, my); ctx.lineTo(jx4, vy(G[i][j])); ctx.stroke();
+          }
+        }
+        /* step 3: the group mean against the grand mean */
+        if (step === 3 && mode === "build") {
+          ctx.strokeStyle = IND; ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.moveTo(cx, vy(st.gm)); ctx.lineTo(cx, my); ctx.stroke();
+        }
+        ctx.fillStyle = VIZ.css("--secondary");
+        for (j = 0; j < G[i].length; j++) {
+          var jx = cx + (j - (G[i].length - 1) / 2) * Math.min(14, colW / (G[i].length + 1));
+          ctx.globalAlpha = 0.75; ctx.beginPath(); ctx.arc(jx, vy(G[i][j]), 3.2, 0, 2 * Math.PI); ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        ctx.strokeStyle = IND; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(cx - colW * 0.3, my); ctx.lineTo(cx + colW * 0.3, my); ctx.stroke();
+        ctx.fillStyle = VIZ.css("--text-faint"); ctx.textAlign = "center"; ctx.font = "600 11px Inter,sans-serif";
+        ctx.fillText(labels[i], cx, H - 7);
+        ctx.font = "10px ui-monospace,monospace";
+        ctx.textAlign = "left";
+        ctx.fillText(f2(m), cx - colW * 0.3, my - 7);
+        ctx.textAlign = "center";
+      }
+    }
+
+    /* ---------- captions ---------- */
+    function caption(st) {
+      var i, parts = [];
+      if (step === 1) {
+        for (i = 0; i < K; i++) parts.push(labels[i] + " " + f2(st.means[i]));
+        return "Group means: " + parts.join(", ") + ". Nothing has been compared yet.";
+      }
+      if (step === 2) return "The grand mean of all " + st.N + " values is " + f2(st.gm) + ". Both of the next two questions are asked against a mean, and this is the first of them.";
+      if (step === 3) {
+        for (i = 0; i < K; i++) parts.push(G[i].length + " × (" + f2(st.means[i]) + " − " + f2(st.gm) + ")²");
+        return "Between groups: " + parts.join(" + ") + " = " + f2(st.ssb) + ". Each group mean's distance from the grand mean, squared, weighted by the group's size.";
+      }
+      if (step === 4) return "Within groups: every score against its own group mean, squared and added, gives " + f2(st.ssw) + ". Equivalently Σ (nᵢ − 1)sᵢ² from the group standard deviations above.";
+      if (step === 5) return "Total: every score against the grand mean gives " + f2(st.sst) + ". And " + f2(st.ssb) + " + " + f2(st.ssw) + " = " + f2(st.sst) + ", which is the identity, not a coincidence.";
+      if (step === 6) return "Degrees of freedom: " + K + " groups leave " + st.dfb + " between, " + st.N + " values in " + K + " groups leave " + st.dfw + " within, and they add to " + st.dft + ".";
+      if (step === 7) return "Mean squares: " + f2(st.ssb) + " / " + st.dfb + " = " + f2(st.msb) + " between, " + f2(st.ssw) + " / " + st.dfw + " = " + f2(st.msw) + " within. Their ratio is F = " + f2(st.f) + " on (" + st.dfb + ", " + st.dfw + ").";
+      return "p = " + pTxt(st.p) + ". The pooled standard deviation is √" + f2(st.msw) + " = " + f2(st.sp) + ", and η² = " + f2(st.ssb) + " / " + f2(st.sst) + " = " + etaTxt(st.eta) + ".";
+    }
+
+    /* ---------- the whole readout ---------- */
+    function etaTxt(v) { return isFinite(v) ? v.toFixed(3).replace(/^0/, "") : EM; }
+    function setTxt(id, v) { var el = $(id); if (el) el.textContent = v; }
+    /* In exam mode the readouts stay blank until the table checks out, so the
+       F a student is being asked for is not printed underneath the question. */
+    function fillStats(st) {
+      var ready = mode === "exam" ? solved : step >= 7;
+      var done = mode === "exam" ? solved : step >= 8;
+      setTxt("at-f", ready ? f2(st.f) : EM);
+      setTxt("at-p", done ? pTxt(st.p) : EM);
+      setTxt("at-sp", done ? f2(st.sp) : EM);
+      setTxt("at-eta", done ? etaTxt(st.eta) : EM);
+      var dec = $("at-dec");
+      if (!dec) return;
+      if (done) {
+        dec.textContent = isFinite(st.p) && st.p < 0.05 ? "Group means differ" : "No difference detected";
+        dec.style.color = (isFinite(st.p) && st.p < 0.05) ? "#22c55e" : VIZ.css("--text");
+      } else { dec.textContent = EM; dec.style.color = VIZ.css("--text"); }
+    }
+    function update() {
+      var st = stats(), i, chips = [];
+      for (i = 0; i < K; i++) {
+        chips.push(labels[i] + ": n = " + G[i].length + ", mean " + f2(st.means[i]) + ", s = " + f2(sampleSD(G[i])));
+      }
+      var sum = $("at-sum");
+      if (sum) sum.textContent = chips.join("   ·   ");
+      drawTable();
+      fillStats(st);
+      var cap = $("at-cap");
+      if (cap) cap.textContent = mode === "exam" ? "Exam mode shows the whole table with four cells missing. Every blank can be worked out from the cells that remain, and the readouts underneath stay blank until they check out." : caption(st);
+      draw();
+    }
+
+    /* ---------- controls ---------- */
+    function setSeg(id, attr, val) {
+      var box = $(id);
+      if (!box) return;
+      Array.prototype.forEach.call(box.querySelectorAll("button"), function (b) {
+        b.classList.toggle("active", b.getAttribute(attr) === String(val));
+      });
+    }
+    var segK = $("at-groups");
+    if (segK) segK.addEventListener("click", function (e) {
+      var b = e.target.closest("button");
+      if (!b) return;
+      var k = +b.dataset.k;
+      if (k === K) return;
+      while (text.length < k) { text.push(D0[text.length].join(", ")); }
+      K = k;
+      setSeg("at-groups", "data-k", K);
+      buildData();
+      readData();
+    });
+    var segM = $("at-mode");
+    if (segM) segM.addEventListener("click", function (e) {
+      var b = e.target.closest("button");
+      if (!b) return;
+      setMode(b.dataset.m);
+    });
+    function setMode(m) {
+      mode = (m === "exam") ? "exam" : "build";
+      setSeg("at-mode", "data-m", mode);
+      var sw = $("at-stepwrap"), ex = $("at-exam");
+      if (sw) sw.hidden = mode === "exam";
+      if (ex) ex.hidden = mode !== "exam";
+      solved = false;
+      if (mode === "exam") newBlanks(); else blanks = [];
+      update();
+    }
+    var segS = $("at-steps");
+    if (segS) segS.addEventListener("click", function (e) {
+      var b = e.target.closest("button");
+      if (!b) return;
+      step = +b.dataset.step;
+      setSeg("at-steps", "data-step", step);
+      update();
+    });
+    if ($("at-check")) $("at-check").addEventListener("click", check);
+    if ($("at-new")) $("at-new").addEventListener("click", newBlanks);
+    if ($("at-reset")) $("at-reset").addEventListener("click", function () {
+      K = 4; step = 8;
+      labels = LABELS.slice();
+      text = D0.map(function (g) { return g.join(", "); });
+      G = D0.map(function (g) { return g.slice(); });
+      setSeg("at-groups", "data-k", K);
+      setSeg("at-steps", "data-step", step);
+      buildData();
+      setMode("build");
+    });
+
+    /* ?g= : the whole dataset in the URL, through the shared parser. */
+    function loadGroups(raw) {
+      var got = (window.SC && SC.groupParam) ? SC.groupParam(String(raw), 4, 10) : null;
+      if (!got) return;
+      G = got;
+      K = got.length;
+      text = got.map(function (g) { return g.join(", "); });
+      labels = got.map(function (g, i) { return "Group " + (i + 1); });
+      setSeg("at-groups", "data-k", K);
+      buildData();
+      dataChanged();
+      update();
+    }
+
+    var redraw = VIZ.rafThrottle(function () { fit(); draw(); });
+    window.addEventListener("resize", redraw);
+    if (window.ResizeObserver) { new ResizeObserver(redraw).observe(canvas); }
+    VIZ.onTheme(function () { draw(); });
+
+    buildData();
+    fit();
+    update();
+
+    if (window.SC && SC.preset) SC.preset({ g: loadGroups, step: "#at-steps" });
   })();
   </script>
 </body>
