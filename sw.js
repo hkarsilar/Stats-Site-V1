@@ -37,10 +37,11 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v50";  /* site.js changed and is precached: P79 added
-                                      window.SC.dataParam, the shared parser behind the new
-                                      ?data= URLs on stats-1/describing-data and
-                                      descriptives.html. Nothing else in the shell changed. */
+const CACHE_VERSION = "sc-v51";  /* site.js changed and is precached: P85 added
+                                      window.SC.pairParam, dataParam's two-column sibling
+                                      behind the new ?data=x:y,… URLs on stats-1/correlation
+                                      and stats-1/simple-linear-regression. Nothing else in
+                                      the shell changed. */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location
