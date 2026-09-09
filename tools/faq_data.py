@@ -217,8 +217,8 @@ FAQS_12 = {
 ],
 
 "non-parametric-alternatives": [
- ("Are non-parametric tests less powerful than parametric ones?",
-  "Only slightly, and only when the parametric assumptions actually hold: on truly normal data, the Mann–Whitney test has about 95% of the t-test's efficiency. When assumptions fail (heavy tails, skew, outliers), the ranking tests are often <em>more</em> powerful, because a single wild value can't inflate the noise term. It's a small premium for a lot of insurance."),
+ ("My output gives both an exact p and an asymptotic p. Which one do I report?",
+  "The exact one, whenever the software offers it. The asymptotic p comes from a normal approximation to a distribution that is anything but smooth at small <em>n</em>, and the gap shows: on six-versus-six data with <em>U</em> = 2 the approximation gives .013 and the count gives .009. Packages stop offering the exact test somewhere past 20 or 30 per group, by which point the approximation has become accurate enough that the choice stops mattering. Printed critical-value tables are built from the exact distribution, so when you are checking hand work against output it is the exact p that should agree with your table reading."),
  ("Should I use a t-test or Mann–Whitney for Likert-scale data?",
   "For a single Likert item (ordinal, few distinct values) Mann–Whitney respects what the data actually is. For a multi-item scale <em>score</em> (summing 8 items into a 8–40 scale), treating it as approximately interval and using a t-test is common and generally defensible. Either way, look at the distributions first; ceiling effects and skew are what really cause trouble."),
  ("Does the Mann–Whitney test compare medians?",

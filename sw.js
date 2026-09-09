@@ -37,11 +37,12 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v53";  /* site.js changed and is precached: P89 added
-                                      SC.groupParam, the shared ?g= parser for group
-                                      data that sits beside dataParam and pairParam.
-                                      styles.css is unchanged this time; nothing else
-                                      in the shell moved. */
+const CACHE_VERSION = "sc-v54";  /* viz.js changed and is precached: P88 added the
+                                      exact null distributions the rank tests are
+                                      tabled from (mwu*, wsr*, spear*), which
+                                      tables.html and §2.1 both read. site.js moved
+                                      too, by one search keyword line. styles.css is
+                                      unchanged; nothing else in the shell moved. */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location

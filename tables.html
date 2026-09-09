@@ -16,16 +16,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Statistical Tables &amp; Calculators — z, t, Chi-Square, F — StatsCapybara</title>
-  <meta name="description" content="Free interactive statistical tables: exact p-values and critical values for z, t, chi-square, and F — with the tail area drawn live." />
+  <meta name="description" content="Free interactive statistical tables: exact p-values and critical values for z, t, chi-square, F, Mann–Whitney U, Wilcoxon W and Spearman." />
   <link rel="canonical" href="https://statscapybara.com/tables.html" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Statistical Tables &amp; Calculators — StatsCapybara" />
-  <meta property="og:description" content="Exact p-values and critical values for z, t, chi-square, and F — with the distribution and tail area drawn live. The last stat table you'll ever need." />
+  <meta property="og:description" content="Exact p-values and critical values for z, t, chi-square and F, plus printed tables for U, W and Spearman. The last stat table you'll ever need." />
   <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
   <meta property="og:url" content="https://statscapybara.com/tables.html" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Statistical Tables &amp; Calculators — StatsCapybara" />
-  <meta name="twitter:description" content="Exact p-values and critical values for z, t, chi-square, and F — with the distribution and tail area drawn live." />
+  <meta name="twitter:description" content="Exact p-values and critical values for z, t, chi-square and F, plus printed tables for U, W and Spearman. The last stat table you'll ever need." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="assets/css/styles.css" />
@@ -67,6 +67,11 @@
       #drill, .stab-cap { display: none !important; }
       .stab-panel { display: block !important; break-before: page; }
       #tb-a { break-before: auto; }
+      /* each print button prints its own group (P88); a plain Ctrl-P sets
+         neither class and prints all eight tables */
+      body.tb-only-adf .np-panel { display: none !important; }
+      body.tb-only-np #tables { display: none !important; }
+      body.tb-only-np #ntb-u5 { break-before: auto; }
       .stab { font-size: 6.4pt; width: 100%; }
       .stab th, .stab td { padding: .035cm .06cm; }
       .stab th[data-rh] { position: static; }
@@ -163,7 +168,7 @@
               </span>
             </div>
             <div class="control"><label>On paper</label>
-              <button class="btn btn-ghost btn-sm" id="tb-print" type="button">🖨️ Print all three</button>
+              <button class="btn btn-ghost btn-sm" id="tb-print" type="button">🖨️ Print these three</button>
             </div>
           </div>
 
@@ -188,14 +193,66 @@
           </section>
         </div>
 
+        <h2 id="rank-tables">Tables for the rank tests</h2>
+        <p>The rank-based tests read their tables the other way round. A <em>t</em> or a χ² is significant when it is <em>large</em>, so Table D and Table F print a floor to clear. <a href="stats-2/non-parametric-alternatives/">Mann–Whitney's <em>U</em> and Wilcoxon's <em>W</em></a> both count something that gets <em>smaller</em> as the groups separate, so their tables print a ceiling: compute the statistic, and you reject when it lands at or below the cell. Spearman's ρ<sub>s</sub> behaves like a correlation again, so its table is a floor.</p>
+        <p>Every cell below is counted rather than copied. The number of rank orders that produce each possible value of <em>U</em>, of <em>W</em> and of Spearman's Σ<em>d</em>² is a finite thing a computer can enumerate, so the page adds up the ones in the tail and keeps the most generous cutoff whose probability is still at or under α. That is the convention printed tables use, and it is why a cell is often a little stricter than α: with twelve pairs there is no value of <em>W</em> whose tail is exactly .025, so the table takes the last one under it.</p>
+
+        <div class="viz" id="nptables">
+          <p class="viz-title">📄 Printed tables · rank tests</p>
+          <p class="viz-sub">Mann–Whitney <em>U</em> at three significance levels, Wilcoxon's <em>W</em>, and Spearman's ρ<sub>s</sub>. Point at a cell or arrow into it to light up its row and column; click one and the line above spells out what it licenses you to say.</p>
+
+          <div class="controls">
+            <div class="control" style="min-width:min(300px,100%)"><label>Table</label>
+              <span class="seg" id="seg-nptable">
+                <button data-tb="u5" class="active">U · two-tailed .05</button><button data-tb="u1">U · two-tailed .01</button><button data-tb="u5one">U · one-tailed .05</button><button data-tb="w">W · Wilcoxon</button><button data-tb="s">ρ · Spearman</button>
+              </span>
+            </div>
+            <div class="control"><label>On paper</label>
+              <button class="btn btn-ghost btn-sm" id="ntb-print" type="button">🖨️ Print these five</button>
+            </div>
+          </div>
+
+          <p class="stab-cap" id="ntb-cap"></p>
+
+          <section class="stab-panel np-panel" id="ntb-u5">
+            <p class="stab-name">Table U · Mann–Whitney critical values, two-tailed α = .05</p>
+            <p class="stab-note">Take the smaller of <em>U</em><sub>1</sub> and <em>U</em><sub>2</sub> and reject when it is at or below the cell. Rows are <em>n</em><sub>2</sub>, columns <em>n</em><sub>1</sub>; the table is symmetric, so it does not matter which group you call which. A dash means no split of those two samples can reach this α.</p>
+            <div class="hscroll"><table class="stab" id="nstab-u5"><thead id="ntb-u5-head"></thead><tbody id="ntb-u5-body"><tr><td class="stab-busy">Counted in your browser from the exact null distribution.</td></tr></tbody></table></div>
+          </section>
+
+          <section class="stab-panel np-panel" id="ntb-u1" hidden>
+            <p class="stab-name">Table U · Mann–Whitney critical values, two-tailed α = .01</p>
+            <p class="stab-note">The same table at the stricter level, where a great deal of it simply goes blank: small samples cannot produce evidence this strong however the ranks fall.</p>
+            <div class="hscroll"><table class="stab" id="nstab-u1"><thead id="ntb-u1-head"></thead><tbody id="ntb-u1-body"><tr><td class="stab-busy">Counted in your browser from the exact null distribution.</td></tr></tbody></table></div>
+          </section>
+
+          <section class="stab-panel np-panel" id="ntb-u5one" hidden>
+            <p class="stab-name">Table U · Mann–Whitney critical values, one-tailed α = .05</p>
+            <p class="stab-note">Use this one only if the direction was predicted before the data arrived, and check that the smaller <em>U</em> belongs to the group you predicted would score higher.</p>
+            <div class="hscroll"><table class="stab" id="nstab-u5one"><thead id="ntb-u5one-head"></thead><tbody id="ntb-u5one-body"><tr><td class="stab-busy">Counted in your browser from the exact null distribution.</td></tr></tbody></table></div>
+          </section>
+
+          <section class="stab-panel np-panel" id="ntb-w" hidden>
+            <p class="stab-name">Table W · Wilcoxon signed-ranks critical values</p>
+            <p class="stab-note">Drop every pair whose difference is zero, then let <em>n</em> be the pairs that remain. Rank the sizes of the differences, add the ranks that carried a plus sign and the ranks that carried a minus sign, take the smaller total, and reject when it is at or below the cell.</p>
+            <div class="hscroll"><table class="stab" id="nstab-w"><thead id="ntb-w-head"></thead><tbody id="ntb-w-body"><tr><td class="stab-busy">Counted in your browser from the exact null distribution.</td></tr></tbody></table></div>
+          </section>
+
+          <section class="stab-panel np-panel" id="ntb-s" hidden>
+            <p class="stab-name">Table ρ · Spearman critical values</p>
+            <p class="stab-note">A floor, not a ceiling: reject when |ρ<sub>s</sub>| reaches the cell. Counted over all <em>n</em>! rankings up to <em>n</em> = 13; past that the count outgrows a browser, so those rows use the Edgeworth series R itself uses, which reproduces the exact value to the three decimals printed here at every <em>n</em> that can be checked, apart from <em>n</em> = 15 in the .01 column, which lands one step high at .657 against an exact .654.</p>
+            <div class="hscroll"><table class="stab" id="nstab-s"><thead id="ntb-s-head"></thead><tbody id="ntb-s-body"><tr><td class="stab-busy">Counted in your browser from the exact null distribution.</td></tr></tbody></table></div>
+          </section>
+        </div>
+
         <h2>Practice the lookup</h2>
-        <p>Knowing the three moves is not the same as performing them under time pressure with a paper table in front of you. Ten questions, drawn from all three tables. Type what the table gives you; the check accepts the table's rounding as readily as the exact value, because on paper the table's rounding <em>is</em> the answer.</p>
+        <p>Knowing the moves is not the same as performing them under time pressure with a paper table in front of you. Ten questions, drawn from all eight tables above. Type what the table gives you; the check accepts the table's rounding as readily as the exact value, because on paper the table's rounding <em>is</em> the answer.</p>
 
         <div class="viz" id="drill">
           <p class="viz-title">🎯 Look it up</p>
           <p class="viz-sub">No timer, no score kept anywhere. Press Enter to check, then Enter again for the next question.</p>
 
-          <p class="dr-moves">left = read the cell &nbsp;·&nbsp; right = 1 − read, or read −z &nbsp;·&nbsp; between = larger − smaller</p>
+          <p class="dr-moves">left = read the cell &nbsp;·&nbsp; right = 1 − read, or read −z &nbsp;·&nbsp; between = larger − smaller &nbsp;·&nbsp; U and W = a ceiling &nbsp;·&nbsp; t, χ² and ρ = a floor</p>
 
           <p class="dr-q" id="dr-q">The first question appears here.</p>
 
@@ -774,11 +831,233 @@
     }
 
     function buildAll() { build("a", true); build("d", true); build("f", true); }
+    /* The button prints its own three; the rank tables below have their own
+       button and their own body class, and a plain Ctrl-P sets neither and
+       prints all eight. Cleared on afterprint, with the timeout fallback
+       problems.html uses for the browsers that never fire it. */
     var pb = el("tb-print");
-    if (pb && pb.addEventListener) pb.addEventListener("click", function () { buildAll(); window.print(); });
+    if (pb && pb.addEventListener) pb.addEventListener("click", function () {
+      buildAll();
+      document.body.classList.add("tb-only-adf");
+      var clear = function () { document.body.classList.remove("tb-only-adf"); };
+      window.addEventListener("afterprint", function h() { window.removeEventListener("afterprint", h); clear(); });
+      setTimeout(clear, 1500);
+      window.print();
+    });
     window.addEventListener("beforeprint", buildAll);
 
     show("a");
+  })();
+  </script>
+
+  <!-- ============ printed tables for the rank tests (P88) ============
+       Five more tables, and not one number in them is transcribed. U, W and
+       Spearman's S each have a null distribution a computer can count
+       exactly, so viz.js counts it and this block reads the tail: the most
+       generous cutoff whose probability is still at or under alpha, which is
+       the rule every printed table follows. Cells are <td>, never <button>,
+       for the same reason the A/D/F tables use <td>: the shared print block
+       hides every button inside a .viz and these have to reach paper.
+
+       Unlike the A/D/F block these cells do not drive the calculator above,
+       which knows nothing about rank tests. Selecting one writes the reading
+       instead — the sentence a student has to be able to say out loud in an
+       exam.
+
+       tools/math-check.js section 14 drives this block under a DOM shim and
+       recomputes every generated cell. It finds the block by the literal
+       "ntb-u5-body", and it needs getElementById, insertAdjacentHTML and a
+       synchronous requestAnimationFrame; the query helpers return nothing
+       rather than throw when the shim has no querySelector. -->
+  <script>
+  (function () {
+    "use strict";
+    /* math-check section 14 finds this block by the marker "ntb-u5-body" */
+    var V = window.VIZ;
+    var el = function (id) { return document.getElementById(id); };
+    var all = function (root, sel) { return root && root.querySelectorAll ? Array.prototype.slice.call(root.querySelectorAll(sel)) : []; };
+    var one = function (root, sel) { return root && root.querySelector ? root.querySelector(sel) : null; };
+    var raf = function (fn) { return (window.requestAnimationFrame || function (f) { return setTimeout(f, 16); })(fn); };
+    var DASH = "—", RHO = "ρ";
+
+    var N_U = [], N_R = [], i;
+    for (i = 3; i <= 20; i++) N_U.push(i);          // Mann–Whitney: both samples 3 to 20
+    for (i = 5; i <= 30; i++) N_R.push(i);          // Wilcoxon and Spearman: 5 to 30
+    /* the three levels every rank table is printed with */
+    var LV = [[0.05, 2, ".05", "two-tailed"], [0.01, 2, ".01", "two-tailed"], [0.05, 1, ".05", "one-tailed"]];
+
+    function rho3(x) { return x < 0 ? "−" + (-x).toFixed(3).replace(/^0\./, ".") : x.toFixed(3).replace(/^0\./, "."); }
+
+    var SPEC = {
+      u5:    { kind: "u", lv: 0, chunk: 4, name: "U", title: "two-tailed .05" },
+      u1:    { kind: "u", lv: 1, chunk: 4, name: "U", title: "two-tailed .01" },
+      u5one: { kind: "u", lv: 2, chunk: 4, name: "U", title: "one-tailed .05" },
+      w:     { kind: "w", chunk: 8, name: "W", title: "" },
+      s:     { kind: "s", chunk: 1, name: RHO, title: "" }
+    };
+    var KEYS = ["u5", "u1", "u5one", "w", "s"];
+    function rowsOf(key) { return SPEC[key].kind === "u" ? N_U : N_R; }
+    function colsOf(key) { return SPEC[key].kind === "u" ? N_U.length : 3; }
+
+    function head(key) {
+      var h, j;
+      if (SPEC[key].kind === "u") {
+        h = '<tr><th>n₂ \\ n₁</th>';
+        for (j = 0; j < N_U.length; j++) h += '<th data-ch="' + j + '">' + N_U[j] + '</th>';
+      } else {
+        h = '<tr><th>n</th>';
+        for (j = 0; j < 3; j++) h += '<th data-ch="' + j + '">' + (LV[j][3] === "two-tailed" ? "two " : "one ") + LV[j][2] + '</th>';
+      }
+      return h + '</tr>';
+    }
+    /* every cell, straight off the exact null distribution in viz.js */
+    function value(key, ri, ci) {
+      var sp = SPEC[key];
+      if (sp.kind === "u") return V.mwuCrit(N_U[ci], N_U[ri], LV[sp.lv][0], LV[sp.lv][1]);
+      if (sp.kind === "w") return V.wsrCrit(N_R[ri], LV[ci][0], LV[ci][1]);
+      return V.spearCrit(N_R[ri], LV[ci][0], LV[ci][1]);
+    }
+    function cellText(key, ri, ci) {
+      var v = value(key, ri, ci);
+      if (v === null) return DASH;
+      return SPEC[key].kind === "s" ? rho3(v) : String(v);
+    }
+
+    var built = {}, cells = {}, rowHeads = {}, colHeads = {}, focusIx = {}, current = "u5", hovCell = null;
+    KEYS.forEach(function (k) { built[k] = false; focusIx[k] = 0; });
+
+    function rowHtml(key, ri) {
+      var rows = rowsOf(key), nc = colsOf(key);
+      var h = '<tr><th scope="row" data-rh="' + ri + '">' + rows[ri] + '</th>', ci;
+      for (ci = 0; ci < nc; ci++) h += '<td tabindex="-1" data-r="' + ri + '" data-c="' + ci + '">' + cellText(key, ri, ci) + '</td>';
+      return h + '</tr>';
+    }
+    /* Chunked for the same reason the A/D/F tables are: Spearman counts every
+       one of the n! rankings, and n = 13 alone is a tenth of a second. */
+    function build(key, sync) {
+      if (built[key]) return;
+      var sp = SPEC[key], body = el("ntb-" + key + "-body"), rows = rowsOf(key), ri = 0;
+      el("ntb-" + key + "-head").innerHTML = head(key);
+      body.innerHTML = "";
+      (function step() {
+        var end = sync ? rows.length : Math.min(rows.length, ri + sp.chunk), h = "";
+        for (; ri < end; ri++) h += rowHtml(key, ri);
+        body.insertAdjacentHTML("beforeend", h);
+        if (ri < rows.length) { raf(step); return; }
+        built[key] = true;
+        var panel = el("ntb-" + key);
+        cells[key] = all(panel, "td[data-r]");
+        rowHeads[key] = all(panel, "th[data-rh]");
+        colHeads[key] = all(panel, "th[data-ch]");
+        rove(key, focusIx[key]);
+      })();
+    }
+
+    function cellAt(key, r, c) { var l = cells[key]; return l && l.length ? l[r * colsOf(key) + c] : null; }
+    function cross(key, r, c) {
+      (rowHeads[key] || []).forEach(function (th) { th.classList.toggle("hl", +th.getAttribute("data-rh") === r); });
+      (colHeads[key] || []).forEach(function (th) { th.classList.toggle("hl", +th.getAttribute("data-ch") === c); });
+      if (hovCell) hovCell.classList.remove("on");
+      hovCell = (r >= 0 && c >= 0) ? cellAt(key, r, c) : null;
+      if (hovCell) hovCell.classList.add("on");
+    }
+    function rove(key, ix) {
+      var l = cells[key]; if (!l || !l.length) return;
+      ix = Math.max(0, Math.min(l.length - 1, ix));
+      if (l[focusIx[key]]) l[focusIx[key]].tabIndex = -1;
+      focusIx[key] = ix; l[ix].tabIndex = 0;
+    }
+
+    /* the sentence the cell licenses — what a student has to be able to say */
+    function reading(key, ri, ci) {
+      var sp = SPEC[key], v = value(key, ri, ci), rows = rowsOf(key);
+      var lv = sp.kind === "u" ? LV[sp.lv] : LV[ci];
+      var at = "at " + lv[3] + " α = " + lv[2];
+      var who = sp.kind === "u" ? "n₁ = " + N_U[ci] + ", n₂ = " + rows[ri] : "n = " + rows[ri];
+      if (v === null) {
+        return who + " " + at + ": no cell. Even a perfect separation of these samples cannot get the tail below " +
+               lv[2] + ", so the test can never reject at this level. Collect more, or accept a looser α.";
+      }
+      if (sp.kind === "u") return who + " " + at + ": reject when the smaller U is " + v + " or less.";
+      if (sp.kind === "w") return who + " " + at + ": reject when the smaller of T₊ and T₋ is " + v + " or less.";
+      return who + " " + at + ": reject when |ρₛ| reaches " + rho3(v) + ".";
+    }
+    function say(key, ri, ci) { var cap = el("ntb-cap"); if (cap) cap.textContent = reading(key, ri, ci); }
+
+    function activate(key) {
+      KEYS.forEach(function (k) { var p = el("ntb-" + k); if (p) p.hidden = (k !== key); });
+      all(el("seg-nptable"), "button").forEach(function (b) { b.classList.toggle("active", b.getAttribute("data-tb") === key); });
+      current = key;
+    }
+    function show(key) {
+      activate(key); build(key, false);
+      var cap = el("ntb-cap");
+      if (cap) cap.textContent = SPEC[key].kind === "s"
+        ? "Spearman's table is a floor: your |ρₛ| has to reach the cell. Select one to read it out."
+        : "Both rank statistics shrink as the groups separate, so these are ceilings: your statistic has to fall to the cell or below. Select one to read it out.";
+    }
+
+    function tdOf(e) { var t = e.target; return t && t.closest ? t.closest("td[data-r]") : null; }
+    function keys(key, e) {
+      var l = cells[key], nc = colsOf(key), nr = rowsOf(key).length;
+      if (!l || !l.length) return;
+      var td = tdOf(e); if (!td) return;
+      var r = +td.getAttribute("data-r"), c = +td.getAttribute("data-c"), tr = r, tc = c, k = e.key;
+      if (k === "ArrowRight") tc++;
+      else if (k === "ArrowLeft") tc--;
+      else if (k === "ArrowDown") tr++;
+      else if (k === "ArrowUp") tr--;
+      else if (k === "Home") tc = 0;
+      else if (k === "End") tc = nc - 1;
+      else if (k === "PageDown") tr += 10;
+      else if (k === "PageUp") tr -= 10;
+      else if (k === "Enter" || k === " ") { e.preventDefault(); say(key, r, c); return; }
+      else return;
+      e.preventDefault();
+      tr = Math.max(0, Math.min(nr - 1, tr));
+      tc = Math.max(0, Math.min(nc - 1, tc));
+      var ix = tr * nc + tc;
+      rove(key, ix); l[ix].focus();
+    }
+
+    KEYS.forEach(function (key) {
+      var panel = el("ntb-" + key);
+      if (!panel || !panel.addEventListener) return;
+      panel.addEventListener("click", function (e) { var td = tdOf(e); if (td) say(key, +td.getAttribute("data-r"), +td.getAttribute("data-c")); });
+      panel.addEventListener("mouseover", function (e) { var td = tdOf(e); if (td) cross(key, +td.getAttribute("data-r"), +td.getAttribute("data-c")); });
+      panel.addEventListener("mouseleave", function () { cross(key, -1, -1); });
+      panel.addEventListener("focusin", function (e) {
+        var td = tdOf(e); if (!td) return;
+        cross(key, +td.getAttribute("data-r"), +td.getAttribute("data-c"));
+        rove(key, cells[key].indexOf(td));
+      });
+      panel.addEventListener("keydown", function (e) { keys(key, e); });
+    });
+
+    var segN = el("seg-nptable");
+    if (segN && segN.addEventListener) segN.addEventListener("click", function (e) {
+      var b = e.target.closest ? e.target.closest("button") : e.target;
+      if (!b || !b.getAttribute) return;
+      show(b.getAttribute("data-tb"));
+    });
+
+    function buildAll() { KEYS.forEach(function (k) { build(k, true); }); }
+    /* Each print button prints its own group: a body class the per-page print
+       rules read, cleared on afterprint the way problems.html clears its two.
+       A plain Ctrl-P sets no class and prints all eight tables. */
+    function printGroup(cls, prep) {
+      prep();
+      document.body.classList.add(cls);
+      var clear = function () { document.body.classList.remove(cls); };
+      window.addEventListener("afterprint", function h() { window.removeEventListener("afterprint", h); clear(); });
+      setTimeout(clear, 1500);
+      window.print();
+    }
+    var pb = el("ntb-print");
+    if (pb && pb.addEventListener) pb.addEventListener("click", function () { printGroup("tb-only-np", buildAll); });
+    window.addEventListener("beforeprint", buildAll);
+
+    show("u5");
   })();
   </script>
 
@@ -853,13 +1132,51 @@
                (inf ? "∞ row." : "df = " + df + " row.")
         };
       }
-      df = pick(DFX); al = pick(ALPHAS); v = V.chiSqInv(al[0], df);
-      return { q: "Table F: what is the " + CHI + " critical value for df = " + df + " at α = " + al[1] + "?",
-               a: v, tol: critTol(v), show: c2(v), hint: "a critical value, as Table F prints it", tbl: "Table F",
-               why: "Row df = " + df + ", column " + al[1] + " on Table F. Anything larger than that critical value is significant at " + al[1] + "." };
+      if (shape === "chi") {
+        df = pick(DFX); al = pick(ALPHAS); v = V.chiSqInv(al[0], df);
+        return { q: "Table F: what is the " + CHI + " critical value for df = " + df + " at α = " + al[1] + "?",
+                 a: v, tol: critTol(v), show: c2(v), hint: "a critical value, as Table F prints it", tbl: "Table F",
+                 why: "Row df = " + df + ", column " + al[1] + " on Table F. Anything larger than that critical value is significant at " + al[1] + "." };
+      }
+      /* the rank tables (P88). Every one of these is drawn from a cell that
+         exists: the small-sample corner of Table U and the first rows of
+         Table W are mostly dashes, and "there is no cell" is a lesson the
+         tables themselves teach rather than a question with a number. */
+      return rankTask(shape);
     }
 
-    var PLAN = ["left", "right", "between", "invz", "tstar", "chi", "left", "right", "tstar", "chi"];
+    var NPLV = [[0.05, 2, ".05", "two-tailed"], [0.01, 2, ".01", "two-tailed"], [0.05, 1, ".05", "one-tailed"]];
+    function rankTask(shape) {
+      var lv, n, n1, n2, v, tries;
+      if (shape === "npu") {
+        for (tries = 0; tries < 40; tries++) {
+          lv = pick(NPLV); n1 = 5 + Math.floor(Math.random() * 12); n2 = 5 + Math.floor(Math.random() * 12);
+          v = V.mwuCrit(n1, n2, lv[0], lv[1]);
+          if (v !== null) break;
+        }
+        return { q: "Table U: two independent samples of n₁ = " + n1 + " and n₂ = " + n2 + ". What is the critical U at " + lv[3] + " α = " + lv[2] + "?",
+                 a: v, tol: 1e-9, show: String(v), hint: "a whole number", tbl: "Table U",
+                 why: "Row n₂ = " + n2 + ", column n₁ = " + n1 + ". Compute both U values, take the smaller, and reject when it is " + v + " or less. Small U means the groups barely overlap, which is why this table is a ceiling and not a floor." };
+      }
+      if (shape === "npw") {
+        for (tries = 0; tries < 40; tries++) {
+          lv = pick(NPLV); n = 8 + Math.floor(Math.random() * 18);
+          v = V.wsrCrit(n, lv[0], lv[1]);
+          if (v !== null) break;
+        }
+        return { q: "Table W: a paired design leaves " + n + " non-zero differences. What is the critical W at " + lv[3] + " α = " + lv[2] + "?",
+                 a: v, tol: 1e-9, show: String(v), hint: "a whole number", tbl: "Table W",
+                 why: "Row n = " + n + ", the " + lv[3] + " " + lv[2] + " column. Add the positive ranks and the negative ranks separately, take the smaller total, and reject when it is " + v + " or less." };
+      }
+      lv = pick(NPLV); n = 6 + Math.floor(Math.random() * 25);
+      v = V.spearCrit(n, lv[0], lv[1]);
+      if (v === null) { n = 12; lv = NPLV[0]; v = V.spearCrit(n, lv[0], lv[1]); }
+      return { q: "Table ρ: " + n + " pairs ranked on both variables. What is the critical ρ" + "ₛ" + " at " + lv[3] + " α = " + lv[2] + "?",
+               a: v, tol: 6e-4, show: v.toFixed(3).replace(/^0\./, "."), hint: "a correlation, 3 decimals", tbl: "Table ρ",
+               why: "Row n = " + n + ", the " + lv[3] + " " + lv[2] + " column. Spearman goes back to being a floor: your |ρ" + "ₛ" + "| has to reach it." };
+    }
+
+    var PLAN = ["left", "right", "between", "invz", "tstar", "chi", "left", "npu", "npw", "nps"];
     function shuffle(a) { var j, k, t; for (j = a.length - 1; j > 0; j--) { k = Math.floor(Math.random() * (j + 1)); t = a[j]; a[j] = a[k]; a[k] = t; } return a; }
 
     var tasks = [], ix = 0, score = 0, done = 0, answered = false;

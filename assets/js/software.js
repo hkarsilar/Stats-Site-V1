@@ -352,7 +352,11 @@ window.SOFTWARE = {
   "non-parametric-alternatives": {
     spss: [
       '<strong>Analyze → Nonparametric Tests → Independent Samples…</strong> (Mann-Whitney, Kruskal-Wallis) or <strong>Related Samples…</strong> (Wilcoxon, Friedman); SPSS picks the right test from your design.',
-      'The classic dialogs live under <strong>Legacy Dialogs</strong> if you prefer them (e.g. <em>2 Independent Samples → Mann-Whitney U</em>).',
+      'The classic dialogs live under <strong>Legacy Dialogs</strong> if you prefer them (e.g. <em>2 Independent Samples → Mann-Whitney U</em>), and they are the route that prints the statistic itself rather than a verdict card.',
+      'The Legacy <em>Test Statistics</em> table has four rows worth knowing. <em>Mann-Whitney U</em> is the smaller of the two U values, the one your table wants. <em>Wilcoxon W</em> on this output is not the signed-rank statistic at all: it is the rank SUM of the smaller sample, so on the lesson\'s data it reads 23 while the paired test\'s W is 1. <em>Z</em> is the normal approximation, and <em>Asymp. Sig. (2-tailed)</em> is that approximation\'s p.',
+      'Below those, <em>Exact Sig. [2*(1-tailed Sig.)]</em> appears when the samples are small. That is the counted p, the same number a critical-value table is built from, and it is the one to report when SPSS offers it. The two can differ by a fair margin: on the lesson\'s six-versus-six data the asymptotic p is .013 and the exact p is .009.',
+      'For the paired test, <em>2 Related Samples → Wilcoxon</em> prints a <em>Ranks</em> table whose <em>Sum of Ranks</em> column gives T₊ and T₋ directly. The smaller of the two is W, which SPSS never labels as such.',
+      'Spearman lives elsewhere: <strong>Analyze → Correlate → Bivariate…</strong> and tick <em>Spearman</em>. SPSS prints the coefficient and its p, never Σ<em>d</em>².',
       'Double-click the output for the <em>Model Viewer</em>, which includes the standardized test statistic (z).',
       'Report medians: get them from <strong>Analyze → Descriptive Statistics → Explore</strong>.'
     ],
@@ -360,11 +364,13 @@ window.SOFTWARE = {
       'Non-parametric options live inside the matching parametric analysis:',
       '<strong>T-Tests → Independent Samples</strong> → tick <em>Mann-Whitney</em>; <strong>Paired Samples</strong> → tick <em>Wilcoxon signed-rank</em>.',
       '<strong>ANOVA → ANOVA → Nonparametrics</strong> → Kruskal-Wallis; <strong>Repeated Measures ANOVA → Nonparametrics</strong> → Friedman.',
+      '<strong>Regression → Correlation</strong> → tick <em>Spearman</em> for ρ<sub>s</sub>, which JASP labels <em>Spearman\'s rho</em>.',
       'Tick <em>Effect size</em> and JASP reports the rank-biserial correlation, a natural effect size for these tests.'
     ],
     apa: '<p>Pain ratings were lower in the treatment group (<em>Mdn</em> = 3, <em>n</em> = 30) than in the control group (<em>Mdn</em> = 5, <em>n</em> = 30), Mann–Whitney <em>U</em> = 306, <em>z</em> = −2.13, <em>p</em> = .033, rank-biserial <em>r</em> = .32. For three or more groups: <em>H</em>(2) = 7.61, <em>p</em> = .022 (Kruskal–Wallis).</p>',
     tips: [
       'Report medians (<em>Mdn</em>) rather than means — that’s what these tests respect.',
+      'When your course examines this by hand, the software still checks your work: the U it prints is the smaller one you looked up, and its exact p should agree with the verdict your critical-value table gave. A U on the wrong side of the cell and a significant p on the same output means you read the larger U.',
       'An effect size still applies, but the two in circulation are not the same number. JASP’s rank-biserial correlation is the win rate minus the loss rate across every cross-group pairing; <em>r</em> = <em>z</em>/√<em>N</em> is the SPSS-era fallback and will usually be smaller on the same data. The sentence above is a case in point: .32 as a rank-biserial correlation, .27 as <em>z</em>/√<em>N</em>. Say which one you computed.'
     ]
   },

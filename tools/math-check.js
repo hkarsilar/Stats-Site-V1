@@ -1718,6 +1718,349 @@ try {
 
 
 /* ============================================================
+   14 — the rank-test tables (tables.html, P88)
+
+   P88 put five more tables on tables.html: Mann–Whitney U at three levels,
+   Wilcoxon's W and Spearman's rho_s. Unlike Tables A, D and F these are not
+   tails of a continuous distribution but tails of an exactly countable one,
+   which is the whole reason they can be generated rather than transcribed.
+   So this section does three things, in this order:
+
+     (a) re-derives all three null distributions here, by a DIFFERENT route
+         from viz.js — exhaustive enumeration, which is the one derivation
+         that cannot share a bug with a recurrence;
+     (b) asserts a grid of critical values against the values a printed table
+         carries (Siegel & Castellan's U and W tables, Zar's rho table);
+     (c) drives the SHIPPED page under the DOM shim sections 8 to 13 use and
+         recomputes every one of its 1,128 generated cells.
+
+   Two things are worth stating rather than leaving implicit.
+
+   ONLY ACHIEVABLE VALUES COUNT. Spearman's S = sum d^2 is always even, since
+   sum d = 0 forces sum d^2 to share its parity. Walking the integers and
+   stopping at the first one whose tail exceeds alpha therefore lands on an
+   odd S half the time and reports a rho no ranking can produce: at n = 6 it
+   gives .857 where the printed table says .886, at n = 8 it gives .726 where
+   the table says .738. The rule has to skip values with zero count, and this
+   section asserts the corrected values against the printed table.
+
+   THE n = 9 DISAGREEMENT IS REAL AND THE CONSERVATIVE VALUE WINS. Some
+   printed tables give .683 for n = 9 at two-tailed .05. Its exact two-tailed
+   probability is .05032, which is above .05 — it rounds to .050 at three
+   decimals, which is presumably how it got into print. The next value up,
+   .700, has probability .04325. Every other table on this page keeps the
+   cutoff whose true size is at or under alpha, so this one does too, and the
+   page says so. Both numbers are asserted below, each against its own tail.
+   ============================================================ */
+head('rank-test tables (the shipped page)');
+
+/* ---- (a) the three null distributions, by exhaustive enumeration ---- */
+
+/* U: every C(m+n, m) way of choosing which ranks belong to group 1.
+   U1 = R1 − m(m+1)/2, counted directly rather than by a recurrence. */
+function enumU(m, n) {
+  const N = m + n, cnt = new Array(m * n + 1).fill(0);
+  (function rec(next, chosen, sum) {
+    if (chosen === m) { cnt[sum - m * (m + 1) / 2]++; return; }
+    for (let r = next; r <= N; r++) rec(r + 1, chosen + 1, sum + r);
+  })(1, 0, 0);
+  return cnt;
+}
+/* W: every one of the 2^n sign patterns, summed the slow way. */
+function enumW(n) {
+  const cnt = new Array(n * (n + 1) / 2 + 1).fill(0);
+  for (let mask = 0; mask < (1 << n); mask++) {
+    let s = 0;
+    for (let i = 1; i <= n; i++) if (mask & (1 << (i - 1))) s += i;
+    cnt[s]++;
+  }
+  return cnt;
+}
+/* S: every one of the n! rankings. */
+function enumS(n) {
+  const cnt = new Array(n * (n * n - 1) / 3 + 1).fill(0), used = new Array(n).fill(false);
+  (function rec(i, s) {
+    if (i === n) { cnt[s]++; return; }
+    for (let v = 0; v < n; v++) {
+      if (used[v]) continue;
+      used[v] = true; rec(i + 1, s + (i - v) * (i - v)); used[v] = false;
+    }
+  })(0, 0);
+  return cnt;
+}
+/* the shared rule: the most generous ACHIEVABLE value whose tail is <= alpha */
+function critOf(counts, total, aOne) {
+  let cum = 0, best = null;
+  for (let k = 0; k < counts.length; k++) {
+    if (!counts[k]) continue;
+    if ((cum + counts[k]) / total <= aOne + 1e-12) { cum += counts[k]; best = k; } else break;
+  }
+  return best;
+}
+const oneSide = (a, t) => (t === 1 ? a : a / 2);
+const factN = n => { let r = 1; for (let i = 2; i <= n; i++) r *= i; return r; };
+const chooseN = (n, k) => { let r = 1; for (let t = 1; t <= k; t++) r = r * (n - k + t) / t; return r; };
+
+{
+  let bad = 0, first = '';
+  const cmp = (what, a, b) => {
+    if (a.length !== b.length) { bad++; if (!first) first = what + ' length'; return; }
+    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) { bad++; if (!first) first = `${what} at ${i}: ${a[i]} vs ${b[i]}`; return; }
+  };
+  for (const [m, n] of [[1, 6], [3, 3], [4, 5], [5, 5], [6, 7], [8, 8], [2, 9], [7, 9]]) cmp(`U(${m},${n})`, [...V.mwuCounts(m, n)], enumU(m, n));
+  for (const n of [1, 4, 7, 10, 14, 18]) cmp(`W(${n})`, [...V.wsrCounts(n)], enumW(n));
+  for (const n of [3, 5, 7, 9]) cmp(`S(${n})`, [...V.spearCounts(n)], enumS(n));
+  is(`viz.js null distributions match exhaustive enumeration${first ? ' (first miss: ' + first + ')' : ''}`, bad, 0,
+     'every arrangement, subset and ranking counted one at a time');
+}
+
+/* the parity fact the critical-value rule turns on, and the symmetry the
+   Edgeworth branch relies on to read a lower tail as an upper one */
+{
+  const c9 = V.spearCounts(9);
+  let odd = 0;
+  for (let s = 1; s < c9.length; s += 2) odd += c9[s];
+  is('Spearman S is always even (n = 9)', odd, 0, 'sum d = 0 forces sum d^2 even');
+  let sym = true, max = 9 * 80 / 3;
+  for (let s = 0; s <= max; s++) if (c9[s] !== c9[max - s]) sym = false;
+  is('Spearman S is symmetric about its midpoint (n = 9)', sym, true, 'reversing a ranking reflects S');
+}
+
+/* ---- (b) the published grids ----
+   U: Siegel & Castellan / the standard Mann–Whitney tables.
+   W: the standard Wilcoxon signed-ranks table.
+   rho: Zar's exact table (which is what the enumeration reproduces). */
+{
+  const U05 = {   // two-tailed .05, n1 = 3..10 across, n2 = 3..10 down
+    3: [null, null, 0, 1, 1, 2, 2, 3], 4: [null, 0, 1, 2, 3, 4, 4, 5],
+    5: [0, 1, 2, 3, 5, 6, 7, 8], 6: [1, 2, 3, 5, 6, 8, 10, 11],
+    7: [1, 3, 5, 6, 8, 10, 12, 14], 8: [2, 4, 6, 8, 10, 13, 15, 17],
+    9: [2, 4, 7, 10, 12, 15, 17, 20], 10: [3, 5, 8, 11, 14, 17, 20, 23]
+  };
+  const U01 = {   // two-tailed .01
+    5: [null, null, 0, 1, 1, 2, 3, 4], 6: [null, 0, 1, 2, 3, 4, 5, 6],
+    8: [null, 1, 2, 4, 6, 7, 9, 11], 10: [0, 2, 4, 6, 9, 11, 13, 16]
+  };
+  const U05one = { // one-tailed .05
+    3: [0, 0, 1, 2, 2, 3, 4, 4], 6: [2, 3, 5, 7, 8, 10, 12, 14],
+    8: [3, 5, 8, 10, 13, 15, 18, 20], 10: [4, 7, 11, 14, 17, 20, 24, 27]
+  };
+  for (const [tbl, a, t, name] of [[U05, 0.05, 2, 'two-tailed .05'], [U01, 0.01, 2, 'two-tailed .01'], [U05one, 0.05, 1, 'one-tailed .05']]) {
+    for (const n2 of Object.keys(tbl)) {
+      tbl[n2].forEach((want, j) => {
+        const n1 = 3 + j;
+        is(`U*(${n1}, ${n2}) ${name}`, V.mwuCrit(n1, +n2, a, t), want, 'Mann–Whitney critical-value table');
+      });
+    }
+  }
+  // and the far corner, where the enumeration in (a) cannot reach
+  is('U*(20, 20) two-tailed .05', V.mwuCrit(20, 20, 0.05, 2), 127, 'Mann–Whitney critical-value table');
+  is('U*(20, 20) one-tailed .05', V.mwuCrit(20, 20, 0.05, 1), 138, 'Mann–Whitney critical-value table');
+  is('U*(20, 20) two-tailed .01', V.mwuCrit(20, 20, 0.01, 2), 105, 'Mann–Whitney critical-value table');
+
+  const W = {   // n: [two .05, two .01, one .05]
+    5: [null, null, 0], 6: [0, null, 2], 7: [2, null, 3], 8: [3, 0, 5], 9: [5, 1, 8],
+    10: [8, 3, 10], 12: [13, 7, 17], 15: [25, 15, 30], 20: [52, 37, 60],
+    25: [89, 68, 100], 30: [137, 109, 151]
+  };
+  for (const n of Object.keys(W)) {
+    const [a2, a1p, one] = W[n];
+    is(`W*(${n}) two-tailed .05`, V.wsrCrit(+n, 0.05, 2), a2, 'Wilcoxon signed-ranks table');
+    is(`W*(${n}) two-tailed .01`, V.wsrCrit(+n, 0.01, 2), a1p, 'Wilcoxon signed-ranks table');
+    is(`W*(${n}) one-tailed .05`, V.wsrCrit(+n, 0.05, 1), one, 'Wilcoxon signed-ranks table');
+  }
+
+  const RHO = {   // n: [two .05, two .01, one .05] — Zar, exact
+    5: [1.000, null, 0.900], 6: [0.886, 1.000, 0.829], 7: [0.786, 0.929, 0.714],
+    8: [0.738, 0.881, 0.643], 9: [0.700, 0.833, 0.600], 10: [0.648, 0.794, 0.564],
+    11: [0.618, 0.755, 0.536], 12: [0.587, 0.727, 0.503], 13: [0.560, 0.703, 0.484],
+    14: [0.538, 0.679, 0.464], 16: [0.503, 0.635, 0.429], 20: [0.447, 0.570, 0.380],
+    25: [0.398, 0.511, 0.337], 30: [0.362, 0.467, 0.306]
+  };
+  for (const n of Object.keys(RHO)) {
+    RHO[n].forEach((want, j) => {
+      const [a, t] = [[0.05, 2], [0.01, 2], [0.05, 1]][j];
+      const got = V.spearCrit(+n, a, t);
+      if (want === null) is(`rho*(${n}) at ${j === 1 ? '.01' : '.05'}: no cell exists`, got, null, 'Zar');
+      else eq(`rho*(${n}) ${['two-tailed .05', 'two-tailed .01', 'one-tailed .05'][j]}`, got, want, 5e-4, 'Zar, exact');
+    });
+  }
+  /* the n = 15 cell the page's own note owns: the Edgeworth branch lands one
+     achievable step high, and saying so beats pretending otherwise */
+  eq('rho*(15) two-tailed .01 — the one approximate cell that is a step high',
+     V.spearCrit(15, 0.01, 2), 0.6571, 5e-4, 'AS 89; the exact value is .6536');
+
+  /* W at n = 30, one-tailed .05, is the second cell where a printed table is
+     a step more generous than alpha allows — the same shape as rho at n = 9,
+     and settled the same way. Many tables print 152; its exact tail is
+     .05020, which rounds to .050 but is not at or under .05. */
+  eq('P(T+ <= 151 | n = 30)', V.wsrLower(151, 30), 0.048051, 5e-6, 'exact enumeration');
+  eq('P(T+ <= 152 | n = 30) — over alpha, so 152 is not the cutoff', V.wsrLower(152, 30), 0.050199, 5e-6, 'exact enumeration');
+
+  /* the n = 9 disagreement, both sides of it, each against its own tail */
+  eq('P(rho_s >= .700 | n = 9) two-tailed', 2 * V.spearUpper(0.700, 9), 0.043254, 5e-6, 'exact enumeration');
+  eq('P(rho_s >= .683 | n = 9) two-tailed', 2 * V.spearUpper(0.6833333333, 9), 0.050320, 5e-6, 'exact enumeration');
+  is('so .700 is the cutoff whose size is at or under .05', V.spearCrit(9, 0.05, 2) > 0.69, true,
+     'the convention every table on this page uses');
+
+  /* the exact p-values the lesson prints beside the table reading */
+  eq('exact two-tailed p for U = 2 with n1 = n2 = 6', V.mwuP(2, 6, 6, 2), 0.008658, 5e-6, 'R wilcox.test exact');
+  eq('exact two-tailed p for W = 1 with n = 7', V.wsrP(1, 7, 2), 0.031250, 5e-7, 'R wilcox.test exact');
+  eq('exact one-tailed p for U = 5 with n1 = 5, n2 = 6', V.mwuP(5, 5, 6, 1), 0.041125, 5e-6, 'exact enumeration');
+  is('U1 + U2 = n1 n2 makes the two tails one tail',
+     V.mwuLower(3, 5, 7) === V.mwuLower(3, 7, 5), true, 'the table is symmetric in n1 and n2');
+  eq('the whole U distribution sums to C(m+n, m)',
+     [...V.mwuCounts(9, 7)].reduce((a, b) => a + b, 0), chooseN(16, 9), 1e-6, 'a probability distribution');
+  eq('the whole W distribution sums to 2^n',
+     [...V.wsrCounts(12)].reduce((a, b) => a + b, 0), Math.pow(2, 12), 1e-6, 'a probability distribution');
+  eq('the whole S distribution sums to n!',
+     [...V.spearCounts(10)].reduce((a, b) => a + b, 0), factN(10), 1e-6, 'a probability distribution');
+}
+
+/* ---- (c) and now the page itself ---- */
+function driveRankTables() {
+  const html = fs.readFileSync(path.join(ROOT, 'tables.html'), 'utf8');
+  const src = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)]
+    .map(m => m[1]).filter(s => /ntb-u5-body/.test(s))[0];
+  if (!src) throw new Error('no inline script mentioning ntb-u5-body');
+
+  const els = {};
+  const mk = () => {
+    const on = {};
+    const node = {
+      innerHTML: '', textContent: '', value: '', hidden: false, tabIndex: -1, style: {},
+      classList: { add: () => {}, remove: () => {}, toggle: () => {} },
+      getAttribute: () => null, focus: () => {},
+      addEventListener: (t, f) => { (on[t] = on[t] || []).push(f); },
+      insertAdjacentHTML: (pos, h) => { node.innerHTML += h; },
+      fire: (t, e) => (on[t] || []).forEach(f => f(e))
+    };
+    return node;
+  };
+  const c = { console };
+  c.window = c;
+  c.document = { documentElement: {}, body: { classList: { add: () => {}, remove: () => {} } },
+                 getElementById: id => els[id] || (els[id] = mk()) };
+  c.getComputedStyle = () => ({ getPropertyValue: () => '#000000' });
+  c.MutationObserver = function () { this.observe = () => {}; };
+  c.requestAnimationFrame = cb => cb();      // the chunked build finishes in one pass
+  c.addEventListener = () => {};
+  c.removeEventListener = () => {};
+  c.setTimeout = () => {};
+  c.Event = function () {};
+  vm.createContext(c);
+  vm.runInContext(fs.readFileSync(path.join(ROOT, 'assets/js/viz.js'), 'utf8'), c, { filename: 'viz.js' });
+  vm.runInContext(src, c, { filename: 'tables.html#rank-tables' });
+
+  // the page boots on the first U table; the other four build when tabbed to
+  const tab = key => els['seg-nptable'].fire('click', { target: { closest: () => ({ getAttribute: () => key }) } });
+  ['u1', 'u5one', 'w', 's'].forEach(tab);
+
+  const grid = key => {
+    const body = els['ntb-' + key + '-body'];
+    if (!body || !body.innerHTML) throw new Error('table ' + key + ' stayed empty');
+    return [...body.innerHTML.matchAll(/<tr>([\s\S]*?)<\/tr>/g)].map(m => ({
+      label: (/<th[^>]*>([^<]*)<\/th>/.exec(m[1]) || [, ''])[1],
+      cells: [...m[1].matchAll(/<td[^>]*>([^<]*)<\/td>/g)].map(c2 => c2[1])
+    }));
+  };
+  const heads = key => [...(els['ntb-' + key + '-head'].innerHTML)
+    .matchAll(/<th[^>]*>([^<]*)<\/th>/g)].map(m => m[1]);
+  const caption = () => els['ntb-cap'].textContent;
+  const select = (key, r, c2) => {
+    els['ntb-' + key].fire('click', { target: { closest: () => ({ getAttribute: n => (n === 'data-r' ? String(r) : String(c2)) }) } });
+    return caption();
+  };
+  return { grid, heads, select, tab };
+}
+
+try {
+  const page = driveRankTables();
+  const DASH = '—';
+  const rho3 = x => x.toFixed(3).replace(/^0\./, '.');
+  const U = { u5: page.grid('u5'), u1: page.grid('u1'), u5one: page.grid('u5one') };
+  const Wg = page.grid('w'), Sg = page.grid('s');
+
+  /* shape */
+  is('Table U row count (n2 = 3…20)', U.u5.length, 18, 'P88 spec');
+  is('Table U column count (n1 = 3…20)', U.u5[0].cells.length, 18, 'P88 spec');
+  is('Table U first row is n2 = 3', U.u5[0].label, '3', 'P88 spec');
+  is('Table U last row is n2 = 20', U.u5[17].label, '20', 'P88 spec');
+  is('Table U head starts at n1 = 3', page.heads('u5')[1], '3', 'P88 spec');
+  is('Table W row count (n = 5…30)', Wg.length, 26, 'P88 spec');
+  is('Table W column count (two .05, two .01, one .05)', Wg[0].cells.length, 3, 'P88 spec');
+  is('Table ρ row count (n = 5…30)', Sg.length, 26, 'P88 spec');
+  is('Table ρ column count', Sg[0].cells.length, 3, 'P88 spec');
+  is('Table W head column 1 is the two-tailed .01', page.heads('w')[2], 'two .01', 'P88 spec');
+  is('Table W head column 2 is the one-tailed .05', page.heads('w')[3], 'one .05', 'P88 spec');
+
+  /* every cell of all five tables, recomputed */
+  const LV = [[0.05, 2], [0.01, 2], [0.05, 1]];
+  let bad = 0, first = '';
+  const flag = (what, got, want) => { if (got !== want) { bad++; if (!first) first = `${what}: page "${got}", viz.js "${want}"`; } };
+  [['u5', 0], ['u1', 1], ['u5one', 2]].forEach(([key, lv]) => {
+    U[key].forEach((row, r) => row.cells.forEach((got, c2) => {
+      const v = V.mwuCrit(3 + c2, 3 + r, LV[lv][0], LV[lv][1]);
+      flag(`${key}[n2=${3 + r}][n1=${3 + c2}]`, got, v === null ? DASH : String(v));
+    }));
+  });
+  Wg.forEach((row, r) => row.cells.forEach((got, c2) => {
+    const v = V.wsrCrit(5 + r, LV[c2][0], LV[c2][1]);
+    flag(`W[n=${5 + r}][${c2}]`, got, v === null ? DASH : String(v));
+  }));
+  Sg.forEach((row, r) => row.cells.forEach((got, c2) => {
+    const v = V.spearCrit(5 + r, LV[c2][0], LV[c2][1]);
+    flag(`rho[n=${5 + r}][${c2}]`, got, v === null ? DASH : rho3(v));
+  }));
+  is(`all ${U.u5.length * 18 * 3 + (Wg.length + Sg.length) * 3} rank-table cells match viz.js${first ? ' (first miss: ' + first + ')' : ''}`,
+     bad, 0, 'viz.js');
+
+  /* the published anchors, read off the PAGE rather than off viz.js */
+  const cellU = (key, n1, n2) => U[key][n2 - 3].cells[n1 - 3];
+  const cellW = (n, j) => Wg[n - 5].cells[j];
+  const cellS = (n, j) => Sg[n - 5].cells[j];
+  const printed = [
+    ['page Table U: n1 = 8, n2 = 8 at two-tailed .05', cellU('u5', 8, 8), '13'],
+    ['page Table U: n1 = 8, n2 = 8 at one-tailed .05', cellU('u5one', 8, 8), '15'],
+    ['page Table U: n1 = 10, n2 = 10 at two-tailed .05', cellU('u5', 10, 10), '23'],
+    ['page Table U: n1 = 20, n2 = 20 at two-tailed .05', cellU('u5', 20, 20), '127'],
+    ['page Table U: n1 = 3, n2 = 3 at two-tailed .05 has no cell', cellU('u5', 3, 3), DASH],
+    ['page Table U: n1 = 4, n2 = 4 at two-tailed .05', cellU('u5', 4, 4), '0'],
+    ['page Table U: n1 = 5, n2 = 10 at two-tailed .05', cellU('u5', 5, 10), '8'],
+    ['page Table U is symmetric (5, 10) = (10, 5)', cellU('u5', 10, 5), cellU('u5', 5, 10)],
+    ['page Table W: n = 10 at two-tailed .05', cellW(10, 0), '8'],
+    ['page Table W: n = 10 at two-tailed .01', cellW(10, 1), '3'],
+    ['page Table W: n = 10 at one-tailed .05', cellW(10, 2), '10'],
+    ['page Table W: n = 5 at two-tailed .05 has no cell', cellW(5, 0), DASH],
+    ['page Table W: n = 25 at two-tailed .05', cellW(25, 0), '89'],
+    ['page Table W: n = 30 at two-tailed .05', cellW(30, 0), '137'],
+    ['page Table ρ: n = 9 at two-tailed .05', cellS(9, 0), '.700'],
+    ['page Table ρ: n = 9 at one-tailed .05', cellS(9, 2), '.600'],
+    ['page Table ρ: n = 5 at two-tailed .05', cellS(5, 0), '1.000'],
+    ['page Table ρ: n = 13 at two-tailed .05, the last exact row', cellS(13, 0), '.560'],
+    ['page Table ρ: n = 14 at two-tailed .05, the first Edgeworth row', cellS(14, 0), '.538'],
+    ['page Table ρ: n = 30 at two-tailed .05', cellS(30, 0), '.362'],
+    ['page Table ρ: n = 20 at two-tailed .01', cellS(20, 1), '.570']
+  ];
+  for (const [label, got, want] of printed) is(label, got, want, 'Mann–Whitney / Wilcoxon / Zar printed tables');
+
+  /* selecting a cell states the rule it licenses, in the right direction */
+  is('selecting U(8, 8) reads out as a ceiling',
+     /reject when the smaller U is 13 or less/.test(page.select('u5', 5, 5)), true, 'P88 spec');
+  is('selecting W(n = 10) names both signed-rank totals',
+     /smaller of T₊ and T₋ is 8 or less/.test(page.select('w', 5, 0)), true, 'P88 spec');
+  is('selecting ρ(n = 9) reads out as a floor',
+     /reject when \|ρₛ\| reaches \.700/.test(page.select('s', 4, 0)), true, 'P88 spec');
+  is('selecting an empty cell says why it is empty',
+     /no cell/.test(page.select('u5', 0, 0)), true, 'P88 spec');
+} catch (e) {
+  failures.push({ section, label: 'the rank tables could not be driven — ids or structure changed?',
+    got: String(e.message), want: 'a runnable ntb-u5-body script generating five tables', tol: 0, err: NaN,
+    src: 'tables.html' });
+}
+
+
+/* ============================================================
    Report
    ============================================================ */
 const line = '─'.repeat(60);

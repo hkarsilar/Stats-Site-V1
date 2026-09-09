@@ -16,16 +16,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Practice Problems — Worked Statistics Exam Questions — StatsCapybara</title>
-  <meta name="description" content="Sixty-six statistics problems with worked solutions: z-scores, t-tests, proportions, chi-square, regression and Bayes, one step at a time." />
+  <meta name="description" content="Seventy-one statistics problems with worked solutions: z-scores, t-tests, chi-square, ANOVA, rank tests, regression and Bayes, one step at a time." />
   <link rel="canonical" href="https://statscapybara.com/problems.html" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Practice Problems — StatsCapybara" />
-  <meta property="og:description" content="Sixty-six worked statistics problems, from z-scores and chi-square to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
+  <meta property="og:description" content="Seventy-one worked statistics problems, from z-scores and rank tests to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
   <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
   <meta property="og:url" content="https://statscapybara.com/problems.html" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Practice Problems — StatsCapybara" />
-  <meta name="twitter:description" content="Sixty-six worked statistics problems, from z-scores and chi-square to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
+  <meta name="twitter:description" content="Seventy-one worked statistics problems, from z-scores and rank tests to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="assets/css/styles.css" />
@@ -139,7 +139,7 @@
         <ul class="pb-index">
           <li><a href="#stats-1"><span class="t">📊 Stats 1 · Foundations</span><br><span class="m">25 problems · data types → probability → z, t, proportions, χ², correlation and regression</span></a></li>
           <li><a href="#exam-style"><span class="t">📝 Exam-style · A Stats 1 midterm</span><br><span class="m">8 problems · §1.1 to §1.12, worked off the printed tables</span></a></li>
-          <li><a href="#stats-2"><span class="t">🔗 Stats 2 · Groups &amp; relationships</span><br><span class="m">14 problems · ANOVA → contrasts → regression</span></a></li>
+          <li><a href="#stats-2"><span class="t">🔗 Stats 2 · Groups &amp; relationships</span><br><span class="m">17 problems · ANOVA → contrasts → regression → rank tests</span></a></li>
           <li><a href="#regression"><span class="t">📐 Regression · Several predictors</span><br><span class="m">8 problems · multiple regression → missing data</span></a></li>
           <li><a href="#advanced"><span class="t">🎲 Advanced · Modern methods</span><br><span class="m">7 problems · Bayes → model comparison</span></a></li>
           <li><a href="#toolkit"><span class="t">🔍 Research Toolkit · Spot the problem</span><br><span class="m">6 problems · design, sampling, ethics, writing</span></a></li>
@@ -2082,7 +2082,7 @@
              ================================================================== -->
         <section class="pb-set" id="stats-2-set">
           <h2 id="stats-2">🔗 Stats 2 · Groups &amp; relationships</h2>
-          <p class="pb-set-sub">Fourteen problems on comparing groups and reading a relationship: three or more groups, factorial designs, the assumptions that decide which test you are allowed to run, the two ways of describing a straight line, two ANOVA tables built by hand, and the planned and corrected comparisons that follow one. The group tests are <a href="stats-2/">Stats 2</a>; correlation and regression are taught in <a href="stats-1/">Stats 1</a>.</p>
+          <p class="pb-set-sub">Seventeen problems on comparing groups and reading a relationship: three or more groups, factorial designs, the assumptions that decide which test you are allowed to run, the two ways of describing a straight line, two ANOVA tables built by hand, the planned and corrected comparisons that follow one, and three rank-based tests worked against their printed critical-value tables. The group tests are <a href="stats-2/">Stats 2</a>; correlation and regression are taught in <a href="stats-1/">Stats 1</a>.</p>
 
           <!-- ---------- 2.1 ----------
                verify: groups [3,5,4,2,6],[4,7,6,5,8],[9,6,8,10,7]; means 4,6,8; grand 6
@@ -2995,6 +2995,194 @@
               </ol>
               <p class="pb-answer">s<sub>p</sub> = 10.00, shared SE = 2.83 on 72 df. <em>t</em> = −2.12, −2.83 and −0.71 for A vs. B, A vs. C and B vs. C. Uncorrected, the first two are significant; under Bonferroni only A vs. C survives, since 2.12 falls between t* = 1.993 and t** = 2.451. Corrected p-values .112, .018 and 1.000.</p>
               <p class="pb-ref">From <a href="stats-2/post-hoc-tests/#pairwise-by-hand">§2.3 Post-Hoc Tests</a>. The All pairs panel of <a href="stats-2/post-hoc-tests/#cbviz">Contrast Builder</a> lays out both verdicts side by side, and <a href="apa.html?a=anova">the APA formatter</a> handles the omnibus sentence.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 2.15 ----------
+               verify: node -e 'const A=[12,15,17,20,23,26,31],B=[18,22,25,28,30,33,36,40];
+                        pooled ranks: A → 1,2,3,5,7,9,12 (R_A = 39); B → 4,6,8,10,11,13,14,15 (R_B = 81)
+                        R_A + R_B = 120 = 15·16/2 ✓
+                        U_1 = 56 + 28 − 39 = 45 ; U_2 = 56 + 36 − 81 = 11 ; U_1 + U_2 = 56 = n1n2 ✓
+                        VIZ.mwuCrit(7,8,.05,2) = 10 ; (7,8,.01,2) = 6 ; (7,8,.05,1) = 13
+                        VIZ.mwuP(11,7,8,2) = .05408 ; one-tailed .02704
+                        normal approx with continuity: z = 1.910, p = .0562
+                        the exact null distribution is the Gaussian binomial for (7, 8): 6435 arrangements
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p2-15"><span class="pb-num">27</span>Two reading apps, fifteen children</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">Fifteen children are randomly assigned to learn spelling either from a paper workbook or from a tablet app, and are scored a fortnight later on words recalled. The scores are bounded below, badly skewed, and there are seven children in one group and eight in the other, so the class is told to run a Mann–Whitney U test by hand against the printed table.</p>
+            <div class="pb-given">
+              <span class="lbl">Words recalled</span>
+              <ul>
+                <li>Workbook (<em>n</em><sub>1</sub> = 7): 12, 15, 17, 20, 23, 26, 31</li>
+                <li>App (<em>n</em><sub>2</sub> = 8): 18, 22, 25, 28, 30, 33, 36, 40</li>
+                <li>Critical values: <em>U</em>*(7, 8) = 10 two-tailed at .05, 6 two-tailed at .01, 13 one-tailed at .05</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Rank the fifteen scores as one pooled set and give both rank sums, with the check that they are right.</li>
+              <li>Compute <em>U</em><sub>1</sub> and <em>U</em><sub>2</sub>, and say which of them is the test statistic.</li>
+              <li>Decide the test at two-tailed α = .05.</li>
+              <li>The researcher now says the app was predicted to win from the start. Does the decision change, and is she entitled to make it?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Pool, rank, and total</span>
+                  <span class="pb-math">Sorted: 12, 15, 17, 18, 20, 22, 23, 25, 26, 28, 30, 31, 33, 36, 40</span>
+                  <span class="pb-math">Workbook ranks: 1, 2, 3, 5, 7, 9, 12  →  <em>R</em><sub>1</sub> = 39</span>
+                  <span class="pb-math">App ranks: 4, 6, 8, 10, 11, 13, 14, 15  →  <em>R</em><sub>2</sub> = 81</span>
+                  <span class="pb-math">Check: 39 + 81 = 120 = <em>N</em>(<em>N</em> + 1)/2 = 15 × 16 / 2</span>
+                  <span class="pb-note">Rank the pooled set, not each group separately. Nothing ties here, so every rank is a whole number; a tie would take the average of the ranks the tied values were competing for. The check on the two sums is worth thirty seconds, because a misranked value is the single commonest way this question goes wrong.</span>
+                </li>
+                <li><span class="pb-lbl">Both U values</span>
+                  <span class="pb-math"><em>U</em><sub>1</sub> = <em>n</em><sub>1</sub><em>n</em><sub>2</sub> + <em>n</em><sub>1</sub>(<em>n</em><sub>1</sub> + 1)/2 − <em>R</em><sub>1</sub> = 56 + 28 − 39 = 45</span>
+                  <span class="pb-math"><em>U</em><sub>2</sub> = <em>n</em><sub>1</sub><em>n</em><sub>2</sub> + <em>n</em><sub>2</sub>(<em>n</em><sub>2</sub> + 1)/2 − <em>R</em><sub>2</sub> = 56 + 36 − 81 = 11</span>
+                  <span class="pb-math">Check: 45 + 11 = 56 = <em>n</em><sub>1</sub><em>n</em><sub>2</sub></span>
+                  <span class="pb-math">The statistic is <em>U</em> = 11, the smaller of the two</span>
+                  <span class="pb-note">Working the second one out from its own rank sum rather than by subtracting from 56 costs one line and checks the ranking again. The smaller U belongs to the app, which is the group sitting higher in the pooled order, and that is what makes it the interesting one.</span>
+                </li>
+                <li><span class="pb-lbl">The table, which runs the other way</span>
+                  <span class="pb-math"><em>U</em> = 11 against <em>U</em>*(7, 8) = 10 at two-tailed .05</span>
+                  <span class="pb-math">11 &gt; 10, so keep H₀</span>
+                  <span class="pb-note">A U table prints a ceiling. The statistic counts how much the two groups still overlap, so it shrinks as they separate, and only a value at or below the cell counts as significant. Eleven misses by one. The exact two-tailed <em>p</em> is .054, which says the same thing from the other direction and shows how close this was.</span>
+                </li>
+                <li><span class="pb-lbl">One tail, and who is allowed to use it</span>
+                  <span class="pb-math">One-tailed at .05: <em>U</em>*(7, 8) = 13, and 11 ≤ 13, so reject H₀</span>
+                  <span class="pb-math">Exact one-tailed <em>p</em> = .027</span>
+                  <span class="pb-note">The arithmetic is not in question; the timing is. A direction chosen before the data arrived is a legitimate one-tailed test and this result rejects. A direction chosen after seeing that the app came out ahead is not a test at all, it is the same two-tailed .054 relabeled, and a marker will treat it as such. If your table prints only two-tailed columns, double the α before you look: a directional test at .05 takes its cell from the .10 column, because half of a two-tailed α is reserved for the tail nobody is watching.</span>
+                </li>
+              </ol>
+              <p class="pb-answer"><em>R</em><sub>1</sub> = 39 and <em>R</em><sub>2</sub> = 81, summing to 120. <em>U</em><sub>1</sub> = 45, <em>U</em><sub>2</sub> = 11, so <em>U</em> = 11. Against <em>U</em>* = 10 at two-tailed .05 the null survives, exact <em>p</em> = .054. A one-tailed test predicted in advance would reject against <em>U</em>* = 13, exact <em>p</em> = .027, but only if the direction was stated first.</p>
+              <p class="pb-ref">From <a href="stats-2/non-parametric-alternatives/#mann-whitney">§2.1 Non-Parametric Alternatives</a>. The Mann–Whitney tab of <a href="stats-2/non-parametric-alternatives/#rankviz">the rank ledger</a> prints the same arithmetic for its own data, and <a href="tables.html#rank-tables">Table U</a> is the table this problem reads.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 2.16 ----------
+               verify: node -e 'before=[24,31,19,27,22,35,28,30,21] after=[29,39,19,38,25,34,35,44,23]
+                        diffs = 5,8,0,11,3,−1,7,14,2 → one zero dropped, n = 8
+                        |d| ranks over the eight survivors: 4,6,7,3,1,5,8,2
+                        T+ = 4+6+7+3+5+8+2 = 35 ; T− = 1 ; 35 + 1 = 36 = 8·9/2 ✓
+                        VIZ.wsrCrit(8,.05,2) = 3 ; (8,.01,2) = 0 ; (8,.05,1) = 5
+                        VIZ.wsrP(1,8,2) = .015625 = 2·(2/256), the two subsets summing to 0 or 1
+                        keeping the zero would read the n = 9 row, where W*(9) = 5
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p2-16"><span class="pb-num">28</span>Nine sleepers, one of whom did not budge</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">Nine adults rate their sleep quality on a 50-point clinical scale before and after four weeks with a wind-down routine. Higher is better. The ratings are ordinal and the sample is small, so the analysis is a Wilcoxon signed-ranks test done by hand.</p>
+            <div class="pb-given">
+              <span class="lbl">Sleep-quality scores</span>
+              <ul>
+                <li>Before: 24, 31, 19, 27, 22, 35, 28, 30, 21</li>
+                <li>After: 29, 39, 19, 38, 25, 34, 35, 44, 23</li>
+                <li>Critical values: <em>W</em>*(8) = 3 two-tailed at .05 and 0 two-tailed at .01; <em>W</em>*(9) = 5 two-tailed at .05</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Form the nine differences and say how many pairs actually enter the test.</li>
+              <li>Rank the surviving differences by absolute size and give <em>T</em><sub>+</sub> and <em>T</em><sub>−</sub>, with the check.</li>
+              <li>Decide the test at two-tailed α = .05 and again at .01.</li>
+              <li>A classmate keeps the unchanged participant, arguing that discarding data is never right. What does that do to the test?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Differences, and one that is not a difference</span>
+                  <span class="pb-math">after − before: +5, +8, 0, +11, +3, −1, +7, +14, +2</span>
+                  <span class="pb-math">The third participant scored 19 both times, so that pair is dropped</span>
+                  <span class="pb-math"><em>n</em> = 8</span>
+                  <span class="pb-note">A pair with a difference of exactly zero has no direction, and the whole test is built on attaching a sign to a rank. There is no honest sign to give it, so it goes, and <em>n</em> becomes the number of pairs left. This is the step most often skipped, and it changes both the ranking and the row of the table you read.</span>
+                </li>
+                <li><span class="pb-lbl">Rank the sizes, then sort by sign</span>
+                  <span class="pb-math">|<em>d</em>| sorted: 1, 2, 3, 5, 7, 8, 11, 14  →  ranks 1 to 8</span>
+                  <span class="pb-math">+5 → 4,  +8 → 6,  +11 → 7,  +3 → 3,  −1 → 1,  +7 → 5,  +14 → 8,  +2 → 2</span>
+                  <span class="pb-math"><em>T</em><sub>+</sub> = 4 + 6 + 7 + 3 + 5 + 8 + 2 = 35</span>
+                  <span class="pb-math"><em>T</em><sub>−</sub> = 1</span>
+                  <span class="pb-math">Check: 35 + 1 = 36 = <em>n</em>(<em>n</em> + 1)/2 = 8 × 9 / 2</span>
+                  <span class="pb-note">Rank the absolute sizes, ignoring sign, and only then look back at which sign each rank came from. The one person who got worse moved least, so the negative side collects a single rank of 1. Had two differences tied in size they would share the average of their two ranks, and the sums would still have to reach 36.</span>
+                </li>
+                <li><span class="pb-lbl">Both decisions</span>
+                  <span class="pb-math"><em>W</em> = min(35, 1) = 1</span>
+                  <span class="pb-math">At .05: 1 ≤ 3, so reject H₀</span>
+                  <span class="pb-math">At .01: 1 &gt; 0, so keep H₀</span>
+                  <span class="pb-math">Exact two-tailed <em>p</em> = .016</span>
+                  <span class="pb-note">Like U, W is a ceiling, and for the same reason: it counts the ranks piled on the losing side, so agreement drives it down. The .01 cell of 0 means that with only eight pairs the evidence has to be perfect, every single person moving the same way, before the test can reject at that level. The exact <em>p</em> of .016 sits between the two, which is exactly what the two decisions say.</span>
+                </li>
+                <li><span class="pb-lbl">Keeping the zero</span>
+                  <span class="pb-note">Two things break at once. The unchanged participant has to be given a signed rank, and there is no sign to give, so whichever side receives it is an invention. And <em>n</em> becomes 9, which sends you to a different row of the table, where the cell is 5 rather than 3. Here the verdict happens to survive both errors, which is the worst kind of luck: the procedure was wrong and the answer came out right anyway. The honest reading of a dropped pair is not that data was discarded but that this participant contributes nothing to a question about direction, and the smaller <em>n</em> reports that loss of information rather than hiding it.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">One zero difference is dropped, so <em>n</em> = 8. <em>T</em><sub>+</sub> = 35 and <em>T</em><sub>−</sub> = 1, summing to 36. <em>W</em> = 1, which rejects at two-tailed .05 against <em>W</em>* = 3 but not at .01 against <em>W</em>* = 0. Exact two-tailed <em>p</em> = .016.</p>
+              <p class="pb-ref">From <a href="stats-2/non-parametric-alternatives/#wilcoxon">§2.1 Non-Parametric Alternatives</a>. The Wilcoxon tab of <a href="stats-2/non-parametric-alternatives/#rankviz">the rank ledger</a> shows the same ledger for its own seven pairs, and <a href="tables.html#rank-tables">Table W</a> holds both cells.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 2.17 ----------
+               verify: node -e 'x=[10,15,20,25,30,40,50,65] y=[52,41,44,47,63,55,70,58]
+                        rank x = 1..8 ; rank y = 4,1,2,3,7,5,8,6
+                        d = −3,1,1,1,−2,1,−1,2 ; d² = 9,1,1,1,4,1,1,4 ; Σd² = 22
+                        rho = 1 − 132/504 = 372/504 = .738095
+                        VIZ.spearCrit(8,.05,2) = .738095 EXACTLY (the .05 cell is S = 22)
+                        VIZ.spearCrit(8,.01,2) = .880952 ; (8,.05,1) = .642857
+                        VIZ.spearP(rho,8,2) = .045833 ; one-tailed .022917
+                        Pearson on the raw values = .6563
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p2-17"><span class="pb-num">29</span>Exercise and wellbeing, landing on the cell</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">Eight adults report their typical daily exercise in minutes and complete a wellbeing questionnaire. Exercise minutes are heavily skewed by two people who train far more than the rest, so the relationship is described with Spearman's ρ<sub>s</sub> rather than Pearson's <em>r</em>.</p>
+            <div class="pb-given">
+              <span class="lbl">Minutes and wellbeing scores</span>
+              <ul>
+                <li>Exercise (min/day): 10, 15, 20, 25, 30, 40, 50, 65</li>
+                <li>Wellbeing: 52, 41, 44, 47, 63, 55, 70, 58</li>
+                <li>Critical values: ρ<sub>s</sub>*(8) = .738 two-tailed at .05, .881 two-tailed at .01, .643 one-tailed at .05</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Rank both columns, build the <em>d</em> and <em>d</em>² columns, and give Σ<em>d</em>².</li>
+              <li>Compute ρ<sub>s</sub> from the shortcut.</li>
+              <li>Decide at two-tailed α = .05 and at .01, and say carefully why the first decision goes the way it does.</li>
+              <li>Two of the wellbeing scores turn out to have been transcribed wrongly and are in fact equal. What has to change?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Two columns of ranks</span>
+                  <span class="pb-math">Exercise is already in order, so rank <em>x</em> = 1, 2, 3, 4, 5, 6, 7, 8</span>
+                  <span class="pb-math">Wellbeing sorted: 41, 44, 47, 52, 55, 58, 63, 70</span>
+                  <span class="pb-math">rank <em>y</em> in the original order = 4, 1, 2, 3, 7, 5, 8, 6</span>
+                  <span class="pb-math"><em>d</em> = −3, 1, 1, 1, −2, 1, −1, 2</span>
+                  <span class="pb-math"><em>d</em>² = 9, 1, 1, 1, 4, 1, 1, 4  →  Σ<em>d</em>² = 22</span>
+                  <span class="pb-note">Rank the two columns separately, then subtract row by row. The signs of <em>d</em> do not matter once you square, but they are worth writing down anyway: their sum has to be zero, which catches a misranked row before it reaches the formula.</span>
+                </li>
+                <li><span class="pb-lbl">The shortcut</span>
+                  <span class="pb-math">ρ<sub>s</sub> = 1 − 6Σ<em>d</em>² / (<em>n</em>(<em>n</em>² − 1))</span>
+                  <span class="pb-math">= 1 − 6(22) / (8 × 63) = 1 − 132 / 504</span>
+                  <span class="pb-math">= 1 − .2619 = .738</span>
+                  <span class="pb-note">Pearson's <em>r</em> on the raw numbers would give .656. The two heavy exercisers stretch the <em>x</em> axis and flatten the linear fit, while the ranks treat them simply as the sixth, seventh and eighth largest. That gap is the reason for choosing ρ<sub>s</sub> here, and it is worth a sentence in any write-up.</span>
+                </li>
+                <li><span class="pb-lbl">Two decisions, and one boundary</span>
+                  <span class="pb-math">At two-tailed .05: .738 against a cell of .738</span>
+                  <span class="pb-math">The rule is reject when |ρ<sub>s</sub>| REACHES the critical value, so reject H₀</span>
+                  <span class="pb-math">At two-tailed .01: .738 &lt; .881, so keep H₀</span>
+                  <span class="pb-math">Exact two-tailed <em>p</em> = .046</span>
+                  <span class="pb-note">Landing exactly on the cell is not a coincidence to be embarrassed about; it is what a discrete statistic does. Σ<em>d</em>² = 22 is the very value that defines the .05 cell for <em>n</em> = 8, and the exact two-tailed probability of a result this extreme is .046, comfortably under .05. Had the rule been a strict inequality, this genuinely significant result would have been thrown away. Spearman's table is a floor rather than a ceiling, because ρ<sub>s</sub> is a correlation and grows with the strength of the relationship, unlike <em>U</em> and <em>W</em>.</span>
+                </li>
+                <li><span class="pb-lbl">What a tie costs</span>
+                  <span class="pb-note">The two tied scores share the average of the two ranks they were competing for, and the <em>y</em> column stops being the whole numbers 1 to 8. The shortcut was derived on the assumption that both columns are exactly those whole numbers, so it is no longer algebraically exact and will drift a little from the truth. The fix is to go back to the definition and run Pearson's formula on the two rank columns, which is what Spearman's ρ<sub>s</sub> has always been and what SPSS and JASP compute whether or not anything ties. With one tied pair in eight the drift is small, but "small" is not a number you can quote.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Σ<em>d</em>² = 22, so ρ<sub>s</sub> = 1 − 132/504 = .738. That reaches the two-tailed .05 cell of .738 exactly, so the null is rejected (exact <em>p</em> = .046), but it falls short of the .01 cell of .881. Ties would break the shortcut and force Pearson's formula on the ranks.</p>
+              <p class="pb-ref">From <a href="stats-2/non-parametric-alternatives/#spearman">§2.1 Non-Parametric Alternatives</a> and <a href="stats-1/correlation/">§1.17 Correlation</a>. The Spearman tab of <a href="stats-2/non-parametric-alternatives/#rankviz">the rank ledger</a> builds the same <em>d</em>² column live, and <a href="tables.html#rank-tables">Table ρ</a> holds both cells.</p>
             </details>
           </article>
         </section>

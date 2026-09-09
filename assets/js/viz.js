@@ -365,5 +365,178 @@ window.VIZ = (function () {
     return [Math.tanh(z - zc * se), Math.tanh(z + zc * se)];
   }
 
-  return { css: css, reducedMotion: reducedMotion, coarsePointer: coarsePointer, grabRadius: grabRadius, rafThrottle: rafThrottle, fit: fit, randn: randn, gauss: gauss, erf: erf, normCdf: normCdf, normQ: normQ, normPdf: normPdf, normInv: normInv, mean: mean, sd: sd, onTheme: onTheme, gammaln: gammaln, gammp: gammp, gammq: gammq, betai: betai, betaiUpper: betaiUpper, fUpper: fUpper, chiSqUpper: chiSqUpper, tUpper: tUpper, tPdf: tPdf, chiSqPdf: chiSqPdf, fPdf: fPdf, tInv: tInv, chiSqInv: chiSqInv, fInv: fInv, nctCdf: nctCdf, ncx2Cdf: ncx2Cdf, ncfCdf: ncfCdf, ncpCI: ncpCI, nctCI: nctCI, varExpCI: varExpCI, vCI: vCI, rCI: rCI };
+  /* ---------- exact null distributions for the rank tests (P88) ----------
+     A paper exam reads U, W and Spearman's rho off a critical-value table,
+     and every one of those tables is a tail of an exactly countable null
+     distribution. Nothing here is an approximation or a transcription:
+
+       U  the number of arrangements of m X's and n Y's giving U = u is the
+          number of partitions of u into at most m parts of size at most n.
+          Placing the last symbol gives counts(m,n)[u] = counts(m-1,n)[u-n]
+          + counts(m,n-1)[u], since a trailing X sits above all n Y's already
+          placed and a trailing Y sits above none. The whole 20 x 20 table
+          costs about 45,000 additions, so it is built once and cached.
+       W  the number of subsets of {1..n} summing to w, i.e. the coefficients
+          of the product of (1 + q^i). One convolution per i.
+       S  the Spearman statistic S = sum of d^2 over all n! rankings, counted
+          by a DP over positions carrying a bitmask of the ranks already used.
+          Exact to n = SPEAR_EXACT (13); beyond it the cost doubles per step,
+          so spearCrit falls back to the t approximation and spearExact()
+          reports which side of that line an n is on.
+
+     Critical values follow the convention every printed table uses: the most
+     generous value whose exact tail probability is still at or below alpha,
+     so the test's real size never exceeds its nominal one. Only ACHIEVABLE
+     values count — S is always even, and stepping through the odd gaps would
+     report a rho no ranking can produce. */
+  var MWU_MAX = 20, mwuAll = null;
+  function mwuBuild() {
+    if (mwuAll) return mwuAll;
+    var t = [], i, j, u, a, p, q;
+    for (i = 0; i <= MWU_MAX; i++) { t.push([]); for (j = 0; j <= MWU_MAX; j++) t[i].push(null); }
+    t[0][0] = new Float64Array([1]);
+    for (i = 0; i <= MWU_MAX; i++) for (j = 0; j <= MWU_MAX; j++) {
+      if (i === 0 && j === 0) continue;
+      a = new Float64Array(i * j + 1);
+      if (i > 0) { p = t[i - 1][j]; for (u = 0; u < p.length; u++) a[u + j] += p[u]; }
+      if (j > 0) { q = t[i][j - 1]; for (u = 0; u < q.length; u++) a[u] += q[u]; }
+      t[i][j] = a;
+    }
+    mwuAll = t;
+    return t;
+  }
+  function mwuCounts(m, n) {
+    if (!(m >= 1 && n >= 1 && m <= MWU_MAX && n <= MWU_MAX)) return null;
+    return mwuBuild()[Math.round(m)][Math.round(n)];
+  }
+  function tailCrit(counts, total, aOne) {
+    var cum = 0, best = null, k;
+    for (k = 0; k < counts.length; k++) {
+      if (!counts[k]) continue;                       // an unreachable value is not a critical value
+      if ((cum + counts[k]) / total <= aOne + 1e-12) { cum += counts[k]; best = k; }
+      else break;
+    }
+    return best;
+  }
+  function tailP(counts, total, x) {
+    var s = 0, k, top = Math.min(x, counts.length - 1);
+    for (k = 0; k <= top; k++) s += counts[k];
+    return s / total;
+  }
+  function nCk(n, k) { var r = 1, t; for (t = 1; t <= k; t++) r = r * (n - k + t) / t; return r; }
+  function oneSided(alpha, tails) { return tails === 1 ? alpha : alpha / 2; }
+
+  function mwuLower(u, m, n) {                         // exact P(U <= u), U either of the two
+    var c = mwuCounts(m, n);
+    return c ? tailP(c, nCk(m + n, m), u) : null;
+  }
+  function mwuCrit(m, n, alpha, tails) {               // reject when the smaller U <= this
+    var c = mwuCounts(m, n);
+    return c ? tailCrit(c, nCk(m + n, m), oneSided(alpha, tails)) : null;
+  }
+  function mwuP(u, m, n, tails) {                      // u = the SMALLER U
+    var p = mwuLower(u, m, n);
+    return p === null ? null : Math.min(1, (tails === 1 ? 1 : 2) * p);
+  }
+
+  var WSR_MAX = 40, wsrCache = [new Float64Array([1])];
+  function wsrCounts(n) {
+    if (!(n >= 1 && n <= WSR_MAX)) return null;
+    n = Math.round(n);
+    for (var k = wsrCache.length; k <= n; k++) {
+      var prev = wsrCache[k - 1], a = new Float64Array(k * (k + 1) / 2 + 1), w;
+      for (w = 0; w < prev.length; w++) { a[w] += prev[w]; a[w + k] += prev[w]; }
+      wsrCache.push(a);
+    }
+    return wsrCache[n];
+  }
+  function wsrLower(w, n) {                            // exact P(T+ <= w)
+    var c = wsrCounts(n);
+    return c ? tailP(c, Math.pow(2, n), w) : null;
+  }
+  function wsrCrit(n, alpha, tails) {                  // reject when the smaller of T+/T- <= this
+    var c = wsrCounts(n);
+    return c ? tailCrit(c, Math.pow(2, n), oneSided(alpha, tails)) : null;
+  }
+  function wsrP(w, n, tails) {                         // w = the SMALLER of T+ and T-
+    var p = wsrLower(w, n);
+    return p === null ? null : Math.min(1, (tails === 1 ? 1 : 2) * p);
+  }
+
+  var SPEAR_EXACT = 13, spearCache = {};
+  function spearExact(n) { return n >= 2 && n <= SPEAR_EXACT; }
+  function spearMaxS(n) { return n * (n * n - 1) / 3; }
+  function spearRho(s, n) { return 1 - 6 * s / (n * (n * n - 1)); }
+  function spearS(rho, n) { return Math.round((1 - rho) * n * (n * n - 1) / 6); }
+  function spearCounts(n) {
+    if (!spearExact(n)) return null;
+    n = Math.round(n);
+    if (spearCache[n]) return spearCache[n];
+    var maxS = spearMaxS(n), cur = {}, pos, v, d, nm, mask, arr, t, s, nxt, keys, i;
+    cur[0] = new Float64Array([1]);
+    for (pos = 0; pos < n; pos++) {
+      nxt = {}; keys = Object.keys(cur);
+      for (i = 0; i < keys.length; i++) {
+        mask = +keys[i]; arr = cur[keys[i]];
+        for (v = 0; v < n; v++) {
+          if (mask & (1 << v)) continue;
+          d = pos - v; nm = mask | (1 << v);
+          t = nxt[nm] || (nxt[nm] = new Float64Array(maxS + 1));
+          for (s = 0; s < arr.length; s++) if (arr[s]) t[s + d * d] += arr[s];
+        }
+      }
+      cur = nxt;
+    }
+    spearCache[n] = cur[(1 << n) - 1];
+    return spearCache[n];
+  }
+  function spearFact(n) { var r = 1, i; for (i = 2; i <= n; i++) r *= i; return r; }
+  function spearUpper(rho, n) {                        // exact P(rho_s >= rho), no ties
+    var c = spearCounts(n);
+    if (!c) return null;
+    return tailP(c, spearFact(n), spearS(rho, n));
+  }
+  function spearCrit(n, alpha, tails) {                // reject when |rho_s| >= this
+    var aOne = oneSided(alpha, tails), c = spearCounts(n), s, tc;
+    if (c) {
+      tc = tailCrit(c, spearFact(n), aOne);
+      return tc === null ? null : spearRho(tc, n);
+    }
+    if (!(n > 2)) return null;
+    /* Above the exact range, find the last ACHIEVABLE value of S (they are
+       the even ones) whose tail is still within alpha, so the approximate
+       rows are built by the same rule as the exact ones. The tail grows with
+       S, so this is a bisection rather than a walk — n = 30 has 4,496 even
+       values of S and each trial costs a continued fraction. */
+    var lo = 0, hi = spearMaxS(n) / 2, mid, best = null;
+    if (spearAS89(spearMaxS(n), n) > aOne + 1e-12) return null;
+    while (lo <= hi) {
+      mid = Math.floor((lo + hi) / 2);
+      if (spearAS89(spearMaxS(n) - 2 * mid, n) <= aOne + 1e-12) { best = 2 * mid; lo = mid + 1; }
+      else hi = mid - 1;
+    }
+    return best === null ? null : spearRho(best, n);
+  }
+  /* AS 89 (Best & Roberts 1975): the Edgeworth series for the upper tail of
+     S, which is what R's cor.test uses for moderate n. It reproduces the
+     exact critical values at n = 14 and 16 to four decimals, and the plain t
+     approximation does not (t alone gives .532 at n = 14 where the exact
+     value is .5385). Argument is S, not rho; P(rho >= r) is the tail at
+     Smax - S(r), which the exact symmetry of S makes an identity. */
+  var AS89 = [0.2274, 0.2531, 0.1745, 0.0758, 0.1033, 0.3932, 0.0879, 0.0151, 0.0072, 0.0831, 0.0131, 4.6e-4];
+  function spearAS89(s, n) {
+    var b = 1 / n, x = (6 * (s - 1) * b / (n * n - 1) - 1) * Math.sqrt(1 / b - 1), y = x * x;
+    var u = x * b * (AS89[0] + b * (AS89[1] + AS89[2] * b)
+          + y * (-AS89[3] + b * (AS89[4] + AS89[5] * b)
+          - y * b * (AS89[6] + AS89[7] * b - y * (AS89[8] - AS89[9] * b + y * b * (AS89[10] - AS89[11] * y)))));
+    return Math.max(0, Math.min(1, u / Math.exp(y / 2) + normQ(x)));
+  }
+  function spearP(rho, n, tails) {
+    var m = (tails === 1 ? 1 : 2), a = Math.abs(rho);
+    if (spearExact(n)) return Math.min(1, m * spearUpper(a, n));
+    if (!(n > 2) || a > 1) return null;
+    return Math.min(1, m * spearAS89(spearMaxS(n) - spearS(a, n), n));
+  }
+
+  return { css: css, reducedMotion: reducedMotion, coarsePointer: coarsePointer, grabRadius: grabRadius, rafThrottle: rafThrottle, fit: fit, randn: randn, gauss: gauss, erf: erf, normCdf: normCdf, normQ: normQ, normPdf: normPdf, normInv: normInv, mean: mean, sd: sd, onTheme: onTheme, gammaln: gammaln, gammp: gammp, gammq: gammq, betai: betai, betaiUpper: betaiUpper, fUpper: fUpper, chiSqUpper: chiSqUpper, tUpper: tUpper, tPdf: tPdf, chiSqPdf: chiSqPdf, fPdf: fPdf, tInv: tInv, chiSqInv: chiSqInv, fInv: fInv, nctCdf: nctCdf, ncx2Cdf: ncx2Cdf, ncfCdf: ncfCdf, ncpCI: ncpCI, nctCI: nctCI, varExpCI: varExpCI, vCI: vCI, rCI: rCI, mwuCounts: mwuCounts, mwuLower: mwuLower, mwuCrit: mwuCrit, mwuP: mwuP, wsrCounts: wsrCounts, wsrLower: wsrLower, wsrCrit: wsrCrit, wsrP: wsrP, spearCounts: spearCounts, spearExact: spearExact, spearRho: spearRho, spearUpper: spearUpper, spearCrit: spearCrit, spearP: spearP, spearAS89: spearAS89 };
 })();

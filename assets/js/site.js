@@ -1631,7 +1631,7 @@
     { title: "Which Test Should I Use?", url: "which-test.html", tag: "Tool", kw: "chooser decision anova t-test regression choose" },
     { title: "Which Chart Should I Use?", url: "which-chart.html", tag: "Tool", kw: "chart graph plot chooser decision visualization histogram bar boxplot scatter line heatmap pie table which chart" },
     { title: "Plan My Analysis", url: "plan.html", tag: "Tool", kw: "plan analysis planner wizard thesis dissertation study design sample size power apa assumptions which test recommendation printable supervisor proposal preregistration" },
-    { title: "Statistical Tables & Calculators", url: "tables.html", tag: "Tool", kw: "z t chi-square f critical value p-value calculator table" },
+    { title: "Statistical Tables & Calculators", url: "tables.html", tag: "Tool", kw: "z t chi-square f mann-whitney u wilcoxon w spearman rho rank critical value p-value calculator table" },
     { title: "Statistics Formula Sheet", url: "formulas.html", tag: "Reference", kw: "formula cheat sheet equations print reference" },
     { title: "Which Test? One-Page Cheat Sheet", url: "cheat-test-chooser.html", tag: "Reference", kw: "which test cheat sheet printable poster one page decision grid outcome design t-test anova correlation regression chi-square nonparametric print pin classroom teacher" },
     { title: "APA Statistics Reporting Cheat Sheet", url: "cheat-apa.html", tag: "Reference", kw: "apa cheat sheet printable poster reporting statistics 7 italics leading zero p value decimals p = .000 ban report t f chi-square r regression how to write results one page" },

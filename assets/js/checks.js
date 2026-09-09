@@ -126,7 +126,7 @@ window.CHECKS = {
   ],
   "non-parametric-alternatives": [
     { q: "The non-parametric counterpart of the independent-samples t-test is…", o: ["Friedman's test", "the Mann-Whitney U test", "Levene's test", "the sign test"], a: 1, why: "Mann-Whitney U compares two independent groups using ranks. (Wilcoxon signed-rank handles the paired case; Kruskal-Wallis handles 3+ groups.)" },
-    { q: "Rank-based tests achieve robustness by…", o: ["deleting outliers", "replacing values with their positions in the sorted data", "assuming normality of ranks", "using larger samples"], a: 1, why: "The biggest outlier becomes just 'rank n', so extreme values lose their leverage." },
+    { q: "Two groups of six give R₁ = 23, so U₁ = 36 + 21 − 23 = 34 and U₂ = 2. The number you take to the table is…", o: ["34, the larger U", "2, the smaller U", "36, the two added together", "18, their average"], a: 1, why: "Mann-Whitney's statistic is the smaller of the two U values, and its table runs the opposite way to a t or χ² table: you reject when U falls to the critical value or below. With n₁ = n₂ = 6 the two-tailed .05 cell is 5, so a U of 2 clears it comfortably. Take the larger U to the table and you will keep every null you should have rejected." },
     { q: "When the data actually ARE normal, using a rank test instead of a t-test costs you…", o: ["nothing", "a little power", "the ability to compute p-values", "independence"], a: 1, why: "Rank tests are slightly less efficient when parametric assumptions hold. The price of their robustness is small but real." }
   ],
   "chi-square-tests": [

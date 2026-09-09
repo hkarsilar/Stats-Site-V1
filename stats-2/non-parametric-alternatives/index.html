@@ -29,12 +29,26 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-2.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <style>
+    /* The by-hand panel under the rank ledger: the arithmetic an exam asks
+       for, written out step by step beside the exact p-value. */
+    .rv-hand-head { font-size:.82rem; font-weight:700; color:var(--text-muted);
+      margin:.9rem 0 .3rem; letter-spacing:.02em; }
+    .rv-hand { border-collapse:collapse; width:100%; font-size:.85rem; margin:0 0 .2rem; }
+    .rv-hand th, .rv-hand td { border-bottom:1px solid var(--border); padding:.32rem .5rem;
+      text-align:left; vertical-align:top; }
+    .rv-hand th { font-weight:600; color:var(--text-muted); width:46%; }
+    .rv-hand td { font-family:var(--mono); font-size:.82rem; color:var(--text); }
+    .rv-hand tr.rv-read th, .rv-hand tr.rv-read td { border-bottom:none; font-weight:700; }
+    .rv-hand td.rv-yes { color:#22c55e; }
+    .rv-hand td.rv-no { color:var(--text-muted); }
+  </style>
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Non-Parametric Alternatives", "description": "Mann–Whitney, Wilcoxon, Kruskal–Wallis, Friedman: how each rank-based test actually works, and why one wild outlier can't sway the ranks or the p-value.", "url": "https://statscapybara.com/stats-2/non-parametric-alternatives/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: ANOVA & Regression", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Non-Parametric Alternatives", "item": "https://statscapybara.com/stats-2/non-parametric-alternatives/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Are non-parametric tests less powerful than parametric ones?", "acceptedAnswer": {"@type": "Answer", "text": "Only slightly, and only when the parametric assumptions actually hold: on truly normal data, the Mann–Whitney test has about 95% of the t-test's efficiency. When assumptions fail (heavy tails, skew, outliers), the ranking tests are often more powerful, because a single wild value can't inflate the noise term. It's a small premium for a lot of insurance."}}, {"@type": "Question", "name": "Should I use a t-test or Mann–Whitney for Likert-scale data?", "acceptedAnswer": {"@type": "Answer", "text": "For a single Likert item (ordinal, few distinct values) Mann–Whitney respects what the data actually is. For a multi-item scale score (summing 8 items into a 8–40 scale), treating it as approximately interval and using a t-test is common and generally defensible. Either way, look at the distributions first; ceiling effects and skew are what really cause trouble."}}, {"@type": "Question", "name": "Does the Mann–Whitney test compare medians?", "acceptedAnswer": {"@type": "Answer", "text": "Not exactly, despite the common shorthand. It tests whether values from one group tend to be larger than values from the other (stochastic dominance). Only under the extra assumption that both distributions have the same shape does that reduce to \"the medians differ.\" With very different shapes or spreads, the test can be significant even when the medians are equal."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "My output gives both an exact p and an asymptotic p. Which one do I report?", "acceptedAnswer": {"@type": "Answer", "text": "The exact one, whenever the software offers it. The asymptotic p comes from a normal approximation to a distribution that is anything but smooth at small n, and the gap shows: on six-versus-six data with U = 2 the approximation gives .013 and the count gives .009. Packages stop offering the exact test somewhere past 20 or 30 per group, by which point the approximation has become accurate enough that the choice stops mattering. Printed critical-value tables are built from the exact distribution, so when you are checking hand work against output it is the exact p that should agree with your table reading."}}, {"@type": "Question", "name": "Should I use a t-test or Mann–Whitney for Likert-scale data?", "acceptedAnswer": {"@type": "Answer", "text": "For a single Likert item (ordinal, few distinct values) Mann–Whitney respects what the data actually is. For a multi-item scale score (summing 8 items into a 8–40 scale), treating it as approximately interval and using a t-test is common and generally defensible. Either way, look at the distributions first; ceiling effects and skew are what really cause trouble."}}, {"@type": "Question", "name": "Does the Mann–Whitney test compare medians?", "acceptedAnswer": {"@type": "Answer", "text": "Not exactly, despite the common shorthand. It tests whether values from one group tend to be larger than values from the other (stochastic dominance). Only under the extra assumption that both distributions have the same shape does that reduce to \"the medians differ.\" With very different shapes or spreads, the test can be significant even when the medians are equal."}}]}
   </script>
 </head>
 <body data-course="stats-2" data-section="non-parametric-alternatives">
@@ -78,14 +92,28 @@
 
         <p>The asymmetry is worth pausing on. As the highlighted value rockets upward, it inflates group 2's mean <em>and</em> its variance at the same time, yanking the t-statistic around. Sometimes the t-test even <em>loses</em> significance, because the variance blew up faster than the means pulled apart. The Mann-Whitney test barely reacts: the value was already the highest, so making it higher changes no ranks, and its p-value holds rock-steady.</p>
 
+        <h2 id="parametric-or-not">Parametric, non-parametric, distribution-free</h2>
+        <p>The vocabulary sounds forbidding and turns out to be simple. A <strong>parametric</strong> test names the distribution it believes the data came from and then estimates that distribution's <em>parameters</em> from the sample. The t-test assumes normal populations and estimates their means and standard deviations; those numbers are the parameters, and everything the test does is built on them. A <strong>non-parametric</strong> test names no distribution at all. Its older name, <strong>distribution-free</strong>, is the more honest of the two, because these tests still assume plenty (independent observations, and for several of them similarly shaped distributions in the groups being compared). What they give up is the requirement that you know the shape.</p>
+        <p>Ranking is what buys that freedom, and the mechanism is worth seeing. Whatever the population looked like, the ranks of <em>N</em> observations are always the whole numbers 1 to <em>N</em>. So the behavior of a rank statistic when nothing is going on can be worked out once, by counting arrangements, and reused for every dataset of that size forever. That is why these tests come with printed critical-value tables, and why the three this lesson reads are indexed by sample size alone rather than by degrees of freedom. Kruskal–Wallis and Friedman are the exception that shows the rule, since both hand their statistic to a χ² and so carry <em>df</em> of their own.</p>
+        <p>Each test then opens the same way, which is worth learning as one recipe rather than five procedures. <strong>Pool</strong> the values you are comparing, or reduce each matched pair to a single difference. <strong>Rank</strong> them from smallest to largest, giving tied values the average of the ranks they were competing for, so that two values fighting over ranks 4 and 5 both take 4.5 and the next value still takes 6. <strong>Sum</strong> the ranks belonging to each group. Then <strong>look up</strong> whatever statistic those sums produce. The <a href="#which-replaces">table further down</a> pairs each parametric test with the rank-based stand-in that takes over when its assumptions give way.</p>
+
         <h2>The logic behind each test</h2>
         <p>Every rank-based test starts from the same instinct: swap the numbers for their order, then ask a question the order can answer. What changes from test to test is <em>which</em> order you build, and what you add up once you have it.</p>
 
         <h3 id="mann-whitney">Mann–Whitney U: counting wins</h3>
         <p>Pool both groups, sort everyone into a single line, and hand out ranks from lowest to highest. The statistic <em>U</em> counts wins: across every pairing of a group-1 value against a group-2 value, how often does one side come out on top? That count falls straight out of the rank sums, because a group's total rank tells you how high its members sit in the shared order. Divide the winning count by the number of pairings and you get the <strong>probability of superiority</strong>: the chance that a value drawn from one group beats a value drawn from the other. A lone extreme value can only ever be "the largest rank," so pushing it further out changes nothing.</p>
 
+        <p>On paper nobody counts those wins one pairing at a time. Rank the pooled values, add up the ranks belonging to group 1 to get <em>R</em><sub>1</sub>, and the count drops out of a formula:</p>
+<p style="text-align:center;font-size:1.15rem;margin:1rem 0"><strong><em>U</em><sub>1</sub> = <em>n</em><sub>1</sub><em>n</em><sub>2</sub> + <em>n</em><sub>1</sub>(<em>n</em><sub>1</sub> + 1) / 2 &minus; <em>R</em><sub>1</sub></strong></p>
+        <p>Swap every subscript for <em>U</em><sub>2</sub>. The two are locked together by <em>U</em><sub>1</sub> + <em>U</em><sub>2</sub> = <em>n</em><sub>1</sub><em>n</em><sub>2</sub>, the total number of cross-group pairings, so working the second one out from <em>R</em><sub>2</sub> instead of by subtraction costs nothing and checks your ranking for free. The <strong>test statistic is the smaller of the two</strong>, and its table points the opposite way to the ones you are used to: reject the null when <em>U</em> is at or <em>below</em> the critical value.</p>
+        <p>The ledger below runs on six control values and six treatment values, and its rank sums are <em>R</em><sub>1</sub> = 23 and <em>R</em><sub>2</sub> = 55. That gives <em>U</em><sub>1</sub> = 36 + 21 &minus; 23 = 34 and <em>U</em><sub>2</sub> = 36 + 21 &minus; 55 = 2, which add to 36 as they must, so the statistic is 2. <a href="../../tables.html#rank-tables">Table U</a> at <em>n</em><sub>1</sub> = <em>n</em><sub>2</sub> = 6 and two-tailed α = .05 gives <em>U</em>* = 5, and 2 sits comfortably under it, so the null goes. The exact <em>p</em> of .009 is the same verdict reached from the other end.</p>
+        <p>Some textbooks define <em>U</em><sub>1</sub> the other way round, as <em>R</em><sub>1</sub> &minus; <em>n</em><sub>1</sub>(<em>n</em><sub>1</sub> + 1) / 2. That version returns the number this one calls <em>U</em><sub>2</sub>, so you finish with the same pair either way and the smaller of them is the same number. Nothing in the decision depends on which convention your course prints.</p>
+
         <h3 id="wilcoxon">Wilcoxon signed-rank: magnitudes with a sign</h3>
         <p>For paired data, work with each person's difference score. Rank the <em>absolute</em> differences from smallest to largest, then re-attach the original signs. Adding up the ranks that carried a plus sign gives <em>W</em><sub>+</sub> (the minus ranks give <em>W</em><sub>−</sub>, and the two are locked together). A plain sign test would only count how many people improved; the signed-rank test also weights <em>how much</em> each one moved, so a big change pulls harder than a barely-there one. The magnitudes enter only through their rank order, which is why the person with the wildest swing contributes the top rank whether they gained 13 points or 130.</p>
+
+        <p>The hand procedure has one step people forget. Take each pair's difference, then <strong>throw away every pair whose difference is exactly zero</strong> and let <em>n</em> be the number of pairs still standing, because someone who did not move tells you nothing about direction and inventing a rank for them would be a fiction. Rank what is left by absolute size. Add the ranks that carried a plus sign to get <em>T</em><sub>+</sub> and the ranks that carried a minus sign to get <em>T</em><sub>&minus;</sub>; those two have to add to <em>n</em>(<em>n</em> + 1) / 2, which is the check. <em>W</em> is the smaller of them, and this table is a ceiling too: reject when <em>W</em> is at or below the critical value.</p>
+        <p>The Wilcoxon tab below follows seven people whose differences are 7, 5, &minus;1, 11, 8, 13 and 9. Ranking those by size gives 3, 2, 1, 6, 4, 7 and 5, so <em>T</em><sub>+</sub> = 27 and <em>T</em><sub>&minus;</sub> = 1, and 27 + 1 is 28, which is 7 × 8 / 2 as promised. <em>W</em> = 1 against <a href="../../tables.html#rank-tables">Table W</a>'s <em>W</em>* = 2 at <em>n</em> = 7 and two-tailed α = .05, so the null goes here as well, exact <em>p</em> = .031.</p>
 
         <h3 id="kruskal-wallis">Kruskal–Wallis: ANOVA on the ranks</h3>
         <p>Three or more independent groups reuse the same opening move: pool everyone, rank the whole pile, and total the ranks inside each group. If the groups were interchangeable, those rank totals should land roughly proportional to group size. The statistic <em>H</em> measures how far the observed totals stray from that even split, and under the null hypothesis it follows a chi-square distribution with <em>k</em> − 1 degrees of freedom. It is one-way ANOVA with ranks standing in for the raw scores.</p>
@@ -93,37 +121,63 @@
         <h3 id="friedman">Friedman: ranking within each person</h3>
         <p>Repeated measures rank <em>within</em> each person rather than across the whole sample. For every participant, rank their conditions from lowest to highest, so each row of the data turns into a small 1-2-3. Add those ranks down each column: if one condition genuinely tends to score highest, its column keeps collecting the top ranks. The statistic reads that imbalance and, like Kruskal–Wallis, compares it to a chi-square distribution with <em>k</em> − 1 degrees of freedom. Ranking inside each person is what cancels stable individual differences, the same trick the paired difference pulls for Wilcoxon.</p>
 
-        <p>Correlation has a rank-based version too. <strong>Spearman's ρ</strong> (rho) is just Pearson's <em>r</em> computed on the ranks, so it captures any steadily rising or falling relationship and shrugs off outliers. It lives alongside the other coefficients in the <a href="../../stats-1/correlation/">correlation lesson</a>.</p>
+        <h3 id="spearman">Spearman's ρ<sub>s</sub>: correlation on the ranks</h3>
+        <p><strong>Spearman's ρ<sub>s</sub></strong> (rho, with a subscript s so nobody confuses it with the population correlation) is <a href="../../stats-1/correlation/">Pearson's <em>r</em></a> computed on ranks instead of values. Rank the <em>x</em> column, rank the <em>y</em> column separately, hand those two columns of ranks to the ordinary correlation formula, and what comes back measures whether the relationship climbs or falls steadily rather than whether it follows a straight line. An outlier can only ever be the top rank, so it cannot drag the coefficient the way it drags <em>r</em>.</p>
+        <p>By hand nobody runs the correlation formula. Take each pair's rank difference <em>d</em>, square it, add the squares, and use the shortcut:</p>
+<p style="text-align:center;font-size:1.15rem;margin:1rem 0"><strong>ρ<sub>s</sub> = 1 &minus; 6Σ<em>d</em>² / (<em>n</em>(<em>n</em>² &minus; 1))</strong></p>
+        <p>Two things about that shortcut deserve knowing before you trust it. It is <strong>algebraically exact only when nothing ties</strong>, because it is derived on the assumption that both rank columns are the whole numbers 1 to <em>n</em>, which stops being true the moment an average rank appears. With ties, go back to the definition and run Pearson on the two rank columns, which is what <a href="../../stats-1/correlation/">§1.17</a> already says Spearman is and what your software does either way. The sign is also doing real work: Σ<em>d</em>² of zero means the two rankings agree perfectly and ρ<sub>s</sub> = 1, while the largest Σ<em>d</em>² a design can produce comes from exactly reversed rankings and returns &minus;1.</p>
+        <p>ρ<sub>s</sub> then gets a table of its own, and this one is a floor again: reject when |ρ<sub>s</sub>| reaches the critical value. The Spearman tab below ranks ten students on minutes spent with the practice set and score on the follow-up test. Σ<em>d</em>² comes to 50, so ρ<sub>s</sub> = 1 &minus; 300 / 990 = .697, and <a href="../../tables.html#rank-tables">Table ρ</a> at <em>n</em> = 10 and two-tailed α = .05 asks for .648. It clears, though not by a wide margin, and the exact <em>p</em> of .031 tells the same story.</p>
+        <p>That tab also carries the lesson's opening argument in miniature. Drag the ringed student's score upward and watch the two coefficients part company: Pearson on the raw values slides from .71 down toward .62 as the point pulls away from everyone else, while Σ<em>d</em>², ρ<sub>s</sub> and the verdict do not move at all. The student was already ranked highest, and being further ahead cannot make them any more highest than that.</p>
 
         <!-- ============ TABBED RANK-LEDGER PLAYGROUND ============ -->
         <div class="viz" id="rankviz">
           <p class="viz-title">🎬 The rank ledger, test by test</p>
-          <p class="viz-sub">Pick a test. Watch the raw values collapse into evenly-spaced ranks, the statistic build from the rank sums, and the p-value fall out. Then nudge the ringed outlier: its rank can't move, so neither can the result.</p>
+          <p class="viz-sub">Pick a test. Watch the raw values collapse into evenly-spaced ranks, the statistic build from the rank sums, and both the exact p-value and the table reading fall out. Then nudge the ringed outlier: as long as it stays the largest value its rank can't move, so neither can the result.</p>
 
           <div class="seg" id="rv-seg" role="group" aria-label="Choose a non-parametric test">
             <button data-tab="mw" class="active">Mann–Whitney</button>
             <button data-tab="wx">Wilcoxon</button>
             <button data-tab="kw">Kruskal–Wallis</button>
             <button data-tab="fr">Friedman</button>
+            <button data-tab="sp">Spearman</button>
           </div>
 
           <p class="viz-sub" id="rv-caption" style="margin-top:.6rem"></p>
 
-          <canvas id="rv-canvas" role="img" aria-label="Rank ledger for the selected non-parametric test: the raw values are shown on top, their ranks below, and the assembled statistic and p-value appear in the readout beneath the chart."></canvas>
+          <canvas id="rv-canvas" role="img" aria-label="Rank ledger for the selected non-parametric test: the raw values are shown on top and their ranks below, or as a ranked grid for the Friedman and Spearman tabs, with the assembled statistic, its p-value and the by-hand table lookup in the readouts beneath the chart."></canvas>
 
           <div class="controls">
-            <div class="control" style="flex:1;min-width:280px">
+            <div class="control" style="flex:1;min-width:min(280px,100%)">
               <label id="rv-nudge-label">Nudge the ringed outlier <span class="val" id="rv-nudge-val">…</span></label>
               <input type="range" id="rv-nudge" min="37" max="90" step="1" value="40" style="width:100%" />
+            </div>
+            <div class="control"><label>Significance level</label>
+              <span class="seg" id="rv-alpha" role="group" aria-label="Significance level for the table lookup">
+                <button data-a="0.05" class="active">α = .05</button><button data-a="0.01">α = .01</button>
+              </span>
+            </div>
+            <div class="control"><label>Direction</label>
+              <span class="seg" id="rv-tails" role="group" aria-label="One-tailed or two-tailed test">
+                <button data-t="2" class="active">two-tailed</button><button data-t="1">one-tailed</button>
+              </span>
             </div>
           </div>
 
           <div class="stat-row" id="rv-stats"></div>
+
+          <p class="rv-hand-head" id="rv-hand-head">By hand, against the table</p>
+          <table class="rv-hand" id="rv-hand"><tbody></tbody></table>
           <p class="viz-sub" id="rv-note" style="margin-top:.5rem;font-size:.82rem"></p>
         </div>
         <!-- ============ /TABBED RANK-LEDGER PLAYGROUND ============ -->
 
-        <h2>Which test replaces which</h2>
+        <h2 id="reading-the-table">Reading a rank table</h2>
+        <p>Two of these tables point the opposite way to every other table in the course, and that is what catches people out under time pressure. <em>U</em> counts overlap and <em>W</em> counts the ranks stacked on the losing side, so both get <em>smaller</em> as the groups pull apart. Their tables print ceilings, and the significant statistic is the one that falls to the cell or below. Spearman's ρ<sub>s</sub> is a correlation and behaves like one, so its table is a floor you have to reach. <a href="../../tables.html#rank-tables">All three live on the tables page</a>, generated by counting rank orders rather than copied out of a book, next to a lookup drill that mixes them in with <em>z</em>, <em>t</em> and χ².</p>
+        <p>Most printed rank tables give you a two-tailed column and a one-tailed column side by side. When yours carries only one of them the conversion is arithmetic rather than a different table, because a two-tailed test spends half its α in each tail: a one-tailed test at α reads the same cell as a two-tailed test at 2α. So a one-tailed test at .05 reads the two-tailed .10 column, and a two-tailed .05 column is already the one-tailed .025 cutoff. Decide the direction before you look, never after.</p>
+        <p>One last thing about the cells themselves. A rank statistic can only take a finite set of values, so no cell has a tail area of exactly .05. The table keeps the last value whose tail is still at or under α, which makes every one of these tests slightly stricter than its label claims. With seven pairs, Wilcoxon's two-tailed .05 cell of <em>W</em>* = 2 actually carries a probability of .047, and the next value up carries .078. There is nothing in between, and no amount of arithmetic will produce it.</p>
+        <p>That conservatism is part of the price. On data the t-test was built for, Mann–Whitney needs about 105 people to learn what a t-test learns from 100, an efficiency of roughly 95%, and the paired versions sit in the same neighborhood. It is a small standing charge, and what it buys is an answer that does not come apart when one value is absurd.</p>
+
+        <h2 id="which-replaces">Which test replaces which</h2>
         <p>Each rank-based test steps in for a specific parametric one when its assumptions give way. The <a href="../../which-test.html">test chooser</a> walks the same map from the other direction, starting from your design rather than from the test you were hoping to run:</p>
         <table class="ref-table">
           <thead>
@@ -172,13 +226,13 @@
         </div>
 
 
-        <p class="pb-xref"><a href="../../problems.html#p2-6">Problem 18 of the practice problems</a> runs a Mann–Whitney by hand on five dogs per shelter, from ranking the ten values through to the decision at α = .05.</p>
+        <p class="pb-xref"><a href="../../problems.html#p2-6">Problem 18 of the practice problems</a> runs a Mann–Whitney by hand on five dogs per shelter, from ranking the ten values through to the decision at α = .05. <a href="../../problems.html#p2-15">Problem 27</a> takes the same test to a table and misses the cell by one, <a href="../../problems.html#p2-16">Problem 28</a> works a Wilcoxon with a zero difference in it, and <a href="../../problems.html#p2-17">Problem 29</a> lands a Spearman ρ<sub>s</sub> exactly on its critical value.</p>
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
           <h2>Common questions</h2>
           <details class="faq-item">
-            <summary>Are non-parametric tests less powerful than parametric ones?</summary>
-            <div class="faq-a"><p>Only slightly, and only when the parametric assumptions actually hold: on truly normal data, the Mann–Whitney test has about 95% of the t-test's efficiency. When assumptions fail (heavy tails, skew, outliers), the ranking tests are often <em>more</em> powerful, because a single wild value can't inflate the noise term. It's a small premium for a lot of insurance.</p></div>
+            <summary>My output gives both an exact p and an asymptotic p. Which one do I report?</summary>
+            <div class="faq-a"><p>The exact one, whenever the software offers it. The asymptotic p comes from a normal approximation to a distribution that is anything but smooth at small <em>n</em>, and the gap shows: on six-versus-six data with <em>U</em> = 2 the approximation gives .013 and the count gives .009. Packages stop offering the exact test somewhere past 20 or 30 per group, by which point the approximation has become accurate enough that the choice stops mattering. Printed critical-value tables are built from the exact distribution, so when you are checking hand work against output it is the exact p that should agree with your table reading.</p></div>
           </details>
           <details class="faq-item">
             <summary>Should I use a t-test or Mann–Whitney for Likert-scale data?</summary>
@@ -286,47 +340,95 @@
   </script>
 
   <!-- ============ tabbed rank-ledger playground ============
-       URL preset (P67):  ?tab=mw|wx|kw|fr  which test the ledger shows
-       (the existing #mann-whitney / #wilcoxon / #kruskal-wallis / #friedman
-       hash links still work; an explicit ?tab wins, since it is the one an
-       instructor put in the embed URL)
-       e.g.  ?embed=1&tab=kw  →  the Kruskal–Wallis ledger
+       URL presets (SC.preset, applied last):
+         ?tab=mw|wx|kw|fr|sp   which test the ledger shows
+                      (the existing #mann-whitney / #wilcoxon / #kruskal-wallis
+                      / #friedman / #spearman hash links still work; an
+                      explicit ?tab wins, since it is the one an instructor
+                      put in the embed URL)
+         ?g=<groups>  a dataset for the mw, wx and kw tabs: commas inside a
+                      group, semicolons between groups, parsed by the shared
+                      SC.groupParam helper, which rejects a mangled parameter
+                      whole rather than half-reading it. mw wants exactly two
+                      groups, wx exactly two of equal length (before then
+                      after), kw two to five. Friedman keeps its frozen grid,
+                      since a subject-by-condition table is not group data.
+                      e.g. ?tab=mw&g=11,14,16,18,22,25;20,27,30,33,36,40
+         ?data=x:y,…  the Spearman tab's pairs, through SC.pairParam.
+                      e.g. ?tab=sp&data=15:63,22:51,28:60,35:44,41:79
+         ?alpha=.05|.01 and ?tails=1|2   which cell of the table is read
+       tab is listed FIRST in the map because g and data load into whichever
+       tab is showing, and loading a dataset rebuilds the nudge slider's own
+       bounds; alpha and tails come last because they only read a table.
   -->
   <script>
   (function () {
     "use strict";
     /* ------------------------------------------------------------------
        Independent re-derivation of every displayed statistic + p-value
-       (verified against R wilcox.test / kruskal.test / friedman.test and
-       scipy). Displayed p is the normal/χ² approximation with continuity
-       + tie corrections, stated honestly in the UI note.
+       (verified against R wilcox.test / kruskal.test / friedman.test /
+       cor.test and scipy). The stat row shows the normal or chi-square
+       approximation with continuity + tie corrections, stated honestly in
+       the UI note; the by-hand panel shows the arithmetic an exam asks for
+       and the EXACT p from viz.js's counted null distributions.
 
        MANN–WHITNEY  A=[11,14,16,18,22,25]  B=[20,27,30,33,36,40]
-         rank sums 23/55 · U=2 · μ=18 σ=6.245 · z_cc=2.482 → p≈.013
-         (R wilcox.test EXACT p=.009 — same verdict) · P(superiority)=34/36=.94
+         rank sums 23/55 · U1 = 36 + 21 − 23 = 34 · U2 = 36 + 21 − 55 = 2
+         U = 2 · U*(6, 6; two-tailed .05) = 5 → reject
+         μ=18 σ=6.245 · z_cc=2.482 → p≈.013 · exact two-tailed p = .00866
+         (= R wilcox.test exact) · P(superiority)=34/36=.94
        WILCOXON  before=[42,51,47,55,49,60,45] after=[49,56,46,66,57,73,54]
-         diffs=[7,5,-1,11,8,13,9] · W+=27 W-=1 · μ=14 σ=5.916 · z_cc=2.113 → p≈.035
-         (R wilcox.test EXACT signed-rank p=.031)
+         diffs=[7,5,-1,11,8,13,9] · |d| ranks 3,2,1,6,4,7,5
+         T+=27 T-=1 (27+1 = 28 = 7·8/2) · W=1 · W*(7; two-tailed .05) = 2
+         μ=14 σ=5.916 · z_cc=2.113 → p≈.035 · exact two-tailed p = .03125
+         (= R wilcox.test exact signed-rank)
        KRUSKAL–WALLIS  [[6,9,13,16],[11,15,19,22],[18,24,28,31]]
-         rank sums 13/25/40 · H=7.039 df=2 → p≈.030  (= R kruskal.test, χ² approx)
+         rank sums 13/25/40 · H=7.039 df=2 → p≈.030  (= R kruskal.test)
+         χ²(2) critical at .05 = 5.99 → reject
        FRIEDMAN  rows 6×3 [[5,7,9],[4,6,8],[6,5,9],[3,7,6],[5,8,10],[4,6,7]]
          col rank sums 7/12/17 · χ²_F=8.333 df=2 → p≈.016  (= R friedman.test)
+       SPEARMAN  x=[15,22,28,35,41,50,58,67,76,90]
+                 y=[63,51,60,44,79,55,72,68,91,85]
+         rank x = 1..10 · rank y = 5,2,4,1,8,3,7,6,10,9
+         d² = 16,0,1,9,9,9,0,4,1,1 · Σd² = 50
+         ρs = 1 − 300/990 = .69697 · Pearson on the two rank columns returns
+         .696970 to six places, which is the identity the prose claims
+         ρs*(10; two-tailed .05) = .648 → reject · exact two-tailed p = .03056
+         (= R cor.test exact) · Pearson on the RAW values would give .7122
 
        Tie-correction paths (ties present) cross-checked:
          MW  x=[1,2,2,3,4] y=[2,3,3,4,5] → U1=6.5 z_cc=1.182 p=.237 (= scipy asymptotic)
          KW  [[1,2,2],[3,3,4],[4,5,5]] → H=6.822 C=.967 Hc=7.058 p=.029
          Wilcoxon |d| ties [2,-2,3,3,5,-1] → W+=17.5 σ=4.743 z=1.476 p=.171
          Friedman ties [[5,5,9],[4,6,6],[6,5,9]] → χ²=3.167 C=.833 χ²c=3.80 p=.150
-       Nudging any ringed outlier leaves every statistic and p unchanged.
+       Nudging any ringed outlier leaves every statistic and p unchanged, so
+       long as it stays the largest value in its own series; the slider's
+       floor is set from the next value down for exactly that reason.
        ------------------------------------------------------------------ */
 
     var canvas = document.getElementById("rv-canvas"), ctx, W = 0, H = 215;
     var seg = document.getElementById("rv-seg"), slider = document.getElementById("rv-nudge");
     var elVal = document.getElementById("rv-nudge-val"), elStats = document.getElementById("rv-stats");
     var elCap = document.getElementById("rv-caption"), elNote = document.getElementById("rv-note");
+    var elHand = document.getElementById("rv-hand"), elHandHead = document.getElementById("rv-hand-head");
+    var segA = document.getElementById("rv-alpha"), segT = document.getElementById("rv-tails");
     var cc = VIZ.css;
     var cur = "mw", anim = 1, animReq = null, animT0 = 0;
-    var nudge = { mw: 40, wx: 73, kw: 31, fr: 10 };
+    var ALPHA = 0.05, TAILS = 2;
+
+    /* ---------- the datasets, and the one value the slider moves ----------
+       DATA holds what each tab is currently showing; a ?g= or ?data= preset
+       replaces it. `ring` is the index of the value the slider drives, and
+       it is always the largest of its own series, so nudging it upward
+       cannot reorder anything. */
+    var DATA = {
+      mw: { g: [[11, 14, 16, 18, 22, 25], [20, 27, 30, 33, 36, 40]], ring: 5 },
+      wx: { before: [42, 51, 47, 55, 49, 60, 45], after: [49, 56, 46, 66, 57, 73, 54], ring: 5 },
+      kw: { g: [[6, 9, 13, 16], [11, 15, 19, 22], [18, 24, 28, 31]], ring: 3 },
+      fr: { rows: [[5, 7, 9], [4, 6, 8], [6, 5, 9], [3, 7, 6], [5, 8, 10], [4, 6, 7]], ring: [4, 2] },
+      sp: { x: [15, 22, 28, 35, 41, 50, 58, 67, 76, 90], y: [63, 51, 60, 44, 79, 55, 72, 68, 91, 85], ring: 8 }
+    };
+    var nudge = {};
 
     // ---------- rank + tie helpers (midranks) ----------
     function ranks(vals) {
@@ -342,94 +444,226 @@
       return r;
     }
     function tieSum(vals) { var m = {}, s = 0; vals.forEach(function (v) { m[v] = (m[v] || 0) + 1; }); Object.keys(m).forEach(function (k) { var t = m[k]; s += t * t * t - t; }); return s; }
+    function pearson(a, b) {
+      var n = a.length, ma = VIZ.mean(a), mb = VIZ.mean(b), sab = 0, sa = 0, sb = 0, i;
+      for (i = 0; i < n; i++) { sab += (a[i] - ma) * (b[i] - mb); sa += (a[i] - ma) * (a[i] - ma); sb += (b[i] - mb) * (b[i] - mb); }
+      return (sa > 0 && sb > 0) ? sab / Math.sqrt(sa * sb) : 0;
+    }
     function fmtP(p) { return p < 0.001 ? "< .001" : "." + Math.round(p * 1000).toString().replace(/^(\d)$/, "00$1").replace(/^(\d\d)$/, "0$1"); }
     function fmtProp(x) { return x >= 1 ? "1.00" : "." + Math.round(x * 100).toString().replace(/^(\d)$/, "0$1"); }
+    function fmtRho(x) { return (x < 0 ? "−" : "") + Math.abs(x).toFixed(3).replace(/^0\./, "."); }
+    function num(x) { return Math.round(x * 100) / 100 === Math.round(x) ? String(Math.round(x)) : String(Math.round(x * 100) / 100); }
+    function alphaText() { return "α = " + (ALPHA === 0.05 ? ".05" : ".01"); }
+    /* Kruskal–Wallis and Friedman read the upper tail of a χ² by construction,
+       so the one-or-two-tailed choice has nothing to say about their cell. */
+    function alphaLabel(oneSided) { return oneSided ? alphaText() : (TAILS === 2 ? "two-tailed " : "one-tailed ") + alphaText(); }
 
-    // ---------- compute functions (return stats + geometry) ----------
-    function computeMW(bLast) {
-      var A = [11, 14, 16, 18, 22, 25], B = [20, 27, 30, 33, 36, 40].slice(); B[5] = bLast;
-      var pooled = A.concat(B), R = ranks(pooled), nA = 6, nB = 6, N = 12;
-      var RA = 0; for (var i = 0; i < nA; i++) RA += R[i]; var RB = N * (N + 1) / 2 - RA;
-      var U1 = RA - nA * (nA + 1) / 2, U2 = nA * nB - U1, U = Math.min(U1, U2);
+    /* the ringed value's slider: it may not fall below the next value down in
+       its own series, which is what keeps its rank fixed while it moves */
+    function bounds(series, idx) {
+      var others = series.filter(function (v, i) { return i !== idx; });
+      var allInt = series.every(function (v) { return v === Math.round(v); });
+      var lo = Math.max.apply(null, others) + (allInt ? 1 : 0);
+      var v = series[idx], hi = Math.max(lo + 60, v + 20);
+      return { lo: lo, hi: hi, step: allInt ? 1 : Math.max(0.01, Math.round((hi - lo) / 100 * 100) / 100), v: Math.min(hi, Math.max(lo, v)) };
+    }
+    /* per tab: which series the ring sits in, and how a slider value gets
+       written back into the dataset */
+    function nudgeSpec(tab) {
+      var d = DATA[tab], i;
+      if (tab === "mw") return { series: d.g[1], idx: d.ring, label: "Treatment's largest value", set: function (v) { d.g[1][d.ring] = v; } };
+      if (tab === "kw") return { series: d.g[d.g.length - 1], idx: d.ring, label: "Last group's largest value", set: function (v) { d.g[d.g.length - 1][d.ring] = v; } };
+      if (tab === "sp") return { series: d.y, idx: d.ring, label: "The largest y value", set: function (v) { d.y[d.ring] = v; } };
+      if (tab === "fr") {
+        var row = d.rows[d.ring[0]];
+        return { series: row, idx: d.ring[1], label: "Subject " + (d.ring[0] + 1) + ", Design " + "ABC".charAt(d.ring[1]), set: function (v) { row[d.ring[1]] = v; } };
+      }
+      /* Wilcoxon ranks the DIFFERENCES, so the ring belongs to that series
+         and moving the "after" score moves its difference one for one */
+      var diffs = d.after.map(function (v, k) { return v - d.before[k]; });
+      var off = d.before[d.ring];
+      return {
+        series: diffs.map(function (v) { return v + off; }), idx: d.ring,
+        label: "Person " + (d.ring + 1) + "'s “after” score",
+        set: function (v) { d.after[d.ring] = v; }
+      };
+    }
+    function argmax(a) { var b = 0, i; for (i = 1; i < a.length; i++) if (a[i] > a[b]) b = i; return b; }
+    function resetNudge(tab) {
+      var sp = nudgeSpec(tab), b = bounds(sp.series, sp.idx);
+      nudge[tab] = { lo: b.lo, hi: b.hi, step: b.step, v: b.v, label: sp.label };
+      sp.set(b.v);
+    }
+
+    // ---------- compute functions (return stats + geometry + the hand table) ----------
+    function computeMW() {
+      var A = DATA.mw.g[0], B = DATA.mw.g[1], nA = A.length, nB = B.length, N = nA + nB;
+      var pooled = A.concat(B), R = ranks(pooled), i;
+      var RA = 0; for (i = 0; i < nA; i++) RA += R[i]; var RB = N * (N + 1) / 2 - RA;
+      var U1 = nA * nB + nA * (nA + 1) / 2 - RA, U2 = nA * nB + nB * (nB + 1) / 2 - RB;
+      var U = Math.min(U1, U2);
       var mu = nA * nB / 2, sig = Math.sqrt(nA * nB / 12 * ((N + 1) - tieSum(pooled) / (N * (N - 1))));
       var zcc = (Math.abs(U1 - mu) - 0.5) / sig, p = Math.min(2 * VIZ.normCdf(-zcc), 1);
       var PS = Math.max(U1, U2) / (nA * nB);
+      var tied = tieSum(pooled) > 0;
+      var crit = VIZ.mwuCrit(nA, nB, ALPHA, TAILS), exact = tied ? null : VIZ.mwuP(U, nA, nB, TAILS);
       var pts = []; for (i = 0; i < nA; i++) pts.push({ v: A[i], g: 0, rank: R[i], out: false });
-      for (i = 0; i < nB; i++) pts.push({ v: B[i], g: 1, rank: R[nA + i], out: i === nB - 1 });
-      return { kind: "line", pts: pts, colors: [cc("--secondary"), "#f97316"], names: ["control", "treatment"], lo: 8, hi: 95, N: N,
+      for (i = 0; i < nB; i++) pts.push({ v: B[i], g: 1, rank: R[nA + i], out: i === DATA.mw.ring });
+      return { kind: "line", pts: pts, colors: [cc("--secondary"), "#f97316"], names: ["control", "treatment"],
+        lo: Math.min.apply(null, pooled) - 3, hi: Math.max.apply(null, pooled) + 5, N: N,
         stats: [
-          { k: "rank sums (ctrl / tx)", v: RA + " / " + RB },
-          { k: "<em>U</em>", v: String(U) },
+          { k: "rank sums (ctrl / tx)", v: num(RA) + " / " + num(RB) },
+          { k: "<em>U</em>", v: num(U) },
           { k: "<em>z</em>", v: zcc.toFixed(2) },
           { k: "<em>p</em> (two-tailed)", v: fmtP(p) },
           { k: "P(superiority)", v: fmtProp(PS) },
           { k: "verdict", v: p < 0.05 ? "significant" : "not significant", sig: p < 0.05 }
-        ] };
+        ],
+        hand: {
+          stat: U, crit: crit, tied: tied, exact: exact, ceiling: true, sym: "U",
+          rows: [
+            ["rank sums", "<em>R</em>₁ = " + num(RA) + ", <em>R</em>₂ = " + num(RB) + " (they add to " + num(N * (N + 1) / 2) + ")"],
+            ["<em>U</em>₁ = <em>n</em>₁<em>n</em>₂ + <em>n</em>₁(<em>n</em>₁+1)/2 − <em>R</em>₁", num(nA * nB) + " + " + num(nA * (nA + 1) / 2) + " − " + num(RA) + " = " + num(U1)],
+            ["<em>U</em>₂ = <em>n</em>₁<em>n</em>₂ + <em>n</em>₂(<em>n</em>₂+1)/2 − <em>R</em>₂", num(nA * nB) + " + " + num(nB * (nB + 1) / 2) + " − " + num(RB) + " = " + num(U2)],
+            ["the statistic", "<em>U</em> = " + num(U) + ", the smaller of the two"]
+          ]
+        } };
     }
-    function computeWX(aLast) {
-      var before = [42, 51, 47, 55, 49, 60, 45], after = [49, 56, 46, 66, 57, 73, 54].slice(); after[5] = aLast;
-      var diffs = after.map(function (v, i) { return v - before[i]; });
-      var absd = diffs.map(Math.abs), R = ranks(absd), n = 7;
-      var Wp = 0; for (var i = 0; i < n; i++) if (diffs[i] > 0) Wp += R[i]; var Wm = n * (n + 1) / 2 - Wp;
+    function computeWX() {
+      var before = DATA.wx.before, after = DATA.wx.after;
+      var raw = after.map(function (v, i) { return v - before[i]; });
+      var diffs = raw.filter(function (d) { return d !== 0; }), dropped = raw.length - diffs.length;
+      var absd = diffs.map(Math.abs), R = ranks(absd), n = diffs.length, i;
+      var Wp = 0; for (i = 0; i < n; i++) if (diffs[i] > 0) Wp += R[i]; var Wm = n * (n + 1) / 2 - Wp;
+      var Wst = Math.min(Wp, Wm);
       var mu = n * (n + 1) / 4, sig = Math.sqrt((n * (n + 1) * (2 * n + 1) - tieSum(absd) / 2) / 24);
       var zcc = (Math.abs(Wp - mu) - 0.5) / sig, p = Math.min(2 * VIZ.normCdf(-zcc), 1);
-      var mx = Math.max.apply(null, absd);
-      var pts = diffs.map(function (d, i) { return { diff: d, sign: d > 0 ? 1 : -1, rank: R[i], out: absd[i] === mx }; });
-      return { kind: "signed", pts: pts, n: n, dmin: -8, dmax: 86,
+      var tied = tieSum(absd) > 0;
+      var crit = VIZ.wsrCrit(n, ALPHA, TAILS), exact = tied ? null : VIZ.wsrP(Wst, n, TAILS);
+      var allR = ranks(raw.map(Math.abs)), mx = Math.max.apply(null, raw.map(Math.abs));
+      var pts = raw.map(function (d, i2) { return { diff: d, sign: d > 0 ? 1 : -1, rank: allR[i2], out: Math.abs(d) === mx }; });
+      var lo = Math.min.apply(null, raw), hi = Math.max.apply(null, raw);
+      return { kind: "signed", pts: pts, n: raw.length, dmin: Math.min(-4, lo - 4), dmax: hi + 6,
         stats: [
-          { k: "signed-rank sums (W₊ / W₋)", v: Wp + " / " + Wm },
+          { k: "signed-rank sums (W₊ / W₋)", v: num(Wp) + " / " + num(Wm) },
           { k: "<em>z</em>", v: zcc.toFixed(2) },
           { k: "<em>p</em> (two-tailed)", v: fmtP(p) },
           { k: "verdict", v: p < 0.05 ? "significant" : "not significant", sig: p < 0.05 }
-        ] };
+        ],
+        hand: {
+          stat: Wst, crit: crit, tied: tied, exact: exact, ceiling: true, sym: "W",
+          rows: [
+            ["pairs left after dropping zero differences", "<em>n</em> = " + n + (dropped ? " (" + dropped + " dropped)" : " (none to drop)")],
+            ["<em>T</em>₊, the ranks that carried a plus", num(Wp)],
+            ["<em>T</em>₋, the ranks that carried a minus", num(Wm)],
+            ["the check: they add to <em>n</em>(<em>n</em>+1)/2", num(Wp) + " + " + num(Wm) + " = " + num(n * (n + 1) / 2)],
+            ["the statistic", "<em>W</em> = " + num(Wst) + ", the smaller of the two"]
+          ]
+        } };
     }
-    function computeKW(g3Last) {
-      var G = [[6, 9, 13, 16], [11, 15, 19, 22], [18, 24, 28, 31].slice()]; G[2][3] = g3Last;
-      var pooled = G[0].concat(G[1], G[2]), R = ranks(pooled), N = 12;
-      var off = 0, Rg = [0, 0, 0], H2 = 0;
-      for (var g = 0; g < 3; g++) { for (var i = 0; i < 4; i++) Rg[g] += R[off + i]; off += 4; H2 += Rg[g] * Rg[g] / 4; }
+    function computeKW() {
+      var G = DATA.kw.g, k = G.length, pooled = [], i, g;
+      for (g = 0; g < k; g++) pooled = pooled.concat(G[g]);
+      var R = ranks(pooled), N = pooled.length, off = 0, Rg = [], H2 = 0;
+      for (g = 0; g < k; g++) { var s = 0; for (i = 0; i < G[g].length; i++) s += R[off + i]; Rg.push(s); H2 += s * s / G[g].length; off += G[g].length; }
       H2 = 12 / (N * (N + 1)) * H2 - 3 * (N + 1);
-      var C = 1 - tieSum(pooled) / (N * N * N - N), Hc = H2 / C, p = VIZ.chiSqUpper(Hc, 2);
+      var C = 1 - tieSum(pooled) / (N * N * N - N), Hc = H2 / C, df = k - 1, p = VIZ.chiSqUpper(Hc, df);
+      var crit = VIZ.chiSqInv(ALPHA, df);
+      var COL = [cc("--secondary"), "#f97316", "#22c55e", "#8b5cf6", "#0ea5e9"], NM = ["A", "B", "C", "D", "E"];
       var pts = []; off = 0;
-      for (g = 0; g < 3; g++) for (i = 0; i < 4; i++) { pts.push({ v: G[g][i], g: g, rank: R[off], out: g === 2 && i === 3 }); off++; }
-      return { kind: "line", pts: pts, colors: [cc("--secondary"), "#f97316", "#22c55e"], names: ["A", "B", "C"], lo: 3, hi: 95, N: N,
+      for (g = 0; g < k; g++) for (i = 0; i < G[g].length; i++) { pts.push({ v: G[g][i], g: g, rank: R[off], out: g === k - 1 && i === DATA.kw.ring }); off++; }
+      return { kind: "line", pts: pts, colors: COL.slice(0, k), names: NM.slice(0, k),
+        lo: Math.min.apply(null, pooled) - 3, hi: Math.max.apply(null, pooled) + 5, N: N,
         stats: [
-          { k: "rank sums (A / B / C)", v: Rg[0] + " / " + Rg[1] + " / " + Rg[2] },
+          { k: "rank sums (" + NM.slice(0, k).join(" / ") + ")", v: Rg.map(num).join(" / ") },
           { k: "<em>H</em>", v: Hc.toFixed(2) },
-          { k: "df", v: "2" },
+          { k: "df", v: String(df) },
           { k: "<em>p</em> (χ² approx.)", v: fmtP(p) },
           { k: "verdict", v: p < 0.05 ? "significant" : "not significant", sig: p < 0.05 }
-        ] };
+        ],
+        hand: {
+          stat: Hc, crit: crit, tied: false, exact: null, ceiling: false, sym: "H", dec: 2, oneSided: true,
+          rows: [
+            ["rank sums", Rg.map(num).join(" / ") + " (they add to " + num(N * (N + 1) / 2) + ")"],
+            ["<em>H</em> = 12/(<em>N</em>(<em>N</em>+1)) · Σ<em>R</em>²/<em>n</em> − 3(<em>N</em>+1)", Hc.toFixed(2)],
+            ["df = <em>k</em> − 1", String(df)],
+            ["the table", "χ² on " + df + " df, upper tail only, from Table F"]
+          ]
+        } };
     }
-    function computeFR(s5c) {
-      var rows = [[5, 7, 9], [4, 6, 8], [6, 5, 9], [3, 7, 6], [5, 8, 10], [4, 6, 7]].map(function (r) { return r.slice(); });
-      rows[4][2] = s5c;
-      var n = 6, k = 3, Rj = [0, 0, 0], rmat = [], tc = 0;
-      for (var b = 0; b < n; b++) { var rr = ranks(rows[b]); rmat.push(rr); for (var j = 0; j < k; j++) Rj[j] += rr[j]; tc += tieSum(rows[b]); }
-      var chi = 12 / (n * k * (k + 1)) * (Rj[0] * Rj[0] + Rj[1] * Rj[1] + Rj[2] * Rj[2]) - 3 * n * (k + 1);
-      var C = 1 - tc / (n * (k * k * k - k)), chiC = chi / C, p = VIZ.chiSqUpper(chiC, 2);
-      return { kind: "grid", rows: rows, rmat: rmat, Rj: Rj, k: k, n: n, colors: [cc("--secondary"), "#f97316", "#22c55e"], out: [4, 2],
+    function computeFR() {
+      var rows = DATA.fr.rows, n = rows.length, k = rows[0].length;
+      var Rj = [], rmat = [], tc = 0, b, j;
+      for (j = 0; j < k; j++) Rj.push(0);
+      for (b = 0; b < n; b++) { var rr = ranks(rows[b]); rmat.push(rr); for (j = 0; j < k; j++) Rj[j] += rr[j]; tc += tieSum(rows[b]); }
+      var sq = 0; for (j = 0; j < k; j++) sq += Rj[j] * Rj[j];
+      var chi = 12 / (n * k * (k + 1)) * sq - 3 * n * (k + 1);
+      var C = 1 - tc / (n * (k * k * k - k)), chiC = chi / C, df = k - 1, p = VIZ.chiSqUpper(chiC, df);
+      var crit = VIZ.chiSqInv(ALPHA, df);
+      return { kind: "grid", rows: rows, rmat: rmat, Rj: Rj, k: k, n: n,
+        colors: [cc("--secondary"), "#f97316", "#22c55e"], out: DATA.fr.ring,
         stats: [
-          { k: "rank sums (A / B / C)", v: Rj[0] + " / " + Rj[1] + " / " + Rj[2] },
-          { k: "χ²<sub>F</sub>", v: chiC.toFixed(2) },
-          { k: "df", v: "2" },
+          { k: "rank sums (A / B / C)", v: Rj.map(num).join(" / ") },
+          { k: "χ²<sub>F</sub>", v: chiC.toFixed(2), raw: true },
+          { k: "df", v: String(df) },
           { k: "<em>p</em> (χ² approx.)", v: fmtP(p) },
           { k: "verdict", v: p < 0.05 ? "significant" : "not significant", sig: p < 0.05 }
-        ] };
+        ],
+        hand: {
+          stat: chiC, crit: crit, tied: false, exact: null, ceiling: false, sym: "χ²", dec: 2, oneSided: true,
+          rows: [
+            ["column rank sums", Rj.map(num).join(" / ")],
+            ["χ²<sub>F</sub> = 12/(<em>nk</em>(<em>k</em>+1)) · Σ<em>R</em>² − 3<em>n</em>(<em>k</em>+1)", chiC.toFixed(2)],
+            ["df = <em>k</em> − 1", String(df)],
+            ["the table", "χ² on " + df + " df, upper tail only, from Table F"]
+          ]
+        } };
+    }
+    function computeSP() {
+      var X = DATA.sp.x, Y = DATA.sp.y, n = X.length;
+      var rx = ranks(X), ry = ranks(Y), d = [], S = 0, i;
+      for (i = 0; i < n; i++) { d.push(rx[i] - ry[i]); S += d[i] * d[i]; }
+      var tied = tieSum(X) + tieSum(Y) > 0;
+      var shortcut = 1 - 6 * S / (n * (n * n - 1)), rho = tied ? pearson(rx, ry) : shortcut;
+      var crit = VIZ.spearCrit(n, ALPHA, TAILS);
+      var exact = tied ? null : VIZ.spearP(rho, n, TAILS);
+      var t = Math.abs(rho) >= 1 ? Infinity : Math.abs(rho) * Math.sqrt((n - 2) / (1 - rho * rho));
+      var p = n > 2 ? Math.min(1, 2 * VIZ.tUpper(t, n - 2)) : 1;
+      var rowsH = [
+        ["<em>n</em> pairs, both columns ranked", String(n)],
+        ["Σ<em>d</em>², the squared rank differences", num(S)],
+        ["ρ" + "ₛ" + " = 1 − 6Σ<em>d</em>²/(<em>n</em>(<em>n</em>²−1))", "1 − " + num(6 * S) + "/" + num(n * (n * n - 1)) + " = " + fmtRho(shortcut)]
+      ];
+      if (tied) rowsH.push(["ties present, so the shortcut is not exact", "Pearson on the two rank columns gives " + fmtRho(rho)]);
+      return { kind: "pairs", X: X, Y: Y, rx: rx, ry: ry, d: d, S: S, n: n, ring: DATA.sp.ring,
+        colors: [cc("--secondary"), "#f97316"],
+        stats: [
+          { k: "Σ<em>d</em>²", v: num(S), raw: true },
+          { k: "ρ" + "ₛ", v: fmtRho(rho), raw: true },
+          { k: "<em>p</em> (t approx.)", v: fmtP(p) },
+          { k: "Pearson on the raw values", v: fmtRho(pearson(X, Y)) },
+          { k: "verdict", v: p < 0.05 ? "significant" : "not significant", sig: p < 0.05 }
+        ],
+        hand: {
+          stat: Math.abs(rho), crit: crit, tied: tied, exact: exact, ceiling: false, sym: "|ρ" + "ₛ" + "|", dec: 3, rho: true,
+          rows: rowsH
+        } };
     }
     function compute() {
-      if (cur === "mw") return computeMW(nudge.mw);
-      if (cur === "wx") return computeWX(nudge.wx);
-      if (cur === "kw") return computeKW(nudge.kw);
-      return computeFR(nudge.fr);
+      if (cur === "mw") return computeMW();
+      if (cur === "wx") return computeWX();
+      if (cur === "kw") return computeKW();
+      if (cur === "fr") return computeFR();
+      return computeSP();
     }
 
     // ---------- per-tab UI config ----------
     var CFG = {
-      mw: { min: 37, max: 90, cap: "Reaction time (ms), control vs. treatment. Pool everyone, rank, and count the wins.", note: "p from the normal approximation with a continuity correction (matches R's wilcox.test with exact = FALSE). The exact test gives p = .009 — same call.", label: "Treatment's largest value" },
-      wx: { min: 73, max: 140, cap: "Memory score before vs. after training, one row per person. Rank the sizes of the changes, keep their signs.", note: "Normal approximation with a continuity correction. R's exact signed-rank test gives p = .031.", label: "Person 6's “after” score" },
-      kw: { min: 29, max: 90, cap: "Exam score across three teaching methods. Pool everyone, rank, and see whether the rank totals split evenly.", note: "The χ² approximation with a tie correction, exactly what R's kruskal.test reports.", label: "Group C's largest value" },
-      fr: { min: 9, max: 90, cap: "Three designs rated by the same six people. Rank the conditions inside each person's row.", note: "The χ² approximation with a tie correction, exactly what R's friedman.test reports.", label: "Subject 5, Design C" }
+      mw: { cap: "Reaction time (ms), control vs. treatment. Pool everyone, rank, and count the wins.", note: "The stat row's p comes from the normal approximation with a continuity correction (matching R's wilcox.test with exact = FALSE); the by-hand panel prints the exact one.", tbl: "Table U" },
+      wx: { cap: "Memory score before vs. after training, one row per person. Rank the sizes of the changes, keep their signs.", note: "The stat row's p is the normal approximation with a continuity correction; the by-hand panel prints the exact signed-rank p.", tbl: "Table W" },
+      kw: { cap: "Exam score across three teaching methods. Pool everyone, rank, and see whether the rank totals split evenly.", note: "The χ² approximation with a tie correction, exactly what R's kruskal.test reports. Kruskal–Wallis reads Table F like any other χ².", tbl: "Table F" },
+      fr: { cap: "Three designs rated by the same six people. Rank the conditions inside each person's row.", note: "The χ² approximation with a tie correction, exactly what R's friedman.test reports. Friedman reads Table F too.", tbl: "Table F" },
+      sp: { cap: "Minutes with the practice set against score on the follow-up test, for ten students. Rank each column, then square the differences.", note: "The stat row's p is the t approximation on n − 2 df; the by-hand panel prints the exact one, counted over all n! rankings.", tbl: "Table ρ" }
     };
 
     // ---------- drawing ----------
@@ -457,7 +691,8 @@
       ctx.strokeStyle = cc("--border"); ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(pad, yAx); ctx.lineTo(W - pad, yAx); ctx.stroke();
       ctx.fillStyle = cc("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center";
-      for (var t = 20; t <= d.hi; t += 20) { if (t < d.lo) continue; var xt = sx(t); ctx.globalAlpha = 0.5; ctx.beginPath(); ctx.moveTo(xt, yAx - 3); ctx.lineTo(xt, yAx + 3); ctx.stroke(); ctx.globalAlpha = 1; ctx.fillText(t, xt, yAx + 14); }
+      var stepT = Math.max(5, Math.round((d.hi - d.lo) / 5 / 5) * 5);
+      for (var t = Math.ceil(d.lo / stepT) * stepT; t <= d.hi; t += stepT) { var xt = sx(t); ctx.globalAlpha = 0.5; ctx.beginPath(); ctx.moveTo(xt, yAx - 3); ctx.lineTo(xt, yAx + 3); ctx.stroke(); ctx.globalAlpha = 1; ctx.fillText(t, xt, yAx + 14); }
       // strip captions
       ctx.fillStyle = cc("--text-muted"); ctx.textAlign = "left"; ctx.font = "600 10px Inter,system-ui,sans-serif";
       ctx.fillText("raw values", pad, yRaw - 20); ctx.fillText("ranks", rpad, yRank - 18);
@@ -476,8 +711,7 @@
       var n = d.n, pad = 26;
       var yRaw = Math.round(H * 0.34), yAx = yRaw + 26, yRank = Math.round(H * 0.80);
       var sx = function (v) { return pad + (v - d.dmin) / (d.dmax - d.dmin) * (W - 2 * pad); };
-      var x0 = sx(0), cx = W / 2, half = W / 2 - rpadClamp();
-      function rpadClamp() { return 40; }
+      var x0 = sx(0), cx = W / 2, half = W / 2 - 40;
       var rankX = function (rank, sign) { return cx + sign * (rank / n) * half; };
       // zero line
       ctx.strokeStyle = cc("--border"); ctx.setLineDash([3, 3]); ctx.lineWidth = 1;
@@ -485,7 +719,8 @@
       ctx.beginPath(); ctx.moveTo(pad, yAx); ctx.lineTo(W - pad, yAx); ctx.stroke();
       ctx.fillStyle = cc("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center";
       ctx.fillText("0", x0, yAx + 14);
-      for (var t = -80; t <= 80; t += 20) { if (t === 0 || t < d.dmin || t > d.dmax) continue; var xt = sx(t); ctx.globalAlpha = 0.5; ctx.beginPath(); ctx.moveTo(xt, yAx - 3); ctx.lineTo(xt, yAx + 3); ctx.stroke(); ctx.globalAlpha = 1; ctx.fillText(t, xt, yAx + 14); }
+      var stepT = Math.max(5, Math.round((d.dmax - d.dmin) / 6 / 5) * 5);
+      for (var t = Math.ceil(d.dmin / stepT) * stepT; t <= d.dmax; t += stepT) { if (t === 0) continue; var xt = sx(t); ctx.globalAlpha = 0.5; ctx.beginPath(); ctx.moveTo(xt, yAx - 3); ctx.lineTo(xt, yAx + 3); ctx.stroke(); ctx.globalAlpha = 1; ctx.fillText(t, xt, yAx + 14); }
       ctx.strokeStyle = cc("--border"); ctx.beginPath(); ctx.moveTo(cx, yRank - 18); ctx.lineTo(cx, yRank + 20); ctx.stroke();
       ctx.fillStyle = cc("--text-muted"); ctx.textAlign = "left"; ctx.font = "600 10px Inter,system-ui,sans-serif";
       ctx.fillText("difference (after − before)", pad, yRaw - 20); ctx.fillText("signed ranks", pad, yRank - 18);
@@ -536,6 +771,43 @@
       for (j = 0; j < k; j++) { ctx.fillStyle = d.colors[j]; ctx.font = "700 12px Inter,system-ui,sans-serif"; ctx.textAlign = "center"; ctx.fillText(d.Rj[j], padL + colW * (j + 1) + colW / 2, sy); }
       ctx.textBaseline = "alphabetic";
     }
+    /* the Spearman ledger: both columns ranked side by side, then the squared
+       rank differences that the shortcut adds up */
+    function drawPairs(d) {
+      var n = d.n, padL = 8, padR = 8, top = 26, botRow = 24;
+      var COLS = ["pair", "x", "rank", "y", "rank", "d²"];
+      var wide = W - padL - padR, colW = wide / 6;
+      var rowH = (H - top - botRow) / (n + 0.6);
+      var fs = colW < 46 ? 10 : 11.5;
+      ctx.textBaseline = "middle";
+      // headers
+      ctx.font = "700 " + fs + "px Inter,system-ui,sans-serif"; ctx.textAlign = "center";
+      for (var j = 0; j < 6; j++) {
+        ctx.fillStyle = (j === 1 || j === 2) ? d.colors[0] : (j === 3 || j === 4) ? d.colors[1] : cc("--text-muted");
+        ctx.fillText(COLS[j], padL + colW * j + colW / 2, top - 12);
+      }
+      for (var r = 0; r < n; r++) {
+        var cy = top + rowH * (r + 0.5), isOut = r === d.ring;
+        if (isOut) { ctx.fillStyle = d.colors[1]; ctx.globalAlpha = 0.10 + 0.05 * anim; roundRect(padL, cy - rowH * 0.42, wide, rowH * 0.84, 6); ctx.fill(); ctx.globalAlpha = 1; }
+        var cells = [String(r + 1), String(d.X[r]), String(d.rx[r]), String(d.Y[r]), String(d.ry[r]), String(d.d[r] * d.d[r])];
+        for (j = 0; j < 6; j++) {
+          var isRank = (j === 2 || j === 4);
+          ctx.globalAlpha = isRank || j === 5 ? anim : 1;
+          ctx.fillStyle = j === 0 ? cc("--text-faint") : isRank ? (j === 2 ? d.colors[0] : d.colors[1]) : cc("--text");
+          ctx.font = (isRank ? "700 " : "600 ") + fs + "px " + (j === 0 ? "Inter,system-ui,sans-serif" : "ui-monospace,monospace");
+          ctx.fillText(cells[j], padL + colW * j + colW / 2, cy);
+          ctx.globalAlpha = 1;
+        }
+      }
+      var sy = top + rowH * n + 10;
+      ctx.strokeStyle = cc("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, sy - rowH * 0.5 + 2); ctx.lineTo(W - padR, sy - rowH * 0.5 + 2); ctx.stroke();
+      ctx.fillStyle = cc("--text-muted"); ctx.font = "600 " + fs + "px Inter,system-ui,sans-serif"; ctx.textAlign = "right";
+      ctx.fillText("Σd²", padL + colW * 5 - 6, sy);
+      ctx.fillStyle = cc("--text"); ctx.font = "700 " + (fs + 1) + "px ui-monospace,monospace"; ctx.textAlign = "center";
+      ctx.globalAlpha = anim; ctx.fillText(String(d.S), padL + colW * 5 + colW / 2, sy); ctx.globalAlpha = 1;
+      ctx.textBaseline = "alphabetic";
+    }
     function roundRect(x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
     var _d = null;
     function draw() {
@@ -544,17 +816,48 @@
       if (!_d) return;
       if (_d.kind === "line") drawLine(_d);
       else if (_d.kind === "signed") drawSigned(_d);
-      else drawGrid(_d);
+      else if (_d.kind === "grid") drawGrid(_d);
+      else drawPairs(_d);
     }
 
     // ---------- state / animation ----------
     function renderStats() {
       elStats.innerHTML = _d.stats.map(function (s) {
         var col = s.sig === true ? "#22c55e" : (s.sig === false ? cc("--text-muted") : "");
-        return '<div class="stat"><span class="k">' + s.k + '</span><span class="v"' + (col ? ' style="color:' + col + (s.k === "verdict" ? ";font-size:.95rem" : "") + '"' : "") + '>' + s.v + "</span></div>";
+        /* .stat .k is uppercased sitewide, and a Greek lower case letter does not
+           survive that: ρ becomes Ρ and χ becomes Χ, which read as a Latin P and
+           X. A key whose label IS the symbol opts out. */
+        var kOpen = s.raw ? '<span class="k" style="text-transform:none">' : '<span class="k">';
+        return '<div class="stat">' + kOpen + s.k + '</span><span class="v"' + (col ? ' style="color:' + col + (s.k === "verdict" ? ";font-size:.95rem" : "") + '"' : "") + '>' + s.v + "</span></div>";
       }).join("");
     }
-    function refresh() { _d = compute(); renderStats(); draw(); }
+    /* the by-hand panel: the arithmetic, then the cell, then the sentence */
+    function renderHand() {
+      var h = _d.hand, out = h.rows.map(function (r) { return "<tr><th>" + r[0] + "</th><td>" + r[1] + "</td></tr>"; });
+      var show = function (x) { return h.rho ? fmtRho(x) : (h.dec === 2 ? x.toFixed(2) : num(x)); };
+      var critTxt, verdict, ok;
+      if (h.crit === null || h.crit === undefined || !isFinite(h.crit)) {
+        critTxt = "no cell at " + alphaLabel(h.oneSided) + " for a sample this small";
+        verdict = "the table cannot decide this one";
+        ok = null;
+      } else {
+        critTxt = h.sym + "* = " + (h.rho ? fmtRho(h.crit) : (h.dec === 2 ? h.crit.toFixed(2) : num(h.crit))) + " at " + alphaLabel(h.oneSided);
+        ok = h.ceiling ? h.stat <= h.crit : h.stat >= h.crit;
+        verdict = show(h.stat) + (h.ceiling ? (ok ? " ≤ " : " > ") : (ok ? " ≥ " : " < ")) +
+          (h.rho ? fmtRho(h.crit) : (h.dec === 2 ? h.crit.toFixed(2) : num(h.crit))) +
+          ", so " + (ok ? "reject H₀" : "keep H₀");
+      }
+      out.push("<tr><th>the critical value</th><td>" + critTxt + "</td></tr>");
+      if (h.exact !== null && h.exact !== undefined) {
+        out.push("<tr><th>the exact <em>p</em>, counted rather than approximated</th><td>" + fmtP(h.exact) + "</td></tr>");
+      } else if (h.tied) {
+        out.push("<tr><th>the exact <em>p</em></th><td>ties present, so the counted null distribution no longer applies</td></tr>");
+      }
+      out.push('<tr class="rv-read"><th>the reading</th><td class="' + (ok === null ? "rv-no" : ok ? "rv-yes" : "rv-no") + '">' + verdict + "</td></tr>");
+      elHand.innerHTML = "<tbody>" + out.join("") + "</tbody>";
+      elHandHead.textContent = "By hand, against " + CFG[cur].tbl;
+    }
+    function refresh() { _d = compute(); renderStats(); renderHand(); draw(); }
     function startAnim() {
       if (VIZ.reducedMotion()) { anim = 1; refresh(); return; }
       anim = 0; animT0 = performance.now();
@@ -565,29 +868,80 @@
         if (t < 1) animReq = requestAnimationFrame(step);
       })();
     }
+    function heightFor(tab) {
+      if (tab === "fr") return 300;
+      if (tab === "sp") return Math.min(400, 70 + 24 * DATA.sp.x.length);
+      return 215;
+    }
+    function syncSlider() {
+      var s = nudge[cur];
+      slider.min = s.lo; slider.max = s.hi; slider.step = s.step; slider.value = s.v;
+      elVal.textContent = s.label + ": " + s.v;
+    }
     function setTab(tab) {
       cur = tab;
       Array.prototype.forEach.call(seg.querySelectorAll("button"), function (b) { b.classList.toggle("active", b.dataset.tab === tab); });
-      var c = CFG[tab];
-      slider.min = c.min; slider.max = c.max; slider.value = nudge[tab];
-      elVal.textContent = c.label + ": " + nudge[tab];
-      elCap.textContent = c.cap; elNote.textContent = c.note;
-      H = tab === "fr" ? 300 : 215; fit();
+      if (!nudge[tab]) resetNudge(tab);
+      syncSlider();
+      elCap.textContent = CFG[tab].cap; elNote.textContent = CFG[tab].note;
+      H = heightFor(tab); fit();
       startAnim();
     }
 
+    /* ---------- URL data, through the shared helpers ---------- */
+    function loadGroups(raw) {
+      var got = (window.SC && window.SC.groupParam) ? window.SC.groupParam(String(raw), 5, 20) : null;
+      if (!got) return;
+      if (cur === "mw") {
+        if (got.length !== 2 || got[0].length < 3 || got[1].length < 3) return;
+        DATA.mw = { g: [got[0], got[1]], ring: argmax(got[1]) };
+      } else if (cur === "wx") {
+        if (got.length !== 2 || got[0].length !== got[1].length || got[0].length < 4) return;
+        var diffs = got[1].map(function (v, i) { return v - got[0][i]; });
+        DATA.wx = { before: got[0], after: got[1], ring: argmax(diffs) };
+      } else if (cur === "kw") {
+        if (got.length < 2 || got.length > 5) return;
+        DATA.kw = { g: got, ring: argmax(got[got.length - 1]) };
+      } else return;             // Friedman and Spearman are not group data
+      resetNudge(cur); syncSlider(); H = heightFor(cur); fit(); startAnim();
+    }
+    function loadPairs(raw) {
+      var got = (window.SC && window.SC.pairParam) ? window.SC.pairParam(String(raw), 30) : null;
+      if (!got || cur !== "sp") return;
+      DATA.sp = { x: got.map(function (p) { return p.x; }), y: got.map(function (p) { return p.y; }), ring: 0 };
+      DATA.sp.ring = argmax(DATA.sp.y);
+      resetNudge("sp"); syncSlider(); H = heightFor("sp"); fit(); startAnim();
+    }
+
     seg.addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) setTab(b.dataset.tab); });
-    slider.addEventListener("input", function () { nudge[cur] = +this.value; elVal.textContent = CFG[cur].label + ": " + nudge[cur]; anim = 1; refresh(); });
+    slider.addEventListener("input", function () {
+      var v = +this.value;
+      nudge[cur].v = v; nudgeSpec(cur).set(v);
+      elVal.textContent = nudge[cur].label + ": " + v;
+      anim = 1; refresh();
+    });
+    segA.addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      ALPHA = +b.getAttribute("data-a");
+      Array.prototype.forEach.call(segA.querySelectorAll("button"), function (x) { x.classList.toggle("active", x === b); });
+      refresh();                     // the critical value is built inside compute()
+    });
+    segT.addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      TAILS = +b.getAttribute("data-t");
+      Array.prototype.forEach.call(segT.querySelectorAll("button"), function (x) { x.classList.toggle("active", x === b); });
+      refresh();
+    });
     window.addEventListener("resize", VIZ.rafThrottle(function () { fit(); draw(); }));
     if (window.ResizeObserver) new ResizeObserver(VIZ.rafThrottle(function () { fit(); draw(); })).observe(canvas);
     VIZ.onTheme(function () { refresh(); });
-    // deep-link: #mann-whitney / #wilcoxon / #kruskal-wallis / #friedman pre-selects its tab
-    var HASH = { "#mann-whitney": "mw", "#wilcoxon": "wx", "#kruskal-wallis": "kw", "#friedman": "fr" };
+    // deep-link: #mann-whitney / #wilcoxon / #kruskal-wallis / #friedman / #spearman pre-selects its tab
+    var HASH = { "#mann-whitney": "mw", "#wilcoxon": "wx", "#kruskal-wallis": "kw", "#friedman": "fr", "#spearman": "sp" };
     setTab(HASH[location.hash] || "mw");
     window.addEventListener("hashchange", function () { if (HASH[location.hash]) setTab(HASH[location.hash]); });
 
-    /* URL preset, applied last (see the head comment) */
-    if (window.SC && SC.preset) SC.preset({ tab: "#rv-seg" });
+    /* URL presets, applied last (see the head comment) */
+    if (window.SC && SC.preset) SC.preset({ tab: "#rv-seg", g: loadGroups, data: loadPairs, alpha: "#rv-alpha", tails: "#rv-tails" });
   })();
   </script>
 </body>
