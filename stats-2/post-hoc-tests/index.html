@@ -16,25 +16,60 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Post-Hoc Tests — StatsCapybara</title>
-  <meta name="description" content="Run enough comparisons and a false positive becomes almost certain. See how the family-wise error rate inflates — and how Bonferroni reins it back in." />
+  <meta name="description" content="Planned contrasts, pairwise comparisons on one pooled error term, and the Bonferroni critical value that decides them. Build a contrast, read its interval." />
   <link rel="canonical" href="https://statscapybara.com/stats-2/post-hoc-tests/" />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Post-Hoc Tests — StatsCapybara" />
-  <meta property="og:description" content="Run enough comparisons and a false positive becomes almost certain. See how the family-wise error rate inflates — and how Bonferroni reins it back in." />
+  <meta property="og:description" content="Planned contrasts, pairwise comparisons on one pooled error term, and the Bonferroni critical value that decides them. Build a contrast, read its interval." />
   <meta property="og:image" content="https://statscapybara.com/assets/og-stats-2.png" />
   <meta property="og:url" content="https://statscapybara.com/stats-2/post-hoc-tests/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Post-Hoc Tests — StatsCapybara" />
-  <meta name="twitter:description" content="Run enough comparisons and a false positive becomes almost certain. See how the family-wise error rate inflates — and how Bonferroni reins it back in." />
+  <meta name="twitter:description" content="Planned contrasts, pairwise comparisons on one pooled error term, and the Bonferroni critical value that decides them. Build a contrast, read its interval." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-2.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <style>
+    /* Contrast Builder (P90): the editable dataset, the coefficient row, the
+       picture, and the pairwise table. Same shape as §2.2's Build the ANOVA
+       Table, which this widget borrows its error term from. */
+    .cb-data { display:flex; flex-wrap:wrap; gap:.45rem .9rem; margin:.2rem 0 .35rem; }
+    .cb-field { display:flex; align-items:center; gap:.4rem; }
+    .cb-field label { font-size:.8rem; font-weight:600; color:var(--text-muted); }
+    .cb-in { width:min(170px,46vw); font:inherit; font-size:.82rem; font-family:var(--mono);
+      padding:.2rem .4rem; border:1.5px solid var(--border); border-radius:6px;
+      background:var(--surface); color:var(--text); }
+    .cb-in.bad { border-color:#e24b4a; }
+    .cb-sum { display:flex; flex-wrap:wrap; gap:.3rem .8rem; font-family:var(--mono);
+      font-size:.75rem; color:var(--text-faint); margin:.1rem 0 .55rem; }
+    .cb-coef, .cb-quick { display:flex; flex-wrap:wrap; align-items:center; gap:.4rem .55rem; margin:.15rem 0; }
+    .cb-clab { font-size:.8rem; font-weight:600; color:var(--text-muted); }
+    .cb-row { display:flex; flex-wrap:wrap; gap:.35rem; }
+    .cb-cell { display:flex; flex-direction:column; align-items:center; gap:.12rem; }
+    .cb-cell span { font-size:.68rem; color:var(--text-faint); }
+    .cb-cin { width:74px; font:inherit; font-family:var(--mono); font-size:.8rem; text-align:right;
+      padding:.15rem .3rem; border:1.5px solid var(--border); border-radius:6px;
+      background:var(--surface); color:var(--text); }
+    .cb-cin.pos { border-color:#6366f1; }
+    .cb-cin.neg { border-color:#f97316; }
+    .cb-zero { font-family:var(--mono); font-size:.78rem; font-weight:700; }
+    .cb-note { font-size:.78rem; color:var(--text-muted); margin:.15rem 0 .6rem; }
+    .cb-cap { font-size:.82rem; color:var(--text-muted); margin:.35rem 0 .3rem; }
+    .cbtab { border-collapse:collapse; font-size:.82rem; margin:.3rem 0; min-width:560px; }
+    .cbtab th, .cbtab td { border:1px solid var(--border); padding:.28rem .5rem;
+      text-align:right; font-family:var(--mono); }
+    .cbtab th { background:var(--surface-2); font-weight:600; color:var(--text-muted); font-family:inherit; }
+    .cbtab th.cb-pair, .cbtab td.cb-pair { text-align:left; font-family:inherit; }
+    .cbtab td.yes { color:#22c55e; font-weight:700; }
+    .cbtab td.no { color:var(--text-faint); }
+    #cb-pairstats[hidden], #cb-one[hidden], #cb-onestats[hidden] { display:none; }
+  </style>
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
-  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Post-Hoc Tests", "description": "Run enough comparisons and a false positive becomes almost certain. See how the family-wise error rate inflates — and how Bonferroni reins it back in.", "url": "https://statscapybara.com/stats-2/post-hoc-tests/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: ANOVA & Regression", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Post-Hoc Tests", "item": "https://statscapybara.com/stats-2/post-hoc-tests/"}]}]
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Post-Hoc Tests", "description": "Planned contrasts, pairwise comparisons on one pooled error term, and the Bonferroni critical value that decides them. Build a contrast, read its interval.", "url": "https://statscapybara.com/stats-2/post-hoc-tests/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: ANOVA & Regression", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Post-Hoc Tests", "item": "https://statscapybara.com/stats-2/post-hoc-tests/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "My design compares several treatments against one control. Do I still use Tukey?", "acceptedAnswer": {"@type": "Answer", "text": "Only if the treatments' differences from each other are genuinely of interest. Tukey corrects for all k(k − 1)/2 pairs, which with five groups is ten comparisons when the design only asked four questions, and the six nobody wanted are still paid for in power. Dunnett's test corrects for the k − 1 comparisons against the control instead. What it will not survive is being chosen late: the family belongs to the design, so switching to Dunnett once the treatment-versus-treatment contrasts have come back null is the same move as dropping an inconvenient condition. Name the comparison set in the write-up, so a reader knows what the correction covered."}}, {"@type": "Question", "name": "Do I have to correct for every test in my whole paper?", "acceptedAnswer": {"@type": "Answer", "text": "No, and nobody does. A correction protects a family of tests, and defining the family is a judgment you make and then state, not something the software decides. The workable convention is that a family is a set of tests bearing on one question: all pairwise comparisons within one ANOVA, or the several outcomes you would treat as interchangeable evidence for a single claim. Tests answering genuinely separate questions belong to separate families. The rule that keeps this honest is the one on timing: decide the boundaries when you plan the analysis, because a family redrawn after seeing which p-values landed where is just p-hacking with extra arithmetic."}}, {"@type": "Question", "name": "Do I need a significant ANOVA before running post-hoc tests?", "acceptedAnswer": {"@type": "Answer", "text": "Tradition says yes, and it's a sensible discipline against fishing. Strictly, though, tests like Tukey's HSD control the family-wise error on their own — they don't need the omnibus F as a gatekeeper, and the two can occasionally disagree (a significant Tukey pair under a non-significant F, or vice versa). Follow your field's convention, but know the protection comes from the correction, not the F."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "My design compares several treatments against one control. Do I still use Tukey?", "acceptedAnswer": {"@type": "Answer", "text": "Only if the treatments' differences from each other are genuinely of interest. Tukey corrects for all k(k − 1)/2 pairs, which with five groups is ten comparisons when the design only asked four questions, and the six nobody wanted are still paid for in power. Dunnett's test corrects for the k − 1 comparisons against the control instead. What it will not survive is being chosen late: the family belongs to the design, so switching to Dunnett once the treatment-versus-treatment contrasts have come back null is the same move as dropping an inconvenient condition. Name the comparison set in the write-up, so a reader knows what the correction covered."}}, {"@type": "Question", "name": "Do I have to correct for every test in my whole paper?", "acceptedAnswer": {"@type": "Answer", "text": "No, and nobody does. A correction protects a family of tests, and defining the family is a judgment you make and then state, not something the software decides. The workable convention is that a family is a set of tests bearing on one question: all pairwise comparisons within one ANOVA, or the several outcomes you would treat as interchangeable evidence for a single claim. Tests answering genuinely separate questions belong to separate families. The rule that keeps this honest is the one on timing: decide the boundaries when you plan the analysis, because a family redrawn after seeing which p-values landed where is just p-hacking with extra arithmetic."}}, {"@type": "Question", "name": "How many planned contrasts can I run before I have to correct them?", "acceptedAnswer": {"@type": "Answer", "text": "The working rule most courses teach is that a small set fixed in advance needs little or no correction, and small means at most I − 1 of them, one fewer than the number of groups. That ceiling is not a convention someone picked. Exactly I − 1 contrasts can be built to be mutually orthogonal, meaning each asks about variation the others leave alone, and between them they carve up SSG with nothing left over and nothing counted twice. Two contrasts are orthogonal when the products of their matching coefficients sum to zero, which with equal group sizes is just Σaᵢbᵢ = 0: on four groups, [1, −1, 0, 0] and [0, 0, 1, −1] pass, while [1, −1, 0, 0] and [1, 0, −1, 0] overlap on the first group and do not. Ask more than I − 1 questions, or ask overlapping ones, and the family-wise rate starts climbing again, so six planned contrasts on four groups is exploration and should be corrected and described as such. Nothing here licenses picking which I − 1 after the means are in front of you."}}]}
   </script>
 </head>
 <body data-course="stats-2" data-section="post-hoc-tests">
@@ -86,6 +121,149 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
+        <h2 id="planned-contrasts">A contrast asks one specific question</h2>
+        <p>Six comparisons is what you pay for arriving at the data with no question. Most studies arrive with one or two. A trial of four fertilizer doses, one of which is no fertilizer at all, was designed to find out whether feeding the seedlings helps, and perhaps whether more is better. Neither of those is a pair.</p>
+        <p>A <strong>contrast</strong> asks exactly the question the design had in mind. It is a weighted combination of the group means:</p>
+        <p style="text-align:center;font-family:var(--mono);font-size:1rem;margin:1rem 0">ψ = a<sub>1</sub>μ<sub>1</sub> + a<sub>2</sub>μ<sub>2</sub> + &hellip; + a<sub>I</sub>μ<sub>I</sub>, &nbsp; with Σa<sub>i</sub> = 0</p>
+        <p>ψ (psi) is the quantity being estimated, and the <strong>contrast coefficients</strong> a<sub>i</sub> carry the question. Making them sum to zero is what turns ψ into a comparison rather than a level: if all <em>I</em> population means were identical, ψ would come out at zero for any zero-sum coefficients, whatever that common mean happened to be.</p>
+        <p>Two shapes cover most of what a course asks for. Coefficients of [1, &minus;1, 0, 0] subtract the second group's mean from the first and ignore the rest, which is an ordinary pairwise comparison written as a contrast. Coefficients of [1, &minus;&#8531;, &minus;&#8531;, &minus;&#8531;] set the first group against the average of the other three, a <strong>complex contrast</strong> asking something no single pair can ask.</p>
+        <p>That second one is also written [3, &minus;1, &minus;1, &minus;1], and the two really are the same contrast. Multiplying every coefficient by 3 multiplies the estimate by 3 and its standard error by 3, so the <em>t</em> ratio is untouched and the <em>p</em>-value with it. What changes is the units the estimate reads in. The fractional version estimates the gap between the control mean and the average of the other three, in the outcome's own units. The whole-number version estimates three times that gap, which is the version SPSS wants typed into its dialog, since whole numbers are easier to enter without rounding.</p>
+
+        <h3>Estimating it, testing it, and putting an interval on it</h3>
+        <p>Swap the population means for the sample means and you have the estimate, ψ&#770; = Σa<sub>i</sub>x&#772;<sub>i</sub>. Its standard error borrows the error term from the <a href="../../stats-2/one-way-anova/">ANOVA table</a> rather than rebuilding one:</p>
+        <p style="text-align:center;font-family:var(--mono);font-size:1rem;margin:1rem 0">SE<sub>ψ&#770;</sub> = &radic;( MS<sub>E</sub> &middot; Σ a<sub>i</sub>&sup2;/n<sub>i</sub> )</p>
+        <p>and the test statistic is that estimate over its standard error,</p>
+        <p style="text-align:center;font-family:var(--mono);font-size:1rem;margin:1rem 0">t = ψ&#770; / SE<sub>ψ&#770;</sub>, &nbsp; on df = N &minus; I</p>
+        <p>on the error degrees of freedom from the same table, not on the degrees of freedom the groups in the contrast would have supplied by themselves. This is the practical dividend the omnibus table pays. A comparison between two groups of four is tested on 12 degrees of freedom rather than 6, because MS<sub>E</sub> was estimated from all sixteen seedlings.</p>
+        <p>The confidence interval uses the same two ingredients:</p>
+        <p style="text-align:center;font-family:var(--mono);font-size:1rem;margin:1rem 0">ψ&#770; &plusmn; t* &middot; SE<sub>ψ&#770;</sub></p>
+        <p>with t* the two-tailed critical value at your &alpha; on those degrees of freedom. A significant <em>t</em> and an interval that excludes zero are one fact stated twice, since both are the same inequality rearranged. Report the interval, because it carries a size and the <em>t</em> does not.</p>
+
+        <h3>Worked, on the seedlings</h3>
+        <p>The four fertilizer doses in <a href="../../stats-2/one-way-anova/#atviz">Build the ANOVA Table</a> gave mean heights of 13, 17, 19 and 23 centimeters on four seedlings each, with MS<sub>E</sub> = 4.00 on 12 degrees of freedom. The planned question was whether any dose beats none, so the control takes a coefficient of 1 and the three fed groups share &minus;1 between them:</p>
+        <p style="text-align:center;font-family:var(--mono);font-size:.95rem;margin:1rem 0;line-height:1.9">ψ&#770; = 13 &minus; (17 + 19 + 23)/3 = 13 &minus; 19.67 = &minus;6.67 cm<br />Σa<sub>i</sub>&sup2;/n<sub>i</sub> = (1 + &#8539; + &#8539; + &#8539;)/4 = &#8531;<br />SE = &radic;(4.00 &times; &#8531;) = 1.15<br />t = &minus;6.67 / 1.15 = &minus;5.77 on 12 df, two-tailed p = .00009</p>
+        <p>With t*(12) = 2.179 the interval is &minus;6.67 &plusmn; 2.179 &times; 1.15, or [&minus;9.18, &minus;4.15] centimeters. Fed seedlings out-grow unfed ones by somewhere between four and nine centimeters on average, and the reason that reads as a plain sentence is that the fractional coefficients kept the estimate in centimeters. Run the identical numbers as [3, &minus;1, &minus;1, &minus;1] and you get ψ&#770; = &minus;20.00, SE = 3.46, the same <em>t</em> of &minus;5.77, and the interval [&minus;27.55, &minus;12.45], which is the first interval multiplied by three.</p>
+        <p>A planned contrast is also one of the few places where a one-tailed test is not a dodge. Fertilizer was never going to shrink the seedlings, the direction was written into the design, and halving the two-tailed <em>p</em> to .00004 is honest arithmetic. The condition is the one thing a reader cannot check: the direction has to have been chosen before the data arrived, and the write-up has to say so.</p>
+
+        <h3>Planned or post-hoc</h3>
+        <p>The lecture's distinction is about timing and count, not about the formulas, which are identical either way.</p>
+        <table class="ref-table">
+          <thead>
+            <tr><th>&nbsp;</th><th>Planned contrast</th><th>Post-hoc comparison</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Chosen</td><td>before the data existed</td><td>after seeing which means look interesting</td></tr>
+            <tr><td>How many</td><td>a few, one per research question</td><td>all <em>I</em>(<em>I</em> &minus; 1)/2 pairs</td></tr>
+            <tr><td>Direction</td><td>often one-tailed, because theory said which way</td><td>two-tailed</td></tr>
+            <tr><td>Correction</td><td>little or none for a small planned set</td><td>required</td></tr>
+            <tr><td>What it costs</td><td>you can only ask what you planned</td><td>power, paid on every comparison</td></tr>
+          </tbody>
+        </table>
+        <p>Nothing in a set of coefficients tells a reader when it was chosen. A dated analysis plan is what makes a contrast planned, ideally a <a href="../../methods/preregistration-and-open-science/">pre-registered</a> one, and without that record the honest label for any comparison is post-hoc.</p>
+
+        <!-- ============ INTERACTIVE 2 ============ -->
+        <div class="viz" id="cbviz">
+          <p class="viz-title">🎮 Contrast Builder</p>
+          <p class="viz-sub">The same four fertilizer doses, with MS<sub>E</sub> borrowed from their ANOVA table rather than recomputed. Type a set of coefficients and the estimate, its standard error, the <em>t</em> and the interval follow; the row is refused until they sum to zero. Switch to All pairs and every pairwise comparison is laid out against the plain and the Bonferroni critical value at once.</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>What to test</label>
+              <div class="seg" id="cb-mode">
+                <button type="button" data-m="one" class="active">One contrast</button><button type="button" data-m="pairs">All pairs</button>
+              </div>
+            </div>
+            <div class="control">
+              <label>&alpha; for the family</label>
+              <div class="seg" id="cb-alpha">
+                <button type="button" data-a="0.1">.10</button><button type="button" data-a="0.05" class="active">.05</button><button type="button" data-a="0.01">.01</button>
+              </div>
+            </div>
+            <div class="control">
+              <label>Start over</label>
+              <button type="button" id="cb-reset" class="btn btn-ghost btn-sm">Back to the seedlings</button>
+            </div>
+          </div>
+
+          <div class="cb-data" id="cb-data"></div>
+          <div class="cb-sum" id="cb-sum"></div>
+
+          <div class="cb-one" id="cb-one">
+            <div class="cb-coef">
+              <span class="cb-clab">Coefficients a<sub>i</sub></span>
+              <div class="cb-row" id="cb-coefs"></div>
+              <span class="cb-zero" id="cb-zero">&nbsp;</span>
+            </div>
+            <div class="cb-quick">
+              <span class="cb-clab">Quick fill</span>
+              <button type="button" class="btn btn-ghost btn-sm" data-q="ctrl">Control vs. rest</button>
+              <button type="button" class="btn btn-ghost btn-sm" data-q="pair">First vs. last</button>
+              <button type="button" class="btn btn-ghost btn-sm" data-q="trend">Linear trend</button>
+            </div>
+          </div>
+          <p class="cb-note" id="cb-note">&nbsp;</p>
+
+          <canvas id="cb-canvas"></canvas>
+          <p class="cb-cap" id="cb-cap">&nbsp;</p>
+
+          <div id="cb-onestats">
+            <div class="stat-row">
+              <div class="stat"><span class="k">Contrast estimate</span><span class="v" id="cb-psi">—</span></div>
+              <div class="stat"><span class="k">Standard error</span><span class="v" id="cb-se">—</span></div>
+              <div class="stat"><span class="k">t statistic</span><span class="v" id="cb-t">—</span></div>
+              <div class="stat"><span class="k">Error df</span><span class="v" id="cb-df">—</span></div>
+            </div>
+            <div class="stat-row">
+              <div class="stat"><span class="k">p, two-tailed</span><span class="v" id="cb-p2">—</span></div>
+              <div class="stat"><span class="k">p, one-tailed</span><span class="v" id="cb-p1">—</span></div>
+              <div class="stat"><span class="k">Confidence interval</span><span class="v" id="cb-ci" style="font-size:.95rem">—</span></div>
+            </div>
+          </div>
+
+          <div id="cb-pairstats" hidden>
+            <div class="stat-row">
+              <div class="stat"><span class="k">Pooled SD</span><span class="v" id="cb-sp">—</span></div>
+              <div class="stat"><span class="k">Comparisons</span><span class="v" id="cb-m">—</span></div>
+              <div class="stat"><span class="k">Bonferroni per-test &alpha;</span><span class="v" id="cb-ab">—</span></div>
+              <div class="stat"><span class="k">Plain critical t*</span><span class="v" id="cb-tc">—</span></div>
+              <div class="stat"><span class="k">Bonferroni critical t**</span><span class="v" id="cb-tcb">—</span></div>
+            </div>
+            <div class="hscroll"><table class="cbtab" id="cb-table"></table></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE 2 ============ -->
+
+        <h2 id="pairwise-by-hand">Every pair, one pooled error term</h2>
+        <p>Exploratory follow-ups are contrasts too, one per pair, carrying 1 and &minus;1 on the two groups involved and zero everywhere else. Put those coefficients through the formulas above, simplify, and what falls out is the version worth memorizing before an exam:</p>
+        <p style="text-align:center;font-family:var(--mono);font-size:1rem;margin:1rem 0">t = (x&#772;<sub>i</sub> &minus; x&#772;<sub>j</sub>) / ( s<sub>p</sub> &radic;(1/n<sub>i</sub> + 1/n<sub>j</sub>) ), &nbsp; s<sub>p</sub> = &radic;MS<sub>E</sub>, &nbsp; df = N &minus; I</p>
+        <p>That is not the <a href="../../stats-1/independent-samples-t-test/">two-sample t-test</a> run again on two of the groups. The two-sample test builds its spread out of the two groups in front of it and tests on n<sub>i</sub> + n<sub>j</sub> &minus; 2 degrees of freedom. This one borrows s<sub>p</sub> from all <em>I</em> groups, so the same comparison gets a better-estimated denominator and more degrees of freedom to test it against. What pays for that is the assumption the ANOVA already made, that every group is drawing from populations of equal spread. When that assumption fails, the borrowing fails with it, which is what <a href="#unequal-variances">Games&ndash;Howell</a> further down is for.</p>
+        <p>On the seedlings, s<sub>p</sub> = &radic;4.00 = 2.00 and every pair has the same standard error, 2.00 &times; &radic;(&frac14; + &frac14;) = 1.41, because the groups are the same size. Six comparisons, all on 12 degrees of freedom:</p>
+        <table class="ref-table">
+          <thead>
+            <tr><th>Comparison</th><th>Difference</th><th><em>t</em></th><th><em>p</em></th><th>Plain, t* = 2.179</th><th>Bonferroni, t** = 3.153</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>None vs. Low</td><td>&minus;4.00</td><td>&minus;2.83</td><td>.015</td><td>reject</td><td>keep</td></tr>
+            <tr><td>None vs. Medium</td><td>&minus;6.00</td><td>&minus;4.24</td><td>.001</td><td>reject</td><td>reject</td></tr>
+            <tr><td>None vs. High</td><td>&minus;10.00</td><td>&minus;7.07</td><td>.000013</td><td>reject</td><td>reject</td></tr>
+            <tr><td>Low vs. Medium</td><td>&minus;2.00</td><td>&minus;1.41</td><td>.183</td><td>keep</td><td>keep</td></tr>
+            <tr><td>Low vs. High</td><td>&minus;6.00</td><td>&minus;4.24</td><td>.001</td><td>reject</td><td>reject</td></tr>
+            <tr><td>Medium vs. High</td><td>&minus;4.00</td><td>&minus;2.83</td><td>.015</td><td>reject</td><td>keep</td></tr>
+          </tbody>
+        </table>
+        <p>The Bonferroni column is the whole idea in one column. Six comparisons at a family-wise .05 means each must clear .05/6 = .0083, and the <em>t</em> that cuts off .0083 in two tails on 12 degrees of freedom is <strong>t** = 3.153</strong>, against the plain t* of 2.179. Two comparisons change their answer, both of them the ones sitting at <em>t</em> = 2.83 between the two bars. Doubling the fertilizer from Low to High is the difference the correction refuses to certify on four seedlings a dose.</p>
+        <p>The gap between the two critical values widens as the family grows and narrows as degrees of freedom accumulate, so it is far less punishing on a real study than on sixteen seedlings. Three comparisons on 73 error degrees of freedom need t** = 2.450 where the uncorrected critical value is 1.993, a bar about a quarter higher rather than half again.</p>
+
+        <h3>Simultaneous confidence intervals</h3>
+        <p>The interval version of the same correction swaps one critical value for the other:</p>
+        <p style="text-align:center;font-family:var(--mono);font-size:1rem;margin:1rem 0">(x&#772;<sub>i</sub> &minus; x&#772;<sub>j</sub>) &plusmn; t** &middot; s<sub>p</sub> &radic;(1/n<sub>i</sub> + 1/n<sub>j</sub>)</p>
+        <p>Built on t** rather than t*, the whole set of intervals holds at 95% <em>together</em>, which is what <strong>simultaneous</strong> means here: 95% of the time, every interval in the family covers its own true difference. For None versus Low that is &minus;4.00 &plusmn; 3.153 &times; 1.41, or [&minus;8.46, 0.46], and it contains zero exactly as the corrected test declined to reject. The ordinary 95% interval on the same pair, [&minus;7.08, &minus;0.92], does not contain zero. Both are correct answers to different questions, and a results section that prints corrected <em>p</em>-values beside uncorrected intervals is answering both at once without telling the reader which is which.</p>
+
+        <h3>Two ways to write the same decision</h3>
+        <p>Bonferroni has two reporting conventions, and they look different enough on the page to confuse a reader who has only met one of them.</p>
+        <p>The first divides &alpha; and leaves the <em>p</em>-value alone: <em>t</em>(73) = 6.62, <em>p</em> &lt; .017, where .017 is .05/3 and the reader is being shown which bar this <em>p</em> had to clear. The second leaves &alpha; at .05 and multiplies the <em>p</em>-value by the number of comparisons instead, capping it at 1. The seedlings' None-versus-Low <em>p</em> of .0152 becomes 6 &times; .0152 = .091 that way, and .091 against .05 delivers the same verdict t** = 3.153 delivered.</p>
+        <p>SPSS prints the second. The <em>Sig.</em> column of its Multiple Comparisons table under Bonferroni already carries the multiplication, so it is read against .05 like any ordinary <em>p</em>-value, and dividing .05 by the number of comparisons before comparing would correct the same family twice. Whichever convention you use, name it, because the family size is not recoverable from the numbers and the two cannot be converted into each other without it.</p>
+
         <h2>How corrections fix it</h2>
         <p>The idea is to make each individual test more demanding so the <em>overall</em> error stays at 5%:</p>
         <ul>
@@ -122,15 +300,12 @@
           <p><strong>Which one you want depends on what a mistake costs.</strong> Controlling the family-wise rate suits confirmatory work where one false claim discredits the paper. Controlling the false discovery rate suits screening, where the output is a shortlist that something else will check anyway. Say which you used; the two are not interchangeable, and a reader cannot tell from the p-values alone.</p>
         </div>
 
-        <h2>Planned vs. post-hoc</h2>
-        <p>If you decided <em>before</em> seeing the data to test just a couple of specific comparisons (planned contrasts), you need little or no correction, because you're not fishing. The heavy correction is the price of <em>exploring</em> all pairs after the fact, which is exactly what "post-hoc" (Latin for "after this") means.</p>
-
         <div class="callout">
           <p><strong>Why it matters:</strong> the multiple-comparisons problem is everywhere — A/B testing, genomics, brain imaging, dredging survey data. Understanding why error inflates, and how to control it, is one of the most practically important ideas in all of statistics.</p>
         </div>
 
 
-        <p class="pb-xref"><a href="../../problems.html#p2-2">Problem 14 of the practice problems</a> takes the significant ANOVA from Problem 13 and hunts down where the difference actually lives, by Bonferroni and by Tukey’s HSD, on the same three group means.</p>
+        <p class="pb-xref"><a href="../../problems.html#p2-2">Problem 14 of the practice problems</a> takes the significant ANOVA from Problem 13 and hunts down where the difference actually lives, by Bonferroni and by Tukey’s HSD, on the same three group means. <a href="../../problems.html#p2-13">Problem 25</a> works a control-versus-treatments contrast from four groups’ standard deviations through to its confidence interval, and <a href="../../problems.html#p2-14">Problem 26</a> runs three pairwise comparisons on one pooled error term and writes the corrected result up.</p>
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
           <h2>Common questions</h2>
@@ -143,8 +318,8 @@
             <div class="faq-a"><p>No, and nobody does. A correction protects a <em>family</em> of tests, and defining the family is a judgment you make and then state, not something the software decides. The workable convention is that a family is a set of tests bearing on one question: all pairwise comparisons within one ANOVA, or the several outcomes you would treat as interchangeable evidence for a single claim. Tests answering genuinely separate questions belong to separate families. The rule that keeps this honest is the one on timing: decide the boundaries when you plan the analysis, because a family redrawn after seeing which p-values landed where is just <a href="../../ethics/questionable-research-practices/">p-hacking</a> with extra arithmetic.</p></div>
           </details>
           <details class="faq-item">
-            <summary>Do I need a significant ANOVA before running post-hoc tests?</summary>
-            <div class="faq-a"><p>Tradition says yes, and it's a sensible discipline against fishing. Strictly, though, tests like Tukey's HSD control the family-wise error on their own — they don't need the omnibus F as a gatekeeper, and the two can occasionally disagree (a significant Tukey pair under a non-significant F, or vice versa). Follow your field's convention, but know the protection comes from the correction, not the F.</p></div>
+            <summary>How many planned contrasts can I run before I have to correct them?</summary>
+            <div class="faq-a"><p>The working rule most courses teach is that a small set fixed in advance needs little or no correction, and small means at most <em>I</em> − 1 of them, one fewer than the number of groups. That ceiling is not a convention someone picked. Exactly <em>I</em> − 1 contrasts can be built to be mutually <strong>orthogonal</strong>, meaning each asks about variation the others leave alone, and between them they carve up SS<sub>G</sub> with nothing left over and nothing counted twice. Two contrasts are orthogonal when the products of their matching coefficients sum to zero, which with equal group sizes is just Σaᵢbᵢ = 0: on four groups, [1, −1, 0, 0] and [0, 0, 1, −1] pass, while [1, −1, 0, 0] and [1, 0, −1, 0] overlap on the first group and do not. Ask more than <em>I</em> − 1 questions, or ask overlapping ones, and the family-wise rate starts climbing again, so six planned contrasts on four groups is exploration and should be corrected and described as such. Nothing here licenses picking which <em>I</em> − 1 after the means are in front of you.</p></div>
           </details>
         </section>
         <!-- faq:end -->
@@ -286,5 +461,468 @@
     fit(); draw();
   })();
   </script>
+
+  <!-- ============ Contrast Builder (P90) ============
+       Deterministic throughout: every number is a closed-form function of the
+       values in the boxes and the coefficients beside them, so there is no
+       noise to freeze and nothing is ever reseeded. The p-values and the
+       critical values come from VIZ.tUpper and VIZ.tInv, the same functions
+       tables.html's calculator uses.
+
+       VIZ.sd divides by n. Every s, MSE and pooled SD printed here is the exam
+       dialect on n minus 1, so this script carries its own sampleSD() and
+       never calls VIZ.sd; math-check section 13 asserts the divisor on the
+       frozen default, the way section 12 does for §2.2's table.
+
+       The default coefficients are [3, -1, -1, -1] rather than the fractional
+       [1, -1/3, -1/3, -1/3] the prose leads with, because whole numbers are
+       exact: a third cannot be written in decimal, so a reader who types
+       -0.333 has a sum-to-zero row that misses by 1e-3. The zero test
+       therefore carries rounding slack rather than demanding an exact zero,
+       and the two scalings give the same t either way, which is the point the
+       prose makes above the widget.
+
+       URL presets (SC.preset, applied last):
+         ?g=<groups>   the dataset: commas inside a group, semicolons between
+                       groups, 2 to 5 groups of 2 to 12 numbers, parsed by
+                       SC.groupParam (the shared ?g= helper, which rejects a
+                       mangled parameter whole rather than half-reading it).
+         ?c=<coefs>    the contrast: one number per group, parsed by
+                       SC.dataParam so the boxes and the URL cannot drift
+                       apart. Rejected unless there is exactly one coefficient
+                       per group and they sum to zero.
+         ?mode=one|pairs   which of the two panels is showing.
+         ?alpha=.1|.05|.01 the family-wise alpha the criticals are read at.
+       g is listed first in the map because loading a dataset resizes the
+       coefficient row that ?c= then fills.
+  -->
+  <script>
+  (function () {
+    "use strict";
+    /* The same four fertilizer doses §2.2 builds its ANOVA table on: group
+       means 13, 17, 19 and 23 cm, MSE exactly 4.00 on 12 df, pooled SD 2.00. */
+    var LABELS = ["None", "Low", "Medium", "High"];
+    var D0 = [[15, 14, 12, 11], [20, 18, 16, 14], [21, 17, 19, 19], [25, 24, 22, 21]];
+    var C0 = [3, -1, -1, -1];
+    var EM = "—";
+    var IND = "#6366f1", ORA = "#f97316", GRN = "#22c55e";
+
+    var host = document.getElementById("cb-data");
+    var canvas = document.getElementById("cb-canvas");
+    if (!host || !canvas) return;
+
+    var K = 4, mode = "one", alpha = 0.05, coefBad = false;
+    var labels = LABELS.slice();
+    var text = D0.map(function (g) { return g.join(", "); });
+    var G = D0.map(function (g) { return g.slice(); });
+    var A = C0.slice();
+    var ctx, W = 0, H = 260;
+
+    function $(id) { return document.getElementById(id); }
+    function mean(a) { var s = 0, i; for (i = 0; i < a.length; i++) s += a[i]; return s / a.length; }
+    /* VIZ.sd divides by n, so it is never called here. */
+    function sampleSD(a) {
+      if (a.length < 2) return 0;
+      var m = mean(a), s = 0, i;
+      for (i = 0; i < a.length; i++) s += (a[i] - m) * (a[i] - m);
+      return Math.sqrt(s / (a.length - 1));
+    }
+    function f2(v) { return isFinite(v) ? v.toFixed(2) : EM; }
+    function f3(v) { return isFinite(v) ? v.toFixed(3) : EM; }
+    function pTxt(v) {
+      if (!isFinite(v)) return EM;
+      if (v < 0.0001) return "< .0001";
+      return v.toFixed(4).replace(/^0/, "");
+    }
+    function coefTxt(v) {
+      var s = Math.round(v * 1e6) / 1e6;
+      return (Math.abs(s - Math.round(s)) < 1e-9) ? String(Math.round(s)) : String(s);
+    }
+
+    /* ---------- the ANOVA error term, from the dataset alone ---------- */
+    function base() {
+      var all = [], i, j;
+      for (i = 0; i < K; i++) for (j = 0; j < G[i].length; j++) all.push(G[i][j]);
+      var N = all.length, means = [], ssw = 0;
+      for (i = 0; i < K; i++) {
+        var m = mean(G[i]);
+        means.push(m);
+        for (j = 0; j < G[i].length; j++) ssw += (G[i][j] - m) * (G[i][j] - m);
+      }
+      var dfE = N - K, mse = dfE > 0 ? ssw / dfE : NaN;
+      return { N: N, means: means, dfE: dfE, mse: mse,
+               sp: (isFinite(mse) && mse >= 0) ? Math.sqrt(mse) : NaN };
+    }
+
+    /* A contrast, from a coefficient vector and that error term. */
+    function contrast(a, b) {
+      var psi = 0, q = 0, i;
+      for (i = 0; i < K; i++) { psi += a[i] * b.means[i]; q += a[i] * a[i] / G[i].length; }
+      var se = Math.sqrt(b.mse * q);
+      var t = (isFinite(se) && se > 0) ? psi / se : NaN;
+      var tc = isFinite(b.dfE) && b.dfE > 0 ? VIZ.tInv(alpha / 2, b.dfE) : NaN;
+      return { psi: psi, se: se, t: t, tc: tc,
+               p2: isFinite(t) ? 2 * VIZ.tUpper(Math.abs(t), b.dfE) : NaN,
+               p1: isFinite(t) ? VIZ.tUpper(Math.abs(t), b.dfE) : NaN,
+               lo: psi - tc * se, hi: psi + tc * se };
+    }
+
+    /* Sum-to-zero, with slack: a reader who writes a third as -0.333 misses an
+       exact zero by 1e-3, and refusing that would be refusing the arithmetic
+       rather than a mistake. The slack scales with the coefficients so a row
+       of hundreds is judged on the same relative footing as a row of ones. */
+    function zeroSum(a) {
+      var s = 0, big = 0, i;
+      for (i = 0; i < a.length; i++) { s += a[i]; big = Math.max(big, Math.abs(a[i])); }
+      return { sum: s, ok: Math.abs(s) <= Math.max(1e-9, big * 2e-3) };
+    }
+    function allZero(a) {
+      for (var i = 0; i < a.length; i++) if (Math.abs(a[i]) > 1e-12) return false;
+      return true;
+    }
+
+    /* ---------- the editable dataset ---------- */
+    function buildData() {
+      var h = "", i;
+      for (i = 0; i < K; i++) {
+        h += '<div class="cb-field"><label for="cb-g' + i + '">' + labels[i] + '</label>' +
+             '<input type="text" class="cb-in" id="cb-g' + i + '" inputmode="decimal" spellcheck="false" value="' + text[i] + '" /></div>';
+      }
+      host.innerHTML = h;
+      for (i = 0; i < K; i++) {
+        var el = $("cb-g" + i);
+        if (el) el.addEventListener("input", readData);
+      }
+    }
+    /* One parser for the boxes and for the URL, so what counts as a valid
+       dataset cannot drift between the editor and a lecturer's link. */
+    function parseBoxes() {
+      var raw = [], i;
+      for (i = 0; i < K; i++) {
+        var el = $("cb-g" + i);
+        raw.push(el ? el.value : text[i]);
+      }
+      return (window.SC && SC.groupParam) ? SC.groupParam(raw.join(";"), 5, 12) : null;
+    }
+    function readData() {
+      var got = parseBoxes(), i, el;
+      if (!got || got.length !== K) {
+        for (i = 0; i < K; i++) { el = $("cb-g" + i); if (el) el.classList.add("bad"); }
+        setNote("Those numbers cannot be read. Every group needs between two and twelve values, separated by commas.");
+        return;
+      }
+      for (i = 0; i < K; i++) { el = $("cb-g" + i); if (el) { el.classList.remove("bad"); text[i] = el.value; } }
+      G = got;
+      update();
+    }
+
+    /* ---------- the coefficient row ---------- */
+    function buildCoefs() {
+      var box = $("cb-coefs");
+      if (!box) return;
+      var h = "", i;
+      for (i = 0; i < K; i++) {
+        h += '<div class="cb-cell"><input type="text" class="cb-cin" id="cb-a' + i + '" inputmode="decimal" ' +
+             'spellcheck="false" aria-label="Coefficient for ' + labels[i] + '" value="' + coefTxt(A[i]) + '" />' +
+             '<span>' + labels[i] + '</span></div>';
+      }
+      box.innerHTML = h;
+      for (i = 0; i < K; i++) {
+        var el = $("cb-a" + i);
+        if (el) el.addEventListener("input", readCoefs);
+      }
+    }
+    /* The coefficients go through SC.dataParam, the same strict numeric test
+       ?c= uses, so a typed row and a linked row are judged identically. */
+    function parseCoefBoxes() {
+      var raw = [], i;
+      for (i = 0; i < K; i++) {
+        var el = $("cb-a" + i);
+        raw.push(el ? el.value : coefTxt(A[i]));
+      }
+      return (window.SC && SC.dataParam) ? SC.dataParam(raw.join(","), 12) : null;
+    }
+    function readCoefs() {
+      var got = parseCoefBoxes();
+      coefBad = !got || got.length !== K;
+      if (!coefBad) A = got;
+      update();
+    }
+    function paintCoefs(z) {
+      var i;
+      for (i = 0; i < K; i++) {
+        var el = $("cb-a" + i);
+        if (!el) continue;
+        el.classList.remove("pos", "neg");
+        if (A[i] > 0) el.classList.add("pos");
+        else if (A[i] < 0) el.classList.add("neg");
+      }
+      var zs = $("cb-zero");
+      if (!zs) return;
+      if (!z) { zs.textContent = " "; zs.style.color = ""; return; }
+      zs.textContent = "sum " + coefTxt(Math.round(z.sum * 1e6) / 1e6);
+      zs.style.color = z.ok ? GRN : ORA;
+    }
+    function setNote(txt) { var n = $("cb-note"); if (n) n.textContent = txt; }
+
+    function quickFill(kind) {
+      var i, a = [];
+      if (kind === "ctrl") { a.push(K - 1); for (i = 1; i < K; i++) a.push(-1); }
+      else if (kind === "pair") { a.push(1); for (i = 1; i < K - 1; i++) a.push(0); a.push(-1); }
+      else { for (i = 0; i < K; i++) a.push(2 * i - (K - 1)); }
+      A = a;
+      coefBad = false;
+      buildCoefs();
+      update();
+    }
+
+    /* ---------- every pair, on the pooled error term ---------- */
+    function pairs(b) {
+      var out = [], i, j;
+      var m = K * (K - 1) / 2;
+      var tc = VIZ.tInv(alpha / 2, b.dfE), tcb = VIZ.tInv(alpha / (2 * m), b.dfE);
+      for (i = 0; i < K; i++) for (j = i + 1; j < K; j++) {
+        var se = b.sp * Math.sqrt(1 / G[i].length + 1 / G[j].length);
+        var d = b.means[i] - b.means[j], t = se > 0 ? d / se : NaN;
+        out.push({ i: i, j: j, d: d, se: se, t: t,
+                   p: isFinite(t) ? 2 * VIZ.tUpper(Math.abs(t), b.dfE) : NaN,
+                   lo: d - tcb * se, hi: d + tcb * se });
+      }
+      return { m: m, tc: tc, tcb: tcb, rows: out };
+    }
+    function drawPairTable(b, P) {
+      var host2 = $("cb-table");
+      if (!host2) return;
+      var h = '<thead><tr><th class="cb-pair">Comparison</th><th>Difference</th><th>t</th><th>p</th>' +
+              '<th>Plain</th><th>Bonferroni</th><th>Simultaneous interval</th></tr></thead><tbody>';
+      P.rows.forEach(function (r, ix) {
+        var plain = Math.abs(r.t) >= P.tc, bonf = Math.abs(r.t) >= P.tcb;
+        h += '<tr id="cb-r' + ix + '"><td class="cb-pair">' + labels[r.i] + " vs. " + labels[r.j] + '</td>' +
+             '<td>' + f2(r.d) + '</td><td>' + f2(r.t) + '</td><td>' + pTxt(r.p).replace("<", "&lt;") + '</td>' +
+             '<td class="' + (plain ? "yes" : "no") + '">' + (plain ? "reject" : "keep") + '</td>' +
+             '<td class="' + (bonf ? "yes" : "no") + '">' + (bonf ? "reject" : "keep") + '</td>' +
+             '<td>[' + f2(r.lo) + ", " + f2(r.hi) + ']</td></tr>';
+      });
+      host2.innerHTML = h + "</tbody>";
+    }
+
+    /* ---------- the picture ---------- */
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function draw(b, C, P) {
+      if (!ctx) return;
+      ctx.clearRect(0, 0, W, H);
+      var splitX = Math.round(W * 0.44), padT = 22, padB = 26, padL = 34;
+
+      /* left: the group means, each labeled with its own coefficient */
+      var lo = Math.min.apply(null, b.means), hi = Math.max.apply(null, b.means);
+      var pad = (hi - lo) * 0.35 || 1;
+      lo -= pad; hi += pad;
+      function vy(v) { return (H - padB) - ((v - lo) / (hi - lo)) * (H - padB - padT); }
+      var colW = (splitX - padL) / K, i;
+      ctx.fillStyle = VIZ.css("--text-muted"); ctx.font = "700 11px Inter,sans-serif"; ctx.textAlign = "left";
+      ctx.fillText("Group means", 4, 13);
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      for (i = 0; i < K; i++) {
+        var cx = padL + (i + 0.5) * colW, my = vy(b.means[i]);
+        var a = A[i], col = a > 0 ? IND : (a < 0 ? ORA : VIZ.css("--text-faint"));
+        ctx.strokeStyle = col; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(cx - colW * 0.34, my); ctx.lineTo(cx + colW * 0.34, my); ctx.stroke();
+        ctx.fillStyle = VIZ.css("--text-faint"); ctx.textAlign = "center"; ctx.font = "10px ui-monospace,monospace";
+        ctx.fillText(f2(b.means[i]), cx, my - 6);
+        ctx.font = "600 10px Inter,sans-serif";
+        ctx.fillText(labels[i], cx, H - 14);
+        if (mode === "one") {
+          ctx.fillStyle = col; ctx.font = "700 10.5px ui-monospace,monospace";
+          ctx.fillText(coefTxt(a), cx, H - 3);
+        }
+      }
+
+      /* right: the interval against zero, or every pair's t against the two bars */
+      var rx = splitX + 14, rw = W - rx - 10;
+      ctx.textAlign = "left"; ctx.fillStyle = VIZ.css("--text-muted"); ctx.font = "700 11px Inter,sans-serif";
+      if (mode === "one" && C) {
+        ctx.fillText("The interval, against zero", rx, 13);
+        var span = Math.max(Math.abs(C.lo), Math.abs(C.hi), Math.abs(C.psi)) * 1.25 || 1;
+        var hx = function (v) { return rx + rw * (v + span) / (2 * span); };
+        var y = Math.round(H * 0.52);
+        ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(rx, y + 26); ctx.lineTo(rx + rw, y + 26); ctx.stroke();
+        var z = hx(0);
+        ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([4, 4]); ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(z, y - 30); ctx.lineTo(z, y + 30); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center";
+        ctx.fillText("0", z, y + 40);
+        if (isFinite(C.lo) && isFinite(C.hi)) {
+          var covers = C.lo <= 0 && C.hi >= 0;
+          ctx.strokeStyle = covers ? VIZ.css("--text-faint") : GRN; ctx.lineWidth = 4;
+          ctx.beginPath(); ctx.moveTo(hx(C.lo), y); ctx.lineTo(hx(C.hi), y); ctx.stroke();
+          ctx.lineWidth = 2;
+          [C.lo, C.hi].forEach(function (v) {
+            ctx.beginPath(); ctx.moveTo(hx(v), y - 7); ctx.lineTo(hx(v), y + 7); ctx.stroke();
+          });
+          ctx.fillStyle = IND;
+          ctx.beginPath(); ctx.arc(hx(C.psi), y, 5, 0, 2 * Math.PI); ctx.fill();
+          ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace";
+          ctx.textAlign = "center"; ctx.fillText(f2(C.psi), hx(C.psi), y - 14);
+        }
+      } else if (P) {
+        ctx.fillText("|t| for every pair", rx, 13);
+        var maxT = Math.max(P.tcb * 1.2, 1);
+        P.rows.forEach(function (r) { maxT = Math.max(maxT, Math.abs(r.t) * 1.1); });
+        var tx = function (v) { return rx + rw * (v / maxT); };
+        var n = P.rows.length, rowH = (H - padT - 16) / n;
+        P.rows.forEach(function (r, ix) {
+          var by = padT + rowH * (ix + 0.5);
+          var over = Math.abs(r.t) >= P.tcb;
+          ctx.fillStyle = over ? GRN : (Math.abs(r.t) >= P.tc ? ORA : VIZ.css("--border"));
+          ctx.fillRect(rx, by - rowH * 0.28, Math.max(1, tx(Math.abs(r.t)) - rx), rowH * 0.56);
+        });
+        [[P.tc, "t*"], [P.tcb, "t**"]].forEach(function (pair2) {
+          var x = tx(pair2[0]);
+          ctx.strokeStyle = VIZ.css("--text"); ctx.setLineDash([3, 3]); ctx.lineWidth = 1.5;
+          ctx.beginPath(); ctx.moveTo(x, padT - 6); ctx.lineTo(x, H - 14); ctx.stroke(); ctx.setLineDash([]);
+          ctx.fillStyle = VIZ.css("--text-muted"); ctx.font = "700 10px ui-monospace,monospace"; ctx.textAlign = "center";
+          ctx.fillText(pair2[1], x, H - 3);
+        });
+      }
+    }
+
+    /* ---------- captions and readouts ---------- */
+    function setTxt(id, v) { var el = $(id); if (el) el.textContent = v; }
+    function caption(b, C, P) {
+      if (mode === "pairs") {
+        return "Pooled SD " + f2(b.sp) + " on " + b.dfE + " degrees of freedom, so every pair is tested against t* = " +
+               f3(P.tc) + " uncorrected and t** = " + f3(P.tcb) + " after dividing alpha by " + P.m + ".";
+      }
+      if (!C) return "Give every group a coefficient. They have to sum to zero for the result to be a comparison.";
+      var pct = Math.round((1 - alpha) * 100);
+      return "The estimate is " + f2(C.psi) + " with standard error " + f2(C.se) + ", so t = " + f2(C.t) +
+             " on " + b.dfE + " degrees of freedom, and the " + pct + "% interval runs from " + f2(C.lo) + " to " + f2(C.hi) + ".";
+    }
+    function update() {
+      var b = base(), i;
+      var chips = [];
+      for (i = 0; i < K; i++) chips.push(labels[i] + ": n = " + G[i].length + ", mean " + f2(b.means[i]) + ", s = " + f2(sampleSD(G[i])));
+      setTxt("cb-sum", chips.join("   ·   "));
+
+      var z = zeroSum(A), usable = !coefBad && z.ok && !allZero(A) && isFinite(b.mse) && b.dfE > 0;
+      paintCoefs(coefBad ? null : z);
+      var C = usable ? contrast(A, b) : null;
+      var P = (isFinite(b.mse) && b.dfE > 0 && K > 1) ? pairs(b) : null;
+
+      if (mode === "one") {
+        setNote(coefBad ? "Every group needs one coefficient, written as a plain number." : usable ? "Any coefficients summing to zero make a legitimate contrast. Scaling them all by the same number changes the estimate and its interval, never the t." :
+          (allZero(A) ? "All-zero coefficients compare nothing. Give at least one group a positive weight and another a negative one." :
+            "The coefficients sum to " + coefTxt(Math.round(z.sum * 1e6) / 1e6) + " rather than zero, so this is not a contrast yet."));
+        setTxt("cb-psi", C ? f2(C.psi) : EM);
+        setTxt("cb-se", C ? f2(C.se) : EM);
+        setTxt("cb-t", C ? f2(C.t) : EM);
+        setTxt("cb-df", isFinite(b.dfE) ? String(b.dfE) : EM);
+        setTxt("cb-p2", C ? pTxt(C.p2) : EM);
+        setTxt("cb-p1", C ? pTxt(C.p1) : EM);
+        setTxt("cb-ci", C ? "[" + f2(C.lo) + ", " + f2(C.hi) + "]" : EM);
+      } else if (P) {
+        setNote("All " + P.m + " comparisons borrow the one pooled standard deviation, so every one of them is tested on the same " + b.dfE + " degrees of freedom.");
+        setTxt("cb-sp", f2(b.sp));
+        setTxt("cb-m", String(P.m));
+        setTxt("cb-ab", (alpha / P.m).toFixed(4).replace(/^0/, ""));
+        setTxt("cb-tc", f3(P.tc));
+        setTxt("cb-tcb", f3(P.tcb));
+        drawPairTable(b, P);
+      }
+      setTxt("cb-cap", caption(b, C, P));
+      draw(b, C, P);
+    }
+
+    /* ---------- controls ---------- */
+    function setSeg(id, attr, val) {
+      var box = $(id);
+      if (!box) return;
+      Array.prototype.forEach.call(box.querySelectorAll("button"), function (b) {
+        b.classList.toggle("active", b.getAttribute(attr) === String(val));
+      });
+    }
+    function setMode(m) {
+      mode = (m === "pairs") ? "pairs" : "one";
+      setSeg("cb-mode", "data-m", mode);
+      var one = $("cb-one"), os = $("cb-onestats"), ps = $("cb-pairstats");
+      if (one) one.hidden = mode !== "one";
+      if (os) os.hidden = mode !== "one";
+      if (ps) ps.hidden = mode !== "pairs";
+      update();
+    }
+    var segM = $("cb-mode");
+    if (segM) segM.addEventListener("click", function (e) {
+      var b = e.target.closest("button");
+      if (b) setMode(b.dataset.m);
+    });
+    var segA = $("cb-alpha");
+    if (segA) segA.addEventListener("click", function (e) {
+      var b = e.target.closest("button");
+      if (!b) return;
+      alpha = parseFloat(b.dataset.a);
+      setSeg("cb-alpha", "data-a", b.dataset.a);
+      update();
+    });
+    var quick = document.querySelector(".cb-quick");
+    if (quick) quick.addEventListener("click", function (e) {
+      var b = e.target.closest("button");
+      if (b && b.dataset.q) quickFill(b.dataset.q);
+    });
+    if ($("cb-reset")) $("cb-reset").addEventListener("click", function () {
+      K = 4; alpha = 0.05;
+      labels = LABELS.slice();
+      text = D0.map(function (g) { return g.join(", "); });
+      G = D0.map(function (g) { return g.slice(); });
+      A = C0.slice();
+      coefBad = false;
+      setSeg("cb-alpha", "data-a", "0.05");
+      buildData();
+      buildCoefs();
+      setMode("one");
+    });
+
+    /* ?g= : the whole dataset in the URL, through the shared parser. A loaded
+       dataset takes generic names, since the fertilizer doses would not
+       describe it, and the coefficient row is resized to match. */
+    function loadGroups(raw) {
+      var got = (window.SC && SC.groupParam) ? SC.groupParam(String(raw), 5, 12) : null;
+      if (!got) return;
+      G = got;
+      K = got.length;
+      text = got.map(function (g) { return g.join(", "); });
+      labels = got.map(function (g, i) { return "Group " + (i + 1); });
+      A = got.map(function (g, i) { return i === 0 ? K - 1 : -1; });
+      coefBad = false;
+      buildData();
+      buildCoefs();
+      update();
+    }
+    /* ?c= : the coefficients, through SC.dataParam. Rejected outright unless
+       there is one per group and they sum to zero, rather than being padded
+       or truncated into something the reader did not ask for. */
+    function loadCoefs(raw) {
+      var got = (window.SC && SC.dataParam) ? SC.dataParam(String(raw), 12) : null;
+      if (!got || got.length !== K || !zeroSum(got).ok || allZero(got)) return;
+      A = got;
+      coefBad = false;
+      buildCoefs();
+      update();
+    }
+
+    var redraw = VIZ.rafThrottle(function () { fit(); update(); });
+    window.addEventListener("resize", redraw);
+    if (window.ResizeObserver) { new ResizeObserver(redraw).observe(canvas); }
+    VIZ.onTheme(function () { update(); });
+
+    buildData();
+    buildCoefs();
+    fit();
+    update();
+
+    if (window.SC && SC.preset) SC.preset({ g: loadGroups, c: loadCoefs, mode: function (v) { if (v === "one" || v === "pairs") setMode(v); }, alpha: "#cb-alpha" });
+  })();
+  </script>
+
 </body>
 </html>

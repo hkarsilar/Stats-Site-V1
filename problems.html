@@ -139,7 +139,7 @@
         <ul class="pb-index">
           <li><a href="#stats-1"><span class="t">📊 Stats 1 · Foundations</span><br><span class="m">25 problems · data types → probability → z, t, proportions, χ², correlation and regression</span></a></li>
           <li><a href="#exam-style"><span class="t">📝 Exam-style · A Stats 1 midterm</span><br><span class="m">8 problems · §1.1 to §1.12, worked off the printed tables</span></a></li>
-          <li><a href="#stats-2"><span class="t">🔗 Stats 2 · Groups &amp; relationships</span><br><span class="m">12 problems · ANOVA → regression</span></a></li>
+          <li><a href="#stats-2"><span class="t">🔗 Stats 2 · Groups &amp; relationships</span><br><span class="m">14 problems · ANOVA → contrasts → regression</span></a></li>
           <li><a href="#regression"><span class="t">📐 Regression · Several predictors</span><br><span class="m">8 problems · multiple regression → missing data</span></a></li>
           <li><a href="#advanced"><span class="t">🎲 Advanced · Modern methods</span><br><span class="m">7 problems · Bayes → model comparison</span></a></li>
           <li><a href="#toolkit"><span class="t">🔍 Research Toolkit · Spot the problem</span><br><span class="m">6 problems · design, sampling, ethics, writing</span></a></li>
@@ -2082,7 +2082,7 @@
              ================================================================== -->
         <section class="pb-set" id="stats-2-set">
           <h2 id="stats-2">🔗 Stats 2 · Groups &amp; relationships</h2>
-          <p class="pb-set-sub">Twelve problems on comparing groups and reading a relationship: three or more groups, factorial designs, the assumptions that decide which test you are allowed to run, the two ways of describing a straight line, and two ANOVA tables built by hand. The group tests are <a href="stats-2/">Stats 2</a>; correlation and regression are taught in <a href="stats-1/">Stats 1</a>.</p>
+          <p class="pb-set-sub">Fourteen problems on comparing groups and reading a relationship: three or more groups, factorial designs, the assumptions that decide which test you are allowed to run, the two ways of describing a straight line, two ANOVA tables built by hand, and the planned and corrected comparisons that follow one. The group tests are <a href="stats-2/">Stats 2</a>; correlation and regression are taught in <a href="stats-1/">Stats 1</a>.</p>
 
           <!-- ---------- 2.1 ----------
                verify: groups [3,5,4,2,6],[4,7,6,5,8],[9,6,8,10,7]; means 4,6,8; grand 6
@@ -2850,6 +2850,151 @@
               </ol>
               <p class="pb-answer">SS<sub>G</sub> = 180.00, df<sub>E</sub> = 36, MS<sub>G</sub> = 60.00, MS<sub>E</sub> = 6.00, <em>F</em>(3, 36) = 10.00, <em>p</em> &lt; .001. Reject H₀: the four leaflets are not equally well understood, η² = .45, s<sub>p</sub> = 2.45.</p>
               <p class="pb-ref">From <a href="stats-2/one-way-anova/">§2.2 One-Way ANOVA</a>. The exam mode of <a href="stats-2/one-way-anova/#atviz">Build the ANOVA Table</a> generates more of these.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 2.13 (P90) ----------
+               verify: node -e 'const n=10,sds=[6,5,7,6],ms=[52,58,61,65];
+                        SSE = 9*(36+25+49+36) = 1314 ; dfE = 40-4 = 36 ; MSE = 36.5 ; sp = 6.0415
+                        a = [1,-1/3,-1/3,-1/3] : psi = 52 - 61.3333 = -9.3333
+                        Sum a^2/n = (1 + 3/9)/10 = .133333 ; SE = sqrt(36.5*.133333) = 2.2061
+                        t = -4.2308 on 36 df ; V.tUpper(4.2308,36)*2 = 1.53e-4
+                        V.tInv(.025,36) = 2.0281 ; CI = -9.3333 +/- 4.4744 = [-13.81, -4.86]
+                        a = [3,-1,-1,-1] : psi = -28.00 ; SE = 6.6182 ; same t ; CI = [-41.42, -14.58]
+                        omnibus: grand 59, SSG 900, F(3,36) = 8.2192, p = 2.70e-4,
+                                 V.fInv(.05,3,36) = 2.8663 ; SST 2214 ; eta2 = .4065
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p2-13"><span class="pb-num">25</span>One question, asked before the data</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">An occupational health team tests whether any kind of scheduled break improves afternoon proofreading accuracy. Forty office workers are assigned to four conditions, ten each: no break at all, three two-minute micro-breaks, one fifteen-minute break, and one fifteen-minute break spent walking outdoors. The team wrote one question into its protocol before collecting anything: does taking a break of <em>any</em> kind beat taking none? The outcome is the percentage of planted errors caught.</p>
+            <div class="pb-given">
+              <span class="lbl">Descriptives, percent of errors caught, <em>n</em> = 10 per condition</span>
+              <ul>
+                <li>No break: <em>M</em> = 52.0, <em>SD</em> = 6.0</li>
+                <li>Micro-breaks: <em>M</em> = 58.0, <em>SD</em> = 5.0</li>
+                <li>Long break: <em>M</em> = 61.0, <em>SD</em> = 7.0</li>
+                <li>Walk outdoors: <em>M</em> = 65.0, <em>SD</em> = 6.0</li>
+              </ul>
+              <p style="margin:.4rem 0 0">Critical values: <em>F</em>*(3, 36) = 2.87, t*(36) = 2.028.</p>
+            </div>
+            <ol class="pb-ask">
+              <li>Build SS<sub>E</sub>, df<sub>E</sub> and MS<sub>E</sub> from the standard deviations, then run the omnibus <em>F</em>.</li>
+              <li>Write the coefficients for the team's planned question and check that they qualify as a contrast.</li>
+              <li>Compute the estimate, its standard error and the <em>t</em>, and decide at α = .05.</li>
+              <li>Give the 95% confidence interval and say what it means in percentage points.</li>
+              <li>Redo the contrast with whole-number coefficients and say what changes.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The error term, from the SDs</span>
+                  <span class="pb-math">SS<sub>E</sub> = Σ (nᵢ − 1)sᵢ² = 9(6.0² + 5.0² + 7.0² + 6.0²)</span>
+                  <span class="pb-math">= 9(36 + 25 + 49 + 36) = 9(146) = 1314.00</span>
+                  <span class="pb-math">df<sub>E</sub> = N − I = 40 − 4 = 36,&nbsp; MS<sub>E</sub> = 1314.00 / 36 = 36.50</span>
+                  <span class="pb-note">Everything after this borrows MS<sub>E</sub>. It is the one number the contrast needs from the ANOVA table, which is why the table is worth building even when the question was never about all four groups.</span>
+                </li>
+                <li><span class="pb-lbl">The omnibus F, for the record</span>
+                  <span class="pb-math">x̄ = (52 + 58 + 61 + 65) / 4 = 59.00</span>
+                  <span class="pb-math">SS<sub>G</sub> = 10[(−7)² + (−1)² + 2² + 6²] = 10(49 + 1 + 4 + 36) = 900.00</span>
+                  <span class="pb-math">MS<sub>G</sub> = 900.00 / 3 = 300.00,&nbsp; F = 300.00 / 36.50 = 8.22 on (3, 36)</span>
+                  <span class="pb-math">8.22 &gt; 2.87, so reject H₀ (exact p = .00027), η² = 900 / 2214 = .41</span>
+                  <span class="pb-note">The equal group sizes are what let the grand mean be the plain average of the four means. A planned contrast does not actually need this test to have been significant, since it was not chosen by looking at the means, but reporting it costs one line and tells a reader the design worked.</span>
+                </li>
+                <li><span class="pb-lbl">The coefficients</span>
+                  <span class="pb-math">a = [1, −⅓, −⅓, −⅓]</span>
+                  <span class="pb-math">Σaᵢ = 1 − ⅓ − ⅓ − ⅓ = 0 ✓</span>
+                  <span class="pb-note">One group on one side, the other three averaged on the other. Coefficients of [1, −1, −1, −1] would sum to −2 and would not be a contrast at all: the three treatment weights have to share the −1 between them, not each take it.</span>
+                </li>
+                <li><span class="pb-lbl">Estimate and standard error</span>
+                  <span class="pb-math">ψ&#770; = 52.00 − (58.00 + 61.00 + 65.00)/3 = 52.00 − 61.33 = −9.33</span>
+                  <span class="pb-math">Σ aᵢ²/nᵢ = (1 + ⅑ + ⅑ + ⅑) / 10 = (4/3) / 10 = .1333</span>
+                  <span class="pb-math">SE = √(36.50 × .1333) = √4.8667 = 2.21</span>
+                </li>
+                <li><span class="pb-lbl">The test</span>
+                  <span class="pb-math">t = −9.33 / 2.21 = −4.23 on df = N − I = 36</span>
+                  <span class="pb-math">|−4.23| &gt; 2.028, so reject H₀ (exact two-tailed p = .00015)</span>
+                  <span class="pb-note">The direction was in the protocol, so a one-tailed test at .05 would have been legitimate here and would halve that p to .000077. It changes nothing about this decision, and the write-up has to say the direction was planned.</span>
+                </li>
+                <li><span class="pb-lbl">The interval</span>
+                  <span class="pb-math">−9.33 ± 2.028 × 2.21 = −9.33 ± 4.47</span>
+                  <span class="pb-math">95% CI [−13.81, −4.86] percentage points</span>
+                  <span class="pb-note">Reading it out loud: workers given no break caught somewhere between about 5 and 14 percentage points fewer of the planted errors than the average of the three break conditions. That sentence is what the study was for, and the <em>t</em> alone cannot produce it.</span>
+                </li>
+                <li><span class="pb-lbl">The same contrast, in whole numbers</span>
+                  <span class="pb-math">a = [3, −1, −1, −1]:&nbsp; ψ&#770; = 156.00 − 184.00 = −28.00</span>
+                  <span class="pb-math">Σ aᵢ²/nᵢ = (9 + 1 + 1 + 1)/10 = 1.20,&nbsp; SE = √(36.50 × 1.20) = 6.62</span>
+                  <span class="pb-math">t = −28.00 / 6.62 = −4.23, unchanged. CI [−41.42, −14.58]</span>
+                  <span class="pb-note">Everything scaled by three: the estimate, the standard error and both interval limits. The <em>t</em> is a ratio of two of them, so it cannot move. Type the whole numbers into SPSS and report the fractional version, or divide the output by three yourself.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">MS<sub>E</sub> = 36.50 on 36 df; <em>F</em>(3, 36) = 8.22, <em>p</em> &lt; .001, η² = .41. The planned contrast of no break against the average of the three break conditions gives ψ&#770; = −9.33, <em>SE</em> = 2.21, <em>t</em>(36) = −4.23, <em>p</em> &lt; .001, 95% CI [−13.81, −4.86]. Any break beats none, by roughly 5 to 14 percentage points.</p>
+              <p class="pb-ref">From <a href="stats-2/post-hoc-tests/#planned-contrasts">§2.3 Post-Hoc Tests</a>. Type the coefficients into <a href="stats-2/post-hoc-tests/#cbviz">Contrast Builder</a> to check every line of it.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 2.14 (P90) ----------
+               verify: node -e 'n=25 per group, means [64,70,72], MSE = 100, dfE = 72, sp = 10
+                        SE = 10*sqrt(2/25) = 2.8284
+                        grand 68.6667 ; SSG = 866.67 ; MSG = 433.33 ; F(2,72) = 4.3333 ; p = .01671
+                        V.fInv(.05,2,72) = 3.1239 ; SST = 8066.67 ; eta2 = .1074
+                        V.tInv(.025,72) = 1.9935 ; V.tInv(.05/6,72) = 2.4512 ; alpha/3 = .01667
+                        A-B: t = -2.1213, p = .03734, adj = .1120, simCI [-12.93, 0.93]
+                        A-C: t = -2.8284, p = .00605, adj = .0182, simCI [-14.93, -1.07]
+                        B-C: t = -0.7071, p = .48178, adj = 1.0000, simCI [-8.93, 4.93]
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p2-14"><span class="pb-num">26</span>Three formats and three comparisons</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">Seventy-five students are randomly assigned to one of three revision formats for the same material, twenty-five per format, and sit a common exam. Nobody specified which formats to compare in advance, so all three pairs are on the table afterwards. The ANOVA has already been run.</p>
+            <div class="pb-given">
+              <span class="lbl">Group means and the ANOVA table</span>
+              <ul>
+                <li>Format A (rereading): <em>M</em> = 64.0; Format B (summarizing): <em>M</em> = 70.0; Format C (self-testing): <em>M</em> = 72.0</li>
+                <li>Between groups: SS = 866.67, df = 2, MS = 433.33</li>
+                <li>Within groups: SS = 7200.00, df = 72, MS = 100.00</li>
+                <li>Critical values: <em>F</em>*(2, 72) = 3.12, t*(72) = 1.993, t**(72) at .05/3 two-sided = 2.451</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Confirm the omnibus decision, and give s<sub>p</sub> and the standard error every pair will share.</li>
+              <li>Compute all three pairwise <em>t</em> statistics on the pooled error term.</li>
+              <li>Decide each one twice, uncorrected and Bonferroni-corrected, and say which comparison the correction costs you.</li>
+              <li>Write the results sentence in APA style, naming the correction.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The omnibus, and the shared standard error</span>
+                  <span class="pb-math">F = 433.33 / 100.00 = 4.33 on (2, 72); 4.33 &gt; 3.12, so reject H₀ (exact p = .017)</span>
+                  <span class="pb-math">s<sub>p</sub> = √MS<sub>E</sub> = √100.00 = 10.00</span>
+                  <span class="pb-math">SE = 10.00 × √(1/25 + 1/25) = 10.00 × √.08 = 2.83</span>
+                  <span class="pb-note">Equal group sizes mean one standard error covers all three pairs. With unequal <em>n</em> each pair would get its own, and only s<sub>p</sub> would be shared. η² = 866.67 / 8066.67 = .11, which is a modest effect for a significant omnibus and worth carrying into the write-up.</span>
+                </li>
+                <li><span class="pb-lbl">Three t statistics</span>
+                  <span class="pb-math">A vs. B: t = (64.0 − 70.0) / 2.83 = −2.12</span>
+                  <span class="pb-math">A vs. C: t = (64.0 − 72.0) / 2.83 = −2.83</span>
+                  <span class="pb-math">B vs. C: t = (70.0 − 72.0) / 2.83 = −0.71</span>
+                  <span class="pb-math">All three on df = N − I = 75 − 3 = 72</span>
+                  <span class="pb-note">Every one of these uses 72 degrees of freedom, not the 48 that two groups of 25 would give on their own. That is the pooled error term earning its keep.</span>
+                </li>
+                <li><span class="pb-lbl">Two verdicts each</span>
+                  <span class="pb-math">Uncorrected, against t* = 1.993: A vs. B reject, A vs. C reject, B vs. C keep</span>
+                  <span class="pb-math">Bonferroni, against t** = 2.451: A vs. B keep, A vs. C reject, B vs. C keep</span>
+                  <span class="pb-math">Exact p-values: .037, .006 and .482</span>
+                  <span class="pb-note">The correction costs the A-versus-B comparison, whose <em>t</em> of 2.12 sits between the two critical values. The same decision in the other convention: multiply each p by 3 to get .112, .018 and 1.000, then read them against .05. Two roads, same three answers, and SPSS drives the second.</span>
+                </li>
+                <li><span class="pb-lbl">The write-up</span>
+                  <span class="pb-note">Revision format affected exam scores, <em>F</em>(2, 72) = 4.33, <em>p</em> = .017, η² = .11. With Bonferroni-corrected pairwise comparisons on the pooled error term, self-testing outperformed rereading, <em>M</em><sub>diff</sub> = 8.00, <em>t</em>(72) = 2.83, <em>p</em> = .018 corrected. Neither the rereading-versus-summarizing difference of 6.00 points, <em>t</em>(72) = 2.12, <em>p</em> = .112 corrected, nor the summarizing-versus-self-testing difference of 2.00 points, <em>t</em>(72) = 0.71, <em>p</em> = 1.000 corrected, reached significance.</span>
+                  <span class="pb-note">Two habits that reviewers notice. The word Bonferroni appears, because a bare p-value from a family of comparisons cannot be interpreted without it. And the corrected p-values are labeled as corrected, so nobody has to guess whether .018 was multiplied by three already.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">s<sub>p</sub> = 10.00, shared SE = 2.83 on 72 df. <em>t</em> = −2.12, −2.83 and −0.71 for A vs. B, A vs. C and B vs. C. Uncorrected, the first two are significant; under Bonferroni only A vs. C survives, since 2.12 falls between t* = 1.993 and t** = 2.451. Corrected p-values .112, .018 and 1.000.</p>
+              <p class="pb-ref">From <a href="stats-2/post-hoc-tests/#pairwise-by-hand">§2.3 Post-Hoc Tests</a>. The All pairs panel of <a href="stats-2/post-hoc-tests/#cbviz">Contrast Builder</a> lays out both verdicts side by side, and <a href="apa.html?a=anova">the APA formatter</a> handles the omnibus sentence.</p>
             </details>
           </article>
         </section>

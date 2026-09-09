@@ -242,6 +242,7 @@ window.SOFTWARE = {
       'Outcome into <em>Dependent List</em>, group into <em>Factor</em>.',
       '<em>Options…</em>: tick <em>Descriptive</em>, <em>Homogeneity of variance test</em> (Levene), and <em>Welch</em> (robust F for unequal variances). Recent SPSS also offers effect-size estimates here.',
       '<em>Post Hoc…</em>: tick <em>Tukey</em> for pairwise follow-ups.',
+      '<em>Contrasts…</em> is the other follow-up button in the same dialog, and it is the one to reach for when the study had a specific question rather than every pair. Type one coefficient per group, in the order SPSS lists the factor levels, pressing <em>Next</em> to add each one; the reading of its output is in the post-hoc walkthrough.',
       'Alternative with η² built in: <strong>Analyze → General Linear Model → Univariate</strong>, then <em>Options → Estimates of effect size</em>.',
       'Reading the ANOVA table it prints, row by row: <em>Between Groups</em> is the group effect, so its <em>Sum of Squares</em> is SS<sub>G</sub> and its <em>df</em> is the number of groups minus one. <em>Within Groups</em> is the error term, giving SS<sub>E</sub> on N minus the number of groups, and its <em>Mean Square</em> is the MSE every follow-up test reuses. <em>Total</em> carries SS<sub>T</sub> on N minus one and prints no mean square, because nothing uses it. The <em>F</em> column is the two mean squares divided, and <em>Sig.</em> is the p-value.',
       'η² is not in that table, but it is one division away from it: SS<sub>G</sub> divided by SS<sub>T</sub>, both read off the rows above. That is worth knowing, since the One-Way ANOVA dialog in older versions offers no effect size at all.',
@@ -253,6 +254,7 @@ window.SOFTWARE = {
       'Open <em>Additional Options</em> → tick <em>Estimates of effect size</em> (η², ω²), and tick <em>Confidence intervals</em> beside them: JASP builds the interval on the effect size, which most packages leave you to compute yourself. It defaults to <strong>90%</strong>, which is the right level for η² and not a typo.',
       '<em>Post Hoc Tests</em>: move the factor across and tick <em>Tukey</em>.',
       '<em>Assumption Checks</em>: tick <em>Homogeneity tests</em> and <em>Q-Q plot of residuals</em>.',
+      '<em>Contrasts</em> is its own collapsible section. Pick the factor, choose <em>custom</em> from the dropdown beside it, and JASP opens a column of coefficient boxes with a running total underneath that has to reach zero before it will run anything. The built-in choices (<em>simple</em>, <em>deviation</em>, <em>polynomial</em>, <em>Helmert</em>) are named coefficient patterns, so picking one and reading off the weights is a fast way to see what a pattern actually asks.',
       'JASP labels the same three rows <em>Cases</em>, <em>Residuals</em> and (with <em>Descriptives</em> ticked) the group summaries, so <em>Cases</em> is SPSS\'s Between Groups and <em>Residuals</em> is its Within Groups. It prints no Total row, so if you want SS<sub>T</sub> for a hand η², add the two sums of squares yourself.'
     ],
     apa: '<p>Study method affected exam scores, <em>F</em>(2, 87) = 5.42, <em>p</em> = .006, η² = .11, 90% CI [.02, .21]. Tukey-corrected comparisons showed that method C outperformed method A, <em>M</em><sub>diff</sub> = 6.8, 95% CI [1.9, 11.7], <em>p</em> = .004; no other pairwise differences were significant.</p>',
@@ -268,18 +270,24 @@ window.SOFTWARE = {
       'Tick <em>Tukey</em> for all-pairwise comparisons with honest error rates; <em>Bonferroni</em> if you have only a few planned comparisons.',
       'If variances are unequal, use the <em>Games-Howell</em> option in the "Equal Variances Not Assumed" panel instead.',
       'If every treatment is being compared against one control rather than against each other, tick <em>Dunnett</em> and set the control category; it corrects for only the comparisons you made, so it is more powerful than Tukey here.',
-      'The output’s <em>Multiple Comparisons</em> table gives each pair’s mean difference, adjusted p, and CI.'
+      'The output’s <em>Multiple Comparisons</em> table gives each pair’s mean difference, adjusted p, and CI.',
+      'Read that <em>Sig.</em> column the right way round. Under Bonferroni, SPSS has already multiplied each p-value by the number of comparisons, so it is compared against .05 like any other p-value. Dividing .05 by the number of comparisons first and testing against that would apply the same correction twice, and the two conventions are covered in the lesson above.',
+      'For a planned comparison, use <strong>One-Way ANOVA → Contrasts…</strong> instead of the Post Hoc button. Type a coefficient for every group in the order the factor levels are listed, press <em>Next</em> for a second contrast, and SPSS prints two tables: <em>Contrast Coefficients</em>, which is your own row echoed back so you can check it landed on the groups you meant, and <em>Contrast Tests</em>, carrying the estimate, its standard error, t and Sig.',
+      'The <em>Contrast Tests</em> table has two rows per contrast. <em>Assume equal variances</em> is the pooled version taught here, with df = N minus the number of groups; <em>Does not assume equal variances</em> is the Welch analogue, with fractional df. Take the first when Levene is happy and the second when it is not, and say which you took.'
     ],
     jasp: [
       'In <strong>ANOVA → Post Hoc Tests</strong>, move your factor to the right panel.',
       'Tick the correction(s) to display: <em>Tukey</em> (default choice), <em>Bonferroni</em>, or <em>Holm</em> (uniformly more powerful than Bonferroni).',
-      'Tick <em>Flag significant comparisons</em> for quick reading, and <em>Confidence intervals</em> for the adjusted CIs.'
+      'Tick <em>Flag significant comparisons</em> for quick reading, and <em>Confidence intervals</em> for the adjusted CIs.',
+      'Planned comparisons live in the separate <em>Contrasts</em> section of the same ANOVA, not under Post Hoc Tests. Choose <em>custom</em> and JASP shows a coefficient box per level with a running sum that must reach zero; its output gives the estimate, standard error, t and p on the pooled error df.'
     ],
-    apa: '<p>The omnibus ANOVA was significant, <em>F</em>(3, 116) = 7.21, <em>p</em> &lt; .001, η² = .16. Tukey’s HSD comparisons showed the drug group improved more than placebo, <em>M</em><sub>diff</sub> = 5.2, 95% CI [1.4, 9.0], <em>p</em> = .003, and than waitlist, <em>M</em><sub>diff</sub> = 6.0, 95% CI [2.1, 9.9], <em>p</em> &lt; .001; the two control groups did not differ, <em>p</em> = .84.</p>',
+    apa: '<p>The omnibus ANOVA was significant, <em>F</em>(3, 116) = 7.21, <em>p</em> &lt; .001, η² = .16. The planned contrast setting the two active treatments against the two control conditions favored treatment, ψ&#770; = 5.60, <em>SE</em> = 1.42, <em>t</em>(116) = 3.94, <em>p</em> &lt; .001, 95% CI [2.79, 8.41]. Tukey’s HSD comparisons showed the drug group improved more than placebo, <em>M</em><sub>diff</sub> = 5.2, 95% CI [1.4, 9.0], <em>p</em> = .003, and than waitlist, <em>M</em><sub>diff</sub> = 6.0, 95% CI [2.1, 9.9], <em>p</em> &lt; .001; the two control groups did not differ, <em>p</em> = .84.</p>',
     tips: [
       'Always name the correction method ("Tukey-corrected", "Bonferroni-adjusted"): a bare p-value from multiple comparisons is meaningless.',
       'Write <em>p</em> &lt; .001 only when p is genuinely below .001; otherwise give the exact value to 2–3 decimals (<em>p</em> = .003).',
-      'Both post-hoc dialogs are built around family-wise methods (Tukey, Bonferroni, Holm, Šidák, Games-Howell). For a false-discovery-rate correction across a list of p-values, apply Benjamini–Hochberg yourself, one line in R or Python, in the snippet below.'
+      'Both post-hoc dialogs are built around family-wise methods (Tukey, Bonferroni, Holm, Šidák, Games-Howell). For a false-discovery-rate correction across a list of p-values, apply Benjamini–Hochberg yourself, one line in R or Python, in the snippet below.',
+      'Report a contrast with its estimate and interval, not only its t. The estimate is in the outcome\'s own units when the coefficients are written as fractions, and a reader who is told the difference was 5.6 points learns something a t of 3.94 does not tell them.',
+      'Say which Bonferroni convention you used. Writing "p &lt; .017" means the raw p-value was tested against a divided alpha; writing an adjusted p against .05 means the p-value itself was multiplied. Both are correct, and a reader cannot tell them apart without the number of comparisons.'
     ]
   },
   "factorial-anova-two-way": {

@@ -83,7 +83,16 @@ PAGE_MAX_CHARS = {"problems.html": 300_000, "glossary.html": 120_000, "teachers.
 # (longest 16.3k) and costs 6,819 characters, 0.8%, over the 12,000 total.
 # The cap stays as a runaway guard, not as a budget. If a future run adds a
 # term and the index cannot find it, CHECK THIS FIRST.
-LESSON_MAX_CHARS = 20_000
+#
+# Raised 20,000 -> 30,000 in P90, before anything was cut rather than after.
+# P90 took stats-2/post-hoc-tests to 18,804 characters, which made it the
+# longest lesson on the site and left 6% of headroom, and Phase 18 has five
+# more prompts still to add sections to Stats 2 lessons. That is exactly the
+# shape runs 13, 20 and 24 each caught only once the cut had already landed on
+# the FAQ block at the end of the article. Nothing is over 20,000 today, so
+# the raise costs zero bytes now and simply stops the guard from becoming a
+# budget. Matches GUIDE_MAX_CHARS.
+LESSON_MAX_CHARS = 30_000
 
 # Guides get the same treatment, and for the same reason (P39 run 24). The
 # five long-form guides run 9.8k-17.5k characters and were being indexed with

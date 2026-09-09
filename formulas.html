@@ -101,7 +101,13 @@
             <tr><td>F-ratio (ANOVA)</td><td>F = MS<sub>G</sub> / MS<sub>E</sub>, on F(I − 1, N − I)</td><td>Signal over noise. With two groups, F = t².</td></tr>
             <tr><td>Pooled SD</td><td>s<sub>p</sub> = √MS<sub>E</sub></td><td>The one spread every follow-up comparison reuses.</td></tr>
             <tr><td>Eta-squared</td><td>η² = SS<sub>G</sub> / SS<sub>T</sub></td><td>Share of outcome variance explained by group membership.</td></tr>
+            <tr><td>Contrast</td><td>ψ = Σ a<sub>i</sub>μ<sub>i</sub>, with Σ a<sub>i</sub> = 0</td><td>A weighted combination of group means. The zero-sum rule is what makes it a comparison.</td></tr>
+            <tr><td>Contrast estimate and SE</td><td>ψ&#770; = Σ a<sub>i</sub>x̄<sub>i</sub>,&nbsp; SE = √( MS<sub>E</sub> · Σ a<sub>i</sub>²/n<sub>i</sub> )</td><td>Sample means in place of population means; the error term is borrowed from the ANOVA table.</td></tr>
+            <tr><td>Contrast test and CI</td><td>t = ψ&#770; / SE on df = N − I,&nbsp; CI: ψ&#770; ± t* · SE</td><td>Tested on the error df, not on the groups involved. The interval excludes zero exactly when the t clears t*.</td></tr>
+            <tr><td>Pairwise t after ANOVA</td><td>t = (x̄<sub>i</sub> − x̄<sub>j</sub>) / ( s<sub>p</sub>√(1/n<sub>i</sub> + 1/n<sub>j</sub>) ), df = N − I</td><td>The two-sample t with the pooled SD from every group, so more df than the pair alone would give.</td></tr>
             <tr><td>Bonferroni correction</td><td>α<sub>each</sub> = α / m</td><td>Split your alpha across m comparisons.</td></tr>
+            <tr><td>Bonferroni critical value</td><td>t** = t<sub>1−α/(2m)</sub> on df = N − I</td><td>The stricter bar a corrected comparison must clear. With 6 comparisons on 12 df it is 3.153 against a plain 2.179.</td></tr>
+            <tr><td>Simultaneous CI</td><td>(x̄<sub>i</sub> − x̄<sub>j</sub>) ± t** · s<sub>p</sub>√(1/n<sub>i</sub> + 1/n<sub>j</sub>)</td><td>The whole family of intervals holds at the stated level together, not one at a time.</td></tr>
             <tr><td>Chi-square</td><td>χ² = Σ (O − E)² / E</td><td>How far observed counts stray from what independence expects.</td></tr>
             <tr><td>Expected count</td><td>E = (row total × column total) / N</td><td>Each cell's count if the two variables were unrelated.</td></tr>
             <tr><td>Chi-square df</td><td>df = (r − 1)(c − 1)</td><td>Rows and columns of the contingency table.</td></tr>

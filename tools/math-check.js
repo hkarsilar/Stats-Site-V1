@@ -1426,6 +1426,296 @@ try {
     src: 'stats-2/one-way-anova' });
 }
 
+/* ============================================================
+   13 — Contrast Builder (stats-2/post-hoc-tests)
+
+   P90 put the follow-up arithmetic on the page: a contrast psi = Sum a_i x̄_i
+   with its standard error borrowed from the ANOVA table, the t and the
+   interval it implies, and every pairwise comparison judged twice, against
+   the plain critical value and against the Bonferroni one. Each of those is
+   a published claim, so this section derives them from the sixteen numbers
+   and the coefficient row alone, then drives the SHIPPED widget under the
+   same DOM shim sections 8 to 12 use, through the page's OWN ?g= and ?c=
+   appliers: the shim hands it a fake window.SC carrying groupParam AND
+   dataParam lifted out of site.js, so the widget is loaded exactly the way a
+   reader's URL loads it and the page carries no test-only hook.
+
+   THREE IDENTITIES ARE THE POINT OF THE SECTION, and each is asserted rather
+   than described.
+
+   (a) SCALE INVARIANCE. [3, -1, -1, -1] and [1, -1/3, -1/3, -1/3] are the
+       same contrast: multiplying every coefficient by 3 multiplies both psi
+       and its standard error by 3, so t cannot move. The prose says so and
+       the widget's default is the whole-number version, so a future edit
+       that rescales one half and not the other has to fail here.
+
+   (b) A PAIRWISE COMPARISON IS A CONTRAST. Feeding [1, -1, 0, 0] through the
+       contrast formulas must return exactly what the pairwise formula
+       t = (x̄i - x̄j) / (sp * sqrt(1/ni + 1/nj)) returns, to machine
+       precision. The widget computes the two panels down two code paths, and
+       this is what stops them drifting apart.
+
+   (c) THE INTERVAL IS THE TEST. |t| >= t* exactly when the interval excludes
+       zero, since both are the same inequality rearranged. Asserted in both
+       directions on the seedlings' own pairs: None vs Low clears t* and its
+       plain interval misses zero, while its SIMULTANEOUS interval, built on
+       t**, contains zero exactly as the corrected test declines to reject.
+
+   THE DIVISOR IS CHECKED HERE TOO. VIZ.sd divides by n; every s, MSE and
+   pooled SD in the exam dialect divides by n - 1. On the frozen default the
+   two are far apart and both round: sp is exactly 2.00 on the sample form
+   and 1.732 on VIZ.sd's, and the None group's s is 1.83 against 1.58. Both
+   are asserted, and the page's printed s is read back, so a future edit that
+   reaches for VIZ.sd fails rather than passing quietly.
+
+   The published anchors, all four-groups-of-four on MSE = 4.00 with 12 error
+   df: t*(12) = 2.179 and t**(12) at .05/6 = 3.153; the control-vs-rest
+   contrast psî = -6.67, SE = 1.15, t = -5.77, 95% CI [-9.18, -4.15]; and the
+   df = 73 pair the prose cites, t* = 1.993 against t** = 2.450.
+   ============================================================ */
+head('Contrast Builder (the shipped page)');
+
+const CB_G = [[15, 14, 12, 11], [20, 18, 16, 14], [21, 17, 19, 19], [25, 24, 22, 21]];
+
+function errTerm(G) {
+  const all = [].concat(...G), N = all.length, I = G.length;
+  const means = G.map(avg);
+  const ssw = G.reduce((s, g) => s + ssOf(g), 0);
+  const dfE = N - I, mse = ssw / dfE;
+  return { N, I, means, ssw, dfE, mse, sp: Math.sqrt(mse) };
+}
+/* psi, its SE, t and the interval — the formulas exactly as §2.3 prints them */
+function contrastOf(G, b, a, level) {
+  const psi = a.reduce((s, ai, i) => s + ai * b.means[i], 0);
+  const q = a.reduce((s, ai, i) => s + ai * ai / G[i].length, 0);
+  const se = Math.sqrt(b.mse * q);
+  const t = psi / se;
+  const tc = V.tInv((1 - (level || 0.95)) / 2, b.dfE);
+  return { psi, q, se, t, tc, p2: 2 * V.tUpper(Math.abs(t), b.dfE),
+           p1: V.tUpper(Math.abs(t), b.dfE), lo: psi - tc * se, hi: psi + tc * se };
+}
+
+const cbB = errTerm(CB_G);
+
+/* ---- the error term the contrasts borrow ---- */
+eq('seedlings: MSE the contrast borrows', cbB.mse, 4, 1e-12, 'SSE 48 on 12 df');
+is('seedlings: error df', cbB.dfE, 12, 'N − I = 16 − 4');
+eq('seedlings: pooled SD on n − 1', cbB.sp, 2, 1e-12, '√MSE');
+/* the identity SSE = Σ(nᵢ − 1)sᵢ² is the one the widget's readouts stand on,
+   and it is only true of the SAMPLE s. Fed VIZ.sd's population SDs the same
+   line returns MSE = 3 and a pooled SD of 1.732 instead of 4 and 2.00. */
+eq('the same pooled SD built from VIZ.sd would be √3', Math.sqrt(
+  CB_G.reduce((s, g) => s + (g.length - 1) * V.sd(g) * V.sd(g), 0) / cbB.dfE), Math.sqrt(3), 1e-12,
+  'VIZ.sd divides by n — the defect this assertion exists to catch');
+eq('seedlings: the None group\'s sample s', sampleSD(CB_G[0]), Math.sqrt(10 / 3), 1e-12, 'SS 10 on 3 df');
+eq('seedlings: VIZ.sd of the same group is smaller', V.sd(CB_G[0]), Math.sqrt(10 / 4), 1e-12, 'divides by n');
+
+/* ---- (a) scale invariance ---- */
+const cWhole = contrastOf(CB_G, cbB, [3, -1, -1, -1]);
+const cFrac = contrastOf(CB_G, cbB, [1, -1 / 3, -1 / 3, -1 / 3]);
+eq('control vs rest, whole numbers: psî', cWhole.psi, -20, 1e-12, '3(13) − 17 − 19 − 23');
+eq('control vs rest, whole numbers: SE', cWhole.se, Math.sqrt(12), 1e-12, '√(4 × 12/4)');
+eq('control vs rest, fractions: psî', cFrac.psi, -20 / 3, 1e-12, '13 − 59/3');
+eq('control vs rest, fractions: SE', cFrac.se, Math.sqrt(4 / 3), 1e-12, '√(4 × 1/3)');
+eq('the two scalings give one t', cWhole.t, cFrac.t, 1e-14, 'scaling by 3 hits psî and SE alike');
+eq('control vs rest: t', cFrac.t, -Math.sqrt(100 / 3), 1e-12, '−6.6667 / 1.1547');
+rel('control vs rest: two-tailed p', cFrac.p2, 8.8319e-5, 1e-4, 'VIZ.tUpper(5.7735, 12) doubled');
+eq('control vs rest: the one-tailed p is half of it', cFrac.p1 * 2, cFrac.p2, 1e-15, 'a planned direction halves the area');
+eq('t*(12) two-tailed at .05', V.tInv(0.025, 12), 2.179, 5e-4, 'printed t table');
+eq('control vs rest: interval, low', cFrac.lo, -9.183, 5e-4, 'psî − t* × SE');
+eq('control vs rest: interval, high', cFrac.hi, -4.151, 5e-4, 'psî + t* × SE');
+eq('the whole-number interval is exactly three times as wide',
+   cWhole.hi - cWhole.lo, 3 * (cFrac.hi - cFrac.lo), 1e-12, 'the same statement in units of three');
+
+/* the sum-to-zero rule is what makes psi a comparison and not a level:
+   shift every group mean by the same amount and psî must not move */
+const shifted = { ...cbB, means: cbB.means.map(m => m + 100) };
+eq('adding 100 to every mean leaves psî unchanged',
+   contrastOf(CB_G, shifted, [3, -1, -1, -1]).psi, cWhole.psi, 1e-11, 'Σaᵢ = 0');
+
+/* ---- (b) a pairwise comparison IS a contrast ---- */
+const pairSE = cbB.sp * Math.sqrt(1 / 4 + 1 / 4);
+eq('pairwise standard error', pairSE, Math.SQRT2, 1e-12, 'sp √(1/4 + 1/4) = 2 × 0.7071');
+const PAIRS = [[0, 1, -4], [0, 2, -6], [0, 3, -10], [1, 2, -2], [1, 3, -6], [2, 3, -4]];
+for (const [i, j, d] of PAIRS) {
+  const a = [0, 0, 0, 0]; a[i] = 1; a[j] = -1;
+  const asContrast = contrastOf(CB_G, cbB, a);
+  eq(`pair ${i}${j}: the pairwise formula and the contrast formula agree`,
+     asContrast.t, d / pairSE, 1e-13, 'a pair is a contrast with 1 and −1');
+  eq(`pair ${i}${j}: difference`, asContrast.psi, d, 1e-12, 'the two group means');
+}
+
+/* ---- the two critical values, and (c) the interval-versus-test identity ---- */
+const tStar = V.tInv(0.025, 12), tStarStar = V.tInv(0.05 / 12, 12);
+eq('plain critical t*(12)', tStar, 2.179, 5e-4, 'printed t table');
+eq('Bonferroni critical t**(12) at .05/6', tStarStar, 3.153, 5e-4, 'the .0083 two-tailed critical');
+is('the corrected bar is the higher one', tStarStar > tStar, true, 'that is what the correction does');
+eq('per-test alpha', 0.05 / 6, 0.008333333333333333, 1e-15, 'alpha divided by six comparisons');
+for (const [i, j, d] of PAIRS) {
+  const t = d / pairSE;
+  const plainLo = d - tStar * pairSE, plainHi = d + tStar * pairSE;
+  const simLo = d - tStarStar * pairSE, simHi = d + tStarStar * pairSE;
+  is(`pair ${i}${j}: plain test and plain interval agree`,
+     Math.abs(t) >= tStar, !(plainLo <= 0 && plainHi >= 0), 'the same inequality rearranged');
+  is(`pair ${i}${j}: corrected test and simultaneous interval agree`,
+     Math.abs(t) >= tStarStar, !(simLo <= 0 && simHi >= 0), 'both built on t**');
+}
+/* the two comparisons the correction actually costs, named in the prose */
+eq('None vs Low: t', -4 / pairSE, -2.8284271, 1e-6, '−4 / 1.4142');
+is('None vs Low clears the plain bar', Math.abs(-4 / pairSE) >= tStar, true, '2.83 > 2.179');
+is('None vs Low fails the corrected bar', Math.abs(-4 / pairSE) >= tStarStar, false, '2.83 < 3.153');
+is('None vs High clears both', Math.abs(-10 / pairSE) >= tStarStar, true, '7.07 > 3.153');
+rel('None vs Low: p', 2 * V.tUpper(Math.abs(-4 / pairSE), 12), 0.0152196, 1e-4, 'VIZ.tUpper doubled');
+rel('None vs High: p', 2 * V.tUpper(Math.abs(-10 / pairSE), 12), 1.29888e-5, 1e-4, 'VIZ.tUpper doubled');
+
+/* the df = 73 pair the prose cites as the realistic case */
+eq('df 73: plain critical', V.tInv(0.025, 73), 1.993, 5e-4, 'printed t table');
+eq('df 73: Bonferroni critical at .05/3', V.tInv(0.05 / 6, 73), 2.450, 5e-4, 'three comparisons, two-sided');
+
+/* ---- and now the page itself ---- */
+function driveContrastBuilder() {
+  const html = fs.readFileSync(path.join(ROOT, 'stats-2/post-hoc-tests/index.html'), 'utf8');
+  const src = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)]
+    .map(m => m[1]).filter(s => /cb-coefs/.test(s))[0];
+  if (!src) throw new Error('no inline script mentioning cb-coefs');
+
+  const ctx2d = {};
+  ['clearRect', 'fillRect', 'strokeRect', 'beginPath', 'moveTo', 'lineTo', 'arc', 'closePath',
+   'fill', 'stroke', 'setLineDash', 'fillText', 'setTransform', 'save', 'restore'].forEach(n => { ctx2d[n] = () => {}; });
+  ctx2d.measureText = t => ({ width: String(t).length * 6 });
+
+  const els = {};
+  const mk = () => {
+    const on = {};
+    const node = {
+      innerHTML: '', textContent: '', value: '', style: {}, dataset: {}, hidden: false,
+      clientWidth: 720, parentElement: { clientWidth: 720 }, getContext: () => ctx2d,
+      classList: { add: () => {}, remove: () => {}, toggle: () => {} },
+      querySelectorAll: () => [], getAttribute: () => null,
+      addEventListener: (t, f) => { (on[t] = on[t] || []).push(f); },
+      fire: (t, e) => (on[t] || []).forEach(f => f.call(node, e))
+    };
+    return node;
+  };
+
+  /* both shared parsers lifted out of site.js rather than reimplemented: the
+     question here is what the SHIPPED helpers do with a URL */
+  const siteSrc = fs.readFileSync(path.join(ROOT, 'assets/js/site.js'), 'utf8');
+  const grab = (name) => {
+    const i = siteSrc.indexOf('function ' + name);
+    const j = siteSrc.indexOf('\n  }\n', i);
+    if (i < 0 || j < 0) throw new Error('site.js no longer defines ' + name);
+    return siteSrc.slice(i, j + 4);
+  };
+  const parsers = new Function(grab('numeric') + grab('groupParam') + grab('dataParam') +
+    ';return { groupParam: groupParam, dataParam: dataParam };')();
+
+  let map = null;
+  const c7 = { console };
+  c7.window = c7;
+  c7.document = { documentElement: {}, getElementById: id => els[id] || (els[id] = mk()), querySelector: () => mk() };
+  c7.getComputedStyle = () => ({ getPropertyValue: () => '#000000' });
+  c7.MutationObserver = function () { this.observe = () => {}; };
+  c7.requestAnimationFrame = cb => cb();
+  c7.addEventListener = () => {};
+  c7.location = { search: '?c=1' };
+  c7.SC = { preset: m => { map = m; }, groupParam: parsers.groupParam, dataParam: parsers.dataParam };
+  vm.createContext(c7);
+  vm.runInContext(fs.readFileSync(path.join(ROOT, 'assets/js/viz.js'), 'utf8'), c7, { filename: 'viz.js' });
+  vm.runInContext(src, c7, { filename: 'stats-2/post-hoc-tests#contrast-builder' });
+  if (!map || typeof map.g !== 'function' || typeof map.c !== 'function') {
+    throw new Error('the page registered no ?g= and ?c= appliers with SC.preset');
+  }
+
+  /* the pairs panel's readouts do not exist until the page has been switched
+     into that mode, so a missing node reads as empty rather than throwing */
+  const txt = id => (els[id] ? els[id].textContent : '');
+  const readout = () => ({
+    psi: txt('cb-psi'), se: txt('cb-se'), t: txt('cb-t'), df: txt('cb-df'),
+    p2: txt('cb-p2'), p1: txt('cb-p1'), ci: txt('cb-ci'), sum: txt('cb-sum'),
+    sp: txt('cb-sp'), m: txt('cb-m'), ab: txt('cb-ab'),
+    tc: txt('cb-tc'), tcb: txt('cb-tcb'),
+    table: els['cb-table'] ? els['cb-table'].innerHTML : ''
+  });
+  if (!readout().psi || readout().psi === '—') throw new Error('the widget printed no estimate on boot');
+  // the BOOT state is read before anything is loaded: a frozen default or a
+  // default coefficient row changed quietly in the markup is what this catches
+  return { boot: readout(), load: (k, v) => { map[k](v); return readout(); } };
+}
+
+try {
+  const cb = driveContrastBuilder();
+  const row = (ix) => {
+    const m = cb.boot.table.match(new RegExp('<tr id="cb-r' + ix + '">([\\s\\S]*?)</tr>'));
+    return m ? m[1] : null;
+  };
+
+  is('page boots on the whole-number control-vs-rest contrast: psî', cb.boot.psi, '-20.00', '3(13) − 17 − 19 − 23');
+  is('page boots: SE', cb.boot.se, '3.46', '√12');
+  is('page boots: t', cb.boot.t, '-5.77', 'psî / SE');
+  is('page boots: error df', cb.boot.df, '12', 'N − I');
+  is('page boots: interval', cb.boot.ci, '[-27.55, -12.45]', 'psî ± t*(12) × SE');
+  // the per-group s the page prints is the SAMPLE SD: 1.83, not VIZ.sd's 1.58
+  is('page prints the None group\'s s on n − 1',
+     /None: n = 4, mean 13\.00, s = 1\.83/.test(cb.boot.sum), true,
+     '√(10/3) = 1.826, where VIZ.sd would print 1.58');
+
+  const frac = cb.load('c', '1,-0.333333,-0.333333,-0.333333');
+  is('page ?c= fractional: psî', frac.psi, '-6.67', '13 − 59/3');
+  is('page ?c= fractional: SE', frac.se, '1.15', '√(4/3)');
+  is('page ?c= fractional: the t is unchanged by the rescaling', frac.t, '-5.77', 'scale invariance');
+  is('page ?c= fractional: interval', frac.ci, '[-9.18, -4.15]', 'the prose\'s worked interval');
+
+  const pr = cb.load('mode', 'pairs');
+  is('page pairs panel: pooled SD', pr.sp, '2.00', '√MSE on n − 1');
+  is('page pairs panel: comparisons', pr.m, '6', 'I(I − 1)/2');
+  is('page pairs panel: per-test alpha', pr.ab, '.0083', '.05 / 6');
+  is('page pairs panel: plain critical', pr.tc, '2.179', 'printed t table');
+  is('page pairs panel: Bonferroni critical', pr.tcb, '3.153', 'the .0083 two-tailed critical');
+  const cells = (ix) => {
+    const m = pr.table.match(new RegExp('<tr id="cb-r' + ix + '">([\\s\\S]*?)</tr>'));
+    /* the p cell writes a literal &lt; for "< .0001", so it is decoded back */
+    return m ? [...m[1].matchAll(/<td[^>]*>(.*?)<\/td>/g)].map(x => x[1].replace(/&lt;/g, '<')) : null;
+  };
+  is('page pairs panel: None vs Low reads reject then keep',
+     (cells(0) || []).slice(0, 6).join('|'), 'None vs. Low|-4.00|-2.83|.0152|reject|keep',
+     't = 2.83 sits between 2.179 and 3.153');
+  is('page pairs panel: None vs Low simultaneous interval covers zero',
+     (cells(0) || [])[6], '[-8.46, 0.46]', 'built on t**, so it agrees with the corrected verdict');
+  is('page pairs panel: None vs High rejects twice',
+     (cells(2) || []).slice(3, 6).join('|'), '< .0001|reject|reject', '7.07 clears both bars');
+  is('page pairs panel: Low vs Medium keeps twice',
+     (cells(3) || []).slice(2, 6).join('|'), '-1.41|.1827|keep|keep', '1.41 clears neither');
+
+  // a mangled ?c= or ?g= must leave the widget where it was rather than
+  // half-reading it — SC.dataParam's and SC.groupParam's rule, through the page
+  cb.load('mode', 'one');
+  const good = JSON.stringify(cb.load('c', '3,-1,-1,-1'));
+  for (const bad of ['3,-1,-1', '3,-1,-1,-1,0', '2,-1,0,0', '0,0,0,0', 'nonsense', '3,-1,x,-1', '']) {
+    is(`page ignores a mangled ?c=${bad}`, JSON.stringify(cb.load('c', bad)), good,
+       'reject the whole parameter, never half-read it');
+  }
+  for (const bad of ['1,2;3', '1,2', 'nonsense', '1,2;3,x', '1,2;;3,4', '1,2;3,4;5,6;7,8;9,10;11,12']) {
+    is(`page ignores a mangled ?g=${bad}`, JSON.stringify(cb.load('g', bad)), good,
+       'reject the whole parameter, never half-read it');
+  }
+
+  // a three-group dataset through ?g=, then a pairwise contrast through ?c=
+  const g3 = cb.load('g', '10,12,14,12;20,22,18,20;30,28,32,30');
+  is('page ?g= three groups: error df', g3.df, '9', 'N − I = 12 − 3');
+  is('page ?g= three groups: default psî', g3.psi, '-26.00', '2(12) − 20 − 30 with the default row');
+  is('page ?g= three groups: prints s on n − 1',
+     /Group 1: n = 4, mean 12\.00, s = 1\.63/.test(g3.sum), true, '√(8/3) = 1.633, VIZ.sd would print 1.41');
+  const g3p = cb.load('c', '1,-1,0');
+  is('page ?g= then ?c=: psî', g3p.psi, '-8.00', '12 − 20');
+  is('page ?g= then ?c=: SE', g3p.se, '1.15', '√(8/3 × 1/2)');
+  is('page ?g= then ?c=: t', g3p.t, '-6.93', 'and MSE = 24/9 on the sample form');
+} catch (e) {
+  failures.push({ section, label: 'Contrast Builder could not be driven — ids or structure changed?',
+    got: String(e.message), want: 'a runnable cb-coefs script printing a contrast', tol: 0, err: NaN,
+    src: 'stats-2/post-hoc-tests' });
+}
+
 
 /* ============================================================
    Report
