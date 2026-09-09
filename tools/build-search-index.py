@@ -208,6 +208,7 @@ for fname, title in [
     ("toolbox.html", "Statistics Toolbox"),
     ("teachers.html", "For Instructors"),
     ("privacy.html", "Privacy"),
+    ("license.html", "License & Reuse"),
 ]:
     p = ROOT / fname
     if p.exists():

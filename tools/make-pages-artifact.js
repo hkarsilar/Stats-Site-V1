@@ -52,6 +52,7 @@ const EXCLUDE = [
   ["ROADMAP.md", "the development plan and its status tracker"],
   ["VOICE.md", "the editorial rules the prose is written against"],
   ["README.md", "repo orientation, not reader-facing"],
+  ["CONTRIBUTING.md", "how to work ON the repo — license.html is the reader-facing version"],
   ["statscapybara-restructure-prompt.md", "the course-restructure session brief"],
   ["tools/", "the checkers, their narration, and faq_data.py"],
   [".claude/", "editor/session config"],

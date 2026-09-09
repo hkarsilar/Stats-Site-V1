@@ -72,8 +72,10 @@ checks, snippets, FAQs, and a rebuild of the search index.
 
 Commit and push to `main`. That fires `.github/workflows/pages.yml`, which
 assembles the artifact with `node tools/make-pages-artifact.js` — the
-committed tree minus the six root `.md` files, `tools/`, `.claude/`,
-`.github/` and the two git dotfiles — and publishes it; the live site updates
+committed tree minus the development docs (the root `.md` guides plus
+`CONTRIBUTING.md`), `tools/`, `.claude/`, `.github/` and the two git dotfiles.
+The license files and `CITATION.cff` *do* ship, so the terms are fetchable
+from the domain itself — and publishes it; the live site updates
 in a minute or two. `CNAME` sets the custom domain. Nothing is compiled,
 minified or rewritten: every published file is copied byte-for-byte, and the
 no-build rule above still holds.
@@ -87,6 +89,28 @@ node tools/serve.js 8097 _site             # browse it exactly as the world sees
 If a deploy changes a precached shell asset (`styles.css`, `site.js`,
 `curriculum.js`, `viz.js`, the font, an icon, or `offline.html`), bump
 `CACHE_VERSION` in `sw.js`.
+
+## License and reuse
+
+StatsCapybara is openly licensed, in two halves:
+
+| | License | Covers |
+|---|---|---|
+| **Content** | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | Lesson prose, FAQs, glossary, quiz and check questions, practice problems and solutions, the guides, the printable posters, the practice datasets, the capybara artwork |
+| **Code** | [MIT](LICENSE) | `assets/js/`, `assets/css/`, `sw.js`, `tools/`, the page scaffolding |
+
+Share it, adapt it, translate it, fork it, teach from it, commercially or
+not. Credit **Hakan Karsilar / [StatsCapybara](https://statscapybara.com/)**,
+link the license, and say if you changed something. The full terms and the
+exact attribution wording are in [`LICENSE-CONTENT.md`](LICENSE-CONTENT.md);
+the reader-facing version lives at
+[statscapybara.com/license.html](https://statscapybara.com/license.html).
+
+To cite the site, see [`CITATION.cff`](CITATION.cff) — GitHub renders it as a
+ready-made citation in the sidebar.
+
+Contributions, and especially corrections, are covered in
+[`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## Found a mistake?
 

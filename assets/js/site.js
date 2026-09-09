@@ -286,6 +286,7 @@
     "home": "No rush — capybaras never cram.",
     "toolbox": "A capybara's toolbox: warm water, good snacks, zero deadlines. Yours has calculators too.",
     "privacy": "The capybara keeps no file on you. It counts how many visitors came to the water, never which one you were.",
+    "license": "The capybara does not guard the waterhole. It dug one, put up a sign reading “drink freely, say where you found it,” and went back to floating.",
     "which-test": "Lost? The capybara also stands at the edge for a while before picking a pool.",
     "which-chart": "A pie chart of the capybara's day would be one giant slice labeled 'napping.' Even then, it says, use a bar.",
     "plan": "The capybara writes the whole plan before the data arrive — test, sample size, and how it'll report it. Then, and only then, it naps.",
@@ -1665,6 +1666,7 @@
     { title: "One Study, Start to Finish: A Complete Worked Project", url: "guides/complete-worked-project/", tag: "Guide", kw: "complete worked project example whole study start to finish end to end research journey capstone guide research question operationalization design power analysis sample size cleaning assumptions two-way factorial anova interaction simple effects effect size confidence interval apa results paragraph limitations ethics reproducible memory 2x2 dissertation thesis" },
     /* not a tool, so deliberately absent from TOOLBOX — but searchable (P69) */
     { title: "Privacy", url: "privacy.html", tag: "Reference", kw: "privacy policy data collection analytics google cookie cookies tracking localstorage local storage progress stored device gdpr ads advertising accounts anonymous page views ko-fi what is collected delete reset children classroom" },
+    { title: "License & Reuse", url: "license.html", tag: "Reference", kw: "license license reuse copyright creative commons cc by 4.0 attribution mit open source open educational resource oer remix adapt translate fork share redistribute commercial credit citation cite citation.cff free to use permissions terms" },
     { title: "For Instructors", url: "teachers.html", tag: "Guide", kw: "instructors teachers professors teaching course syllabus lms canvas moodle blackboard embed iframe classroom handouts posters assignments datasets reproducible semester week by week map free license link to us lecturer educator" }
   ];
   function escHtml(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
@@ -2114,6 +2116,20 @@
     c.appendChild(a);
   }
 
+  /* a Reuse link in every footer — the site is CC BY 4.0 / MIT, and an open
+     license nobody can find is not doing the job an open license exists to
+     do. Same quiet weight as Privacy beside it; it sits last because it is
+     the answer to a question a reader only asks once. */
+  function renderFooterLicense() {
+    var c = document.querySelector(".footer .container");
+    if (!c || c.querySelector(".footer-license")) return;
+    var a = document.createElement("a");
+    a.className = "footer-license";
+    a.href = BASE + "license.html";
+    a.textContent = "Reuse: CC BY 4.0";
+    c.appendChild(a);
+  }
+
   /* a small capybara next to the copyright line, on every page */
   function renderFooterCapy() {
     var c = document.querySelector(".footer .container");
@@ -2344,6 +2360,7 @@
     renderFooterAbout();
     renderFooterFeedback();
     renderFooterPrivacy();
+    renderFooterLicense();
     renderFooterCapy();
     setupHScroll();
     injectVizExport();

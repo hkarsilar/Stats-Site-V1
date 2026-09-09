@@ -37,12 +37,9 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v54";  /* viz.js changed and is precached: P88 added the
-                                      exact null distributions the rank tests are
-                                      tabled from (mwu*, wsr*, spear*), which
-                                      tables.html and §2.1 both read. site.js moved
-                                      too, by one search keyword line. styles.css is
-                                      unchanged; nothing else in the shell moved. */
+const CACHE_VERSION = "sc-v55";  /* site.js and styles.css changed and are both
+                                    precached: the footer gained a Reuse link
+                                    to the new license.html, and its styling. */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location
