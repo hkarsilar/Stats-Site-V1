@@ -2061,6 +2061,386 @@ try {
 
 
 /* ============================================================
+   15 — the factorial 2 × 2 (stats-2/factorial-anova-two-way)
+
+   P91 put two claims on that lesson that nothing else could check. The
+   Interaction Plot Explorer now prints a cell-means table with both margins,
+   the grand mean and four simple main effects; and Where the Variance Goes
+   analyzes one frozen 2 × 2 twice, as a one-way ANOVA on factor A alone and
+   as the two-way model, drawing the partition of SS_T into SS_A, SS_B, SS_AB
+   and SS_E. So this section derives both from the numbers alone and then
+   drives the SHIPPED page under the DOM shim sections 8 to 14 use, through
+   the page's OWN ?cells= and ?g= appliers: the shim hands it a fake window.SC
+   carrying dataParam and groupParam lifted out of site.js, so the widgets are
+   loaded exactly the way a reader's URL loads them.
+
+   THREE IDENTITIES ARE THE POINT, and each is asserted rather than described.
+
+   (a) THE ORTHOGONAL PARTITION. In a BALANCED design the four sums of squares
+   add to SS_T exactly. That is what makes the picture honest, and it is the
+   one property an unbalanced dataset would break, which is why the widget
+   refuses four cells of unequal size.
+
+   (b) A MAIN EFFECT IS THE AVERAGE OF ITS OWN TWO SIMPLE MAIN EFFECTS, and
+   the interaction is their difference. Both halves are asserted against the
+   shipped readouts, since the widget computes the margins down one code path
+   and the simple effects down another and nothing else would notice them
+   drifting apart.
+
+   (c) THE SECOND FACTOR MOVES VARIANCE, NOT THE FIRST EFFECT. The Effect-of-B
+   slider shifts every B1 observation down by b/2 and every B2 one up by b/2.
+   Because the design is balanced that moves neither A margin, so SS_A, SS_AB
+   and SS_E must be untouched at every setting while SS_B grows as b². The
+   consequence a lecturer draws on the board is the two-way F for A holding
+   still at 80.00 while the one-way F for A sinks from 45.16 to 3.25, and both
+   ends are asserted.
+
+   THE DIVISOR IS CHECKED THE WAY SECTIONS 12 AND 13 CHECK IT. VIZ.sd divides
+   by n; every mean square here is on its own df. The frozen default was
+   chosen so the answers are round and far apart: MS_E is exactly 5.00 on 12
+   df, where dividing the same SS_E by N instead of by N − IJ would print 3.75.
+   ============================================================ */
+head('the factorial 2 × 2 (the shipped page)');
+
+const FA_HTML = fs.readFileSync(path.join(ROOT, 'stats-2/factorial-anova-two-way/index.html'), 'utf8');
+
+/* ---- (1) the cell-means arithmetic, independent of the page ---- */
+function square(c11, c12, c21, c22) {
+  const a1 = (c11 + c12) / 2, a2 = (c21 + c22) / 2;
+  const b1 = (c11 + c21) / 2, b2 = (c12 + c22) / 2;
+  const gm = (c11 + c12 + c21 + c22) / 4;
+  const aAtB1 = c21 - c11, aAtB2 = c22 - c12;
+  const bAtA1 = c11 - c12, bAtA2 = c21 - c22;
+  return { a1, a2, b1, b2, gm, aAtB1, aAtB2, bAtA1, bAtA2,
+           mainA: (aAtB1 + aAtB2) / 2, mainB: (bAtA1 + bAtA2) / 2,
+           inter: aAtB2 - aAtB1 };
+}
+
+const boot = square(60, 40, 75, 55);          /* the widget's frozen default */
+eq('cells: A margins', boot.a1 * 1000 + boot.a2, 50 * 1000 + 65, 1e-9, '(60+40)/2 and (75+55)/2');
+eq('cells: B margins', boot.b1 * 1000 + boot.b2, 67.5 * 1000 + 47.5, 1e-9, '(60+75)/2 and (40+55)/2');
+eq('cells: grand mean', boot.gm, 57.5, 1e-12, 'the average of the four cells');
+eq('cells: row margins average to the grand mean', (boot.a1 + boot.a2) / 2, boot.gm, 1e-12, 'balanced 2 × 2');
+eq('cells: column margins average to the grand mean', (boot.b1 + boot.b2) / 2, boot.gm, 1e-12, 'balanced 2 × 2');
+eq('cells: main effect of A', boot.mainA, 15, 1e-12, '65 − 50');
+eq('cells: main effect of B', boot.mainB, 20, 1e-12, '67.5 − 47.5');
+eq('cells: difference of differences', boot.inter, 0, 1e-12, 'parallel lines');
+
+/* identity (b), on a design that is NOT the default, so it cannot pass by
+   coincidence of round numbers */
+const skew = square(45, 40, 80, 55);
+eq('a main effect is the mean of its two simple main effects (A)',
+   (skew.aAtB1 + skew.aAtB2) / 2, skew.mainA, 1e-12, '(35 + 15)/2 = 25');
+eq('a main effect is the mean of its two simple main effects (B)',
+   (skew.bAtA1 + skew.bAtA2) / 2, skew.mainB, 1e-12, '(5 + 25)/2 = 15');
+eq('the interaction is the same size whichever factor is differenced first',
+   skew.aAtB2 - skew.aAtB1, -((skew.bAtA2 - skew.bAtA1)), 1e-12,
+   'one interaction, two sign conventions');
+eq('difference of differences on the skewed design', skew.inter, -20, 1e-12, '15 − 35');
+
+/* ---- (2) the two-way partition, independent of the page ---- */
+/* the frozen study, written as effects rather than typed out, which is what
+   makes identity (c) exact: grand mean 17, alpha ∓5, gamma ±2 */
+const FA_DEV = [
+  [-2, -1, 1, 2, -3, 3, 0, -1, 2, -1],
+  [-3, -1, 1, 3, 2, -2, 0, 1, -2, 1],
+  [-2, -1, 1, 2, 0, 3, -3, 2, -1, -1],
+  [-3, -1, 1, 3, -2, 0, 2, -1, 1, 0]
+];
+const FA_ALPHA = [-5, 5], FA_GAMMA = [[2, -2], [-2, 2]], FA_GM = 17;
+
+function frozen(n, b) {
+  const out = [];
+  for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) {
+    const cm = FA_GM + FA_ALPHA[i] + FA_GAMMA[i][j] + (j === 0 ? -b / 2 : b / 2);
+    const col = [];
+    for (let k = 0; k < n; k++) col.push(cm + FA_DEV[i * 2 + j][k % 10]);
+    out.push(col);
+  }
+  return out;                                   /* A1B1, A1B2, A2B1, A2B2 */
+}
+
+function twoWay(C) {
+  const n = C[0].length, N = 4 * n;
+  const all = [].concat(...C), gm = avg(all);
+  const cm = C.map(avg);
+  const aM = [(cm[0] + cm[1]) / 2, (cm[2] + cm[3]) / 2];
+  const bM = [(cm[0] + cm[2]) / 2, (cm[1] + cm[3]) / 2];
+  let ssa = 0, ssb = 0, ssab = 0, sse = 0, sst = 0;
+  for (let i = 0; i < 2; i++) ssa += n * 2 * (aM[i] - gm) ** 2;
+  for (let j = 0; j < 2; j++) ssb += n * 2 * (bM[j] - gm) ** 2;
+  for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) {
+    const r = cm[i * 2 + j] - aM[i] - bM[j] + gm;
+    ssab += n * r * r;
+  }
+  for (let i = 0; i < 4; i++) sse += ssOf(C[i]);
+  for (const v of all) sst += (v - gm) ** 2;
+  const dfE = N - 4, mse = sse / dfE, df1 = N - 2, mse1 = (sst - ssa) / df1;
+  return { n, N, gm, cm, aM, bM, ssa, ssb, ssab, sse, sst, dfE, mse,
+           fa: ssa / mse, fb: ssb / mse, fab: ssab / mse,
+           df1, mse1, fa1: ssa / mse1,
+           pa: V.fUpper(ssa / mse, 1, dfE), pa1: V.fUpper(ssa / mse1, 1, df1) };
+}
+
+const P0 = twoWay(frozen(4, 8));
+is('frozen study: cell means', P0.cm.join(','), '10,14,16,28', 'the sixteen scores');
+eq('frozen study: grand mean', P0.gm, 17, 1e-12, '(10 + 14 + 16 + 28)/4');
+eq('frozen study: SS A', P0.ssa, 400, 1e-9, '4 × 2 × (25 + 25)');
+eq('frozen study: SS B', P0.ssb, 256, 1e-9, '4 × 2 × (16 + 16)');
+eq('frozen study: SS AB', P0.ssab, 64, 1e-9, '4 × (4 + 4 + 4 + 4)');
+eq('frozen study: SS E', P0.sse, 60, 1e-9, '10 + 20 + 10 + 20');
+eq('frozen study: SS T', P0.sst, 780, 1e-9, 'every score against the grand mean');
+/* identity (a) */
+eq('the partition adds to the total', P0.ssa + P0.ssb + P0.ssab + P0.sse, P0.sst, 1e-9,
+   'SS_T = SS_A + SS_B + SS_AB + SS_E, balanced design');
+is('frozen study: df', [1, 1, 1, P0.dfE, P0.N - 1].join(','), '1,1,1,12,15', 'I−1, J−1, (I−1)(J−1), N−IJ, N−1');
+is('frozen study: the five df add up', 1 + 1 + 1 + P0.dfE, P0.N - 1, '(I−1)+(J−1)+(I−1)(J−1)+(N−IJ) = N−1');
+eq('frozen study: MS E is on N − IJ', P0.mse, 5, 1e-12, '60 / 12');
+eq('the same SS E over N instead would print 3.75', P0.sse / P0.N, 3.75, 1e-12,
+   'the divisor this assertion exists to catch');
+eq('frozen study: F for A, two-way', P0.fa, 80, 1e-9, '400 / 5');
+eq('frozen study: F for B', P0.fb, 51.2, 1e-9, '256 / 5');
+eq('frozen study: F for A × B', P0.fab, 12.8, 1e-9, '64 / 5');
+eq('frozen study: one-way error MS', P0.mse1, 380 / 14, 1e-12, '(780 − 400) / 14');
+eq('frozen study: F for A, one-way', P0.fa1, 400 / (380 / 14), 1e-9, '14.7368');
+rel('frozen study: p for A, two-way', P0.pa, 1.1788817e-6, 1e-5, 'VIZ.fUpper(80, 1, 12)');
+rel('frozen study: p for A, one-way', P0.pa1, 1.8068047e-3, 1e-5, 'VIZ.fUpper(14.7368, 1, 14)');
+eq('frozen study: pooled SD', Math.sqrt(P0.mse), Math.sqrt(5), 1e-12, '√MS_E');
+
+/* identity (c): the slider moves SS_B and nothing else */
+for (const b of [0, 2, 6, 12, 20]) {
+  const P = twoWay(frozen(4, b));
+  eq(`effect of B = ${b}: SS A is unmoved`, P.ssa, 400, 1e-9, 'a pure B shift leaves both A margins alone');
+  eq(`effect of B = ${b}: SS AB is unmoved`, P.ssab, 64, 1e-9, 'adding a constant to a whole B level is not an interaction');
+  eq(`effect of B = ${b}: SS E is unmoved`, P.sse, 60, 1e-9, 'every score moves with its own cell mean');
+  eq(`effect of B = ${b}: SS B grows as b squared`, P.ssb, 8 * (b / 2) ** 2 * 2, 1e-9, 'nI Σ βⱼ²');
+  eq(`effect of B = ${b}: F for A, two-way, is still 80`, P.fa, 80, 1e-9, 'MS_E never moved');
+}
+eq('at b = 0 the one-way F for A is 45.16', twoWay(frozen(4, 0)).fa1, 400 / (124 / 14), 1e-9,
+   'the interaction alone is still in the one-way error');
+eq('at b = 20 the one-way F for A is 3.25', twoWay(frozen(4, 20)).fa1, 400 / (1724 / 14), 1e-9,
+   '(2124 − 400) / 14');
+eq('F*(1, 14) at .05', V.fInv(0.05, 1, 14), 4.6001, 5e-5, 'printed F table');
+is('so the one-way test misses at b = 20 while the two-way test does not',
+   twoWay(frozen(4, 20)).fa1 < V.fInv(0.05, 1, 14) && twoWay(frozen(4, 20)).fa > V.fInv(0.05, 1, 12),
+   true, 'the point of the widget');
+
+/* ---- (3) and now the page itself ---- */
+function driveFactorial() {
+  const blocks = [...FA_HTML.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]);
+  const srcPlot = blocks.filter(s => /cm-gm/.test(s))[0];
+  const srcVar = blocks.filter(s => /wv-t1/.test(s))[0];
+  if (!srcPlot) throw new Error('no inline script mentioning cm-gm');
+  if (!srcVar) throw new Error('no inline script mentioning wv-t1');
+
+  const ctx2d = {};
+  ['clearRect', 'fillRect', 'strokeRect', 'beginPath', 'moveTo', 'lineTo', 'arc', 'closePath',
+   'fill', 'stroke', 'setLineDash', 'fillText', 'setTransform', 'save', 'restore'].forEach(n => { ctx2d[n] = () => {}; });
+  ctx2d.measureText = t => ({ width: String(t).length * 6 });
+
+  const els = {};
+  const mk = () => {
+    const on = {};
+    const node = {
+      innerHTML: '', textContent: '', value: '', min: '0', max: '100', step: '1',
+      style: {}, dataset: {}, hidden: false,
+      clientWidth: 720, parentElement: { clientWidth: 720 }, getContext: () => ctx2d,
+      classList: { add: () => {}, remove: () => {}, toggle: () => {} },
+      querySelectorAll: () => [], getAttribute: () => null,
+      addEventListener: (t, f) => { (on[t] = on[t] || []).push(f); },
+      fire: (t, e) => (on[t] || []).forEach(f => f.call(node, e))
+    };
+    return node;
+  };
+
+  /* the shared parsers, lifted out of site.js rather than reimplemented: what
+     is being asked is what the SHIPPED helpers do with a URL */
+  const siteSrc = fs.readFileSync(path.join(ROOT, 'assets/js/site.js'), 'utf8');
+  const grab = (name) => {
+    const i = siteSrc.indexOf('function ' + name);
+    const j = siteSrc.indexOf('\n  }\n', i);
+    if (i < 0 || j < 0) throw new Error('site.js no longer defines ' + name);
+    return siteSrc.slice(i, j + 4);
+  };
+  const dataParam = new Function(grab('numeric') + grab('dataParam') + ';return dataParam;')();
+  const groupParam = new Function(grab('numeric') + grab('groupParam') + ';return groupParam;')();
+
+  let maps = [];
+  const c = { console };
+  c.window = c;
+  c.document = {
+    documentElement: {},
+    getElementById: id => els[id] || (els[id] = mk()),
+    querySelector: sel => els[sel.replace('#', '')] || (els[sel.replace('#', '')] = mk()),
+    querySelectorAll: () => []
+  };
+  c.getComputedStyle = () => ({ getPropertyValue: () => '#000000' });
+  c.MutationObserver = function () { this.observe = () => {}; };
+  c.ResizeObserver = function () { this.observe = () => {}; };
+  c.requestAnimationFrame = cb => cb();
+  c.addEventListener = () => {};
+  c.location = { search: '?x=1' };
+  c.SC = { preset: m => { maps.push(m); }, dataParam, groupParam };
+  vm.createContext(c);
+  vm.runInContext(fs.readFileSync(path.join(ROOT, 'assets/js/viz.js'), 'utf8'), c, { filename: 'viz.js' });
+
+  /* the four sliders carry the lesson's own defaults, read out of the markup
+     rather than restated here: a frozen default switched in the HTML is
+     exactly what this has to catch */
+  const slider = (id) => {
+    const m = FA_HTML.match(new RegExp('<input type="range" id="' + id + '"[^>]*value="([-\\d.]+)"'));
+    if (!m) throw new Error('no range input with id ' + id);
+    return m[1];
+  };
+  ['c11', 'c21', 'c12', 'c22'].forEach(id => { els[id] = mk(); els[id].value = slider(id); });
+  ['wv-n', 'wv-b'].forEach(id => {
+    els[id] = mk(); els[id].value = slider(id);
+    const m = FA_HTML.match(new RegExp('<input type="range" id="' + id + '"[^>]*min="([-\\d.]+)" max="([-\\d.]+)" step="([-\\d.]+)"'));
+    if (m) { els[id].min = m[1]; els[id].max = m[2]; els[id].step = m[3]; }
+  });
+
+  vm.runInContext(srcPlot, c, { filename: 'stats-2/factorial-anova-two-way#interaction-plot' });
+  vm.runInContext(srcVar, c, { filename: 'stats-2/factorial-anova-two-way#where-the-variance-goes' });
+  const cellsMap = maps.filter(m => typeof m.cells === 'function')[0];
+  const gMap = maps.filter(m => typeof m.g === 'function')[0];
+  if (!cellsMap) throw new Error('the interaction plot registered no ?cells= applier');
+  if (!gMap) throw new Error('the variance widget registered no ?g= applier');
+
+  /* a real textContent setter coerces to a string; the shim stores what it is
+     handed, so the read is coerced here instead */
+  const txt = id => (els[id] ? String(els[id].textContent) : null);
+  const plot = () => ({
+    c11: txt('cm-11'), c12: txt('cm-12'), c21: txt('cm-21'), c22: txt('cm-22'),
+    a1: txt('cm-a1'), a2: txt('cm-a2'), b1: txt('cm-b1'), b2: txt('cm-b2'), gm: txt('cm-gm'),
+    mainA: txt('stat-a'), mainB: txt('stat-b'), inter: txt('stat-int'), lines: txt('stat-lines'),
+    ab1: txt('stat-ab1'), ab2: txt('stat-ab2'), ba1: txt('stat-ba1'), ba2: txt('stat-ba2')
+  });
+  /* the two tables are written as markup, so they are read back as markup, the
+     same way section 9 reads tables.html's <tbody> */
+  const cell = (host, id) => {
+    const m = els[host].innerHTML.match(new RegExp('<span id="' + id + '"[^>]*>([^<]*)<'));
+    return m ? m[1] : null;
+  };
+  const nums = host => (els[host].innerHTML.match(/<td[^>]*>[\s\S]*?<\/td>/g) || [])
+    .map(t => t.replace(/<[^>]*>/g, '').trim());
+  const variance = () => ({
+    f1: txt('wv-f1'), f2: txt('wv-f2'), m1: txt('wv-m1'), m2: txt('wv-m2'),
+    n: txt('wv-nv'), b: txt('wv-bv'),
+    t1f: cell('wv-t1', 'wv-c-f1'), t1m: cell('wv-t1', 'wv-c-m1'),
+    t2f: cell('wv-t2', 'wv-c-f2'), t2m: cell('wv-t2', 'wv-c-m2'),
+    t1: nums('wv-t1'), t2: nums('wv-t2'), data: els['wv-data'].innerHTML
+  });
+  if (!plot().gm) throw new Error('the cell-means table stayed empty on boot');
+  if (!variance().t2.length) throw new Error('the two-way table stayed empty on boot');
+  return {
+    plotBoot: plot(), varBoot: variance(),
+    loadCells: raw => { cellsMap.cells(raw); return plot(); },
+    loadG: raw => { gMap.g(raw); return variance(); },
+    slide: (id, v) => { els[id].value = String(v); els[id].fire('input'); return variance(); }
+  };
+}
+
+try {
+  const page = driveFactorial();
+  const b = page.plotBoot;
+
+  /* the BOOT state is read before any parameter is applied, which is the only
+     way to catch a default switched in the markup (sections 10 and 11 learned
+     this the hard way) */
+  is('plot boots on its own markup defaults: cells', [b.c11, b.c12, b.c21, b.c22].join(','),
+     '60.0,40.0,75.0,55.0', 'the four range inputs');
+  is('plot boots: row margins', [b.a1, b.a2].join(','), '50.0,65.0', 'averages of each row');
+  is('plot boots: column margins', [b.b1, b.b2].join(','), '67.5,47.5', 'averages of each column');
+  is('plot boots: grand mean', b.gm, '57.5', 'the average of the four cells');
+  is('plot boots: main effect of A', b.mainA, '+15.0', '65 − 50');
+  is('plot boots: main effect of B', b.mainB, '+20.0', '67.5 − 47.5');
+  is('plot boots: difference of differences', b.inter, '+0.0', 'parallel');
+  is('plot boots: simple main effects of A', [b.ab1, b.ab2].join(','), '+15.0,+15.0', '75−60 and 55−40');
+  is('plot boots: simple main effects of B', [b.ba1, b.ba2].join(','), '+20.0,+20.0', '60−40 and 75−55');
+  is('plot boots: the verdict on the lines', /parallel/.test(b.lines), true, 'no interaction');
+
+  /* ?cells= drives it the way a lecturer's link does, in reading order */
+  const sk = page.loadCells('45,40,80,55');
+  is('page ?cells=: simple main effects of A', [sk.ab1, sk.ab2].join(','), '+35.0,+15.0', '80−45 and 55−40');
+  is('page ?cells=: main effect of A is their average', sk.mainA, '+25.0', '(35 + 15)/2');
+  is('page ?cells=: difference of differences', sk.inter, '-20.0', '15 − 35');
+  is('page ?cells=: simple main effects of B', [sk.ba1, sk.ba2].join(','), '+5.0,+25.0', '45−40 and 80−55');
+  is('page ?cells=: main effect of B is their average', sk.mainB, '+15.0', '(5 + 25)/2');
+  const cross = page.loadCells('70,35,35,72');
+  is('page ?cells= on a crossover: the verdict says crossing', /crossing/.test(cross.lines), true,
+     'the two lines change order');
+
+  /* a mangled ?cells= must leave the widget where it was */
+  for (const bad of ['60,40,75', '60,40,75,55,20', 'nonsense', '60,40,75,x', '', '60']) {
+    const good = page.loadCells('60,40,75,55');
+    is(`page ignores a mangled ?cells=${bad || '(empty)'}`, page.loadCells(bad).gm, good.gm,
+       'reject the whole parameter, never half-read it');
+  }
+
+  /* --- Where the Variance Goes --- */
+  const v = page.varBoot;
+  is('variance widget boots on its own markup defaults', [v.n, v.b].join(','), '4,8', 'the two range inputs');
+  is('variance widget boots: F for A, one-way', v.f1, '14.74', '400 / 27.14');
+  is('variance widget boots: F for A, two-way', v.f2, '80.00', '400 / 5');
+  is('variance widget boots: error MS, one-way', v.m1, '27.14', '380 / 14');
+  is('variance widget boots: error MS, two-way', v.m2, '5.00', '60 / 12');
+  is('the one-way F in the table matches the readout', v.t1f, v.f1, 'one number, printed twice');
+  is('the two-way F in the table matches the readout', v.t2f, v.f2, 'one number, printed twice');
+  is('the one-way error MS in the table matches the readout', v.t1m, v.m1, 'one number, printed twice');
+  is('the two-way error MS in the table matches the readout', v.t2m, v.m2, 'one number, printed twice');
+  /* the cells the two tables print, read out of the markup */
+  is('one-way table: every cell, source names included', v.t1.join('|'),
+     'Practice time (A)|400.00|1|400.00|14.74|.0018|Error|380.00|14|27.14|||Total|780.00|15|||',
+     'A on 1 df, error on N − 2, total on N − 1');
+  is('two-way table: every cell, source names included', v.t2.join('|'),
+     'Practice time (A)|400.00|1|400.00|80.00|&lt; .0001|Feedback (B)|256.00|1|256.00|51.20|&lt; .0001|' +
+     'A × B|64.00|1|64.00|12.80|.0038|Error|60.00|12|5.00|||Total|780.00|15|||',
+     'SS_A 400, SS_B 256, SS_AB 64, SS_E 60 of 780');
+  is('the two-way table escapes its own less-than sign', /&lt; \.0001/.test(v.t2.join('|')), true,
+     'the p column is written into innerHTML');
+  /* the per-cell values it prints are whole numbers at the default, and the
+     cell means are the exam-dialect means of those numbers */
+  is('variance widget prints the frozen cells', /8, 9, 11, 12<\/span><span class="wv-cmean">mean 10\.00/.test(v.data),
+     true, 'the first cell, mean exactly 10');
+  is('variance widget prints the last cell', /25, 27, 29, 31<\/span><span class="wv-cmean">mean 28\.00/.test(v.data),
+     true, 'the fourth cell, mean exactly 28');
+
+  /* identity (c), through the page's own slider */
+  const at20 = page.slide('wv-b', 20);
+  is('page at b = 20: the two-way F for A has not moved', at20.f2, '80.00', 'SS_A and MS_E both untouched');
+  is('page at b = 20: the one-way F for A has collapsed', at20.f1, '3.25', '400 / 123.14');
+  is('page at b = 20: the two-way error MS has not moved', at20.m2, '5.00', 'the B shift never touched a residual');
+  const at0 = page.slide('wv-b', 0);
+  is('page at b = 0: the one-way F for A is 45.16', at0.f1, '45.16', 'the interaction is still in that error');
+  is('page at b = 0: the two-way F for A is still 80.00', at0.f2, '80.00', 'unmoved across the whole range');
+  page.slide('wv-b', 8);
+
+  /* ?g= : a whole balanced 2 × 2 in the URL */
+  const g = page.loadG('2,4,6;10,12,14;3,5,7;20,22,24');
+  const want = twoWay([[2, 4, 6], [10, 12, 14], [3, 5, 7], [20, 22, 24]]);
+  is('page ?g=: n per cell follows the dataset', g.n, '3', 'three values in every cell');
+  is('page ?g=: loading resets the effect-of-B slider', g.b, '0', 'what arrives is what shows');
+  is('page ?g=: F for A, two-way', g.f2, want.fa.toFixed(2), 'derived independently above');
+  is('page ?g=: F for A, one-way', g.f1, want.fa1.toFixed(2), 'derived independently above');
+  is('page ?g=: error MS, two-way', g.m2, want.mse.toFixed(2), 'SS_E over N − IJ');
+
+  /* an unbalanced or malformed ?g= must leave the widget where it was: an
+     unbalanced factorial has no four-way partition of SS_T to draw */
+  for (const bad of ['1,2;3,4;5,6', '1,2;3,4;5,6;7,8;9,10', '1,2,3;4,5;6,7,8;9,10,11',
+                     '1,2;3,4;5,6;7,x', 'nonsense', '1,2;3,4;5,6;7']) {
+    const good = page.loadG('2,4,6;10,12,14;3,5,7;20,22,24');
+    is(`page ignores a bad ?g=${bad}`, page.loadG(bad).f2, good.f2,
+       'four equal cells or nothing');
+  }
+} catch (e) {
+  failures.push({ section, label: 'the factorial 2 × 2 could not be driven — ids or structure changed?',
+    got: String(e.message), want: 'runnable cm-gm and wv-t1 scripts printing the two tables', tol: 0, err: NaN,
+    src: 'stats-2/factorial-anova-two-way' });
+}
+
+
+
+/* ============================================================
    Report
    ============================================================ */
 const line = '─'.repeat(60);

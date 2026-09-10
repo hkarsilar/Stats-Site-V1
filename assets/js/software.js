@@ -294,20 +294,27 @@ window.SOFTWARE = {
     spss: [
       '<strong>Analyze → General Linear Model → Univariate…</strong>',
       'Outcome into <em>Dependent Variable</em>; both factors into <em>Fixed Factor(s)</em>. The A × B interaction is included automatically.',
-      '<em>Options…</em>: tick <em>Estimates of effect size</em> (partial η²) and <em>Descriptive statistics</em>.',
-      '<em>Plots…</em>: put one factor on the horizontal axis and the other as separate lines — non-parallel lines are the interaction.',
-      'If the interaction is significant, follow up with <em>EM Means → Compare simple main effects</em>.'
+      '<em>Options…</em>: tick <em>Estimates of effect size</em> (partial η²), <em>Descriptive statistics</em> and <em>Homogeneity tests</em>.',
+      '<em>Plots…</em>: put one factor on the horizontal axis and the other as separate lines, then press <em>Add</em> before <em>Continue</em>, which is the step people forget. Non-parallel lines are the interaction.',
+      'Read <em>Tests of Between-Subjects Effects</em> from the bottom up. The <em>Error</em> row gives MS<sub>E</sub> and its df (N − IJ); the <em>Corrected Total</em> row gives SS<sub>T</sub> on N − 1. Above them sit one row per factor and one for the interaction, each with SS, df, MS, F, Sig. and partial η². Ignore the <em>Intercept</em> and <em>Corrected Model</em> rows: the first tests whether the grand mean is zero, the second is the omnibus test of all three effects together.',
+      'The <em>Sig.</em> column is a p-value even where it prints .000, which means p &lt; .001 and is never reported as zero.',
+      '<em>EM Means…</em>: move both factors and the <em>(factorname*factorname)</em> interaction term into <em>Display Means for</em>. The one-factor boxes print the marginal means; the interaction box prints the cell means.',
+      'For simple main effects, tick <em>Compare main effects</em>, choose <em>Bonferroni</em> and press <em>Paste</em> rather than OK. In the syntax window, edit the <code>/EMMEANS</code> line for the interaction to read <code>/EMMEANS = TABLES(a*b) COMPARE(a) ADJ(BONFERRONI)</code> and run it: that tests A at each level of B. Swap the two names inside <code>COMPARE()</code> for the other direction.',
+      'Unequal cell sizes are handled by <em>Model… → Sum of squares</em>, which defaults to <em>Type III</em>. Leave it there unless you have a specific reason not to.'
     ],
     jasp: [
       '<strong>ANOVA → ANOVA</strong> with both factors in <em>Fixed Factors</em>.',
       'The <em>Model</em> section shows main effects and the interaction (included by default).',
       'Tick <em>Estimates of effect size</em>; use <em>Descriptives plots</em> with one factor on the x-axis and one as separate lines.',
-      'Follow a significant interaction with <em>Simple Main Effects</em> in the same analysis.'
+      'JASP prints the same table without the intercept row, so the rows you see are the two factors, the interaction and Residuals, where Residuals is what SPSS calls Error.',
+      'Open <em>Marginal Means</em> for the margins, and <em>Simple Main Effects</em> for the follow-ups: put the factor you want tested in <em>Simple effect factor</em> and the factor whose levels you want to split by in <em>Moderator factor 1</em>.'
     ],
     apa: '<p>There was a significant caffeine × time-of-day interaction, <em>F</em>(1, 76) = 6.87, <em>p</em> = .011, η<sub>p</sub>² = .08: caffeine improved performance in the morning, <em>F</em>(1, 76) = 16.09, <em>p</em> &lt; .001, but not in the evening, <em>F</em>(1, 76) = 0.09, <em>p</em> = .76. There was also a main effect of caffeine, <em>F</em>(1, 76) = 9.31, <em>p</em> = .003, η<sub>p</sub>² = .11, qualified by the interaction above.</p>',
     tips: [
       'Lead with the interaction, since a significant interaction changes how the main effects should be read ("qualified by").',
-      'GLM output gives <em>partial</em> η² (η<sub>p</sub>²); label it as such, since it isn’t comparable to plain η².'
+      'GLM output gives <em>partial</em> η² (η<sub>p</sub>²); label it as such, since it isn’t comparable to plain η².',
+      'Report the marginal means when you report a main effect and the cell means when you report the interaction, each with its own standard deviation or standard error. A reader cannot reconstruct a simple main effect from an F alone.',
+      'A marginal mean averages the cells, not the people. With unequal cells it will not equal the raw average of everyone at that level, and it is the marginal mean the F ratio is testing.'
     ]
   },
   "repeated-measures-anova": {

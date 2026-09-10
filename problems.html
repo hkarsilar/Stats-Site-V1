@@ -16,16 +16,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Practice Problems — Worked Statistics Exam Questions — StatsCapybara</title>
-  <meta name="description" content="Seventy-one statistics problems with worked solutions: z-scores, t-tests, chi-square, ANOVA, rank tests, regression and Bayes, one step at a time." />
+  <meta name="description" content="Seventy-three statistics problems with worked solutions: z-scores, t-tests, chi-square, ANOVA, rank tests, regression and Bayes, one step at a time." />
   <link rel="canonical" href="https://statscapybara.com/problems.html" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Practice Problems — StatsCapybara" />
-  <meta property="og:description" content="Seventy-one worked statistics problems, from z-scores and rank tests to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
+  <meta property="og:description" content="Seventy-three worked statistics problems, from z-scores and rank tests to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
   <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
   <meta property="og:url" content="https://statscapybara.com/problems.html" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Practice Problems — StatsCapybara" />
-  <meta name="twitter:description" content="Seventy-one worked statistics problems, from z-scores and rank tests to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
+  <meta name="twitter:description" content="Seventy-three worked statistics problems, from z-scores and rank tests to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="assets/css/styles.css" />
@@ -139,7 +139,7 @@
         <ul class="pb-index">
           <li><a href="#stats-1"><span class="t">📊 Stats 1 · Foundations</span><br><span class="m">25 problems · data types → probability → z, t, proportions, χ², correlation and regression</span></a></li>
           <li><a href="#exam-style"><span class="t">📝 Exam-style · A Stats 1 midterm</span><br><span class="m">8 problems · §1.1 to §1.12, worked off the printed tables</span></a></li>
-          <li><a href="#stats-2"><span class="t">🔗 Stats 2 · Groups &amp; relationships</span><br><span class="m">17 problems · ANOVA → contrasts → regression → rank tests</span></a></li>
+          <li><a href="#stats-2"><span class="t">🔗 Stats 2 · Groups &amp; relationships</span><br><span class="m">19 problems · ANOVA → contrasts → factorial → regression → rank tests</span></a></li>
           <li><a href="#regression"><span class="t">📐 Regression · Several predictors</span><br><span class="m">8 problems · multiple regression → missing data</span></a></li>
           <li><a href="#advanced"><span class="t">🎲 Advanced · Modern methods</span><br><span class="m">7 problems · Bayes → model comparison</span></a></li>
           <li><a href="#toolkit"><span class="t">🔍 Research Toolkit · Spot the problem</span><br><span class="m">6 problems · design, sampling, ethics, writing</span></a></li>
@@ -2082,7 +2082,7 @@
              ================================================================== -->
         <section class="pb-set" id="stats-2-set">
           <h2 id="stats-2">🔗 Stats 2 · Groups &amp; relationships</h2>
-          <p class="pb-set-sub">Seventeen problems on comparing groups and reading a relationship: three or more groups, factorial designs, the assumptions that decide which test you are allowed to run, the two ways of describing a straight line, two ANOVA tables built by hand, the planned and corrected comparisons that follow one, and three rank-based tests worked against their printed critical-value tables. The group tests are <a href="stats-2/">Stats 2</a>; correlation and regression are taught in <a href="stats-1/">Stats 1</a>.</p>
+          <p class="pb-set-sub">Nineteen problems on comparing groups and reading a relationship: three or more groups, factorial designs, the assumptions that decide which test you are allowed to run, the two ways of describing a straight line, two ANOVA tables built by hand, the planned and corrected comparisons that follow one, and three rank-based tests worked against their printed critical-value tables. The group tests are <a href="stats-2/">Stats 2</a>; correlation and regression are taught in <a href="stats-1/">Stats 1</a>.</p>
 
           <!-- ---------- 2.1 ----------
                verify: groups [3,5,4,2,6],[4,7,6,5,8],[9,6,8,10,7]; means 4,6,8; grand 6
@@ -3183,6 +3183,146 @@
               </ol>
               <p class="pb-answer">Σ<em>d</em>² = 22, so ρ<sub>s</sub> = 1 − 132/504 = .738. That reaches the two-tailed .05 cell of .738 exactly, so the null is rejected (exact <em>p</em> = .046), but it falls short of the .01 cell of .881. Ties would break the shortcut and force Pearson's formula on the ranks.</p>
               <p class="pb-ref">From <a href="stats-2/non-parametric-alternatives/#spearman">§2.1 Non-Parametric Alternatives</a> and <a href="stats-1/correlation/">§1.17 Correlation</a>. The Spearman tab of <a href="stats-2/non-parametric-alternatives/#rankviz">the rank ledger</a> builds the same <em>d</em>² column live, and <a href="tables.html#rank-tables">Table ρ</a> holds both cells.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 2.18 ----------
+               verify: cells (rows = place A1 quiet, A2 cafe; cols = phone B1 away, B2 desk)
+                       c11=84 c12=64 c21=62 c22=58
+                       A margins (84+64)/2=74, (62+58)/2=60  -> main A (A2-A1) = -14
+                       B margins (84+62)/2=73, (64+58)/2=61  -> main B (B1-B2) = +12
+                       grand (84+64+62+58)/4 = 268/4 = 67 ; margins average to it both ways
+                       simple A: 62-84 = -22 at B1, 58-64 = -6 at B2 ; DoD = -6 - (-22) = +16
+                       simple B: 84-64 = +20 at A1, 62-58 = +4 at A2 ; DoD = 4 - 20 = -16
+                       each main effect is the mean of its own two simple effects:
+                       (-22 + -6)/2 = -14 ; (20 + 4)/2 = 12
+                       lines with A on the x-axis: B1 84->62 and B2 64->58, B1 above at both
+                       ends, so spreading rather than crossover
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p2-18"><span class="pb-num">30</span>Four cells, and everything that falls out of them</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">Forty students are each given the same two-hour assignment and randomly assigned to one of four conditions: they work either in a quiet reading room or in a busy café, and their phone is either left in another room or sitting on the desk. The outcome is the number of minutes of focused work recorded by a timer that stops when they switch away from the document. Ten students land in each cell.</p>
+            <div class="pb-given">
+              <span class="lbl">Cell means, in minutes</span>
+              <ul>
+                <li>Quiet room, phone in another room: 84 &nbsp;·&nbsp; quiet room, phone on the desk: 64</li>
+                <li>Busy café, phone in another room: 62 &nbsp;·&nbsp; busy café, phone on the desk: 58</li>
+                <li>Call the place factor A (A₁ quiet, A₂ café) and the phone factor B (B₁ away, B₂ on the desk)</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Lay the four means out as a 2 × 2 and fill in both row margins, both column margins and the grand mean.</li>
+              <li>Give the main effect of each factor, and check each one against its own two simple main effects.</li>
+              <li>Give all four simple main effects and the difference of differences. Is the interaction spreading or crossover?</li>
+              <li>Describe the interaction plot with A on the horizontal axis and one line per level of B.</li>
+              <li>A colleague summarizes the study as "leaving your phone in another room buys you twelve minutes". Say what is right and what is misleading about that.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The square, with its margins</span>
+                  <span class="pb-math">Row A₁: 84 and 64 &nbsp;→&nbsp; margin (84 + 64)/2 = 74</span>
+                  <span class="pb-math">Row A₂: 62 and 58 &nbsp;→&nbsp; margin (62 + 58)/2 = 60</span>
+                  <span class="pb-math">Column B₁: 84 and 62 &nbsp;→&nbsp; margin (84 + 62)/2 = 73</span>
+                  <span class="pb-math">Column B₂: 64 and 58 &nbsp;→&nbsp; margin (64 + 58)/2 = 61</span>
+                  <span class="pb-math">Grand mean = (84 + 64 + 62 + 58)/4 = 268/4 = 67</span>
+                  <span class="pb-note">Two arithmetic checks come free. The two row margins average to the grand mean, (74 + 60)/2 = 67, and so do the two column margins, (73 + 61)/2 = 67. Both hold only because every cell has the same ten students in it; with unequal cells a margin is a weighted average and these tidy identities go away.</span>
+                </li>
+                <li><span class="pb-lbl">Two main effects</span>
+                  <span class="pb-math">Main effect of A = 60 &minus; 74 = &minus;14 minutes (the café costs 14)</span>
+                  <span class="pb-math">Main effect of B = 73 &minus; 61 = +12 minutes (the phone away buys 12)</span>
+                  <span class="pb-note">Each is a statement about an average over the other factor. The café figure averages over the two phone conditions; the phone figure averages over the two places.</span>
+                </li>
+                <li><span class="pb-lbl">Four simple main effects, and their difference</span>
+                  <span class="pb-math">A at B₁: 62 &minus; 84 = &minus;22 &nbsp;&nbsp; A at B₂: 58 &minus; 64 = &minus;6</span>
+                  <span class="pb-math">Mean of the two: (&minus;22 + &minus;6)/2 = &minus;14, which is the main effect of A</span>
+                  <span class="pb-math">B at A₁: 84 &minus; 64 = +20 &nbsp;&nbsp; B at A₂: 62 &minus; 58 = +4</span>
+                  <span class="pb-math">Mean of the two: (20 + 4)/2 = +12, which is the main effect of B</span>
+                  <span class="pb-math">Difference of differences = &minus;6 &minus; (&minus;22) = +16</span>
+                  <span class="pb-note">Difference the other factor first and you get 4 &minus; 20 = &minus;16, the same size with the other sign. There is only one interaction here, and which sign it wears depends on which factor you subtracted first. Both simple main effects of A point the same way and both simple main effects of B point the same way, so this is a spreading interaction rather than a crossover: the phone matters in both places, five times as much in the quiet room.</span>
+                </li>
+                <li><span class="pb-lbl">The picture</span>
+                  <span class="pb-note">Two points on the left at A₁, 84 for B₁ and 64 for B₂; two on the right at A₂, 62 and 58. The B₁ line falls steeply from 84 to 62; the B₂ line drops gently from 64 to 58. The B₁ line stays above the B₂ line across the whole plot, so the lines do not cross inside the range, and their different slopes are the interaction. A 20-minute gap on the left has narrowed to a 4-minute gap on the right.</span>
+                </li>
+                <li><span class="pb-lbl">What the summary gets wrong</span>
+                  <span class="pb-note">Twelve minutes is the correct main effect of B, so the number is not wrong. What is misleading is the implied "wherever you work". The phone bought 20 minutes in the quiet room and 4 in the café, and 12 is the average of two numbers, neither of which is 12. With an interaction this size the honest summary reports it first and then gives the two simple main effects: leaving the phone in another room helped in both settings, substantially in the quiet room and barely in the café.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Margins 74 and 60 down the rows, 73 and 61 across the columns, grand mean 67. Main effects &minus;14 for place and +12 for the phone. Simple main effects &minus;22 and &minus;6 for place, +20 and +4 for the phone, each pair averaging to its own main effect; the difference of differences is 16, a spreading interaction. The twelve-minute claim is the right average and the wrong story.</p>
+              <p class="pb-ref">From <a href="stats-2/factorial-anova-two-way/#margins-and-simple-effects">§2.4 Factorial ANOVA</a>. Type the four cell means into <a href="stats-2/factorial-anova-two-way/?cells=84,64,62,58">the Interaction Plot Explorer</a> and every number above is printed for you.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 2.19 ----------
+               verify: 2 x 3 design, n = 8 per cell, N = 48, IJ = 6
+                       given SSA=96, SSB=150, SSAB=88, SST=838
+                       SSE = 838 - 96 - 150 - 88 = 504 ; dfE = 48 - 6 = 42 ; MSE = 12.00
+                       dfA=1 dfB=2 dfAB=2 dfE=42 dfT=47 ; 1+2+2+42 = 47 OK
+                       MSA = 96 ; F_A = 8.00 ; V.fUpper(8,1,42) = .00714
+                       MSB = 75 ; F_B = 6.25 ; V.fUpper(6.25,2,42) = .00421
+                       MSAB = 44 ; F_AB = 3.6667 ; V.fUpper(3.6667,2,42) = .03406
+                       V.fInv(.05,1,42) = 4.0727 ; V.fInv(.05,2,42) = 3.2199
+                       partial eta2: A 96/600 = .160 ; B 150/654 = .229 ; AB 88/592 = .149
+                       sp = sqrt(12) = 3.4641
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p2-19"><span class="pb-num">31</span>The two-way table with four cells missing</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">Students take notes on the same lecture either on a laptop or in longhand, and are quizzed either the same day, one week later or three weeks later. Every one of the six conditions holds the same number of students. The output below arrived with four cells missing.</p>
+            <div class="pb-given">
+              <span class="lbl">Two-way ANOVA, quiz score out of 40</span>
+              <ul>
+                <li>Medium (A): SS = 96.00, df = 1, MS = 96.00, <em>F</em> = ?</li>
+                <li>Delay (B): SS = 150.00, df = 2, MS = ?, <em>F</em> = ?</li>
+                <li>A × B: SS = 88.00, df = 2, MS = 44.00, <em>F</em> = ?</li>
+                <li>Error: SS = ?, df = ?, MS = ?</li>
+                <li>Total: SS = 838.00, df = 47</li>
+                <li>Critical values: <em>F</em>*(1, 42) = 4.07 and <em>F</em>*(2, 42) = 3.22, both at α = .05</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>How many levels does each factor have, how many students were there in total, and how many sat in each cell? Answer from the degrees of freedom alone.</li>
+              <li>Complete the error row and the three <em>F</em> ratios.</li>
+              <li>Decide each of the three tests at α = .05, and give partial η² for the interaction.</li>
+              <li>Which line do you report first, and what does that decision do to the two sentences about the main effects?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Reading the design off the df column</span>
+                  <span class="pb-math">df<sub>A</sub> = <em>I</em> &minus; 1 = 1 &nbsp;→&nbsp; <em>I</em> = 2 levels of medium</span>
+                  <span class="pb-math">df<sub>B</sub> = <em>J</em> &minus; 1 = 2 &nbsp;→&nbsp; <em>J</em> = 3 delays, and (<em>I</em> &minus; 1)(<em>J</em> &minus; 1) = 2 checks out</span>
+                  <span class="pb-math">df<sub>T</sub> = <em>N</em> &minus; 1 = 47 &nbsp;→&nbsp; <em>N</em> = 48 students</span>
+                  <span class="pb-math"><em>IJ</em> = 6 cells, so <em>n</em> = 48/6 = 8 per cell</span>
+                  <span class="pb-note">A two-way table carries its own design in the df column, which is why an exam can hand you nothing else and still expect the sample size back. The same trick works in reverse: quote <em>F</em>(2, 42) in a paper and a reader can reconstruct three levels and 48 people.</span>
+                </li>
+                <li><span class="pb-lbl">The error row, then the ratios</span>
+                  <span class="pb-math">SS<sub>E</sub> = SS<sub>T</sub> &minus; SS<sub>A</sub> &minus; SS<sub>B</sub> &minus; SS<sub>AB</sub></span>
+                  <span class="pb-math">= 838 &minus; 96 &minus; 150 &minus; 88 = 504.00</span>
+                  <span class="pb-math">df<sub>E</sub> = <em>N</em> &minus; <em>IJ</em> = 48 &minus; 6 = 42, and 1 + 2 + 2 + 42 = 47 as it must</span>
+                  <span class="pb-math">MS<sub>E</sub> = 504/42 = 12.00</span>
+                  <span class="pb-math">MS<sub>B</sub> = 150/2 = 75.00</span>
+                  <span class="pb-math"><em>F</em><sub>A</sub> = 96/12 = 8.00 &nbsp;&nbsp; <em>F</em><sub>B</sub> = 75/12 = 6.25 &nbsp;&nbsp; <em>F</em><sub>AB</sub> = 44/12 = 3.67</span>
+                  <span class="pb-note">All three <em>F</em> ratios divide by the same MS<sub>E</sub>, which is the only reason the missing error row had to be recovered first. Its square root, s<sub>p</sub> = √12 = 3.46 points, is the residual spread worth quoting beside the means.</span>
+                </li>
+                <li><span class="pb-lbl">Three decisions and an effect size</span>
+                  <span class="pb-math">Medium: 8.00 &gt; 4.07, so reject (exact <em>p</em> = .007)</span>
+                  <span class="pb-math">Delay: 6.25 &gt; 3.22, so reject (exact <em>p</em> = .004)</span>
+                  <span class="pb-math">A × B: 3.67 &gt; 3.22, so reject (exact <em>p</em> = .034)</span>
+                  <span class="pb-math">η<sub>p</sub>² for the interaction = 88 / (88 + 504) = 88/592 = .149</span>
+                  <span class="pb-note">Partial η² puts each effect over itself plus the error rather than over the total, so the three values here (.160, .229 and .149) are not shares of one pie and do not add to anything. The interaction is the smallest of the three and still comfortably past its critical value, because 42 error degrees of freedom buy a good deal of precision.</span>
+                </li>
+                <li><span class="pb-lbl">The reading order</span>
+                  <span class="pb-note">The interaction line goes first, because it is significant and it changes what the two lines above it are allowed to say. The medium effect of 8.00 and the delay effect of 6.25 are both real, but each is an average over the other factor, and a significant A × B says the medium's advantage is not the same at every delay. The write-up leads with the interaction, then reports each main effect as qualified by it, and then tests the simple main effects that say what actually happened: the medium's effect at each of the three delays, or the delay's effect within each medium. Reporting the two main effects first and mentioning the interaction as an afterthought inverts the logic of the table.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Two levels of medium, three delays, 48 students, 8 per cell. SS<sub>E</sub> = 504.00 on 42 df, MS<sub>E</sub> = 12.00; MS<sub>B</sub> = 75.00; <em>F</em>(1, 42) = 8.00, <em>F</em>(2, 42) = 6.25 and <em>F</em>(2, 42) = 3.67, all three significant at .05, with η<sub>p</sub>² = .149 for the interaction. Report the interaction first and treat both main effects as qualified by it.</p>
+              <p class="pb-ref">From <a href="stats-2/factorial-anova-two-way/#two-way-table">§2.4 Factorial ANOVA</a> and <a href="stats-2/one-way-anova/#df-ms-f">§2.2 One-Way ANOVA</a>. <a href="tables.html">The printed F tables</a> hold both criticals, and <a href="stats-2/factorial-anova-two-way/#wvviz">Where the Variance Goes</a> shows what the error row would have swallowed had the delay factor been left out.</p>
             </details>
           </article>
         </section>

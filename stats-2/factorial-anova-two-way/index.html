@@ -16,25 +16,54 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Factorial ANOVA (Two-Way) — StatsCapybara</title>
-  <meta name="description" content="Two factors at once reveal something neither shows alone: the interaction. Drag the cell means to make the interaction plot's lines go parallel or cross." />
+  <meta name="description" content="Two factors at once reveal the interaction. Read a 2 × 2 from its cell means, margins and simple main effects, then build the two-way ANOVA table." />
   <link rel="canonical" href="https://statscapybara.com/stats-2/factorial-anova-two-way/" />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Factorial ANOVA (Two-Way) — StatsCapybara" />
-  <meta property="og:description" content="Two factors at once reveal something neither shows alone: the interaction. Drag the cell means to make the interaction plot's lines go parallel or cross." />
+  <meta property="og:description" content="Two factors at once reveal the interaction. Read a 2 × 2 from its cell means, margins and simple main effects, then build the two-way ANOVA table." />
   <meta property="og:image" content="https://statscapybara.com/assets/og-stats-2.png" />
   <meta property="og:url" content="https://statscapybara.com/stats-2/factorial-anova-two-way/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Factorial ANOVA (Two-Way) — StatsCapybara" />
-  <meta name="twitter:description" content="Two factors at once reveal something neither shows alone: the interaction. Drag the cell means to make the interaction plot's lines go parallel or cross." />
+  <meta name="twitter:description" content="Two factors at once reveal the interaction. Read a 2 × 2 from its cell means, margins and simple main effects, then build the two-way ANOVA table." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-2.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <style>
+    /* The cell-means table beside the interaction plot, and Where the Variance
+       Goes: its frozen dataset, the two ANOVA tables and their captions. */
+    .cmtab { border-collapse:collapse; font-size:.86rem; margin:.6rem 0 .2rem; min-width:340px; }
+    .cmtab th, .cmtab td { border:1px solid var(--border); padding:.3rem .6rem;
+      text-align:right; font-family:var(--mono); }
+    .cmtab thead th, .cmtab tbody th { background:var(--surface-2); font-weight:600;
+      color:var(--text-muted); font-family:inherit; text-align:left; }
+    .cmtab th.cm-corner { font-weight:600; color:var(--text-faint); }
+    .cmtab .cm-marg { color:#f97316; font-weight:700; }
+    .cmtab tr.cm-foot td, .cmtab tr.cm-foot th { border-top:2px solid var(--border); }
+    .cm-cap { font-size:.82rem; color:var(--text-muted); margin:.35rem 0 .2rem; }
+    .wv-data { display:flex; flex-wrap:wrap; gap:.3rem .9rem; margin:.2rem 0 .35rem; }
+    .wv-cell { display:flex; flex-wrap:wrap; align-items:baseline; gap:.35rem;
+      font-size:.78rem; }
+    .wv-clab { font-weight:600; color:var(--text-muted); }
+    .wv-cvals { font-family:var(--mono); color:var(--text); }
+    .wv-cmean { font-family:var(--mono); color:var(--text-faint); }
+    .wv-note { font-size:.78rem; color:var(--text-muted); margin:.1rem 0 .6rem; }
+    .wv-cap { font-size:.82rem; color:var(--text-muted); margin:.35rem 0 .5rem; }
+    .wvtab { border-collapse:collapse; font-size:.84rem; margin:.2rem 0 .6rem; min-width:400px; }
+    .wvtab caption { caption-side:top; text-align:left; font-size:.8rem; font-weight:600;
+      color:var(--text-muted); padding:.1rem 0 .25rem; }
+    .wvtab th, .wvtab td { border:1px solid var(--border); padding:.28rem .55rem;
+      text-align:right; font-family:var(--mono); }
+    .wvtab th { background:var(--surface-2); font-weight:600; color:var(--text-muted);
+      font-family:inherit; }
+    .wvtab th.wv-src, .wvtab td.wv-src { text-align:left; font-family:inherit; font-weight:600; }
+  </style>
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
-  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Factorial ANOVA (Two-Way)", "description": "Two factors at once reveal something neither shows alone: the interaction. Drag the cell means to make the interaction plot's lines go parallel or cross.", "url": "https://statscapybara.com/stats-2/factorial-anova-two-way/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: ANOVA & Regression", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Factorial ANOVA (Two-Way)", "item": "https://statscapybara.com/stats-2/factorial-anova-two-way/"}]}]
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Factorial ANOVA (Two-Way)", "description": "Two factors at once reveal the interaction. Read a 2 × 2 from its cell means, margins and simple main effects, then build the two-way ANOVA table.", "url": "https://statscapybara.com/stats-2/factorial-anova-two-way/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: ANOVA & Regression", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Factorial ANOVA (Two-Way)", "item": "https://statscapybara.com/stats-2/factorial-anova-two-way/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How many participants do I need to detect an interaction?", "acceptedAnswer": {"@type": "Answer", "text": "More than the main effect needed, usually by a lot. An interaction is a difference between differences, so its standard error is larger than that of a plain two-group comparison. Take a study with enough people to detect an effect in one condition: if you now expect that effect to be present at one level of B and absent at the other, detecting the interaction takes roughly four times the total sample. A full crossover, where the effect reverses sign, is far cheaper and costs about the same total as the original two-group study. This is the commonest reason a factorial study reports two clean main effects and an underpowered interaction, so settle the number at design time: power analysis for complex designs works it through."}}, {"@type": "Question", "name": "Can I interpret main effects when there's a significant interaction?", "acceptedAnswer": {"@type": "Answer", "text": "With caution. A main effect is an average across the other factor's levels — and when the effect genuinely differs by level (that's what the interaction says), the average can mislead or even hide two opposite effects (a crossover). Standard practice: interpret the interaction first, usually via simple effects (\"A's effect at each level of B\"), and only lean on main effects when the interaction is small."}}, {"@type": "Question", "name": "What does a 2×3 factorial design mean?", "acceptedAnswer": {"@type": "Answer", "text": "Two factors: the first with 2 levels, the second with 3, fully crossed into 2 × 3 = 6 cells (every combination is tested). One analysis then yields three tests: the main effect of each factor and their interaction. The notation scales: a 2×2×4 design has three factors and 16 cells."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How many participants do I need to detect an interaction?", "acceptedAnswer": {"@type": "Answer", "text": "More than the main effect needed, usually by a lot. An interaction is a difference between differences, so its standard error is larger than that of a plain two-group comparison. Take a study with enough people to detect an effect in one condition: if you now expect that effect to be present at one level of B and absent at the other, detecting the interaction takes roughly four times the total sample. A full crossover, where the effect reverses sign, is far cheaper and costs about the same total as the original two-group study. This is the commonest reason a factorial study reports two clean main effects and an underpowered interaction, so settle the number at design time: power analysis for complex designs works it through."}}, {"@type": "Question", "name": "My interaction came out nonsignificant. Should I drop it and rerun the model?", "acceptedAnswer": {"@type": "Answer", "text": "It is a real practice, called pooling, and it is not free. Deleting the interaction row folds SSAB and its degrees of freedom back into the error term, which usually lowers MSE a little and raises the df a little, so the two main effects get tested slightly more sharply. The catch is that you are buying that sharpness with an assumption you just failed to reject rather than one you established, and a nonsignificant interaction is weak evidence at the best of times: an interaction is a difference between differences, so a factorial powered comfortably for its main effects is often underpowered for the interaction by a factor of four. In a designed factorial the safer habit is to keep the full model, report the interaction as it came out with its own effect size, and let a reader see that it was tested. Pooling makes more sense when the interaction term was never of interest, the study is small enough that the extra degrees of freedom matter, and the decision was written down before the data arrived."}}, {"@type": "Question", "name": "Can I run a factorial ANOVA when the cells hold different numbers of people?", "acceptedAnswer": {"@type": "Answer", "text": "The analysis still runs, and three things change without announcing themselves. The four sums of squares stop adding to the total, because the effects are no longer separable and part of the variation belongs to both factors at once; software resolves that with a convention (SPSS calls the default Type III) rather than by arithmetic, so two packages set differently can print different tables from the same data. The margins change meaning too: what the F tests is the unweighted average of the cells in a row, which is no longer the plain average of everyone at that level, so a large cell stops speaking for its size. And the equal-variance assumption bites harder, since the pooled error term is only forgiving of unequal spreads while the cells are the same size. The practical advice is to report the cell sizes, check the spreads, and resist deleting cases to force a balance: throwing away data to tidy a table costs more power than the imbalance does."}}]}
   </script>
 </head>
 <body data-course="stats-2" data-section="factorial-anova-two-way">
@@ -50,21 +79,26 @@
 
         <p class="lede">Real situations rarely involve just one factor. Does a drug's effect depend on dose <em>and</em> on age? Does a teaching method work differently for beginners than experts? A <strong>factorial ANOVA</strong> tests two (or more) factors at once and reveals something no single-factor study ever could: the <strong>interaction</strong>.</p>
 
+        <h2 id="factors-levels-cells">Factors, levels, and cells</h2>
+        <p>Three words carry most of the notation. A <strong>factor</strong> is a categorical variable the study manipulates or classifies people by. Its <strong>levels</strong> are the categories it takes, so a factor called Dose might have the levels None, Low and High. Cross two factors, pairing every level of one with every level of the other, and each pairing is a <strong>cell</strong>.</p>
+        <p>The design is then named by its levels, multiplied. Two levels of each factor is a <strong>2 &times; 2</strong> with four cells. Three levels of each is a 3 &times; 3 with nine. Four doses crossed with two age bands is a 4 &times; 2 with eight. Read the notation and you know how many factors there are, from the count of numbers; how many levels each has, from the numbers themselves; and how many cells you are filling, from their product. A third factor adds a third number, so 2 &times; 2 &times; 4 is sixteen cells.</p>
+        <p>Two properties of a design matter for everything below. It is <strong>fully crossed</strong> when every cell is actually filled, which is what lets one analysis answer three questions instead of one. It is <strong>balanced</strong> when every cell holds the same number of observations, which is what keeps the arithmetic tidy.</p>
+
         <h2>Three questions for the price of one</h2>
         <p>A two-way design with factors A and B answers three separate questions:</p>
         <ul>
           <li><strong>Main effect of A:</strong> does A matter, averaging over B?</li>
           <li><strong>Main effect of B:</strong> does B matter, averaging over A?</li>
-          <li><strong>A × B interaction:</strong> does the effect of A <em>depend on the level of</em> B? This is the one you can only get by studying them together.</li>
+          <li><strong>A &times; B interaction:</strong> does the effect of A <em>depend on the level of</em> B? This is the one you can only get by studying them together.</li>
         </ul>
 
         <h2>The interaction plot</h2>
-        <p>The fastest way to read a two-way result is a picture. Put factor A on the x-axis and draw one line for each level of B. The rule is simple: <strong>parallel lines mean no interaction</strong> (A's effect is the same at every level of B); <strong>non-parallel lines mean there's an interaction</strong>. Drag the cell means below and watch it happen.</p>
+        <p>The fastest way to read a two-way result is a picture. Put factor A on the x-axis and draw one line for each level of B. The rule is simple: <strong>parallel lines mean no interaction</strong> (A's effect is the same at every level of B); <strong>non-parallel lines mean there's an interaction</strong>. Drag the cell means below and watch it happen. The table beside the plot keeps the same four numbers in the square arrangement a printed report uses, with every margin and every simple effect worked out from them.</p>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="faviz">
           <p class="viz-title">🎮 Interaction Plot Explorer</p>
-          <p class="viz-sub">A 2×2 design. Set the average outcome in each of the four cells; the lines show how factor A's effect changes across the two levels of factor B.</p>
+          <p class="viz-sub">A 2&times;2 design. Set the average outcome in each of the four cells; the lines show how factor A's effect changes across the two levels of factor B, and the table works out the margins, the grand mean and the four simple main effects.</p>
 
           <div class="controls">
             <div class="control"><button class="btn btn-ghost btn-sm" data-preset="none">No interaction</button></div>
@@ -81,33 +115,138 @@
             <div class="control"><label style="color:#f97316">B₂ at A₂ <span class="val" id="v22">55</span></label><input type="range" id="c22" min="0" max="100" step="1" value="55" /></div>
           </div>
 
+          <div class="hscroll"><table class="cmtab" id="cm-table">
+            <thead><tr><th class="cm-corner">Cell means</th><th>B₁</th><th>B₂</th><th class="cm-marg">Row mean</th></tr></thead>
+            <tbody>
+              <tr><th>A₁</th><td id="cm-11">—</td><td id="cm-12">—</td><td class="cm-marg" id="cm-a1">—</td></tr>
+              <tr><th>A₂</th><td id="cm-21">—</td><td id="cm-22">—</td><td class="cm-marg" id="cm-a2">—</td></tr>
+              <tr class="cm-foot"><th>Column mean</th><td class="cm-marg" id="cm-b1">—</td><td class="cm-marg" id="cm-b2">—</td><td class="cm-marg" id="cm-gm">—</td></tr>
+            </tbody>
+          </table></div>
+          <p class="cm-cap" id="cm-cap">&nbsp;</p>
+
           <div class="stat-row">
             <div class="stat"><span class="k">Main effect of A</span><span class="v" id="stat-a">—</span></div>
             <div class="stat"><span class="k">Main effect of B</span><span class="v" id="stat-b">—</span></div>
             <div class="stat"><span class="k">Interaction (A×B)</span><span class="v" id="stat-int">—</span></div>
             <div class="stat"><span class="k">Lines are</span><span class="v" id="stat-lines" style="font-size:1rem">—</span></div>
           </div>
+          <div class="stat-row">
+            <div class="stat"><span class="k">A at B₁</span><span class="v" id="stat-ab1">—</span></div>
+            <div class="stat"><span class="k">A at B₂</span><span class="v" id="stat-ab2">—</span></div>
+            <div class="stat"><span class="k">B at A₁</span><span class="v" id="stat-ba1">—</span></div>
+            <div class="stat"><span class="k">B at A₂</span><span class="v" id="stat-ba2">—</span></div>
+          </div>
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>Why interactions are the interesting part</h2>
-        <p>Often the interaction <em>is</em> the finding. "The drug works" is fine; "the drug works for young patients but not old ones" is far more useful, and it's an interaction. A famous trap: reporting only main effects when a strong interaction is present can be downright misleading. If a "crossover" interaction makes A helpful for B₁ but harmful for B₂, the <em>average</em> main effect of A might be zero, hiding two large, opposite real effects. The same idea carries over to continuous predictors, where it goes by the name <a href="../../stats-2/interactions-in-regression/">interactions in regression</a>.</p>
+        <h2 id="margins-and-simple-effects">Margins, and the difference of differences</h2>
+        <p>Everything the analysis has to say about the pattern is already in those four cell means, and getting it out needs no arithmetic harder than averaging. Take the numbers the widget boots with. The A₁ row holds 60 at B₁ and 40 at B₂; the A₂ row holds 75 and 55.</p>
+        <p>Average the two cells in a row and the answer is a <strong>marginal mean</strong> for that level of A: 50 for A₁, 65 for A₂. The gap between those margins, 15 points, is the <strong>main effect of A</strong>. Average down the columns instead and B's margins are 67.5 and 47.5, a main effect of 20. Average all four cells and you have the grand mean, 57.5.</p>
+        <p>The word <em>marginal</em> is literal: write the four cells in a square and the row and column averages sit in the margins around it, which is where a printed table puts them and where the <em>Estimated Marginal Means</em> box in SPSS gets its name. One caution travels with that box. A marginal mean is the unweighted average of the cells in its row, so once cells hold different numbers of people it stops matching the plain average of everyone in that row. In a balanced design the two agree exactly.</p>
+        <p>Now stay inside one column. The <strong>simple main effect</strong> of A at B₁ is what A does at that one level of B, which with two levels is a difference of two cells: 75 &minus; 60 = 15. At B₂ it is 55 &minus; 40 = 15. Those two numbers are the slopes of the two lines in the plot, and each main effect is nothing more than the average of its own two simple main effects, which is what "averaging over the other factor" means when you write it out.</p>
+        <p>Subtract one simple main effect from the other and you have the <strong>difference of differences</strong>: 15 &minus; 15 = 0. A does the same thing at both levels of B, the lines are parallel, and there is no interaction. Press the widget's Interaction button and the same subtraction returns 15 &minus; 35 = &minus;20, which is what non-parallel looks like as a number.</p>
+        <p>Nothing in this privileges A. The simple main effects of B are the vertical gaps within a column of the plot, 60 &minus; 40 = 20 at A₁ and 75 &minus; 55 = 20 at A₂, and their difference is the same 0. An interaction is symmetric: if A's effect changes across the levels of B then B's effect changes across the levels of A, by the same amount, and only the sign depends on which factor you differenced first. Two effects, one fact.</p>
+        <div class="callout">
+          <p><strong>Signs, as the widget reports them.</strong> The main effect of A is A₂ minus A₁ and the main effect of B is B₁ minus B₂, which is why both come out positive on the numbers it starts with. Each simple main effect is differenced the same way as its own main effect, so the two always average to it.</p>
+        </div>
+
+        <h2>Reading the patterns</h2>
+        <p>With A on the x-axis and one line per level of B, five arrangements cover almost everything a 2 &times; 2 can do, and each one names the effects that are present:</p>
+        <table class="ref-table">
+          <thead><tr><th>What the plot shows</th><th>A</th><th>B</th><th>A &times; B</th></tr></thead>
+          <tbody>
+            <tr><td>Two flat lines lying on top of each other</td><td>no</td><td>no</td><td>no</td></tr>
+            <tr><td>Two sloping lines lying on top of each other</td><td>yes</td><td>no</td><td>no</td></tr>
+            <tr><td>Two flat lines, one above the other</td><td>no</td><td>yes</td><td>no</td></tr>
+            <tr><td>Two parallel sloping lines, one above the other</td><td>yes</td><td>yes</td><td>no</td></tr>
+            <tr><td>Two lines that are not parallel</td><td>read the margins</td><td>read the margins</td><td>yes</td></tr>
+          </tbody>
+        </table>
+        <p>Sloping means the row margins differ, so A has a main effect. Separated means the column margins differ, so B has one. Only the last row needs care, because non-parallel lines can sit above perfectly equal margins, and then the main effect is zero while plenty is going on.</p>
+        <p>Non-parallel splits into two named shapes. A <strong>spreading interaction</strong>, which this site has been calling fanning, keeps both simple main effects pointing the same way and changes only their size: A helps at both levels of B, more at one than the other. A <strong>crossover interaction</strong>, the crossing case, reverses the sign, so A helps at one level of B and hurts at the other and the two lines meet. Crossover is also called disordinal, because the ordering of the levels itself flips. The widget's third preset is that case, and it is the one most likely to be missed by a study that measured only A.</p>
+
+        <h2 id="moderation">Interaction is moderation</h2>
+        <p>The same claim has a second vocabulary, worth knowing because two other parts of the site use it. A variable that changes the strength or the direction of another variable's effect is a <strong>moderator</strong>, and what it does is <strong>moderation</strong>. Age moderates the drug's effect; prior expertise moderates the teaching method's. The design tradition says interaction and the modeling tradition says moderation, and <a href="../../stats-2/interactions-in-regression/">interactions in regression</a> shows they are one model, written once with factors and once with continuous predictors.</p>
+        <p>There are two good reasons to build a study around an interaction rather than meet one by accident. The first is generalization. A main effect established in one population, one setting or one task carries an implied "and everywhere else", and crossing the manipulation with a second factor is how you find the boundary where it stops holding. The second is theory: some accounts predict an interaction directly, and then the interaction is the test rather than a qualification of one. If a memory advantage is supposed to come from effortful retrieval, it should appear when retrieval is effortful and vanish when it is easy, and no main effect can say that.</p>
+        <p>Often the interaction <em>is</em> the finding. "The drug works" is fine; "the drug works for young patients but not old ones" is far more useful. A famous trap runs the other way: reporting only main effects when a strong interaction is present can be downright misleading. If a crossover makes A helpful for B₁ and harmful for B₂, the <em>average</em> main effect of A might be zero, hiding two large and opposite real effects.</p>
         <div class="callout key">
           <p><strong>Read the interaction first.</strong> When lines are clearly non-parallel, interpret the main effects with caution: the effect of one factor genuinely differs depending on the other, so a single "average" effect can mislead.</p>
         </div>
 
-        <h2>Reading the patterns</h2>
-        <ul>
-          <li><strong>Parallel lines:</strong> no interaction; both main effects mean what they say.</li>
-          <li><strong>Fanning lines</strong> (same direction, different slopes): A helps in both conditions, but more in one.</li>
-          <li><strong>Crossing lines:</strong> a crossover interaction; A's effect reverses direction across levels of B. The most dramatic and easily-missed pattern.</li>
-        </ul>
+        <h2 id="two-way-table">The two-way ANOVA table</h2>
+        <p>The picture says which pattern the means make. The table says whether any of it survives the noise, and completing one is what a factorial exam question asks for. It carries two more source lines than the <a href="../../stats-2/one-way-anova/">one-way table</a>, because the variation between cells now splits three ways instead of staying whole.</p>
+        <div class="hscroll"><table class="ref-table">
+          <thead><tr><th>Source</th><th>df</th><th>MS</th><th>F</th></tr></thead>
+          <tbody>
+            <tr><td>Factor A</td><td><em>I</em> &minus; 1</td><td>SS<sub>A</sub> / df<sub>A</sub></td><td>MS<sub>A</sub> / MS<sub>E</sub></td></tr>
+            <tr><td>Factor B</td><td><em>J</em> &minus; 1</td><td>SS<sub>B</sub> / df<sub>B</sub></td><td>MS<sub>B</sub> / MS<sub>E</sub></td></tr>
+            <tr><td>A &times; B</td><td>(<em>I</em> &minus; 1)(<em>J</em> &minus; 1)</td><td>SS<sub>AB</sub> / df<sub>AB</sub></td><td>MS<sub>AB</sub> / MS<sub>E</sub></td></tr>
+            <tr><td>Error (within cells)</td><td><em>N</em> &minus; <em>IJ</em></td><td>SS<sub>E</sub> / df<sub>E</sub></td><td></td></tr>
+            <tr><td>Total</td><td><em>N</em> &minus; 1</td><td></td><td></td></tr>
+          </tbody>
+        </table></div>
+        <p><em>I</em> is the number of levels of A, <em>J</em> the number of levels of B, and <em>IJ</em> the number of cells. The five degrees of freedom add up, as they always do: (<em>I</em> &minus; 1) + (<em>J</em> &minus; 1) + (<em>I</em> &minus; 1)(<em>J</em> &minus; 1) + (<em>N</em> &minus; <em>IJ</em>) is <em>N</em> &minus; 1. In a 2 &times; 2 the first three are all 1, which is why a 2 &times; 2 prints three <em>F</em> ratios with a 1 on top of each.</p>
+        <p>With <em>n</em> observations in every cell, and writing x&#772;<sub>i&middot;</sub> for a row margin, x&#772;<sub>&middot;j</sub> for a column margin, x&#772;<sub>ij</sub> for a cell mean and x&#772; for the grand mean, the sums of squares are:</p>
+        <table class="ref-table">
+          <thead><tr><th>Sum of squares</th><th>Formula</th><th>Read it as</th></tr></thead>
+          <tbody>
+            <tr><td>SS<sub>A</sub></td><td><em>nJ</em> &Sigma;<sub>i</sub> (x&#772;<sub>i&middot;</sub> &minus; x&#772;)&sup2;</td><td>Row margins against the grand mean, weighted by how many observations sit behind each margin.</td></tr>
+            <tr><td>SS<sub>B</sub></td><td><em>nI</em> &Sigma;<sub>j</sub> (x&#772;<sub>&middot;j</sub> &minus; x&#772;)&sup2;</td><td>The same down the columns.</td></tr>
+            <tr><td>SS<sub>AB</sub></td><td><em>n</em> &Sigma;<sub>i</sub>&Sigma;<sub>j</sub> (x&#772;<sub>ij</sub> &minus; x&#772;<sub>i&middot;</sub> &minus; x&#772;<sub>&middot;j</sub> + x&#772;)&sup2;</td><td>What each cell does that its own two margins did not predict.</td></tr>
+            <tr><td>SS<sub>E</sub></td><td>&Sigma; (x &minus; x&#772;<sub>ij</sub>)&sup2;</td><td>Every score against its own cell mean. Nothing in the design explains this.</td></tr>
+            <tr><td>SS<sub>T</sub></td><td>&Sigma; (x &minus; x&#772;)&sup2; = SS<sub>A</sub> + SS<sub>B</sub> + SS<sub>AB</sub> + SS<sub>E</sub></td><td>Every score against the grand mean. The identity is the arithmetic check.</td></tr>
+          </tbody>
+        </table>
+        <p>The bracket inside SS<sub>AB</sub> is the difference of differences again, one cell at a time. Take a cell mean, subtract what its row margin and column margin between them lead you to expect, and what is left over is that cell's share of the interaction. In a 2 &times; 2 those four leftovers are the same size with alternating signs, each one a quarter of the difference of differences.</p>
+        <p>Three <em>F</em> ratios come out of that table and every one of them divides by the same MS<sub>E</sub>. That single error term is the pooled within-cell variance, the two-way version of the pooled spread the <a href="../../stats-2/post-hoc-tests/">follow-up comparisons</a> borrow, and its square root s<sub>p</sub> = &radic;MS<sub>E</sub> is the number to report as the residual spread. For effect sizes the usual choice is <strong>partial eta squared</strong>, &eta;<sub>p</sub>&sup2; = SS<sub>effect</sub> / (SS<sub>effect</sub> + SS<sub>E</sub>), which asks what share of the variation an effect accounts for once the <em>other</em> effects have been set aside. It is what the software prints, and because its denominator changes from row to row, the three values in a table do not add to anything.</p>
+        <p>All of this assumes a balanced design. When cells hold different numbers of people the four sums of squares stop adding to SS<sub>T</sub>, because the effects are no longer separable, and software has to be told which of several conventions to use for splitting the overlap. The default nearly everywhere is called Type III, which asks what each effect adds once every other effect is already in the model; it is the right default, and it is worth knowing the choice exists before an output table surprises you.</p>
+
+        <!-- ============ INTERACTIVE 2 ============ -->
+        <div class="viz" id="wvviz">
+          <p class="viz-title">🎮 Where the Variance Goes</p>
+          <p class="viz-sub">One frozen 2 &times; 2 study, analyzed twice. The top bar is a one-way ANOVA that knows about practice time and nothing else, so everything feedback does lands in its error. The bottom bar is the two-way model, which names the same variation instead of burying it. Slide the effect of feedback and watch the top bar's error swell while the bottom bar's holds still.</p>
+
+          <div class="controls">
+            <div class="control"><label>Participants per cell <span class="val" id="wv-nv">4</span></label><input type="range" id="wv-n" min="3" max="10" step="1" value="4" /></div>
+            <div class="control"><label>Effect of B <span class="val" id="wv-bv">8</span></label><input type="range" id="wv-b" min="0" max="20" step="2" value="8" /></div>
+            <div class="control"><label>Start over</label><button type="button" id="wv-reset" class="btn btn-ghost btn-sm">Back to the frozen study</button></div>
+          </div>
+
+          <div class="wv-data" id="wv-data"></div>
+          <p class="wv-note" id="wv-note">The participants slider rebuilds the built-in study at that size. A dataset arriving in a link keeps its own.</p>
+
+          <canvas id="wv-canvas"></canvas>
+          <p class="wv-cap" id="wv-cap">&nbsp;</p>
+
+          <div class="hscroll"><table class="wvtab" id="wv-t1"></table></div>
+          <div class="hscroll"><table class="wvtab" id="wv-t2"></table></div>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">F for A, one-way</span><span class="v" id="wv-f1">—</span></div>
+            <div class="stat"><span class="k">F for A, two-way</span><span class="v" id="wv-f2">—</span></div>
+            <div class="stat"><span class="k">Error MS, one-way</span><span class="v" id="wv-m1">—</span></div>
+            <div class="stat"><span class="k">Error MS, two-way</span><span class="v" id="wv-m2">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE 2 ============ -->
+
+        <p>The study it boots with crosses practice time (short or long) with feedback (none or coached) and scores a skills test out of 40, four people in each cell. Its cell means are 10 and 14 in the short-practice row, 16 and 28 in the long-practice row, so SS<sub>A</sub> = 400, SS<sub>B</sub> = 256, SS<sub>AB</sub> = 64 and SS<sub>E</sub> = 60 against a total of 780. The two-way table gives MS<sub>E</sub> = 5.00 on 12 degrees of freedom and <em>F</em>(1, 12) = 80.00 for practice time. Analyzed as a one-way ANOVA on practice time alone, the same 400 is tested against an error of 380 on 14 degrees of freedom, so MS<sub>E</sub> = 27.14 and <em>F</em>(1, 14) = 14.74. Same data, same effect, and one analysis is more than five times as sharp about it.</p>
+        <p>Push the feedback slider to its maximum and the one-way <em>F</em> falls to 3.25, which on 1 and 14 degrees of freedom does not reach the 4.60 it would need at &alpha; = .05, while the two-way <em>F</em> for practice time has not moved off 80.00 the whole way. A real effect that a well-designed study finds easily can be invisible to a study that ignored the other thing in the room.</p>
+
+        <h2 id="two-for-one">Two factors are cheaper than two studies</h2>
+        <p>That the second factor sharpens the first test is one argument for factorial designs. The other is arithmetic about people. Consider a 3 &times; 3 with 14 participants in each of its nine cells, which is 126 people. Every level of A is then represented by 42 of them, and so is every level of B, because each person sits in one level of each. To get 42 per group from separate studies you would run a three-group study of A with 126 people and a three-group study of B with another 126, and the 252 you spent would still tell you nothing about the interaction. The factorial design asks both questions, and a third one neither of the separate studies could ask, for half the sample.</p>
+        <p>None of this is free. Each extra source line takes degrees of freedom away from the error term, and in a small study those can cost more than the variation they remove; the widget above goes from 14 error df to 12 to buy its 320 points of named variation, which is a bargain, but it would not be if the sums of squares were tiny and the df were scarce. The usual case is the widget's case, and it is why a factor worth crossing in is worth crossing in even when its own main effect is not the question you came to ask.</p>
+
+        <h2 id="interaction-first">Interpret the interaction first</h2>
+        <p>The reading order for a two-way table is fixed and it is not the order the table prints in. Look at the A &times; B line first. If it is significant, the two main effects above it describe averages that may not describe anybody, and the honest write-up leads with the interaction and then reports each main effect as qualified by it, usually alongside the simple main effects that say what happened at each level. If the interaction is not significant, the main effects mean what they say and you can report them plainly.</p>
+        <p>One misreading is common enough to name. A main effect that comes out nonsignificant <em>under</em> a significant interaction does not say the factor never matters. It says the factor's effects at the different levels of the other factor averaged out, which is a statement about an average and not about either level. In a full crossover the main effect can be exactly zero while both simple main effects are large and both are real. Test the simple main effects before concluding that a factor did nothing.</p>
 
         <div class="callout">
           <p><strong>Why it matters:</strong> the world is full of "it depends." Factorial designs are how we test "it depends" rigorously, and interactions are the statistical home of conditional, context-dependent effects.</p>
         </div>
 
-        <p class="pb-xref"><a href="../../problems.html#p2-3">Problem 15 of the practice problems</a> reads a caffeine × sleep interaction off a 2 × 2 table of cell means, and <a href="../../problems.html#p3-4">Problem 26</a> is the trap above: an abstract that reports the main effect when the interaction is the story. To watch one 2 × 2 study travel from its hypothesis all the way to its APA paragraph, follow the <a href="../../guides/complete-worked-project/">complete worked project</a>.</p>
+        <p class="pb-xref"><a href="../../problems.html#p2-3">Problem 15 of the practice problems</a> reads a caffeine × sleep interaction off a 2 × 2 table of cell means, <a href="../../problems.html#p2-18">Problem 30</a> works a full set of margins and simple main effects out of four cell means, and <a href="../../problems.html#p2-19">Problem 31</a> completes a two-way table with four cells blanked. <a href="../../problems.html#p3-4">Problem 26</a> is the trap above: an abstract that reports the main effect when the interaction is the story. To watch one 2 × 2 study travel from its hypothesis all the way to its APA paragraph, follow the <a href="../../guides/complete-worked-project/">complete worked project</a>.</p>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
@@ -117,12 +256,12 @@
             <div class="faq-a"><p>More than the main effect needed, usually by a lot. An interaction is a difference between differences, so its standard error is larger than that of a plain two-group comparison. Take a study with enough people to detect an effect in one condition: if you now expect that effect to be present at one level of B and absent at the other, detecting the interaction takes roughly <strong>four times the total sample</strong>. A full crossover, where the effect reverses sign, is far cheaper and costs about the same total as the original two-group study. This is the commonest reason a factorial study reports two clean main effects and an underpowered interaction, so settle the number at design time: <a href="../../stats-3/power-analysis-for-complex-designs/">power analysis for complex designs</a> works it through.</p></div>
           </details>
           <details class="faq-item">
-            <summary>Can I interpret main effects when there's a significant interaction?</summary>
-            <div class="faq-a"><p>With caution. A main effect is an <em>average</em> across the other factor's levels — and when the effect genuinely differs by level (that's what the interaction says), the average can mislead or even hide two opposite effects (a crossover). Standard practice: interpret the interaction first, usually via simple effects ("A's effect at each level of B"), and only lean on main effects when the interaction is small.</p></div>
+            <summary>My interaction came out nonsignificant. Should I drop it and rerun the model?</summary>
+            <div class="faq-a"><p>It is a real practice, called pooling, and it is not free. Deleting the interaction row folds SS<sub>AB</sub> and its degrees of freedom back into the error term, which usually lowers MS<sub>E</sub> a little and raises the df a little, so the two main effects get tested slightly more sharply. The catch is that you are buying that sharpness with an assumption you just failed to reject rather than one you established, and a nonsignificant interaction is weak evidence at the best of times: an interaction is a difference between differences, so a factorial powered comfortably for its main effects is often underpowered for the interaction by a factor of four. In a designed factorial the safer habit is to keep the full model, report the interaction as it came out with its own effect size, and let a reader see that it was tested. Pooling makes more sense when the interaction term was never of interest, the study is small enough that the extra degrees of freedom matter, and the decision was written down before the data arrived.</p></div>
           </details>
           <details class="faq-item">
-            <summary>What does a 2×3 factorial design mean?</summary>
-            <div class="faq-a"><p>Two factors: the first with 2 levels, the second with 3, fully crossed into 2 × 3 = 6 cells (every combination is tested). One analysis then yields three tests: the main effect of each factor and their interaction. The notation scales: a 2×2×4 design has three factors and 16 cells.</p></div>
+            <summary>Can I run a factorial ANOVA when the cells hold different numbers of people?</summary>
+            <div class="faq-a"><p>The analysis still runs, and three things change without announcing themselves. The four sums of squares stop adding to the total, because the effects are no longer separable and part of the variation belongs to both factors at once; software resolves that with a convention (SPSS calls the default Type III) rather than by arithmetic, so two packages set differently can print different tables from the same data. The margins change meaning too: what the <em>F</em> tests is the unweighted average of the cells in a row, which is no longer the plain average of everyone at that level, so a large cell stops speaking for its size. And the equal-variance assumption bites harder, since <a href="../../stats-2/one-way-anova/#df-ms-f">the pooled error term</a> is only forgiving of unequal spreads while the cells are the same size. The practical advice is to report the cell sizes, check the spreads, and resist deleting cases to force a balance: throwing away data to tidy a table costs more power than the imbalance does.</p></div>
           </details>
         </section>
         <!-- faq:end -->
@@ -141,15 +280,30 @@
   <script src="../../assets/js/site.js"></script>
   <script src="../../assets/js/viz.js"></script>
 
-  <!-- ============ interaction-plot visualization ============ -->
+  <!-- ============ interaction-plot visualization ============
+       Fully deterministic: every number is a closed-form function of the four
+       slider values, so there is no noise to freeze and nothing is reseeded.
+
+       URL presets (SC.preset, applied last):
+         ?cells=<a1b1,a1b2,a2b1,a2b2>  the four cell means, in reading order
+                      across the table (row A1 first, then row A2), parsed by
+                      SC.dataParam so a single bad token rejects the whole
+                      parameter rather than half-loading a design. Exactly four
+                      values are required; each is snapped to its own slider's
+                      step and clamped to its own min and max, so the lesson
+                      never restates those bounds here.
+  -->
   <script>
   (function () {
     "use strict";
     var ids = ["c11", "c21", "c12", "c22"], canvas = document.getElementById("fa-canvas"), ctx, W = 0, H = 250, padL = 34, padB = 26, padT = 24;
     function val(id) { return +document.getElementById(id).value; }
+    function txt(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; }
     function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
     function vy(v) { return (H - padB) - (v / 100) * (H - padB - padT); }
     function xA(level) { return padL + (level === 0 ? 0.28 : 0.72) * (W - padL - 12); }
+    function n1(v) { return v.toFixed(1); }
+    function sg(v) { return (v >= 0 ? "+" : "") + v.toFixed(1); }
 
     function draw() {
       var c11 = val("c11"), c21 = val("c21"), c12 = val("c12"), c22 = val("c22");
@@ -170,18 +324,41 @@
       ctx.fillStyle = VIZ.css("--primary"); ctx.fillText("B₁", W - 30, 16);
       ctx.fillStyle = "#f97316"; ctx.fillText("B₂", W - 30, 30);
 
-      var mainA = ((c21 + c22) - (c11 + c12)) / 2;
-      var mainB = ((c11 + c21) - (c12 + c22)) / 2;
-      var inter = (c22 - c12) - (c21 - c11);
-      document.getElementById("v11").textContent = c11; document.getElementById("v21").textContent = c21;
-      document.getElementById("v12").textContent = c12; document.getElementById("v22").textContent = c22;
-      document.getElementById("stat-a").textContent = (mainA >= 0 ? "+" : "") + mainA.toFixed(1);
-      document.getElementById("stat-b").textContent = (mainB >= 0 ? "+" : "") + mainB.toFixed(1);
-      document.getElementById("stat-int").textContent = (inter >= 0 ? "+" : "") + inter.toFixed(1);
+      /* margins, in the orientation the table prints: rows are levels of A,
+         columns are levels of B. With a balanced 2 x 2 the grand mean is the
+         plain average of the four cells. */
+      var a1 = (c11 + c12) / 2, a2 = (c21 + c22) / 2;
+      var b1 = (c11 + c21) / 2, b2 = (c12 + c22) / 2;
+      var gm = (c11 + c12 + c21 + c22) / 4;
+      /* each simple main effect is differenced the same way as its own main
+         effect, which is what makes a main effect the average of its two */
+      var aAtB1 = c21 - c11, aAtB2 = c22 - c12;
+      var bAtA1 = c11 - c12, bAtA2 = c21 - c22;
+      var mainA = (aAtB1 + aAtB2) / 2;
+      var mainB = (bAtA1 + bAtA2) / 2;
+      var inter = aAtB2 - aAtB1;
+
+      txt("v11", c11); txt("v21", c21); txt("v12", c12); txt("v22", c22);
+      txt("cm-11", n1(c11)); txt("cm-12", n1(c12));
+      txt("cm-21", n1(c21)); txt("cm-22", n1(c22));
+      txt("cm-a1", n1(a1)); txt("cm-a2", n1(a2));
+      txt("cm-b1", n1(b1)); txt("cm-b2", n1(b2)); txt("cm-gm", n1(gm));
+      txt("stat-a", sg(mainA)); txt("stat-b", sg(mainB)); txt("stat-int", sg(inter));
+      txt("stat-ab1", sg(aAtB1)); txt("stat-ab2", sg(aAtB2));
+      txt("stat-ba1", sg(bAtA1)); txt("stat-ba2", sg(bAtA2));
+
       var lines = document.getElementById("stat-lines");
       var a = Math.abs(inter), crosses = (c11 - c12) * (c21 - c22) < 0;
       lines.textContent = a < 4 ? "parallel — no interaction" : (crosses ? "crossing — interaction" : "non-parallel — interaction");
       lines.style.color = a < 4 ? VIZ.css("--text") : "#f97316";
+
+      var cap = document.getElementById("cm-cap");
+      if (cap) {
+        cap.textContent = "A moves the outcome by " + n1(aAtB1) + " at B₁ and by " + n1(aAtB2) +
+          " at B₂, so the difference of differences is " + n1(inter) + ". The row margins " +
+          n1(a1) + " and " + n1(a2) + " average to the grand mean " + n1(gm) + ", and so do the column margins " +
+          n1(b1) + " and " + n1(b2) + ".";
+      }
     }
 
     var presets = {
@@ -200,6 +377,311 @@
     window.addEventListener("resize", function () { fit(); draw(); });
     VIZ.onTheme(draw);
     fit(); draw();
+
+    /* ?cells= : the four cell means in reading order, through the shared
+       parser, so a mangled paste loads the ordinary lesson instead of half a
+       design. Each value is snapped to its own control's step and clamped to
+       its own bounds rather than to bounds restated here. */
+    function loadCells(raw) {
+      var got = (window.SC && SC.dataParam) ? SC.dataParam(String(raw), 4) : null;
+      if (!got || got.length !== 4) return;
+      var order = ["c11", "c12", "c21", "c22"];
+      order.forEach(function (id, i) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        var lo = parseFloat(el.min), hi = parseFloat(el.max), st = parseFloat(el.step) || 1;
+        var v = Math.round((got[i] - lo) / st) * st + lo;
+        el.value = Math.min(hi, Math.max(lo, v));
+      });
+      draw();
+    }
+    if (window.SC && SC.preset) SC.preset({ cells: loadCells });
+  })();
+  </script>
+
+  <!-- ============ Where the Variance Goes (P91) ============
+       One frozen 2 x 2 study analyzed twice, so the reader can watch the
+       variation a one-way model calls error get named by the two-way model.
+
+       The frozen study is built from effects rather than typed out, which is
+       what makes the demonstration exact. Cell mean = 17 + alpha_i + gamma_ij,
+       plus a frozen deviation pool per cell, and then the Effect-of-B slider
+       adds -b/2 to every B1 observation and +b/2 to every B2 one. Because the
+       design is balanced, that shift moves neither A margin, so SS_A, SS_AB
+       and SS_E are all untouched by the slider while SS_B grows: the two-way
+       F for A holds still while the one-way F for A sinks. At the default
+       b = 8 with four per cell, every value is a whole number and the table is
+       hand-checkable (SS 400 / 256 / 64 / 60 of 780, MSE exactly 5).
+
+       VIZ.sd divides by n. Every MS and error term here is the exam dialect on
+       n minus 1, so this script computes its sums of squares directly and
+       never calls VIZ.sd; math-check section 15 asserts the divisor.
+
+       URL presets (SC.preset, applied last):
+         ?g=<cells>   a whole 2 x 2 in cell order A1B1, A1B2, A2B1, A2B2, with
+                      commas inside a cell and semicolons between cells, 2 to 10
+                      values per cell, parsed by SC.groupParam (the shared ?g=
+                      helper). Exactly four cells of equal size are required, because an unbalanced
+                      two-way design does not partition into four sums of
+                      squares that add to the total, which is the whole picture
+                      this widget draws. Loading a dataset resets the
+                      Effect-of-B slider to zero, so what arrives is what shows.
+         ?n=2..10     participants per cell of the BUILT-IN study.
+         ?b=0..20     the size of B's main effect, in points.
+       g is listed last, because n rebuilds the built-in study and would
+       otherwise throw a loaded dataset away.
+  -->
+  <script>
+  (function () {
+    "use strict";
+    var canvas = document.getElementById("wv-canvas");
+    var t1host = document.getElementById("wv-t1"), t2host = document.getElementById("wv-t2");
+    if (!canvas || !t1host || !t2host) return;
+
+    /* The built-in study: practice time (short, long) crossed with feedback
+       (none, coached), scored out of 40. Effects, not typed data, so the
+       slider can move B's main effect without disturbing anything else. */
+    var GM = 17, ALPHA = [-5, 5], GAMMA = [[2, -2], [-2, 2]];
+    var A_LAB = ["Short practice", "Long practice"], B_LAB = ["no feedback", "coached"];
+    /* frozen deviation pools, one per cell, ten deep; the first four of each
+       sum to zero, which is what makes the default table come out round */
+    var DEV = [
+      [-2, -1, 1, 2, -3, 3, 0, -1, 2, -1],
+      [-3, -1, 1, 3, 2, -2, 0, 1, -2, 1],
+      [-2, -1, 1, 2, 0, 3, -3, 2, -1, -1],
+      [-3, -1, 1, 3, -2, 0, 2, -1, 1, 0]
+    ];
+    var EM = "—", IND = "--primary", ORA = "#f97316", TEA = "--secondary";
+
+    var nPer = 4, bEff = 8, custom = null;
+    var ctx, W = 0, H = 226;
+
+    function $(id) { return document.getElementById(id); }
+    function mean(a) { var s = 0, i; for (i = 0; i < a.length; i++) s += a[i]; return s / a.length; }
+    function f2(v) { return isFinite(v) ? v.toFixed(2) : EM; }
+    function pTxt(v) {
+      if (!isFinite(v)) return EM;
+      /* this string is written into innerHTML, so the less-than is escaped */
+      if (v < 0.0001) return "&lt; .0001";
+      return v.toFixed(4).replace(/^0/, "");
+    }
+
+    /* base cells at b = 0, in cell order A1B1, A1B2, A2B1, A2B2 */
+    function baseCells() {
+      if (custom) return custom.map(function (c) { return c.slice(); });
+      var out = [], i, j, k;
+      for (i = 0; i < 2; i++) for (j = 0; j < 2; j++) {
+        var cm = GM + ALPHA[i] + GAMMA[i][j], col = [], pool = DEV[i * 2 + j];
+        for (k = 0; k < nPer; k++) col.push(cm + pool[k % pool.length]);
+        out.push(col);
+      }
+      return out;
+    }
+    /* the slider: B1 down by half, B2 up by half, so the grand mean holds */
+    function cells() {
+      return baseCells().map(function (c, idx) {
+        var shift = (idx % 2 === 0) ? -bEff / 2 : bEff / 2;
+        return c.map(function (v) { return v + shift; });
+      });
+    }
+
+    /* The whole partition, computed directly. VIZ.sd divides by n, so it is
+       never called here: every mean square below is on its own df. */
+    function partition(C) {
+      var n = C[0].length, N = 4 * n, all = [], i, j, k;
+      for (i = 0; i < 4; i++) for (k = 0; k < C[i].length; k++) all.push(C[i][k]);
+      var gm = mean(all), cm = C.map(mean);
+      var aM = [(cm[0] + cm[1]) / 2, (cm[2] + cm[3]) / 2];
+      var bM = [(cm[0] + cm[2]) / 2, (cm[1] + cm[3]) / 2];
+      var ssa = 0, ssb = 0, ssab = 0, sse = 0, sst = 0;
+      for (i = 0; i < 2; i++) ssa += n * 2 * (aM[i] - gm) * (aM[i] - gm);
+      for (j = 0; j < 2; j++) ssb += n * 2 * (bM[j] - gm) * (bM[j] - gm);
+      for (i = 0; i < 2; i++) for (j = 0; j < 2; j++) {
+        var r = cm[i * 2 + j] - aM[i] - bM[j] + gm;
+        ssab += n * r * r;
+      }
+      for (i = 0; i < 4; i++) for (k = 0; k < C[i].length; k++) sse += (C[i][k] - cm[i]) * (C[i][k] - cm[i]);
+      for (i = 0; i < all.length; i++) sst += (all[i] - gm) * (all[i] - gm);
+      var dfE = N - 4, mse = sse / dfE;
+      /* the one-way model on A alone: everything the two-way model names as B
+         or as the interaction is unexplained here, so it lands in the error */
+      var sse1 = sst - ssa, df1 = N - 2, mse1 = sse1 / df1;
+      return {
+        n: n, N: N, gm: gm, cm: cm, aM: aM, bM: bM,
+        ssa: ssa, ssb: ssb, ssab: ssab, sse: sse, sst: sst,
+        dfE: dfE, mse: mse,
+        fa: ssa / mse, fb: ssb / mse, fab: ssab / mse,
+        pa: VIZ.fUpper(ssa / mse, 1, dfE), pb: VIZ.fUpper(ssb / mse, 1, dfE),
+        pab: VIZ.fUpper(ssab / mse, 1, dfE),
+        sse1: sse1, df1: df1, mse1: mse1,
+        fa1: ssa / mse1, pa1: VIZ.fUpper(ssa / mse1, 1, df1)
+      };
+    }
+
+    function labelFor(idx) {
+      if (custom) return "Cell " + (idx + 1);
+      return A_LAB[idx < 2 ? 0 : 1] + ", " + B_LAB[idx % 2];
+    }
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+
+    function drawBars(P) {
+      if (!ctx) return;
+      var col = { a: VIZ.css(IND), b: ORA, ab: VIZ.css(TEA), e: VIZ.css("--text-faint") };
+      var ink = VIZ.css("--text"), quiet = VIZ.css("--text-muted");
+      ctx.clearRect(0, 0, W, H);
+      var left = 8, right = W - 8, wide = right - left;
+      var scale = P.sst > 0 ? wide / P.sst : 0;
+      var barH = 32;
+
+      /* Segment labels sit UNDER the bar rather than inside it: the four fills
+         are theme tokens, and no single ink reads on all of them in both
+         themes. A segment too narrow for its own name simply goes unlabeled,
+         which is what the legend and the two tables underneath are for. */
+      function bar(y, parts) {
+        var x = left, i;
+        for (i = 0; i < parts.length; i++) {
+          var w = parts[i].ss * scale;
+          if (w <= 0) continue;
+          ctx.fillStyle = parts[i].c;
+          ctx.fillRect(x, y, w, barH);
+          ctx.strokeStyle = VIZ.css("--surface"); ctx.lineWidth = 1;
+          ctx.strokeRect(x + 0.5, y + 0.5, Math.max(0, w - 1), barH - 1);
+          if (w > 30) {
+            ctx.fillStyle = quiet; ctx.textAlign = "center";
+            ctx.font = "11px ui-monospace,monospace";
+            ctx.fillText(w > 74 ? parts[i].k + " " + f2(parts[i].ss) : parts[i].k, x + w / 2, y + barH + 14);
+          }
+          x += w;
+        }
+      }
+
+      ctx.textAlign = "left";
+      ctx.font = "600 12px Inter,sans-serif"; ctx.fillStyle = ink;
+      ctx.fillText("One-way on A alone", left, 14);
+      bar(20, [{ ss: P.ssa, c: col.a, k: "A" }, { ss: P.sst - P.ssa, c: col.e, k: "error" }]);
+
+      ctx.textAlign = "left";
+      ctx.font = "600 12px Inter,sans-serif"; ctx.fillStyle = ink;
+      ctx.fillText("Two-way on A, B and A × B", left, 90);
+      bar(96, [{ ss: P.ssa, c: col.a, k: "A" }, { ss: P.ssb, c: col.b, k: "B" },
+               { ss: P.ssab, c: col.ab, k: "A×B" }, { ss: P.sse, c: col.e, k: "error" }]);
+
+      /* the legend wraps onto a second row rather than dropping a key, since
+         the narrow bars are exactly where an unlabeled segment needs one */
+      var keys = [["factor A", col.a], ["factor B", col.b], ["interaction", col.ab], ["error", col.e]];
+      var kx = left, ky = 160, i;
+      ctx.font = "11px Inter,sans-serif"; ctx.textAlign = "left";
+      for (i = 0; i < keys.length; i++) {
+        var kw = 14 + ctx.measureText(keys[i][0]).width + 14;
+        if (kx + kw > right && kx > left) { kx = left; ky += 16; }
+        ctx.fillStyle = keys[i][1]; ctx.fillRect(kx, ky, 10, 10);
+        ctx.fillStyle = quiet; ctx.fillText(keys[i][0], kx + 14, ky + 9);
+        kx += kw;
+      }
+      /* and the total line falls back to its short form rather than running
+         off the right edge of a phone-width canvas */
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px ui-monospace,monospace";
+      var full = "both bars span the same total, SS T = " + f2(P.sst);
+      var shortForm = "SS T = " + f2(P.sst);
+      ctx.fillText(ctx.measureText(full).width <= wide ? full : shortForm, left, ky + 33);
+    }
+
+    function row(src, ss, df, ms, f, p) {
+      return "<tr><td class=\"wv-src\">" + src + "</td><td>" + ss + "</td><td>" + df +
+        "</td><td>" + ms + "</td><td>" + f + "</td><td>" + p + "</td></tr>";
+    }
+    function headRow(cap) {
+      return "<caption>" + cap + "</caption><thead><tr><th class=\"wv-src\">Source</th><th>SS</th>" +
+        "<th>df</th><th>MS</th><th><em>F</em></th><th><em>p</em></th></tr></thead>";
+    }
+
+    function tables(P) {
+      var aName = custom ? "Factor A" : "Practice time (A)";
+      var bName = custom ? "Factor B" : "Feedback (B)";
+      t1host.innerHTML = headRow("One-way ANOVA, factor A only") + "<tbody>" +
+        row(aName, f2(P.ssa), "1", f2(P.ssa), "<span id=\"wv-c-f1\">" + f2(P.fa1) + "</span>", pTxt(P.pa1)) +
+        row("Error", f2(P.sse1), String(P.df1), "<span id=\"wv-c-m1\">" + f2(P.mse1) + "</span>", "", "") +
+        row("Total", f2(P.sst), String(P.N - 1), "", "", "") +
+        "</tbody>";
+      t2host.innerHTML = headRow("Two-way ANOVA, both factors") + "<tbody>" +
+        row(aName, f2(P.ssa), "1", f2(P.ssa), "<span id=\"wv-c-f2\">" + f2(P.fa) + "</span>", pTxt(P.pa)) +
+        row(bName, f2(P.ssb), "1", f2(P.ssb), f2(P.fb), pTxt(P.pb)) +
+        row("A × B", f2(P.ssab), "1", f2(P.ssab), f2(P.fab), pTxt(P.pab)) +
+        row("Error", f2(P.sse), String(P.dfE), "<span id=\"wv-c-m2\">" + f2(P.mse) + "</span>", "", "") +
+        row("Total", f2(P.sst), String(P.N - 1), "", "", "") +
+        "</tbody>";
+    }
+
+    function dataBox(C, P) {
+      var host = $("wv-data");
+      if (!host) return;
+      var out = "", i;
+      for (i = 0; i < 4; i++) {
+        out += "<div class=\"wv-cell\"><span class=\"wv-clab\">" + labelFor(i) +
+          "</span><span class=\"wv-cvals\">" + C[i].map(function (v) { return f2(v).replace(/\.00$/, ""); }).join(", ") +
+          "</span><span class=\"wv-cmean\">mean " + f2(P.cm[i]) + "</span></div>";
+      }
+      host.innerHTML = out;
+    }
+
+    function update() {
+      var C = cells(), P = partition(C);
+      dataBox(C, P);
+      tables(P);
+      drawBars(P);
+      $("wv-nv").textContent = P.n;
+      $("wv-bv").textContent = bEff;
+      $("wv-f1").textContent = f2(P.fa1);
+      $("wv-f2").textContent = f2(P.fa);
+      $("wv-m1").textContent = f2(P.mse1);
+      $("wv-m2").textContent = f2(P.mse);
+      var cap = $("wv-cap");
+      if (cap) {
+        cap.textContent = "Naming B and the interaction takes " + f2(P.ssb + P.ssab) +
+          " out of the error and " + (P.df1 - P.dfE) + " degrees of freedom with it, so the error mean square falls from " +
+          f2(P.mse1) + " to " + f2(P.mse) + " and the same SS A of " + f2(P.ssa) +
+          " is tested as F(1, " + P.dfE + ") = " + f2(P.fa) + " rather than F(1, " + P.df1 + ") = " + f2(P.fa1) + ".";
+      }
+    }
+
+    var slN = $("wv-n"), slB = $("wv-b");
+    if (slN) slN.addEventListener("input", function () {
+      nPer = +slN.value; custom = null;   /* the built-in study, at that size */
+      update();
+    });
+    if (slB) slB.addEventListener("input", function () { bEff = +slB.value; update(); });
+    if ($("wv-reset")) $("wv-reset").addEventListener("click", function () {
+      nPer = 4; bEff = 8; custom = null;
+      if (slN) slN.value = 4;
+      if (slB) slB.value = 8;
+      update();
+    });
+
+    /* ?g= : a whole 2 x 2 in the URL, through the shared parser. Four cells of
+       equal size or nothing: an unbalanced design has no clean partition to
+       draw, and half-reading a dataset is worse than ignoring it. */
+    function loadCells(raw) {
+      var got = (window.SC && SC.groupParam) ? SC.groupParam(String(raw), 4, 10) : null;
+      if (!got || got.length !== 4) return;
+      var k = got[0].length, i;
+      for (i = 1; i < 4; i++) if (got[i].length !== k) return;
+      custom = got.map(function (c) { return c.slice(); });
+      nPer = k; bEff = 0;
+      if (slB) slB.value = 0;
+      if (slN) slN.value = Math.min(+slN.max, Math.max(+slN.min, k));
+      update();
+    }
+
+    var redraw = VIZ.rafThrottle(function () { fit(); update(); });
+    window.addEventListener("resize", redraw);
+    if (window.ResizeObserver) { new ResizeObserver(redraw).observe(canvas); }
+    VIZ.onTheme(function () { update(); });
+
+    fit();
+    update();
+
+    if (window.SC && SC.preset) SC.preset({ n: "#wv-n", b: "#wv-b", g: loadCells });
   })();
   </script>
 </body>
