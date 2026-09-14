@@ -1434,7 +1434,38 @@
   /* ---------- "Check your understanding" (lesson pages) ----------
      Question data lives in assets/js/checks.js, loaded lazily like
      the code snippets. Injected above the "Try it yourself" block
-     (or the progress head if snippets haven't landed yet). */
+     (or the progress head if snippets haven't landed yet).
+
+     OPTIONS ARE SHUFFLED ON EVERY RENDER, and the answer index is
+     remapped with them. checks.js stores 249 of its 306 answers at
+     index 1, so until this landed a student who clicked the second
+     button on every question scored about 81% without reading a
+     word — the options had always rendered in their stored order.
+     quiz.html's exam mode has shuffled its own BANK since P62; this
+     is the same treatment, mirroring its shuffleOpts rather than
+     inventing a second mechanism.
+
+     Shuffling is safe here because no question's options carry an
+     order that teaches. That was measured before choosing it over
+     rebalancing the 306 stored indices by hand: only two option sets
+     are monotone numeric ladders (±2 SD at 50/68/95/99.7, and the
+     largest P(A or B) at 1.1/1.0/0.9/0.3) and both are plausible-
+     value distractors, and the single "all of them remove skew"
+     option names the SET rather than a position, so it reads the
+     same wherever it lands. A "none of the above" would not, and is
+     the one shape to check before adding a question. */
+  function shuffleOpts(item) {
+    var order = item.o.map(function (_, i) { return i; }), i, j, t;
+    for (i = order.length - 1; i > 0; i--) {
+      j = (Math.random() * (i + 1)) | 0;
+      t = order[i]; order[i] = order[j]; order[j] = t;
+    }
+    return {
+      q: item.q, why: item.why,
+      o: order.map(function (k) { return item.o[k]; }),
+      a: order.indexOf(item.a)
+    };
+  }
   function renderChecks() {
     if (!HERE) return;
     var s = document.createElement("script");
@@ -1462,7 +1493,8 @@
       var scoreEl = head.querySelector(".ck-score");
       var prev = loadCheckScores()[HERE];
       if (prev) scoreEl.textContent = "best so far: " + prev.c + " / " + prev.t;
-      qs.forEach(function (item, qi) {
+      qs.forEach(function (stored, qi) {
+        var item = shuffleOpts(stored);   // a fresh order per render; item.a moves with it
         var card = document.createElement("div");
         card.className = "ck-q";
         var p = document.createElement("p");

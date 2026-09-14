@@ -37,9 +37,9 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v55";  /* site.js and styles.css changed and are both
-                                    precached: the footer gained a Reuse link
-                                    to the new license.html, and its styling. */
+const CACHE_VERSION = "sc-v56";  /* site.js changed and is precached: the
+                                    per-lesson check questions now shuffle
+                                    their options on every render. */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location

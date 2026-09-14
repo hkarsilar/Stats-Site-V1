@@ -669,7 +669,12 @@
 
     function begin(setId) {
       activeSet = setId;
-      quiz = shuffle(poolFor(setId)).slice(0, MAXQ);
+      /* shuffle WHICH questions, then the options inside each one: the BANK
+         stores 201 of its 257 answers at index 1, so rendering them in their
+         stored order let a student click the second button every time and
+         score about 78% without reading. Exam mode has mapped shuffleOpts
+         since P62; practice mode, the default, never did. */
+      quiz = shuffle(poolFor(setId)).slice(0, MAXQ).map(shuffleOpts);
       pos = 0; score = 0;
       el("start").style.display = "none";
       el("results").style.display = "none";
