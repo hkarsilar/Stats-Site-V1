@@ -54,15 +54,23 @@
        refiled here from the Stats 3 table where it never belonged), which at
        the shared 10.5pt would have pushed an eight-page handout to ten. The
        sizes below are page-local and change nothing anywhere else; measured
-       with headless Chromium at both A4 and US Letter. */
+       with headless Chromium at both A4 and US Letter.
+
+       P93 added seven more rows (covariance and the two forms of the slope,
+       the residual standard error, both standard errors of the line, the
+       slope test and its interval, the regression ANOVA and omitted-variable
+       bias) and that took the sheet to six pages. The table type and padding
+       came down a further notch, from 8.2pt/.13cm to 7.9pt/.10cm, which puts
+       it back at FIVE pages at both sizes. Re-measure the same way after any
+       further rows: the sheet fitting on one handout is part of what it is. */
     @media print {
       @page { margin: 1.2cm 1.2cm 1.5cm; }
       .lesson { font-size: 9pt; }
       .lesson h1 { font-size: 16pt; margin-bottom: .2cm; }
       .lesson h2 { font-size: 11.5pt; margin: .45cm 0 .1cm; }
       .lesson .lede { font-size: 8.5pt; margin: .1cm 0 .25cm; }
-      .ref-table { font-size: 8.2pt; margin: .15cm 0 .3cm; }
-      .ref-table th, .ref-table td { padding: .13cm .22cm; }
+      .ref-table { font-size: 7.9pt; margin: .12cm 0 .26cm; }
+      .ref-table th, .ref-table td { padding: .10cm .20cm; }
       .ref-table caption { font-size: 7.4pt; line-height: 1.4; padding-bottom: .12cm; }
       .callout { font-size: 8.2pt; }
     }
@@ -118,7 +126,7 @@
 
         <h2 style="color:var(--secondary)"><a href="./#curriculum" style="color:inherit">Stats 2: ANOVA &amp; Regression</a></h2>
         <table class="ref-table">
-          <caption><b>Notation, one convention per family.</b> Group designs: <em>I</em> groups (some books write <em>k</em>), <em>J</em> levels of a second factor, <em>N</em> observations in total, <em>n<sub>i</sub></em> in group <em>i</em>. Repeated measures: <em>n</em> people in <em>k</em> conditions, <em>g</em> groups in a mixed design. Regression: <em>n</em> cases and <em>p</em> predictors, so every <em>t</em>, every <em>s</em> and the second <em>F</em> df run on <em>n</em> − <em>p</em> − 1. A starred critical value is the bar to clear; <em>t</em>** is a corrected one. Rows run in the order the course meets them, §2.1 first.</caption>
+          <caption><b>Notation, one convention per family.</b> Group designs: <em>I</em> groups (some books write <em>k</em>), <em>J</em> levels of a second factor, <em>N</em> observations in total, <em>n<sub>i</sub></em> in group <em>i</em>. Repeated measures: <em>n</em> people in <em>k</em> conditions, <em>g</em> groups in a mixed design. Regression: <em>n</em> cases and <em>p</em> predictors, so every <em>t</em>, every <em>s</em> and the second <em>F</em> df run on <em>n</em> − <em>p</em> − 1, which is <em>n</em> − 2 in a one-predictor fit. A starred critical value is the bar to clear; <em>t</em>** is a corrected one. Rows run in the order the course meets them, §2.1 first.</caption>
           <thead><tr><th>Concept</th><th>Formula</th><th>Read it as</th></tr></thead>
           <tbody>
             <tr><td>Pooled ranking</td><td>rank every value 1…N across both groups; tied values share the average of the ranks they cover</td><td>The four tests below run on these ranks and never on the values, which is why one wild outlier cannot move them.</td></tr>
@@ -158,11 +166,17 @@
             <tr><td>Expected count</td><td>E = (row total × column total) / N</td><td>Each cell's count if the two variables were unrelated.</td></tr>
             <tr><td>Chi-square df</td><td>df = (r − 1)(c − 1)</td><td>Rows and columns of the contingency table.</td></tr>
             <tr><td>Cramér's V</td><td>V = √( χ² / (N · (min(r,c) − 1)) )</td><td>Effect size for χ², from 0 to 1.</td></tr>
+            <tr><td>Covariance</td><td>cov(x, y) = Σ (x − x̄)(y − ȳ) / (n − 1)</td><td>The variance with one copy of x swapped for y. Its units are the two variables’ units multiplied, so it gives the direction and not the size.</td></tr>
             <tr><td>Pearson r</td><td>r = Σ z<sub>x</sub>z<sub>y</sub> / (n − 1)</td><td>The average product of paired z-scores.</td></tr>
-            <tr><td>Regression slope</td><td>b = r · (s<sub>y</sub> / s<sub>x</sub>)</td><td>Predicted change in y per one-unit rise in x.</td></tr>
+            <tr><td>Regression slope</td><td>b = r · (s<sub>y</sub> / s<sub>x</sub>) = cov(x, y) / var(x)</td><td>Predicted change in y per one-unit rise in x. The two forms are the same number; use whichever pieces the question hands you.</td></tr>
             <tr><td>Intercept</td><td>a = ȳ − b·x̄</td><td>The least-squares line always passes through (x̄, ȳ).</td></tr>
             <tr><td>R²</td><td>R² = 1 − SS<sub>res</sub> / SS<sub>tot</sub></td><td>Share of y's variance the model explains.</td></tr>
+            <tr><td>Residual standard error</td><td>s = √( Σ (y − ŷ)² / (n − 2) )</td><td>The typical size of a residual. Two df pay for the slope and the intercept, which is why the tests below run on n − 2.</td></tr>
+            <tr><td>Standard errors of the line</td><td>SE(b₁) = s / √Σ (x − x̄)²,&nbsp; SE(b₀) = s · √( 1/n + x̄² / Σ (x − x̄)² )</td><td>Tight scatter and spread-out x values sharpen both. The x̄² term is the price of an intercept far from the data; center x and it disappears.</td></tr>
+            <tr><td>Slope test and CI</td><td>t = b₁ / SE(b₁) on df = n − 2,&nbsp; CI: b₁ ± t* · SE(b₁)</td><td>The interval excludes zero exactly when the t clears t*. The intercept row works the same way and is rarely worth reporting.</td></tr>
+            <tr><td>Regression ANOVA</td><td>SS<sub>T</sub> = SS<sub>R</sub> + SS<sub>E</sub>, df 1, n − 2 and n − 1; F = MS<sub>R</sub> / MS<sub>E</sub></td><td>With one predictor F = t² and R² = SS<sub>R</sub>/SS<sub>T</sub>, so the table repeats what the coefficient row said. It earns its keep once there are several predictors.</td></tr>
             <tr><td>Multiple regression</td><td>ŷ = b₀ + b₁x₁ + … + b<sub>p</sub>x<sub>p</sub></td><td>Each bⱼ is that predictor's effect holding the others constant. With p predictors every t and every s in the model runs on df = n − p − 1.</td></tr>
+            <tr><td>Omitted-variable bias</td><td>E[b₁] = β₁ + β₂δ, where δ (delta) is the slope of the omitted x₂ on the included x₁</td><td>Fit y on x₁ alone and this is what you get. The bias is a product, so it is zero unless the omitted variable is tied to both the outcome and the predictor you kept, and its sign is the product of the two signs.</td></tr>
             <tr><td>Overall F (regression)</td><td>F = (R²/p) / ((1 − R²)/(n − p − 1)), on F(p, n − p − 1)</td><td>One test of the whole model against no model at all. Rejecting says at least one predictor earns its place, never which one.</td></tr>
             <tr><td>Multiple correlation</td><td>R = √R²</td><td>The plain correlation between y and the model's own predictions ŷ, which is why it can never come out negative.</td></tr>
             <tr><td>Adjusted R²</td><td>1 − (1 − R²)(n − 1) / (n − p − 1)</td><td>R² with rent charged per predictor. It falls when a predictor earns less than it costs, which plain R² can never do.</td></tr>

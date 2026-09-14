@@ -493,7 +493,8 @@ window.SOFTWARE = {
     tips: [
       'Report the overall model (<em>R</em>², <em>F</em>) first, then the coefficients. A full coefficient table is usually clearer than prose for 3+ predictors.',
       'Say explicitly that coefficients are adjusted effects ("controlling for the other predictors").',
-      'SPSS prints the standardized β in the <em>Coefficients</em> table without being asked, under <em>Standardized Coefficients</em>. Anywhere that doesn’t, z-score every variable and refit: the raw slopes come back as the βs.'
+      'SPSS prints the standardized β in the <em>Coefficients</em> table without being asked, under <em>Standardized Coefficients</em>. Anywhere that doesn’t, z-score every variable and refit: the raw slopes come back as the βs.',
+      'The degrees of freedom are printed once, in the <em>ANOVA</em> table’s <em>Residual</em> row, and every <em>t</em> in the Coefficients box below runs on that same <em>n</em> &minus; <em>p</em> &minus; 1. A write-up quoting <em>t</em>(<em>n</em> &minus; 1) has forgotten to charge for the predictors.'
     ]
   },
   "multicollinearity-and-variable-selection": {
@@ -511,7 +512,8 @@ window.SOFTWARE = {
     apa: '<p>Collinearity was acceptable across predictors (all VIFs ≤ 2.3, all tolerances ≥ .43), so all three predictors were retained in the final model.</p>',
     tips: [
       'A single sentence reporting the largest VIF (or "all VIFs below X") is the convention; VIF is an abbreviation, not a statistic symbol, so it isn’t italicized.',
-      'Tolerance and VIF carry the same information (tolerance = 1 / VIF), so report one, not both. VIF is the usual choice in write-ups; tolerance reads more naturally as a share, since .08 says only 8% of that predictor is its own.'
+      'Tolerance and VIF carry the same information (tolerance = 1 / VIF), so report one, not both. VIF is the usual choice in write-ups; tolerance reads more naturally as a share, since .08 says only 8% of that predictor is its own.',
+      'To see where a VIF comes from, run the side regression yourself: make the suspect predictor the <em>Dependent</em>, put every other predictor in <em>Independent(s)</em>, and leave the real outcome out altogether. The Model Summary’s <em>R</em>&sup2; is the R&sup2;<sub>j</sub> inside 1/(1 &minus; R&sup2;<sub>j</sub>).'
     ]
   },
   "categorical-predictors-and-dummy-coding": {

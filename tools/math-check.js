@@ -2796,6 +2796,404 @@ try {
 
 
 /* ============================================================
+   17 — omitted-variable bias (stats-2/multiple-regression)
+
+   P93 gave §2.9 the formula the lesson used to gesture at: fit y on x1
+   alone while x2 belongs in the model, and the coefficient you get
+   estimates β1 + β2·δ, where δ is the slope of the omitted x2 on the
+   included x1. The section exists because that relation is not merely a
+   statement about expectations — IN A SAMPLE IT IS AN ALGEBRAIC IDENTITY,
+   exact to the last bit, and the widget prints both sides of it. If the
+   two ever disagree on screen, one of the three regressions is wrong.
+
+   Three things are the point, and each is asserted rather than described.
+
+   (a) THE IDENTITY. Regress y on (x1, x2) for b1 and b2, regress x2 on x1
+   for δ, and the simple regression of y on x1 alone returns b1 + b2δ.
+   Asserted on the widget's own data and on two hand-built sets, to 1e-12,
+   with the derivation here written from the raw sums rather than shared
+   with the page's.
+
+   (b) b1 IS EXACTLY INVARIANT TO BOTH SLIDERS. With a 0/1 second
+   predictor the partial slope is the pooled within-group slope, and
+   neither slider touches a within-group deviation: moving the groups
+   apart on x1 shifts x by a constant inside each group, and changing β2
+   shifts y by a constant inside each group. So the whole of the widget's
+   movement lands on the naive slope. That is the lesson's own sentence
+   ("omitting a variable does not add noise to your answer, it relocates
+   the answer"), and it is checked over a grid rather than at one setting.
+
+   (c) THE FOUR SIGN QUADRANTS ARE REACHABLE AND CORRECT. β2 and δ each
+   carry a sign the reader sets, and the bias is their product, so the
+   published sign table has to hold at every corner.
+
+   P93 ALSO FROZE THE WIDGET'S POOLS, which is what makes the boot state
+   assertable at all — it drew a fresh sample on every page load until
+   then, the defect P92 fixed in §2.5. The pools are transcribed here and
+   USED to rebuild the same sample, so a changed pool shows up as a
+   changed number rather than as a silently different study, and the boot
+   is read BEFORE any parameter is applied (the lesson sections 10, 11, 15
+   and 16 each learned).
+
+   Part (4) leaves the widget and checks the other published arithmetic
+   P93 added: §2.10's claim that a one-way ANOVA and a regression on k − 1
+   dummies are one analysis in two layouts, worked on the shipped
+   study-methods.csv, so every number in that lesson's two tables is
+   recomputed from the file rather than trusted.
+   ============================================================ */
+head('omitted-variable bias (the shipped widget)');
+
+/* the three regressions, from the raw sums and nothing else */
+function ovb(pts) {
+  const n = pts.length;
+  let mx = 0, mg = 0, my = 0;
+  for (const p of pts) { mx += p.x; mg += p.g; my += p.y; }
+  mx /= n; mg /= n; my /= n;
+  let Sxx = 0, Sgg = 0, Sxg = 0, Sxy = 0, Sgy = 0;
+  for (const p of pts) {
+    const dx = p.x - mx, dg = p.g - mg, dy = p.y - my;
+    Sxx += dx * dx; Sgg += dg * dg; Sxg += dx * dg; Sxy += dx * dy; Sgy += dg * dy;
+  }
+  const D = Sxx * Sgg - Sxg * Sxg;
+  return {
+    naive: Sxy / Sxx,
+    b1: (Sgg * Sxy - Sxg * Sgy) / D,
+    b2: (Sxx * Sgy - Sxg * Sxy) / D,
+    delta: Sxg / Sxx
+  };
+}
+/* the pooled within-group slope, computed a different way on purpose */
+function withinSlope(pts) {
+  let num = 0, den = 0;
+  for (const g of [0, 1]) {
+    const s = pts.filter(p => p.g === g);
+    const mx = s.reduce((a, p) => a + p.x, 0) / s.length;
+    const my = s.reduce((a, p) => a + p.y, 0) / s.length;
+    for (const p of s) { num += (p.x - mx) * (p.y - my); den += (p.x - mx) ** 2; }
+  }
+  return num / den;
+}
+
+/* the widget's frozen pools, transcribed from the lesson */
+const OU = [
+  [-0.24, 0.69, 0.78, 0.45, 0.54, -0.73, 0.23, 0.92, -0.74, 0.92, -0.79, -0.87, -0.06, 0.8, 0.07, -0.05, -0.18, 0.35, 0.43, -0.07, 0, -0.93, 0.65, 0.1, -0.72, -0.63],
+  [-0.42, 0.96, -0.13, -0.84, -0.49, -0.2, 0.24, -0.78, -0.41, 0.32, 0.56, 0.75, -0.2, -0.46, -0.83, -0.71, -0.17, -0.75, 0.42, -0.54, -0.31, -0.38, -0.73, -0.48, -0.47, -0.5]
+];
+const OE = [
+  [0.41, -0.69, -0.4, 1.02, 0.06, -0.45, 1.36, -1.6, -1.26, -0.68, 1.64, -1.21, -0.03, 1.06, 0.32, -0.62, -0.47, 2.12, 1.23, 0.73, -2.17, 1.63, -0.31, -0.25, 1.69, -2.55],
+  [-0.55, 0.44, 0.16, -0.21, 1.21, -0.56, 1.31, -0.93, 1.88, 0.5, -0.85, -0.25, 1.15, 0.16, -0.33, 0.86, -0.54, -1.24, -1.03, 0.98, -2.07, -0.14, -1.19, 0.41, 0.39, 1.03]
+];
+const WITHIN_TRUE = -0.6;
+function cloud(B2, SEP) {
+  const pts = [];
+  for (let g = 0; g < 2; g++) {
+    const xm = 50 + (g - 0.5) * SEP;
+    for (let i = 0; i < 26; i++) {
+      const x = xm + OU[g][i] * 13;
+      pts.push({ x, g, y: 50 + WITHIN_TRUE * (x - 50) + B2 * (g - 0.5) + 4 * OE[g][i] });
+    }
+  }
+  return pts;
+}
+
+/* ---- (a) the identity ---- */
+const OVB0 = ovb(cloud(54, 34));
+eq('frozen sample: the identity holds exactly', OVB0.b1 + OVB0.b2 * OVB0.delta, OVB0.naive, 1e-12,
+   'E[b1] = β1 + β2δ, exact in a sample rather than only in expectation');
+eq('frozen sample: the partial slope IS the pooled within-group slope',
+   OVB0.b1, withinSlope(cloud(54, 34)), 1e-12, 'what a 0/1 second predictor makes b1 mean');
+eq('frozen sample: controlled slope', OVB0.b1, -0.599946, 5e-6, 'the boot readout, which prints −0.60');
+eq('frozen sample: naive slope', OVB0.naive, 0.8666378, 5e-7, 'the boot readout, which prints +0.87');
+eq('frozen sample: delta', OVB0.delta, 0.02715899, 5e-8, 'Sxg / Sxx on the same 52 points');
+eq('frozen sample: the bias is the gap between the two slopes',
+   OVB0.b2 * OVB0.delta, OVB0.naive - OVB0.b1, 1e-12, 'what the widget prints in two boxes');
+
+/* two hand-built sets, so the identity is not a property of one cloud */
+const HAND_A = [{x:1,g:0,y:2},{x:2,g:0,y:3},{x:4,g:0,y:4},{x:5,g:1,y:9},{x:7,g:1,y:11},{x:8,g:1,y:14}];
+const HAND_B = [{x:3,g:1,y:1},{x:1,g:0,y:8},{x:6,g:1,y:2},{x:2,g:0,y:7},{x:9,g:1,y:5},{x:4,g:0,y:6},{x:5,g:0,y:4},{x:8,g:1,y:0}];
+for (const [name, set] of [['A', HAND_A], ['B', HAND_B]]) {
+  const o = ovb(set);
+  eq(`hand-built set ${name}: the identity holds exactly`, o.b1 + o.b2 * o.delta, o.naive, 1e-12,
+     'the same three regressions on six or eight points');
+  eq(`hand-built set ${name}: b1 is the pooled within-group slope`, o.b1, withinSlope(set), 1e-12,
+     'independent derivation');
+}
+/* the two factors of the product, each zeroed EXACTLY rather than nearly, so
+   the "a product is zero unless both halves are nonzero" claim is a proof and
+   not a demonstration */
+{
+  /* δ = 0 by construction: the two groups sit on the same x values, so nothing
+     about x predicts group membership, even though group shifts y by 20 */
+  const sameX = [];
+  for (const x of [1, 3, 4, 7, 9, 12]) { sameX.push({ x, g: 0, y: 30 - 2 * x }); sameX.push({ x, g: 1, y: 50 - 2 * x + (x % 5) }); }
+  const oD = ovb(sameX);
+  eq('δ is exactly zero when the groups share their x values', oD.delta, 0, 1e-12,
+     'Sxg = 0, so nothing about x says which group a case is in');
+  eq('and then the naive slope IS the controlled slope', oD.naive, oD.b1, 1e-12,
+     'a product with a zero factor is zero');
+  /* β2 = 0 by construction: y is an exact function of x, whatever the group */
+  const pureX = [{x:2,g:0},{x:5,g:0},{x:6,g:0},{x:11,g:1},{x:14,g:1},{x:17,g:1}]
+    .map(p => ({ x: p.x, g: p.g, y: 7 + 1.5 * p.x }));
+  const oB = ovb(pureX);
+  eq('b2 is exactly zero when the group tells you nothing about y', oB.b2, 0, 1e-11,
+     'group membership adds nothing once x is in the model');
+  eq('and then the naive slope IS the controlled slope again', oB.naive, oB.b1, 1e-11,
+     'the other factor of the same product');
+  is('while the widget\u2019s own cloud has both factors nonzero',
+     Math.abs(OVB0.b2) > 50 && Math.abs(OVB0.delta) > 0.02, true, 'which is why it is biased at all');
+}
+
+/* ---- (b) b1 is exactly invariant to both sliders ---- */
+{
+  const base = ovb(cloud(54, 34)).b1;
+  for (const B2 of [-60, -54, -20, 0, 20, 54, 60]) {
+    for (const SEP of [-40, -34, -10, 0, 10, 34, 40]) {
+      eq(`b2 = ${B2}, sep = ${SEP}: the controlled slope has not moved`, ovb(cloud(B2, SEP)).b1, base, 1e-12,
+         'neither slider touches a within-group deviation');
+    }
+  }
+  eq('and the naive slope moves by exactly the bias at every setting',
+     Math.max(...[[-60, -40], [0, 34], [54, 34], [60, 40], [20, -10]].map(([B2, S]) => {
+       const o = ovb(cloud(B2, S));
+       return Math.abs(o.naive - (base + o.b2 * o.delta));
+     })), 0, 1e-12, 'all of the movement lands on the naive slope');
+}
+
+/* ---- (c) the four sign quadrants ---- */
+for (const [B2, SEP, sign] of [[54, 34, +1], [54, -34, -1], [-54, 34, -1], [-54, -34, +1]]) {
+  const o = ovb(cloud(B2, SEP));
+  is(`b2 ${B2 > 0 ? '+' : '−'} and δ ${SEP > 0 ? '+' : '−'}: the bias is ${sign > 0 ? 'positive' : 'negative'}`,
+     Math.sign(o.b2 * o.delta), sign, 'the published sign table');
+  is(`b2 ${B2 > 0 ? '+' : '−'} and δ ${SEP > 0 ? '+' : '−'}: δ takes the sign of the separation`,
+     Math.sign(o.delta), Math.sign(SEP), 'the groups sit where the slider puts them');
+}
+is('a positive bias is what flips a negative slope positive',
+   ovb(cloud(54, 34)).naive > 0 && ovb(cloud(54, 34)).b1 < 0, true,
+   "Simpson's paradox, which is the lesson's own default picture");
+
+/* ---- and now the shipped page ---- */
+function driveOVB() {
+  const html = fs.readFileSync(path.join(ROOT, 'stats-2/multiple-regression/index.html'), 'utf8');
+  const src = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]).filter(s => /mr-canvas/.test(s))[0];
+  if (!src) throw new Error('no inline script mentioning mr-canvas');
+
+  const ctx2d = {};
+  ['clearRect', 'fillRect', 'strokeRect', 'beginPath', 'moveTo', 'lineTo', 'arc', 'closePath',
+   'fill', 'stroke', 'setLineDash', 'fillText', 'setTransform', 'save', 'restore', 'translate',
+   'rotate'].forEach(n => { ctx2d[n] = () => {}; });
+  ctx2d.measureText = t => ({ width: String(t).length * 6 });
+
+  const els = {};
+  const mk = () => {
+    const on = {};
+    const node = {
+      innerHTML: '', textContent: '', value: '', type: 'range', min: '0', max: '100', step: '1',
+      style: {}, dataset: {}, tagName: 'INPUT',
+      clientWidth: 720, parentElement: { clientWidth: 720 }, getContext: () => ctx2d,
+      classList: { add: () => {}, remove: () => {}, toggle: () => {} },
+      querySelectorAll: () => [], getAttribute: () => null,
+      addEventListener: (t, f) => { (on[t] = on[t] || []).push(f); },
+      fire: (t, e) => (on[t] || []).forEach(f => f.call(node, e)),
+      dispatchEvent: (e) => { node.fire(e.type, e); return true; }
+    };
+    return node;
+  };
+
+  /* the two sliders carry the lesson's own defaults, read out of the markup
+     rather than restated here: a frozen default switched quietly in the HTML
+     is exactly what this has to catch */
+  ['b2-range', 'sep-range'].forEach(id => {
+    els[id] = mk();
+    const m = html.match(new RegExp('<input type="range" id="' + id +
+      '" min="([-\\d.]+)" max="([-\\d.]+)" step="([-\\d.]+)" value="([-\\d.]+)"'));
+    if (!m) throw new Error('no range input with id ' + id);
+    els[id].min = m[1]; els[id].max = m[2]; els[id].step = m[3]; els[id].value = m[4];
+  });
+
+  /* the generic control applier, lifted out of site.js rather than
+     reimplemented: a preset URL goes through the SHIPPED helper */
+  const siteSrc = fs.readFileSync(path.join(ROOT, 'assets/js/site.js'), 'utf8');
+  const grab = (name) => {
+    const i = siteSrc.indexOf('function ' + name);
+    const j = siteSrc.indexOf('\n  }\n', i);
+    if (i < 0 || j < 0) throw new Error('site.js no longer defines ' + name);
+    return siteSrc.slice(i, j + 4);
+  };
+  const applyControl = new Function(grab('numeric') + grab('applyControl') + ';return applyControl;')();
+
+  let maps = [];
+  const c = { console };
+  c.window = c;
+  c.document = {
+    documentElement: {},
+    getElementById: id => els[id] || (els[id] = mk()),
+    querySelector: sel => els[sel.replace('#', '')] || (els[sel.replace('#', '')] = mk()),
+    querySelectorAll: () => []
+  };
+  c.getComputedStyle = () => ({ getPropertyValue: () => '#000000' });
+  c.MutationObserver = function () { this.observe = () => {}; };
+  c.ResizeObserver = function () { this.observe = () => {}; };
+  c.requestAnimationFrame = cb => cb();
+  c.addEventListener = () => {};
+  c.location = { search: '?x=1' };
+  c.SC = { preset: m => { maps.push(m); } };
+  vm.createContext(c);
+  vm.runInContext(fs.readFileSync(path.join(ROOT, 'assets/js/viz.js'), 'utf8'), c, { filename: 'viz.js' });
+  vm.runInContext(src, c, { filename: 'stats-2/multiple-regression#controlling-for' });
+
+  /* the frozen pools are read OUT of the page and compared with the
+     transcription above, rather than the transcription being trusted: a
+     changed pool has to fire here, not merely hope to move a printed readout
+     past its second decimal. Proved by measuring: a 0.07 edit to one of the
+     52 offsets moves nothing the widget prints. */
+  const pool = (name) => {
+    const m = html.match(new RegExp('var ' + name + ' = \\[([^\\]]*)\\];'));
+    if (!m) throw new Error('no frozen pool named ' + name);
+    return m[1].split(',').map(s => Number(s.trim()));
+  };
+
+  const txt = id => (els[id] ? String(els[id].textContent) : null);
+  const num = s => parseFloat(String(s).replace(/−/g, '-'));
+  const state = () => ({
+    naive: txt('stat-naive'), ctrl: txt('stat-ctrl'), gap: txt('stat-gap'),
+    b2: txt('stat-b2'), delta: txt('stat-delta'), bias: txt('stat-bias'),
+    verdict: txt('stat-flip'),
+    b2lab: txt('b2-val'), seplab: txt('sep-val'),
+    b2v: els['b2-range'].value, sepv: els['sep-range'].value
+  });
+  if (!state().naive) throw new Error('the readout row stayed empty on boot');
+  return {
+    boot: state(), maps, num,
+    pools: { U0: pool('U0'), U1: pool('U1'), E0: pool('E0'), E1: pool('E1') },
+    preset: (key, raw) => {
+      const map = maps.filter(m => typeof m[key] === 'string')[0];
+      if (!map) throw new Error('the widget registered no ?' + key + '= applier');
+      applyControl(els[map[key].replace('#', '')], raw, 1);
+      return state();
+    }
+  };
+}
+
+try {
+  const page = driveOVB();
+  const b = page.boot;
+
+  /* the BOOT state is read before any parameter is applied. P93 froze the
+     pools, so "it boots on a fixed sample at all" is itself worth asserting. */
+  is('widget boots on its own markup defaults', [b.b2v, b.sepv].join(','), '54,34', 'the two range inputs');
+  is('the page still carries the frozen pools this section derives from',
+     [page.pools.U0, page.pools.U1, page.pools.E0, page.pools.E1].map(a => a.join(',')).join('|'),
+     [OU[0], OU[1], OE[0], OE[1]].map(a => a.join(',')).join('|'),
+     'the transcription is checked against the page rather than trusted');
+  is('widget boots: naive slope', b.naive, '+0.87', 'derived above from the transcribed pools');
+  is('widget boots: controlled slope', b.ctrl, '−0.60', 'the pooled within-group slope');
+  is('widget boots: b2', b.b2, '+54.0', "x2's own effect, recovered from the data");
+  is('widget boots: delta', b.delta, '+0.0272', 'the slope of x2 on x1');
+  is('widget boots: bias', b.bias, '+1.47', '54.0 × 0.0272');
+  is('widget boots: the printed gap equals the printed bias', b.gap, b.bias,
+     'the two halves of the identity, side by side on screen');
+  is('widget boots: the verdict names both signs and the flip', b.verdict,
+     '+ × +, so it overstates the slope and flips its sign',
+     "the default picture is Simpson's paradox");
+  is('widget boots: the slider labels echo the sliders', [b.b2lab, b.seplab].join(','), '+54,+34',
+     'signed, because the sign is the point');
+
+  /* the presets the lesson registers, applied through site.js's own helper */
+  is('the widget registers exactly the b2 and sep appliers',
+     page.maps.map(m => Object.keys(m).sort().join('+')).join('|'), 'b2+sep',
+     'the two params teachers.html lists');
+  const q2 = page.preset('sep', '-34');
+  is('?sep=-34: delta changes sign', q2.delta.charAt(0), '−', 'the groups swap sides on x1');
+  is('?sep=-34: the controlled slope has not moved', q2.ctrl, '−0.60', 'invariance, on the shipped page');
+  is('?sep=-34: the gap still equals the bias', q2.gap, q2.bias, 'the identity survives a preset');
+  is('?sep=-34: the verdict reads the new quadrant', q2.verdict,
+     '+ × −, so it understates the slope', 'β2 positive, δ negative');
+  const q3 = page.preset('b2', '-54');
+  is('?b2=-54 as well: back to a positive bias', q3.bias.charAt(0), '+', 'two negatives multiply');
+  is('?b2=-54 as well: the controlled slope is still −0.60', q3.ctrl, '−0.60',
+     'neither parameter can move it');
+
+  /* garbage and out-of-range go through the same clamping every preset uses */
+  const before = page.preset('b2', '-54');
+  for (const bad of ['0x10', '12abc', 'NaN', 'Infinity', 'nonsense', '']) {
+    is(`a bad ?b2=${bad || '(empty)'} leaves the widget where it was`, page.preset('b2', bad).bias, before.bias,
+       'strict numeric parsing, the same rule every preset follows');
+  }
+  const hi = page.preset('b2', '9999');
+  is('?b2=9999 clamps to the slider’s own maximum', hi.b2lab, '+60', 'a state a hand could reach');
+  const odd = page.preset('sep', '33');
+  is('?sep=33 snaps to the slider’s own step', odd.seplab, '+34', 'step 2 from a minimum of −40');
+} catch (e) {
+  failures.push({ section, label: 'the controlling-for widget could not be driven — ids or structure changed?',
+    got: String(e.message), want: 'a runnable mr-canvas script printing seven readouts', tol: 0, err: NaN,
+    src: 'stats-2/multiple-regression' });
+}
+
+/* ---- (4) §2.10: one analysis, two layouts, on the shipped CSV ---- */
+head('ANOVA as regression (study-methods.csv)');
+try {
+  const rows = fs.readFileSync(path.join(ROOT, 'assets/data/study-methods.csv'), 'utf8')
+    .trim().split(/\r?\n/).slice(1).map(r => r.split(','));
+  const G = {};
+  for (const r of rows) (G[r[1]] = G[r[1]] || []).push(Number(r[2]));
+  const KEYS = ['rereading', 'flashcards', 'practice_testing'];
+  const av = a => a.reduce((s, v) => s + v, 0) / a.length;
+  const all = rows.map(r => Number(r[2])), N = all.length, I = 3, gm = av(all);
+  let ssG = 0, ssE = 0, ssT = 0;
+  for (const k of KEYS) { const m = av(G[k]); ssG += G[k].length * (m - gm) ** 2; for (const v of G[k]) ssE += (v - m) ** 2; }
+  for (const v of all) ssT += (v - gm) ** 2;
+  const dfG = I - 1, dfE = N - I, msG = ssG / dfG, msE = ssE / dfE, F = msG / msE;
+
+  is('the file still holds three groups of 35', KEYS.map(k => G[k].length).join(','), '35,35,35',
+     'assets/data/study-methods.csv');
+  eq('group means', Number(KEYS.map(k => av(G[k]).toFixed(3)).join('').replace(/\./g, '')),
+     Number('66143' + '74429' + '76829'), 0, '66.143, 74.429, 76.829');
+  eq('the partition adds up', ssG + ssE, ssT, 1e-9, 'SS_G + SS_E = SS_T');
+  eq('SS regression = SS between groups', ssG, 2200.305, 5e-4, 'the published table');
+  eq('SS residual = SS within groups', ssE, 9701.829, 5e-4, 'the published table');
+  eq('SS total', ssT, 11902.133, 5e-4, 'the published table');
+  eq('mean squares', msG, 1100.152, 5e-4, 'the published table');
+  eq('error mean square', msE, 95.116, 5e-4, 'the published table');
+  eq('F(2, 102)', F, 11.5664, 5e-5, 'the published table, and §2.2 reports the same 11.57');
+  rel('p', V.fUpper(F, dfG, dfE), 2.969e-5, 1e-3, 'VIZ.fUpper');
+  eq('R squared is eta squared', ssG / ssT, 0.18487, 5e-6, 'the published .185');
+  eq('the residual standard error is the pooled SD', Math.sqrt(msE), 9.7527, 5e-5, 'the published 9.753');
+
+  /* the dummy regression, with rereading as the reference */
+  const b0 = av(G.rereading);
+  const b1 = av(G.flashcards) - b0, b2 = av(G.practice_testing) - b0;
+  const seB = Math.sqrt(msE * (1 / 35 + 1 / 35)), seB0 = Math.sqrt(msE / 35);
+  const tc = V.tInv(0.025, dfE);
+  eq('intercept = the reference group mean', b0, 66.143, 5e-4, 'the published Coefficients table');
+  eq('b1 = flashcards − rereading', b1, 8.286, 5e-4, '74.429 − 66.143');
+  eq('b2 = practice testing − rereading', b2, 10.686, 5e-4, '76.829 − 66.143');
+  eq('both dummy standard errors are the pooled pairwise SE', seB, 2.331, 5e-4,
+     '√(MS_E(1/35 + 1/35)), equal because the groups are equal');
+  eq('the intercept standard error', seB0, 1.649, 5e-4, '√(MS_E/35)');
+  eq('t for b1', b1 / seB, 3.554, 5e-4, 'the published 3.55');
+  eq('t for b2', b2 / seB, 4.5835, 5e-4, 'the published 4.58');
+  eq('t for the intercept', b0 / seB0, 40.12, 5e-3, 'the published 40.12');
+  eq('the CI on b1', b1 - tc * seB, 3.661, 5e-4, 'the published [3.66, 12.91]');
+  eq('the CI on b1, upper', b1 + tc * seB, 12.910, 5e-4, 'the published [3.66, 12.91]');
+  eq('the CI on b2', b2 - tc * seB, 6.061, 5e-4, 'the published [6.06, 15.31]');
+  eq('the CI on b2, upper', b2 + tc * seB, 15.310, 5e-4, 'the published [6.06, 15.31]');
+  eq('the comparison NO coefficient makes: flashcards against practice testing',
+     (av(G.practice_testing) - av(G.flashcards)) / seB, 1.0294, 5e-5, 'the published t(102) = 1.03');
+  rel('and its p', 2 * V.tUpper(1.0294, dfE), 0.3057, 1e-3, 'the published .31');
+  /* the regression F from R² alone, which is how a table with no SS column is read */
+  const R2 = ssG / ssT;
+  eq('the overall F recovered from R² alone', (R2 / 2) / ((1 - R2) / dfE), F, 1e-9,
+     'F = (R²/p) / ((1 − R²)/(n − p − 1)) with p = 2 dummies');
+  eq('adjusted R² on two dummies', 1 - (1 - R2) * (N - 1) / (N - 2 - 1), 0.168883, 5e-6,
+     '1 − (1 − R²)(n − 1)/(n − p − 1)');
+} catch (e) {
+  failures.push({ section, label: 'the dummy-regression demonstration could not be checked',
+    got: String(e.message), want: 'a readable assets/data/study-methods.csv', tol: 0, err: NaN,
+    src: 'stats-2/categorical-predictors-and-dummy-coding' });
+}
+
+
+/* ============================================================
    Report
    ============================================================ */
 const line = '─'.repeat(60);

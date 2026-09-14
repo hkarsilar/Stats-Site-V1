@@ -95,6 +95,32 @@
         <h2>Choosing the reference</h2>
         <p>Switch the reference group above and watch the coefficients change, but notice that the <em>predicted group means stay identical</em>. The reference is just the baseline you measure everything against, so pick the one that makes your comparisons most meaningful: the control condition, the placebo, the "standard" category. The model is the same either way; only the story the coefficients tell changes.</p>
 
+        <h2>The same analysis twice, on real data</h2>
+        <p>The reveal above is easy to assert and better to watch happen, so here it is end to end. <a href="../../datasets.html#study">study-methods.csv</a> holds 105 students, 35 in each of three revision conditions, with an exam score apiece. <a href="../../stats-2/one-way-anova/">Section 2.2</a> runs it as a one-way ANOVA. This is the same file as a regression.</p>
+        <p>Three groups means two dummies. With rereading as the reference, <em>d</em>₁ is 1 for a flashcards student and 0 for everyone else, and <em>d</em>₂ is 1 for a practice-testing student and 0 for everyone else. A rereading student is 0 on both, which is how the reference group gets represented without a column of its own. Fit <em>ŷ</em> = <em>b</em>₀ + <em>b</em>₁<em>d</em>₁ + <em>b</em>₂<em>d</em>₂ and the Coefficients box comes back:</p>
+        <table class="ref-table">
+          <thead><tr><th>Model</th><th>B</th><th>Std. Error</th><th><em>t</em></th><th>Sig.</th><th>95% CI</th></tr></thead>
+          <tbody>
+            <tr><td>(Constant)</td><td>66.143</td><td>1.649</td><td>40.12</td><td>&lt;.001</td><td>[62.87, 69.41]</td></tr>
+            <tr><td><em>d</em>₁ flashcards</td><td>8.286</td><td>2.331</td><td>3.55</td><td>&lt;.001</td><td>[3.66, 12.91]</td></tr>
+            <tr><td><em>d</em>₂ practice testing</td><td>10.686</td><td>2.331</td><td>4.58</td><td>&lt;.001</td><td>[6.06, 15.31]</td></tr>
+          </tbody>
+        </table>
+        <p>Every number in that table is a group mean in disguise. The group means are 66.143, 74.429 and 76.829. The intercept is the rereading mean exactly. 8.286 is 74.429 − 66.143 and 10.686 is 76.829 − 66.143, so each coefficient is a distance from the reference and the predicted mean for a group is the intercept plus its own coefficient. The two standard errors are identical because the groups are the same size, and both are √(MS<sub>E</sub>(1/35 + 1/35)) = 2.331, which is the <a href="../../stats-2/post-hoc-tests/">pooled pairwise comparison</a> of Section 2.3 written in regression notation.</p>
+        <p>Above the coefficients sits the model's ANOVA table:</p>
+        <table class="ref-table">
+          <thead><tr><th>Source</th><th>SS</th><th>df</th><th>MS</th><th><em>F</em></th><th>Sig.</th></tr></thead>
+          <tbody>
+            <tr><td>Regression</td><td>2200.305</td><td>2</td><td>1100.152</td><td>11.57</td><td>&lt;.001</td></tr>
+            <tr><td>Residual</td><td>9701.829</td><td>102</td><td>95.116</td><td></td><td></td></tr>
+            <tr><td>Total</td><td>11902.133</td><td>104</td><td></td><td></td><td></td></tr>
+          </tbody>
+        </table>
+        <p>That is the one-way ANOVA table, cell for cell. The regression sum of squares is SS<sub>G</sub>, the residual sum of squares is SS<sub>E</sub>, the two df are <em>I</em> − 1 and <em>N</em> − <em>I</em>, and <em>F</em>(2, 102) = 11.57, <em>p</em> &lt; .001 is the number Section 2.2 reports on this same file. R² = .185 is η². The residual standard error √95.116 = 9.753 is s<sub>p</sub>, the pooled SD every follow-up comparison borrows. Nothing has been approximated; it is one analysis with two output layouts.</p>
+        <p>The regression layout adds two things and withholds one. It adds a confidence interval on every difference for free, so flashcards beat rereading by somewhere between 3.66 and 12.91 points rather than merely by a significant amount. It adds a <em>t</em> per dummy, which is the pairwise comparison of that group against the reference on <em>N</em> − <em>I</em> degrees of freedom. What it withholds is the third comparison: no row in the table compares flashcards with practice testing, because neither of them is the reference. That gap is 2.40 points, <em>t</em>(102) = 1.03, <em>p</em> = .31, and you reach it by refitting with a different reference or through <a href="../../stats-2/post-hoc-tests/">a contrast</a>. The <em>F</em> test has not overlooked that comparison; it simply never names any comparison at all.</p>
+        <h3>Why the third dummy has to go</h3>
+        <p>Add <em>d</em>₃, flagging rereading, and the model does not degrade gracefully. For every student in the file <em>d</em>₁ + <em>d</em>₂ + <em>d</em>₃ = 1, and the intercept is itself a column of 1s, so the four columns are exactly linearly dependent. This is <a href="../../stats-2/multicollinearity-and-variable-selection/">perfect collinearity</a>, and it is not a matter of the estimates becoming shaky: infinitely many sets of coefficients fit these data identically well, and nothing in the arithmetic can pick one. Software responds by dropping a column and fitting the model without it, with a blank row or a footnote if you are lucky. That is the dummy variable trap, and <em>k</em> − 1 is the rule that keeps you out of it.</p>
+
         <h2>The other coding scheme you'll meet</h2>
         <p>Dummy coding (software often calls it <strong>treatment coding</strong>, and it is R's default) is not the only way to turn groups into numbers. <strong>Effect coding</strong> uses −1, 0 and 1 instead of 0 and 1, and it moves the baseline: the intercept becomes the <em>grand mean</em> of all groups rather than one group's mean, and each coefficient becomes that group's distance from the grand mean rather than from a reference. Both schemes fit the identical model and give the identical predictions and R²; they differ only in what the individual coefficients mean. The distinction starts to matter once you add <a href="../../stats-2/interactions-in-regression/">an interaction</a>, because under dummy coding the lower-order terms describe the reference group rather than an average, which is the single most common misreading of a factorial regression.</p>
 

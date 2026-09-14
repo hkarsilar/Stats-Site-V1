@@ -141,7 +141,7 @@
           <li><a href="#exam-style"><span class="t">📝 Exam-style · A Stats 1 midterm</span><br><span class="m">8 problems · §1.1 to §1.12, worked off the printed tables</span></a></li>
           <li><a href="#stats-2"><span class="t">🔗 Stats 2 · Groups &amp; relationships</span><br><span class="m">21 problems · ANOVA → contrasts → factorial → regression → rank tests</span></a></li>
           <li><a href="#stats-2-exam"><span class="t">📝 Exam-style · A Stats 2 midterm</span><br><span class="m">8 problems · §2.1 to §2.5, tables completed and read backwards</span></a></li>
-          <li><a href="#regression"><span class="t">📐 Regression · Several predictors</span><br><span class="m">8 problems · multiple regression → missing data</span></a></li>
+          <li><a href="#regression"><span class="t">📐 Regression · Several predictors</span><br><span class="m">11 problems · multiple regression → omitted-variable bias → missing data</span></a></li>
           <li><a href="#advanced"><span class="t">🎲 Advanced · Modern methods</span><br><span class="m">7 problems · Bayes → model comparison</span></a></li>
           <li><a href="#toolkit"><span class="t">🔍 Research Toolkit · Spot the problem</span><br><span class="m">6 problems · design, sampling, ethics, writing</span></a></li>
         </ul>
@@ -4183,7 +4183,7 @@
                   <span class="pb-note">Both values sit near the middle of their observed ranges, which is the only region where a prediction is safe.</span>
                 </li>
                 <li><span class="pb-lbl">Adjusted R² and the intercept</span>
-                  <span class="pb-math">adj <em>R</em>² = 1 − (1 − <em>R</em>²)(n − 1)/(n − k − 1)</span>
+                  <span class="pb-math">adj <em>R</em>² = 1 − (1 − <em>R</em>²)(n − 1)/(n − p − 1)</span>
                   <span class="pb-math">= 1 − (.66)(119/117) = 1 − .671 = .329 ≈ .33</span>
                   <span class="pb-note">Barely below <em>R</em>², because two predictors is a cheap model at <em>n</em> = 120. The intercept of 29.57 is the predicted score for a student who studies zero hours a week and sleeps zero hours a night. No such student exists in the data, and the model has no information about that corner of the space, so the number is an artifact of where the plane happens to cross the axis.</span>
                 </li>
@@ -4601,6 +4601,177 @@
               <p class="pb-ref">From <a href="stats-3/missing-data/">§3.14 Missing Data</a> · the reporting standard belongs to <a href="writing/writing-results/">§3.4 From Output to Results</a>.</p>
             </details>
           </article>
+
+          <!-- ---------- 3.9 (P93) ----------
+               verify: node -e with viz.js
+                 SE(b1) = s/√Sxx = 6.40/√74.8 = 6.40/8.6487 = 0.7400  ✓ matches the printed SE
+                 t = 1.86/0.74 = 2.5135 on df = 42 − 2 = 40 ; 2*V.tUpper(2.5135,40) = .0161
+                 t*(40) at .025 = V.tInv(0.025,40) = 2.0211
+                 CI = 1.86 ± 2.0211(0.74) = 1.86 ± 1.4956 = [0.3644, 3.3556]
+                 F = t² = 6.3178 on (1, 40), V.fUpper = .0161 — the same p
+                 b0 = 64.2 − 1.86(6.9) = 51.366
+                 SE(b0) = 6.40√(1/42 + 6.9²/74.8) = 6.40√0.660307 = 5.2006 ; t0 = 9.877
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p3-9"><span class="pb-num">71</span>One slope, four columns</h3>
+              <span class="pb-chip warmup">Warm-up</span>
+            </div>
+            <p class="pb-scenario">Forty-two first-year students record how many hours they slept the night before an exam, and their exam score out of 100 is regressed on that. Here is the whole printout, which is less than it looks.</p>
+            <div class="pb-given">
+              <span class="lbl">What the output says</span>
+              <ul>
+                <li><em>n</em> = 42 students; mean sleep <em>x̄</em> = 6.9 hours, mean score <em>ȳ</em> = 64.2</li>
+                <li>Coefficient on sleep: <em>B</em> = 1.86, Std. Error = 0.74</li>
+                <li>Std. Error of the Estimate (that is, <em>s</em>) = 6.40</li>
+                <li>Σ(<em>x</em> − <em>x̄</em>)² = 74.8</li>
+                <li>Critical values: <em>t</em>*(40) = 2.021 at 95%, <em>t</em>*(40) = 1.684 one-tailed at .05</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Confirm the printed standard error from <em>s</em> and Σ(<em>x</em> − <em>x̄</em>)², and give the degrees of freedom.</li>
+              <li>Test H₀: β₁ = 0 and build the 95% confidence interval for the slope.</li>
+              <li>What <em>F</em> will the ANOVA table above these coefficients print, and what is its <em>p</em>?</li>
+              <li>Work out the intercept and its standard error, then say why nobody reports that row.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Where the standard error comes from</span>
+                  <span class="pb-math">SE(<em>b</em>₁) = <em>s</em> / √Σ(<em>x</em> − <em>x̄</em>)² = 6.40 / √74.8 = 6.40 / 8.649 = 0.740</span>
+                  <span class="pb-note">Which is the number the software printed, so the two ingredients really are the only two: the scatter around the line, and how spread out the sleep hours are. Degrees of freedom are <em>n</em> − 2 = 40, because the line spent one on the slope and one on the intercept.</span>
+                </li>
+                <li><span class="pb-lbl">The test and the interval</span>
+                  <span class="pb-math"><em>t</em> = <em>b</em>₁ / SE(<em>b</em>₁) = 1.86 / 0.74 = 2.51</span>
+                  <span class="pb-math">2.51 &gt; <em>t</em>*(40) = 2.021, so reject at α = .05; <em>p</em> = .016</span>
+                  <span class="pb-math">CI: 1.86 ± 2.021(0.74) = 1.86 ± 1.50 = [0.36, 3.36]</span>
+                  <span class="pb-note">An extra hour of sleep goes with somewhere between 0.4 and 3.4 more exam points. The interval misses zero, which is the same verdict the test returned and is never a coincidence. It is also the more useful half of the output, because it says the data are compatible with an effect small enough to be irrelevant and with one worth changing your habits over.</span>
+                </li>
+                <li><span class="pb-lbl">The ANOVA table above it</span>
+                  <span class="pb-math"><em>F</em> = <em>t</em>² = 2.5135² = 6.32 on (1, 40)</span>
+                  <span class="pb-math"><em>p</em> = .016, the same <em>p</em></span>
+                  <span class="pb-note">With one predictor the two tests are one test in two layouts, so the table tells you nothing the coefficient row has not. It starts earning its place once the model holds several predictors and the question becomes whether any of them matter.</span>
+                </li>
+                <li><span class="pb-lbl">The intercept row</span>
+                  <span class="pb-math"><em>b</em>₀ = <em>ȳ</em> − <em>b</em>₁<em>x̄</em> = 64.2 − 1.86(6.9) = 51.37</span>
+                  <span class="pb-math">SE(<em>b</em>₀) = 6.40√(1/42 + 6.9²/74.8) = 6.40√0.6603 = 5.20</span>
+                  <span class="pb-math"><em>t</em>(40) = 51.37 / 5.20 = 9.88, <em>p</em> &lt; .001</span>
+                  <span class="pb-note">Emphatic and pointless. The hypothesis it rejects is that a student who slept zero hours would score zero, and nobody in the data slept anywhere near zero hours. SE(<em>b</em>₀) comes out far larger than SE(<em>b</em>₁), because the <em>x̄</em>²/Σ(<em>x</em> − <em>x̄</em>)² term dominates, because reaching <em>x</em> = 0 means carrying the line almost seven hours beyond the middle of the data. Center sleep hours first and that term vanishes, leaving an intercept that means the score at average sleep, which is worth reporting.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">SE(<em>b</em>₁) = 0.740 on 40 df; <em>t</em> = 2.51, <em>p</em> = .016, 95% CI [0.36, 3.36]; <em>F</em>(1, 40) = 6.32 with the identical <em>p</em>; intercept 51.37 with SE 5.20, a huge <em>t</em> about a question nobody asked.</p>
+              <p class="pb-ref">From <a href="stats-2/inference-for-regression/">§2.7 Inference for Regression</a> · look the criticals up on <a href="tables.html">the printed tables</a>, and write the result with <a href="apa.html?a=regcoef">the APA formatter</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 3.10 (P93) ----------
+               verify: node -e
+                 adj = 1 − (1 − R²)(n − 1)/(n − p − 1)
+                 five predictors : 1 − .69(83/78) = 1 − .73423 = .2658
+                 F = (.31/5)/((.69)/78) = .062/.0088462 = 7.0087 on (5, 78), fUpper = 1.868e-5
+                 eight predictors: 1 − .67(83/75) = 1 − .74147 = .2585
+                 F = (.33/8)/((.67)/75) = .04125/.0089333 = 4.6175 on (8, 75), fUpper = 1.303e-4
+                 R = √.31 = .5568 ; F*(5,78) = 2.332, F*(8,75) = 2.064
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p3-10"><span class="pb-num">72</span>Three more predictors, and the scoreboard falls</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">An analyst fits job satisfaction on five predictors across 84 employees and gets R² = .31. A reviewer asks for three more controls. The bigger model returns R² = .33, and the analyst reports it as the better one.</p>
+            <div class="pb-given">
+              <span class="lbl">The two models</span>
+              <ul>
+                <li>Model 1: <em>n</em> = 84, <em>p</em> = 5 predictors, R² = .31</li>
+                <li>Model 2: <em>n</em> = 84, <em>p</em> = 8 predictors, R² = .33</li>
+                <li>Critical values: <em>F</em>*(5, 78) = 2.33 and <em>F</em>*(8, 75) = 2.06 at α = .05</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Give the degrees of freedom for Model 1 and report its multiple correlation R.</li>
+              <li>Compute the overall <em>F</em> for each model and decide both.</li>
+              <li>Compute adjusted R² for each model. Which one does the evidence favor?</li>
+              <li>The overall <em>F</em> for Model 2 is significant, yet none of its eight coefficients reaches .05. Explain how both can be true.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Degrees of freedom and R</span>
+                  <span class="pb-math">df for every <em>t</em> and for <em>s</em>: <em>n</em> − <em>p</em> − 1 = 84 − 5 − 1 = 78</span>
+                  <span class="pb-math">R = √R² = √.31 = .56</span>
+                  <span class="pb-note">Five predictors plus an intercept is six parameters, so six of the 84 cases are spent before any testing starts. R is the plain correlation between the observed satisfaction scores and the model's own fitted values, which is why it cannot come out negative however many of the five coefficients are.</span>
+                </li>
+                <li><span class="pb-lbl">The overall F</span>
+                  <span class="pb-math">Model 1: <em>F</em> = (.31/5) / (.69/78) = .0620 / .008846 = 7.01 on (5, 78)</span>
+                  <span class="pb-math">7.01 &gt; 2.33, reject; <em>p</em> &lt; .001</span>
+                  <span class="pb-math">Model 2: <em>F</em> = (.33/8) / (.67/75) = .04125 / .008933 = 4.62 on (8, 75)</span>
+                  <span class="pb-math">4.62 &gt; 2.06, reject; <em>p</em> &lt; .001</span>
+                  <span class="pb-note">Both models beat an intercept-only model, and the bigger one does so less emphatically despite explaining more variance, because the <em>F</em> divides the explained share by <em>p</em>. Three predictors that bought two points of R² between them cost a third of the numerator df.</span>
+                </li>
+                <li><span class="pb-lbl">Adjusted R²</span>
+                  <span class="pb-math">adj R² = 1 − (1 − R²)(<em>n</em> − 1)/(<em>n</em> − <em>p</em> − 1)</span>
+                  <span class="pb-math">Model 1: 1 − (.69)(83/78) = 1 − .734 = .266</span>
+                  <span class="pb-math">Model 2: 1 − (.67)(83/75) = 1 − .741 = .259</span>
+                  <span class="pb-note">R² went up and adjusted R² went down, which is the whole argument in two numbers. Plain R² cannot fall when a predictor is added, so it can never answer the question the analyst asked it. The three controls earned less than they cost, and Model 1 is the one to report.</span>
+                </li>
+                <li><span class="pb-lbl">A significant F over a table of nothing</span>
+                  <span class="pb-note">The two tests ask different questions. The <em>F</em> asks whether the eight predictors together explain more than chance, and they plainly do. Each <em>t</em> asks whether its own predictor adds something the other seven have not already said, and if the predictors overlap heavily, the answer for every one of them can be no. That is the classic signature of <a href="stats-2/multicollinearity-and-variable-selection/">multicollinearity</a>, and the next thing to look at is the VIF column rather than the <em>p</em>-values. It is not a contradiction and it is not a mistake in the arithmetic.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Model 1: df 78, R = .56, <em>F</em>(5, 78) = 7.01, adjusted R² = .266. Model 2: <em>F</em>(8, 75) = 4.62, adjusted R² = .259. R² rose and adjusted R² fell, so the three extra controls did not earn their keep.</p>
+              <p class="pb-ref">From <a href="stats-2/multiple-regression/">§2.9 Multiple Regression</a> · the criticals are on <a href="tables.html">the printed tables</a>, and the formulas on <a href="formulas.html">the formula sheet</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 3.11 (P93) ----------
+               verify: arithmetic only — E[b₁] = β₁ + β₂δ
+                 bias = (−1.8)(+0.6) = −1.08
+                 controlled = naive − bias = −0.4 − (−1.08) = +0.68
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p3-11"><span class="pb-num">73</span>Which way are you wrong?</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">Three published coefficients, each fitted without a variable everybody agrees belongs in the model. None of the three teams can measure the missing variable. All three can still say which way their number is wrong, and that is the whole exercise.</p>
+            <div class="pb-given">
+              <span class="lbl">The three studies</span>
+              <ul>
+                <li><strong>A.</strong> Officers per thousand residents predicts recorded crime across 60 districts, coefficient positive. Missing: how much crime each district had before its policing level was set.</li>
+                <li><strong>B.</strong> Class size predicts test scores across 120 schools, coefficient small and negative. Missing: per-pupil funding.</li>
+                <li><strong>C.</strong> Treatment intensity predicts survival across 400 patients, coefficient −0.4. Missing: illness severity at admission.</li>
+                <li>For study C only, a later audit measures severity: β₂ = −1.8 survival points per severity point, and δ = +0.6 severity points per unit of treatment intensity.</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>For each study, give the sign of β₂ and the sign of δ, then the sign of the bias.</li>
+              <li>Say whether each published coefficient is too high or too low, and write the honest one-sentence conclusion for study A.</li>
+              <li>Study C's audit hands you both numbers. Compute the bias and recover the controlled coefficient.</li>
+              <li>One cell of the sign table is unused here. Invent a study that lands in it.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Two signs each</span>
+                  <span class="pb-math">E[<em>b</em>₁] = β₁ + β₂δ, where δ is the slope of the missing variable on the one you kept</span>
+                  <span class="pb-note"><strong>A.</strong> Prior crime raises recorded crime, so β₂ is positive. Districts with more prior crime were given more officers, so δ is positive. Bias is positive. <strong>B.</strong> Funding raises test scores, so β₂ is positive. Better-funded schools run smaller classes, so funding falls as class size rises and δ is negative. Bias is negative. <strong>C.</strong> Severity lowers survival, so β₂ is negative. Sicker patients receive more intensive treatment, so δ is positive. Bias is negative.</span>
+                </li>
+                <li><span class="pb-lbl">Too high or too low</span>
+                  <span class="pb-note">A positive bias means the published number sits too far in the positive direction, so study A's coefficient is too high. Studies B and C both carry a negative bias, so both are too low, which for a negative coefficient means too harsh rather than too small. Study A's honest sentence: adding officers is associated with at most the reported rise in crime, and quite possibly with none of it, because districts were given officers in response to the crime they already had. That sentence costs nothing to write and is worth more than the coefficient.</span>
+                </li>
+                <li><span class="pb-lbl">Study C, with the audit in hand</span>
+                  <span class="pb-math">bias = β₂δ = (−1.8)(+0.6) = −1.08</span>
+                  <span class="pb-math">controlled = naive − bias = −0.4 − (−1.08) = +0.68</span>
+                  <span class="pb-note">Intensive treatment looked mildly harmful and is in fact mildly helpful. The sign reversal was entirely manufactured by the sickest patients receiving the most treatment, which is the shape of confounding by indication and the reason observational treatment effects need a causal argument before they need a <em>p</em>-value.</span>
+                </li>
+                <li><span class="pb-lbl">The fourth cell</span>
+                  <span class="pb-note">Both signs negative, which multiplies to a positive bias. One example: hours of paid work predicts exam score across a cohort, with family wealth left out. Wealth raises exam scores through everything it buys, so β₂ is positive rather than negative, which is the wrong cell. Try instead commuting distance predicting job satisfaction with hours worked omitted: long hours lower satisfaction, so β₂ is negative, and people who commute furthest tend to work shorter days, so δ is negative too. Negative times negative is positive, so the published commuting coefficient is too high and the true damage of a long commute is worse than reported. Any story where both links point the same way downward will do; the point of writing one yourself is that the table is an argument about the world, not a lookup.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">A: (+)(+), positive bias, too high. B: (+)(−), negative bias, too low. C: (−)(+), negative bias, too low; the audit gives a bias of −1.08, so the controlled coefficient is +0.68 and the sign reverses.</p>
+              <p class="pb-ref">From <a href="stats-2/multiple-regression/">§2.9 Multiple Regression</a> · whether a variable belongs in the model at all is <a href="stats-3/causal-dags-and-confounding/">§3.10 Causal DAGs &amp; Confounding</a>.</p>
+            </details>
+          </article>
         </section>
 
 
@@ -4623,7 +4794,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p4-1"><span class="pb-num">71</span>A very good test for a very rare disease</h3>
+              <h3 id="p4-1"><span class="pb-num">74</span>A very good test for a very rare disease</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A screening program offers a blood test for a condition that affects 8 people in every 1,000. A patient tests positive and is told the test is "95% accurate". She would like to know what that means for her.</p>
@@ -4694,7 +4865,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p4-2"><span class="pb-num">72</span>Updating what last quarter told you</h3>
+              <h3 id="p4-2"><span class="pb-num">75</span>Updating what last quarter told you</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A team redesigns the onboarding flow in an app. Last quarter's version had a completion rate they summarize as a Beta(8, 12) prior. The new flow goes out to 60 users and 33 of them finish onboarding.</p>
@@ -4759,7 +4930,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p4-3"><span class="pb-num">73</span>Who is the better witness?</h3>
+              <h3 id="p4-3"><span class="pb-num">76</span>Who is the better witness?</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">In a recognition-memory experiment each participant studies 40 words, then sees those 40 mixed with 40 new ones and says "old" or "new" to each. Three participants produce very different response patterns.</p>
@@ -4826,7 +4997,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p4-4"><span class="pb-num">74</span>Reading a psychometric function</h3>
+              <h3 id="p4-4"><span class="pb-num">77</span>Reading a psychometric function</h3>
               <span class="pb-chip stretch">Stretch</span>
             </div>
             <p class="pb-scenario">In a temporal bisection task, listeners learn a short anchor of 200 ms and a long anchor of 800 ms, then judge probe tones as "short" or "long". A logistic regression of the "long" response on probe duration is fitted separately for quiet and loud probes.</p>
@@ -4889,7 +5060,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p4-5"><span class="pb-num">75</span>Pick the family before you fit</h3>
+              <h3 id="p4-5"><span class="pb-num">78</span>Pick the family before you fit</h3>
               <span class="pb-chip warm">Warm-up</span>
             </div>
             <p class="pb-scenario">A hospital analytics team has five questions and one statistician. Each outcome needs a GLM family and a link before anyone touches the data.</p>
@@ -4957,7 +5128,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p4-6"><span class="pb-num">76</span>The curve that never reaches zero</h3>
+              <h3 id="p4-6"><span class="pb-num">79</span>The curve that never reaches zero</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">Ten patients enter a two-year follow-up study after treatment. The outcome is time to relapse in months. A plus sign marks a patient who was still relapse-free when the study or their participation ended.</p>
@@ -5026,7 +5197,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p4-7"><span class="pb-num">77</span>Four models, one dataset</h3>
+              <h3 id="p4-7"><span class="pb-num">80</span>Four models, one dataset</h3>
               <span class="pb-chip stretch">Stretch</span>
             </div>
             <p class="pb-scenario">Working with the same 120 students from <a href="problems.html#p3-1">Problem 63</a>, an analyst fits four nested models of exam performance and asks which one to report. The most complex model has the best log-likelihood, and she suspects that is not the end of the argument.</p>
@@ -5102,7 +5273,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-1"><span class="pb-num">78</span>The module that raises exam scores</h3>
+              <h3 id="p5-1"><span class="pb-num">81</span>The module that raises exam scores</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A university builds an optional online tutorial module for its introductory statistics course. Usage is tracked automatically. At the end of term the learning-technology team compares final exam marks and issues a press release.</p>
@@ -5151,7 +5322,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-2"><span class="pb-num">79</span>Four thousand responses and no answer</h3>
+              <h3 id="p5-2"><span class="pb-num">82</span>Four thousand responses and no answer</h3>
               <span class="pb-chip warm">Warm-up</span>
             </div>
             <p class="pb-scenario">A city council is deciding whether to pedestrianize the main square. It posts a survey link on the council website and its social media accounts, leaves it open for six weeks, and reports the result to the planning committee.</p>
@@ -5204,7 +5375,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-3"><span class="pb-num">80</span>Four questionable practices in one paragraph</h3>
+              <h3 id="p5-3"><span class="pb-num">83</span>Four questionable practices in one paragraph</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">You are reviewing a manuscript for a journal. The methods and results read as follows. Nothing in it is fabricated, and every number is real. It should still not be published in this form.</p>
@@ -5256,7 +5427,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-4"><span class="pb-num">81</span>The cleaning log that broke the data</h3>
+              <h3 id="p5-4"><span class="pb-num">84</span>The cleaning log that broke the data</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A research assistant hands you a cleaned dataset for a two-wave wellbeing study and, to their considerable credit, an actual log of what they did to it. Reading the log is faster than discovering each problem later.</p>
@@ -5328,7 +5499,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-5"><span class="pb-num">82</span>The figure that made 0.27 look enormous</h3>
+              <h3 id="p5-5"><span class="pb-num">85</span>The figure that made 0.27 look enormous</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A retail consultancy sends its client a one-page summary of a store-layout trial. The figure is the whole page, and you have been asked whether the client should spend two million on the rollout.</p>
@@ -5391,7 +5562,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-6"><span class="pb-num">83</span>Three things wrong with one sentence</h3>
+              <h3 id="p5-6"><span class="pb-num">86</span>Three things wrong with one sentence</h3>
               <span class="pb-chip warm">Warm-up</span>
             </div>
             <p class="pb-scenario">A results paragraph comes back from a co-author. The analysis is sound and every number was computed correctly, but the sentence breaks exactly three APA 7 formatting rules. Find them, then write the version that goes in the paper.</p>

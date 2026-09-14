@@ -58,22 +58,30 @@
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="mrviz">
           <p class="viz-title">🎮 The Power of "Controlling For"</p>
-          <p class="viz-sub">Outcome vs. x₁, with a lurking second variable shown by color (two groups). The gray line ignores it; the colored lines hold it constant. Increase the confounding and watch them disagree.</p>
+          <p class="viz-sub">Outcome vs. x₁, with a lurking second variable shown by color (two groups). The gray line ignores it; the colored lines are the model that holds it constant. The two sliders move the two halves of the bias separately: how much x₂ shifts the outcome, and how far it pulls the groups apart on x₁.</p>
 
           <div class="controls">
-            <div class="control" style="flex:1;min-width:280px">
-              <label>Strength of the confounder (x₂) <span class="val" id="conf-val">0.7</span></label>
-              <input type="range" id="conf-range" min="0" max="100" step="1" value="70" style="width:100%" />
+            <div class="control" style="flex:1;min-width:min(300px,100%)">
+              <label>x₂&#39;s own effect on y (β₂) <span class="val" id="b2-val">+54</span></label>
+              <input type="range" id="b2-range" min="-60" max="60" step="2" value="54" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:min(300px,100%)">
+              <label>How far x₂ pulls the groups apart on x₁ <span class="val" id="sep-val">+34</span></label>
+              <input type="range" id="sep-range" min="-40" max="40" step="2" value="34" style="width:100%" />
             </div>
             <div class="control"><button class="btn btn-ghost btn-sm" id="resample">New sample</button></div>
           </div>
 
-          <canvas id="mr-canvas"></canvas>
+          <canvas id="mr-canvas" style="touch-action:auto"></canvas>
 
           <div class="stat-row">
             <div class="stat"><span class="k">Naive slope (ignoring x₂)</span><span class="v" id="stat-naive">—</span></div>
             <div class="stat"><span class="k">Controlled slope (holding x₂ fixed)</span><span class="v" id="stat-ctrl">—</span></div>
-            <div class="stat"><span class="k">Conclusion flips?</span><span class="v" id="stat-flip" style="font-size:1rem">—</span></div>
+            <div class="stat"><span class="k">Naive − controlled</span><span class="v" id="stat-gap">—</span></div>
+            <div class="stat"><span class="k">b₂ (x₂’s effect on y)</span><span class="v" id="stat-b2">—</span></div>
+            <div class="stat"><span class="k"><span style="text-transform:none">δ</span> (x₂ regressed on x₁)</span><span class="v" id="stat-delta">—</span></div>
+            <div class="stat"><span class="k">Bias b₂ × <span style="text-transform:none">δ</span></span><span class="v" id="stat-bias">—</span></div>
+            <div class="stat"><span class="k">What omitting x₂ does</span><span class="v" id="stat-flip" style="font-size:1rem">—</span></div>
           </div>
         </div>
         <!-- ============ /INTERACTIVE ============ -->
@@ -81,15 +89,37 @@
         <p>When the confounder is strong, the naive slope (gray) can point the <em>opposite</em> way from the true within-group effect (colored). The gray line says "higher x₁ goes with higher y"; control for the group and the real relationship is negative. This is <strong>Simpson's paradox</strong>, and it's exactly the kind of mistake multiple regression exists to prevent.</p>
 
         <div class="callout key">
-          <p><strong>The headline idea:</strong> a multiple-regression coefficient answers "what's the effect of <em>this</em> variable, among people who are otherwise alike?" Leaving out an important predictor (an <em>omitted variable</em>) can bias the others — sometimes enough to reverse their sign.</p>
+          <p><strong>The headline idea:</strong> a multiple-regression coefficient answers "what's the effect of <em>this</em> variable, among people who are otherwise alike?" Leaving out an important predictor (an <em>omitted variable</em>) can bias the others, sometimes enough to reverse their sign.</p>
         </div>
 
+        <h2>Omitted-variable bias, and the sign you can work out in advance</h2>
+        <p>"Can bias the others" is vague, and the vagueness is avoidable, because the bias has a formula. Suppose the truth is</p>
+        <p style="text-align:center"><em>y</em> = β₀ + β₁<em>x</em>₁ + β₂<em>x</em>₂ + ε</p>
+        <p>and you fit <em>y</em> on <em>x</em>₁ alone, because <em>x</em>₂ was never measured. Write δ (delta) for the slope you would get by regressing the missing <em>x</em>₂ on the included <em>x</em>₁. Then the coefficient you do get is not estimating β₁:</p>
+        <p style="text-align:center">E[<em>b</em>₁] = β₁ + β₂ · δ</p>
+        <p>Two things read straight off that. The bias is a <em>product</em>, so it vanishes when either factor is zero. A variable that has no effect on the outcome does no damage by being left out, and neither does one that is unrelated to the predictor you kept. Only a variable connected to both ends can bend the estimate, which is why "control for everything you have" is the wrong instinct and picking the controls is a question about <a href="../../stats-3/causal-dags-and-confounding/">causal structure</a>.</p>
+        <p>The second thing is that a product of two signed numbers has a knowable sign. You can often argue both signs from what you know about the subject, without any data at all:</p>
+        <table class="ref-table">
+          <thead><tr><th>β₂: does <em>x</em>₂ raise or lower <em>y</em>?</th><th>δ: does <em>x</em>₂ rise or fall with <em>x</em>₁?</th><th>Bias β₂δ</th><th>So your <em>b</em>₁ is</th></tr></thead>
+          <tbody>
+            <tr><td>raises it (+)</td><td>rises with it (+)</td><td>positive</td><td>too high</td></tr>
+            <tr><td>raises it (+)</td><td>falls with it (−)</td><td>negative</td><td>too low</td></tr>
+            <tr><td>lowers it (−)</td><td>rises with it (+)</td><td>negative</td><td>too low</td></tr>
+            <tr><td>lowers it (−)</td><td>falls with it (−)</td><td>positive</td><td>too high</td></tr>
+          </tbody>
+        </table>
+        <p>"Too high" means too far in the positive direction, which for a negative β₁ means closer to zero, or past it.</p>
+        <p>In practice the argument usually takes this shape. A researcher regresses monthly wage on years of education and reports <em>b</em>₁ = €156 per year of schooling. Motivation was never measured, and nobody in the room doubts it belongs in the model: more motivated people earn more, so β₂ is positive, and more motivated people stay in education longer, so δ is positive too. Positive times positive is positive, so €156 is too high, and the honest sentence in the discussion is that a year of education is worth <em>at most</em> about €156 a month, probably less.</p>
+        <p>Suppose a later study does measure motivation, on a 1-to-10 scale, and can put numbers on both halves. Holding motivation constant, education is worth €120 a year. Motivation itself is worth β₂ = €90 a point. Regressing motivation on education gives δ = 0.4 points per year of schooling. The arithmetic closes: 120 + 90 × 0.4 = 156. The first study was not wrong about its own number, only about what the number meant, and it had enough information to say which way it was wrong.</p>
+        <p>The widget above is that identity moving. Its two sliders set the two halves separately, and the readouts print the estimated β₂, the δ between the two predictors, their product, and the gap between the naive and controlled slopes. The last two agree to the last decimal every time, because in a sample the relation is an algebraic identity rather than a statement about long-run averages. Drag either slider and watch the controlled slope: it does not move at all. Omitting a variable does not add noise to your answer, it relocates the answer, which is exactly why collecting more data cannot rescue it.</p>
+
         <h2>Reading the whole model</h2>
-        <ul>
-          <li>Each <strong>coefficient</strong> is a partial effect, holding the other predictors constant.</li>
-          <li><strong>R²</strong> now reports how much of the outcome's variation <em>all</em> the predictors explain together.</li>
-          <li>Each coefficient gets its own <strong>p-value</strong>, testing whether that predictor adds anything beyond the others.</li>
-        </ul>
+        <p>With <em>p</em> predictors and an intercept the model spends <em>p</em> + 1 parameters, so everything that ran on <em>n</em> − 2 in a one-predictor fit now runs on <strong><em>n</em> − <em>p</em> − 1</strong>. The residual standard error divides by it, every coefficient's <em>t</em> = <em>b</em>/SE(<em>b</em>) is judged against it, and every confidence interval takes its <em>t</em>* from it. <a href="../../stats-2/inference-for-regression/">Section 2.7</a>'s <em>n</em> − 2 is the case <em>p</em> = 1. Write the df out on any table you read: a model fitted on 200 people with six predictors is tested on 193, not on 199.</p>
+        <p>Each coefficient is a partial effect, holding the other predictors constant, and its <em>p</em>-value asks whether that predictor adds anything the others have not already said. R² now reports how much of the outcome's variation all the predictors explain together.</p>
+        <p>Above the coefficients sits one test of the model as a whole, whose null hypothesis is that every slope is zero at once:</p>
+        <p style="text-align:center"><em>F</em> = (R²/<em>p</em>) / ((1 − R²)/(<em>n</em> − <em>p</em> − 1)),&nbsp;&nbsp;&nbsp; on <em>F</em>(<em>p</em>, <em>n</em> − <em>p</em> − 1)</p>
+        <p>Rejecting it says at least one predictor earns its place, and never which one. That is worth holding onto, because a significant <em>F</em> sitting above a table where no single coefficient reaches .05 is a real and fairly common output rather than a contradiction: it usually means the predictors overlap so much that no one of them is distinguishable on its own, which is <a href="../../stats-2/multicollinearity-and-variable-selection/">multicollinearity</a>. The mirror case, a nonsignificant <em>F</em> with a respectable R², usually means the model is spending degrees of freedom on predictors that are not paying for themselves.</p>
+        <p>Software prints one more number beside R² and labels it R. The <strong>multiple correlation</strong> is just √R², and it has a plain meaning: it is the ordinary correlation between the observed <em>y</em> and the model's own fitted values <em>ŷ</em>. That is a useful way to picture what a many-predictor model does, since it folds every predictor into a single prediction and leaves you with a one-variable problem again. Because <em>ŷ</em> is built to point the same way as <em>y</em>, R never comes out negative, however many of the coefficients inside it are negative.</p>
 
         <!-- ============ INTERACTIVE 2 ============ -->
         <div class="viz" id="mrviz2">
@@ -114,7 +144,15 @@
         </div>
         <!-- ============ /INTERACTIVE 2 ============ -->
 
-        <p>Plain R² is a ratchet: it can only go up, because adding a column never hurts the best in-sample fit, even if that column is random noise. <strong>Adjusted R²</strong> charges a toll for every predictor, so it only rises when a variable earns its keep. That's why it's the fairer scoreboard for comparing models of different sizes, and why chasing a high R² by piling on predictors is a trap. When the comparison really matters, <a href="../../stats-2/model-comparison/">model comparison</a> has sharper tools than either number.</p>
+        <p>Plain R² is a ratchet: it can only go up, because adding a column never hurts the best in-sample fit, even if that column is random noise. <strong>Adjusted R²</strong> charges rent for every predictor, so it only rises when a variable earns its keep:</p>
+        <p style="text-align:center">adjusted R² = 1 − (1 − R²) · (<em>n</em> − 1)/(<em>n</em> − <em>p</em> − 1)</p>
+        <p>The penalty is visible in that fraction. It is always greater than 1 and it grows as <em>p</em> grows, so it inflates the unexplained share before the subtraction, and a predictor that explains nothing leaves R² where it was while the penalty climbs past it. That is the one thing plain R² can never do, and it is why adjusted R² can fall and can even go negative. That's why it's the fairer scoreboard for comparing models of different sizes, and why chasing a high R² by piling on predictors is a trap. When the comparison really matters, <a href="../../stats-2/model-comparison/">model comparison</a> has sharper tools than either number.</p>
+
+        <h2>One continuous predictor and one dummy</h2>
+        <p>The commonest model in a real report mixes kinds: something measured and something categorical. Predict grip strength from height in centimeters and from sex, coded 0 for one group and 1 for the other, and the fit is</p>
+        <p style="text-align:center"><em>ŷ</em> = <em>b</em>₀ + <em>b</em>₁·height + <em>b</em>₂·sex</p>
+        <p>Both coefficients are read the same "all else equal" way, and the two sentences come out sounding different only because the predictors are different kinds of thing. <em>b</em>₁ says that holding sex constant, one more centimeter of height goes with <em>b</em>₁ more units of grip strength, a comparison between two people of the same sex. <em>b</em>₂ says that holding height constant, the group coded 1 averages <em>b</em>₂ units above the group coded 0, a comparison between two people of the same height. Neither sentence is about any particular person; both describe the shape of one fitted surface.</p>
+        <p>Draw it and the surface is two parallel lines, one per group, sitting <em>b</em>₂ apart. Parallel is an assumption rather than a finding, because this model has no way of letting height matter more in one group than in the other even if it does. Letting it differ is what <a href="../../stats-2/interactions-in-regression/">an interaction</a> buys, at the cost of one more coefficient. The coding itself, including what to do with three groups or twenty, is <a href="../../stats-2/categorical-predictors-and-dummy-coding/">Section 2.10</a>.</p>
 
         <h2>Putting the predictors on one scale</h2>
         <p>Each <em>b</em> is measured in the units of its own predictor, so their sizes say nothing about which predictor matters more. Weekly study hours and nightly sleep hours are both "hours" and still aren't comparable: study time varies enormously between students, sleep barely at all. The standard repair is the <strong>standardized coefficient</strong>, written β:</p>
@@ -130,6 +168,8 @@
         </div>
 
         <p class="pb-xref"><a href="../../problems.html#p3-1">Problem 63 of the practice problems</a> takes a two-predictor model whose raw coefficients point one way and whose standardized coefficients point the other, and asks which one a journalist should have quoted.</p>
+
+        <p class="pb-xref"><a href="../../problems.html#p3-10">Problem 72</a> gives you two nested models and asks for the df, the multiple correlation, the overall <em>F</em> and both adjusted R² values, in a case where R² rises and adjusted R² falls. <a href="../../problems.html#p3-11">Problem 73</a> is the sign table on three published coefficients, none of whose authors can measure the variable they left out.</p>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
@@ -163,22 +203,50 @@
   <script src="../../assets/js/site.js"></script>
   <script src="../../assets/js/viz.js"></script>
 
-  <!-- ============ controlling-for visualization ============ -->
+  <!-- ============ controlling-for visualization ============
+       Presets (P93): ?b2=<-60..60>   x₂'s own effect on y (β₂)
+                      ?sep=<-40..40>  how far x₂ pulls the groups apart on x₁
+       δ is a READOUT, not a control: with a 0/1 confounder it is fixed by the
+       separation and the spread of x₁ together, so a ?delta= that disagreed
+       with the printed number would be worse than none.
+
+       Frozen noise: each point keeps a fixed within-group offset and error, so
+       the sliders slide the SAME two clouds instead of scattering new points.
+       "New sample" reseeds.
+
+       The arithmetic is the omitted-variable identity, exact in a sample and
+       not merely in expectation: regress y on x₁ and x₂ for b₁ and b₂, regress
+       x₂ on x₁ for δ, and the simple regression of y on x₁ alone returns
+       b₁ + b₂δ to machine precision. math-check section 17 asserts it.
+  -->
   <script>
   (function () {
     "use strict";
-    var conf = 0.7, groups = [[], []], WITHIN = -0.6;
-    var LO = 10, HI = 90;
-    var canvas = document.getElementById("mr-canvas"), ctx, W = 0, H = 280, pad = 26;
+    var B2 = 54, SEP = 34, WITHIN = -0.6, NPG = 26;
+    var groups = [[], []];
+    var canvas = document.getElementById("mr-canvas"), ctx, W = 0, H = 280, pad = 30;
     var COL = [ "#6366f1", "#f97316" ];
+    var XLO = 10, XHI = 90, YLO = 10, YHI = 90;
 
-    /* Frozen noise: each point keeps a fixed within-group offset and error,
-       so the confounding slider slides the SAME two clouds apart or together
-       instead of scattering new points. "New data" reseeds. */
     var U = [], E = [];
-    function seed() {
+
+    /* Frozen pools (P93). This widget drew a fresh sample on every page load
+       until now, so no two visits showed the same picture and nothing about
+       its boot state could be asserted. These are one sample, kept: 26
+       within-group offsets and 26 errors per group, chosen so the controlled
+       slope lands on the model's own -0.60 and b2 on the slider's own 54,
+       which is what makes the identity legible on screen. "New sample" still
+       draws live ones. math-check section 17 reads the boot state before any
+       parameter is applied. */
+    var U0 = [-0.24, 0.69, 0.78, 0.45, 0.54, -0.73, 0.23, 0.92, -0.74, 0.92, -0.79, -0.87, -0.06, 0.8, 0.07, -0.05, -0.18, 0.35, 0.43, -0.07, 0, -0.93, 0.65, 0.1, -0.72, -0.63];
+    var U1 = [-0.42, 0.96, -0.13, -0.84, -0.49, -0.2, 0.24, -0.78, -0.41, 0.32, 0.56, 0.75, -0.2, -0.46, -0.83, -0.71, -0.17, -0.75, 0.42, -0.54, -0.31, -0.38, -0.73, -0.48, -0.47, -0.5];
+    var E0 = [0.41, -0.69, -0.4, 1.02, 0.06, -0.45, 1.36, -1.6, -1.26, -0.68, 1.64, -1.21, -0.03, 1.06, 0.32, -0.62, -0.47, 2.12, 1.23, 0.73, -2.17, 1.63, -0.31, -0.25, 1.69, -2.55];
+    var E1 = [-0.55, 0.44, 0.16, -0.21, 1.21, -0.56, 1.31, -0.93, 1.88, 0.5, -0.85, -0.25, 1.15, 0.16, -0.33, 0.86, -0.54, -1.24, -1.03, 0.98, -2.07, -0.14, -1.19, 0.41, 0.39, 1.03];
+
+    function seed() { U = [U0.slice(), U1.slice()]; E = [E0.slice(), E1.slice()]; }
+    function draw() {
       U = [[], []]; E = [[], []];
-      for (var g = 0; g < 2; g++) for (var i = 0; i < 26; i++) {
+      for (var g = 0; g < 2; g++) for (var i = 0; i < NPG; i++) {
         U[g].push(Math.random() * 2 - 1);
         E[g].push(VIZ.randn());
       }
@@ -186,61 +254,119 @@
     function gen() {
       groups = [[], []];
       for (var g = 0; g < 2; g++) {
-        var x1mean = 50 + (g - 0.5) * 2 * conf * 24;
-        var baseY = 50 + (g - 0.5) * 2 * conf * 24;
-        for (var i = 0; i < 26; i++) {
+        var x1mean = 50 + (g - 0.5) * SEP;
+        for (var i = 0; i < NPG; i++) {
           var x1 = x1mean + U[g][i] * 13;
-          var y = baseY + WITHIN * (x1 - x1mean) + 4 * E[g][i];
-          groups[g].push({ x: x1, y: y });
+          groups[g].push({ x: x1, y: 50 + WITHIN * (x1 - 50) + B2 * (g - 0.5) + 4 * E[g][i], g: g });
         }
       }
       update();
     }
-    function reseed() { seed(); gen(); }
-    function slope(pts) {
-      var mx = VIZ.mean(pts.map(function (p) { return p.x; })), my = VIZ.mean(pts.map(function (p) { return p.y; }));
-      var sxy = 0, sxx = 0; pts.forEach(function (p) { sxy += (p.x - mx) * (p.y - my); sxx += (p.x - mx) * (p.x - mx); });
-      return { b: sxy / sxx, mx: mx, my: my };
+    function reseed() { draw(); gen(); }
+
+    /* y on x₁ alone, y on (x₁, x₂), and x₂ on x₁ — all from the same sums */
+    function analyze() {
+      var all = groups[0].concat(groups[1]), n = all.length, i;
+      var mx = 0, mg = 0, my = 0;
+      for (i = 0; i < n; i++) { mx += all[i].x; mg += all[i].g; my += all[i].y; }
+      mx /= n; mg /= n; my /= n;
+      var Sxx = 0, Sgg = 0, Sxg = 0, Sxy = 0, Sgy = 0;
+      for (i = 0; i < n; i++) {
+        var dx = all[i].x - mx, dg = all[i].g - mg, dy = all[i].y - my;
+        Sxx += dx * dx; Sgg += dg * dg; Sxg += dx * dg; Sxy += dx * dy; Sgy += dg * dy;
+      }
+      var D = Sxx * Sgg - Sxg * Sxg;
+      var naive = Sxx ? Sxy / Sxx : 0;
+      var b1 = D ? (Sgg * Sxy - Sxg * Sgy) / D : naive;
+      var b2 = D ? (Sxx * Sgy - Sxg * Sxy) / D : 0;
+      var delta = Sxx ? Sxg / Sxx : 0;
+      return {
+        naive: naive, naiveInt: my - naive * mx,
+        b1: b1, b2: b2, delta: delta, bias: b2 * delta,
+        int0: my - b1 * mx - b2 * mg
+      };
     }
+
     function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
-    function vx(x) { return pad + ((x - LO) / (HI - LO)) * (W - 2 * pad); }
-    function vy(y) { return (H - pad) - ((y - LO) / (HI - LO)) * (H - 2 * pad); }
+    function vx(x) { return pad + ((x - XLO) / (XHI - XLO)) * (W - 2 * pad); }
+    function vy(y) { return (H - pad) - ((y - YLO) / (YHI - YLO)) * (H - 2 * pad); }
+
+    function scale(a) {
+      var xs = [], ys = [], i;
+      for (i = 0; i < groups[0].length + groups[1].length; i++) {
+        var pt = i < groups[0].length ? groups[0][i] : groups[1][i - groups[0].length];
+        xs.push(pt.x); ys.push(pt.y);
+      }
+      XLO = Math.min.apply(null, xs); XHI = Math.max.apply(null, xs);
+      var xpad = (XHI - XLO) * 0.06 || 1; XLO -= xpad; XHI += xpad;
+      // the three lines must fit too, at both ends of the x range
+      [a.naiveInt + a.naive * XLO, a.naiveInt + a.naive * XHI,
+       a.int0 + a.b1 * XLO, a.int0 + a.b1 * XHI,
+       a.int0 + a.b2 + a.b1 * XLO, a.int0 + a.b2 + a.b1 * XHI].forEach(function (v) { ys.push(v); });
+      YLO = Math.min.apply(null, ys); YHI = Math.max.apply(null, ys);
+      var ypad = (YHI - YLO) * 0.08 || 1; YLO -= ypad; YHI += ypad;
+    }
+
+    function verdict(a) {
+      if (Math.abs(a.bias) < 0.1) return "next to nothing: the product is about zero";
+      var s = (a.b2 > 0 ? "+" : "\u2212") + " \u00d7 " + (a.delta > 0 ? "+" : "\u2212");
+      var dir = a.bias > 0 ? "overstates" : "understates";
+      var flip = (a.naive > 0) !== (a.b1 > 0);
+      return s + ", so it " + dir + " the slope" + (flip ? " and flips its sign" : "");
+    }
+    function signed(v, dp) { return (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(dp); }
 
     function update() {
-      var all = groups[0].concat(groups[1]);
-      var naive = slope(all);
-      var s0 = slope(groups[0]), s1 = slope(groups[1]);
-      var ctrl = (s0.b + s1.b) / 2;
+      var a = analyze();
+      scale(a);
       ctx.clearRect(0, 0, W, H);
       ctx.strokeStyle = VIZ.css("--border"); ctx.strokeRect(pad, pad, W - 2 * pad, H - 2 * pad);
       ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px Inter,sans-serif"; ctx.textAlign = "center";
-      ctx.fillText("x₁ →", W / 2, H - 6); ctx.save(); ctx.translate(12, H / 2); ctx.rotate(-Math.PI / 2); ctx.fillText("outcome y", 0, 0); ctx.restore();
-      // points
-      for (var g = 0; g < 2; g++) { ctx.fillStyle = COL[g]; ctx.globalAlpha = 0.7; groups[g].forEach(function (p) { ctx.beginPath(); ctx.arc(vx(p.x), vy(p.y), 4, 0, 2 * Math.PI); ctx.fill(); }); }
-      ctx.globalAlpha = 1;
-      // within-group lines
-      [s0, s1].forEach(function (s, g) {
-        var xs = groups[g].map(function (p) { return p.x; }), lo = Math.min.apply(null, xs), hi = Math.max.apply(null, xs);
-        ctx.strokeStyle = COL[g]; ctx.lineWidth = 2.5;
-        ctx.beginPath(); ctx.moveTo(vx(lo), vy(s.my + s.b * (lo - s.mx))); ctx.lineTo(vx(hi), vy(s.my + s.b * (hi - s.mx))); ctx.stroke();
-      });
-      // naive line (gray, dashed)
-      ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([6, 4]); ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.moveTo(vx(LO), vy(naive.my + naive.b * (LO - naive.mx))); ctx.lineTo(vx(HI), vy(naive.my + naive.b * (HI - naive.mx))); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillText("x\u2081 \u2192", W / 2, H - 6);
+      ctx.save(); ctx.translate(12, H / 2); ctx.rotate(-Math.PI / 2); ctx.fillText("outcome y", 0, 0); ctx.restore();
 
-      document.getElementById("conf-val").textContent = conf.toFixed(1);
-      document.getElementById("stat-naive").textContent = (naive.b >= 0 ? "+" : "") + naive.b.toFixed(2);
-      document.getElementById("stat-ctrl").textContent = (ctrl >= 0 ? "+" : "") + ctrl.toFixed(2);
-      var flip = document.getElementById("stat-flip"), flipped = (naive.b > 0) !== (ctrl > 0);
-      flip.textContent = flipped ? "yes — opposite signs!" : "no — same direction";
-      flip.style.color = flipped ? "#f97316" : VIZ.css("--text");
+      for (var g = 0; g < 2; g++) {
+        ctx.fillStyle = COL[g]; ctx.globalAlpha = 0.7;
+        groups[g].forEach(function (pt) { ctx.beginPath(); ctx.arc(vx(pt.x), vy(pt.y), 4, 0, 2 * Math.PI); ctx.fill(); });
+      }
+      ctx.globalAlpha = 1;
+
+      // the fitted model: one common slope, one line per level of x₂
+      for (g = 0; g < 2; g++) {
+        var xs = groups[g].map(function (pt) { return pt.x; });
+        var lo = Math.min.apply(null, xs), hi = Math.max.apply(null, xs);
+        ctx.strokeStyle = COL[g]; ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(vx(lo), vy(a.int0 + a.b2 * g + a.b1 * lo));
+        ctx.lineTo(vx(hi), vy(a.int0 + a.b2 * g + a.b1 * hi));
+        ctx.stroke();
+      }
+      // the naive line, ignoring x₂
+      ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([6, 4]); ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(vx(XLO), vy(a.naiveInt + a.naive * XLO));
+      ctx.lineTo(vx(XHI), vy(a.naiveInt + a.naive * XHI)); ctx.stroke(); ctx.setLineDash([]);
+
+      document.getElementById("b2-val").textContent = signed(B2, 0);
+      document.getElementById("sep-val").textContent = signed(SEP, 0);
+      document.getElementById("stat-naive").textContent = signed(a.naive, 2);
+      document.getElementById("stat-ctrl").textContent = signed(a.b1, 2);
+      document.getElementById("stat-gap").textContent = signed(a.naive - a.b1, 2);
+      document.getElementById("stat-b2").textContent = signed(a.b2, 1);
+      document.getElementById("stat-delta").textContent = signed(a.delta, 4);
+      document.getElementById("stat-bias").textContent = signed(a.bias, 2);
+      var flip = document.getElementById("stat-flip");
+      flip.textContent = verdict(a);
+      flip.style.color = ((a.naive > 0) !== (a.b1 > 0)) ? "#f97316" : VIZ.css("--text");
     }
 
-    document.getElementById("conf-range").addEventListener("input", function () { conf = this.value / 100; gen(); });
+    document.getElementById("b2-range").addEventListener("input", function () { B2 = +this.value; gen(); });
+    document.getElementById("sep-range").addEventListener("input", function () { SEP = +this.value; gen(); });
     document.getElementById("resample").addEventListener("click", reseed);
     window.addEventListener("resize", function () { fit(); update(); });
     VIZ.onTheme(update);
-    fit(); reseed();
+    fit(); seed(); gen();
+
+    if (window.SC && SC.preset) SC.preset({ b2: "#b2-range", sep: "#sep-range" });
   })();
   </script>
 

@@ -268,6 +268,11 @@
               <td><code>?spread=32&amp;view=centered</code></td>
             </tr>
             <tr>
+              <td><a href="stats-2/multiple-regression/">Multiple Regression</a></td>
+              <td><code>b2</code> &minus;60&ndash;60, the confounder&rsquo;s own effect on the outcome &middot; <code>sep</code> &minus;40&ndash;40, how far it pulls the two groups apart on the predictor</td>
+              <td><code>?b2=54&amp;sep=-34</code></td>
+            </tr>
+            <tr>
               <td><a href="stats-2/logistic-regression/">Logistic Regression</a></td>
               <td><code>x0</code> 20–80 · <code>b1</code> 0.02–0.50</td>
               <td><code>?x0=50&amp;b1=0.5</code></td>
@@ -291,6 +296,7 @@
         </table>
         </div>
         <p>Values outside a listed range are pulled back to the nearest one the control can actually reach, and a value between two slider steps snaps to the nearer step. What you get is always a state a student could have reached by hand.</p>
+        <p>&sect;2.9 is the one place where a quantity the lecture cares about is deliberately <em>not</em> a parameter. The Power of &ldquo;Controlling For&rdquo; prints &delta;, the slope of the confounder on the predictor, because &delta; is half of the omitted-variable bias; but with a two-group confounder &delta; is fixed by the separation and the spread of the predictor together, so it is a readout rather than a control. A <code>?delta=</code> that disagreed with the number on the screen would be worse than none, so the link sets <code>sep</code> and the page reports what &delta; comes out at. The four sign combinations are all reachable: flip either slider through zero.</p>
         <p>A page with more than one interactive shares its parameter names across them, which is deliberate: <code>n</code> means sample size wherever it appears, so one link configures the whole page. Each control still clamps to its own range, so <code>?n=4</code> lands the coverage playground on its minimum of 5 while the Interval Builder beside it takes the 4. Two pairings are worth knowing on §1.12: <code>mu0</code>, <code>sigma</code>, <code>n</code> and <code>xbar</code> drive the numbers-to-z panel and hand the resulting statistic to the p-value explorer below it, and <code>mu1</code>, <code>n</code> and <code>alpha</code> set the Two Curves power picture at the foot of the page. §1.14 is the one exception to the shared-name habit: its two interactives both have a gap slider, but they run on different scales, so the Tug-of-War takes <code>gap</code> and the overlapping-intervals block takes <code>sep</code>.</p>
         <h3>Put your own numbers in the link</h3>
         <p>Four surfaces read a <code>?data=</code> parameter, so a lecture's own batch of numbers can go into a live playground without anyone typing it in front of a class. Two of them take a single column: the Mean vs. Median Playground in <a href="stats-1/describing-data/">§1.3</a>, where the values become the draggable dots and the axis rebuilds around them, and the <a href="descriptives.html">Descriptives calculator</a>, which fills its box and calculates. Separate those numbers with commas, up to 200 of them.</p>
