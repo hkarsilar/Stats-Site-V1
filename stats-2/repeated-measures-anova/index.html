@@ -16,25 +16,48 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Repeated Measures ANOVA — StatsCapybara</title>
-  <meta name="description" content="Measuring the same people repeatedly subtracts out their individual differences — a condition effect that between-subjects designs would drown in noise." />
+  <meta name="description" content="Build the repeated-measures ANOVA table by hand: the subjects row, the covariance identity behind pairing, mixed designs, order effects and sphericity." />
   <link rel="canonical" href="https://statscapybara.com/stats-2/repeated-measures-anova/" />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Repeated Measures ANOVA — StatsCapybara" />
-  <meta property="og:description" content="Measuring the same people repeatedly subtracts out their individual differences — a condition effect that between-subjects designs would drown in noise." />
+  <meta property="og:description" content="Build the repeated-measures ANOVA table by hand: the subjects row, the covariance identity behind pairing, mixed designs, order effects and sphericity." />
   <meta property="og:image" content="https://statscapybara.com/assets/og-stats-2.png" />
   <meta property="og:url" content="https://statscapybara.com/stats-2/repeated-measures-anova/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Repeated Measures ANOVA — StatsCapybara" />
-  <meta name="twitter:description" content="Measuring the same people repeatedly subtracts out their individual differences — a condition effect that between-subjects designs would drown in noise." />
+  <meta name="twitter:description" content="Build the repeated-measures ANOVA table by hand: the subjects row, the covariance identity behind pairing, mixed designs, order effects and sphericity." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-2.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <style>
+    /* The partition block inside the repeated-measures widget: its note line,
+       the caption under the bars, and the two ANOVA tables. */
+    .rm-note { font-size:.78rem; color:var(--text-muted); margin:.55rem 0 .35rem; }
+    .rm-cap { font-size:.82rem; color:var(--text-muted); margin:.35rem 0 .5rem; }
+    .rmtab { border-collapse:collapse; font-size:.84rem; margin:.2rem 0 .6rem; min-width:400px; }
+    .rmtab caption { caption-side:top; text-align:left; font-size:.8rem; font-weight:600;
+      color:var(--text-muted); padding:.1rem 0 .25rem; }
+    .rmtab th, .rmtab td { border:1px solid var(--border); padding:.28rem .55rem;
+      text-align:right; font-family:var(--mono); }
+    .rmtab th { background:var(--surface-2); font-weight:600; color:var(--text-muted);
+      font-family:inherit; }
+    .rmtab th.rm-src, .rmtab td.rm-src { text-align:left; font-family:inherit; font-weight:600; }
+    .rmtab td.rm-sub { padding-left:1.4rem; font-weight:400; color:var(--text-muted); }
+    /* the worked data table in the prose, 8 people by 3 conditions */
+    .rmdata { border-collapse:collapse; font-size:.86rem; margin:.6rem 0 .2rem; min-width:360px; }
+    .rmdata th, .rmdata td { border:1px solid var(--border); padding:.3rem .6rem;
+      text-align:right; font-family:var(--mono); }
+    .rmdata thead th, .rmdata tbody th { background:var(--surface-2); font-weight:600;
+      color:var(--text-muted); font-family:inherit; text-align:left; }
+    .rmdata .rm-marg { color:#f97316; font-weight:700; }
+    .rmdata tr.rm-foot td, .rmdata tr.rm-foot th { border-top:2px solid var(--border); }
+  </style>
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
-  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Repeated Measures ANOVA", "description": "Measuring the same people repeatedly subtracts out their individual differences — a condition effect that between-subjects designs would drown in noise.", "url": "https://statscapybara.com/stats-2/repeated-measures-anova/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: ANOVA & Regression", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Repeated Measures ANOVA", "item": "https://statscapybara.com/stats-2/repeated-measures-anova/"}]}]
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Repeated Measures ANOVA", "description": "Build the repeated-measures ANOVA table by hand: the subjects row, the covariance identity behind pairing, mixed designs, order effects and sphericity.", "url": "https://statscapybara.com/stats-2/repeated-measures-anova/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: ANOVA & Regression", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Repeated Measures ANOVA", "item": "https://statscapybara.com/stats-2/repeated-measures-anova/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is sphericity and why does it matter?", "acceptedAnswer": {"@type": "Answer", "text": "Sphericity is the assumption that the variance of the difference between every pair of conditions is roughly equal. When it fails (typical for time-based measurements, where neighboring timepoints correlate more than distant ones), the F-test's p-values come out too small, inflating false positives. Mauchly's test flags it, and corrections fix it."}}, {"@type": "Question", "name": "Mauchly's test came back non-significant. Does that settle it?", "acceptedAnswer": {"@type": "Answer", "text": "Less than it looks. Mauchly's test is a hypothesis test like any other, so what it reports depends heavily on how many people you have. Simulated at 5,000 samples per row, with three conditions and a real violation of ε = .71, it rejects sphericity 53% of the time at 12 participants, 82% at 20 and 96% at 30. The damage the violation does is meanwhile flat: the uncorrected F ran between 6% and 7% false positives at every sample size tried, and the Greenhouse-Geisser correction returned it to 5% each time. Your sample size governs the test's verdict far more than the problem does. Since the correction costs almost nothing when sphericity does hold, the safer habit is to apply it from the estimated ε and report that value, rather than letting Mauchly decide."}}, {"@type": "Question", "name": "What happens if a participant misses one condition?", "acceptedAnswer": {"@type": "Answer", "text": "A classical repeated-measures ANOVA drops that person from the analysis entirely, in every condition, because the computation needs a complete row per participant. Lose a handful of people that way and you can give back most of the power the design was chosen for. Two respectable routes out: a mixed model, which keeps every observation a person did provide, or a principled treatment of the missing values before the ANOVA. Substituting the person's own mean for the gap is not one of them, since it invents data with zero variance and shrinks your error term."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why does partial eta-squared come out so large in a within-subjects study?", "acceptedAnswer": {"@type": "Answer", "text": "Because its denominator leaves out the very thing the design removed. Partial η² is SSeffect / (SSeffect + SSerror), and in a repeated-measures table the error excludes the subjects row entirely, so the number answers 'how much of what is left once people are accounted for' rather than 'how much of the variation in the data'. The eight people worked through above make the gap concrete: their partial η² is 1296/1352 = .96, while the same effect against the raw total is 1296/11516 = .11. Neither is wrong and they answer different questions, but they are not comparable across designs, which is why a within-subjects study routinely reports an effect size several times the size of a between-subjects one testing the same thing. Say which you computed, report the design beside it, and if you need a number a reader can hold against a between-subjects study, generalized η² is the version built for that comparison: it puts the subjects variance back into the denominator for any factor a participant did not choose."}}, {"@type": "Question", "name": "Mauchly's test came back non-significant. Does that settle it?", "acceptedAnswer": {"@type": "Answer", "text": "Less than it looks. Mauchly's test is a hypothesis test like any other, so what it reports depends heavily on how many people you have. Simulated at 5,000 samples per row, with three conditions and a real violation of ε = .71, it rejects sphericity 53% of the time at 12 participants, 82% at 20 and 96% at 30. The damage the violation does is meanwhile flat: the uncorrected F ran between 6% and 7% false positives at every sample size tried, and the Greenhouse-Geisser correction returned it to 5% each time. Your sample size governs the test's verdict far more than the problem does. Since the correction costs almost nothing when sphericity does hold, the safer habit is to apply it from the estimated ε and report that value, rather than letting Mauchly decide."}}, {"@type": "Question", "name": "What happens if a participant misses one condition?", "acceptedAnswer": {"@type": "Answer", "text": "A classical repeated-measures ANOVA drops that person from the analysis entirely, in every condition, because the computation needs a complete row per participant. Lose a handful of people that way and you can give back most of the power the design was chosen for. Two respectable routes out: a mixed model, which keeps every observation a person did provide, or a principled treatment of the missing values before the ANOVA. Substituting the person's own mean for the gap is not one of them, since it invents data with zero variance and shrinks your error term."}}]}
   </script>
 </head>
 <body data-course="stats-2" data-section="repeated-measures-anova">
@@ -56,14 +79,14 @@
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="rmviz">
           <p class="viz-title">🎮 Removing the Individual Differences</p>
-          <p class="viz-sub">Eight people, three conditions, and each line is one person. Crank up how different people are, then flip to the subject-centered view to see the condition pattern snap into focus.</p>
+          <p class="viz-sub">Eight people, three conditions, and each line is one person. Crank up how different people are, then flip to the subject-centered view to see the condition pattern snap into focus. The bars underneath split the same numbers two ways, once with people ignored and once with their differences named.</p>
 
           <div class="controls">
-            <div class="control" style="flex:1;min-width:220px">
+            <div class="control" style="flex:1;min-width:min(220px,100%)">
               <label>How different people are <span class="val" id="bv-val">22</span></label>
               <input type="range" id="bv-range" min="0" max="32" step="1" value="22" style="width:100%" />
             </div>
-            <div class="control" style="flex:1;min-width:200px">
+            <div class="control" style="flex:1;min-width:min(200px,100%)">
               <label>True condition effect <span class="val" id="ce-val">9</span></label>
               <input type="range" id="ce-range" min="0" max="20" step="1" value="9" style="width:100%" />
             </div>
@@ -75,6 +98,7 @@
               </div>
             </div>
             <div class="control"><button class="btn btn-ghost btn-sm" id="resample">New people</button></div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="rm-reset">Back to the built-in eight</button></div>
           </div>
 
           <canvas id="rm-canvas"></canvas>
@@ -84,13 +108,136 @@
             <div class="stat"><span class="k">Condition spread (the signal)</span><span class="v" id="stat-cs">—</span></div>
             <div class="stat"><span class="k">Condition effect stands out?</span><span class="v" id="stat-vis" style="font-size:1rem">—</span></div>
           </div>
+
+          <p class="rm-note" id="rm-note">&nbsp;</p>
+          <canvas id="rm-bars" style="--viz-ar: 4 / 1" role="img" aria-label="Two stacked bars splitting the same total sum of squares: the top bar is a one-way ANOVA with people ignored, the bottom bar is the repeated-measures partition into conditions, subjects and error."></canvas>
+          <p class="rm-cap" id="rm-cap">&nbsp;</p>
+
+          <div class="hscroll"><table class="rmtab" id="rm-t1"></table></div>
+          <div class="hscroll"><table class="rmtab" id="rm-t2"></table></div>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k"><em>F</em>, repeated measures</span><span class="v" id="rm-f2">—</span></div>
+            <div class="stat"><span class="k"><em>F</em>, people ignored</span><span class="v" id="rm-f1">—</span></div>
+            <div class="stat"><span class="k">Error MS, repeated measures</span><span class="v" id="rm-m2">—</span></div>
+            <div class="stat"><span class="k">Partial eta squared</span><span class="v" id="rm-eta">—</span></div>
+          </div>
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
         <h2>The repeated-measures trick</h2>
         <p>Because every person is measured in every condition, each person serves as their <strong>own control</strong>. The analysis can split off a "subjects" chunk of variation and set it aside, leaving a much cleaner comparison of the conditions. In the <strong>subject-centered</strong> view above, where each person's own average is subtracted out, the tangle of lines collapses into a clear shared pattern. That's exactly what repeated-measures ANOVA does mathematically. It's also the reason the honest picture of a within-subjects result is one line per person rather than a row of bars: the <a href="../../which-chart.html">chart chooser</a> calls that a slopegraph, and <a href="../../writing/tables-and-figures/">Tables &amp; Figures That Don't Lie</a> shows what goes wrong when you draw the bars instead.</p>
         <div class="callout key">
-          <p><strong>The payoff is power.</strong> By removing stable individual differences from the error term, a repeated-measures design can detect a real effect with far fewer participants than a between-subjects design would need. Fewer people, more sensitivity — that's why it's so popular.</p>
+          <p><strong>The payoff is power.</strong> By removing stable individual differences from the error term, a repeated-measures design can detect a real effect with far fewer participants than a between-subjects design would need. Fewer people and more sensitivity, which is why the design is so popular.</p>
+        </div>
+
+        <h2 id="difference-scores">Two conditions first: the difference score</h2>
+        <p>With only two conditions there is no new machinery to learn, because repeated-measures ANOVA is the <a href="../../stats-1/one-sample-and-paired-t-tests/">paired <em>t</em>-test</a> wearing different notation. Write <em>D</em> = <em>X</em><sub>2</sub> &minus; <em>X</em><sub>1</sub> for each person and the whole design collapses into one column of numbers. The null hypothesis becomes μ<sub>D</sub> = 0, and a one-sample <em>t</em> on that column is the test. Two conditions are also where the reason pairing works is easiest to see, so it is worth a small example before the general table.</p>
+        <p>Five people did a reaction-time task twice, once on its own and once with a distracting second task running. Times are in milliseconds, so smaller is faster.</p>
+        <table class="ref-table">
+          <thead>
+            <tr><th>Person</th><th>Single task</th><th>Dual task</th><th><em>D</em></th></tr>
+          </thead>
+          <tbody>
+            <tr><td>A</td><td>492</td><td>496</td><td>4</td></tr>
+            <tr><td>B</td><td>502</td><td>511</td><td>9</td></tr>
+            <tr><td>C</td><td>518</td><td>524</td><td>6</td></tr>
+            <tr><td>D</td><td>534</td><td>542</td><td>8</td></tr>
+            <tr><td>E</td><td>554</td><td>562</td><td>8</td></tr>
+            <tr><td><strong>Mean</strong></td><td><strong>520.0</strong></td><td><strong>527.0</strong></td><td><strong>7.0</strong></td></tr>
+            <tr><td><strong><em>s</em></strong></td><td><strong>24.82</strong></td><td><strong>25.87</strong></td><td><strong>2.00</strong></td></tr>
+          </tbody>
+        </table>
+        <p>The two columns are enormously spread out. People differ by 60 milliseconds or more from each other, and the effect being hunted is seven. Run the ten numbers as two independent samples and the test finds nothing: <em>s</em><sub>p</sub> = 25.35, <em>t</em>(8) = 0.44, <em>p</em> = .67. Run the difference column instead and the same seven milliseconds give <em>t</em>(4) = 7.0/(2.00/√5) = 7.83, <em>p</em> = .001, comfortably past the <em>t</em>* of 2.776. Every person got slower under the distractor, and four of the five by between six and nine milliseconds.</p>
+
+        <h3 id="covariance-identity">Why the difference column is so quiet</h3>
+        <p>The reason sits in one identity from probability, which the course writes out because it is the whole justification for the design:</p>
+        <div class="callout">
+          <p style="font-family:var(--mono)">Var(<em>X</em> &minus; <em>Y</em>) = Var(<em>X</em>) + Var(<em>Y</em>) &minus; 2 &middot; Cov(<em>X</em>, <em>Y</em>)<br />Cov(<em>X</em>, <em>Y</em>) = <em>r</em> &middot; SD(<em>X</em>) &middot; SD(<em>Y</em>)</p>
+        </div>
+        <p>Covariance is the unstandardized cousin of the correlation: the average product of the two variables' deviations from their own means, in whatever units they came in. Divide it by both standard deviations and you get <em>r</em> back. In the table above Var(single) = 616.0, Var(dual) = 669.0 and <em>r</em> = .998, so Cov = .998 × 24.82 × 25.87 = 640.5, and the identity gives</p>
+        <p style="font-family:var(--mono)">616.0 + 669.0 &minus; 2(640.5) = 4.0,</p>
+        <p>which is exactly the 2.00² the difference column shows. That subtraction of twice the covariance is the entire mechanism. When people keep their rank order across conditions the covariance is nearly as large as the two variances, so almost all of the between-person variation cancels and what survives is the part that differs <em>within</em> a person. When the correlation is weak the covariance is small, little cancels, and the paired design has bought you nothing while still costing a degree of freedom. Around <em>r</em> = .5 the two designs break even, which is the number <a href="../../methods/between-vs-within-designs/">between vs within designs</a> works through.</p>
+
+        <h2 id="rm-table">The repeated-measures table</h2>
+        <p>With three or more conditions the difference-score trick runs out, because there is no single difference to take. What replaces it is a partition of the sums of squares that does the same job in a more general way. Start from the <a href="../../stats-2/one-way-anova/#df-ms-f">one-way table</a>, where the total splits into a conditions part and everything else, then split that "everything else" once more:</p>
+        <div class="callout key">
+          <p style="font-family:var(--mono)">SS<sub>total</sub> = SS<sub>conditions</sub> + SS<sub>within subjects</sub><br />SS<sub>within subjects</sub> = SS<sub>subjects</sub> + SS<sub>error</sub></p>
+        </div>
+        <p>The second line is what a between-subjects design cannot do. Measuring each person once leaves no way to tell a stable personal level apart from a random wobble, so both stay inside one error term. Measuring each person <em>k</em> times separates them, and the subjects piece is then removed from the comparison rather than counted against it.</p>
+        <p>Each piece is a sum of squared deviations from a mean, and which mean is the only thing that changes. Writing <em>n</em> for the number of people, <em>k</em> for the number of conditions and <em>N</em> = <em>nk</em> for the number of observations:</p>
+        <table class="ref-table">
+          <thead>
+            <tr><th>Source</th><th>Sum of squares</th><th><em>df</em></th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Subjects (between people)</td><td>SS<sub>S</sub> = <em>k</em> Σ (x̄<sub>person</sub> &minus; x̄)²</td><td><em>n</em> &minus; 1</td></tr>
+            <tr><td>Conditions</td><td>SS<sub>C</sub> = <em>n</em> Σ (x̄<sub>cond</sub> &minus; x̄)²</td><td><em>k</em> &minus; 1</td></tr>
+            <tr><td>Error (person × condition)</td><td>SS<sub>E</sub> = Σ (x &minus; x̄<sub>person</sub> &minus; x̄<sub>cond</sub> + x̄)²</td><td>(<em>n</em> &minus; 1)(<em>k</em> &minus; 1)</td></tr>
+            <tr><td>Total</td><td>SS<sub>T</sub> = Σ (x &minus; x̄)²</td><td><em>N</em> &minus; 1</td></tr>
+          </tbody>
+        </table>
+        <p>Two things about the error row are worth pausing on. Its formula is a residual: what is left in a score once its own person's level and its own condition's level have both been accounted for. And its degrees of freedom are a product rather than a subtraction, which is the same (<em>n</em> &minus; 1)(<em>k</em> &minus; 1) that an interaction gets in a <a href="../../stats-2/factorial-anova-two-way/#two-way-table">two-way table</a>. That is not a coincidence: the repeated-measures error <em>is</em> the person-by-condition interaction, the extent to which the conditions do different things to different people. Mean squares then follow the usual rule, MS = SS/<em>df</em>, and the test is</p>
+        <p style="font-family:var(--mono)"><em>F</em> = MS<sub>conditions</sub> / MS<sub>error</sub>, on <em>F</em>(<em>k</em> &minus; 1, (<em>n</em> &minus; 1)(<em>k</em> &minus; 1)).</p>
+        <p>The subjects row gets no <em>F</em> of its own in most reports. Its <em>F</em> would test whether people differ from each other, which nobody doubts and nobody set out to ask.</p>
+
+        <h3 id="worked-table">The table on eight people</h3>
+        <p>The widget above boots on a fixed set of eight people measured in three conditions, and the numbers were chosen so the whole table comes out whole. Reload the page or press "Back to the built-in eight" to get them back after exploring.</p>
+        <div class="hscroll"><table class="rmdata">
+          <thead><tr><th>Person</th><th>Cond 1</th><th>Cond 2</th><th>Cond 3</th><th class="rm-marg">Person mean</th></tr></thead>
+          <tbody>
+            <tr><th>1</th><td>5</td><td>18</td><td>28</td><td class="rm-marg">17</td></tr>
+            <tr><th>2</th><td>22</td><td>27</td><td>35</td><td class="rm-marg">28</td></tr>
+            <tr><th>3</th><td>29</td><td>41</td><td>47</td><td class="rm-marg">39</td></tr>
+            <tr><th>4</th><td>42</td><td>48</td><td>60</td><td class="rm-marg">50</td></tr>
+            <tr><th>5</th><td>43</td><td>49</td><td>58</td><td class="rm-marg">50</td></tr>
+            <tr><th>6</th><td>50</td><td>62</td><td>71</td><td class="rm-marg">61</td></tr>
+            <tr><th>7</th><td>63</td><td>73</td><td>80</td><td class="rm-marg">72</td></tr>
+            <tr><th>8</th><td>74</td><td>82</td><td>93</td><td class="rm-marg">83</td></tr>
+            <tr class="rm-foot"><th>Condition mean</th><td class="rm-marg">41</td><td class="rm-marg">50</td><td class="rm-marg">59</td><td class="rm-marg">50</td></tr>
+          </tbody>
+        </table></div>
+        <p>The three condition means sit at 41, 50 and 59 against a grand mean of 50, and the eight people run from 17 to 83. Both facts go straight into the arithmetic:</p>
+        <p style="font-family:var(--mono)">SS<sub>C</sub> = 8[(41 &minus; 50)² + (50 &minus; 50)² + (59 &minus; 50)²] = 8(162) = 1296<br />SS<sub>S</sub> = 3[(17 &minus; 50)² + (28 &minus; 50)² + … + (83 &minus; 50)²] = 3(3388) = 10164<br />SS<sub>T</sub> = 11516, so SS<sub>E</sub> = 11516 &minus; 1296 &minus; 10164 = 56</p>
+        <p>The last step is the arithmetic check rather than the definition. Computing SS<sub>E</sub> from its own residual formula gives the same 56, and an exam question that hands you three of the four sums of squares expects you to recover the fourth this way. Filling in the table:</p>
+        <div class="hscroll"><table class="ref-table">
+          <thead><tr><th>Source</th><th>SS</th><th><em>df</em></th><th>MS</th><th><em>F</em></th></tr></thead>
+          <tbody>
+            <tr><td>Between subjects</td><td>10164</td><td>7</td><td>1452.00</td><td></td></tr>
+            <tr><td>Within subjects</td><td>1352</td><td>16</td><td></td><td></td></tr>
+            <tr><td>&nbsp;&nbsp;&nbsp;Conditions</td><td>1296</td><td>2</td><td>648.00</td><td>162.00</td></tr>
+            <tr><td>&nbsp;&nbsp;&nbsp;Error</td><td>56</td><td>14</td><td>4.00</td><td></td></tr>
+            <tr><td>Total</td><td>11516</td><td>23</td><td></td><td></td></tr>
+          </tbody>
+        </table></div>
+        <p><em>F</em>(2, 14) = 162.00 against a critical value of 3.74 at α = .05, so <em>p</em> &lt; .001, and partial η² = 1296/(1296 + 56) = .96. Now run the same 24 numbers as a one-way ANOVA that knows nothing about who produced them. SS<sub>C</sub> is unchanged at 1296, but the subjects row no longer exists, so its 10164 falls back into the error: 10220 on 21 degrees of freedom, MS = 486.67, and <em>F</em>(2, 21) = 1.33 with <em>p</em> = .29. Same data, same condition means, and one analysis reports an effect you could not miss while the other reports nothing at all. That is the picture the two bars in the widget draw, and pushing the "how different people are" slider widens the gap: the repeated-measures <em>F</em> does not move, because the slider adds variation to the subjects row and to nothing else, while the one-way <em>F</em> sinks as its error swallows the lot.</p>
+        <p>Drag that slider the other way instead, down to zero, and something worth knowing happens. The one-way <em>F</em> climbs to 243.00 and overtakes the repeated-measures one, which is still 162.00. With no individual differences left to remove, the subjects row is pure bookkeeping, and the seven degrees of freedom it took out of the error term would have been better left there: the one-way error gets 56 over 21 <em>df</em> where the repeated-measures error gets the same 56 over 14. A within-subjects design pays only when people genuinely differ from each other, and the more they differ the larger the payment. This is the same bargain a <a href="../../stats-2/factorial-anova-two-way/#two-for-one">second factor</a> strikes in a factorial design, and it is why the correlation between conditions is the number to think about before choosing the design rather than after.</p>
+
+        <h3 id="read-the-df">Reading the design back out of the df</h3>
+        <p>A paper that reports <em>F</em>(3, 84) has told you more than it looks. The first number is <em>k</em> &minus; 1, so there were four conditions. The second is (<em>n</em> &minus; 1)(<em>k</em> &minus; 1) = (<em>n</em> &minus; 1) × 3 = 84, so <em>n</em> &minus; 1 = 28 and the study ran <strong>29 participants</strong>, who between them produced 116 observations. Exams ask this both ways round, and it is a fast sanity check on a paper: a repeated-measures error <em>df</em> that is not a multiple of <em>k</em> &minus; 1 means something has been reported wrong, and a number that implies a strangely small <em>n</em> is worth a second look.</p>
+
+        <h2 id="mixed-designs">Mixed designs: one factor between, one within</h2>
+        <p>Most real studies cannot make every factor within-subjects. You can measure the same person before and after training, but you cannot put them in both the training group and the control group. A <strong>mixed design</strong> takes the factors it can repeat and repeats them, and takes the ones it cannot and assigns people to them. One between-subjects factor crossed with one within-subjects factor is the commonest shape in psychology by a distance, and the language follows the split: a <strong>within-subjects factor</strong> is one whose levels every participant experiences, and a <strong>between-subjects factor</strong> is one whose levels different participants experience.</p>
+        <p>Say forty people are randomly assigned to a meditation course or a waiting list, twenty in each, and everyone is tested for attention at baseline, after four weeks and after twelve. Group is between, time is within, and the table splits in two, because the two factors are tested against different error terms. Group differences are differences <em>between</em> people, so they are judged against how much people differ; time differences happen inside a person, so they are judged against the much smaller person-by-time residual.</p>
+        <div class="hscroll"><table class="ref-table">
+          <thead><tr><th>Part of the table</th><th>Source</th><th><em>df</em> in general</th><th>Here</th></tr></thead>
+          <tbody>
+            <tr><td rowspan="2">Between subjects</td><td>Group</td><td><em>g</em> &minus; 1</td><td>1</td></tr>
+            <tr><td>Error (between)</td><td><em>N</em> &minus; <em>g</em></td><td>38</td></tr>
+            <tr><td rowspan="3">Within subjects</td><td>Time</td><td><em>k</em> &minus; 1</td><td>2</td></tr>
+            <tr><td>Group × Time</td><td>(<em>g</em> &minus; 1)(<em>k</em> &minus; 1)</td><td>2</td></tr>
+            <tr><td>Error (within)</td><td>(<em>N</em> &minus; <em>g</em>)(<em>k</em> &minus; 1)</td><td>76</td></tr>
+          </tbody>
+        </table></div>
+        <p>Here <em>g</em> is the number of groups, <em>k</em> the number of measurement occasions and <em>N</em> the number of <em>participants</em> rather than observations. The five rows add to 119, which is <em>Nk</em> &minus; 1 for 120 observations. SPSS prints them as two separate tables, Tests of Between-Subjects Effects and Tests of Within-Subjects Effects, and the second is where both the time effect and the interaction live. Reading the error <em>df</em> backwards is the same trick as before with one extra step: 76 = 38 × 2 gives 38 = <em>N</em> &minus; <em>g</em>, and the between-subjects error <em>df</em> of 38 with two groups says 40 people in total, not 40 per group.</p>
+        <p>The reading order is the one a <a href="../../stats-2/factorial-anova-two-way/#interaction-first">two-way table</a> uses. Look at Group × Time first, because it is usually the question the study was designed to answer: did the two groups <em>change differently</em>? If it is significant, the two main effects describe averages that may describe nobody, and each is reported as qualified by it. A main effect of time then means "averaging over both groups, scores moved", and a main effect of group means "averaging over all three occasions, one group scored higher", which in a pre-post study is often an artifact of a baseline difference rather than anything the treatment did.</p>
+
+        <h2 id="design-costs">What the design costs</h2>
+        <p>Everything above is the upside. Measuring the same person repeatedly also creates problems a between-subjects design never has, and the course groups them under <strong>order effects</strong>: any change in the response that comes from a condition's position in the sequence rather than from the condition itself. Two of them push in opposite directions. <strong>Practice</strong> improves performance as people get used to the task, so whichever condition runs last looks best. <strong>Fatigue</strong> and boredom do the reverse, so whichever condition runs last looks worst. A <strong>carryover effect</strong> is the more specific problem of one condition still acting during the next: a drug not yet cleared, a strategy just learned, a mood the last block put someone in.</p>
+        <p>The standard defense is <a href="../../methods/between-vs-within-designs/">counterbalancing</a>, running the conditions in different orders across participants so that a pure order effect falls equally on every condition and cancels in the means. With two conditions that is half the sample each way; with more, a Latin square gives each condition every position without needing all <em>k</em>! sequences. What counterbalancing does <em>not</em> do is remove the variability. A symmetric order effect stops biasing the condition means and stays in the error term, and an asymmetric one, where A changes B more than B changes A, is not balanced away at all. When the carryover is severe enough, the honest fix is a between-subjects design.</p>
+        <p>Three further costs are worth stating plainly, because they decide the design as often as power does. A participant who misses one condition is lost from every condition, since the table needs a complete row. The conditions have to be repeatable in the first place, which rules out anything that teaches, reveals or permanently changes something. And the analysis carries an extra assumption, sphericity, which the rest of this page is about.</p>
+        <div class="callout">
+          <p><strong>The trade in one line:</strong> a within-subjects design buys power by removing stable individual differences from the error term, and pays for it with order effects, a stricter completeness requirement and an extra assumption. Reach for it when the conditions are reversible and people are consistent, counterbalance whenever you do, and go between-subjects when they are not.</p>
         </div>
 
         <h2>The catch: sphericity</h2>
@@ -112,20 +259,20 @@
         </table>
         <p>The correction more than doubles the <em>p</em>-value here without touching a single data point. Even the floor leaves this result standing, but a study reporting an uncorrected .04 would not survive the trip.</p>
         <p>Greenhouse-Geisser is known to under-estimate ε when the violation is mild, so Huynh-Feldt applies a correction to the correction (that .785 is computed from the .71, not measured separately) and can reach 1, at which point software caps it. The convention most textbooks give: take Greenhouse-Geisser when its ε falls below .75 and Huynh-Feldt when it does not. Report which one you used and print the ε beside it, because fractional degrees of freedom tell a reader that <em>something</em> was corrected without telling them by how much. The <a href="../../cheat-assumptions.html">assumption-checks sheet</a> lists this one alongside every other check a comparison of means owes you.</p>
-        <p>There is also a more modern route. A <a href="../../stats-3/mixed-and-multilevel-models/">mixed (multilevel) model</a> treats each participant as a random effect and estimates the correlation structure directly, so it needs no sphericity correction, tolerates unequal spacing between timepoints, and keeps a participant who missed one session instead of dropping them from every condition. Repeated-measures ANOVA is still the clearer way to <em>understand</em> what within-subjects designs buy you, which is why it comes first. When the repeated outcome is a category rather than a number, the same reasoning arrives as <a href="../../stats-1/chi-square-tests/#same-person-twice">McNemar's test</a>: pair each person with themselves and count only the ones who changed.</p>
+        <p>There is also a more modern route. A <a href="../../stats-3/mixed-and-multilevel-models/">mixed (multilevel) model</a> treats each participant as a random effect and estimates the correlation structure directly, so it needs no sphericity correction, tolerates unequal spacing between timepoints, and keeps a participant who missed one session instead of dropping them from every condition. The word <em>mixed</em> is doing different work there than it does in "mixed design" above: a mixed design is about which factors repeat, a mixed model is about fixed and random effects, and a mixed design is usually what a mixed model gets fitted to. Repeated-measures ANOVA is still the clearer way to <em>understand</em> what within-subjects designs buy you, which is why it comes first. When the repeated outcome is a category rather than a number, the same reasoning arrives as <a href="../../stats-1/chi-square-tests/#same-person-twice">McNemar's test</a>: pair each person with themselves and count only the ones who changed.</p>
 
         <div class="callout">
           <p><strong>Why it matters:</strong> within-subjects designs are everywhere in psychology, medicine, and UX research, anywhere you can measure the same unit repeatedly. Knowing that they trade a sphericity assumption for a big gain in power helps you design more efficient studies. <a href="../../plan.html?test=rm-anova">Plan My Analysis</a> will lay one out for you, assumptions and write-up included.</p>
         </div>
 
-        <p class="pb-xref"><a href="../../problems.html#p2-4">Problem 16 of the practice problems</a> works the case above from the sums of squares up, so you build the <em>F</em> yourself before correcting it, and <a href="../../problems.html#p3-5">Problem 27</a> asks the prior question: whether a study is between, within, or neither.</p>
+        <p class="pb-xref"><a href="../../problems.html#p2-4">Problem 16 of the practice problems</a> works the sphericity case above from the sums of squares up, so you build the <em>F</em> yourself before correcting it. <a href="../../problems.html#p2-20">Problem 32</a> completes a repeated-measures table from three sums of squares and the design, and <a href="../../problems.html#p2-21">Problem 33</a> reads a mixed-design output and recovers the study from its <em>df</em> column. <a href="../../problems.html#p3-5">Problem 27</a> asks the prior question: whether a study is between, within, or neither.</p>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
           <h2>Common questions</h2>
           <details class="faq-item">
-            <summary>What is sphericity and why does it matter?</summary>
-            <div class="faq-a"><p>Sphericity is the assumption that the variance of the <em>difference</em> between every pair of conditions is roughly equal. When it fails (typical for time-based measurements, where neighboring timepoints correlate more than distant ones), the F-test's p-values come out too small, inflating false positives. Mauchly's test flags it, and corrections fix it.</p></div>
+            <summary>Why does partial eta-squared come out so large in a within-subjects study?</summary>
+            <div class="faq-a"><p>Because its denominator leaves out the very thing the design removed. Partial η² is SS<sub>effect</sub> / (SS<sub>effect</sub> + SS<sub>error</sub>), and in a repeated-measures table the error excludes the subjects row entirely, so the number answers 'how much of what is left once people are accounted for' rather than 'how much of the variation in the data'. The eight people worked through above make the gap concrete: their partial η² is 1296/1352 = .96, while the same effect against the raw total is 1296/11516 = .11. Neither is wrong and they answer different questions, but they are not comparable across designs, which is why a within-subjects study routinely reports an effect size several times the size of a between-subjects one testing the same thing. Say which you computed, report the design beside it, and if you need a number a reader can hold against a between-subjects study, generalized η² is the version built for that comparison: it puts the subjects variance back into the denominator for any factor a participant did not choose.</p></div>
           </details>
           <details class="faq-item">
             <summary>Mauchly's test came back non-significant. Does that settle it?</summary>
@@ -152,28 +299,85 @@
   <script src="../../assets/js/site.js"></script>
   <script src="../../assets/js/viz.js"></script>
 
-  <!-- ============ repeated-measures visualization ============ -->
+  <!-- ============ repeated-measures visualization ============
+       Two pictures over one dataset. The line chart shows eight people across
+       three conditions, raw or subject-centered; the bars below it split the
+       same sum of squares twice, once as a one-way ANOVA that knows nothing
+       about who produced a score and once as the repeated-measures partition.
+
+       THE BOOT STATE IS FROZEN AND DETERMINISTIC (P92). It used to be a fresh
+       VIZ.randn() draw on every page load, which is fine for a picture and
+       useless for a worked table: the lesson now prints this exact 8 x 3 set
+       and works its sums of squares by hand, so the widget has to boot on the
+       same numbers every time. "New people" still reseeds at random; "Back to
+       the built-in eight" returns to the frozen pools.
+
+       The pools are chosen so the default table is whole. Every residual row
+       sums to zero and every residual column sums to zero, so the person means
+       are 50 + 22 * Z_BASE and the condition means are 50 + 9 * pattern, which
+       gives SS_C = 1296, SS_S = 10164, SS_E = 56 of a total 11516, and an
+       error mean square of exactly 4.00 on 14 df.
+
+       VIZ.sd divides by n and is used ONLY for the two descriptive spread
+       readouts, which is what it is for. Every sum of squares and mean square
+       below is computed directly on its own df; math-check section 16 asserts
+       that divisor.
+
+       URL presets (SC.preset, applied last):
+         ?spread=0..32   how different people are
+         ?effect=0..20   the true condition effect
+         ?view=raw|centered
+         ?g=<conditions> a whole within-subjects dataset, one GROUP per
+                         condition, commas inside a condition and semicolons
+                         between them, parsed by SC.groupParam (the shared ?g=
+                         helper). Values are paired by position, so the first
+                         number of every condition belongs to the same person,
+                         and every condition must therefore hold the same
+                         number of people: 2 to 6 conditions of 2 to 20.
+       g is listed LAST, because moving either slider rebuilds the built-in
+       study and would otherwise throw a loaded dataset away.
+  -->
   <script>
   (function () {
     "use strict";
-    var N = 8, K = 3, bv = 22, ce = 9, view = "raw", subjects = [];
+    var N = 8, K = 3, bv = 22, ce = 9, view = "raw", subjects = [], custom = null;
     var canvas = document.getElementById("rm-canvas"), ctx, W = 0, H = 260, padL = 34, padB = 26, padT = 14;
+    var bars = document.getElementById("rm-bars"), bctx, bW = 0, bH = 190;
     var pattern = [-1, 0, 1]; // shape of the condition effect across the 3 conditions
 
-    /* Frozen noise: each person keeps a fixed baseline z and per-condition
-       wiggle, so the sliders morph the SAME people (lines fan out or squeeze
-       together) instead of generating a new sample. "New people" reseeds. */
+    /* The frozen boot pools. Z_BASE has mean 0, and every row and every column
+       of Z_NOISE sums to zero, which is what makes the default table whole:
+       2.5 * Z_NOISE is the integer residual table
+       [-3,1,2; 3,-1,-2; -1,2,-1; 1,-2,1; 2,-1,-1; -2,1,1; 0,1,-1; 0,-1,1],
+       whose squares total 56. */
+    var Z_BASE = [-1.5, -1, -0.5, 0, 0, 0.5, 1, 1.5];
+    var Z_NOISE = [
+      [-1.2, 0.4, 0.8], [1.2, -0.4, -0.8], [-0.4, 0.8, -0.4], [0.4, -0.8, 0.4],
+      [0.8, -0.4, -0.4], [-0.8, 0.4, 0.4], [0, 0.4, -0.4], [0, -0.4, 0.4]
+    ];
     var zBase = [], zNoise = [];
+
+    function frozen() {
+      zBase = Z_BASE.slice();
+      zNoise = Z_NOISE.map(function (r) { return r.slice(); });
+    }
+    /* "New people": a fresh random draw of the same shape */
     function seed() {
       zBase = []; zNoise = [];
-      for (var s = 0; s < N; s++) {
+      for (var s = 0; s < 8; s++) {
         zBase.push(VIZ.randn());
         var row = [];
-        for (var k = 0; k < K; k++) row.push(VIZ.randn());
+        for (var k = 0; k < 3; k++) row.push(VIZ.randn());
         zNoise.push(row);
       }
     }
     function build() {
+      if (custom) {
+        subjects = custom.map(function (r) { return r.slice(); });
+        N = subjects.length; K = subjects[0].length;
+        update(); return;
+      }
+      N = 8; K = 3;
       subjects = [];
       for (var s = 0; s < N; s++) {
         var base = 50 + bv * zBase[s], row = [];
@@ -182,8 +386,11 @@
       }
       update();
     }
-    function reseed() { seed(); build(); }
-    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function reseed() { custom = null; seed(); build(); }
+    function fit() {
+      var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w;
+      if (bars) { var b = VIZ.fit(bars, bH); bctx = b.ctx; bW = b.w; }
+    }
     // y-axis follows the data, so cranking the between-person slider never
     // pushes anyone off the chart
     var yLO = 10, yHI = 90;
@@ -197,9 +404,52 @@
     function cx(k) { return padL + (k + 0.5) * ((W - padL - 12) / K); }
 
     function display() {
-      // raw, or each subject re-centered to the grand mean (50)
+      // raw, or each subject re-centered to the grand mean of the whole set
       if (view === "raw") return subjects;
-      return subjects.map(function (row) { var m = VIZ.mean(row); return row.map(function (v) { return v - m + 50; }); });
+      var gm = grandMean();
+      return subjects.map(function (row) { var m = VIZ.mean(row); return row.map(function (v) { return v - m + gm; }); });
+    }
+    function grandMean() {
+      var s = 0, c = 0;
+      subjects.forEach(function (r) { r.forEach(function (v) { s += v; c++; }); });
+      return c ? s / c : 0;
+    }
+
+    /* ---- the partition, computed directly on its own degrees of freedom ----
+       SS_E is the residual formula rather than a subtraction, so that
+       SS_C + SS_S + SS_E = SS_T is a CHECK on the arithmetic instead of the
+       way it was built. */
+    function partition(D) {
+      var n = D.length, k = D[0].length, NT = n * k, i, j;
+      var gm = 0;
+      for (i = 0; i < n; i++) for (j = 0; j < k; j++) gm += D[i][j];
+      gm /= NT;
+      var pm = D.map(function (r) { return VIZ.mean(r); });
+      var cm = [];
+      for (j = 0; j < k; j++) { var s = 0; for (i = 0; i < n; i++) s += D[i][j]; cm.push(s / n); }
+      var ssC = 0, ssS = 0, ssE = 0, ssT = 0;
+      for (j = 0; j < k; j++) ssC += n * (cm[j] - gm) * (cm[j] - gm);
+      for (i = 0; i < n; i++) ssS += k * (pm[i] - gm) * (pm[i] - gm);
+      for (i = 0; i < n; i++) for (j = 0; j < k; j++) {
+        var r = D[i][j] - pm[i] - cm[j] + gm;
+        ssE += r * r;
+        ssT += (D[i][j] - gm) * (D[i][j] - gm);
+      }
+      var dfC = k - 1, dfS = n - 1, dfE = (n - 1) * (k - 1), dfW = n * (k - 1);
+      var msC = ssC / dfC, msE = dfE > 0 ? ssE / dfE : NaN;
+      var f2 = msC / msE;
+      /* the one-way model, people ignored: the subjects row does not exist, so
+         everything it held falls back into the error term */
+      var ss1 = ssS + ssE, df1 = NT - k, ms1 = ss1 / df1, f1 = msC / ms1;
+      return {
+        n: n, k: k, N: NT, gm: gm, pm: pm, cm: cm,
+        ssC: ssC, ssS: ssS, ssE: ssE, ssT: ssT, ssW: ssC + ssE,
+        dfC: dfC, dfS: dfS, dfE: dfE, dfW: dfW,
+        msC: msC, msS: ssS / dfS, msE: msE,
+        f2: f2, p2: VIZ.fUpper(f2, dfC, dfE),
+        eta: ssC / (ssC + ssE),
+        ss1: ss1, df1: df1, ms1: ms1, f1: f1, p1: VIZ.fUpper(f1, dfC, df1)
+      };
     }
 
     function draw() {
@@ -213,41 +463,178 @@
       for (var k = 0; k < K; k++) ctx.fillText("Cond " + (k + 1), cx(k), H - 8);
       // each subject as a faint line
       ctx.strokeStyle = VIZ.css("--text-faint"); ctx.globalAlpha = 0.55; ctx.lineWidth = 1.5;
-      data.forEach(function (row) { ctx.beginPath(); for (var k = 0; k < K; k++) { var x = cx(k), y = vy(row[k]); if (k === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); } ctx.stroke(); });
+      data.forEach(function (row) { ctx.beginPath(); for (var k2 = 0; k2 < K; k2++) { var x = cx(k2), y = vy(row[k2]); if (k2 === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); } ctx.stroke(); });
       ctx.globalAlpha = 1;
       // condition means as a thick line
       var means = [];
-      for (var k2 = 0; k2 < K; k2++) { var s = 0; for (var i = 0; i < N; i++) s += data[i][k2]; means.push(s / N); }
+      for (var k3 = 0; k3 < K; k3++) { var s = 0; for (var i = 0; i < data.length; i++) s += data[i][k3]; means.push(s / data.length); }
       ctx.strokeStyle = VIZ.css("--primary"); ctx.lineWidth = 3.5; ctx.beginPath();
-      means.forEach(function (m, k) { var x = cx(k), y = vy(m); if (k === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }); ctx.stroke();
-      ctx.fillStyle = VIZ.css("--primary"); means.forEach(function (m, k) { ctx.beginPath(); ctx.arc(cx(k), vy(m), 5, 0, 2 * Math.PI); ctx.fill(); });
+      means.forEach(function (m, k4) { var x = cx(k4), y = vy(m); if (k4 === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--primary"); means.forEach(function (m, k5) { ctx.beginPath(); ctx.arc(cx(k5), vy(m), 5, 0, 2 * Math.PI); ctx.fill(); });
       return means;
     }
 
+    function f2s(v) { return isFinite(v) ? v.toFixed(2) : "—"; }
+    function pTxt(v) {
+      if (!isFinite(v)) return "—";
+      /* written into innerHTML, so the less-than sign is escaped */
+      if (v < 0.0001) return "&lt; .0001";
+      return v.toFixed(4).replace(/^0/, "");
+    }
+
+    function drawBars(P) {
+      if (!bctx) return;
+      var col = { c: VIZ.css("--primary"), s: "#f97316", e: VIZ.css("--text-faint") };
+      var ink = VIZ.css("--text"), quiet = VIZ.css("--text-muted");
+      bctx.clearRect(0, 0, bW, bH);
+      var left = 8, right = bW - 8, wide = right - left;
+      var scale = P.ssT > 0 ? wide / P.ssT : 0, barH = 30;
+
+      /* Segment labels sit UNDER each bar: the three fills are theme tokens and
+         no single ink reads on all of them in both themes. A segment too narrow
+         for its own name goes unlabeled, which is what the legend and the two
+         tables underneath are for. */
+      function bar(y, parts) {
+        var x = left, i;
+        for (i = 0; i < parts.length; i++) {
+          var w = parts[i].ss * scale;
+          if (w <= 0) continue;
+          bctx.fillStyle = parts[i].c;
+          bctx.fillRect(x, y, w, barH);
+          bctx.strokeStyle = VIZ.css("--surface"); bctx.lineWidth = 1;
+          bctx.strokeRect(x + 0.5, y + 0.5, Math.max(0, w - 1), barH - 1);
+          if (w > 30) {
+            bctx.fillStyle = quiet; bctx.textAlign = "center";
+            bctx.font = "11px ui-monospace,monospace";
+            /* a label is routinely wider than the segment it names, so centering
+               it on a narrow segment near either end runs it off the canvas.
+               Clamp the centre into the drawing area rather than clipping. */
+            var lab = w > 74 ? parts[i].k + " " + f2s(parts[i].ss) : parts[i].k;
+            var half = bctx.measureText(lab).width / 2;
+            bctx.fillText(lab, Math.min(Math.max(x + w / 2, left + half), right - half), y + barH + 14);
+          }
+          x += w;
+        }
+      }
+
+      bctx.textAlign = "left"; bctx.font = "600 12px Inter,sans-serif"; bctx.fillStyle = ink;
+      bctx.fillText("One-way ANOVA, people ignored", left, 13);
+      bar(19, [{ ss: P.ssC, c: col.c, k: "conditions" }, { ss: P.ss1, c: col.e, k: "error" }]);
+
+      bctx.textAlign = "left"; bctx.font = "600 12px Inter,sans-serif"; bctx.fillStyle = ink;
+      bctx.fillText("Repeated measures, subjects removed", left, 85);
+      bar(91, [{ ss: P.ssC, c: col.c, k: "conditions" }, { ss: P.ssS, c: col.s, k: "subjects" },
+               { ss: P.ssE, c: col.e, k: "error" }]);
+
+      /* the legend wraps onto a second row rather than dropping a key, since a
+         narrow bar is exactly where an unlabeled segment needs one */
+      var keys = [["conditions", col.c], ["subjects", col.s], ["error", col.e]];
+      var kx = left, ky = 150, i;
+      bctx.font = "11px Inter,sans-serif"; bctx.textAlign = "left";
+      for (i = 0; i < keys.length; i++) {
+        var kw = 14 + bctx.measureText(keys[i][0]).width + 14;
+        if (kx + kw > right && kx > left) { kx = left; ky += 16; }
+        bctx.fillStyle = keys[i][1]; bctx.fillRect(kx, ky, 10, 10);
+        bctx.fillStyle = quiet; bctx.fillText(keys[i][0], kx + 14, ky + 9);
+        kx += kw;
+      }
+      bctx.fillStyle = VIZ.css("--text-faint"); bctx.font = "11px ui-monospace,monospace";
+      var full = "both bars span the same total, SS T = " + f2s(P.ssT);
+      var shortForm = "SS T = " + f2s(P.ssT);
+      bctx.fillText(bctx.measureText(full).width <= wide ? full : shortForm, left, ky + 31);
+    }
+
+    function row(src, ss, df, ms, f, p, cls) {
+      return "<tr><td class=\"rm-src" + (cls ? " " + cls : "") + "\">" + src + "</td><td>" + ss +
+        "</td><td>" + df + "</td><td>" + ms + "</td><td>" + f + "</td><td>" + p + "</td></tr>";
+    }
+    function headRow(cap) {
+      return "<caption>" + cap + "</caption><thead><tr><th class=\"rm-src\">Source</th><th>SS</th>" +
+        "<th>df</th><th>MS</th><th><em>F</em></th><th><em>p</em></th></tr></thead>";
+    }
+    function tables(P) {
+      var t1 = document.getElementById("rm-t1"), t2 = document.getElementById("rm-t2");
+      if (t1) t1.innerHTML = headRow("One-way ANOVA, people ignored") + "<tbody>" +
+        row("Conditions", f2s(P.ssC), String(P.dfC), f2s(P.msC),
+            "<span id=\"rm-c-f1\">" + f2s(P.f1) + "</span>", pTxt(P.p1)) +
+        row("Error", f2s(P.ss1), String(P.df1), "<span id=\"rm-c-m1\">" + f2s(P.ms1) + "</span>", "", "") +
+        row("Total", f2s(P.ssT), String(P.N - 1), "", "", "") +
+        "</tbody>";
+      if (t2) t2.innerHTML = headRow("Repeated measures, subjects removed") + "<tbody>" +
+        row("Between subjects", f2s(P.ssS), String(P.dfS), f2s(P.msS), "", "") +
+        row("Within subjects", f2s(P.ssW), String(P.dfW), "", "", "") +
+        row("Conditions", f2s(P.ssC), String(P.dfC), f2s(P.msC),
+            "<span id=\"rm-c-f2\">" + f2s(P.f2) + "</span>", pTxt(P.p2), "rm-sub") +
+        row("Error", f2s(P.ssE), String(P.dfE), "<span id=\"rm-c-m2\">" + f2s(P.msE) + "</span>", "", "", "rm-sub") +
+        row("Total", f2s(P.ssT), String(P.N - 1), "", "", "") +
+        "</tbody>";
+    }
+
     function update() {
-      var means = draw();
+      var means = draw(), P = partition(subjects);
       document.getElementById("bv-val").textContent = bv;
       document.getElementById("ce-val").textContent = ce;
-      // spread of all raw scores between people vs spread of condition means
+      // spread of each person's own average vs spread of the condition means:
+      // both are descriptive, which is what VIZ.sd's n divisor is for
       var allBase = subjects.map(function (r) { return VIZ.mean(r); });
-      var condMeans = []; for (var k = 0; k < K; k++) { var s = 0; for (var i = 0; i < N; i++) s += subjects[i][k]; condMeans.push(s / N); }
-      var betweenSpread = VIZ.sd(allBase), condSpread = VIZ.sd(condMeans);
+      var betweenSpread = VIZ.sd(allBase), condSpread = VIZ.sd(P.cm);
       document.getElementById("stat-bv").textContent = betweenSpread.toFixed(1);
       document.getElementById("stat-cs").textContent = condSpread.toFixed(1);
       var ratio = condSpread / (betweenSpread + 0.001);
       var vis = document.getElementById("stat-vis");
-      if (view === "centered") { vis.textContent = "yes — clearly (centered)"; vis.style.color = "#22c55e"; }
+      if (view === "centered") { vis.textContent = "yes, clearly (centered)"; vis.style.color = "#22c55e"; }
       else if (ratio > 0.6) { vis.textContent = "yes, visible"; vis.style.color = "#22c55e"; }
       else { vis.textContent = "hidden in the noise"; vis.style.color = "#f97316"; }
+
+      tables(P);
+      drawBars(P);
+      document.getElementById("rm-f2").textContent = f2s(P.f2);
+      document.getElementById("rm-f1").textContent = f2s(P.f1);
+      document.getElementById("rm-m2").textContent = f2s(P.msE);
+      document.getElementById("rm-eta").textContent = isFinite(P.eta) ? P.eta.toFixed(3).replace(/^0/, "") : "—";
+      var note = document.getElementById("rm-note");
+      if (note) note.textContent = (custom ? "A dataset from the link: " : "The built-in study: ") +
+        P.n + " people in " + P.k + " conditions, " + P.N + " observations.";
+      var cap = document.getElementById("rm-cap");
+      if (cap) cap.textContent = "Naming the subjects row takes " + f2s(P.ssS) +
+        " out of the error and " + (P.df1 - P.dfE) + " degrees of freedom with it, so the error mean square falls from " +
+        f2s(P.ms1) + " to " + f2s(P.msE) + " and the same SS for conditions, " + f2s(P.ssC) +
+        ", is tested as F(" + P.dfC + ", " + P.dfE + ") = " + f2s(P.f2) +
+        " rather than F(" + P.dfC + ", " + P.df1 + ") = " + f2s(P.f1) + ".";
+      return means;
     }
 
-    document.getElementById("bv-range").addEventListener("input", function () { bv = +this.value; build(); });
-    document.getElementById("ce-range").addEventListener("input", function () { ce = +this.value; build(); });
+    /* ?g= : a whole within-subjects dataset, one group per condition, through
+       the shared parser. Values are paired by position, so every condition
+       must hold the same number of people or the rows are not rows. */
+    function loadG(raw) {
+      var got = (window.SC && SC.groupParam) ? SC.groupParam(String(raw), 6, 20) : null;
+      if (!got) return;
+      var m = got[0].length, i;
+      for (i = 1; i < got.length; i++) if (got[i].length !== m) return;
+      var rows = [];
+      for (i = 0; i < m; i++) rows.push(got.map(function (col) { return col[i]; }));
+      custom = rows;
+      build();
+    }
+
+    document.getElementById("bv-range").addEventListener("input", function () { bv = +this.value; custom = null; build(); });
+    document.getElementById("ce-range").addEventListener("input", function () { ce = +this.value; custom = null; build(); });
     document.getElementById("view-seg").addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; view = b.dataset.view; Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("active", x.dataset.view === view); }); update(); });
     document.getElementById("resample").addEventListener("click", reseed);
-    window.addEventListener("resize", function () { fit(); draw(); });
-    VIZ.onTheme(draw);
-    fit(); reseed();
+    document.getElementById("rm-reset").addEventListener("click", function () {
+      custom = null; bv = 22; ce = 9;
+      document.getElementById("bv-range").value = 22;
+      document.getElementById("ce-range").value = 9;
+      frozen(); build();
+    });
+    var redraw = VIZ.rafThrottle(function () { fit(); update(); });
+    window.addEventListener("resize", redraw);
+    if (window.ResizeObserver && bars) { new ResizeObserver(redraw).observe(bars); }
+    VIZ.onTheme(function () { update(); });
+    fit(); frozen(); build();
+
+    if (window.SC && SC.preset) SC.preset({ spread: "#bv-range", effect: "#ce-range", view: "#view-seg", g: loadG });
   })();
   </script>
 </body>

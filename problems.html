@@ -16,7 +16,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Practice Problems — Worked Statistics Exam Questions — StatsCapybara</title>
-  <meta name="description" content="Seventy-three statistics problems with worked solutions: z-scores, t-tests, chi-square, ANOVA, rank tests, regression and Bayes, one step at a time." />
+  <meta name="description" content="Seventy-five statistics problems with worked solutions: z-scores, t-tests, chi-square, ANOVA, rank tests, regression and Bayes, one step at a time." />
   <link rel="canonical" href="https://statscapybara.com/problems.html" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Practice Problems — StatsCapybara" />
@@ -139,7 +139,7 @@
         <ul class="pb-index">
           <li><a href="#stats-1"><span class="t">📊 Stats 1 · Foundations</span><br><span class="m">25 problems · data types → probability → z, t, proportions, χ², correlation and regression</span></a></li>
           <li><a href="#exam-style"><span class="t">📝 Exam-style · A Stats 1 midterm</span><br><span class="m">8 problems · §1.1 to §1.12, worked off the printed tables</span></a></li>
-          <li><a href="#stats-2"><span class="t">🔗 Stats 2 · Groups &amp; relationships</span><br><span class="m">19 problems · ANOVA → contrasts → factorial → regression → rank tests</span></a></li>
+          <li><a href="#stats-2"><span class="t">🔗 Stats 2 · Groups &amp; relationships</span><br><span class="m">21 problems · ANOVA → contrasts → factorial → regression → rank tests</span></a></li>
           <li><a href="#regression"><span class="t">📐 Regression · Several predictors</span><br><span class="m">8 problems · multiple regression → missing data</span></a></li>
           <li><a href="#advanced"><span class="t">🎲 Advanced · Modern methods</span><br><span class="m">7 problems · Bayes → model comparison</span></a></li>
           <li><a href="#toolkit"><span class="t">🔍 Research Toolkit · Spot the problem</span><br><span class="m">6 problems · design, sampling, ethics, writing</span></a></li>
@@ -2082,7 +2082,7 @@
              ================================================================== -->
         <section class="pb-set" id="stats-2-set">
           <h2 id="stats-2">🔗 Stats 2 · Groups &amp; relationships</h2>
-          <p class="pb-set-sub">Nineteen problems on comparing groups and reading a relationship: three or more groups, factorial designs, the assumptions that decide which test you are allowed to run, the two ways of describing a straight line, two ANOVA tables built by hand, the planned and corrected comparisons that follow one, and three rank-based tests worked against their printed critical-value tables. The group tests are <a href="stats-2/">Stats 2</a>; correlation and regression are taught in <a href="stats-1/">Stats 1</a>.</p>
+          <p class="pb-set-sub">Twenty-one problems on comparing groups and reading a relationship: three or more groups, factorial and repeated-measures designs, the assumptions that decide which test you are allowed to run, the two ways of describing a straight line, four ANOVA tables built by hand, one of them a mixed design read back out of its own degrees of freedom, the planned and corrected comparisons that follow an omnibus test, and three rank-based tests worked against their printed critical-value tables. The group tests are <a href="stats-2/">Stats 2</a>; correlation and regression are taught in <a href="stats-1/">Stats 1</a>.</p>
 
           <!-- ---------- 2.1 ----------
                verify: groups [3,5,4,2,6],[4,7,6,5,8],[9,6,8,10,7]; means 4,6,8; grand 6
@@ -3323,6 +3323,141 @@
               </ol>
               <p class="pb-answer">Two levels of medium, three delays, 48 students, 8 per cell. SS<sub>E</sub> = 504.00 on 42 df, MS<sub>E</sub> = 12.00; MS<sub>B</sub> = 75.00; <em>F</em>(1, 42) = 8.00, <em>F</em>(2, 42) = 6.25 and <em>F</em>(2, 42) = 3.67, all three significant at .05, with η<sub>p</sub>² = .149 for the interaction. Report the interaction first and treat both main effects as qualified by it.</p>
               <p class="pb-ref">From <a href="stats-2/factorial-anova-two-way/#two-way-table">§2.4 Factorial ANOVA</a> and <a href="stats-2/one-way-anova/#df-ms-f">§2.2 One-Way ANOVA</a>. <a href="tables.html">The printed F tables</a> hold both criticals, and <a href="stats-2/factorial-anova-two-way/#wvviz">Where the Variance Goes</a> shows what the error row would have swallowed had the delay factor been left out.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 2.20 ----------
+               verify: node -e 'const fs=require("fs"),vm=require("vm");const c={console};c.window=c;
+                        c.document={documentElement:{}};c.getComputedStyle=()=>({getPropertyValue:()=>""});
+                        c.MutationObserver=function(){this.observe=()=>{}};vm.createContext(c);
+                        vm.runInContext(fs.readFileSync("assets/js/viz.js","utf8"),c);const V=c.window.VIZ;
+                        console.log(1500-240-900, 240/3, 360/27, 900/9, (240/3)/(360/27));
+                        console.log(V.fInv(.05,3,27), V.fUpper(6,3,27), 240/600);
+                        console.log(V.fUpper(6,2.4,21.6), V.fInv(.05,2.4,21.6));
+                        console.log((900+360)/36, 80/35, V.fUpper(80/35,3,36), V.fInv(.05,3,36))'
+                     → SS_E 360 ; MS 80 / 13.3333 / 100 ; F 6.00
+                       F*(3,27)=2.9604 ; p=.00286 ; eta_p2=.40
+                       GG .8 → p=.00607 against F*(2.4, 21.6)=3.2652
+                       one-way MS_E 35 ; F 2.2857 ; p=.0953 ; F*(3,36)=2.8663
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p2-20"><span class="pb-num">32</span>Ten raters, four layouts, one missing row</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">Ten people each rate the same four website layouts for ease of use, so every person contributes four scores. The analysis was run and then most of the table was lost. What survived is below.</p>
+            <div class="pb-given">
+              <span class="lbl">Repeated-measures ANOVA, ease-of-use rating</span>
+              <ul>
+                <li><em>n</em> = 10 participants, <em>k</em> = 4 layouts</li>
+                <li>SS<sub>conditions</sub> = 240.00</li>
+                <li>SS<sub>subjects</sub> = 900.00</li>
+                <li>SS<sub>total</sub> = 1500.00</li>
+                <li>Critical value: <em>F</em>*(3, 27) = 2.96 at α = .05</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Write down every row's degrees of freedom from <em>n</em> and <em>k</em> alone, and check that they add up.</li>
+              <li>Complete the table: the error sum of squares, the mean squares and the <em>F</em> ratio.</li>
+              <li>Decide the test at α = .05 and report partial η².</li>
+              <li>The same forty scores analyzed as a one-way between-subjects ANOVA give <em>F</em>(3, 36) = 2.29 against a critical value of 2.87. Using your table, say exactly where that difference came from.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The degrees of freedom, before any arithmetic</span>
+                  <span class="pb-math">df<sub>subjects</sub> = <em>n</em> &minus; 1 = 9</span>
+                  <span class="pb-math">df<sub>conditions</sub> = <em>k</em> &minus; 1 = 3</span>
+                  <span class="pb-math">df<sub>error</sub> = (<em>n</em> &minus; 1)(<em>k</em> &minus; 1) = 9 × 3 = 27</span>
+                  <span class="pb-math">df<sub>total</sub> = <em>nk</em> &minus; 1 = 40 &minus; 1 = 39, and 9 + 3 + 27 = 39 ✓</span>
+                  <span class="pb-note">The error df is a product rather than a subtraction, which is the one place a repeated-measures table differs from every other ANOVA table you fill in. It is a product because the error <em>is</em> the person-by-condition interaction, and an interaction always gets the product of its two df.</span>
+                </li>
+                <li><span class="pb-lbl">The missing sum of squares, then the rest</span>
+                  <span class="pb-math">SS<sub>error</sub> = SS<sub>total</sub> &minus; SS<sub>conditions</sub> &minus; SS<sub>subjects</sub></span>
+                  <span class="pb-math">= 1500 &minus; 240 &minus; 900 = 360.00</span>
+                  <span class="pb-math">MS<sub>subjects</sub> = 900/9 = 100.00</span>
+                  <span class="pb-math">MS<sub>conditions</sub> = 240/3 = 80.00</span>
+                  <span class="pb-math">MS<sub>error</sub> = 360/27 = 13.33</span>
+                  <span class="pb-math"><em>F</em> = MS<sub>conditions</sub>/MS<sub>error</sub> = 80/13.33 = 6.00</span>
+                  <span class="pb-note">The within-subjects block is worth writing out as a check: SS = 240 + 360 = 600 on <em>n</em>(<em>k</em> &minus; 1) = 30 df, and 900 + 600 = 1500 on 9 + 30 = 39. The subjects row gets a mean square but no <em>F</em>. Its <em>F</em> would test whether people differ from each other, which nobody was asking.</span>
+                </li>
+                <li><span class="pb-lbl">The decision and the effect size</span>
+                  <span class="pb-math">6.00 &gt; 2.96, so reject H<sub>0</sub> (exact <em>p</em> = .003)</span>
+                  <span class="pb-math">η<sub>p</sub>² = SS<sub>conditions</sub> / (SS<sub>conditions</sub> + SS<sub>error</sub>)</span>
+                  <span class="pb-math">= 240 / (240 + 360) = 240/600 = .40</span>
+                  <span class="pb-note">Partial η² leaves the subjects row out of its denominator, which is why it can look large in a within-subjects study. Forty per cent of what is left once individual differences are removed is not forty per cent of the raw variation: that would be 240/1500 = .16. Report which one you computed, because the two answers to "how big was it" differ by a factor of two and a half here.</span>
+                </li>
+                <li><span class="pb-lbl">Where the between-subjects analysis lost it</span>
+                  <span class="pb-math">Between-subjects error = 900 + 360 = 1260 on 36 df</span>
+                  <span class="pb-math">MS = 1260/36 = 35.00, and <em>F</em> = 80/35 = 2.29</span>
+                  <span class="pb-note">The 900 is the whole story. A between-subjects analysis has no way of knowing that the same ten people produced all forty ratings, so the variation between those people has nowhere to go but the error term, where it nearly quadruples the mean square. The repeated-measures analysis names that 900, sets it aside, and tests the identical 240 against what is left. Neither analysis is wrong about the data; only one of them matches the design that produced it, and running a within-subjects study as though it were between-subjects is the commonest way to lose a real effect.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">df 9, 3, 27 and 39. SS<sub>error</sub> = 360.00, MS = 100.00, 80.00 and 13.33, and <em>F</em>(3, 27) = 6.00, which beats 2.96, so the layouts differ (<em>p</em> = .003, η<sub>p</sub>² = .40). The between-subjects version fails because the 900 points of between-person variation land in its error term instead of being removed.</p>
+              <p class="pb-ref">From <a href="stats-2/repeated-measures-anova/#rm-table">§2.5 Repeated Measures ANOVA</a>. <a href="tables.html">The printed F tables</a> hold both criticals, and the widget in <a href="stats-2/repeated-measures-anova/#rmviz">§2.5</a> draws the same two analyses as stacked bars.</p>
+            </details>
+          </article>
+
+          <!-- ---------- 2.21 ----------
+               verify: node -e 'const fs=require("fs"),vm=require("vm");const c={console};c.window=c;
+                        c.document={documentElement:{}};c.getComputedStyle=()=>({getPropertyValue:()=>""});
+                        c.MutationObserver=function(){this.observe=()=>{}};vm.createContext(c);
+                        vm.runInContext(fs.readFileSync("assets/js/viz.js","utf8"),c);const V=c.window.VIZ;
+                        console.log(V.fUpper(4.21,1,38), V.fUpper(18.6,2,76), V.fUpper(7.45,2,76));
+                        console.log(4.21/(4.21+38), 18.6*2/(18.6*2+76), 7.45*2/(7.45*2+76));
+                        console.log(2*.82, 76*.82, V.fUpper(7.45,1.64,62.32))'
+                     → p .0471 / 2.66e-7 / .00111 ; eta_p2 .0997 / .3286 / .1639
+                       GG .82 → df 1.64, 62.32 ; interaction p .0024
+                       design: N − g = 38 and g = 2 → 40 participants, 20 per group;
+                       (N − g)(k − 1) = 76 → k = 3 occasions ; total df 119 = 40×3 − 1
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p2-21"><span class="pb-num">33</span>One output, two tables, and how many people</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A sleep-hygiene course is compared against a waiting list. Everyone is assessed on a daytime-alertness scale at baseline, at four weeks and at twelve weeks. The output arrives as two tables and no method section.</p>
+            <div class="pb-given">
+              <span class="lbl">Mixed-design ANOVA output</span>
+              <ul>
+                <li>Group, in Tests of Between-Subjects Effects: <em>F</em>(1, 38) = 4.21, <em>p</em> = .047</li>
+                <li>Time, in Tests of Within-Subjects Effects: <em>F</em>(2, 76) = 18.60, <em>p</em> &lt; .001</li>
+                <li>Group × Time, in the same table: <em>F</em>(2, 76) = 7.45, <em>p</em> = .001</li>
+                <li>Mauchly's test was significant, with Greenhouse-Geisser ε = .82</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>How many participants took part, how many were in each group, and how many times was each one measured? Work from the degrees of freedom alone.</li>
+              <li>Why are the group effect and the time effect tested against different error terms, and which table holds which?</li>
+              <li>Which line do you report first, and what does the main effect of time mean once you have?</li>
+              <li>Apply the sphericity correction: which rows change, what do their degrees of freedom become, and does the interaction survive? Give partial η² for it.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Reading the design out of the df</span>
+                  <span class="pb-math">Group df = <em>g</em> &minus; 1 = 1 &nbsp;→&nbsp; <em>g</em> = 2 groups</span>
+                  <span class="pb-math">Between-subjects error df = <em>N</em> &minus; <em>g</em> = 38 &nbsp;→&nbsp; <em>N</em> = 40 participants</span>
+                  <span class="pb-math">Within-subjects error df = (<em>N</em> &minus; <em>g</em>)(<em>k</em> &minus; 1) = 38(<em>k</em> &minus; 1) = 76 &nbsp;→&nbsp; <em>k</em> = 3 occasions</span>
+                  <span class="pb-math">So 20 per group, 3 measurements each, 120 observations, and df<sub>total</sub> = 120 &minus; 1 = 119</span>
+                  <span class="pb-note">The trap is reading <em>N</em> = 40 as forty per group. In the between-subjects half of a mixed design, <em>N</em> counts participants and not observations, so its error df of 38 covers everyone in the study. Check the five source df add to 119: 1 + 38 + 2 + 2 + 76 = 119 ✓.</span>
+                </li>
+                <li><span class="pb-lbl">Two questions, two kinds of noise</span>
+                  <span class="pb-note">A group difference is a difference between people, so the only fair yardstick for it is how much people differ from each other in the first place. That is the between-subjects error, on 38 df, and the group row sits in the same table as it. A change over time happens inside a person, and the yardstick for it is how differently the three occasions treated different people: the person-by-time residual, on 76 df, in the within-subjects table. The interaction is also a within-person comparison (did the two groups <em>change</em> differently), so it is tested against that same smaller error. Using one pooled error for all three would judge the time effect against variation it has nothing to do with, which is exactly the mistake a between-subjects analysis of a within-subjects study makes.</span>
+                </li>
+                <li><span class="pb-lbl">The reading order</span>
+                  <span class="pb-note">Group × Time first, at <em>F</em>(2, 76) = 7.45, <em>p</em> = .001. It is significant, and it is the question the study was built to answer: the two groups did not follow the same trajectory. That changes what the row above it is allowed to say. The main effect of time, <em>F</em>(2, 76) = 18.60, now means only that alertness moved when the two groups are averaged together, which may describe neither of them: it is perfectly possible for the course group to have improved a great deal and the waiting list not at all. The group main effect is the weakest line here in any case, because it averages over all three occasions including baseline, where random assignment says the groups should not differ. Follow the interaction with simple effects, the change over time within each group separately, and report those.</span>
+                </li>
+                <li><span class="pb-lbl">The sphericity correction</span>
+                  <span class="pb-math">Only the within-subjects rows are corrected: Time and Group × Time</span>
+                  <span class="pb-math">df become (<em>k</em> &minus; 1)ε = 2 × .82 = 1.64 and 76 × .82 = 62.32</span>
+                  <span class="pb-math">Group × Time: <em>F</em>(1.64, 62.32) = 7.45, <em>p</em> = .002, still significant</span>
+                  <span class="pb-math">η<sub>p</sub>² = <em>F</em> · df<sub>1</sub> / (<em>F</em> · df<sub>1</sub> + df<sub>2</sub>) = 14.90 / 90.90 = .16</span>
+                  <span class="pb-note">The <em>F</em> ratio itself never moves, because no data changed: both degrees of freedom are multiplied by ε and the same ratio is read against a stricter distribution, which is why the <em>p</em> rose from .001 to .002. The between-subjects table is untouched, since sphericity is a statement about condition differences and that table has no conditions in it. Report the correction by name and print the ε, since fractional df tell a reader something was corrected without telling them how much.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">40 participants, 20 per group, measured 3 times, for 120 observations and 119 total df. Group is tested against the between-subjects error on 38 df and both within rows against the person-by-time error on 76 df. Report Group × Time first, <em>F</em>(1.64, 62.32) = 7.45, <em>p</em> = .002, η<sub>p</sub>² = .16 after the Greenhouse-Geisser correction, and treat the time main effect as qualified by it.</p>
+              <p class="pb-ref">From <a href="stats-2/repeated-measures-anova/#mixed-designs">§2.5 Repeated Measures ANOVA</a> and <a href="methods/between-vs-within-designs/">§5.4 Between vs Within Designs</a>. The reading order is the one <a href="stats-2/factorial-anova-two-way/#interaction-first">§2.4</a> sets out, and <a href="apa.html">the APA formatter</a> will typeset the corrected df for you.</p>
             </details>
           </article>
         </section>

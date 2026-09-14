@@ -41,6 +41,16 @@
     12. Build the ANOVA Table — the one-way table in stats-2/one-way-anova,
         derived here and read back off the shipped page, including the
         sample-SD divisor the exam dialect needs
+    13. Contrast Builder — the follow-up arithmetic in stats-2/post-hoc-tests,
+        with the scale-invariance, pairwise-is-a-contrast and interval-is-the-
+        test identities asserted rather than described
+    14. the rank-test tables — Mann–Whitney, Wilcoxon and Spearman on
+        tables.html, re-derived by exhaustive enumeration
+    15. the factorial 2 × 2 — the cell-means table and the variance partition
+        in stats-2/factorial-anova-two-way
+    16. the repeated-measures partition — the subjects row in
+        stats-2/repeated-measures-anova, plus the covariance identity that
+        explains why pairing works
 
    Note on section 7: the tool pages compute these inline against the DOM,
    so they can't be imported. What is asserted here is that viz.js still
@@ -2438,6 +2448,351 @@ try {
     src: 'stats-2/factorial-anova-two-way' });
 }
 
+
+
+/* ============================================================
+   16 — the repeated-measures partition (stats-2/repeated-measures-anova)
+
+   P92 put a second picture inside §2.5's widget: the same n × k table
+   analyzed twice, once as a one-way ANOVA that knows nothing about who
+   produced a score and once as the repeated-measures partition with the
+   subjects row split off. This section derives that partition from the
+   numbers alone and then drives the SHIPPED page under the DOM shim sections
+   8 to 15 use, through the page's OWN ?g= applier, with the shim handing it a
+   fake window.SC carrying groupParam lifted out of site.js by brace-matching.
+
+   THE BOOT STATE IS THE FIRST THING ASSERTED, and P92 is the reason it can
+   be. The widget used to seed itself with a fresh VIZ.randn() draw on every
+   load, which no test can pin down; the lesson now prints those eight people
+   and works their sums of squares by hand, so the frozen pools have to
+   reproduce that table exactly. Reading the boot BEFORE any parameter is
+   applied is what catches a frozen default quietly switched in the markup,
+   the lesson sections 10, 11 and 15 each learned.
+
+   THREE IDENTITIES ARE THE POINT, and each is asserted rather than described.
+
+   (a) THE THREE-WAY PARTITION. SS_C + SS_S + SS_E = SS_T exactly, and the
+   degrees of freedom add the same way, with the error taking the PRODUCT
+   (n − 1)(k − 1) rather than a difference. The widget computes SS_E from its
+   own residual formula rather than by subtracting, so the identity is a check
+   on the arithmetic instead of the way it was built, and it is asserted on
+   several datasets rather than only on the frozen one.
+
+   (b) THE SUBJECTS ROW IS THE WHOLE DIFFERENCE BETWEEN THE TWO ANALYSES. The
+   one-way model has no subjects row, so its error is exactly SS_S + SS_E on
+   N − k df. Both F ratios divide the SAME SS_C, which is what makes the two
+   bars comparable at all.
+
+   (c) THE SPREAD SLIDER MOVES THE SUBJECTS ROW AND NOTHING ELSE. Adding
+   bv·z to every score of a person is a pure subject effect, so SS_C and SS_E
+   must be untouched at every setting while SS_S grows as bv². The consequence
+   a lecturer draws is the repeated-measures F holding at 162.00 across the
+   whole slider while the one-way F falls from 243.00 to 0.63 — and the
+   crossover is the honest half of the lesson: at bv = 0 the one-way analysis
+   WINS, because the subjects row is then pure bookkeeping and the seven
+   degrees of freedom it takes would have been better left in the error.
+
+   THE DIVISOR IS CHECKED THE WAY SECTIONS 12, 13 AND 15 CHECK IT. VIZ.sd
+   divides by n; every mean square here is on its own df. The frozen pools
+   were chosen to put the two answers far apart and make both round: MS_E is
+   exactly 4.00 on 14 df, where the same SS_E over N would print 2.33.
+
+   Also asserted: the paired-versus-independent example the prose works, and
+   the covariance identity Var(X − Y) = Var(X) + Var(Y) − 2·Cov(X, Y) that
+   explains it.
+   ============================================================ */
+head('the repeated-measures partition (the shipped page)');
+
+const RM_HTML = fs.readFileSync(path.join(ROOT, 'stats-2/repeated-measures-anova/index.html'), 'utf8');
+
+/* ---- (1) the partition, derived here and independent of the page ---- */
+function rmPartition(D) {
+  const n = D.length, k = D[0].length, N = n * k;
+  let gm = 0;
+  for (const r of D) for (const v of r) gm += v;
+  gm /= N;
+  const pm = D.map(r => r.reduce((a, b) => a + b, 0) / k);
+  const cm = [];
+  for (let j = 0; j < k; j++) { let s = 0; for (let i = 0; i < n; i++) s += D[i][j]; cm.push(s / n); }
+  let ssC = 0, ssS = 0, ssE = 0, ssT = 0;
+  for (let j = 0; j < k; j++) ssC += n * (cm[j] - gm) ** 2;
+  for (let i = 0; i < n; i++) ssS += k * (pm[i] - gm) ** 2;
+  for (let i = 0; i < n; i++) for (let j = 0; j < k; j++) {
+    ssE += (D[i][j] - pm[i] - cm[j] + gm) ** 2;
+    ssT += (D[i][j] - gm) ** 2;
+  }
+  const dfC = k - 1, dfS = n - 1, dfE = (n - 1) * (k - 1), df1 = N - k;
+  const msC = ssC / dfC, msE = ssE / dfE, ss1 = ssS + ssE, ms1 = ss1 / df1;
+  return { n, k, N, gm, pm, cm, ssC, ssS, ssE, ssT, dfC, dfS, dfE, df1,
+           msC, msS: ssS / dfS, msE, ms1, ss1,
+           f2: msC / msE, f1: msC / ms1, eta: ssC / (ssC + ssE) };
+}
+
+/* the widget's frozen pools, transcribed from the lesson and then USED to
+   rebuild the same table, so a changed pool shows up as a changed number
+   rather than as a silently different study */
+const Z_BASE = [-1.5, -1, -0.5, 0, 0, 0.5, 1, 1.5];
+const Z_NOISE = [
+  [-1.2, 0.4, 0.8], [1.2, -0.4, -0.8], [-0.4, 0.8, -0.4], [0.4, -0.8, 0.4],
+  [0.8, -0.4, -0.4], [-0.8, 0.4, 0.4], [0, 0.4, -0.4], [0, -0.4, 0.4]
+];
+const PATTERN = [-1, 0, 1];
+function builtIn(bv, ce) {
+  return Z_BASE.map((z, s) => PATTERN.map((pk, k) => 50 + bv * z + pk * ce + 2.5 * Z_NOISE[s][k]));
+}
+
+const RM0 = rmPartition(builtIn(22, 9));
+eq('frozen study: SS conditions', RM0.ssC, 1296, 1e-9, '8[(41−50)² + 0 + (59−50)²]');
+eq('frozen study: SS subjects', RM0.ssS, 10164, 1e-9, '3 × 3388');
+eq('frozen study: SS error', RM0.ssE, 56, 1e-9, 'the 24 residuals, squares totalling 56');
+eq('frozen study: SS total', RM0.ssT, 11516, 1e-9, 'every score against the grand mean of 50');
+/* identity (a) */
+eq('the three pieces add to the total', RM0.ssC + RM0.ssS + RM0.ssE, RM0.ssT, 1e-9,
+   'SS_C + SS_S + SS_E = SS_T');
+is('the four df add the same way', RM0.dfC + RM0.dfS + RM0.dfE === RM0.N - 1, true, '2 + 7 + 14 = 23');
+is('the error df is a PRODUCT, not a difference', RM0.dfE === (RM0.n - 1) * (RM0.k - 1), true,
+   'the error is the person-by-condition interaction');
+eq('frozen study: MS error is on (n − 1)(k − 1), not on N', RM0.msE, 4, 1e-12,
+   'the divisor this assertion exists to catch: 56/14, where 56/24 would give 2.33');
+eq('frozen study: MS conditions', RM0.msC, 648, 1e-12, '1296/2');
+eq('frozen study: MS subjects', RM0.msS, 1452, 1e-12, '10164/7');
+eq('frozen study: F, repeated measures', RM0.f2, 162, 1e-9, '648/4');
+rel('frozen study: p, repeated measures', V.fUpper(RM0.f2, 2, 14), 2.0916034e-10, 1e-5,
+    'VIZ.fUpper(162, 2, 14)');
+eq('frozen study: partial eta squared', RM0.eta, 1296 / 1352, 1e-12, 'SS_C / (SS_C + SS_E)');
+/* identity (b) */
+eq('the one-way error is exactly the subjects row plus the error row', RM0.ss1, 10164 + 56, 1e-9,
+   'a between-subjects model has nowhere else to put SS_S');
+eq('frozen study: one-way error MS', RM0.ms1, 10220 / 21, 1e-12, '(11516 − 1296) / 21');
+eq('frozen study: F, people ignored', RM0.f1, 1296 / 2 / (10220 / 21), 1e-9, '1.3315');
+rel('frozen study: p, people ignored', V.fUpper(RM0.f1, 2, 21), 0.2854743, 1e-5,
+    'VIZ.fUpper(1.3315, 2, 21)');
+is('both analyses divide the SAME sum of squares for conditions',
+   rmPartition(builtIn(22, 9)).ssC === rmPartition(builtIn(0, 9)).ssC, true,
+   'which is what makes the two bars comparable');
+
+/* identity (c): the spread slider moves SS_S and nothing else */
+for (const bv of [0, 8, 16, 22, 32]) {
+  const P = rmPartition(builtIn(bv, 9));
+  eq(`spread = ${bv}: SS conditions is unmoved`, P.ssC, 1296, 1e-9, 'a pure person shift leaves every condition mean alone');
+  eq(`spread = ${bv}: SS error is unmoved`, P.ssE, 56, 1e-9, 'every score moves with its own person mean');
+  eq(`spread = ${bv}: SS subjects grows as the square of the spread`, P.ssS, 3 * bv * bv * 7, 1e-9,
+     'k Σ (bv·z)², with Σ z² = 7');
+  eq(`spread = ${bv}: F, repeated measures, is still 162`, P.f2, 162, 1e-9, 'MS_E never moved');
+}
+eq('at spread = 0 the one-way F is 243', rmPartition(builtIn(0, 9)).f1, 648 / (56 / 21), 1e-9,
+   'the same SS_E spread over 21 df instead of 14');
+eq('at spread = 32 the one-way F has collapsed', rmPartition(builtIn(32, 9)).f1,
+   648 / ((3 * 32 * 32 * 7 + 56) / 21), 1e-9, '0.6285');
+is('so the design COSTS df when nobody differs and pays when they do',
+   rmPartition(builtIn(0, 9)).f1 > rmPartition(builtIn(0, 9)).f2 &&
+   rmPartition(builtIn(32, 9)).f1 < rmPartition(builtIn(32, 9)).f2, true,
+   'the honest half of the lesson, asserted in both directions');
+
+/* ---- (2) the paired example the prose works, and the identity behind it ---- */
+const PX = [492, 502, 518, 534, 554], PY = [496, 511, 524, 542, 562];
+const mean5 = a => a.reduce((x, y) => x + y, 0) / a.length;
+const varS = a => { const m = mean5(a); return a.reduce((s, v) => s + (v - m) ** 2, 0) / (a.length - 1); };
+const covS = (a, b) => {
+  const ma = mean5(a), mb = mean5(b);
+  return a.reduce((s, v, i) => s + (v - ma) * (b[i] - mb), 0) / (a.length - 1);
+};
+const PD = PY.map((v, i) => v - PX[i]);
+eq('paired example: variance of the single-task column', varS(PX), 616, 1e-9, 'the lesson prints s = 24.82');
+eq('paired example: variance of the dual-task column', varS(PY), 669, 1e-9, 'the lesson prints s = 25.87');
+eq('paired example: covariance', covS(PX, PY), 640.5, 1e-9, 'r · SD(X) · SD(Y)');
+eq('paired example: r', covS(PX, PY) / Math.sqrt(varS(PX) * varS(PY)), 0.9977, 5e-5, 'the lesson prints .998');
+/* the identity, which is the reason the design works at all */
+eq('Var(X − Y) = Var(X) + Var(Y) − 2 Cov(X, Y)', varS(PD),
+   varS(PX) + varS(PY) - 2 * covS(PX, PY), 1e-9, '616 + 669 − 2(640.5) = 4');
+eq('paired example: the difference column has s = 2.00 exactly', Math.sqrt(varS(PD)), 2, 1e-12,
+   'which is what the identity predicts');
+eq('paired example: the paired t', mean5(PD) / (Math.sqrt(varS(PD)) / Math.sqrt(5)), 7.8262, 5e-5,
+   '7.0 / (2.00/√5)');
+const spPair = Math.sqrt((varS(PX) + varS(PY)) / 2);
+eq('paired example: the pooled SD an independent t would use', spPair, 25.3476, 5e-5, '√((616 + 669)/2)');
+eq('paired example: the independent t on the same ten numbers',
+   (mean5(PY) - mean5(PX)) / (spPair * Math.sqrt(2 / 5)), 0.4366, 5e-5, 'the lesson prints 0.44');
+rel('paired example: p for the paired t', 2 * V.tUpper(7.8262, 4), 0.0014391, 1e-4, 'two-tailed');
+rel('paired example: p for the independent t', 2 * V.tUpper(0.4366, 8), 0.6739454, 1e-4, 'two-tailed');
+eq('t*(4) at .05 two-tailed', V.tInv(0.025, 4), 2.7764, 5e-5, 'printed t table');
+/* with two conditions the repeated-measures F is the paired t squared, exactly */
+const RM2 = rmPartition(PX.map((v, i) => [v, PY[i]]));
+eq('two conditions: F = t² exactly', RM2.f2, (mean5(PD) / (Math.sqrt(varS(PD)) / Math.sqrt(5))) ** 2, 1e-9,
+   'the FAQ prints F(1, 4) = 61.25');
+eq('two conditions: F(1, 4) = 61.25', RM2.f2, 61.25, 1e-9, 'the same test written twice');
+
+/* ---- (3) the exam bookkeeping the lesson teaches ---- */
+is('F(3, 84) implies 4 conditions', 3 + 1, 4, 'the first df is k − 1');
+is('F(3, 84) implies 29 participants', 84 / 3 + 1, 29, 'the second df is (n − 1)(k − 1)');
+is('a mixed design: an error df of 38 with 2 groups means 40 people', 38 + 2, 40,
+   'N − g, where N counts participants and not observations');
+is('and 76 = 38 × 2 means 3 occasions', 76 / 38 + 1, 3, '(N − g)(k − 1)');
+is('the five mixed-design source df add to Nk − 1', 1 + 38 + 2 + 2 + 76, 40 * 3 - 1,
+   'the arithmetic check on problem 33');
+
+/* ---- (4) and now the page itself ---- */
+function driveRM() {
+  const blocks = [...RM_HTML.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]);
+  const src = blocks.filter(s => /rm-t2/.test(s))[0];
+  if (!src) throw new Error('no inline script mentioning rm-t2');
+
+  const ctx2d = {};
+  ['clearRect', 'fillRect', 'strokeRect', 'beginPath', 'moveTo', 'lineTo', 'arc', 'closePath',
+   'fill', 'stroke', 'setLineDash', 'fillText', 'setTransform', 'save', 'restore'].forEach(n => { ctx2d[n] = () => {}; });
+  ctx2d.measureText = t => ({ width: String(t).length * 6 });
+
+  const els = {};
+  const mk = () => {
+    const on = {};
+    const node = {
+      innerHTML: '', textContent: '', value: '', min: '0', max: '100', step: '1',
+      style: {}, dataset: {}, hidden: false,
+      clientWidth: 720, parentElement: { clientWidth: 720 }, getContext: () => ctx2d,
+      classList: { add: () => {}, remove: () => {}, toggle: () => {} },
+      querySelectorAll: () => [], getAttribute: () => null,
+      addEventListener: (t, f) => { (on[t] = on[t] || []).push(f); },
+      fire: (t, e) => (on[t] || []).forEach(f => f.call(node, e))
+    };
+    return node;
+  };
+
+  /* the shared parser, lifted out of site.js rather than reimplemented: what
+     is being asked is what the SHIPPED helper does with a URL */
+  const siteSrc = fs.readFileSync(path.join(ROOT, 'assets/js/site.js'), 'utf8');
+  const grab = (name) => {
+    const i = siteSrc.indexOf('function ' + name);
+    const j = siteSrc.indexOf('\n  }\n', i);
+    if (i < 0 || j < 0) throw new Error('site.js no longer defines ' + name);
+    return siteSrc.slice(i, j + 4);
+  };
+  const groupParam = new Function(grab('numeric') + grab('groupParam') + ';return groupParam;')();
+
+  let maps = [];
+  const c = { console };
+  c.window = c;
+  c.document = {
+    documentElement: {},
+    getElementById: id => els[id] || (els[id] = mk()),
+    querySelector: sel => els[sel.replace('#', '')] || (els[sel.replace('#', '')] = mk()),
+    querySelectorAll: () => []
+  };
+  c.getComputedStyle = () => ({ getPropertyValue: () => '#000000' });
+  c.MutationObserver = function () { this.observe = () => {}; };
+  c.ResizeObserver = function () { this.observe = () => {}; };
+  c.requestAnimationFrame = cb => cb();
+  c.addEventListener = () => {};
+  c.location = { search: '?x=1' };
+  c.SC = { preset: m => { maps.push(m); }, groupParam };
+  vm.createContext(c);
+  vm.runInContext(fs.readFileSync(path.join(ROOT, 'assets/js/viz.js'), 'utf8'), c, { filename: 'viz.js' });
+
+  /* the two sliders carry the lesson's own defaults, read out of the markup
+     rather than restated here */
+  ['bv-range', 'ce-range'].forEach(id => {
+    els[id] = mk();
+    const m = RM_HTML.match(new RegExp('<input type="range" id="' + id +
+      '" min="([-\\d.]+)" max="([-\\d.]+)" step="([-\\d.]+)" value="([-\\d.]+)"'));
+    if (!m) throw new Error('no range input with id ' + id);
+    els[id].min = m[1]; els[id].max = m[2]; els[id].step = m[3]; els[id].value = m[4];
+  });
+
+  vm.runInContext(src, c, { filename: 'stats-2/repeated-measures-anova#partition' });
+  const gMap = maps.filter(m => typeof m.g === 'function')[0];
+  if (!gMap) throw new Error('the widget registered no ?g= applier');
+
+  const txt = id => (els[id] ? String(els[id].textContent) : null);
+  /* the two tables are written as markup, so they are read back as markup, the
+     same way section 9 reads tables.html's <tbody> */
+  const nums = host => (els[host].innerHTML.match(/<td[^>]*>[\s\S]*?<\/td>/g) || [])
+    .map(t => t.replace(/<[^>]*>/g, '').trim());
+  const state = () => ({
+    f2: txt('rm-f2'), f1: txt('rm-f1'), m2: txt('rm-m2'), eta: txt('rm-eta'),
+    note: txt('rm-note'), cap: txt('rm-cap'),
+    spread: txt('stat-bv'), cond: txt('stat-cs'), vis: txt('stat-vis'),
+    bv: els['bv-range'].value, ce: els['ce-range'].value,
+    t1: nums('rm-t1'), t2: nums('rm-t2')
+  });
+  if (!state().t2.length) throw new Error('the repeated-measures table stayed empty on boot');
+  return {
+    boot: state(),
+    loadG: raw => { gMap.g(raw); return state(); },
+    slide: (id, v) => { els[id].value = String(v); els[id].fire('input'); return state(); }
+  };
+}
+
+try {
+  const page = driveRM();
+  const b = page.boot;
+
+  /* the BOOT state is read before any parameter is applied. This widget
+     reseeded itself at random until P92, so "it boots on a fixed study at
+     all" is itself an assertion worth making. */
+  is('widget boots on its own markup defaults', [b.bv, b.ce].join(','), '22,9', 'the two range inputs');
+  is('widget boots on the built-in eight', b.note,
+     'The built-in study: 8 people in 3 conditions, 24 observations.', 'frozen, not reseeded');
+  is('widget boots: F, repeated measures', b.f2, '162.00', '648 / 4');
+  is('widget boots: F, people ignored', b.f1, '1.33', '648 / 486.67');
+  is('widget boots: error MS on (n − 1)(k − 1)', b.m2, '4.00', '56 / 14, not 56 / 24');
+  is('widget boots: partial eta squared', b.eta, '.959', '1296 / 1352');
+  is('widget boots: the descriptive spreads', [b.spread, b.cond].join(','), '20.6,7.3',
+     'VIZ.sd of the person means and of the condition means, which is what its n divisor is for');
+  is('widget boots: the verdict on the raw view', b.vis, 'hidden in the noise',
+     'the condition spread is well under the between-person spread');
+
+  /* every cell of both tables, read back out of the markup */
+  is('one-way table: every cell, source names included', b.t1.join('|'),
+     'Conditions|1296.00|2|648.00|1.33|.2855|Error|10220.00|21|486.67|||Total|11516.00|23|||',
+     'conditions on k − 1, error on N − k, total on N − 1');
+  is('repeated-measures table: every cell, source names included', b.t2.join('|'),
+     'Between subjects|10164.00|7|1452.00|||Within subjects|1352.00|16||||' +
+     'Conditions|1296.00|2|648.00|162.00|&lt; .0001|Error|56.00|14|4.00|||Total|11516.00|23|||',
+     'SS_S 10164, SS_C 1296, SS_E 56 of 11516');
+  is('the within-subjects row is the conditions row plus the error row', b.t2[7], '1352.00',
+     '1296 + 56, on n(k − 1) = 16 df');
+  is('the table escapes its own less-than sign', /&lt; \.0001/.test(b.t2.join('|')), true,
+     'the p column is written into innerHTML');
+  is('the caption reads the two analyses back', /falls from 486\.67 to 4\.00/.test(b.cap), true,
+     'the sentence a lecturer says out loud');
+
+  /* identity (c), through the page's own slider */
+  const at32 = page.slide('bv-range', 32);
+  is('page at spread = 32: the repeated-measures F has not moved', at32.f2, '162.00', 'SS_C and MS_E both untouched');
+  is('page at spread = 32: the one-way F has collapsed', at32.f1, '0.63', '648 / 1029.71');
+  is('page at spread = 32: the error MS has not moved', at32.m2, '4.00', 'a person shift never touched a residual');
+  const at0 = page.slide('bv-range', 0);
+  is('page at spread = 0: the repeated-measures F is still 162', at0.f2, '162.00', 'unmoved across the whole range');
+  is('page at spread = 0: the one-way F OVERTAKES it', at0.f1, '243.00',
+     'the same SS_E over 21 df rather than 14: the design costs df when nobody differs');
+  page.slide('bv-range', 22);
+
+  /* ?g= : a whole within-subjects dataset in the URL, paired by position */
+  const gRaw = '12,15,9,14,11;18,20,14,19,16;22,26,17,24,21';
+  const g = page.loadG(gRaw);
+  const want = rmPartition([[12, 18, 22], [15, 20, 26], [9, 14, 17], [14, 19, 24], [11, 16, 21]]);
+  is('page ?g=: the note names the loaded shape', g.note,
+     'A dataset from the link: 5 people in 3 conditions, 15 observations.',
+     'groups are conditions, and values are paired by position');
+  is('page ?g=: F, repeated measures', g.f2, want.f2.toFixed(2), 'derived independently above');
+  is('page ?g=: F, people ignored', g.f1, want.f1.toFixed(2), 'derived independently above');
+  is('page ?g=: error MS', g.m2, want.msE.toFixed(2), 'SS_E over (n − 1)(k − 1)');
+  eq('page ?g=: the three pieces still add to the total',
+     Number(g.t2[1]) + Number(g.t2[13]) + Number(g.t2[19]), Number(g.t2[25]), 5e-9,
+     'SS_S + SS_C + SS_E = SS_T, read off the shipped markup');
+
+  /* a mangled or unpairable ?g= must leave the widget where it was: conditions
+     of different lengths are not rows, and half a dataset is worse than none */
+  for (const bad of ['1,2,3;4,5', '1,2,3', '1,2,3;4,5,x', 'nonsense', '', '1;2;3',
+                     '1,2,3;4,5,6;7,8,9;1,2,3;4,5,6;7,8,9;1,2,3']) {
+    const good = page.loadG(gRaw);
+    is(`page ignores a bad ?g=${bad || '(empty)'}`, page.loadG(bad).f2, good.f2,
+       'reject the whole parameter, never half-read it');
+  }
+} catch (e) {
+  failures.push({ section, label: 'the repeated-measures partition could not be driven — ids or structure changed?',
+    got: String(e.message), want: 'a runnable rm-t2 script printing both tables', tol: 0, err: NaN,
+    src: 'stats-2/repeated-measures-anova' });
+}
 
 
 /* ============================================================

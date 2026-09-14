@@ -320,19 +320,25 @@ window.SOFTWARE = {
   "repeated-measures-anova": {
     spss: [
       '<strong>Analyze → General Linear Model → Repeated Measures…</strong>',
-      'Name the within-subject factor (e.g. <em>time</em>), enter its number of levels, click <em>Add</em> then <em>Define</em>, and map each level to its column.',
+      'Name the within-subject factor (e.g. <em>time</em>), enter its number of levels, click <em>Add</em> then <em>Define</em>, and map each level to its column. The data have to be in wide format: one row per person, one column per condition.',
+      'For a <strong>mixed design</strong>, put the grouping variable into <em>Between-Subjects Factor(s)</em> in the same dialog. Nothing else changes, and the output grows a second table.',
       'Check <em>Mauchly’s Test of Sphericity</em> in the output; if <em>p</em> &lt; .05, read the <em>Greenhouse-Geisser</em> row of the within-subjects table.',
+      'Read <em>Tests of Within-Subjects Effects</em> in pairs of rows. The factor’s block prints four versions of the same test (<em>Sphericity Assumed</em>, <em>Greenhouse-Geisser</em>, <em>Huynh-Feldt</em>, <em>Lower-bound</em>): the SS and the <em>F</em> are identical in all four and only the df and <em>p</em> move. Directly beneath sits <em>Error(factor)</em>, which is the (n − 1)(k − 1) error the <em>F</em> divided by.',
+      'The subjects row is in the other table, <em>Tests of Between-Subjects Effects</em>, as <em>Error</em> on n − 1 df. In a mixed design that table is also where the grouping factor is tested; the within-subjects table holds the repeated factor and the group × factor interaction.',
       '<em>Options…</em>: tick <em>Estimates of effect size</em>; <em>EM Means…</em> with <em>Compare main effects</em> (Bonferroni) for pairwise follow-ups.'
     ],
     jasp: [
       '<strong>ANOVA → Repeated Measures ANOVA</strong>.',
       'Define the factor and its levels in <em>Repeated Measures Factors</em>, then drag each column into its cell.',
       '<em>Assumption Checks</em>: tick <em>Sphericity tests</em> and, under corrections, <em>Greenhouse-Geisser</em>. JASP prints corrected and uncorrected rows side by side.',
+      'A between-subjects factor goes in the <em>Between Subject Factors</em> box of the same panel, which is all a mixed design needs. JASP then prints <em>Within Subjects Effects</em> and <em>Between Subjects Effects</em> as two tables, the way SPSS does.',
       'Tick <em>Estimates of effect size</em>; post-hocs live in <em>Post Hoc Tests</em> with Bonferroni/Holm options.'
     ],
     apa: '<p>Mauchly’s test indicated a sphericity violation, χ²(2) = 9.4, <em>p</em> = .009, so Greenhouse–Geisser-corrected values are reported (ε = .78). Recall differed across the three delays, <em>F</em>(1.56, 45.2) = 8.75, <em>p</em> = .001, η<sub>p</sub>² = .23. Bonferroni-corrected comparisons showed forgetting from immediate to one week, <em>M</em><sub>diff</sub> = 9.1, <em>p</em> = .001.</p>',
     tips: [
       'The corrected (fractional) dfs, <em>F</em>(1.56, 45.2), tell the reader a sphericity correction was applied. Also name it and give ε.',
+      'The uncorrected error df is the fast check on how many people ran: it is (n − 1)(k − 1), so <em>F</em>(2, 58) with three conditions means 30 participants, not 30 per condition.',
+      'In a mixed design, report the interaction before either main effect, and say which table each <em>F</em> came from, since the two use different error terms.',
       'χ² and ε are Greek, so no italics; <em>F</em>, <em>p</em>, and <em>M</em> are Latin, so italics.'
     ]
   },
