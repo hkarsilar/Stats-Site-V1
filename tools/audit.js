@@ -967,6 +967,102 @@ descSeen.forEach((pages, d) => {
 }
 
 /* ============================================================
+   CHECK 11 — a "Problem N" reference must name the badge it links to
+   (P94)
+
+   problems.html shows each problem a visible number, the .pb-num badge,
+   and ~57 lesson pages cite a problem by that number in prose. The two
+   are joined by nothing: the href carries an #pX-Y fragment, the prose
+   carries a numeral, and until P94 they had disagreed for five sessions
+   without a single check noticing. P79 and P82 appended to the Stats 1
+   set without renumbering the sets below it, so the Stats 2 set kept
+   counting from 13 and six badges named two different cards, while
+   "Problem 15 of the practice problems" in a lesson landed on a card
+   labelled something else. The link check cannot see this — the href
+   resolves perfectly, and CHECK 3a's fragment check confirms the id
+   exists. The defect is entirely in the numeral beside it.
+
+   The rule: resolve every "Problem N" to a fragment, by the anchor it
+   sits inside or, failing that, by the only problems.html#pX-Y link
+   within 60 characters of it, then require N to equal the badge
+   rendered at that fragment. A mention no link can be attached to is
+   reported and not gated, because a number alone carries nothing to
+   check it against; that is a nudge to link it rather than a fault.
+   The corpus has none today, which is what makes the gate meaningful.
+
+   The badge run itself is asserted first, as 1..n in page order with no
+   gap and no repeat. That is the invariant every one of those prose
+   references leans on, and it is exactly what five sessions of
+   appending broke. A session that adds a problem renumbers with it.
+   ============================================================ */
+{
+  const pbSrc = read(path.join(ROOT, 'problems.html'));
+  const badges = new Map();                       // fragment id → visible badge
+  let seq = 0, run = true;
+  for (const m of pbSrc.matchAll(/<h3 id="(p\d+-\d+)"><span class="pb-num">(\d+)<\/span>/g)) {
+    seq++;
+    const n = Number(m[2]);
+    if (badges.has(m[1])) err(`problems.html → duplicate problem id #${m[1]}`);
+    badges.set(m[1], n);
+    if (n !== seq && run) {
+      const ord = (k) => k + (k % 100 >= 11 && k % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][k % 10] || 'th');
+      err(`problems.html → .pb-num badges must run 1..n in page order; #${m[1]} is the ${ord(seq)} card on the page and shows ${n}. Renumber the badges below it too.`);
+      run = false;                                 // one message, not a cascade
+    }
+  }
+  if (!badges.size) err('CHECK 11: found no .pb-num badges in problems.html');
+
+  const files = [];
+  (function walk(dir) {
+    for (const f of fs.readdirSync(dir)) {
+      if (f.startsWith('.') || f === 'node_modules' || f === '_site') continue;
+      const q = path.join(dir, f);
+      if (fs.statSync(q).isDirectory()) { if (f !== 'tools') walk(q); }
+      else if (f.endsWith('.html') && f !== 'search-index.js') files.push(q);
+    }
+  }(ROOT));
+  files.push(path.join(ROOT, 'tools', 'faq_data.py'));   // FAQ answers are prose too
+
+  const LINK = /problems\.html#(p\d+-\d+)/g;
+  let checked = 0, loose = 0;
+  for (const file of files) {
+    if (!fs.existsSync(file)) continue;
+    /* HTML comments are blanked, not removed, so every index below still
+       points into the real file: problems.html's own source markers and its
+       node -e verification notes are full of "Problem N" and none of it is
+       prose a reader ever sees. */
+    const src = read(file).replace(/<!--[\s\S]*?-->/g, (c) => ' '.repeat(c.length));
+    if (!/Problems?\s+\d/.test(src)) continue;
+    /* Anchor bodies, so a mention inside a link is paired with THAT link
+       rather than with whichever one happens to sit nearest in the source. */
+    const spans = [];
+    for (const a of src.matchAll(/<a href="[^"]*problems\.html#(p\d+-\d+)"[^>]*>([\s\S]*?)<\/a>/g)) {
+      const bodyStart = a.index + a[0].indexOf('>', a[0].indexOf('href')) + 1;
+      spans.push([bodyStart, bodyStart + a[2].length, a[1]]);
+    }
+    for (const m of src.matchAll(/Problems?\s+(\d+)/g)) {
+      let frag = null;
+      for (const [a, b, id] of spans) if (a <= m.index && m.index < b) frag = id;
+      if (!frag) {
+        const win = src.slice(Math.max(0, m.index - 60), m.index + m[0].length + 60);
+        const near = [...new Set([...win.matchAll(LINK)].map((x) => x[1]))];
+        if (near.length === 1) frag = near[0];
+      }
+      if (!frag) {
+        loose++;
+        warn(`${rel(file)} → "${m[0]}" has no problems.html link within 60 characters, so nothing can check the number. Link it.`);
+        continue;
+      }
+      if (!badges.has(frag)) { err(`${rel(file)} → "${m[0]}" links to #${frag}, which is not a problem on problems.html`); continue; }
+      checked++;
+      if (Number(m[1]) !== badges.get(frag))
+        err(`${rel(file)} → "${m[0]}" links to #${frag}, which is shown as Problem ${badges.get(frag)}. Fix the number in the prose, not the badge.`);
+    }
+  }
+  info(`problem-number references: ${checked} checked against ${badges.size} badges${loose ? `, ${loose} unlinked` : ''}`);
+}
+
+/* ============================================================
    Report
    ============================================================ */
 const line = '─'.repeat(60);

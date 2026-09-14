@@ -16,16 +16,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Practice Problems — Worked Statistics Exam Questions — StatsCapybara</title>
-  <meta name="description" content="Seventy-five statistics problems with worked solutions: z-scores, t-tests, chi-square, ANOVA, rank tests, regression and Bayes, one step at a time." />
+  <meta name="description" content="Eighty-three statistics problems with worked solutions: z-scores, t-tests, chi-square, ANOVA tables, contrasts, rank tests and regression, one step at a time." />
   <link rel="canonical" href="https://statscapybara.com/problems.html" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Practice Problems — StatsCapybara" />
-  <meta property="og:description" content="Seventy-three worked statistics problems, from z-scores and rank tests to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
+  <meta property="og:description" content="Eighty-three worked statistics problems, from z-scores and ANOVA tables to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
   <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
   <meta property="og:url" content="https://statscapybara.com/problems.html" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Practice Problems — StatsCapybara" />
-  <meta name="twitter:description" content="Seventy-three worked statistics problems, from z-scores and rank tests to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
+  <meta name="twitter:description" content="Eighty-three worked statistics problems, from z-scores and ANOVA tables to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="assets/css/styles.css" />
@@ -140,6 +140,7 @@
           <li><a href="#stats-1"><span class="t">📊 Stats 1 · Foundations</span><br><span class="m">25 problems · data types → probability → z, t, proportions, χ², correlation and regression</span></a></li>
           <li><a href="#exam-style"><span class="t">📝 Exam-style · A Stats 1 midterm</span><br><span class="m">8 problems · §1.1 to §1.12, worked off the printed tables</span></a></li>
           <li><a href="#stats-2"><span class="t">🔗 Stats 2 · Groups &amp; relationships</span><br><span class="m">21 problems · ANOVA → contrasts → factorial → regression → rank tests</span></a></li>
+          <li><a href="#stats-2-exam"><span class="t">📝 Exam-style · A Stats 2 midterm</span><br><span class="m">8 problems · §2.1 to §2.5, tables completed and read backwards</span></a></li>
           <li><a href="#regression"><span class="t">📐 Regression · Several predictors</span><br><span class="m">8 problems · multiple regression → missing data</span></a></li>
           <li><a href="#advanced"><span class="t">🎲 Advanced · Modern methods</span><br><span class="m">7 problems · Bayes → model comparison</span></a></li>
           <li><a href="#toolkit"><span class="t">🔍 Research Toolkit · Spot the problem</span><br><span class="m">6 problems · design, sampling, ethics, writing</span></a></li>
@@ -409,7 +410,7 @@
                 </li>
               </ol>
               <p class="pb-answer">.35, .48, .24, and no: the two variables are dependent. Under-30s cycle at nearly twice the rate of over-30s (48% against 22%).</p>
-              <p class="pb-ref">From <a href="stats-1/probability-basics/">§1.7 Probability Basics</a> · test the dependence formally with a <a href="stats-1/chi-square-tests/">chi-square test</a> (Problem 19 below).</p>
+              <p class="pb-ref">From <a href="stats-1/probability-basics/">§1.7 Probability Basics</a> · test the dependence formally with a <a href="stats-1/chi-square-tests/">chi-square test</a> (<a href="problems.html#p2-7">Problem 40</a> below).</p>
             </details>
           </article>
 
@@ -1334,7 +1335,7 @@
                 </li>
               </ol>
               <p class="pb-answer">Expected counts 60, 36, 24 for members and 40, 24, 16 for casual riders; all conditions met. Components 1.6667, 0.4444, 1.5000, 2.5000, 0.6667 and 2.2500 give χ² = 9.03 on 2 df. Table F brackets p between .01 and .02 (p = .0110 exactly), so rider type and verdict are associated at α = .05. The biggest contributor is casual riders who chose "better", 30 against an expected 40. Row percentages: members 58.3 / 26.7 / 15.0, casual 37.5 / 35.0 / 27.5.</p>
-              <p class="pb-round">Rounding: components to 4 dp so the sum is right in the second decimal; χ² to 2 dp and percentages to 1 dp in the report. Reporting it: χ²(2, <em>N</em> = 200) = 9.03, <em>p</em> = .011. <a href="problems.html#p2-7">Problem 19</a> takes a different 2 × 3 table on to Cramér's <em>V</em>.</p>
+              <p class="pb-round">Rounding: components to 4 dp so the sum is right in the second decimal; χ² to 2 dp and percentages to 1 dp in the report. Reporting it: χ²(2, <em>N</em> = 200) = 9.03, <em>p</em> = .011. <a href="problems.html#p2-7">Problem 40</a> takes a different 2 × 3 table on to Cramér's <em>V</em>.</p>
               <p class="pb-ref">From <a href="stats-1/chi-square-tests/">§1.16 Chi-Square Tests</a> · type the table into the <a href="stats-1/chi-square-tests/?t=70,32,18;30,28,22">Build a Table explorer</a> to see the same components, the same row percentages and the tint, or look the critical values up on the printed <a href="tables.html#printed-tables">Table F</a>.</p>
             </details>
           </article>
@@ -1578,32 +1579,28 @@
              EXAM-STYLE (P86)
              A second Stats 1 set, written in the shapes a paper midterm asks
              over §1.1–§1.12. Numbering continues the Stats 1 set above it.
-             Note for a later session: the page's .pb-num badges drifted out of
-             step when P79 and P82 appended problems 13–18 to the Stats 1 set
-             without renumbering the four sets below it, so the Stats 2 set
-             still starts its own count at 13. P83 added two more Stats 1
-             problems and moved this set's badges from 19–26 to 21–28, P84
-             added two more and moved them to 23–30, and P85 added three
-             (r by hand, the line from summary statistics, a residual plot)
-             and moved them to 26–33, so the two Stats 1 sets run 1 to 33
-             without a gap. Every one of those renumbers was safe because no
-             page names an exam-style problem by its number, and P84 also
-             brought this set's stale "Problem N" source comments into step
-             with the badges. The remaining drift is the 33 cards below, and
-             fixing it means renumbering them AND the "Problem N" mentions in
-             the lesson pages, which is its own session; the #pX-Y anchors
-             every lesson links to are unaffected either way. P89 appended two
-             ANOVA problems to the Stats 2 set and gave them 23 and 24, which
-             continues that set's own run rather than the page's, so those two
-             numbers now appear twice on the page. Deliberate: the alternative
-             was renumbering the sets below inside a prompt that is not the one
-             that owns the sweep.
+             Numbering note, settled by P94: the page's .pb-num badges drifted
+             out of step from P79 onward, because each session appended to the
+             Stats 1 set without renumbering the sets below it, so the Stats 2
+             set still began its own count at 13 and six badges named two
+             different cards. The #pX-Y anchors were never affected, but ~57
+             lesson pages cite a problem by its DISPLAYED number, which is why
+             the repair needed a session of its own rather than an edit here.
+             P94 renumbered every badge continuously in page order across all
+             seven sets, repointed every "Problem N" mention sitewide, made
+             each of them a link (there were two bare ones, and ten more
+             inside this file), and added CHECK 10 to tools/audit.js, which
+             pairs a "Problem N" with the badge rendered at the fragment its
+             own link names and errors on a mismatch. It found one genuinely
+             stale reference on its first run, in p1-5. Append freely from
+             here: renumber with the badges, and the check will catch anything
+             the sweep missed.
              ================================================================== -->
         <section class="pb-set" id="exam-style-set">
           <h2 id="exam-style">📝 Exam-style · A midterm on §1.1–§1.12</h2>
           <p class="pb-set-sub">Eight problems written the way a paper exam asks them: one short scenario, several parts that build on each other, numbers a basic calculator can hold, and every area read off the printed tables rather than out of software. They span the first twelve sections of <a href="stats-1/">Stats 1</a>, which is the usual reach of a week 4 or week 5 midterm. The set above teaches one idea per problem; this one chains them.</p>
 
-          <!-- ---------- Problem 23 ----------
+          <!-- ---------- p6-1 (P86) ----------
                verify: node -e 'console.log(63/175, 175/250, 250/18400, 18400/250)'
                        → p-hat 0.36 exactly, response rate 0.70, sampling fraction 0.0135870 (1.36%),
                          population/sample ratio 73.6
@@ -1660,7 +1657,7 @@
             </details>
           </article>
 
-          <!-- ---------- Problem 24 ----------
+          <!-- ---------- p6-2 (P86) ----------
                verify: node -e 'const d=[14,6,22,9,31,11,7,18,12,8,26,10,47].sort((a,b)=>a-b);
                         const lo=d.slice(0,6),hi=d.slice(7);
                         const Q1=(lo[2]+lo[3])/2,Q3=(hi[2]+hi[3])/2;
@@ -1723,7 +1720,7 @@
             </details>
           </article>
 
-          <!-- ---------- Problem 25 ----------
+          <!-- ---------- p6-3 (P86) ----------
                verify: node -e with VIZ in a vm context —
                  normCdf(-0.50) = 0.308538 → Table A .3085
                  normCdf( 1.50) = 0.933193 → upper tail .0668
@@ -1784,7 +1781,7 @@
             </details>
           </article>
 
-          <!-- ---------- Problem 26 ----------
+          <!-- ---------- p6-4 (P86) ----------
                verify: node -e 'let s=0,x=0,b=0;for(let a=1;a<=6;a++)for(let c=1;c<=6;c++){
                         const S=a+c===7,X=(a===6||c===6);if(S)s++;if(X)x++;if(S&&X)b++;}
                         console.log(s,x,b,(s+x-b)/36, 1-(5/6)**4, 1-(35/36)**24,
@@ -1843,7 +1840,7 @@
             </details>
           </article>
 
-          <!-- ---------- Problem 27 ----------
+          <!-- ---------- p6-5 (P86) ----------
                verify: node -e 'console.log(4/12*3/11, 8/12*7/11, 1-8/12*7/11, (1/3)*(3/11)+(2/3)*(4/11),
                         (1/3)**2, 1-(2/3)**2, 2*(1/3)*(2/3))'
                        → 1/11 = .090909 ; 14/33 = .424242 ; 19/33 = .575758 ; P(2nd flat) = 1/3
@@ -1898,7 +1895,7 @@
             </details>
           </article>
 
-          <!-- ---------- Problem 28 ----------
+          <!-- ---------- p6-6 (P86) ----------
                verify: node -e 'function C(n,k){let r=1;for(let i=1;i<=k;i++)r=r*(n-i+1)/i;return Math.round(r)}
                         let t=0;for(let k=0;k<=8;k++){const p=C(8,k)*0.25**k*0.75**(8-k);
                         console.log(k,C(8,k),p.toFixed(7));t+=p}console.log("sum",t,
@@ -1959,7 +1956,7 @@
             </details>
           </article>
 
-          <!-- ---------- Problem 29 ----------
+          <!-- ---------- p6-7 (P86) ----------
                verify: node -e with VIZ in a vm context —
                  z = (244 − 250)/15 = −0.40 → normCdf = .344578 → Table A .3446
                  n = 9  → SE = 5   → z = −1.20 → normCdf = .115070 → .1151
@@ -2014,7 +2011,7 @@
             </details>
           </article>
 
-          <!-- ---------- Problem 30 ----------
+          <!-- ---------- p6-8 (P86) ----------
                verify: node -e with VIZ in a vm context —
                  SE = 6/√36 = 1 ; z = (102.2 − 100)/1 = 2.20
                  normCdf(2.20) = .986097 → upper tail .013903 → Table A .0139, two-sided p = .0278
@@ -2091,7 +2088,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p2-1"><span class="pb-num">13</span>Proofreading in three kinds of noise</h3>
+              <h3 id="p2-1"><span class="pb-num">34</span>Proofreading in three kinds of noise</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">Fifteen copy-editors are randomly assigned to proofread the same 2,000-word article in one of three sound conditions. The outcome is the number of planted errors they missed.</p>
@@ -2150,7 +2147,7 @@
                   <span class="pb-note">57% of the variance in errors missed is associated with the sound condition. η² is biased upward in small samples; ω² (omega squared) = .483 is the less flattering estimate.</span>
                 </li>
                 <li><span class="pb-lbl">Why not three t-tests</span>
-                  <span class="pb-note">Three pairwise tests at α = .05 push the chance of at least one false positive to about 14% rather than 5% (1 − .95³ = .143 if the three were independent; sharing the same data pulls it a little below that, but nowhere near back to .05). The ANOVA asks one question at one α, and the follow-up comparisons then get their own correction (Problem 14).</span>
+                  <span class="pb-note">Three pairwise tests at α = .05 push the chance of at least one false positive to about 14% rather than 5% (1 − .95³ = .143 if the three were independent; sharing the same data pulls it a little below that, but nowhere near back to .05). The ANOVA asks one question at one α, and the follow-up comparisons then get their own correction (<a href="problems.html#p2-2">Problem 35</a>).</span>
                 </li>
               </ol>
               <p class="pb-answer">Sound condition affected proofreading, <em>F</em>(2, 12) = 8.00, <em>p</em> = .006, η² = .57. The omnibus test says the three means are not all equal; it does not say which pairs differ.</p>
@@ -2165,12 +2162,12 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p2-2"><span class="pb-num">14</span>Which pairs actually differ?</h3>
+              <h3 id="p2-2"><span class="pb-num">35</span>Which pairs actually differ?</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
-            <p class="pb-scenario">The ANOVA in Problem 13 was significant. Now find out where the difference lives, using the same data.</p>
+            <p class="pb-scenario">The ANOVA in <a href="problems.html#p2-1">Problem 34</a> was significant. Now find out where the difference lives, using the same data.</p>
             <div class="pb-given">
-              <span class="lbl">Carried over from Problem 13</span>
+              <span class="lbl">Carried over from <a href="problems.html#p2-1">Problem 34</a></span>
               Means: silence 4, music 6, café 8 · <em>n</em> = 5 each · MS_W = 2.50, df_W = 12
             </div>
             <ol class="pb-ask">
@@ -2225,7 +2222,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p2-3"><span class="pb-num">15</span>Caffeine, sleep, and the interaction</h3>
+              <h3 id="p2-3"><span class="pb-num">36</span>Caffeine, sleep, and the interaction</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">Forty volunteers are crossed on two factors: 200 mg caffeine or none, and a normal night's sleep or four hours. Each of the four cells holds ten people. The outcome is mean reaction time in milliseconds on a vigilance task.</p>
@@ -2295,7 +2292,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p2-4"><span class="pb-num">16</span>When Mauchly complains</h3>
+              <h3 id="p2-4"><span class="pb-num">37</span>When Mauchly complains</h3>
               <span class="pb-chip stretch">Stretch</span>
             </div>
             <p class="pb-scenario">Twelve typists each try three keyboard layouts in a counterbalanced order. The outcome is words per minute. The software prints a repeated-measures ANOVA and a sphericity test alongside it.</p>
@@ -2357,7 +2354,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p2-5"><span class="pb-num">17</span>Two clinics, two very different spreads</h3>
+              <h3 id="p2-5"><span class="pb-num">38</span>Two clinics, two very different spreads</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A service evaluation compares how many therapy sessions clients attend at two clinics. Clinic A is small and runs a fixed 12-session program. Clinic B is large and open-ended, and its distribution is heavily right-skewed with a handful of clients attending forty or more sessions. Levene's test returns <em>p</em> = .004.</p>
@@ -2419,7 +2416,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p2-6"><span class="pb-num">18</span>Five dogs each, no normality in sight</h3>
+              <h3 id="p2-6"><span class="pb-num">39</span>Five dogs each, no normality in sight</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">Two rescue shelters record days-to-adoption for five dogs each. The samples are far too small to judge normality, and one shelter has a dog that waited a month.</p>
@@ -2482,7 +2479,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p2-7"><span class="pb-num">19</span>How first-years and finalists revise</h3>
+              <h3 id="p2-7"><span class="pb-num">40</span>How first-years and finalists revise</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A department asks 180 students how they prefer to revise. It wants to know whether preference depends on year group.</p>
@@ -2548,7 +2545,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p2-8"><span class="pb-num">20</span>Sleep and next-day mood</h3>
+              <h3 id="p2-8"><span class="pb-num">41</span>Sleep and next-day mood</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">Six volunteers keep a one-week diary. For each person the researcher records average nightly sleep in hours and average next-day mood on a 1–10 scale.</p>
@@ -2618,12 +2615,12 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p2-9"><span class="pb-num">21</span>The same six people, as a line</h3>
+              <h3 id="p2-9"><span class="pb-num">42</span>The same six people, as a line</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
-            <p class="pb-scenario">Take the sleep-and-mood data from Problem 20 and fit a regression line predicting mood from sleep.</p>
+            <p class="pb-scenario">Take the sleep-and-mood data from <a href="problems.html#p2-8">Problem 41</a> and fit a regression line predicting mood from sleep.</p>
             <div class="pb-given">
-              <span class="lbl">Carried over from Problem 20</span>
+              <span class="lbl">Carried over from <a href="problems.html#p2-8">Problem 41</a></span>
               x̄ = 7.0, ȳ = 5.0, Σ(x−x̄)² = 28, Σ(y−ȳ)² = 10, Σ(x−x̄)(y−ȳ) = 14
             </div>
             <ol class="pb-ask">
@@ -2659,7 +2656,7 @@
                 </li>
                 <li><span class="pb-lbl">Tie it back to r²</span>
                   <span class="pb-math">SS_total = 10,  SS_residual = 3.00,  SS_regression = 7.00</span>
-                  <span class="pb-math">r² = 7.00 / 10 = .70 ✓  matches Problem 20</span>
+                  <span class="pb-math">r² = 7.00 / 10 = .70 ✓  matches <a href="problems.html#p2-8">Problem 41</a></span>
                   <span class="pb-math">s_e = √(SS_residual / (n − 2)) = √(3/4) = 0.87</span>
                 </li>
                 <li><span class="pb-lbl">Why not predict at 2 hours</span>
@@ -2677,7 +2674,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p2-10"><span class="pb-num">22</span>Reading the diagnostics before the coefficients</h3>
+              <h3 id="p2-10"><span class="pb-num">43</span>Reading the diagnostics before the coefficients</h3>
               <span class="pb-chip stretch">Stretch</span>
             </div>
             <p class="pb-scenario">An estate agency fits a regression predicting house price from floor area and number of bedrooms, on 40 properties. Before interpreting anything, the analyst prints the diagnostics.</p>
@@ -2736,7 +2733,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p2-11"><span class="pb-num">23</span>A table from three lines of output</h3>
+              <h3 id="p2-11"><span class="pb-num">44</span>A table from three lines of output</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A sports scientist compares three warm-up routines on how far athletes can reach in a sit-and-reach test, eight athletes per routine. The paper reports only the descriptive statistics, so the ANOVA table has to be rebuilt from them.</p>
@@ -2805,7 +2802,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p2-12"><span class="pb-num">24</span>The table with four cells missing</h3>
+              <h3 id="p2-12"><span class="pb-num">45</span>The table with four cells missing</h3>
               <span class="pb-chip warm">Warm-up</span>
             </div>
             <p class="pb-scenario">A printout has been photocopied badly and four cells of the ANOVA table are unreadable. Forty participants were assigned to four versions of an instruction leaflet, and the outcome is a comprehension score.</p>
@@ -2866,7 +2863,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p2-13"><span class="pb-num">25</span>One question, asked before the data</h3>
+              <h3 id="p2-13"><span class="pb-num">46</span>One question, asked before the data</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">An occupational health team tests whether any kind of scheduled break improves afternoon proofreading accuracy. Forty office workers are assigned to four conditions, ten each: no break at all, three two-minute micro-breaks, one fifteen-minute break, and one fifteen-minute break spent walking outdoors. The team wrote one question into its protocol before collecting anything: does taking a break of <em>any</em> kind beat taking none? The outcome is the percentage of planted errors caught.</p>
@@ -2947,7 +2944,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p2-14"><span class="pb-num">26</span>Three formats and three comparisons</h3>
+              <h3 id="p2-14"><span class="pb-num">47</span>Three formats and three comparisons</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">Seventy-five students are randomly assigned to one of three revision formats for the same material, twenty-five per format, and sit a common exam. Nobody specified which formats to compare in advance, so all three pairs are on the table afterwards. The ANOVA has already been run.</p>
@@ -3010,7 +3007,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p2-15"><span class="pb-num">27</span>Two reading apps, fifteen children</h3>
+              <h3 id="p2-15"><span class="pb-num">48</span>Two reading apps, fifteen children</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">Fifteen children are randomly assigned to learn spelling either from a paper workbook or from a tablet app, and are scored a fortnight later on words recalled. The scores are bounded below, badly skewed, and there are seven children in one group and eight in the other, so the class is told to run a Mann–Whitney U test by hand against the printed table.</p>
@@ -3072,7 +3069,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p2-16"><span class="pb-num">28</span>Nine sleepers, one of whom did not budge</h3>
+              <h3 id="p2-16"><span class="pb-num">49</span>Nine sleepers, one of whom did not budge</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">Nine adults rate their sleep quality on a 50-point clinical scale before and after four weeks with a wind-down routine. Higher is better. The ratings are ordinal and the sample is small, so the analysis is a Wilcoxon signed-ranks test done by hand.</p>
@@ -3135,7 +3132,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p2-17"><span class="pb-num">29</span>Exercise and wellbeing, landing on the cell</h3>
+              <h3 id="p2-17"><span class="pb-num">50</span>Exercise and wellbeing, landing on the cell</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">Eight adults report their typical daily exercise in minutes and complete a wellbeing questionnaire. Exercise minutes are heavily skewed by two people who train far more than the rest, so the relationship is described with Spearman's ρ<sub>s</sub> rather than Pearson's <em>r</em>.</p>
@@ -3201,7 +3198,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p2-18"><span class="pb-num">30</span>Four cells, and everything that falls out of them</h3>
+              <h3 id="p2-18"><span class="pb-num">51</span>Four cells, and everything that falls out of them</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">Forty students are each given the same two-hour assignment and randomly assigned to one of four conditions: they work either in a quiet reading room or in a busy café, and their phone is either left in another room or sitting on the desk. The outcome is the number of minutes of focused work recorded by a timer that stops when they switch away from the document. Ten students land in each cell.</p>
@@ -3270,7 +3267,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p2-19"><span class="pb-num">31</span>The two-way table with four cells missing</h3>
+              <h3 id="p2-19"><span class="pb-num">52</span>The two-way table with four cells missing</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">Students take notes on the same lecture either on a laptop or in longhand, and are quizzed either the same day, one week later or three weeks later. Every one of the six conditions holds the same number of students. The output below arrived with four cells missing.</p>
@@ -3342,7 +3339,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p2-20"><span class="pb-num">32</span>Ten raters, four layouts, one missing row</h3>
+              <h3 id="p2-20"><span class="pb-num">53</span>Ten raters, four layouts, one missing row</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">Ten people each rate the same four website layouts for ease of use, so every person contributes four scores. The analysis was run and then most of the table was lost. What survived is below.</p>
@@ -3413,7 +3410,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p2-21"><span class="pb-num">33</span>One output, two tables, and how many people</h3>
+              <h3 id="p2-21"><span class="pb-num">54</span>One output, two tables, and how many people</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A sleep-hygiene course is compared against a waiting list. Everyone is assessed on a daytime-alertness scale at baseline, at four weeks and at twelve weeks. The output arrives as two tables and no method section.</p>
@@ -3463,6 +3460,673 @@
         </section>
 
         <!-- ==================================================================
+             EXAM-STYLE, STATS 2 (P94)
+             A second Stats 2 set, written in the shapes a paper midterm asks
+             over §2.1–§2.5: tables completed and read backwards, contrasts,
+             corrected pairwise comparisons, a 2 × 2 partition, a repeated-
+             measures table whose design has to be recovered from its own df,
+             and the two rank tests worked against the printed critical-value
+             tables on tables.html. Every number below was verified with
+             node -e against assets/js/viz.js; the two rank tests were also
+             re-derived by exhaustive enumeration, which is the one check that
+             cannot share a bug with viz.js. P94 also renumbered the page's
+             .pb-num badges continuously across all seven sets, so a badge and
+             a lesson's "Problem N" reference now agree; tools/audit.js CHECK
+             10 keeps them in step from here.
+             ================================================================== -->
+        <section class="pb-set" id="stats-2-exam-set">
+          <h2 id="stats-2-exam">📝 Exam-style · A midterm on §2.1–§2.5</h2>
+          <p class="pb-set-sub">Eight problems in the shapes an ANOVA paper asks them: a table to complete, a table to read backwards, a planned contrast, a corrected set of pairwise comparisons, a 2 × 2 design taken apart into its margins and its interaction, a repeated-measures table whose design has to be recovered from its degrees of freedom, and the two rank tests worked by hand against the printed tables. They span the first five sections of <a href="stats-2/">Stats 2</a>, which is the usual reach of a midterm taken with a calculator and a formula sheet. The set above teaches one idea per problem; this one chains them.</p>
+
+          <!-- ---------- p7-1 (P94) ----------
+               verify: node -e 'V.fInv(.05,4,40), V.fUpper(7,4,40)'
+                       given dfG = 4, MSG = 45.50, MSE = 6.50, SST = 442.00, dfT = 44
+                       dfE = 44 − 4 = 40 ; SSG = 4 × 45.50 = 182.00 ; SSE = 40 × 6.50 = 260.00
+                       182 + 260 = 442 ✓ ; F = 45.50 / 6.50 = 7.00 exactly
+                       F*(4, 40) = 2.6060 ; exact p = 2.2723e−4
+                       eta2 = 182/442 = .41176 ; sp = √6.50 = 2.5495
+                       design: I = dfG + 1 = 5 ; N = dfT + 1 = 45 ; n = 45/5 = 9 per group
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p7-1"><span class="pb-num">55</span>The table with its SS column lost</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A university language center trials five vocabulary apps on the same fifty-word recall test, with the same number of students on each app. The report it published prints the ANOVA table with the sums-of-squares column dropped in typesetting, and the method section never says how many students took part.</p>
+            <div class="pb-given">
+              <span class="lbl">What the report prints</span>
+              <table class="ref-table">
+                <thead><tr><th>Source</th><th>SS</th><th>df</th><th>MS</th><th><em>F</em></th></tr></thead>
+                <tbody>
+                  <tr><td>Between groups (app)</td><td>?</td><td>4</td><td>45.50</td><td>7.00</td></tr>
+                  <tr><td>Within groups (error)</td><td>?</td><td>?</td><td>6.50</td><td></td></tr>
+                  <tr><td>Total</td><td>442.00</td><td>44</td><td></td><td></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <ol class="pb-ask">
+              <li>How many apps were compared, how many students took part, and how many were on each app?</li>
+              <li>Recover the three missing cells, and check them against the partition identity.</li>
+              <li>Decide at α = .05 against the critical value <em>F</em>*(4, 40) = 2.61.</li>
+              <li>Report η² and the pooled standard deviation.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The design, read out of the df</span>
+                  <span class="pb-math">df<sub>G</sub> = I − 1 = 4, so I = 5 apps</span>
+                  <span class="pb-math">df<sub>T</sub> = N − 1 = 44, so N = 45 students</span>
+                  <span class="pb-math">45 / 5 = 9 students per app</span>
+                  <span class="pb-note">The degrees of freedom carry the design, which is why an exam can hand you a table with no method section and still expect a full answer. Two numbers in that column tell you everything about the shape of the study.</span>
+                </li>
+                <li><span class="pb-lbl">The missing df</span>
+                  <span class="pb-math">df<sub>E</sub> = df<sub>T</sub> − df<sub>G</sub> = 44 − 4 = 40</span>
+                  <span class="pb-note">The same answer comes from N − I = 45 − 5 = 40, and seeing both routes agree is worth the ten seconds.</span>
+                </li>
+                <li><span class="pb-lbl">The SS column, from MS × df</span>
+                  <span class="pb-math">MS = SS / df, so SS = MS × df</span>
+                  <span class="pb-math">SS<sub>G</sub> = 45.50 × 4 = 182.00</span>
+                  <span class="pb-math">SS<sub>E</sub> = 6.50 × 40 = 260.00</span>
+                  <span class="pb-note">This is the step people stall on, because every worked example in the lectures runs the other way. A mean square is a sum of squares that has already been divided by its df, so multiplying it back is all that is needed.</span>
+                </li>
+                <li><span class="pb-lbl">The check that makes it safe</span>
+                  <span class="pb-math">SS<sub>G</sub> + SS<sub>E</sub> = 182.00 + 260.00 = 442.00 = SS<sub>T</sub> ✓</span>
+                  <span class="pb-note">The total was given and was not used to get either number, so this is a genuine check rather than a restatement. If the two recovered figures had not added to 442.00, one of the mean squares would have been misread.</span>
+                </li>
+                <li><span class="pb-lbl">The F ratio and the decision</span>
+                  <span class="pb-math">F = MS<sub>G</sub> / MS<sub>E</sub> = 45.50 / 6.50 = 7.00 on (4, 40)</span>
+                  <span class="pb-math">7.00 &gt; 2.61, so reject H₀ at α = .05 (exact <em>p</em> = .0002)</span>
+                  <span class="pb-note">The <em>F</em> was printed, so recomputing it is a third check on the recovered cells rather than new work.</span>
+                </li>
+                <li><span class="pb-lbl">Effect size and pooled SD</span>
+                  <span class="pb-math">η² = SS<sub>G</sub> / SS<sub>T</sub> = 182.00 / 442.00 = .41</span>
+                  <span class="pb-math">s<sub>p</sub> = √MS<sub>E</sub> = √6.50 = 2.55 words</span>
+                  <span class="pb-note">Which app a student used accounts for about 41% of the variation in recall. The pooled SD is the yardstick every follow-up comparison between two apps will divide by, and it is the square root of the error mean square rather than of the error sum of squares.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Five apps, 45 students, 9 per app. df<sub>E</sub> = 40, SS<sub>G</sub> = 182.00, SS<sub>E</sub> = 260.00, and the two add to the printed total of 442.00. <em>F</em>(4, 40) = 7.00, <em>p</em> &lt; .001, so the apps are not equally effective, η² = .41, s<sub>p</sub> = 2.55 words.</p>
+              <p class="pb-round">Rounding: every cell here is exact. η² = 182/442 = .411765 rounds to .41, and s<sub>p</sub> = 2.5495 rounds to 2.55.</p>
+              <p class="pb-ref">From <a href="stats-2/one-way-anova/">§2.2 One-Way ANOVA</a>. Build the forward version of this table in <a href="stats-2/one-way-anova/#atviz">Build the ANOVA Table</a>, and get <em>F</em>*(4, 40) from the α-to-critical-value mode of <a href="tables.html">the table calculator</a>, since the printed sheets carry <em>z</em>, <em>t</em> and χ² but no <em>F</em>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- p7-2 (P94) ----------
+               verify: n = 10 per group, means 20, 23, 26, SDs 4.0, 5.0, 5.0
+                       grand = 23 exactly ; SSG = 10(9 + 0 + 9) = 180 ; MSG = 90
+                       SSE = 9(16 + 25 + 25) = 594 ; dfE = 27 ; MSE = 22.00 exactly
+                       SST = 774 ; F = 90/22 = 4.0909 on (2, 27)
+                       V.fInv(.05,2,27) = 3.3541 ; V.fUpper(4.0909,2,27) = .02806
+                       eta2 = 180/774 = .23256 ; sp = √22 = 4.6904
+                   two-group version (groups 1 and 3 only, means 20 and 26, SDs 4.0 and 5.0):
+                       sp² = (9·16 + 9·25)/18 = 369/18 = 20.50 ; sp = 4.52769
+                       t = 6 / (4.52769 × √0.2) = 2.96319 on 18 df ; t² = 8.78049
+                       SSG = 10(9) + 10(9) = 180, df 1 ; SSE = 369, df 18, MSE = 20.50
+                       F = 180/20.50 = 8.78049 ✓ equals t² to machine precision
+                       two-tailed p = 2·V.tUpper(2.96319,18) = .00833
+                       V.tInv(.025,18) = 2.10092 ; V.fInv(.05,1,18) = 4.41387 = 2.10092² ✓
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p7-2"><span class="pb-num">56</span>Three stretches, then only two</h3>
+              <span class="pb-chip warm">Warm-up</span>
+            </div>
+            <p class="pb-scenario">A physiotherapy clinic compares three stretching protocols on how much shoulder range of motion a patient gains over six weeks, ten patients on each protocol. Only the descriptive statistics were kept, so the table has to be rebuilt from them.</p>
+            <div class="pb-given">
+              <span class="lbl">Gain in degrees</span>
+              <ul>
+                <li>Static holds: <em>n</em> = 10, <em>M</em> = 20.0, <em>SD</em> = 4.0</li>
+                <li>Contract and relax: <em>n</em> = 10, <em>M</em> = 23.0, <em>SD</em> = 5.0</li>
+                <li>Assisted range: <em>n</em> = 10, <em>M</em> = 26.0, <em>SD</em> = 5.0</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Build the full ANOVA table and test at α = .05 against <em>F</em>*(2, 27) = 3.35.</li>
+              <li>Report η² and the pooled standard deviation.</li>
+              <li>A reviewer asks what would have happened with only the first and third protocols. Run that comparison as an independent-samples <em>t</em> test.</li>
+              <li>Run the same two groups through a one-way ANOVA and show that <em>F</em> = <em>t</em>². Check the two critical values obey the same rule.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Grand mean and between-groups SS</span>
+                  <span class="pb-math">x̄ = (20 + 23 + 26) / 3 = 23.0 degrees</span>
+                  <span class="pb-math">SS<sub>G</sub> = Σ nᵢ(x̄ᵢ − x̄)² = 10(−3)² + 10(0)² + 10(3)² = 180.00</span>
+                  <span class="pb-note">Equal group sizes make the grand mean the plain average of the three means. With unequal sizes it has to be the weighted average Σnᵢx̄ᵢ / N.</span>
+                </li>
+                <li><span class="pb-lbl">Within-groups SS from the SDs</span>
+                  <span class="pb-math">SS<sub>E</sub> = Σ (nᵢ − 1)sᵢ² = 9(4.0² + 5.0² + 5.0²)</span>
+                  <span class="pb-math">= 9(16 + 25 + 25) = 9(66) = 594.00</span>
+                  <span class="pb-math">SS<sub>T</sub> = 180.00 + 594.00 = 774.00</span>
+                </li>
+                <li><span class="pb-lbl">The table</span>
+                  <table class="ref-table">
+                    <thead><tr><th>Source</th><th>SS</th><th>df</th><th>MS</th><th><em>F</em></th></tr></thead>
+                    <tbody>
+                      <tr><td>Between groups</td><td>180.00</td><td>2</td><td>90.00</td><td>4.09</td></tr>
+                      <tr><td>Within groups</td><td>594.00</td><td>27</td><td>22.00</td><td></td></tr>
+                      <tr><td>Total</td><td>774.00</td><td>29</td><td></td><td></td></tr>
+                    </tbody>
+                  </table>
+                  <span class="pb-math">4.09 &gt; 3.35, so reject H₀ at α = .05 (exact <em>p</em> = .028)</span>
+                </li>
+                <li><span class="pb-lbl">Effect size and pooled SD</span>
+                  <span class="pb-math">η² = 180.00 / 774.00 = .23</span>
+                  <span class="pb-math">s<sub>p</sub> = √22.00 = 4.69 degrees</span>
+                </li>
+                <li><span class="pb-lbl">The two-group t test</span>
+                  <span class="pb-math">s<sub>p</sub>² = [9(4.0²) + 9(5.0²)] / 18 = (144 + 225) / 18 = 20.50</span>
+                  <span class="pb-math">SE = √20.50 × √(1/10 + 1/10) = 4.5277 × 0.4472 = 2.0248</span>
+                  <span class="pb-math">t = (26.0 − 20.0) / 2.0248 = 2.963 on 18 df</span>
+                  <span class="pb-math">2.963 &gt; t*(18) = 2.101, so reject (two-tailed <em>p</em> = .008)</span>
+                  <span class="pb-note">The pooled variance here is 20.50 rather than the 22.00 of the three-group table, because the middle protocol is no longer contributing its own scatter to the error term. Dropping a group changes the yardstick.</span>
+                </li>
+                <li><span class="pb-lbl">The same two groups as an ANOVA</span>
+                  <span class="pb-math">grand mean of the two = 23.0, so SS<sub>G</sub> = 10(−3)² + 10(3)² = 180.00 on 1 df</span>
+                  <span class="pb-math">SS<sub>E</sub> = 9(16 + 25) = 369.00 on 18 df, so MS<sub>E</sub> = 20.50</span>
+                  <span class="pb-math">F = 180.00 / 20.50 = 8.780 on (1, 18)</span>
+                  <span class="pb-math">t² = 2.963² = 8.780 ✓</span>
+                  <span class="pb-note">The error term of the two-group ANOVA is exactly the pooled variance of the <em>t</em> test, which is what makes the identity work rather than merely come close. It holds only with two groups: the three-group <em>F</em> of 4.09 is not any <em>t</em> squared.</span>
+                </li>
+                <li><span class="pb-lbl">The critical values obey it too</span>
+                  <span class="pb-math">t*(18) at two-tailed .05 = 2.1009</span>
+                  <span class="pb-math">2.1009² = 4.4139 = <em>F</em>*(1, 18) at .05 ✓</span>
+                  <span class="pb-note">Squaring folds the two tails of the <em>t</em> into the one upper tail of the <em>F</em>, so a two-tailed <em>t</em> at .05 and a one-tailed <em>F</em> at .05 are the same test written twice. That is also why an <em>F</em> test never has a direction to report.</span>
+                </li>
+              </ol>
+              <p class="pb-answer"><em>F</em>(2, 27) = 4.09, <em>p</em> = .028, η² = .23, s<sub>p</sub> = 4.69 degrees: the three protocols do not produce equal gains. On the first and third alone, <em>t</em>(18) = 2.96, <em>p</em> = .008, and the matching one-way analysis gives <em>F</em>(1, 18) = 8.78 = 2.96², with <em>F</em>*(1, 18) = 4.41 = 2.101² as the critical-value version of the same identity.</p>
+              <p class="pb-round">Rounding: MS<sub>E</sub> = 594/27 = 22.00 exactly, so <em>F</em> = 90/22 = 4.0909 and rounds to 4.09. Working to two decimals throughout leaves <em>t</em>² and <em>F</em> agreeing at 8.78.</p>
+              <p class="pb-ref">From <a href="stats-2/one-way-anova/">§2.2 One-Way ANOVA</a> and <a href="stats-1/independent-samples-t-test/">§1.14 Independent Samples <em>t</em> Test</a>. §2.2 works the identity through on a smaller pair of groups you can load straight into the widget: <a href="stats-2/one-way-anova/?g=15,14,12,11;25,24,22,21">?g=15,14,12,11;25,24,22,21</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- p7-3 (P94) ----------
+               verify: 4 groups, n = 6, means 50, 56, 59, 63 ; MSE = 24.00 on 20 df
+                       grand = 57 ; SSG = 6(49 + 1 + 4 + 36) = 540 ; MSG = 180
+                       SSE = 20 × 24 = 480 ; SST = 1020 ; F = 7.50 on (3, 20)
+                       V.fInv(.05,3,20) = 3.0984 ; V.fUpper(7.5,3,20) = .001490 ; eta2 = .5294
+                       sp = √24 = 4.89898
+                       whole-number row [−3, 1, 1, 1] : psi = −150 + 178 = 28 ; Sc² = 12
+                         SE = 4.89898 × √(12/6) = 6.92820 ; t = 28/6.92820 = 4.04145
+                       fractional row [−1, ⅓, ⅓, ⅓] : psi = 59.33333 − 50 = 9.33333 ; Sc² = 1.33333
+                         SE = 4.89898 × √(1.33333/6) = 2.30940 ; t = 4.04145 ✓ identical
+                       one-tailed p = V.tUpper(4.04145,20) = .000319 (two-tailed .000639)
+                       V.tInv(.025,20) = 2.08596 ; CI = 9.33333 ± 2.08596 × 2.30940 = [4.516, 14.151]
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p7-3"><span class="pb-num">57</span>The control against the other three</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A workplace trials a mindfulness program at three lengths against a waiting-list control, six employees in each of the four conditions. The outcome is a recovery score, where higher is better. Before any data were collected the team wrote down one comparison: control against the average of the three program lengths, predicted in that direction.</p>
+            <div class="pb-given">
+              <span class="lbl">Group means and the omnibus table</span>
+              <ul>
+                <li>Control: <em>n</em> = 6, <em>M</em> = 50.0</li>
+                <li>Two weeks: <em>n</em> = 6, <em>M</em> = 56.0</li>
+                <li>Four weeks: <em>n</em> = 6, <em>M</em> = 59.0</li>
+                <li>Eight weeks: <em>n</em> = 6, <em>M</em> = 63.0</li>
+                <li>The one-way ANOVA gave MS<sub>E</sub> = 24.00 on 20 df, <em>F</em>(3, 20) = 7.50, <em>p</em> = .001</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Write the contrast coefficients twice, once in whole numbers and once scaled to give an answer in recovery points, and check each row sums to zero.</li>
+              <li>Compute ψ̂ and its standard error under both scalings.</li>
+              <li>Compute <em>t</em> under both, and say why the two agree.</li>
+              <li>Give the one-tailed <em>p</em> and a 95% confidence interval in recovery points.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Two ways to write one contrast</span>
+                  <span class="pb-math">whole numbers: a = (−3, 1, 1, 1), sum = −3 + 3 = 0 ✓</span>
+                  <span class="pb-math">scaled: a = (−1, ⅓, ⅓, ⅓), sum = −1 + 1 = 0 ✓</span>
+                  <span class="pb-note">Both rows say the same thing, that the control is being set against the average of the other three. The whole-number row is the one SPSS wants typed into its Contrasts box; the scaled row is the one whose estimate reads in the units of the outcome.</span>
+                </li>
+                <li><span class="pb-lbl">The estimate, whole-number row</span>
+                  <span class="pb-math">ψ̂ = Σ aᵢx̄ᵢ = −3(50) + 1(56) + 1(59) + 1(63)</span>
+                  <span class="pb-math">= −150 + 178 = 28.0</span>
+                  <span class="pb-math">Σaᵢ² = 9 + 1 + 1 + 1 = 12</span>
+                  <span class="pb-math">SE = s<sub>p</sub>√(Σaᵢ²/n) = √24.00 × √(12/6) = 4.899 × 1.414 = 6.928</span>
+                </li>
+                <li><span class="pb-lbl">The estimate, scaled row</span>
+                  <span class="pb-math">ψ̂ = (56 + 59 + 63)/3 − 50 = 59.333 − 50 = 9.333 points</span>
+                  <span class="pb-math">Σaᵢ² = 1 + 3(1/9) = 1.3333</span>
+                  <span class="pb-math">SE = 4.899 × √(1.3333/6) = 4.899 × 0.4714 = 2.309 points</span>
+                  <span class="pb-note">This is the number to put in a sentence: the program groups sit 9.3 recovery points above the control on average. The whole-number version, 28.0, is three times as large and is in no natural unit at all.</span>
+                </li>
+                <li><span class="pb-lbl">The test, computed twice</span>
+                  <span class="pb-math">whole numbers: t = 28.0 / 6.928 = 4.041 on 20 df</span>
+                  <span class="pb-math">scaled: t = 9.333 / 2.309 = 4.041 on 20 df</span>
+                  <span class="pb-note">Multiplying every coefficient by 3 multiplies ψ̂ by 3 and multiplies Σaᵢ² by 9, so the standard error, which takes a square root, is multiplied by 3 as well. The ratio cannot move. Scaling a contrast changes what the estimate means and never changes the test.</span>
+                </li>
+                <li><span class="pb-lbl">One-tailed p</span>
+                  <span class="pb-math">t = 4.041 on 20 df, upper tail: <em>p</em> = .0003</span>
+                  <span class="pb-note">One tail is legitimate here only because the direction was written down before the data arrived. Table D on 20 df puts 4.041 past the .0005 column, which is how you would bracket it on paper: the exact value is .00032.</span>
+                </li>
+                <li><span class="pb-lbl">The interval, in recovery points</span>
+                  <span class="pb-math">t*(20) at two-tailed .05 = 2.086</span>
+                  <span class="pb-math">9.333 ± 2.086 × 2.309 = 9.333 ± 4.817</span>
+                  <span class="pb-math">95% CI [4.52, 14.15] points</span>
+                  <span class="pb-note">The interval is built on the scaled row, because an interval is only readable when its units are. It excludes zero, which is the same verdict the <em>t</em> reached, and it adds the part the <em>t</em> cannot say: the advantage could be as small as four and a half points or as large as fourteen.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">ψ̂ = 9.33 recovery points, SE = 2.31, <em>t</em>(20) = 4.04, one-tailed <em>p</em> = .0003, 95% CI [4.52, 14.15]. On the whole-number coefficients ψ̂ = 28.0 with SE = 6.93 and the same <em>t</em> = 4.04. The program groups recover better than the control.</p>
+              <p class="pb-round">Rounding: s<sub>p</sub> = √24 = 4.8990, and carrying only 4.90 gives <em>t</em> = 4.040 rather than 4.041. Round at the end, not at the standard error.</p>
+              <p class="pb-ref">From <a href="stats-2/post-hoc-tests/#planned-contrasts">§2.3 Post-Hoc Tests</a>. <a href="stats-2/post-hoc-tests/#cbviz">The Contrast Builder</a> boots on the mirror image of this row, so <a href="stats-2/post-hoc-tests/?c=-3,1,1,1">?c=-3,1,1,1</a> flips it and leaves |<em>t</em>| where it was. Read t*(20) off Table D in <a href="tables.html#printed-tables">the printed tables</a>.</p>
+            </details>
+          </article>
+
+          <!-- ---------- p7-4 (P94) ----------
+               verify: 3 groups, n = 8, means 45, 52, 58 ; MSE = 28.00 on 21 df
+                       grand = 51.6667 ; SSG = 8(44.4444 + .1111 + 40.1111) = 677.3333
+                       MSG = 338.6667 ; F = 12.0952 on (2, 21) ; V.fUpper = 3.2012e−4
+                       sp = √28 = 5.29150 ; SE of any pair = 5.29150 × √(1/8+1/8) = 2.64575
+                       A−B: 7/2.64575 = 2.64575, p = .015118, ×3 = .045354
+                       A−C: 13/2.64575 = 4.91354, p = .000074, ×3 = .000221
+                       B−C: 6/2.64575 = 2.26779, p = .034015, ×3 = .102046
+                       V.tInv(.025,21) = 2.07961 ; V.tInv(.05/6,21) = 2.60135
+                       simultaneous CI A−C: 13 ± 2.60135 × 2.64575 = [6.12, 19.88]
+                       plain CI A−C: 13 ± 2.07961 × 2.64575 = [7.50, 18.50]
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p7-4"><span class="pb-num">58</span>Three fonts, three comparisons</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A publisher tests three typefaces on reading speed, eight readers per typeface, and measures words per minute on a matched passage. The omnibus test has already been run and rejected. Nobody specified which pairs to compare in advance, so all three are on the table.</p>
+            <div class="pb-given">
+              <span class="lbl">Means and the error term</span>
+              <ul>
+                <li>Serif: <em>n</em> = 8, <em>M</em> = 45.0 wpm</li>
+                <li>Sans serif: <em>n</em> = 8, <em>M</em> = 52.0 wpm</li>
+                <li>Slab: <em>n</em> = 8, <em>M</em> = 58.0 wpm</li>
+                <li><em>F</em>(2, 21) = 12.10, <em>p</em> &lt; .001, MS<sub>E</sub> = 28.00</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Find s<sub>p</sub> and the standard error of any pairwise difference.</li>
+              <li>Compute all three pairwise <em>t</em> values on the pooled error term.</li>
+              <li>Give the uncorrected critical value and the Bonferroni critical value, and say which comparisons survive each.</li>
+              <li>Report the adjusted <em>p</em>-values, a simultaneous interval for the largest difference, and the APA sentence.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The pooled yardstick</span>
+                  <span class="pb-math">s<sub>p</sub> = √MS<sub>E</sub> = √28.00 = 5.292 wpm</span>
+                  <span class="pb-math">SE = s<sub>p</sub>√(1/nᵢ + 1/nⱼ) = 5.292 × √(1/8 + 1/8) = 5.292 × 0.5 = 2.646</span>
+                  <span class="pb-note">Equal group sizes make one standard error do for all three pairs, which is the labor-saving part of using the pooled error rather than a separate <em>t</em> test per pair. The other part is the df: 21 rather than 14, because every group contributes to the estimate of the common scatter.</span>
+                </li>
+                <li><span class="pb-lbl">The three t values</span>
+                  <span class="pb-math">serif vs sans: t = (52 − 45) / 2.646 = 7 / 2.646 = 2.646</span>
+                  <span class="pb-math">serif vs slab: t = (58 − 45) / 2.646 = 13 / 2.646 = 4.914</span>
+                  <span class="pb-math">sans vs slab: t = (58 − 52) / 2.646 = 6 / 2.646 = 2.268</span>
+                  <span class="pb-note">All three share a denominator, so their order is just the order of the gaps. That is worth noticing before any correction is applied: the arithmetic decides nothing except which comparison is largest.</span>
+                </li>
+                <li><span class="pb-lbl">Two critical values</span>
+                  <span class="pb-math">uncorrected: t*(21) at two-tailed .05 = 2.080</span>
+                  <span class="pb-math">Bonferroni with m = 3: α/m = .05/3 = .0167</span>
+                  <span class="pb-math">t**(21) at two-tailed .0167 = 2.601</span>
+                  <span class="pb-note">The correction is applied to the α, not to the <em>t</em> values, and the divisor is the number of comparisons being made rather than the number of groups. Three groups give three pairs, but four groups would give six.</span>
+                </li>
+                <li><span class="pb-lbl">Who survives which</span>
+                  <table class="ref-table">
+                    <thead><tr><th>Comparison</th><th>Difference</th><th><em>t</em>(21)</th><th>vs 2.080</th><th>vs 2.601</th></tr></thead>
+                    <tbody>
+                      <tr><td>Serif vs sans</td><td>7.0</td><td>2.646</td><td>significant</td><td>significant</td></tr>
+                      <tr><td>Serif vs slab</td><td>13.0</td><td>4.914</td><td>significant</td><td>significant</td></tr>
+                      <tr><td>Sans vs slab</td><td>6.0</td><td>2.268</td><td>significant</td><td>not significant</td></tr>
+                    </tbody>
+                  </table>
+                  <span class="pb-note">One comparison changes its answer, and it is the one that was marginal to begin with. Serif against sans survives by a hair, 2.646 against 2.601, which is the honest picture of what a correction does: it does not tidy the borderline away, it moves the border.</span>
+                </li>
+                <li><span class="pb-lbl">Adjusted p-values</span>
+                  <span class="pb-math">serif vs sans: <em>p</em> = .0151, × 3 = .045</span>
+                  <span class="pb-math">serif vs slab: <em>p</em> = .00007, × 3 = .0002</span>
+                  <span class="pb-math">sans vs slab: <em>p</em> = .0340, × 3 = .102</span>
+                  <span class="pb-note">Multiplying the <em>p</em> by <em>m</em> and comparing with .05 gives the same three verdicts as comparing the <em>t</em> with t**. SPSS prints the adjusted column, so a Sig. of .045 under Bonferroni has already been multiplied and is read against .05, not against .0167. Reading it against α/m is the commonest way to get this table wrong.</span>
+                </li>
+                <li><span class="pb-lbl">A simultaneous interval for the biggest gap</span>
+                  <span class="pb-math">13.0 ± 2.601 × 2.646 = 13.0 ± 6.88</span>
+                  <span class="pb-math">95% simultaneous CI [6.12, 19.88] wpm</span>
+                  <span class="pb-note">The plain interval would be 13.0 ± 2.080 × 2.646 = [7.50, 18.50]. The simultaneous one is wider because 95% confidence is being spread across all three statements at once rather than spent on this one.</span>
+                </li>
+                <li><span class="pb-lbl">The write-up</span>
+                  <span class="pb-note">Typeface affected reading speed, <em>F</em>(2, 21) = 12.10, <em>p</em> &lt; .001. Bonferroni-corrected pairwise comparisons on the pooled error term showed that slab was read faster than serif (13.0 wpm, 95% simultaneous CI [6.12, 19.88], <em>t</em>(21) = 4.91, adjusted <em>p</em> &lt; .001) and that sans serif was also read faster than serif (7.0 wpm, <em>t</em>(21) = 2.65, adjusted <em>p</em> = .045). Slab and sans serif did not differ reliably (6.0 wpm, <em>t</em>(21) = 2.27, adjusted <em>p</em> = .10).</span>
+                </li>
+              </ol>
+              <p class="pb-answer">s<sub>p</sub> = 5.29 wpm and every pair has SE = 2.65. <em>t</em>(21) = 2.65, 4.91 and 2.27. Against the uncorrected t*(21) = 2.080 all three are significant; against the Bonferroni t**(21) = 2.601 the sans-versus-slab comparison is not, adjusted <em>p</em> = .10. The largest difference is 13.0 wpm, 95% simultaneous CI [6.12, 19.88].</p>
+              <p class="pb-round">Rounding: t**(21) = 2.6013, and no printed column sits at α = .0167. Table D brackets it between the .025 column (2.080) and the .01 column (2.518), which settles the two clear comparisons but leaves serif against sans, at 2.646, needing the exact value. Computing it is the honest move; taking the nearer column is not.</p>
+              <p class="pb-ref">From <a href="stats-2/post-hoc-tests/#pairwise-by-hand">§2.3 Post-Hoc Tests</a>. <a href="stats-2/post-hoc-tests/#cbviz">The Contrast Builder</a> runs a pairwise comparison as a contrast with coefficients (1, −1, 0), and <a href="apa.html?a=anova">the APA formatter</a> will typeset the omnibus line.</p>
+            </details>
+          </article>
+
+          <!-- ---------- p7-5 (P94) ----------
+               verify: 2 × 2, n = 5 per cell, N = 20 ; cells a1b1 80, a1b2 60, a2b1 84, a2b2 76
+                       A margins 70 and 80 ; B margins 82 and 68 ; grand 75
+                       SSA = 5·2[(70−75)² + (80−75)²] = 500
+                       SSB = 5·2[(82−75)² + (68−75)²] = 980
+                       interaction residuals +3, −3, −3, +3 ; SSAB = 5(4 × 9) = 180
+                       given SSE = 320 on N − IJ = 16 df ; MSE = 20.00 ; SST = 1980
+                       FA = 25.00, FB = 49.00, FAB = 9.00 ; V.fInv(.05,1,16) = 4.4940
+                       pA = 1.31e−4, pB = 3.00e−6, pAB = .008479
+                       partial eta2: A .6098, B .7538, AB .3600
+                       simple main effects of A: at b1 = 4, at b2 = 16, mean 10 = main effect ✓
+                       difference of differences = 12 ; n(dod)²/4 = 5(144)/4 = 180 = SSAB ✓
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p7-5"><span class="pb-num">59</span>Caffeine on a short night</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">Twenty volunteers are assigned to one of four conditions in a balanced 2 × 2 design: caffeine or none, crossed with a normal night's sleep or four hours. Five people are in each cell. The outcome is a sustained-attention score out of 100, where higher is better. The error sum of squares from the analysis is 320.00.</p>
+            <div class="pb-given">
+              <span class="lbl">Cell means, attention score</span>
+              <table class="ref-table">
+                <thead><tr><th></th><th>Rested</th><th>Deprived</th></tr></thead>
+                <tbody>
+                  <tr><td>No caffeine</td><td>80</td><td>60</td></tr>
+                  <tr><td>200 mg caffeine</td><td>84</td><td>76</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <ol class="pb-ask">
+              <li>Compute both marginal means for each factor, the grand mean, and the size of each main effect.</li>
+              <li>Compute the two simple main effects of caffeine and show they average to the main effect.</li>
+              <li>Give the difference of differences, say what it means in words, and compute SS<sub>AB</sub> from it.</li>
+              <li>Complete the two-way ANOVA table and test all three effects against <em>F</em>*(1, 16) = 4.49.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Margins and main effects</span>
+                  <span class="pb-math">no caffeine: (80 + 60)/2 = 70.0 &nbsp;&nbsp; caffeine: (84 + 76)/2 = 80.0</span>
+                  <span class="pb-math">rested: (80 + 84)/2 = 82.0 &nbsp;&nbsp; deprived: (60 + 76)/2 = 68.0</span>
+                  <span class="pb-math">grand mean = (80 + 60 + 84 + 76)/4 = 75.0</span>
+                  <span class="pb-math">main effect of caffeine = 80 − 70 = 10.0 points</span>
+                  <span class="pb-math">main effect of sleep = 82 − 68 = 14.0 points</span>
+                  <span class="pb-note">A marginal mean averages cells, not people. That is only the same thing because every cell holds five volunteers; in an unbalanced design the two answers part company and the software has to be told which one you want.</span>
+                </li>
+                <li><span class="pb-lbl">Simple main effects of caffeine</span>
+                  <span class="pb-math">among the rested: 84 − 80 = 4.0 points</span>
+                  <span class="pb-math">among the deprived: 76 − 60 = 16.0 points</span>
+                  <span class="pb-math">mean of the two: (4 + 16)/2 = 10.0 = the main effect ✓</span>
+                  <span class="pb-note">A main effect is the average of its own simple main effects, always, in a balanced design. Here the average of 4 and 16 is a fair summary of neither, which is the reason an interaction has to be read before either main effect is quoted.</span>
+                </li>
+                <li><span class="pb-lbl">The difference of differences</span>
+                  <span class="pb-math">16.0 − 4.0 = 12.0 points</span>
+                  <span class="pb-math">SS<sub>AB</sub> = n(difference of differences)² / 4 = 5(144)/4 = 180.00</span>
+                  <span class="pb-note">In words: caffeine buys you twelve more points of attention when you are short of sleep than when you are not. Both simple effects point the same way, so the lines on an interaction plot converge rather than cross, which is a spreading interaction. The shortcut formula is a 2 × 2 special case; with more levels the interaction has to be built from the cell residuals.</span>
+                </li>
+                <li><span class="pb-lbl">The sums of squares</span>
+                  <span class="pb-math">SS<sub>A</sub> = n·J·Σ(Āᵢ − Ḡ)² = 5 × 2 × [(70 − 75)² + (80 − 75)²] = 10(50) = 500.00</span>
+                  <span class="pb-math">SS<sub>B</sub> = n·I·Σ(B̄ⱼ − Ḡ)² = 5 × 2 × [(82 − 75)² + (68 − 75)²] = 10(98) = 980.00</span>
+                  <span class="pb-math">cell residuals: 80 − 70 − 82 + 75 = +3, and −3, −3, +3 round the table</span>
+                  <span class="pb-math">SS<sub>AB</sub> = 5(3² + 3² + 3² + 3²) = 5(36) = 180.00 ✓ matches the shortcut</span>
+                  <span class="pb-math">SS<sub>T</sub> = 500 + 980 + 180 + 320 = 1980.00</span>
+                </li>
+                <li><span class="pb-lbl">The table</span>
+                  <table class="ref-table">
+                    <thead><tr><th>Source</th><th>SS</th><th>df</th><th>MS</th><th><em>F</em></th><th>η<sub>p</sub>²</th></tr></thead>
+                    <tbody>
+                      <tr><td>Caffeine (A)</td><td>500.00</td><td>1</td><td>500.00</td><td>25.00</td><td>.61</td></tr>
+                      <tr><td>Sleep (B)</td><td>980.00</td><td>1</td><td>980.00</td><td>49.00</td><td>.75</td></tr>
+                      <tr><td>A × B</td><td>180.00</td><td>1</td><td>180.00</td><td>9.00</td><td>.36</td></tr>
+                      <tr><td>Error</td><td>320.00</td><td>16</td><td>20.00</td><td></td><td></td></tr>
+                      <tr><td>Total</td><td>1980.00</td><td>19</td><td></td><td></td><td></td></tr>
+                    </tbody>
+                  </table>
+                  <span class="pb-math">df<sub>E</sub> = N − IJ = 20 − 4 = 16, so MS<sub>E</sub> = 320.00 / 16 = 20.00</span>
+                  <span class="pb-math">all three <em>F</em> values exceed 4.49, so all three effects are significant</span>
+                  <span class="pb-note">The error df is N minus the number of cells, not N minus 2. Dividing 320 by 20 instead would print MS<sub>E</sub> = 16.00 and inflate every <em>F</em> by a quarter.</span>
+                </li>
+                <li><span class="pb-lbl">What to say first</span>
+                  <span class="pb-note">The interaction, <em>F</em>(1, 16) = 9.00, <em>p</em> = .008, η<sub>p</sub>² = .36. Caffeine helped everyone, but it helped the sleep-deprived four times as much. Quoting the main effect of caffeine on its own, ten points, describes nobody in the study: not the rested, who gained four, and not the deprived, who gained sixteen.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Margins 70 and 80 for caffeine, 82 and 68 for sleep, grand mean 75. Simple main effects of caffeine are 4.0 rested and 16.0 deprived, averaging to the 10.0 main effect; the difference of differences is 12.0. <em>F</em>(1, 16) = 25.00 for caffeine, 49.00 for sleep and 9.00 for the interaction, all significant at α = .05, with η<sub>p</sub>² of .61, .75 and .36. Report the interaction first.</p>
+              <p class="pb-round">Rounding: none needed. Every cell in the table is exact because the four cell means and the error SS were chosen to make it so.</p>
+              <p class="pb-ref">From <a href="stats-2/factorial-anova-two-way/">§2.4 Factorial ANOVA</a>. Load these four cell means into <a href="stats-2/factorial-anova-two-way/?cells=80,60,84,76#faviz">the Interaction Plot Explorer</a> to see the spreading pattern, and <a href="stats-2/factorial-anova-two-way/#interaction-first">§2.4's reading order</a> is the one used in the last step.</p>
+            </details>
+          </article>
+
+          <!-- ---------- p7-6 (P94) ----------
+               verify: RM with dfC = 3 and dfE = 33 given
+                       dfC = k − 1 = 3 → k = 4 ; dfE = (n−1)(k−1) = 33 → n − 1 = 11 → n = 12
+                       N = nk = 48 ; dfT = 47 ; dfS = 11
+                       SSC = 162, SSS = 253, SST = 613 → SSE = 613 − 162 − 253 = 198
+                       MSC = 54.00 ; MSE = 198/33 = 6.00 ; F = 9.00 on (3, 33)
+                       V.fInv(.05,3,33) = 2.8916 ; V.fUpper(9,3,33) = 1.6902e−4
+                       partial eta2 = 162/360 = .45 ; eta2 = 162/613 = .2643
+                   between-subjects version: SSE = 253 + 198 = 451 on 44 df, MS = 10.25
+                       F = 54/10.25 = 5.2683 on (3, 44) ; V.fInv(.05,3,44) = 2.8165
+                       V.fUpper(5.2683,3,44) = .003420
+                   Greenhouse-Geisser at eps = .72: df 2.16 and 23.76 ; V.fUpper(9,2.16,23.76) = .000991
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p7-6"><span class="pb-num">60</span>The study that lost its method section</h3>
+              <span class="pb-chip stretch">Stretch</span>
+            </div>
+            <p class="pb-scenario">A driving-simulator study had every participant try every one of several in-car display designs, in a counterbalanced order, and recorded reaction time to a hazard. The version of the paper that survives prints the repeated-measures table with two of its degrees of freedom and three of its sums of squares, and nothing else about how many people or how many displays were involved.</p>
+            <div class="pb-given">
+              <span class="lbl">What survives</span>
+              <ul>
+                <li>Between conditions: SS = 162.00, df = 3</li>
+                <li>Between subjects: SS = 253.00, df = ?</li>
+                <li>Error (subject × condition): SS = ?, df = 33</li>
+                <li>Total: SS = 613.00, df = ?</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Recover the number of displays, the number of participants, and the number of observations.</li>
+              <li>Complete the table and test at α = .05 against <em>F</em>*(3, 33) = 2.89.</li>
+              <li>Report partial η² and plain η², and say why they differ so much here.</li>
+              <li>The same 48 observations could have come from 48 different people, one per display. Redo the test that way and compare.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The design, from two df</span>
+                  <span class="pb-math">df<sub>conditions</sub> = k − 1 = 3, so k = 4 displays</span>
+                  <span class="pb-math">df<sub>error</sub> = (n − 1)(k − 1) = 33, so (n − 1)(3) = 33 and n − 1 = 11</span>
+                  <span class="pb-math">n = 12 participants, N = nk = 48 observations</span>
+                  <span class="pb-math">df<sub>subjects</sub> = n − 1 = 11 &nbsp;&nbsp; df<sub>T</sub> = N − 1 = 47</span>
+                  <span class="pb-note">The error df of a repeated-measures analysis is a product rather than a subtraction, and it is the one that carries the sample size. Check the bookkeeping before going on: 3 + 11 + 33 = 47 ✓.</span>
+                </li>
+                <li><span class="pb-lbl">The missing sum of squares</span>
+                  <span class="pb-math">SS<sub>T</sub> = SS<sub>C</sub> + SS<sub>S</sub> + SS<sub>E</sub></span>
+                  <span class="pb-math">SS<sub>E</sub> = 613.00 − 162.00 − 253.00 = 198.00</span>
+                  <span class="pb-note">This three-way split is the whole difference between a repeated-measures analysis and a one-way one. The subjects row takes out the fact that some drivers are quicker than others at everything, before the conditions are compared at all.</span>
+                </li>
+                <li><span class="pb-lbl">The table</span>
+                  <table class="ref-table">
+                    <thead><tr><th>Source</th><th>SS</th><th>df</th><th>MS</th><th><em>F</em></th></tr></thead>
+                    <tbody>
+                      <tr><td>Between conditions</td><td>162.00</td><td>3</td><td>54.00</td><td>9.00</td></tr>
+                      <tr><td>Between subjects</td><td>253.00</td><td>11</td><td>23.00</td><td></td></tr>
+                      <tr><td>Error</td><td>198.00</td><td>33</td><td>6.00</td><td></td></tr>
+                      <tr><td>Total</td><td>613.00</td><td>47</td><td></td><td></td></tr>
+                    </tbody>
+                  </table>
+                  <span class="pb-math">9.00 &gt; 2.89, so reject H₀ at α = .05 (exact <em>p</em> = .0002)</span>
+                  <span class="pb-note">The subjects row gets a mean square but never an <em>F</em>. It is a nuisance term that has been removed, not a hypothesis anyone is testing, and printing an <em>F</em> beside it invites a reader to test whether people differ from each other, which they always do.</span>
+                </li>
+                <li><span class="pb-lbl">Two effect sizes</span>
+                  <span class="pb-math">η<sub>p</sub>² = SS<sub>C</sub> / (SS<sub>C</sub> + SS<sub>E</sub>) = 162 / 360 = .45</span>
+                  <span class="pb-math">η² = SS<sub>C</sub> / SS<sub>T</sub> = 162 / 613 = .26</span>
+                  <span class="pb-note">Partial η² sets the display effect against only the variation the design leaves unexplained. Plain η² sets it against everything, including the 253.00 of stable differences between drivers that the design deliberately removed. Neither is wrong; the gap between them is large exactly when individual differences are large, which is when a within-subjects design is worth running.</span>
+                </li>
+                <li><span class="pb-lbl">The same data as a between-subjects study</span>
+                  <span class="pb-math">error = SS<sub>S</sub> + SS<sub>E</sub> = 253.00 + 198.00 = 451.00 on 11 + 33 = 44 df</span>
+                  <span class="pb-math">MS<sub>E</sub> = 451.00 / 44 = 10.25</span>
+                  <span class="pb-math">F = 54.00 / 10.25 = 5.27 on (3, 44)</span>
+                  <span class="pb-math">5.27 &gt; <em>F</em>*(3, 44) = 2.82, so still significant (<em>p</em> = .003)</span>
+                  <span class="pb-note">Same SS<sub>C</sub>, same numerator, and an <em>F</em> not much over half the size. The between-subjects analysis has to leave the 253.00 in the error term, because with one observation per person there is no way to separate a driver from a display. It buys back eleven degrees of freedom and pays 253.00 in sums of squares for them, which is a bad trade whenever people differ a lot from each other.</span>
+                </li>
+                <li><span class="pb-lbl">A note on sphericity</span>
+                  <span class="pb-note">With four conditions there are six pairwise differences and no reason to assume they vary equally, so the output would carry a Greenhouse-Geisser row. At ε = .72 the df become 2.16 and 23.76, the <em>F</em> stays 9.00 because no data changed, and <em>p</em> moves from .0002 to .001. The correction makes the distribution stricter rather than the statistic smaller.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Four displays, 12 participants, 48 observations, df 3, 11, 33 and 47. SS<sub>E</sub> = 198.00, MS<sub>C</sub> = 54.00, MS<sub>E</sub> = 6.00, <em>F</em>(3, 33) = 9.00, <em>p</em> &lt; .001, η<sub>p</sub>² = .45 against a plain η² of .26. Run between subjects the same numbers give <em>F</em>(3, 44) = 5.27, <em>p</em> = .003, because the 253.00 of subject variation goes back into the error.</p>
+              <p class="pb-round">Rounding: every cell is exact. MS<sub>E</sub> = 198/33 = 6.00 and MS<sub>C</sub> = 162/3 = 54.00 both divide evenly, so <em>F</em> = 9.00 exactly.</p>
+              <p class="pb-ref">From <a href="stats-2/repeated-measures-anova/">§2.5 Repeated Measures ANOVA</a>. The partition readout in <a href="stats-2/repeated-measures-anova/#rmviz">Where the Variance Goes</a> runs the last step as a slider, and <a href="methods/between-vs-within-designs/">§5.4 Between vs Within Designs</a> covers the trade in words.</p>
+            </details>
+          </article>
+
+          <!-- ---------- p7-7 (P94) ----------
+               verify: treated (6): 8, 11, 13, 15, 18, 24 ; control (6): 16, 19, 21, 23, 27, 31
+                       combined sorted 8,11,13,15,16,18,19,21,23,24,27,31
+                       treated ranks 1,2,3,4,6,10 → R = 26 ; control ranks 5,7,8,9,11,12 → R = 52
+                       26 + 52 = 78 = 12·13/2 ✓
+                       U_treated = 26 − 21 = 5 ; U_control = 52 − 21 = 31 ; 5 + 31 = 36 = mn ✓
+                       V.mwuCrit(6,6,.05,2) = 5 ; V.mwuP(5,6,6,2) = .041126
+                       independent exhaustive enumeration of all C(12,6) = 924 rank splits:
+                         P(smaller U ≤ 5) = 38/924 = .041126 ✓ ; P(≤ 6) = .064935 (over α)
+                       normal approximation: mu = 18, sd = √39 = 6.245, z = −2.082, p = .0374
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p7-7"><span class="pb-num">61</span>Twelve seeds, two treatments</h3>
+              <span class="pb-chip warm">Warm-up</span>
+            </div>
+            <p class="pb-scenario">A horticulture student records how many days each seedling takes to produce its first flower. Six seeds were soaked before planting and six were not. Six per group is far too few to judge normality, and days-to-event data are skewed by nature, so the comparison is made on ranks.</p>
+            <div class="pb-given">
+              <span class="lbl">Days to first flower</span>
+              <ul>
+                <li>Soaked (<em>n</em>₁ = 6): 8, 11, 13, 15, 18, 24</li>
+                <li>Not soaked (<em>n</em>₂ = 6): 16, 19, 21, 23, 27, 31</li>
+                <li>Critical value from the table: <em>U</em>* = 5 at two-tailed α = .05</li>
+              </ul>
+            </div>
+            <ol class="pb-ask">
+              <li>Rank all twelve values together and find each group's rank sum, then check the two sums.</li>
+              <li>Compute both <em>U</em> values and check them against each other.</li>
+              <li>State the decision rule and decide at α = .05.</li>
+              <li>The exact two-tailed <em>p</em> is .041. Explain why a statistic that only just reaches the table cutoff has a <em>p</em> noticeably under .05.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">One ranking over both groups</span>
+                  <table class="ref-table">
+                    <thead><tr><th>Value</th><th>8</th><th>11</th><th>13</th><th>15</th><th>16</th><th>18</th><th>19</th><th>21</th><th>23</th><th>24</th><th>27</th><th>31</th></tr></thead>
+                    <tbody>
+                      <tr><td>Group</td><td>S</td><td>S</td><td>S</td><td>S</td><td>N</td><td>S</td><td>N</td><td>N</td><td>N</td><td>S</td><td>N</td><td>N</td></tr>
+                      <tr><td>Rank</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td></tr>
+                    </tbody>
+                  </table>
+                  <span class="pb-math">R₁ (soaked) = 1 + 2 + 3 + 4 + 6 + 10 = 26</span>
+                  <span class="pb-math">R₂ (not soaked) = 5 + 7 + 8 + 9 + 11 + 12 = 52</span>
+                  <span class="pb-math">check: 26 + 52 = 78 = 12(13)/2 ✓</span>
+                  <span class="pb-note">The ranks are assigned to the pooled sample and only afterwards sorted back into groups, which is the step people skip. There are no ties here, so no rank has to be shared.</span>
+                </li>
+                <li><span class="pb-lbl">The two U statistics</span>
+                  <span class="pb-math">U₁ = R₁ − n₁(n₁ + 1)/2 = 26 − 21 = 5</span>
+                  <span class="pb-math">U₂ = R₂ − n₂(n₂ + 1)/2 = 52 − 21 = 31</span>
+                  <span class="pb-math">check: U₁ + U₂ = 36 = n₁n₂ ✓</span>
+                  <span class="pb-note">U counts how many times a value from one group beats a value from the other, out of the 36 possible pairings. Five means the soaked seeds flowered later than the unsoaked ones in only five of the thirty-six head-to-head comparisons.</span>
+                </li>
+                <li><span class="pb-lbl">The decision</span>
+                  <span class="pb-math">test statistic = the smaller U = 5</span>
+                  <span class="pb-math">reject when U ≤ U*, and 5 ≤ 5, so reject H₀ at α = .05</span>
+                  <span class="pb-note">The rank tests reverse the usual direction: a small statistic is the significant one, because small means the two groups barely interleave. Reading them the way an <em>F</em> is read is the classic way to get the answer backwards.</span>
+                </li>
+                <li><span class="pb-lbl">Why the exact p is .041 rather than .050</span>
+                  <span class="pb-math">P(smaller U ≤ 5) = 38 / 924 = .0411</span>
+                  <span class="pb-math">P(smaller U ≤ 6) = 60 / 924 = .0649</span>
+                  <span class="pb-note">With six and six there are only 924 ways to split twelve ranks into two groups, so the null distribution is a short list of jumps rather than a smooth curve and no cutoff lands on .050 exactly. A table prints the most generous value whose true error rate is still at or under α, which here is 5 at .0411, because the next one up would take the test to .0649. That is the same convention every printed rank table follows, and it is why these tests are slightly conservative by construction.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">R₁ = 26 and R₂ = 52, summing to 78 as they must. U₁ = 5, U₂ = 31, summing to 36. The smaller <em>U</em> is 5, which is at the critical value of 5, so reject H₀ at two-tailed α = .05: soaking shifted the time to first flower. The exact two-tailed <em>p</em> is .041.</p>
+              <p class="pb-round">Rounding: nothing to round. Every quantity in this problem is an integer until the <em>p</em>-value, which comes from counting 38 of the 924 possible rank splits.</p>
+              <p class="pb-ref">From <a href="stats-2/non-parametric-alternatives/">§2.1 Non-Parametric Alternatives</a>. Load the twelve seedlings into the rank ledger with <a href="stats-2/non-parametric-alternatives/?tab=mw&amp;g=8,11,13,15,18,24;16,19,21,23,27,31">?tab=mw&amp;g=…</a>, which reaches the same U = 5 and the same exact <em>p</em> by subtracting each rank sum from n₁n₂ + nᵢ(nᵢ + 1)/2 instead. That is the other published convention: it prints the same two numbers and swaps which one is called U₁, and since the test uses the smaller of them, nothing about the decision moves. Find <em>U</em>* in Table U on <a href="tables.html#nptables">tables.html</a>, where selecting the n₁ = 6, n₂ = 6 cell reads the rule back out in a sentence.</p>
+            </details>
+          </article>
+
+          <!-- ---------- p7-8 (P94) ----------
+               verify: hours 1,2,4,5,7,9,12,16 ; wellbeing 50,44,41,52,47,58,63,55
+                       rank(hours) = 1..8 ; rank(wellbeing) = 4,2,1,5,3,7,8,6
+                       d = −3, 0, 2, −1, 2, −1, −1, 2 ; Σd = 0 ✓
+                       d² = 9, 0, 4, 1, 4, 1, 1, 4 ; S = Σd² = 24
+                       rho_s = 1 − 6(24)/(8 × 63) = 1 − 144/504 = .714286
+                       V.spearCrit(8,.05,2) = .7381 ; V.spearP(.714286,8,2) = .057589
+                       independent exhaustive enumeration of all 8! = 40,320 rankings:
+                         P(S ≤ 24) = .028795 → two-tailed .057589 ✓
+                         critical: S = 22 → rho = .7381 with exact two-tailed tail .045833 ✓
+                       Pearson r on the raw numbers = .6810
+                       t approximation: t = rho√(6/(1−rho²)) = .714286 × 3.5 = 2.500 on 6 df
+                         t*(6) at two-tailed .05 = 2.4469, so the approximation would reject
+                         and its p = .0465 against the exact .0576
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p7-8"><span class="pb-num">62</span>Volunteering and a wellbeing score</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">Eight people report how many hours they volunteer in a typical month and complete a wellbeing questionnaire. The hours are badly skewed, with one person at sixteen and most under ten, and the wellbeing score is an ordinal sum of Likert items, so the relationship is measured on ranks.</p>
+            <div class="pb-given">
+              <span class="lbl">Eight people</span>
+              <table class="ref-table">
+                <thead><tr><th>Person</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th></tr></thead>
+                <tbody>
+                  <tr><td>Hours per month</td><td>1</td><td>2</td><td>4</td><td>5</td><td>7</td><td>9</td><td>12</td><td>16</td></tr>
+                  <tr><td>Wellbeing score</td><td>50</td><td>44</td><td>41</td><td>52</td><td>47</td><td>58</td><td>63</td><td>55</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <ol class="pb-ask">
+              <li>Rank each variable separately, compute the differences and check that they sum to zero.</li>
+              <li>Compute Σ<em>d</em>² and then ρ<sub>s</sub>.</li>
+              <li>The table gives ρ<sub>s</sub>* = .738 at two-tailed α = .05 for <em>n</em> = 8. Decide, and write the conclusion.</li>
+              <li>A classmate computes <em>t</em> = ρ<sub>s</sub>√((<em>n</em> − 2)/(1 − ρ<sub>s</sub>²)) = 2.50 on 6 df, compares it with 2.447, and reports a significant result. Who is right?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Two separate rankings</span>
+                  <table class="ref-table">
+                    <thead><tr><th>Person</th><th>Hours</th><th>Rank <em>x</em></th><th>Wellbeing</th><th>Rank <em>y</em></th><th><em>d</em></th><th><em>d</em>²</th></tr></thead>
+                    <tbody>
+                      <tr><td>A</td><td>1</td><td>1</td><td>50</td><td>4</td><td>−3</td><td>9</td></tr>
+                      <tr><td>B</td><td>2</td><td>2</td><td>44</td><td>2</td><td>0</td><td>0</td></tr>
+                      <tr><td>C</td><td>4</td><td>3</td><td>41</td><td>1</td><td>+2</td><td>4</td></tr>
+                      <tr><td>D</td><td>5</td><td>4</td><td>52</td><td>5</td><td>−1</td><td>1</td></tr>
+                      <tr><td>E</td><td>7</td><td>5</td><td>47</td><td>3</td><td>+2</td><td>4</td></tr>
+                      <tr><td>F</td><td>9</td><td>6</td><td>58</td><td>7</td><td>−1</td><td>1</td></tr>
+                      <tr><td>G</td><td>12</td><td>7</td><td>63</td><td>8</td><td>−1</td><td>1</td></tr>
+                      <tr><td>H</td><td>16</td><td>8</td><td>55</td><td>6</td><td>+2</td><td>4</td></tr>
+                    </tbody>
+                  </table>
+                  <span class="pb-math">Σ<em>d</em> = −3 + 0 + 2 − 1 + 2 − 1 − 1 + 2 = 0 ✓</span>
+                  <span class="pb-note">Each variable is ranked within itself, which is what makes this different from the Mann-Whitney ranking of a pooled sample. The differences always sum to zero, because both columns are the same eight ranks in some order, so a nonzero sum means an arithmetic slip rather than a finding.</span>
+                </li>
+                <li><span class="pb-lbl">The coefficient</span>
+                  <span class="pb-math">Σ<em>d</em>² = 9 + 0 + 4 + 1 + 4 + 1 + 1 + 4 = 24</span>
+                  <span class="pb-math">ρ<sub>s</sub> = 1 − 6Σ<em>d</em>² / [n(n² − 1)] = 1 − 6(24) / [8(63)]</span>
+                  <span class="pb-math">= 1 − 144 / 504 = 1 − 0.2857 = .714</span>
+                  <span class="pb-note">The formula rewards agreement: Σ<em>d</em>² = 0 gives ρ<sub>s</sub> = 1, and the largest Σ<em>d</em>² available at <em>n</em> = 8, which is 168, gives −1. Nine of the 24 here come from person A alone, who volunteers least of anyone and still reports a middling score.</span>
+                </li>
+                <li><span class="pb-lbl">The decision</span>
+                  <span class="pb-math">ρ<sub>s</sub> = .714 against ρ<sub>s</sub>* = .738</span>
+                  <span class="pb-math">.714 &lt; .738, so do not reject H₀ at two-tailed α = .05</span>
+                  <span class="pb-note">With eight people a coefficient that would look convincing at any reasonable sample size is not enough. The sentence to write is that the monotonic association was positive but not statistically significant, ρ<sub>s</sub> = .71, <em>p</em> = .058, and that eight people cannot settle the question either way.</span>
+                </li>
+                <li><span class="pb-lbl">Who is right</span>
+                  <span class="pb-math">exact two-tailed <em>p</em> from the 40,320 possible rankings: .058</span>
+                  <span class="pb-math">the t approximation gives <em>p</em> = .047</span>
+                  <span class="pb-note">The table is right and the classmate is wrong. The <em>t</em> formula treats ρ<sub>s</sub> as though it came from a continuous distribution, and at <em>n</em> = 8 the true null distribution of Σ<em>d</em>² is a list of 40,320 outcomes with visible gaps between its possible values. The approximation runs slightly generous there, which is exactly the case where it flips a decision. Use the exact table whenever the sample is small enough to have one, which for Spearman means up to about thirty pairs.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Σ<em>d</em>² = 24 and ρ<sub>s</sub> = 1 − 144/504 = .714. Against ρ<sub>s</sub>*(8) = .738 at two-tailed α = .05, do not reject: the association is positive but not significant, exact <em>p</em> = .058. The classmate's <em>t</em> approximation is generous at this sample size and reverses the verdict; the exact table is the one to trust.</p>
+              <p class="pb-round">Rounding: ρ<sub>s</sub> = .714286, which rounds to .71 for reporting and to .714 for comparison with a table printed to three decimals. Pearson's <em>r</em> on the raw numbers is .681, lower than ρ<sub>s</sub> because the sixteen-hour volunteer stretches the <em>x</em> scale that ranks flatten.</p>
+              <p class="pb-ref">From <a href="stats-2/non-parametric-alternatives/">§2.1 Non-Parametric Alternatives</a> and <a href="stats-1/correlation/">§1.17 Correlation</a>. The ρ<sub>s</sub> table is printed on <a href="tables.html#nptables">tables.html</a>, and the Spearman tab takes these eight pairs directly: <a href="stats-2/non-parametric-alternatives/?tab=sp&amp;data=1:50,2:44,4:41,5:52,7:47,9:58,12:63,16:55">?tab=sp&amp;data=…</a>.</p>
+            </details>
+          </article>
+        </section>
+
+
+        <!-- ==================================================================
              REGRESSION
              ================================================================== -->
         <section class="pb-set" id="regression-set">
@@ -3480,7 +4144,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p3-1"><span class="pb-num">23</span>Two predictors, two scales</h3>
+              <h3 id="p3-1"><span class="pb-num">63</span>Two predictors, two scales</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A study of 120 first-year students regresses final exam score on weekly study hours and average nightly sleep. A journalist reads the output and writes that sleep matters two and a half times more than studying, because its coefficient is bigger.</p>
@@ -3539,7 +4203,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p3-2"><span class="pb-num">24</span>The reading program that started ahead</h3>
+              <h3 id="p3-2"><span class="pb-num">64</span>The reading program that started ahead</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A school offers an after-school reading program. Thirty children enroll and thirty comparable children do not, and everyone sits the same reading test before and after the term. The program leader reports a 6.4-point advantage.</p>
@@ -3598,7 +4262,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p3-3"><span class="pb-num">25</span>Three scales, one model</h3>
+              <h3 id="p3-3"><span class="pb-num">65</span>Three scales, one model</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A driving school fits a logistic regression predicting whether a learner passes the practical test on the first attempt, from the number of paid lessons taken beforehand.</p>
@@ -3657,7 +4321,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p3-4"><span class="pb-num">26</span>The main effect that isn't the story</h3>
+              <h3 id="p3-4"><span class="pb-num">66</span>The main effect that isn't the story</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">Sixty participants solve logic puzzles under one of four conditions in a 2 × 2 design: feedback arrives either immediately or after a delay, and the puzzles are either easy or hard. The abstract reports that immediate feedback improved accuracy by 10 percentage points.</p>
@@ -3717,7 +4381,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p3-5"><span class="pb-num">27</span>Between, within, or neither</h3>
+              <h3 id="p3-5"><span class="pb-num">67</span>Between, within, or neither</h3>
               <span class="pb-chip warm">Warm-up</span>
             </div>
             <p class="pb-scenario">A researcher wants to compare three interface designs on task completion time. She has budget for about 90 testing sessions and asks you whether to run 90 people through one design each, or 30 people through all three.</p>
@@ -3776,7 +4440,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p3-6"><span class="pb-num">28</span>Getting the inputs right</h3>
+              <h3 id="p3-6"><span class="pb-num">68</span>Getting the inputs right</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A master's student is planning a study comparing three teaching methods on an end-of-term test. Her draft methods section says: "Based on previous work we expect a medium effect. We will recruit 20 participants per group, which is standard in this literature."</p>
@@ -3830,7 +4494,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p3-7"><span class="pb-num">29</span>Significant model, significant nothing</h3>
+              <h3 id="p3-7"><span class="pb-num">69</span>Significant model, significant nothing</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">An occupational psychologist regresses supervisor-rated job performance on three predictors in a sample of 150 employees. The model works. None of the predictors do, and one of them has the wrong sign.</p>
@@ -3880,7 +4544,7 @@
                 </li>
               </ol>
               <p class="pb-answer">VIFs of 12.99, 8.85 and 7.19, all above the usual alarm level of 5. The predictors are nearly the same variable, so the model as a whole is significant while no individual coefficient can be trusted, including its sign. Prediction survives; interpretation does not.</p>
-              <p class="pb-ref">From <a href="stats-2/multicollinearity-and-variable-selection/">§2.12 Multicollinearity</a> · compare with the diagnostics in <a href="stats-2/regression-diagnostics/">§2.8</a> and Problem 22 above.</p>
+              <p class="pb-ref">From <a href="stats-2/multicollinearity-and-variable-selection/">§2.12 Multicollinearity</a> · compare with the diagnostics in <a href="stats-2/regression-diagnostics/">§2.8</a> and <a href="problems.html#p2-10">Problem 43</a> above.</p>
             </details>
           </article>
 
@@ -3890,7 +4554,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p3-8"><span class="pb-num">30</span>The twenty-four who did not come back</h3>
+              <h3 id="p3-8"><span class="pb-num">70</span>The twenty-four who did not come back</h3>
               <span class="pb-chip stretch">Stretch</span>
             </div>
             <p class="pb-scenario">A twelve-week weight-management trial randomized 180 adults to an intervention or a control arm. Twenty-four never returned for the week-12 weigh-in. The analyst dropped them and reported the result.</p>
@@ -3959,7 +4623,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p4-1"><span class="pb-num">31</span>A very good test for a very rare disease</h3>
+              <h3 id="p4-1"><span class="pb-num">71</span>A very good test for a very rare disease</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A screening program offers a blood test for a condition that affects 8 people in every 1,000. A patient tests positive and is told the test is "95% accurate". She would like to know what that means for her.</p>
@@ -4030,7 +4694,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p4-2"><span class="pb-num">32</span>Updating what last quarter told you</h3>
+              <h3 id="p4-2"><span class="pb-num">72</span>Updating what last quarter told you</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A team redesigns the onboarding flow in an app. Last quarter's version had a completion rate they summarize as a Beta(8, 12) prior. The new flow goes out to 60 users and 33 of them finish onboarding.</p>
@@ -4095,7 +4759,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p4-3"><span class="pb-num">33</span>Who is the better witness?</h3>
+              <h3 id="p4-3"><span class="pb-num">73</span>Who is the better witness?</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">In a recognition-memory experiment each participant studies 40 words, then sees those 40 mixed with 40 new ones and says "old" or "new" to each. Three participants produce very different response patterns.</p>
@@ -4162,7 +4826,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p4-4"><span class="pb-num">34</span>Reading a psychometric function</h3>
+              <h3 id="p4-4"><span class="pb-num">74</span>Reading a psychometric function</h3>
               <span class="pb-chip stretch">Stretch</span>
             </div>
             <p class="pb-scenario">In a temporal bisection task, listeners learn a short anchor of 200 ms and a long anchor of 800 ms, then judge probe tones as "short" or "long". A logistic regression of the "long" response on probe duration is fitted separately for quiet and loud probes.</p>
@@ -4225,7 +4889,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p4-5"><span class="pb-num">35</span>Pick the family before you fit</h3>
+              <h3 id="p4-5"><span class="pb-num">75</span>Pick the family before you fit</h3>
               <span class="pb-chip warm">Warm-up</span>
             </div>
             <p class="pb-scenario">A hospital analytics team has five questions and one statistician. Each outcome needs a GLM family and a link before anyone touches the data.</p>
@@ -4293,7 +4957,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p4-6"><span class="pb-num">36</span>The curve that never reaches zero</h3>
+              <h3 id="p4-6"><span class="pb-num">76</span>The curve that never reaches zero</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">Ten patients enter a two-year follow-up study after treatment. The outcome is time to relapse in months. A plus sign marks a patient who was still relapse-free when the study or their participation ended.</p>
@@ -4362,10 +5026,10 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p4-7"><span class="pb-num">37</span>Four models, one dataset</h3>
+              <h3 id="p4-7"><span class="pb-num">77</span>Four models, one dataset</h3>
               <span class="pb-chip stretch">Stretch</span>
             </div>
-            <p class="pb-scenario">Working with the same 120 students from Problem 23, an analyst fits four nested models of exam performance and asks which one to report. The most complex model has the best log-likelihood, and she suspects that is not the end of the argument.</p>
+            <p class="pb-scenario">Working with the same 120 students from <a href="problems.html#p3-1">Problem 63</a>, an analyst fits four nested models of exam performance and asks which one to report. The most complex model has the best log-likelihood, and she suspects that is not the end of the argument.</p>
             <div class="pb-given">
               <span class="lbl">Model fits, n = 120</span>
               <table class="ref-table">
@@ -4438,7 +5102,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-1"><span class="pb-num">38</span>The module that raises exam scores</h3>
+              <h3 id="p5-1"><span class="pb-num">78</span>The module that raises exam scores</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A university builds an optional online tutorial module for its introductory statistics course. Usage is tracked automatically. At the end of term the learning-technology team compares final exam marks and issues a press release.</p>
@@ -4487,7 +5151,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-2"><span class="pb-num">39</span>Four thousand responses and no answer</h3>
+              <h3 id="p5-2"><span class="pb-num">79</span>Four thousand responses and no answer</h3>
               <span class="pb-chip warm">Warm-up</span>
             </div>
             <p class="pb-scenario">A city council is deciding whether to pedestrianize the main square. It posts a survey link on the council website and its social media accounts, leaves it open for six weeks, and reports the result to the planning committee.</p>
@@ -4540,7 +5204,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-3"><span class="pb-num">40</span>Four questionable practices in one paragraph</h3>
+              <h3 id="p5-3"><span class="pb-num">80</span>Four questionable practices in one paragraph</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">You are reviewing a manuscript for a journal. The methods and results read as follows. Nothing in it is fabricated, and every number is real. It should still not be published in this form.</p>
@@ -4592,7 +5256,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-4"><span class="pb-num">41</span>The cleaning log that broke the data</h3>
+              <h3 id="p5-4"><span class="pb-num">81</span>The cleaning log that broke the data</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A research assistant hands you a cleaned dataset for a two-wave wellbeing study and, to their considerable credit, an actual log of what they did to it. Reading the log is faster than discovering each problem later.</p>
@@ -4664,7 +5328,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-5"><span class="pb-num">42</span>The figure that made 0.27 look enormous</h3>
+              <h3 id="p5-5"><span class="pb-num">82</span>The figure that made 0.27 look enormous</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A retail consultancy sends its client a one-page summary of a store-layout trial. The figure is the whole page, and you have been asked whether the client should spend two million on the rollout.</p>
@@ -4727,7 +5391,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-6"><span class="pb-num">43</span>Three things wrong with one sentence</h3>
+              <h3 id="p5-6"><span class="pb-num">83</span>Three things wrong with one sentence</h3>
               <span class="pb-chip warm">Warm-up</span>
             </div>
             <p class="pb-scenario">A results paragraph comes back from a co-author. The analysis is sound and every number was computed correctly, but the sentence breaks exactly three APA 7 formatting rules. Find them, then write the version that goes in the paper.</p>

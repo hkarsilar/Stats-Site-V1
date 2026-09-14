@@ -61,7 +61,14 @@ MAX_CHARS = 20_000
 # its guard has the wrong guard, so this is 60,000 rather than 25,000 — real
 # slack, on the P86 reading that a runaway guard is not a budget. It costs
 # about 3 KB on a lazily loaded index.
-PAGE_MAX_CHARS = {"problems.html": 300_000, "glossary.html": 120_000, "teachers.html": 60_000}
+#
+# P94 raised problems.html again, from 300,000 to 500,000, BEFORE anything was
+# cut rather than after. The page reached 248,467 characters once P94's eight
+# Stats 2 exam problems landed, which is 83% of the guard it had, and P95 and
+# P96 are still to come. That is precisely the shape P86 described and then
+# left one prompt short of acting on: a guard the page keeps catching up with
+# was set too tight. Raising it costs nothing until the text exists.
+PAGE_MAX_CHARS = {"problems.html": 500_000, "glossary.html": 120_000, "teachers.html": 60_000}
 
 # Lessons get their own, much larger cap (P39 run 13). The 4,500-char default
 # was truncating 87 of the 97 lessons, dropping 27% of the site's lesson prose

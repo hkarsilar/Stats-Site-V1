@@ -41,6 +41,32 @@
     ]
   }
   </script>
+  <style>
+    /* Notation captions on the reference tables (P94). Local to this page:
+       a caption is print-critical furniture here and nowhere else on the site. */
+    .ref-table caption { caption-side: top; text-align: left; font-size: .84rem;
+      line-height: 1.5; color: var(--text-muted); padding: 0 0 .55rem; }
+    .ref-table caption b { color: var(--text); font-weight: 600; }
+
+    /* Print: this page is a reference sheet, so it gets tighter furniture than
+       the shared lesson print block gives an article of prose. P94 added
+       fifteen rows (the five rank tests of §2.1, and the regression family
+       refiled here from the Stats 3 table where it never belonged), which at
+       the shared 10.5pt would have pushed an eight-page handout to ten. The
+       sizes below are page-local and change nothing anywhere else; measured
+       with headless Chromium at both A4 and US Letter. */
+    @media print {
+      @page { margin: 1.2cm 1.2cm 1.5cm; }
+      .lesson { font-size: 9pt; }
+      .lesson h1 { font-size: 16pt; margin-bottom: .2cm; }
+      .lesson h2 { font-size: 11.5pt; margin: .45cm 0 .1cm; }
+      .lesson .lede { font-size: 8.5pt; margin: .1cm 0 .25cm; }
+      .ref-table { font-size: 8.2pt; margin: .15cm 0 .3cm; }
+      .ref-table th, .ref-table td { padding: .13cm .22cm; }
+      .ref-table caption { font-size: 7.4pt; line-height: 1.4; padding-bottom: .12cm; }
+      .callout { font-size: 8.2pt; }
+    }
+  </style>
 </head>
 <body>
   <nav class="nav" id="nav"></nav>
@@ -60,6 +86,7 @@
 
         <h2 style="color:var(--primary)"><a href="./#curriculum" style="color:inherit">Stats 1: Introduction to Statistics</a></h2>
         <table class="ref-table">
+          <caption><b>Notation.</b> <em>n</em> is a sample size and <em>N</em> a population or a grand total. A Greek letter or a plain <em>p</em> is the parameter nobody has measured; a bar, a hat or a Latin letter is the statistic computed from data. <em>z</em>* and <em>t</em>* are critical values, never observed ones.</caption>
           <thead><tr><th>Concept</th><th>Formula</th><th>Read it as</th></tr></thead>
           <tbody>
             <tr><td>Mean</td><td>x̄ = Σxᵢ / n</td><td>Add everything, divide by the count.</td></tr>
@@ -91,8 +118,14 @@
 
         <h2 style="color:var(--secondary)"><a href="./#curriculum" style="color:inherit">Stats 2: ANOVA &amp; Regression</a></h2>
         <table class="ref-table">
+          <caption><b>Notation, one convention per family.</b> Group designs: <em>I</em> groups (some books write <em>k</em>), <em>J</em> levels of a second factor, <em>N</em> observations in total, <em>n<sub>i</sub></em> in group <em>i</em>. Repeated measures: <em>n</em> people in <em>k</em> conditions, <em>g</em> groups in a mixed design. Regression: <em>n</em> cases and <em>p</em> predictors, so every <em>t</em>, every <em>s</em> and the second <em>F</em> df run on <em>n</em> − <em>p</em> − 1. A starred critical value is the bar to clear; <em>t</em>** is a corrected one. Rows run in the order the course meets them, §2.1 first.</caption>
           <thead><tr><th>Concept</th><th>Formula</th><th>Read it as</th></tr></thead>
           <tbody>
+            <tr><td>Pooled ranking</td><td>rank every value 1…N across both groups; tied values share the average of the ranks they cover</td><td>The four tests below run on these ranks and never on the values, which is why one wild outlier cannot move them.</td></tr>
+            <tr><td>Mann–Whitney <em>U</em></td><td>U₁ = R₁ − n₁(n₁ + 1)/2,&nbsp; U₁ + U₂ = n₁n₂</td><td>R₁ is group 1's rank sum in the pooled ranking. Some books subtract the rank sum from n₁n₂ + n₁(n₁ + 1)/2 instead, which names the same pair the other way round. Test the smaller U either way and reject when U ≤ U*, so a small statistic is the significant one here.</td></tr>
+            <tr><td>Wilcoxon signed ranks</td><td>W = the smaller of T₊ and T₋</td><td>Rank the nonzero differences by size, ignoring sign, then total the ranks each sign carries. A zero difference is dropped and n falls with it. Reject when W ≤ W*.</td></tr>
+            <tr><td>Kruskal–Wallis <em>H</em></td><td>H = [12 / (N(N + 1))] · Σ R<sub>i</sub>²/n<sub>i</sub> − 3(N + 1), on χ²(I − 1)</td><td>The rank version of the one-way ANOVA. Unlike U and W it hands its statistic to a χ², so here a large H is the significant one.</td></tr>
+            <tr><td>Spearman's rho</td><td>ρ<sub>s</sub> = 1 − 6Σd² / (n(n² − 1))</td><td>d is each pair's rank difference, after ranking the two variables separately. Σd is always 0 and Σd² always even. Reject when |ρ<sub>s</sub>| ≥ ρ<sub>s</sub>*.</td></tr>
             <tr><td>Between-groups SS</td><td>SS<sub>G</sub> = Σ n<sub>i</sub>(x̄<sub>i</sub> − x̄)²</td><td>Each group mean’s squared distance from the grand mean, weighted by group size.</td></tr>
             <tr><td>Within-groups SS</td><td>SS<sub>E</sub> = Σ (x − x̄<sub>i</sub>)² = Σ (n<sub>i</sub> − 1)s<sub>i</sub>²</td><td>Every score against its own group mean. The right-hand form works straight from group SDs.</td></tr>
             <tr><td>Total SS</td><td>SS<sub>T</sub> = Σ (x − x̄)² = SS<sub>G</sub> + SS<sub>E</sub></td><td>Every score against the grand mean; the identity is the arithmetic check.</td></tr>
@@ -129,29 +162,26 @@
             <tr><td>Regression slope</td><td>b = r · (s<sub>y</sub> / s<sub>x</sub>)</td><td>Predicted change in y per one-unit rise in x.</td></tr>
             <tr><td>Intercept</td><td>a = ȳ − b·x̄</td><td>The least-squares line always passes through (x̄, ȳ).</td></tr>
             <tr><td>R²</td><td>R² = 1 − SS<sub>res</sub> / SS<sub>tot</sub></td><td>Share of y's variance the model explains.</td></tr>
+            <tr><td>Multiple regression</td><td>ŷ = b₀ + b₁x₁ + … + b<sub>p</sub>x<sub>p</sub></td><td>Each bⱼ is that predictor's effect holding the others constant. With p predictors every t and every s in the model runs on df = n − p − 1.</td></tr>
+            <tr><td>Overall F (regression)</td><td>F = (R²/p) / ((1 − R²)/(n − p − 1)), on F(p, n − p − 1)</td><td>One test of the whole model against no model at all. Rejecting says at least one predictor earns its place, never which one.</td></tr>
+            <tr><td>Multiple correlation</td><td>R = √R²</td><td>The plain correlation between y and the model's own predictions ŷ, which is why it can never come out negative.</td></tr>
+            <tr><td>Adjusted R²</td><td>1 − (1 − R²)(n − 1) / (n − p − 1)</td><td>R² with rent charged per predictor. It falls when a predictor earns less than it costs, which plain R² can never do.</td></tr>
+            <tr><td>Interaction model</td><td>ŷ = b₀ + b₁x + b₂m + b₃(x·m)</td><td>x's slope becomes b₁ + b₃m, so it depends on the moderator.</td></tr>
+            <tr><td>VIF</td><td>VIF<sub>j</sub> = 1 / (1 − R²<sub>j</sub>)</td><td>R²<sub>j</sub> comes from regressing predictor j on all the others. Worry near 10.</td></tr>
+            <tr><td>AIC / BIC</td><td>−2·lnL + 2p &nbsp;·&nbsp; −2·lnL + p·ln(n)</td><td>Fit plus a complexity penalty; lower wins. BIC punishes harder as n grows.</td></tr>
+            <tr><td>Logistic model</td><td>ln( π / (1 − π) ) = b₀ + b₁x</td><td>A straight line on the log-odds scale. π (pi) is the probability of the outcome, written Greek here so that p can go on meaning the number of predictors.</td></tr>
+            <tr><td>Odds ratio</td><td>OR = e<sup>b</sup></td><td>Multiplies the odds per one-unit rise in the predictor. b = 0 gives OR = 1, which is the null.</td></tr>
+            <tr><td>Wald test</td><td>z = b / SE(b), and SPSS prints z² as Wald χ²(1)</td><td>The logistic answer to the regression t. It is unreliable for very large coefficients, where a likelihood-ratio test is the safer one.</td></tr>
           </tbody>
         </table>
 
         <h2 style="color:var(--success)"><a href="./#curriculum" style="color:inherit">Stats 3: Advanced &amp; Elective Topics</a></h2>
         <table class="ref-table">
+          <caption><b>Notation.</b> Greek letters are population quantities: θ (theta) whatever is being estimated, τ² (tau squared) variance between clusters or studies, σ² (sigma squared) variance within them, μ (mu) a mean on the link scale. Latin letters are estimates from data.</caption>
           <thead><tr><th>Concept</th><th>Formula</th><th>Read it as</th></tr></thead>
           <tbody>
-            <tr><td>Multiple regression</td><td>ŷ = b₀ + b₁x₁ + … + b<sub>k</sub>x<sub>k</sub></td><td>Each bⱼ is that predictor's effect holding the others constant.</td></tr>
-            <tr><td>Adjusted R²</td><td>1 − (1 − R²)(n − 1) / (n − k − 1)</td><td>R² with rent charged per predictor.</td></tr>
-            <tr><td>VIF</td><td>VIF<sub>j</sub> = 1 / (1 − R²<sub>j</sub>)</td><td>How much overlap with other predictors inflates bⱼ's variance (worry near 10).</td></tr>
-            <tr><td>Interaction model</td><td>ŷ = b₀ + b₁x + b₂m + b₃(x·m)</td><td>x's slope becomes b₁ + b₃m — it depends on the moderator.</td></tr>
             <tr><td>Indirect effect</td><td>a × b</td><td>X→M path times M→Y path; test it with a bootstrap CI.</td></tr>
             <tr><td>Effect decomposition</td><td>c = c′ + a·b</td><td>Total effect = direct + indirect (through the mediator).</td></tr>
-            <tr><td>Logistic model</td><td>ln( p / (1 − p) ) = b₀ + b₁x</td><td>A straight line on the log-odds scale.</td></tr>
-            <tr><td>Odds ratio</td><td>OR = e<sup>b</sup></td><td>Multiplies the odds per one-unit rise in the predictor.</td></tr>
-            <tr><td>AIC / BIC</td><td>−2·lnL + 2k &nbsp;·&nbsp; −2·lnL + k·ln(n)</td><td>Fit plus a complexity penalty; lower wins. BIC punishes harder as n grows.</td></tr>
-          </tbody>
-        </table>
-
-        <h2 style="color:var(--success)"><a href="./#curriculum" style="color:inherit">Stats 3, continued: modern methods</a></h2>
-        <table class="ref-table">
-          <thead><tr><th>Concept</th><th>Formula</th><th>Read it as</th></tr></thead>
-          <tbody>
             <tr><td>Bayes' theorem</td><td>P(θ | data) ∝ P(data | θ) · P(θ)</td><td>Posterior ∝ likelihood × prior. θ (theta) stands for whatever you are estimating.</td></tr>
             <tr><td>Beta–Binomial update</td><td>Beta(a, b) → Beta(a + k, b + n − k)</td><td>See k successes in n trials: add them straight into the prior.</td></tr>
             <tr><td>Percentile bootstrap CI</td><td>[2.5th, 97.5th percentile]</td><td>…of the statistic across thousands of with-replacement resamples.</td></tr>
