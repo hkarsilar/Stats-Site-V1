@@ -282,6 +282,7 @@
     "choose-statistics-dissertation": "One outcome, two groups, nobody measured twice — the capybara names the test before its tea cools. Not memory; just asking three questions in order.",
     "clean-survey-data": "The capybara cleans data the way it grooms: gently, in a fixed order, and never losing the raw coat underneath.",
     "complete-worked-project": "One question, one dataset, no skipping ahead to the p-value. The capybara has tried skipping ahead. It does not work.",
+    "anova-and-regression-project": "Two analyses, one question, and a coefficient that shrinks when you look at it properly. The capybara approves of looking properly.",
     /* Root pages */
     "home": "No rush — capybaras never cram.",
     "toolbox": "A capybara's toolbox: warm water, good snacks, zero deadlines. Yours has calculators too.",
@@ -391,6 +392,7 @@
     { url: "guides/choose-statistics-dissertation/", key: "choose-statistics-dissertation", group: "read", emoji: "🎓", title: "Choosing statistics for your dissertation", desc: "Three questions that pick your test — plus honest words on messy designs" },
     { url: "guides/clean-survey-data/",              key: "clean-survey-data",              group: "read", emoji: "🧹", title: "Clean your survey data, step by step", desc: "From raw export to analysis-ready, with a real dataset to follow along" },
     { url: "guides/complete-worked-project/",        key: "complete-worked-project",        group: "read", emoji: "🧭", title: "One study, start to finish",           desc: "A whole project on one file: question, power, analysis, APA, limitations" },
+    { url: "guides/anova-and-regression-project/",   key: "anova-and-regression-project",   group: "read", emoji: "🔀", title: "An ANOVA and a regression",           desc: "The group project: three conditions analyzed twice, with control variables" },
     { url: "teachers.html",                        key: "teachers",                       group: "read", emoji: "🧑‍🏫", title: "For instructors",                     desc: "Use the site in your course: link, embed, print & assign — free" }
   ];
   /* the four toolbox groups — the homepage grid and toolbox.html render the
@@ -1695,6 +1697,7 @@
     { title: "From SPSS Output to APA Results", url: "guides/spss-output-to-apa/", tag: "Guide", kw: "spss guide output apa results report write up sig 2-tailed .000 levene two rows t-test anova correlation chi-square regression tables how to read coefficients" },
     { title: "Choosing Statistics for Your Dissertation", url: "guides/choose-statistics-dissertation/", tag: "Guide", kw: "choose choosing statistics dissertation thesis which test analysis pick guide outcome predictor groups paired design likert messy real data decision" },
     { title: "Clean Your Survey Data, Step by Step", url: "guides/clean-survey-data/", tag: "Guide", kw: "clean cleaning survey data guide questionnaire likert reverse code coding missing values composite score reliability cronbach alpha screening exclusions step by step raw export" },
+    { title: "One Question, an ANOVA and a Regression", url: "guides/anova-and-regression-project/", tag: "Guide", kw: "group research project anova and regression three conditions control variables covariates dummy coding reference level one-way anova planned contrast bonferroni multiple regression holding constant partial coefficient omitted variable bias confounder vif multicollinearity residual plot codebook cleaning power calculation apa results paragraph imrad limitations supervisor checklist commute mood simulated dataset" },
     { title: "One Study, Start to Finish: A Complete Worked Project", url: "guides/complete-worked-project/", tag: "Guide", kw: "complete worked project example whole study start to finish end to end research journey capstone guide research question operationalization design power analysis sample size cleaning assumptions two-way factorial anova interaction simple effects effect size confidence interval apa results paragraph limitations ethics reproducible memory 2x2 dissertation thesis" },
     /* not a tool, so deliberately absent from TOOLBOX — but searchable (P69) */
     { title: "Privacy", url: "privacy.html", tag: "Reference", kw: "privacy policy data collection analytics google cookie cookies tracking localstorage local storage progress stored device gdpr ads advertising accounts anonymous page views ko-fi what is collected delete reset children classroom" },

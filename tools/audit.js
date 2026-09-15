@@ -346,7 +346,7 @@ const ROOT_PAGES = ['index.html', 'quiz.html', 'glossary.html', 'toolbox.html', 
    carries a two-level trail. */
 const NON_TOOL_ROOT = new Set(['privacy.html', 'license.html']);
 /* long-form guides — guides/<slug>/index.html (P34); each is a body[data-guide] page */
-const GUIDES = ['analyze-thesis-data-jasp', 'spss-output-to-apa', 'choose-statistics-dissertation', 'clean-survey-data', 'complete-worked-project'];
+const GUIDES = ['analyze-thesis-data-jasp', 'spss-output-to-apa', 'choose-statistics-dissertation', 'clean-survey-data', 'complete-worked-project', 'anova-and-regression-project'];
 /* course landing pages — <course>/index.html (P61); each is a body[data-course-home] page.
    Derived from the curriculum, so adding a course automatically expects its landing page. */
 const COURSE_PAGES = CURRICULUM.map((c) => c.slug);

@@ -16,7 +16,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Practice Datasets — Free CSVs with Stories for Stats Practice — StatsCapybara</title>
-  <meta name="description" content="Nine free practice datasets (CSV) with stories, exercises and worked solutions — for descriptives, t-tests, ANOVA, regression, reliability and cleaning." />
+  <meta name="description" content="Ten free practice datasets (CSV) with stories, exercises and worked solutions — for descriptives, t-tests, ANOVA, regression, reliability and cleaning." />
   <link rel="canonical" href="https://statscapybara.com/datasets.html" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Practice Datasets — StatsCapybara" />
@@ -82,7 +82,7 @@
           <p><strong>How to use them:</strong> download a CSV, open it in SPSS, JASP, R, Python, or even the <a href="descriptives.html">Descriptives calculator</a> right here, and try the exercises. Peek at the worked solution only after you've had a go. The numbers there are computed from the exact file you downloaded, so they'll match if you did it right.</p>
         </div>
 
-        <p style="color:var(--text-muted);font-size:.92rem">Eight of the nine are simulated by a seeded, committed script (<code>tools/make-datasets.py</code>, master seed <code>20260709</code>). Rerunning it reproduces byte-for-byte identical CSVs, so the shipped worked-solution numbers stay true. The ninth, the hot-dog contest, is real published data and is committed as it stands. Nothing here is uploaded anywhere; the files are static.</p>
+        <p style="color:var(--text-muted);font-size:.92rem">Nine of the ten are simulated for teaching by a seeded, committed script (<code>tools/make-datasets.py</code>, master seed <code>20260709</code>). Rerunning it reproduces byte-for-byte identical CSVs, so the shipped worked-solution numbers stay true. The tenth, the hot-dog contest, is real published data and is committed as it stands. Nothing here is uploaded anywhere; the files are static.</p>
 
         <ul class="ds-index">
           <li><a href="#hotdog"><span class="t">🌭 Hot-dog contest</span><br><span class="m">describing data · real · 18 rows</span></a></li>
@@ -94,6 +94,7 @@
           <li><a href="#clinic"><span class="t">🩺 Messy clinic intake</span><br><span class="m">data cleaning · 52 rows</span></a></li>
           <li><a href="#training"><span class="t">🏋️ Strength training</span><br><span class="m">wide · repeated measures · 60 rows</span></a></li>
           <li><a href="#admissions"><span class="t">🎓 Grad admissions</span><br><span class="m">logistic regression · 160 rows</span></a></li>
+          <li><a href="#commute"><span class="t">🚲 Commute &amp; mood</span><br><span class="m">ANOVA + controls · 150 rows</span></a></li>
         </ul>
 
         <!-- ============ 0 &middot; hotdog-contest-2019 (real, not generated) ============
@@ -402,6 +403,57 @@
               <li>Admit rate: research = 58.0% vs no research = 36.3%, so research helps.</li>
               <li>Mean GPA: admitted = 3.44 vs rejected = 3.16.</li>
               <li>Logistic fit: GPA <em>b</em> = 3.98 (OR ≈ 53.6 per whole GPA point), GRE <em>b</em> = 0.029, research <em>b</em> = 1.37 (OR ≈ 3.9). All three predictors point the right way.</li>
+            </ul>
+          </details>
+        </section>
+
+        <!-- ============ 9 · commute-mood ============
+             verify (node -e with assets/js/viz.js loaded; full workings in
+             guides/anova-and-regression-project/index.html's source comment):
+               150 rows, 50 per mode, no blanks, ids unique
+               mood by mode  walk_cycle 73.26 (7.84) · public_transport 64.14 (7.98) · car 64.56 (7.07)
+               distance      2.09 (0.78) / 7.44 (2.87) / 9.80 (3.38); sleep 6.88 / 6.89 / 7.03
+               Levene (median-centered) F(2, 147) = 0.5066, p = .6036; variance ratio 1.275
+               one-way ANOVA SS 2650.680 / 8579.960 / 11230.640, F(2, 147) = 22.7070, eta^2 = .2360
+               contrast [1,-.5,-.5] psi = 8.9100, SE = 1.3233, t(147) = 6.7334, 95% CI [6.295, 11.525]
+               dummies-only regression R2 = .23602 = eta^2 exactly; b_walk 9.12, b_car 0.42
+               + distance + sleep: R2 = .39835, b_walk 5.0922 (t 2.8407), b_dist -0.7557, b_sleep 3.4317
+               omitted-variable identity 5.092158 + (-0.7557)(-5.3480) + (3.4317)(-0.0040) = 9.120000
+               VIF 2.299 / 1.524 / 2.583 / 1.009
+        -->
+        <section class="ds-card">
+          <div class="ds-head">
+            <h2 id="commute"><span class="ds-emoji">🚲</span>Commute &amp; mood</h2>
+            <a class="btn btn-primary btn-sm dl-btn" download href="assets/data/commute-mood.csv">⬇ commute-mood.csv · 150 rows</a>
+          </div>
+          <p class="ds-story">A hundred and fifty students rated their mood on arrival at campus, having walked or cycled, taken public transport, or driven. Three conditions and a continuous outcome make it an ANOVA, but nobody was assigned a commute mode, and the two extra columns are why that matters: walkers live 2 km from campus and drivers live 10 km away. This is the file for practicing an analysis with control variables, and for watching a group difference shrink by nearly half when you add them.</p>
+          <table class="ref-table ds-vars">
+            <thead><tr><th>Variable</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>participant_id</td><td>ID</td><td>1–150, one row per student</td></tr>
+              <tr><td>mode</td><td>categorical</td><td><code>walk_cycle</code> · <code>public_transport</code> · <code>car</code> (50 each)</td></tr>
+              <tr><td>distance_km</td><td>continuous</td><td>home to campus, 0.3–17.8 km</td></tr>
+              <tr><td>sleep_hours</td><td>continuous</td><td>hours slept the previous night, 4.7–9.3</td></tr>
+              <tr><td>mood</td><td>continuous</td><td>arrival mood slider, 0–100 (the outcome)</td></tr>
+            </tbody>
+          </table>
+          <p class="ds-try-h">Try these</p>
+          <ol class="ds-try">
+            <li>Run a <a href="stats-2/one-way-anova/">one-way ANOVA</a> of mood on mode, then check equal variances with <a href="stats-2/assumptions-and-when-they-break/">Levene's test</a>.</li>
+            <li>Follow up with the <a href="stats-2/post-hoc-tests/">planned contrast</a> comparing active travel against the average of the two motorized modes, coefficients [1, −½, −½].</li>
+            <li>Refit it as a regression with <a href="stats-2/categorical-predictors-and-dummy-coding/">dummy coding</a>, confirm <em>R</em>² equals η², then add both covariates and read the coefficients as partial (<a href="stats-2/multiple-regression/">Multiple Regression</a>).</li>
+            <li>Check <a href="stats-2/multicollinearity-and-variable-selection/">VIF</a> and the residual plot, and explain the change in the mode coefficients from the covariate imbalance in step 1.</li>
+          </ol>
+          <details class="ds-sol">
+            <summary>Worked solution: the key numbers</summary>
+            <ul>
+              <li>walk_cycle: <em>M</em> = 73.26, <em>SD</em> = 7.84 · public_transport: <em>M</em> = 64.14, <em>SD</em> = 7.98 · car: <em>M</em> = 64.56, <em>SD</em> = 7.07</li>
+              <li>Levene (median-centered): <em>F</em>(2, 147) = 0.51, <em>p</em> = .604, so the pooled error term is fine.</li>
+              <li>One-way ANOVA: <em>F</em>(2, 147) = 22.71, <em>p</em> &lt; .001, η² = .236, <em>s</em><sub>p</sub> = 7.64.</li>
+              <li>Planned contrast: ψ̂ = 8.91, <em>SE</em> = 1.32, <em>t</em>(147) = 6.73, 95% CI [6.30, 11.53].</li>
+              <li>Dummies only (reference public_transport): <em>b</em> = 9.12 for walking, 0.42 for car, <em>R</em>² = .236, identical to η².</li>
+              <li>Adding distance and sleep: <em>R</em>² = .398, walking falls to <em>b</em> = 5.09, distance <em>b</em> = −0.76, sleep <em>b</em> = 3.43; largest VIF 2.58.</li>
+              <li>The full route, with the mock output and the write-up, is the <a href="guides/anova-and-regression-project/">ANOVA-and-regression project guide</a>.</li>
             </ul>
           </details>
         </section>

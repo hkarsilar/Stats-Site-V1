@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    /* Consent Mode: advertising storage denied outright. Analytics storage is
+       granted so page views are actually counted, while client_storage 'none'
+       keeps gtag from writing a cookie, so nobody is followed between visits. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'granted' });
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN', { client_storage: 'none' });
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>One Question, an ANOVA and a Regression — StatsCapybara</title>
+  <meta name="description" content="The group research project end to end on a downloadable file: three conditions, a one-way ANOVA, the same question as a regression with controls, and the paper." />
+  <link rel="canonical" href="https://statscapybara.com/guides/anova-and-regression-project/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="One Question, an ANOVA and a Regression — StatsCapybara" />
+  <meta property="og:description" content="The group research project end to end on a downloadable file: three conditions, a one-way ANOVA, the same question as a regression with controls, and the paper." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/guides/anova-and-regression-project/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="One Question, an ANOVA and a Regression — StatsCapybara" />
+  <meta name="twitter:description" content="Three conditions and two control variables, analyzed twice on one downloadable file: the ANOVA your course asks for, the regression it asks for beside it, and why the two agree." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "Article", "headline": "One Question, an ANOVA and a Regression", "description": "The group research project end to end on a downloadable file: three conditions, a one-way ANOVA, the same question as a regression with controls, and the paper.", "url": "https://statscapybara.com/guides/anova-and-regression-project/", "mainEntityOfPage": "https://statscapybara.com/guides/anova-and-regression-project/", "image": "https://statscapybara.com/assets/og.png", "inLanguage": "en", "isAccessibleForFree": true, "datePublished": "2026-09-15", "dateModified": "2026-09-15", "author": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://statscapybara.com/guides/"}, {"@type": "ListItem", "position": 3, "name": "One Question, an ANOVA and a Regression", "item": "https://statscapybara.com/guides/anova-and-regression-project/"}]}]
+  </script>
+  <style>
+    .mock { border: 1px solid var(--border); border-radius: 12px; background: var(--surface); padding: 1rem 1.1rem; margin: 1.25rem 0; overflow-x: auto; }
+    .mock-cap { font-family: var(--mono); font-size: .74rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-faint); margin: 0 0 .6rem; }
+    .mock table { border-collapse: collapse; font-size: .84rem; width: 100%; }
+    .mock th, .mock td { border: 1px solid var(--border); padding: .38rem .6rem; text-align: right; color: var(--text-muted); white-space: nowrap; }
+    .mock th { background: var(--surface-2); color: var(--text); font-weight: 650; text-align: center; }
+    .mock td:first-child, .mock th:first-child { text-align: left; }
+    .mock .hl { background: color-mix(in srgb, var(--primary) 14%, transparent); color: var(--text); font-weight: 650; }
+    .mock .dim { color: var(--text-faint); }
+    .mock-note { font-size: .84rem; color: var(--text-faint); margin: .6rem 0 0; }
+  </style>
+</head>
+<body data-guide="anova-and-regression-project">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="container narrow">
+      <article class="lesson" style="margin:0 auto">
+        <span class="lesson-eyebrow">Guide</span>
+        <h1>One Question, an ANOVA and a Regression</h1>
+
+        <p class="lede">A great many intermediate courses end the same way. Four of you collect your own data on one question, analyze it as a one-way ANOVA across at least three conditions, analyze the same relation again as a multiple regression with control variables, and hand in a paper. Every stage of that has a lesson on this site and none of them is the route. This guide is the route, walked once on <code>commute-mood.csv</code> from our <a href="../../datasets.html">practice datasets</a>, so every number below can be reproduced from the file you download. The interesting part turns up at step 7, where the two analyses have to be reconciled and one of the group differences loses nearly half its size.</p>
+
+        <nav class="lesson-toc" aria-label="In this guide">
+          <span class="toc-label">In this guide</span>
+          <a href="#question">1 · The question and its controls</a>
+          <a href="#collect">2 · Collecting the data</a>
+          <a href="#codebook">3 · Codebook and cleaning</a>
+          <a href="#checks">4 · Univariate checks</a>
+          <a href="#anova">5 · The one-way ANOVA</a>
+          <a href="#regression">6 · The same question as a regression</a>
+          <a href="#reconcile">7 · Reconciling the two</a>
+          <a href="#paper">8 · The paper</a>
+          <a href="#checklist">9 · A grading checklist</a>
+          <a href="#keep-going">Keep going</a>
+        </nav>
+
+        <!--
+          ═══════════════════════════════════════════════════════════════════
+          P95 VERIFICATION — every number on this page was recomputed from
+          assets/data/commute-mood.csv with node + assets/js/viz.js.
+          Load VIZ first:
+            node -e 'const fs=require("fs"),vm=require("vm");
+              const c={window:{},document:{addEventListener(){},documentElement:{}}};c.self=c;
+              vm.createContext(c);vm.runInContext(fs.readFileSync("assets/js/viz.js","utf8"),c);
+              const V=c.window.VIZ; /* ...checks below... */'
+          ⚠ VIZ.tInv / fInv / chiSqInv take the UPPER-TAIL area, so a 95%
+            two-sided critical is V.tInv(.025, df), not V.tInv(.975, df).
+            The .975 form returns the NEGATIVE value and silently flips a CI.
+
+          DATA INTEGRITY  → 150 rows, 0 blank cells, 0 duplicate ids, 50 per mode.
+            distance_km 0.3–17.8 (M 6.445, SD 4.138) · sleep_hours 4.7–9.3
+            (M 6.933, SD 0.880) · mood 44–87 integer (M 67.320, SD 8.682).
+
+          PER GROUP (mood M, SD | distance M, SD | sleep M, SD) →
+            walk_cycle       73.26, 7.84 | 2.09, 0.78 | 6.88, 0.93
+            public_transport 64.14, 7.98 | 7.44, 2.87 | 6.89, 0.88
+            car              64.56, 7.07 | 9.80, 3.38 | 7.03, 0.84
+
+          UNIVARIATE mood → Mdn 68, Q1 62, Q3 73, IQR 11 (type-7, descriptives.html's
+            default), fences 45.5 and 89.5 → exactly one flag, the 44 belonging to
+            participant 81. Adjusted Fisher–Pearson skew G1 = 0.0114.
+            95% CI on the grand mean [65.92, 68.72], t*(149) = 1.9760.
+            Within each mode's own fences: no flags in any of the three groups.
+
+          LEVENE on mood by mode →
+            median-centered (Brown–Forsythe) F(2, 147) = 0.5066, p = .6036
+            mean-centered                    F(2, 147) = 0.4540, p = .6360
+            variances 61.543 / 63.633 / 49.925, max:min ratio 1.275
+
+          ONE-WAY ANOVA → SS_between 2650.680, SS_within 8579.960, SS_total 11230.640
+            (components sum exactly), df 2 / 147, MS 1325.340 / 58.367,
+            F(2, 147) = 22.7070, p = 2.5494e-9, η² = .2360, s_p = 7.6398,
+            F*(.05; 2, 147) = 3.058, 90% CI on η² [.1366, .3215] via V.varExpCI.
+
+          PLANNED CONTRAST active vs the mean of the two motorized modes,
+            coefficients [1, −½, −½] → ψ̂ = 8.9100, SE = 1.3233, t(147) = 6.7334,
+            p = 3.478e-10, 95% CI [6.295, 11.525], t*(147) = 1.9762.
+            Scaled [2, −1, −1] → ψ̂ = 17.8200, SE = 2.6465, identical t to 1e-12
+            (the scale-invariance §2.3's Contrast Builder asserts).
+
+          PAIRWISE, Bonferroni m = 3, t**(147) at .05/6 = 2.4217 →
+            walk − transport  9.120, SE 1.5280, t = 5.9687, p = 1.715e-8,
+                              adjusted p = 5.14e-8, simultaneous CI [5.420, 12.820]
+            walk − car        8.700, SE 1.5280, t = 5.6938, p = 6.532e-8,
+                              adjusted p = 1.96e-7, simultaneous CI [5.000, 12.400]
+            transport − car  −0.420, SE 1.5280, t = −0.2749, p = .7838,
+                              adjusted p = 1.000, simultaneous CI [−4.120, 3.280]
+            ⚠ that last t is the one place on this page reported to THREE decimals,
+              and deliberately: rounded to −0.27 it implies p = .7875, which audit
+              CHECK 9 correctly flags against the printed .784. A statistic this
+              close to zero needs the third decimal for its own p to be recoverable.
+              t = −0.275 → p = .78370, which rounds to .784 and reconciles.
+
+          REGRESSION 1, dummies only (reference = public_transport) →
+            b0 64.1400 (SE 1.0804) · walk 9.1200 (SE 1.5280, t 5.9687, p 1.715e-8,
+            CI [6.100, 12.140]) · car 0.4200 (SE 1.5280, t 0.2749, p .7838,
+            CI [−2.600, 3.440]); R² = .23602, adj .22563, SEE 7.6398,
+            F(2, 147) = 22.7070, SS 2650.680 / 8579.960 / 11230.640.
+
+          REGRESSION 2, + distance_km + sleep_hours →
+            b0 46.1321 (SE 4.7000, t 9.8153) · walk 5.0922 (SE 1.7926, t 2.8407,
+            p .00515, CI [1.549, 8.635]) · car 1.7040 (SE 1.4597, t 1.1673, p .2450,
+            CI [−1.181, 4.589]) · distance −0.7557 (SE 0.2172, t −3.4788, p 6.653e-4,
+            CI [−1.185, −0.326]) · sleep 3.4317 (SE 0.6381, t 5.3776, p 2.954e-7,
+            CI [2.170, 4.693]); R² = .39835, adj .38176, SEE 6.8264,
+            F(4, 145) = 24.0014, p 3.003e-15, SS 4473.777 / 6756.863 / 11230.640.
+
+          RECONCILIATION (the identities this guide is built on) →
+            dummies-only R² − η²  = 6.7e-16      (same number)
+            dummies-only F − ANOVA F = 5.3e-14   (same test)
+            dummies-only MSE − MS_within = 2.8e-14 (same error term)
+            b0 = mean(public_transport) = 64.14 · b_walk = 73.26 − 64.14 = 9.12
+            b_car = 64.56 − 64.14 = 0.42
+
+          OMITTED-VARIABLE IDENTITY, exact in the sample, not just in expectation →
+            b_raw = b_full + b_dist·δ_dist + b_sleep·δ_sleep, where δ is the
+            coefficient from regressing the control on the same dummies:
+            walk: 5.092158 + (−0.7557)(−5.3480) + (3.4317)(−0.0040) = 9.120000
+            car:  1.703978 + (−0.7557)( 2.3620) + (3.4317)( 0.1460) = 0.420000
+            both agree with the raw coefficients to 1.8e-14. This is §2.9's relation
+            and math-check.js section 17 asserts the same identity on §2.9's widget.
+
+          VIF (full model) → walk 2.299, car 1.524, distance 2.583, sleep 1.009
+            (tolerances .4351 / .6561 / .3871 / .9908).
+
+          RESIDUAL DIAGNOSTICS (full model) → skew G1 −0.1548, excess kurtosis
+            G2 −0.2791, SD 6.7341 against SEE 6.8264, no 1.5×IQR flags,
+            5 cases with |standardized residual| > 2 where 6.8 are expected under
+            normality at n = 150, none over 3. r(|residual|, fitted) = −0.0165.
+            Max leverage 0.0964 against the 3p/n rule of 0.1000 (none over);
+            max Cook's D 0.0538, and participant 81 sits at D = 0.0348.
+
+          CORRELATIONS → r(distance, sleep) = .0801, r(distance, mood) = −.4859,
+            r(sleep, mood) = .3150.
+
+          POWER (V.ncfCdf, λ = f²N) → f = .25, k = 3, α = .05, power .80 needs
+            N = 158 (52.7 per group; power .8022). At N = 150 that design has
+            power .7796 for f = .25, and the smallest f it detects at 80% power
+            is f = .2560. The realised η² = .236 corresponds to f = .5558, which
+            is NOT what the design was planned on and is not reported as power.
+          ═══════════════════════════════════════════════════════════════════
+        -->
+
+        <h2 id="question">Step 1 · A question your design can actually answer</h2>
+        <p>A project question has to survive two tests before anyone collects anything. It needs a predictor with three or more levels, because a two-level predictor gives you a <em>t</em>-test and the assignment asks for an ANOVA. And it needs an outcome measured on a continuous scale, because that is what both analyses expect. <a href="../../methods/from-question-to-hypothesis/">From Question to Hypothesis</a> is the lesson on turning a vague interest into something testable; <a href="../../methods/variables-and-operationalization/">Variables &amp; Operationalization</a> is the one on deciding what you will actually measure.</p>
+        <p>The question carried through this guide: <strong>does how students travel to campus relate to how they feel when they arrive?</strong> The predictor is commute mode with three levels (walking or cycling, public transport, car). The outcome is a mood rating taken on arrival, on a 0 to 100 slider.</p>
+        <p>Now the harder half. Nobody was randomly assigned to a commute mode, so any difference you find has an obvious rival explanation, and a reviewer will name it before you finish your sentence. People who live near campus walk. People who live far away do not. If distance also affects mood, then a comparison of the three modes is partly a comparison of how far people live from campus, and you cannot tell the two apart by staring at the group means. That rival variable is a <strong>confounder</strong>, and it is the reason the assignment asks for a regression as well as an ANOVA: the regression is where you hold it constant.</p>
+        <p>Two controls were chosen before any data existed, for two different reasons:</p>
+        <ul>
+          <li><strong>Distance from campus in kilometers</strong>, because it plausibly causes both the predictor and the outcome. Where you live is settled long before you pick a commute mode, so distance is upstream of mode rather than downstream of it. Controlling for something that sits <em>after</em> your predictor in the causal chain answers a different question, which <a href="../../stats-2/multiple-regression/">Multiple Regression</a> takes some care over.</li>
+          <li><strong>Hours slept the night before</strong>, because it plausibly affects mood without having much to do with commute mode. A control like this buys precision rather than correcting bias, and as you will see below it does exactly that.</li>
+        </ul>
+        <p>Write both of these into the proposal with the reason attached. A control variable defended after the analysis reads as a fishing trip, and <a href="../../ethics/questionable-research-practices/">Questionable Research Practices</a> explains why that reputation is deserved. <a href="../../methods/preregistration-and-open-science/">Preregistration &amp; Open Science</a> is the tidy way to make the commitment public.</p>
+
+        <h2 id="collect">Step 2 · Collecting it, and the sample size that decides everything</h2>
+        <p>This is a short campus survey: intercept students on arrival, ask for the three variables and the mood rating, four fieldworkers over a fortnight. <a href="../../methods/survey-and-questionnaire-design/">Designing Surveys &amp; Questionnaires</a> covers the wording; <a href="../../methods/sampling-methods/">Sampling Methods</a> covers the part that limits your conclusions, since whoever walks past your table at 9 a.m. is not a random sample of anything.</p>
+        <p>One design decision settles the analysis and cannot be revisited later. Each person contributes one row, and nobody appears in two conditions, so this is a between-subjects design and the ANOVA is the between-subjects kind. Had you followed the same people across modes, you would need <a href="../../stats-2/repeated-measures-anova/">Repeated Measures ANOVA</a> instead, with an entirely different error term. <a href="../../methods/between-vs-within-designs/">Between vs Within Designs</a> is worth ten minutes before you print anything.</p>
+        <p>Then the sample size, from the <a href="../../power.html?sc=anova&amp;es=0.25">power calculator</a>. For a one-way ANOVA with <em>k</em> = 3 groups, a medium effect (<em>f</em> = .25), α = .05 and 80% power, you need <strong><em>N</em> = 158</strong>, about 53 per group. The study in this file collected 150, which is 50 per group and slightly short: at that size the design has 78% power for a medium effect, and the smallest effect it detects at 80% power is <em>f</em> = .26. That is worth one honest sentence in the method section and one in the limitations. It is not worth computing power from the effect you ended up observing, which is a rearrangement of your own <em>p</em>-value and tells a reader nothing they did not already have.</p>
+
+        <h2 id="codebook">Step 3 · The codebook, then the cleaning</h2>
+        <p>Write the codebook before the first row arrives. It is a page that says what every column is called, what type it is, what values are legal and what a blank cell means, and it is what lets a stranger open your file next year and understand it. <a href="../../data/codebooks-and-documentation/">Codebooks &amp; Documentation</a> makes the case at length. Here is the whole of ours:</p>
+        <table class="ref-table">
+          <thead><tr><th>Variable</th><th>Type</th><th>Values</th></tr></thead>
+          <tbody>
+            <tr><td><code>participant_id</code></td><td>ID</td><td>1–150, one row per person, no reuse</td></tr>
+            <tr><td><code>mode</code></td><td>nominal, 3 levels</td><td><code>walk_cycle</code> · <code>public_transport</code> · <code>car</code></td></tr>
+            <tr><td><code>distance_km</code></td><td>continuous</td><td>home to campus, one decimal, 0.3–17.8 observed</td></tr>
+            <tr><td><code>sleep_hours</code></td><td>continuous</td><td>previous night, one decimal, 4.7–9.3 observed</td></tr>
+            <tr><td><code>mood</code></td><td>continuous</td><td>arrival mood slider, integer 0–100, 44–87 observed</td></tr>
+          </tbody>
+        </table>
+        <p>Cleaning then has something to check against, which is the entire point of writing it first. Run the four passes <a href="../../data/data-cleaning-workflow/">The Cleaning Workflow</a> sets out: structure (150 rows, five columns, one row per person), completeness (no blank cells), validity (every <code>mode</code> is one of the three legal strings, every number inside its declared range, <code>participant_id</code> unique), and consistency. Our file passes all four, which is a property of a file built for teaching rather than of fieldwork; <a href="../../data/data-entry-and-validation/">Data Entry &amp; Validation</a> shows what a real intake sheet looks like, and the <code>messy-clinic.csv</code> in the same dataset library is the version with the dirt left in.</p>
+        <p>Never edit the raw file. Save the original untouched and do every correction in a script or a syntax file, so the path from what you collected to what you analyzed is visible to anyone who asks. <a href="../../data/reproducible-workflows/">Reproducible Workflows</a> is the lesson, and it is also the answer to the question a supervisor asks when two group members report different means.</p>
+
+        <h2 id="checks">Step 4 · Look at the data before you test anything</h2>
+        <p>Descriptives first, by condition, because an ANOVA table is unreadable without them. Paste a column into the <a href="../../descriptives.html">descriptives calculator</a> and it returns the mean, the sample SD, the quartiles, a <em>t</em>-based interval and the outlier flags:</p>
+        <table class="ref-table">
+          <thead><tr><th>Mode</th><th><em>n</em></th><th>Mood <em>M</em> (<em>SD</em>)</th><th>Distance <em>M</em> (<em>SD</em>)</th><th>Sleep <em>M</em> (<em>SD</em>)</th></tr></thead>
+          <tbody>
+            <tr><td>Walk or cycle</td><td>50</td><td>73.26 (7.84)</td><td>2.09 (0.78)</td><td>6.88 (0.93)</td></tr>
+            <tr><td>Public transport</td><td>50</td><td>64.14 (7.98)</td><td>7.44 (2.87)</td><td>6.89 (0.88)</td></tr>
+            <tr><td>Car</td><td>50</td><td>64.56 (7.07)</td><td>9.80 (3.38)</td><td>7.03 (0.84)</td></tr>
+          </tbody>
+        </table>
+        <p>Read the covariate columns as carefully as the outcome column, because they are the argument for the whole second analysis. Walkers live 2.09 km from campus and drivers live 9.80 km away, a gap of nearly eight kilometers, so the three groups are not comparable on distance and never were. Sleep, by contrast, is flat across the three (6.88, 6.89, 7.03). Predict from that pair of facts alone what each control will do to the group differences, then check yourself at step 7.</p>
+        <p>The whole-sample outcome is roughly symmetric: <em>M</em> = 67.32, <em>SD</em> = 8.68, <em>Mdn</em> = 68, and an adjusted Fisher–Pearson skewness of 0.01. One value trips the 1.5 × IQR rule, participant 81's mood of 44, which sits just under the lower fence of 45.5. <a href="../../data/outliers-in-practice/">Outliers: Detect, Investigate, Decide</a> is emphatic about what happens next, and it is not deletion. Check the row against the codebook: 44 is a legal mood value, the person's distance and sleep are both ordinary, nothing suggests a typing error. Keep it, and check later whether it moved anything. It does not; at step 6 the model puts its residual at 2.5 standard errors below zero, which in 150 cases is unremarkable, and its Cook's distance is 0.03 against a threshold of 1.</p>
+
+        <h2 id="anova">Step 5 · The one-way ANOVA</h2>
+        <p>Two assumptions decide whether the ordinary <em>F</em> is the right test, and <a href="../../stats-2/assumptions-and-when-they-break/">ANOVA &amp; t-Test Assumptions</a> is the lesson on both. Independence comes from the design: one row per person, no clustering, nobody surveyed twice. Equal variances gets tested, and Levene's test on the three mood distributions gives <em>F</em>(2, 147) = 0.51, <em>p</em> = .604. The group variances are 61.5, 63.6 and 49.9, a largest-to-smallest ratio of 1.28, so the pooled error term is honest and ordinary <em>F</em> is fine. Had that test come back significant you would switch to Welch's ANOVA, which the same lesson covers.</p>
+        <p>Then the table. SPSS prints it under <strong>Analyze → Compare Means → One-Way ANOVA</strong>; the arithmetic behind every cell is in <a href="../../stats-2/one-way-anova/">One-Way ANOVA</a>, whose Build the ANOVA Table widget will walk it through cell by cell on your own numbers.</p>
+        <div class="mock">
+          <p class="mock-cap">SPSS · ANOVA · dependent variable: mood</p>
+          <table>
+            <thead><tr><th></th><th>Sum of Squares</th><th>df</th><th>Mean Square</th><th>F</th><th>Sig.</th></tr></thead>
+            <tbody>
+              <tr><td>Between Groups</td><td>2650.680</td><td class="hl">2</td><td>1325.340</td><td class="hl">22.707</td><td class="hl">&lt;.001</td></tr>
+              <tr><td>Within Groups</td><td>8579.960</td><td class="hl">147</td><td class="hl">58.367</td><td></td><td></td></tr>
+              <tr><td>Total</td><td>11230.640</td><td>149</td><td></td><td></td><td></td></tr>
+            </tbody>
+          </table>
+          <p class="mock-note">η² is not in this table. Compute it yourself: 2650.680 / 11230.640 = .236.</p>
+        </div>
+        <p>Read it left to right and every number has a job. The two sums of squares add to the total exactly, which is the partition the whole method rests on. The mean squares are sums of squares divided by their own degrees of freedom, and the within-groups one, 58.367, is the pooled variance; its square root, 7.64, is the pooled standard deviation <em>s</em><sub>p</sub> that every follow-up test below divides by. <em>F</em> is the ratio of the two mean squares, 1325.340 / 58.367 = 22.71, against a critical <em>F</em>*(2, 147) of 3.06 from <a href="../../tables.html">the printed tables</a>. And η² = .236 says commute mode accounts for about 24% of the variance in arrival mood, with a 90% confidence interval of [.14, .32].</p>
+        <p>The omnibus test says the three means are not all equal and stops there. Since the question named a specific comparison in advance, the follow-up should be a planned contrast rather than a fishing expedition through all three pairs. Active travel against the average of the two motorized modes has coefficients [1, −½, −½], and <a href="../../stats-2/post-hoc-tests/">Post-Hoc Tests</a> builds it interactively:</p>
+        <p>ψ̂ = 8.91, <em>SE</em> = 1.32, <em>t</em>(147) = 6.73, <em>p</em> &lt; .001, 95% CI [6.30, 11.53]. Active commuters arrive about nine mood points above the motorized average, and the interval is nowhere near zero. Written as whole numbers, [2, −1, −1], the estimate doubles to 17.82 and so does its standard error, leaving <em>t</em> untouched, which is the cheapest check that you built the contrast correctly.</p>
+        <p>The three pairwise comparisons, Bonferroni-corrected against a critical <em>t</em>** of 2.42, tell the same story with more detail: walking beats public transport by 9.12 points and beats car by 8.70, both with adjusted <em>p</em> &lt; .001, while public transport and car differ by 0.42 points, adjusted <em>p</em> = 1.000. Two groups and one group, not three.</p>
+
+        <h2 id="regression">Step 6 · The same question, asked as a regression</h2>
+        <p>A regression needs numbers, and <code>mode</code> is a word. Dummy coding is the translation: pick one level as the reference, then make one 0/1 column for each of the others. With public transport as the reference you get <code>walk_cycle</code> (1 if they walked, else 0) and <code>car</code>. Two columns for three groups, never three, because a third would be perfectly predictable from the other two and the model would refuse to fit. <a href="../../stats-2/categorical-predictors-and-dummy-coding/">Categorical Predictors &amp; Dummy Coding</a> is the lesson, and SPSS will do it for you under <strong>Transform → Recode into Different Variables</strong> or through the <strong>Automatic Linear Modeling</strong> dialog.</p>
+        <p>Fit the dummies on their own first. It is one line in the write-up and it is the anchor for everything that follows.</p>
+        <div class="mock">
+          <p class="mock-cap">SPSS · Coefficients · model 1: dummies only</p>
+          <table>
+            <thead><tr><th>Model</th><th>B</th><th>Std. Error</th><th>t</th><th>Sig.</th></tr></thead>
+            <tbody>
+              <tr><td>(Constant)</td><td class="hl">64.140</td><td>1.080</td><td>59.365</td><td>&lt;.001</td></tr>
+              <tr><td>walk_cycle</td><td class="hl">9.120</td><td>1.528</td><td>5.969</td><td>&lt;.001</td></tr>
+              <tr><td>car</td><td class="hl">0.420</td><td>1.528</td><td>0.275</td><td>.784</td></tr>
+            </tbody>
+          </table>
+          <p class="mock-note">R² = .236 · adjusted R² = .226 · SE of the estimate = 7.640 · F(2, 147) = 22.707, p &lt; .001</p>
+        </div>
+        <p>Every one of those numbers is already on this page. The constant, 64.140, is the mean of the reference group. The walk coefficient, 9.120, is exactly 73.26 − 64.14, and the car coefficient is 64.56 − 64.14. R² equals η² to fifteen decimal places, and the model <em>F</em> is the ANOVA's <em>F</em>. There is no new analysis here, only a different notation for the one you already ran, which <a href="../../stats-2/inference-for-regression/">Inference for Regression</a> unpacks.</p>
+        <p>Now add the controls, which is the model the assignment is really asking for.</p>
+        <div class="mock">
+          <p class="mock-cap">SPSS · Coefficients · model 2: + distance_km + sleep_hours</p>
+          <table>
+            <thead><tr><th>Model</th><th>B</th><th>Std. Error</th><th>t</th><th>Sig.</th><th>95% CI</th><th>VIF</th></tr></thead>
+            <tbody>
+              <tr><td>(Constant)</td><td>46.132</td><td>4.700</td><td>9.815</td><td>&lt;.001</td><td class="dim">[36.84, 55.42]</td><td class="dim">—</td></tr>
+              <tr><td>walk_cycle</td><td class="hl">5.092</td><td>1.793</td><td>2.841</td><td class="hl">.005</td><td>[1.55, 8.64]</td><td>2.299</td></tr>
+              <tr><td>car</td><td class="hl">1.704</td><td>1.460</td><td>1.167</td><td class="hl">.245</td><td>[−1.18, 4.59]</td><td>1.524</td></tr>
+              <tr><td>distance_km</td><td class="hl">−0.756</td><td>0.217</td><td>−3.479</td><td>&lt;.001</td><td>[−1.19, −0.33]</td><td>2.583</td></tr>
+              <tr><td>sleep_hours</td><td class="hl">3.432</td><td>0.638</td><td>5.378</td><td>&lt;.001</td><td>[2.17, 4.69]</td><td>1.009</td></tr>
+            </tbody>
+          </table>
+          <p class="mock-note">R² = .398 · adjusted R² = .382 · SE of the estimate = 6.826 · F(4, 145) = 24.001, p &lt; .001</p>
+        </div>
+        <p>Say each coefficient out loud with the phrase that makes it true. <strong>Holding distance and sleep constant</strong>, active commuters arrive 5.09 points above transport users. Holding everything else constant, each additional kilometer from campus costs 0.76 mood points, and each additional hour of sleep is worth 3.43. Drop the phrase and you have said something the model does not support; it is not decoration, it is the meaning of a partial coefficient.</p>
+        <p>Three diagnostics before you trust any of it, all from <a href="../../stats-2/regression-diagnostics/">Regression Diagnostics</a> and <a href="../../stats-2/assumptions-of-regression/">Assumptions of Regression</a>. The <strong>residual plot</strong> (tick <em>Save → Unstandardized residuals</em> in SPSS, then plot them against the fitted values) should be a shapeless band, and this one is: the correlation between absolute residual and fitted value is −.02, so there is no fanning out. The residuals are near enough normal, with a skewness of −0.15 and an excess kurtosis of −0.28, and no case has leverage over the 3<em>p</em>/<em>n</em> threshold of 0.10 or a Cook's distance anywhere near 1. The largest is 0.05. <strong>VIF</strong> is the last column of the table above, and <a href="../../stats-2/multicollinearity-and-variable-selection/">Multicollinearity &amp; Variable Selection</a> gives the reading: a VIF of 2.58 on distance means its standard error is √2.58 = 1.6 times what it would be if distance were unrelated to the other predictors. That is the price of controlling for something correlated with your predictor, it is visible and modest, and everything here sits comfortably under the conventional threshold of 5.</p>
+
+        <h2 id="reconcile">Step 7 · Making the two analyses agree</h2>
+        <p>You now have to explain, in the paper, why the same comparison is worth 9.12 points in one table and 5.09 in another. Both numbers are correct and they answer different questions.</p>
+        <p>The 9.12 is the raw difference between two groups of real students. The 5.09 is what is left of it once you compare people who live equally far from campus and slept equally long. The gap between them is not error. It has a name, <strong>omitted-variable bias</strong>, and <a href="../../stats-2/multiple-regression/">Multiple Regression</a> gives its size exactly, as an identity that holds in your sample rather than merely on average:</p>
+        <p style="text-align:center"><em>b</em><sub>raw</sub> = <em>b</em><sub>controlled</sub> + <em>b</em><sub>control</sub> × δ</p>
+        <p>δ is how much the control itself differs between the groups, which you get by regressing the control on the same dummies. Walkers live 5.35 km closer to campus than transport users (δ = −5.35) and sleep essentially the same amount (δ = −0.004). Put the numbers in:</p>
+        <p style="text-align:center">5.092 + (−0.756 × −5.348) + (3.432 × −0.004) = <strong>9.120</strong></p>
+        <p>which is the raw coefficient to the last decimal the table prints, and to fourteen decimals in the file. So the arithmetic answers its own question. About 4.03 of the raw 9.12-point advantage of walking was distance wearing a commute-mode costume, and 0.01 of it was sleep, which is what you should have predicted from step 4 when sleep came out flat across the three groups. A control that is balanced across conditions cannot shift a coefficient; it can only shrink the standard errors, and it did, which is why the model's residual standard error fell from 7.64 to 6.83 and R² rose from .236 to .398.</p>
+        <p>The car coefficient makes the same point in the opposite direction. Raw, drivers sat 0.42 points <em>above</em> transport users; controlled, they sit 1.70 above. Drivers live furthest from campus, so the raw comparison was holding them back, and neither version is statistically significant in any case. Report both and say which one your conclusion rests on.</p>
+        <p>One honest limit on all of this. Holding a confounder constant is not the same as randomizing, and no regression can control for a variable you did not measure. The claim you can defend is that the mode difference is not merely a distance difference; the claim you cannot defend is that commuting by bicycle causes better moods. <a href="../../methods/observational-designs/">Observational Designs</a> and <a href="../../methods/quasi-experiments/">Quasi-Experiments &amp; Natural Experiments</a> are the lessons on where that line sits.</p>
+
+        <h2 id="paper">Step 8 · The paper</h2>
+        <p>Four sections, in the order <a href="../../writing/imrad-structure/">The IMRaD Structure</a> sets out, and the results section is the only one this guide can write for you. Its ordering rule is the one most drafts get wrong: descriptives, then the omnibus test, then the follow-ups, then the effect sizes, and no discussion of what any of it means. <a href="../../writing/writing-results/">From Output to Results Section</a> is the lesson, and the <a href="../../apa.html">APA Results Formatter</a> will build any of these sentences with the typography applied and recompute the <em>p</em> from your statistic as a check.</p>
+        <blockquote class="apa-quote">
+          <p>Arrival mood differed across the three commute modes, <em>F</em>(2, 147) = 22.71, <em>p</em> &lt; .001, η² = .24, 90% CI [.14, .32]. A planned contrast comparing active travel with the two motorized modes was significant, ψ̂ = 8.91, <em>SE</em> = 1.32, <em>t</em>(147) = 6.73, <em>p</em> &lt; .001, 95% CI [6.30, 11.53]. Bonferroni-corrected pairwise comparisons showed that walking or cycling exceeded public transport, <em>M</em><sub>diff</sub> = 9.12, <em>t</em>(147) = 5.97, <em>p</em> &lt; .001, and car use, <em>M</em><sub>diff</sub> = 8.70, <em>t</em>(147) = 5.69, <em>p</em> &lt; .001, while public transport and car use did not differ, <em>M</em><sub>diff</sub> = −0.42, <em>t</em>(147) = −0.275, <em>p</em> = .784.</p>
+          <p>A multiple regression predicting arrival mood from commute mode alone reproduced the ANOVA, <em>R</em>² = .24, <em>F</em>(2, 147) = 22.71, <em>p</em> &lt; .001. Adding distance from campus and hours slept improved the fit, <em>R</em>² = .40, <em>F</em>(4, 145) = 24.00, <em>p</em> &lt; .001, and reduced the advantage of active travel over public transport from 9.12 to 5.09 points, <em>b</em> = 5.09, <em>SE</em> = 1.79, <em>t</em>(145) = 2.84, <em>p</em> = .005, 95% CI [1.55, 8.64]. Both covariates predicted mood: each additional kilometer from campus was associated with a 0.76-point decrease, <em>b</em> = −0.76, <em>SE</em> = 0.22, <em>t</em>(145) = −3.48, <em>p</em> &lt; .001, and each additional hour of sleep with a 3.43-point increase, <em>b</em> = 3.43, <em>SE</em> = 0.64, <em>t</em>(145) = 5.38, <em>p</em> &lt; .001.</p>
+        </blockquote>
+        <p>The typography is load-bearing and reviewers notice it. Latin statistics are italic (<em>F</em>, <em>t</em>, <em>p</em>, <em>b</em>, <em>M</em>, <em>R</em>²), Greek ones are not (η², ψ̂), and <em>p</em>, η² and <em>R</em>² take no leading zero. Below .001 you write <em>p</em> &lt; .001 and never <em>p</em> = .000. <a href="../../writing/reporting-statistics-apa/">Reporting Statistics in APA Style</a> is the lesson and <a href="../../cheat-apa.html">the APA cheat sheet</a> is the printable version to keep beside you.</p>
+        <p>One figure earns its place. Plot the three group means with 95% confidence intervals on the outcome scale, since that is the comparison the whole paper turns on, and a reader gets the overlap between transport and car from the picture faster than from the <em>p</em>-value. A second panel showing the controlled estimates beside the raw ones makes step 7 visible in a way three paragraphs cannot. <a href="../../writing/tables-and-figures/">Tables &amp; Figures That Don't Lie</a> covers the formatting rules, and <a href="../../which-chart.html">the chart chooser</a> is there if you are unsure of the shape.</p>
+        <p>Limitations, then. Three of the four were fixed long before the analysis, which is the usual pattern. The sample fell 8 people short of the power target and was collected wherever fieldworkers happened to stand, so it represents the students who walk past a table on a weekday morning. Nobody was randomly assigned to a commute mode, so the causal reading stays shut. And mood was one slider at one moment, which <a href="../../methods/reliability-and-validity/">Reliability &amp; Validity</a> would call a thin measure of a broad construct. Write those plainly; <a href="../../writing/discussion-and-limitations/">Discussion &amp; Limitations</a> makes the case that a limitations section done honestly reads as competence rather than weakness.</p>
+        <p>The ethics review is not a form to be survived either. Students gave their commute mode, their home distance and their sleep, which together can identify someone on a small campus, so the file that leaves your laptop should carry a code rather than a name and the key should live somewhere else and be destroyed on schedule. <a href="../../ethics/privacy-and-confidentiality/">Privacy &amp; Confidentiality</a> is the lesson; <a href="../../ethics/informed-consent-and-irb/">Informed Consent &amp; Ethics Committees</a> is the paperwork.</p>
+        <div class="callout key">
+          <p>One thing this guide will not do is your project. Every number above comes from a file we simulated and published so the method could be shown end to end, and your course sets its own rules about what help is allowed with your own data, including help from AI tools. Those rules are yours to read and to follow. <a href="../../ethics/ai-in-research-ethics/">Using AI Tools Ethically</a> is the lesson on where the line usually sits and why it sits there.</p>
+        </div>
+
+        <h2 id="checklist">Step 9 · What a supervisor will grade</h2>
+        <p>Nine things, in the order they get looked at. Most projects that lose marks lose them in the first three, which were decided before any analysis existed.</p>
+        <table class="ref-table">
+          <thead><tr><th>Check</th><th>What good looks like</th></tr></thead>
+          <tbody>
+            <tr><td>Question</td><td>One sentence, a predictor with three or more levels, a continuous outcome, and the controls named with a reason each.</td></tr>
+            <tr><td>Design</td><td>Between or within stated explicitly, sampling described honestly, the target <em>N</em> from a power calculation reported with the effect size it assumed.</td></tr>
+            <tr><td>Data quality</td><td>A codebook, a raw file never edited, cleaning done in a script, outliers investigated rather than deleted.</td></tr>
+            <tr><td>Assumptions</td><td>Independence argued from the design, equal variances tested, residuals plotted, VIF reported.</td></tr>
+            <tr><td>The ANOVA</td><td>The full table, η², and a planned contrast or a corrected set of pairwise comparisons, not both fished.</td></tr>
+            <tr><td>The regression</td><td>Dummy coding with the reference level stated, the dummies-only model shown before the controls go in, coefficients read as partial.</td></tr>
+            <tr><td>Reconciliation</td><td>The two analyses shown to agree, and the change in the coefficients explained by the covariate imbalance rather than waved at.</td></tr>
+            <tr><td>Interpretation</td><td>Effect sizes and intervals carried into the sentences, causal language matched to the design.</td></tr>
+            <tr><td>Reporting</td><td>APA 7 throughout, a figure that answers the question, limitations that name what the study cannot say.</td></tr>
+          </tbody>
+        </table>
+        <p>Then the test that covers all nine at once. Hand your raw file and your written method to somebody outside the group and ask whether they can arrive at your numbers. For this project the answer is yes, and you can check it yourself right now on the same CSV. <a href="../../writing/final-checklist/">The Final Checklist</a> is the version to run the night before submission.</p>
+
+        <h2 id="keep-going">Keep going</h2>
+        <ul>
+          <li><a href="../../datasets.html">Practice Datasets</a>: <code>commute-mood.csv</code> to redo this project yourself, with nine other files and their worked solutions.</li>
+          <li><a href="../complete-worked-project/">One Study, Start to Finish</a>: the same journey for a 2 × 2 factorial experiment rather than a survey.</li>
+          <li><a href="../spss-output-to-apa/">From SPSS Output to APA Results</a>: which number on the screen belongs in which slot.</li>
+          <li><a href="../clean-survey-data/">Clean Your Survey Data</a>: the cleaning step worked on a file that needs it.</li>
+          <li><a href="../choose-statistics-dissertation/">Choose the Right Statistics</a>: for when your design is not three conditions and an outcome.</li>
+          <li><a href="../../problems.html">Practice Problems</a>: ANOVA tables and regression coefficients to work by hand.</li>
+        </ul>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+</body>
+</html>

@@ -239,6 +239,7 @@ for slug in [
     "choose-statistics-dissertation",
     "clean-survey-data",
     "complete-worked-project",
+    "anova-and-regression-project",
 ]:
     p = ROOT / "guides" / slug / "index.html"
     if p.exists():

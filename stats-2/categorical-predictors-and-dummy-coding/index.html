@@ -124,6 +124,8 @@
         <h2>The other coding scheme you'll meet</h2>
         <p>Dummy coding (software often calls it <strong>treatment coding</strong>, and it is R's default) is not the only way to turn groups into numbers. <strong>Effect coding</strong> uses −1, 0 and 1 instead of 0 and 1, and it moves the baseline: the intercept becomes the <em>grand mean</em> of all groups rather than one group's mean, and each coefficient becomes that group's distance from the grand mean rather than from a reference. Both schemes fit the identical model and give the identical predictions and R²; they differ only in what the individual coefficients mean. The distinction starts to matter once you add <a href="../../stats-2/interactions-in-regression/">an interaction</a>, because under dummy coding the lower-order terms describe the reference group rather than an average, which is the single most common misreading of a factorial regression.</p>
 
+        <p>The point of doing any of this is usually the model you fit next, once the covariates go in beside the dummies. <a href="../../guides/anova-and-regression-project/">One Question, an ANOVA and a Regression</a> takes a three-group study through exactly that sequence, ANOVA first, then dummies alone to show the two agree, then the controls, which is the order an assignment asks for and the order that makes the coefficients readable.</p>
+
         <div class="callout">
           <p><strong>Why it matters:</strong> almost every real dataset mixes numeric and categorical predictors. Dummy coding is what lets a single regression handle "dose (mg) and treatment group and sex and region" all at once — the foundation for the rest of applied modeling.</p>
         </div>

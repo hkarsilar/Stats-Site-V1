@@ -77,6 +77,45 @@ def ols(xs, ys):
     return b, a, pearson(xs, ys)
 
 
+def mlr(X, y):
+    """Multiple OLS by normal equations (Gauss-Jordan on the augmented XtX).
+    X = list of predictor rows WITHOUT the intercept column. Returns a dict
+    with coefficients (b0 first), R^2, SEs, t's and per-predictor VIFs."""
+    n, k = len(y), len(X[0])
+    D = [[1.0] + [float(v) for v in row] for row in X]      # design matrix
+    p = k + 1
+    A = [[sum(D[i][a] * D[i][b] for i in range(n)) for b in range(p)] +
+         [sum(D[i][a] * y[i] for i in range(n))] for a in range(p)]
+    # Gauss-Jordan with partial pivoting, augmented with XtX^-1 for the SEs
+    for a in range(p):
+        A[a] += [1.0 if a == j else 0.0 for j in range(p)]
+    for c in range(p):
+        piv = max(range(c, p), key=lambda r: abs(A[r][c]))
+        A[c], A[piv] = A[piv], A[c]
+        d = A[c][c]
+        A[c] = [v / d for v in A[c]]
+        for r in range(p):
+            if r != c and A[r][c]:
+                f = A[r][c]
+                A[r] = [A[r][j] - f * A[c][j] for j in range(len(A[r]))]
+    b = [A[a][p] for a in range(p)]
+    inv = [[A[a][p + 1 + j] for j in range(p)] for a in range(p)]
+    fit = [sum(b[a] * D[i][a] for a in range(p)) for i in range(n)]
+    resid = [y[i] - fit[i] for i in range(n)]
+    sse = sum(e * e for e in resid)
+    sst = sum((v - mean(y)) ** 2 for v in y)
+    mse = sse / (n - p)
+    se = [math.sqrt(mse * inv[a][a]) for a in range(p)]
+    vifs = []
+    for j in range(k):
+        others = [[row[m] for m in range(k) if m != j] for row in X]
+        col = [row[j] for row in X]
+        vifs.append(1 / (1 - mlr(others, col)["r2"]) if k > 1 else 1.0)
+    return {"b": b, "se": se, "t": [b[a] / se[a] for a in range(p)],
+            "r2": 1 - sse / sst, "sse": sse, "sst": sst, "mse": mse,
+            "df": n - p, "resid": resid, "fit": fit, "vif": vifs}
+
+
 def two_sample_t(a, b):
     """Independent-samples t (pooled), Cohen's d -> (t, df, d)."""
     na, nb = len(a), len(b)
@@ -409,8 +448,93 @@ def make_admissions():
              f"logistic fit: GRE b = {rnd(b[1],3)}, research b = {rnd(b[2],2)} (OR = {rnd(math.exp(b[2]),1)})"])
 
 
+def make_commute():
+    """(9) The ANOVA-and-regression project dataset: three commute modes, a
+    continuous outcome, and two covariates a reviewer will ask about.
+
+    The point of the file is that distance is PRIOR to the mode you choose —
+    you do not walk to campus from 12 km away — so it confounds the raw
+    comparison rather than mediating it, and holding it constant is a genuine
+    change of question, not a technicality. Sleep is the other control: it
+    predicts the outcome well and is balanced across modes, so it buys
+    precision and moves nothing. The planted truth is
+
+        mood = 50 + effect(mode) - 0.9 * distance_km + 3.0 * sleep_hours + e
+
+    with effect(walk_cycle) = +4, effect(public_transport) = 0,
+    effect(car) = +1 and e ~ N(0, 7).
+    """
+    specs = [("walk_cycle", 4.0, 2.2, 0.9),
+             ("public_transport", 0.0, 7.5, 3.0),
+             ("car", 1.0, 9.5, 3.5)]
+    B_DIST, B_SLEEP = -0.9, 3.0
+
+    def gen(seed):
+        r = random.Random(seed)
+        rows, groups, X, y = [], [], [], []
+        pid = 1
+        for name, eff, dmu, dsd in specs:
+            g = []
+            for _ in range(50):
+                dist = round(clamp(r.gauss(dmu, dsd), 0.3, 18.0), 1)
+                slp = round(clamp(r.gauss(7.0, 0.9), 4.0, 10.0), 1)
+                mood = round(clamp(50 + eff + B_DIST * dist + B_SLEEP * slp
+                                   + r.gauss(0, 7.0), 0, 100))
+                rows.append([pid, name, dist, slp, mood])
+                g.append(mood)
+                X.append([1 if name == "walk_cycle" else 0,
+                          1 if name == "car" else 0, dist, slp])
+                y.append(mood)
+                pid += 1
+            groups.append(g)
+        return rows, groups, X, y
+
+    def ok(pl):
+        _, groups, X, y = pl
+        F, _, _, eta = one_way_anova(groups)
+        sds = [sd(g) for g in groups]
+        if not (18.0 <= F <= 28.0):                  # clearly real, not absurd
+            return False
+        if max(sds) / min(sds) > 1.30:               # Levene must pass
+            return False
+        raw = mlr([row[:2] for row in X], y)         # dummies only
+        full = mlr(X, y)                             # + the two controls
+        if not (0.36 <= full["r2"] <= 0.44):
+            return False
+        # the walk coefficient must SHRINK by roughly half and stay significant
+        shrink = full["b"][1] / raw["b"][1]
+        if not (0.40 <= shrink <= 0.62) or full["t"][1] < 2.2:
+            return False
+        # the car-vs-transport contrast stays nonsignificant in both models
+        if abs(raw["t"][2]) > 1.6 or abs(full["t"][2]) > 1.6:
+            return False
+        if max(full["vif"]) > 3.0:                   # mild, checkable, fine
+            return False
+        return True
+
+    seed, (rows, groups, X, y) = search_seed(gen, ok, BASE_SEED + 9)
+    write_csv("commute-mood.csv",
+              ["participant_id", "mode", "distance_km", "sleep_hours", "mood"], rows)
+    F, dfb, dfw, eta = one_way_anova(groups)
+    raw, full = mlr([row[:2] for row in X], y), mlr(X, y)
+    lines = [f"seed offset used = {seed - BASE_SEED}"]
+    lines += [f"{specs[i][0]}: M = {rnd(mean(groups[i]),2)}, SD = {rnd(sd(groups[i]),2)}, n = {len(groups[i])}"
+              for i in range(3)]
+    lines.append(f"one-way ANOVA: F({dfb}, {dfw}) = {rnd(F,2)}, eta^2 = {rnd(eta,3)}")
+    lines.append(f"SD ratio largest/smallest = {rnd(max(sd(g) for g in groups)/min(sd(g) for g in groups),3)}")
+    lines.append(f"dummies only: R2 = {rnd(raw['r2'],4)} (= eta^2), "
+                 f"b_walk = {rnd(raw['b'][1],3)}, b_car = {rnd(raw['b'][2],3)}")
+    lines.append(f"+ controls:   R2 = {rnd(full['r2'],4)}, "
+                 f"b_walk = {rnd(full['b'][1],3)} (t = {rnd(full['t'][1],2)}), "
+                 f"b_car = {rnd(full['b'][2],3)} (t = {rnd(full['t'][2],2)})")
+    lines.append(f"b_distance = {rnd(full['b'][3],3)}, b_sleep = {rnd(full['b'][4],3)}; "
+                 f"VIF = {[rnd(v,2) for v in full['vif']]}")
+    return ("commute-mood.csv", lines)
+
+
 BUILDERS = [make_sleep, make_study_methods, make_screen_time, make_memory_2x2,
-            make_wellbeing, make_messy_clinic, make_training, make_admissions]
+            make_wellbeing, make_messy_clinic, make_training, make_admissions,
+            make_commute]
 
 
 def main():
