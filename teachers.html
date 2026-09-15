@@ -42,18 +42,21 @@
     .tm-printbar .tm-hint { color:var(--text-faint); font-size:.83rem; }
 
     /* ============================================================
-       PRINT — the block map on its own sheet. The button sets
-       body.tm-print-map, which drops every other part of the page so
-       the map is the whole print job; it reverts on afterprint. The
+       PRINT — one block map on its own sheet. A print button marks its
+       OWN section with .bm-printing and sets body.tm-print-map, which
+       together drop every other part of the page so that map is the
+       whole print job; both classes revert on afterprint. Keying the
+       rules to the class rather than to an id is what lets a second map
+       print the same way without a second copy of this block. The
        shared block in styles.css already hides the chrome, forces the
        light palette and underlines links, so only the sizing and the
        link decoration are set here.
        ============================================================ */
     @media print {
-      body.tm-print-map .lesson > *:not(#block-map) { display:none !important; }
+      body.tm-print-map .lesson > *:not(.bm-printing) { display:none !important; }
       .tm-printbar { display:none !important; }   /* never print the button or its hint */
-      body.tm-print-map #block-map > p { display:none !important; }
-      body.tm-print-map #block-map h3 { font-size:13pt; margin:0 0 .3cm; }
+      body.tm-print-map .bm-printing > p { display:none !important; }
+      body.tm-print-map .bm-printing h3 { font-size:13pt; margin:0 0 .3cm; }
       body.tm-print-map .bm-map { font-size:8pt; margin:0; }
       body.tm-print-map .bm-map th,
       body.tm-print-map .bm-map td { padding:.14cm .18cm; line-height:1.35; }
@@ -122,6 +125,8 @@
         <h2>A ready-made semester project</h2>
         <p>If your course ends in a mini-project rather than an exam, <a href="guides/complete-worked-project/">One Study, Start to Finish</a> is the model answer you can hand out or withhold. It carries <code>memory-2x2.csv</code> through every stage a project report has to cover: the research question and its operationalization, the design and a power analysis, the data checks, the assumption checks, a two-way ANOVA with simple effects, effect sizes with confidence intervals, the APA results paragraph, and the limitations. Every number in it is reproducible from the CSV.</p>
         <p>Two things in it are hard to teach from a clean example and are deliberately left messy. The study recruited 25 per cell against a plan that asked for 32, so the guide states the shortfall and puts it in the limitations rather than hiding it. And a boxplot rule flags four points in one cell that should not be deleted, where deleting them would make the hypothesis look stronger. Both make good seminar discussions on their own, with or without the rest of the guide. Assign a different dataset from the same page and students cannot copy the numbers, only the structure.</p>
+        <p>An intermediate course usually sets a different brief: collect your own data, answer one question with an ANOVA of three or more conditions and again with a regression that carries control variables, then write it up. <a href="guides/anova-and-regression-project/">One Question, an ANOVA and a Regression</a> is that project worked end to end on <code>commute-mood.csv</code>, and its seventh step is the one students most often skip. The walking coefficient falls from 9.12 to 5.09 once distance from campus is in the model, and the guide shows where the missing 4.03 went, so the two analyses stop looking like two answers and start looking like one model written twice. Hand it out as a worked example, or hold it back and grade against its final checklist.</p>
+        <p>It also says once, plainly, that what a course allows by way of AI help on a student&rsquo;s own data is the course&rsquo;s rule to set and the student&rsquo;s to follow, and then does nobody&rsquo;s analysis for them.</p>
 
         <h2>Problem sheets you can hand out</h2>
         <p>The <a href="problems.html">practice problems</a> page is the pencil-and-calculator half of the same idea: exam-style scenarios with numbers small enough to work by hand, each followed by a full solution that shows the formula, the substitution, the arithmetic and the reporting sentence. Every value in every step was verified before it shipped.</p>
@@ -333,7 +338,7 @@ https://statscapybara.com/stats-1/simple-linear-regression/?data=1:12,2:20,3:26,
         </div>
 
         <h2>A one-semester map</h2>
-        <p>Here is one way to lay the <strong>Stats 1</strong> and <strong>Stats 2</strong> material over a typical fourteen-week intro course, borrowing one lesson from Stats 3 for the effect-size week. It is a starting point, not a prescription: merge weeks, skip the ANOVA that your syllabus saves for a second course, or spend two weeks where your students always struggle.</p>
+        <p>Here is one way to lay the <strong>Stats 1</strong> and <strong>Stats 2</strong> material over a typical fourteen-week intro course, borrowing one lesson from Stats 3 for the effect-size week. It is a starting point, not a prescription: merge weeks, skip the ANOVA that your syllabus saves for a second course, or spend two weeks where your students always struggle. The five Stats 2 links carry presets, so they open on the configuration the week is about rather than on the lesson&rsquo;s default.</p>
         <div class="hscroll">
         <table class="ref-table sem-map">
           <thead><tr><th>Week</th><th>Topic</th><th>Lessons</th></tr></thead>
@@ -346,9 +351,9 @@ https://statscapybara.com/stats-1/simple-linear-regression/?data=1:12,2:20,3:26,
             <tr><td>6</td><td>The logic of testing</td><td><a href="stats-1/hypothesis-testing-logic/">Hypothesis Testing Logic</a></td></tr>
             <tr><td>7</td><td>t-tests</td><td><a href="stats-1/one-sample-and-paired-t-tests/">One-Sample &amp; Paired t-Tests</a> · <a href="stats-1/independent-samples-t-test/">Independent Samples t-Test</a></td></tr>
             <tr><td>8</td><td>Effect size, power &amp; midterm</td><td><a href="stats-3/effect-size-and-power/">Effect Size &amp; Power</a></td></tr>
-            <tr><td>9</td><td>Comparing several means</td><td><a href="stats-2/one-way-anova/">One-Way ANOVA</a> · <a href="stats-2/post-hoc-tests/">Post-Hoc Tests</a></td></tr>
-            <tr><td>10</td><td>Two factors &amp; repeated measures</td><td><a href="stats-2/factorial-anova-two-way/">Factorial ANOVA</a> · <a href="stats-2/repeated-measures-anova/">Repeated Measures ANOVA</a></td></tr>
-            <tr><td>11</td><td>When assumptions fail</td><td><a href="stats-2/assumptions-and-when-they-break/">ANOVA &amp; t-Test Assumptions</a> · <a href="stats-2/non-parametric-alternatives/">Non-Parametric Alternatives</a></td></tr>
+            <tr><td>9</td><td>Comparing several means</td><td><a href="stats-2/one-way-anova/?g=3,5,4,2,6;4,7,6,5,8;9,6,8,10,7&amp;step=8">One-Way ANOVA</a> · <a href="stats-2/post-hoc-tests/?g=3,5,4,2,6;4,7,6,5,8;9,6,8,10,7&amp;c=-2,1,1">Post-Hoc Tests</a></td></tr>
+            <tr><td>10</td><td>Two factors &amp; repeated measures</td><td><a href="stats-2/factorial-anova-two-way/?cells=80,60,84,76">Factorial ANOVA</a> · <a href="stats-2/repeated-measures-anova/?spread=24&amp;effect=8&amp;view=centered">Repeated Measures ANOVA</a></td></tr>
+            <tr><td>11</td><td>When assumptions fail</td><td><a href="stats-2/assumptions-and-when-they-break/">ANOVA &amp; t-Test Assumptions</a> · <a href="stats-2/non-parametric-alternatives/?tab=mw&amp;g=8,11,13,15,18,24;16,19,21,23,27,31">Non-Parametric Alternatives</a></td></tr>
             <tr><td>12</td><td>Categorical data</td><td><a href="stats-1/chi-square-tests/">Chi-Square Tests</a></td></tr>
             <tr><td>13</td><td>Relationships &amp; prediction</td><td><a href="stats-1/correlation/">Correlation</a> · <a href="stats-1/simple-linear-regression/">Simple Linear Regression</a></td></tr>
             <tr><td>14</td><td>Checking a model &amp; revision</td><td><a href="stats-2/regression-diagnostics/">Regression Diagnostics</a> · <a href="quiz.html">Quiz</a></td></tr>
@@ -358,11 +363,11 @@ https://statscapybara.com/stats-1/simple-linear-regression/?data=1:12,2:20,3:26,
         <p>Teaching research methods too? The <strong>Research Toolkit</strong> track adds full courses on <a href="methods/from-question-to-hypothesis/">Methods</a>, <a href="data/tidy-data/">Data</a>, <a href="writing/imrad-structure/">Writing</a>, and <a href="ethics/why-research-ethics/">Ethics</a>, which map neatly onto a dissertation or capstone module. For a quantitative-methods sequel, <a href="ml/prediction-vs-explanation/">ML &amp; AI</a> closes the <strong>Statistics Core</strong> and picks up where regression leaves off.</p>
 
         <section id="block-map">
-        <h3>A seven-week block</h3>
+        <h3>A seven-week block: Stats 1</h3>
         <p>Plenty of intro courses are not a semester at all. They run as a short block that follows the textbook's own order, data before probability and probability before inference, with a mock paper partway through and the real one at the end. This is that shape, laid over Stats 1 alone.</p>
         <p>Every lesson link below carries a preset, so opening one from your slides lands on the configuration the week is about rather than on the lesson's default. The tools column is what students should have open beside the lecture, and the problems column is what they can work by hand afterward.</p>
         <div class="tm-printbar">
-          <button class="btn btn-primary btn-sm" id="print-blockmap" type="button">🖨️ Print the block map</button>
+          <button class="btn btn-primary btn-sm" id="print-blockmap" type="button">🖨️ Print the Stats 1 block map</button>
           <span class="tm-hint">Prints on its own, one page, ready for a course handbook.</span>
         </div>
         <div class="hscroll">
@@ -436,6 +441,92 @@ https://statscapybara.com/stats-1/simple-linear-regression/?data=1:12,2:20,3:26,
         <p>Two of those presets are worth a word. The §1.3 link loads eighteen real numbers into the playground rather than a simulated cloud, which is the fastest way to show a class that the mean and the median part company; pair it with the calculator link beside it and flip the quartile switch to watch Q1 move between conventions. The §1.16 link types a whole 2&nbsp;&times;&nbsp;3 table into the builder, so the expected counts, the components and the Table F bracket all appear at once.</p>
         </section>
 
+        <section id="block-map-2">
+        <h3>An eight-week block: Stats 2</h3>
+        <p>The second course is shorter and heavier. Eight teaching weeks, a paper midterm on the first four, a paper final on all of it, and in many versions a group project running alongside from about week three. This is that shape laid over Stats 2, in the order an intermediate syllabus usually takes: the rank tests and the ANOVA table first, then the designs that complicate that table, then regression as the same model written a different way.</p>
+        <p>Where a lesson takes a preset, the link here carries one, and three of those load the numbers a problem in the library asks students to work by hand, so the widget on the screen and the sheet in their bag hold the same study. Later weeks lean more on the tools column, because a regression lesson has no single setting a slide is about. The last two rows are the two things the course ends with.</p>
+        <div class="tm-printbar">
+          <button class="btn btn-primary btn-sm" id="print-blockmap-2" type="button">🖨️ Print the Stats 2 block map</button>
+          <span class="tm-hint">Prints on its own, one page, like the one above.</span>
+        </div>
+        <div class="hscroll">
+        <table class="ref-table sem-map bm-map">
+          <thead><tr><th>Week</th><th>What it covers</th><th>Lessons</th><th>Tools</th><th>Problems</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>1</strong><br><span class="bm-topic">Ranks, then the ANOVA table</span></td>
+              <td>When a rank replaces a value: Mann&ndash;Whitney&rsquo;s <em>U</em>, Wilcoxon&rsquo;s <em>W</em> and Spearman&rsquo;s &rho;<sub>s</sub> against a printed table. Then explained against unexplained variation, the table itself, df and MS, <em>F</em>(df<sub>G</sub>, df<sub>E</sub>), s<sub>p</sub> = &radic;MSE and &eta;&sup2;</td>
+              <td><a href="stats-2/non-parametric-alternatives/?tab=mw&amp;g=8,11,13,15,18,24;16,19,21,23,27,31">&sect;2.1 Non-Parametric Alternatives</a> &middot; <a href="stats-2/assumptions-and-when-they-break/">&sect;2.6 ANOVA &amp; t-Test Assumptions</a> &middot; <a href="stats-2/one-way-anova/?g=3,5,4,2,6;4,7,6,5,8;9,6,8,10,7&amp;step=8">&sect;2.2 One-Way ANOVA</a></td>
+              <td><a href="tables.html#nptables">The <em>U</em>, <em>W</em> and &rho;<sub>s</sub> tables</a> &middot; <a href="tables.html">Critical <em>F</em> from the calculator</a> &middot; <a href="formulas.html">Formula sheet</a></td>
+              <td><a href="problems.html#p2-6">39</a>, <a href="problems.html#p2-15">48&ndash;50</a>, <a href="problems.html#p2-1">34</a>, <a href="problems.html#p2-11">44&ndash;45</a></td>
+            </tr>
+            <tr>
+              <td><strong>2</strong><br><span class="bm-topic">Contrasts and multiple comparisons</span></td>
+              <td>A planned question written as coefficients: &psi;, its standard error, the <em>t</em> and the interval. Then the family-wise problem, the pooled s<sub>p</sub> every pair shares, the Bonferroni <em>t</em>** and simultaneous intervals</td>
+              <td><a href="stats-2/post-hoc-tests/?g=3,5,4,2,6;4,7,6,5,8;9,6,8,10,7&amp;c=-2,1,1">&sect;2.3 Post-Hoc Tests</a></td>
+              <td><a href="stats-2/post-hoc-tests/?g=3,5,4,2,6;4,7,6,5,8;9,6,8,10,7&amp;mode=pairs#cbviz">Contrast Builder, all pairs</a> &middot; <a href="tables.html#printed-tables">Table D for <em>t</em>* and <em>t</em>**</a> &middot; <a href="apa.html?a=anova&amp;v=one">APA formatter, one-way</a></td>
+              <td><a href="problems.html#p2-2">35</a>, <a href="problems.html#p2-13">46&ndash;47</a></td>
+            </tr>
+            <tr>
+              <td><strong>3</strong><br><span class="bm-topic">Factorial designs</span></td>
+              <td>Two factors at once, marginal means and simple main effects, the interaction as a difference of differences, crossover against spreading, the two-way table and its df, and why the interaction is read first</td>
+              <td><a href="stats-2/factorial-anova-two-way/?cells=80,60,84,76">&sect;2.4 Factorial ANOVA (Two-Way)</a></td>
+              <td><a href="stats-2/factorial-anova-two-way/?g=74,78,80,82,86;54,58,60,62,66;78,82,84,86,90;70,74,76,78,82#wvviz">Where the Variance Goes</a> &middot; <a href="apa.html?a=anova&amp;v=fact">APA formatter, factorial</a></td>
+              <td><a href="problems.html#p2-3">36</a>, <a href="problems.html#p2-18">51&ndash;52</a></td>
+            </tr>
+            <tr>
+              <td><strong>4</strong><br><span class="bm-topic">Repeated measures and mixed designs</span></td>
+              <td>The same people in every condition, the covariance identity behind the paired <em>t</em>, the two-step partition with subjects taken out, the RM table and its df, sphericity, then mixed designs and counterbalancing</td>
+              <td><a href="stats-2/repeated-measures-anova/?spread=24&amp;effect=8&amp;view=centered">&sect;2.5 Repeated Measures ANOVA</a></td>
+              <td><a href="plan.html?test=rm-anova">Plan My Analysis</a> &middot; <a href="power.html">Power &amp; sample size</a> &middot; <a href="apa.html?a=anova&amp;v=one">APA formatter</a></td>
+              <td><a href="problems.html#p2-4">37</a>, <a href="problems.html#p2-20">53&ndash;54</a></td>
+            </tr>
+            <tr>
+              <td><strong>5</strong><br><span class="bm-topic">Midterm, and inference for regression</span></td>
+              <td>A marked paper over the first four weeks, then the regression model as inference: <em>b</em><sub>1</sub> = cov/var, the conditions the model asks for, <em>s</em> and SE(<em>b</em><sub>1</sub>), the <em>t</em> and interval on <em>n</em> &minus; 2, the regression ANOVA and <em>r</em>&sup2; read off it</td>
+              <td><a href="stats-2/inference-for-regression/">&sect;2.7 Inference for Regression</a> &middot; <a href="stats-2/regression-diagnostics/">&sect;2.8 Regression Diagnostics</a> &middot; <a href="stats-2/assumptions-of-regression/">&sect;2.13 Assumptions of Regression</a></td>
+              <td><a href="quiz.html?exam=stats-2&amp;from=2.1&amp;to=2.5&amp;n=20">Mock exam, &sect;2.1 to &sect;2.5</a> &middot; <a href="correlation.html">Correlation &amp; regression calculator</a> &middot; <a href="apa.html?a=reg&amp;v=coef">APA formatter, coefficient</a></td>
+              <td><a href="problems.html#stats-2-exam">55&ndash;62</a>, <a href="problems.html#p2-10">43</a>, <a href="problems.html#p3-9">71</a></td>
+            </tr>
+            <tr>
+              <td><strong>6</strong><br><span class="bm-topic">Several predictors at once</span></td>
+              <td>The multiple model and what &ldquo;holding the others constant&rdquo; buys, omitted-variable bias with its sign, <em>t</em>(<em>n</em> &minus; <em>p</em> &minus; 1) and the overall <em>F</em>, R&sup2; and adjusted R&sup2;, dummy coding, and a covariate alongside a factor</td>
+              <td><a href="stats-2/multiple-regression/?b2=54&amp;sep=-34">&sect;2.9 Multiple Regression</a> &middot; <a href="stats-2/categorical-predictors-and-dummy-coding/">&sect;2.10 Categorical Predictors &amp; Dummy Coding</a> &middot; <a href="stats-2/ancova/">&sect;2.15 ANCOVA</a></td>
+              <td><a href="guides/anova-and-regression-project/">The project guide</a> &middot; <a href="datasets.html#commute">commute-mood.csv</a> &middot; <a href="apa.html?a=reg&amp;v=model">APA formatter, model fit</a></td>
+              <td><a href="problems.html#p3-1">63&ndash;64</a>, <a href="problems.html#p3-10">72&ndash;73</a></td>
+            </tr>
+            <tr>
+              <td><strong>7</strong><br><span class="bm-topic">Building and choosing a model</span></td>
+              <td>Interaction terms between predictors, centering, multicollinearity and VIF, theory-led selection against letting an algorithm pick, and comparing models on adjusted R&sup2; and AIC rather than on <em>p</em></td>
+              <td><a href="stats-2/interactions-in-regression/">&sect;2.11 Interactions in Regression</a> &middot; <a href="stats-2/multicollinearity-and-variable-selection/">&sect;2.12 Multicollinearity &amp; Variable Selection</a> &middot; <a href="stats-2/model-comparison/">&sect;2.14 Model Comparison</a></td>
+              <td><a href="plan.html?test=regression-multiple">Plan My Analysis</a> &middot; <a href="effect-sizes.html">Effect-size converter</a></td>
+              <td><a href="problems.html#p3-4">66</a>, <a href="problems.html#p3-7">69</a>, <a href="problems.html#p4-7">80</a></td>
+            </tr>
+            <tr>
+              <td><strong>8</strong><br><span class="bm-topic">Binary outcomes and curves</span></td>
+              <td>Logistic regression: the logit, odds ratios, why least squares will not do for a yes/no outcome. Then relationships that are not straight, and what a transformation costs in interpretation</td>
+              <td><a href="stats-2/logistic-regression/?x0=50&amp;b1=0.5">&sect;2.16 Logistic Regression</a> &middot; <a href="stats-2/nonlinear-relationships-and-transformations/">&sect;2.17 Non-Linear Relationships &amp; Transformations</a></td>
+              <td><a href="which-test.html">Which test should I use?</a> &middot; <a href="plan.html?test=logistic">Plan My Analysis</a></td>
+              <td><a href="problems.html#p3-3">65</a></td>
+            </tr>
+            <tr>
+              <td><strong>Final</strong><br><span class="bm-topic">All seventeen sections</span></td>
+              <td>Everything above, with the formula sheet, the printed tables and a basic calculator</td>
+              <td colspan="2"><a href="quiz.html?exam=stats-2&amp;n=40">Full mock, 40 questions</a> &middot; <a href="formulas.html">Formula sheet</a> &middot; the three posters: <a href="cheat-test-chooser.html">which test</a>, <a href="cheat-apa.html">APA</a>, <a href="cheat-assumptions.html">assumptions</a></td>
+              <td><a href="problems.html#stats-2">34&ndash;54</a>, <a href="problems.html#stats-2-exam">55&ndash;62</a></td>
+            </tr>
+            <tr>
+              <td><strong>Project</strong><br><span class="bm-topic">One question, two analyses</span></td>
+              <td>A group collects its own data and answers one question twice, as an ANOVA of three or more conditions and as a regression carrying control variables, then writes it up</td>
+              <td colspan="2"><a href="guides/anova-and-regression-project/">One Question, an ANOVA and a Regression</a> &middot; <a href="guides/complete-worked-project/">One Study, Start to Finish</a> &middot; <a href="power.html">Power &amp; sample size</a> &middot; <a href="datasets.html">Practice datasets</a></td>
+              <td><a href="problems.html#toolkit">81&ndash;86</a></td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <p>Three of those links are worth knowing about. Week 1 opens &sect;2.2 on the finished table for the fifteen copy-editors of <a href="problems.html#p2-1">problem 34</a>, so the lecture and the homework run on one dataset; week 2 hands the same fifteen numbers to Contrast Builder with the coefficients (&minus;2, 1, 1) already typed, which asks whether any background sound at all costs accuracy. And the Where the Variance Goes link in week 3 loads twenty scores whose cell means are <a href="problems.html#p7-5">problem 59</a>&rsquo;s exactly, error sum of squares 320 and all: the same study appears on the screen as a variance partition and on paper as a table to complete.</p>
+        </section>
+
 
         <h2>Use it freely</h2>
         <p>StatsCapybara is free and stays free. There is no institutional license to sign, no seat count, and no ambiguity to resolve: link it, embed it, print it, and assign from it in any class, at any institution, at no cost.</p>
@@ -482,21 +573,32 @@ https://statscapybara.com/stats-1/simple-linear-regression/?data=1:12,2:20,3:26,
     });
   })();
 
-  /* The block map prints on its own: body.tm-print-map hides the rest of the
-     page, and the class comes off again on afterprint (with a timeout for the
-     browsers that never fire it). Mirrors problems.html's two print modes. */
+  /* A block map prints on its own: the button marks its own section with
+     .bm-printing and body.tm-print-map hides the rest of the page. Both come
+     off again on afterprint (with a timeout for the browsers that never fire
+     it). Mirrors problems.html's two print modes. */
   (function () {
     "use strict";
-    var btn = document.getElementById("print-blockmap");
-    if (!btn) return;
-    var on = false;
-    function end() { if (!on) return; on = false; document.body.classList.remove("tm-print-map"); }
+    var maps = [["print-blockmap", "block-map"], ["print-blockmap-2", "block-map-2"]];
+    var current = null;
+    function end() {
+      if (!current) return;
+      current.classList.remove("bm-printing");
+      document.body.classList.remove("tm-print-map");
+      current = null;
+    }
     window.addEventListener("afterprint", end);
-    btn.addEventListener("click", function () {
-      on = true;
-      document.body.classList.add("tm-print-map");
-      window.print();
-      setTimeout(end, 1500);
+    maps.forEach(function (pair) {
+      var btn = document.getElementById(pair[0]), sec = document.getElementById(pair[1]);
+      if (!btn || !sec) return;
+      btn.addEventListener("click", function () {
+        end();
+        current = sec;
+        sec.classList.add("bm-printing");
+        document.body.classList.add("tm-print-map");
+        window.print();
+        setTimeout(end, 1500);
+      });
     });
   })();
   </script>
