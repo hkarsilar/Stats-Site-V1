@@ -51,6 +51,11 @@
     16. the repeated-measures partition — the subjects row in
         stats-2/repeated-measures-anova, plus the covariance identity that
         explains why pairing works
+    17. omitted-variable bias — §2.9's widget and §2.10's ANOVA-as-regression
+        demonstration, recomputed from the shipped study-methods.csv
+    18. the measurement model — σ(ij) = β(i)β(j) and σ(ii) = β(i)² + ψ(ii) in
+        stats-3/factor-analysis-pca, with the lesson's published one-factor
+        solution refitted from the shipped wellbeing-survey.csv
 
    Note on section 7: the tool pages compute these inline against the DOM,
    so they can't be imported. What is asserted here is that viz.js still
@@ -3190,6 +3195,389 @@ try {
   failures.push({ section, label: 'the dummy-regression demonstration could not be checked',
     got: String(e.message), want: 'a readable assets/data/study-methods.csv', tol: 0, err: NaN,
     src: 'stats-2/categorical-predictors-and-dummy-coding' });
+}
+
+
+/* ============================================================
+   18 — the measurement model (stats-3/factor-analysis-pca)
+
+   P97 gave §3.5 the half it was missing: the model factor analysis is built
+   on, y = μ + βξ + ε with the factor standardized, and the two identities
+   everything else in the lesson is a consequence of — σ(ij) = β(i)β(j)
+   between two indicators and σ(ii) = β(i)² + ψ(ii) within one. The new
+   widget, Loadings In / Correlations Out, prints all three grids those
+   identities generate: the observed correlations, the implied ones, and the
+   residual. This section derives them from the numbers alone and then drives
+   the SHIPPED widget under the same DOM shim sections 8 to 17 use, through
+   the page's OWN ?b= applier, with dataParam lifted out of site.js by
+   brace-matching rather than reimplemented.
+
+   Four things are the point of it, and each is asserted rather than described.
+
+   (a) The identities are EXACT, not approximate, and the three grids are one
+       arithmetic statement read three ways: off the diagonal, implied plus
+       residual is the observed correlation; down it, h² plus ψ is exactly 1,
+       which is what standardizing bought. The worked trio the prose publishes
+       (.80, .70, .50 implying .56, .40 and .35) is checked as printed.
+
+   (b) The frozen observed matrix is NOT transcribed on trust. It is
+       recomputed here from the shipped assets/data/wellbeing-survey.csv,
+       listwise with q3 and q6 reverse-coded, and compared with the twelve
+       values the widget carries. A regenerated CSV would move numbers the
+       lesson publishes, and CLAUDE.md's rule against that is worth a check
+       rather than a sentence.
+
+   (c) The lesson's published EIGHT-item solution is reproduced from the same
+       file by an independent maximum-likelihood factor analysis written here:
+       loadings .67 to .76, communalities .44 to .58 with a mean of .54,
+       χ²(20) = 20.14 at p = .45, and Cronbach's α = .90. The fit statistic
+       is Lawley's, ((n − 1 − (2p + 5)/6 − 2m/3)) times the discrepancy, on
+       ((p − m)² − (p + m))/2 degrees of freedom, which is where the lesson's
+       df of 20 comes from. The four-item solution the widget starts on is
+       fitted the same way, and the slider defaults are READ OUT OF THE MARKUP
+       and compared with it, so a frozen default switched quietly in the HTML
+       fails here (the lesson sections 10, 11 and 15 each learned).
+
+   (d) α's two caveats are arithmetic, not opinion. The item-count table the
+       lesson prints comes out of α = k·r̄/(1 + (k − 1)r̄) with r̄ held at .20,
+       and doubling a scale's length moves α exactly where the Spearman-Brown
+       formula says it will, which is the identity that makes "α climbs with
+       k whatever the items are worth" a fact rather than a warning.
+
+   VIZ.sd divides by n, so every variance, covariance and correlation here is
+   computed on n − 1, the exam's dialect and the one SPSS prints.
+   ============================================================ */
+head('the measurement model (the shipped widget)');
+
+/* ---- (a) the identities, on the trio the prose publishes ---- */
+const TRIO = [0.80, 0.70, 0.50];
+eq('worked trio: implied r between items 1 and 2', TRIO[0] * TRIO[1], 0.56, 1e-12, 'σ(ij) = β(i)β(j)');
+eq('worked trio: implied r between items 1 and 3', TRIO[0] * TRIO[2], 0.40, 1e-12, 'the lesson prints .40');
+eq('worked trio: implied r between items 2 and 3', TRIO[1] * TRIO[2], 0.35, 1e-12, 'the lesson prints .35');
+TRIO.forEach((b, i) => {
+  eq(`worked trio: communality of item ${i + 1}`, b * b, [0.64, 0.49, 0.25][i], 1e-12, 'h² = β²');
+  eq(`worked trio: uniqueness of item ${i + 1}`, 1 - b * b, [0.36, 0.51, 0.75][i], 1e-12, 'ψ = 1 − h²');
+  eq(`worked trio: h² + ψ is exactly 1 for item ${i + 1}`, b * b + (1 - b * b), 1, 0,
+     'σ(ii) = β² + ψ with the item standardized');
+});
+
+/* ---- the linear algebra this section needs, written from scratch ---- */
+/* Jacobi rotation for a symmetric matrix: eigenvalues descending, with the
+   matching eigenvectors. Nothing in viz.js does this, so it cannot share a
+   bug with the page. */
+function jacobiEig(Ain) {
+  const N = Ain.length;
+  const A = Ain.map(r => r.slice());
+  const Vm = [...Array(N)].map((_, i) => [...Array(N)].map((_, j) => (i === j ? 1 : 0)));
+  for (let sweep = 0; sweep < 300; sweep++) {
+    let off = 0;
+    for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++) off += A[i][j] * A[i][j];
+    if (off < 1e-26) break;
+    for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++) {
+      if (Math.abs(A[i][j]) < 1e-20) continue;
+      const theta = (A[j][j] - A[i][i]) / (2 * A[i][j]);
+      const t = Math.sign(theta || 1) / (Math.abs(theta) + Math.sqrt(theta * theta + 1));
+      const c = 1 / Math.sqrt(t * t + 1), s = t * c;
+      for (let k = 0; k < N; k++) { const a = A[i][k], b = A[j][k]; A[i][k] = c * a - s * b; A[j][k] = s * a + c * b; }
+      for (let k = 0; k < N; k++) { const a = A[k][i], b = A[k][j]; A[k][i] = c * a - s * b; A[k][j] = s * a + c * b; }
+      for (let k = 0; k < N; k++) { const a = Vm[k][i], b = Vm[k][j]; Vm[k][i] = c * a - s * b; Vm[k][j] = s * a + c * b; }
+    }
+  }
+  const vals = [...Array(N)].map((_, i) => A[i][i]);
+  const order = vals.map((v, i) => i).sort((a, b) => vals[b] - vals[a]);
+  return { values: order.map(i => vals[i]), vectors: order.map(i => Vm.map(r => r[i])) };
+}
+
+/* Lawley's maximum-likelihood factor analysis, profiled over the uniquenesses
+   exactly as R's factanal does it: minimize Σ(θ − log θ) − (p − m) over the
+   trailing eigenvalues of Ψ^(−½) R Ψ^(−½), then read the loadings off the
+   leading ones. Minimized by Nelder-Mead from a fixed start, so it is
+   deterministic. */
+function mlFactor(Rm, nObs, m) {
+  const p = Rm.length;
+  const toPsi = x => x.map(v => 0.005 + 0.995 / (1 + Math.exp(-v)));
+  const scaled = Psi => {
+    const sc = Psi.map(v => 1 / Math.sqrt(v));
+    return [...Array(p)].map((_, i) => [...Array(p)].map((_, j) => sc[i] * Rm[i][j] * sc[j]));
+  };
+  const F = x => {
+    const e = jacobiEig(scaled(toPsi(x))).values.slice(m);
+    return e.reduce((a, v) => a + (v - Math.log(v)), 0) - (p - m);
+  };
+  let simplex = [[...Array(p)].map(() => 0)];
+  for (let i = 0; i < p; i++) { const y = simplex[0].slice(); y[i] += 0.5; simplex.push(y); }
+  let fv = simplex.map(F);
+  for (let it = 0; it < 30000; it++) {
+    const ord = fv.map((v, i) => i).sort((a, b) => fv[a] - fv[b]);
+    simplex = ord.map(i => simplex[i]); fv = ord.map(i => fv[i]);
+    if (Math.abs(fv[p] - fv[0]) < 1e-15) break;
+    const cen = [...Array(p)].map((_, j) => simplex.slice(0, p).reduce((a, s) => a + s[j], 0) / p);
+    const refl = cen.map((c, j) => c + (c - simplex[p][j])); const fr = F(refl);
+    if (fr < fv[0]) {
+      const ex = cen.map((c, j) => c + 2 * (c - simplex[p][j])); const fe = F(ex);
+      if (fe < fr) { simplex[p] = ex; fv[p] = fe; } else { simplex[p] = refl; fv[p] = fr; }
+      continue;
+    }
+    if (fr < fv[p - 1]) { simplex[p] = refl; fv[p] = fr; continue; }
+    const con = cen.map((c, j) => c + 0.5 * (simplex[p][j] - c)); const fc = F(con);
+    if (fc < fv[p]) { simplex[p] = con; fv[p] = fc; continue; }
+    for (let i = 1; i <= p; i++) { simplex[i] = simplex[i].map((v, j) => simplex[0][j] + 0.5 * (v - simplex[0][j])); fv[i] = F(simplex[i]); }
+  }
+  const best = fv.indexOf(Math.min(...fv));
+  const Psi = toPsi(simplex[best]);
+  const E = jacobiEig(scaled(Psi));
+  const sq = Math.sqrt(Math.max(E.values[0] - 1, 0));
+  let L = E.vectors[0].map((v, i) => Math.sqrt(Psi[i]) * v * sq);
+  if (L.reduce((a, b) => a + b, 0) < 0) L = L.map(v => -v);      // sign is arbitrary; point it up
+  const df = ((p - m) * (p - m) - (p + m)) / 2;
+  return { L, Psi, F: fv[best], df, chi2: (nObs - 1 - (2 * p + 5) / 6 - (2 * m) / 3) * fv[best] };
+}
+
+/* ---- (b) and (c): the shipped dataset ---- */
+try {
+  const raw = fs.readFileSync(path.join(ROOT, 'assets/data/wellbeing-survey.csv'), 'utf8').trim().split(/\r?\n/);
+  const REV = new Set([3, 6]);                                    // the lesson reverse-codes q3 and q6
+  const rows = [];
+  for (let i = 1; i < raw.length; i++) {
+    const cells = raw[i].split(',').slice(1);
+    if (cells.length !== 8 || cells.some(c => c === '')) continue;  // listwise, as the lesson states
+    rows.push(cells.map((c, j) => (REV.has(j + 1) ? 6 - Number(c) : Number(c))));
+  }
+  const nObs = rows.length, P8 = 8;
+  is('wellbeing-survey.csv: complete cases after listwise deletion', nObs, 75, 'the dataset card');
+
+  /* n − 1 throughout: VIZ.sd divides by n, and every quantity here is in the
+     exam's dialect */
+  const mu = [...Array(P8)].map((_, j) => rows.reduce((a, r) => a + r[j], 0) / nObs);
+  const cov = (j, k) => rows.reduce((a, r) => a + (r[j] - mu[j]) * (r[k] - mu[k]), 0) / (nObs - 1);
+  const sdv = [...Array(P8)].map((_, j) => Math.sqrt(cov(j, j)));
+  const R8 = [...Array(P8)].map((_, j) => [...Array(P8)].map((_, k) => cov(j, k) / (sdv[j] * sdv[k])));
+
+  /* the twelve numbers the widget freezes, against the file they came from */
+  const FROZEN = [
+    [1.000, 0.585, 0.553, 0.504],
+    [0.585, 1.000, 0.539, 0.435],
+    [0.553, 0.539, 1.000, 0.449],
+    [0.504, 0.435, 0.449, 1.000]
+  ];
+  for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) {
+    eq(`widget's frozen r(q${i + 1}, q${j + 1}) matches the shipped CSV`, R8[i][j], FROZEN[i][j], 5e-4,
+       'assets/data/wellbeing-survey.csv, listwise, q3 reverse-coded');
+  }
+
+  /* Cronbach's α on all eight, in the form the lesson prints */
+  const totals = rows.map(r => r.reduce((a, b) => a + b, 0));
+  const tm = totals.reduce((a, b) => a + b, 0) / nObs;
+  const varTot = totals.reduce((a, t) => a + (t - tm) * (t - tm), 0) / (nObs - 1);
+  const sumItemVar = [...Array(P8)].map((_, j) => cov(j, j)).reduce((a, b) => a + b, 0);
+  const alpha8 = (P8 / (P8 - 1)) * (1 - sumItemVar / varTot);
+  eq("the eight items' Cronbach's α", alpha8, 0.90, 5e-3, 'the lesson and the dataset card both print .90');
+
+  /* the published eight-item ML solution */
+  const fit8 = mlFactor(R8, nObs, 1);
+  const h2 = fit8.L.map(b => b * b);
+  is('fit test df for eight indicators and one factor', fit8.df, 20, '((p − m)² − (p + m))/2');
+  is('fit test df for eight indicators and two factors', mlFactor(R8, nObs, 1).df - 7, 13,
+     'the same formula at m = 2, which the lesson also cites');
+  eq('the published χ² for one factor', fit8.chi2, 20.14, 5e-3, 'the lesson prints χ²(20) = 20.14');
+  eq('and its p-value', V.chiSqUpper(fit8.chi2, fit8.df), 0.45, 5e-3, 'the lesson prints p = .45');
+  eq('smallest of the eight loadings', Math.min(...fit8.L), 0.6664, 5e-4, 'the lesson prints "between .67 and .76"');
+  eq('largest of the eight loadings', Math.max(...fit8.L), 0.7586, 5e-4, 'the lesson prints "between .67 and .76"');
+  is('smallest loading rounds to the published .67', Math.round(Math.min(...fit8.L) * 100) / 100, 0.67, 'the lesson');
+  is('largest loading rounds to the published .76', Math.round(Math.max(...fit8.L) * 100) / 100, 0.76, 'the lesson');
+  eq('smallest communality', Math.min(...h2), 0.4442, 5e-4, 'the lesson prints "from .44 to .58"');
+  eq('largest communality', Math.max(...h2), 0.5754, 5e-4, 'the lesson prints "from .44 to .58"');
+  eq('mean communality', h2.reduce((a, b) => a + b, 0) / P8, 0.54, 5e-3, 'the lesson prints "a mean of .54"');
+  /* the second identity, on the fitted solution rather than on a round trio */
+  for (let i = 0; i < P8; i++) {
+    /* this doubles as the optimizer's convergence check: the constraint holds
+       exactly in the model and only to the solver's tolerance in a fit */
+    eq(`fitted item ${i + 1}: h² + ψ is 1`, h2[i] + fit8.Psi[i], 1, 1e-7, 'σ(ii) = β² + ψ, standardized');
+  }
+
+  /* the four-item solution the widget starts on, fitted the same way */
+  const R4 = [0, 1, 2, 3].map(i => [0, 1, 2, 3].map(j => R8[i][j]));
+  const fit4 = mlFactor(R4, nObs, 1);
+  is('fit test df for four indicators and one factor', fit4.df, 2, '((4 − 1)² − 5)/2');
+  const FIT_EXACT = [0.7900, 0.7372, 0.7147, 0.6209];
+  FIT_EXACT.forEach((want, i) => {
+    eq(`four-item ML loading ${i + 1}`, fit4.L[i], want, 5e-4, 'recomputed from the shipped CSV');
+  });
+
+  /* ---- (d) α's two caveats, as arithmetic ---- */
+  const alphaK = (k, rbar) => (k * rbar) / (1 + (k - 1) * rbar);
+  const TABLE = [[4, 0.50], [8, 0.67], [12, 0.75], [20, 0.83], [30, 0.88]];
+  TABLE.forEach(([k, want]) => {
+    eq(`α at k = ${k} items with average r = .20`, alphaK(k, 0.20), want, 5e-3,
+       "the lesson's item-count table");
+  });
+  /* the covariance form the practice problem uses, and its agreement with the
+     classic Σσ(ii)/σ²(total) form on the same numbers */
+  const alphaCov = (k, vbar, cbar) => (k * cbar) / (vbar + (k - 1) * cbar);
+  const alphaClassic = (k, vbar, cbar) =>
+    (k / (k - 1)) * (1 - (k * vbar) / (k * vbar + k * (k - 1) * cbar));
+  eq('α from k = 6, average item variance 1.20, average covariance 0.42',
+     alphaCov(6, 1.20, 0.42), 0.7636, 5e-5, 'the practice problem');
+  eq('the same α from the Σσ(ii)/σ²(total) form', alphaClassic(6, 1.20, 0.42), alphaCov(6, 1.20, 0.42),
+     1e-12, 'the two forms are one identity');
+  eq('α after doubling the scale to k = 12', alphaCov(12, 1.20, 0.42), 0.8660, 5e-5, 'the practice problem');
+  eq('and Spearman-Brown lands on exactly the same number',
+     2 * alphaCov(6, 1.20, 0.42) / (1 + alphaCov(6, 1.20, 0.42)), alphaCov(12, 1.20, 0.42), 1e-12,
+     'doubling a scale IS the Spearman-Brown case k = 2');
+
+  /* ---- the shipped widget ---- */
+  const LC_HTML = fs.readFileSync(path.join(ROOT, 'stats-3/factor-analysis-pca/index.html'), 'utf8');
+  const srcLC = [...LC_HTML.matchAll(/<script>([\s\S]*?)<\/script>/g)]
+    .map(m => m[1]).filter(s => /lc-obs/.test(s))[0];
+  if (!srcLC) throw new Error('no inline script mentioning lc-obs');
+
+  const els = {};
+  const mk = () => {
+    const on = {};
+    const node = {
+      innerHTML: '', textContent: '', value: '', min: '', max: '', step: '', style: {},
+      classList: { add: () => {}, remove: () => {}, toggle: () => {} },
+      addEventListener: (t, f) => { (on[t] = on[t] || []).push(f); },
+      fire: (t, e) => (on[t] || []).forEach(f => f.call(node, e))
+    };
+    return node;
+  };
+  const siteSrc = fs.readFileSync(path.join(ROOT, 'assets/js/site.js'), 'utf8');
+  const grab = (name) => {
+    const i = siteSrc.indexOf('function ' + name);
+    const j = siteSrc.indexOf('\n  }\n', i);
+    if (i < 0 || j < 0) throw new Error('site.js no longer defines ' + name);
+    return siteSrc.slice(i, j + 4);
+  };
+  const dataParam = new Function(grab('numeric') + grab('dataParam') + ';return dataParam;')();
+
+  let maps = [];
+  const c18 = { console };
+  c18.window = c18;
+  c18.document = { documentElement: {}, getElementById: id => els[id] || (els[id] = mk()) };
+  c18.getComputedStyle = () => ({ getPropertyValue: () => '#000000' });
+  c18.MutationObserver = function () { this.observe = () => {}; };
+  c18.addEventListener = () => {};
+  c18.location = { search: '?x=1' };
+  c18.SC = { preset: m => { maps.push(m); }, dataParam };
+  vm.createContext(c18);
+
+  /* the four sliders carry the lesson's own defaults and bounds, read out of
+     the markup rather than restated here */
+  const IDS = ['lc-b1', 'lc-b2', 'lc-b3', 'lc-b4'];
+  IDS.forEach(id => {
+    const m = LC_HTML.match(new RegExp('<input type="range" id="' + id +
+      '" min="([-\\d.]+)" max="([-\\d.]+)" step="([-\\d.]+)" value="([-\\d.]+)"'));
+    if (!m) throw new Error('no range input with id ' + id);
+    els[id] = mk();
+    els[id].min = m[1]; els[id].max = m[2]; els[id].step = m[3]; els[id].value = m[4];
+  });
+  /* the defaults ARE the fitted solution, to the two decimals the slider steps
+     in: a default switched quietly in the HTML fails right here */
+  IDS.forEach((id, i) => {
+    eq(`slider ${i + 1}'s markup default is the fitted loading`, Number(els[id].value),
+       Math.round(fit4.L[i] * 100) / 100, 1e-12, 'the four-item ML solution above');
+  });
+
+  vm.runInContext(srcLC, c18, { filename: 'stats-3/factor-analysis-pca#loadings-in-correlations-out' });
+  const applier = (maps.filter(m => typeof m.b === 'function')[0] || {}).b;
+  if (typeof applier !== 'function') throw new Error('the widget registered no ?b= applier with SC.preset');
+
+  /* the three grids are written as markup, so they are read back as markup,
+     the same way section 9 reads tables.html's <tbody> */
+  const gridOf = (id) => {
+    const rowsHtml = [...String(els[id].innerHTML).matchAll(/<tr>([\s\S]*?)<\/tr>/g)].map(m => m[1]);
+    return rowsHtml.slice(1).map(r => [...r.matchAll(/<td[^>]*>([^<]*)<\/td>/g)].map(m => m[1]));
+  };
+  /* the widget prints APA style, no leading zero and a real minus sign */
+  const show = v => (v < 0 ? '−' : '') + Math.abs(v).toFixed(3).replace(/^0/, '');
+  const stat = id => String(els[id].textContent);
+  const readout = () => ({
+    obs: gridOf('lc-obs'), imp: gridOf('lc-imp'), res: gridOf('lc-res'),
+    max: stat('lc-maxres'), pair: stat('lc-maxpair'), rmsr: stat('lc-rmsr'), mh2: stat('lc-mh2')
+  });
+  if (!readout().max) throw new Error('the readout row stayed empty on boot');
+
+  /* what the three grids must say, derived here from the loadings alone */
+  function grids(b) {
+    const imp = [], res = [];
+    for (let i = 0; i < 4; i++) {
+      imp[i] = []; res[i] = [];
+      for (let j = 0; j < 4; j++) {
+        imp[i][j] = i === j ? b[i] * b[i] : b[i] * b[j];
+        res[i][j] = FROZEN[i][j] - imp[i][j];
+      }
+    }
+    let big = 0, bi = 0, bj = 1, ss = 0, cnt = 0;
+    for (let i = 0; i < 4; i++) for (let j = i + 1; j < 4; j++) {
+      ss += res[i][j] * res[i][j]; cnt++;
+      if (Math.abs(res[i][j]) > Math.abs(big)) { big = res[i][j]; bi = i; bj = j; }
+    }
+    return { imp, res, big, pair: `q${bi + 1} with q${bj + 1}`, rmsr: Math.sqrt(ss / cnt),
+             mh2: b.reduce((a, v) => a + v * v, 0) / 4 };
+  }
+  function checkAgainst(tag, b, got) {
+    const want = grids(b);
+    for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) {
+      is(`${tag}: observed cell ${i + 1},${j + 1}`, got.obs[i][j], show(FROZEN[i][j]), 'the frozen matrix');
+      is(`${tag}: implied cell ${i + 1},${j + 1}`, got.imp[i][j], show(want.imp[i][j]),
+         i === j ? 'h² = β²' : 'σ(ij) = β(i)β(j)');
+      is(`${tag}: residual cell ${i + 1},${j + 1}`, got.res[i][j], show(want.res[i][j]),
+         i === j ? 'ψ = 1 − h²' : 'observed − implied');
+    }
+    is(`${tag}: largest residual`, got.max, show(want.big), 'the six off-diagonal residuals');
+    is(`${tag}: and the pair it sits on`, got.pair, want.pair, 'the same six');
+    is(`${tag}: root mean square residual`, got.rmsr, show(want.rmsr), '√(mean squared off-diagonal residual)');
+    is(`${tag}: mean communality`, got.mh2, show(want.mh2), 'mean of β²');
+  }
+
+  const BOOT = IDS.map(id => Number(els[id].value));
+  checkAgainst('boots on the fitted solution', BOOT, readout());
+  /* the published readings of that boot state */
+  is('boot: the largest residual is the one the prose names', readout().max, '−.024',
+     'the lesson: "every residual is under .025 in absolute value"');
+  is('boot: the RMSR the prose publishes', readout().rmsr, '.013', 'the lesson prints .013');
+
+  /* the three grids are one statement: implied + residual = observed, exactly */
+  const g0 = grids(BOOT);
+  for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) {
+    eq(`implied + residual reproduces the observed correlation at ${i + 1},${j + 1}`,
+       g0.imp[i][j] + g0.res[i][j], FROZEN[i][j], 1e-12, 'the definition of a residual');
+  }
+  BOOT.forEach((b, i) => {
+    eq(`down the diagonal, h² + ψ is exactly 1 for item ${i + 1}`, g0.imp[i][i] + g0.res[i][i], 1, 1e-12,
+       "the lesson's legend: 1.000 = h² + ψ");
+  });
+
+  /* pulling one loading away blooms three residuals at once, because one
+     loading appears in three of the six products — the lesson's own claim */
+  const PULLED = [0.40, BOOT[1], BOOT[2], BOOT[3]];
+  applier('0.40,' + BOOT.slice(1).join(','));
+  const pulled = readout();
+  checkAgainst('after ?b= pulls β₁ to .40', PULLED, pulled);
+  const gp = grids(PULLED);
+  for (let j = 1; j < 4; j++) {
+    eq(`pulling β₁ to .40 pushes residual 1,${j + 1} past .20`, Math.abs(gp.res[0][j]), 0.25, 0.05,
+       'the lesson: "three residuals in q1\'s row jump past .20 at once"');
+  }
+
+  /* a mangled ?b= must leave the widget where it was rather than half-read it */
+  for (const bad of ['0.5,0.5,0.5', '0.5,0.5,0.5,0.5,0.5', 'x,0.5,0.5,0.5', '0.5,0x10,0.5,0.5',
+                     'nonsense', '', '0.5,NaN,0.5,0.5']) {
+    const anchorState = readout().max;
+    is(`the widget ignores a mangled ?b=${bad}`, (applier(bad), readout().max), anchorState,
+       "SC.dataParam's rule: reject the whole parameter, never half-read it");
+  }
+  /* out-of-range values are snapped and clamped to the control's OWN bounds,
+     which is why the lesson never restates them in JS */
+  applier('2,2,-3,0.5');
+  is('?b= clamps above the slider maximum', Number(els['lc-b1'].value), Number(els['lc-b1'].max),
+     "SC.preset's clamping rule");
+  is('?b= clamps below the slider minimum', Number(els['lc-b3'].value), Number(els['lc-b3'].min), 'the same rule');
+} catch (e) {
+  failures.push({ section, label: 'the measurement-model widget could not be driven — ids or structure changed?',
+    got: String(e.message), want: 'a runnable lc-obs script and a readable wellbeing-survey.csv', tol: 0, err: NaN,
+    src: 'stats-3/factor-analysis-pca' });
 }
 
 

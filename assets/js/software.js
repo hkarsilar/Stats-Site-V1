@@ -628,21 +628,26 @@ window.SOFTWARE = {
   },
   "factor-analysis-pca": {
     spss: [
-      '<strong>Analyze → Dimension Reduction → Factor…</strong>',
-      '<em>Descriptives…</em>: tick <em>KMO and Bartlett’s test of sphericity</em>.',
-      '<em>Extraction…</em>: choose <em>Principal components</em> (or <em>Principal axis factoring</em> for a true EFA); tick the <em>Scree plot</em>.',
+      '<strong>Analyze → Dimension Reduction → Factor…</strong>, moving every item into <em>Variables</em>. Reverse-code the negatively worded items first, under <em>Transform → Recode into Different Variables</em>, or the analysis reads them as a second factor.',
+      '<em>Descriptives…</em>: tick <em>KMO and Bartlett’s test of sphericity</em>, and <em>Reproduced</em> under Correlation Matrix. That second box prints the model-implied correlations with the residuals beneath them, and a footnote counts the residuals above .05 for you.',
+      '<em>Extraction…</em>: the <em>Method</em> dropdown is where <em>Principal components</em>, <em>Principal axis factoring</em> and <em>Maximum likelihood</em> live, and the default is principal components rather than either factor method, so it is a box worth opening. Maximum likelihood is the one that adds a goodness-of-fit test to the output. Under <em>Extract</em>, switch from <em>Based on Eigenvalue</em> to <em>Fixed number of factors</em> once theory or a scree plot has settled the count; tick the <em>Scree plot</em> either way.',
       '<em>Rotation…</em>: <em>Varimax</em> if you expect independent factors, <em>Direct Oblimin</em> if they may correlate (usually the safer bet in psychology).',
-      'Interpret the <em>Rotated Component/Pattern Matrix</em>; loadings ≥ .40 conventionally define a factor.'
+      'Interpret the <em>Rotated Component/Pattern Matrix</em>; loadings ≥ .40 conventionally define a factor.',
+      'Cronbach’s α is not part of this procedure and never appears in its output. It has a dialog of its own: <strong>Analyze → Scale → Reliability Analysis</strong> with <em>Model: Alpha</em>, and <em>Scale if item deleted</em> under <em>Statistics…</em> shows which item is holding the scale back. Run it on the reverse-coded variables, one factor at a time.'
     ],
     jasp: [
       '<strong>Factor → Exploratory Factor Analysis</strong> (or <em>Principal Component Analysis</em>).',
       'Choose the number of factors by <em>Eigenvalues &gt; 1</em>, <em>scree plot</em>, or best: <em>parallel analysis</em>, offered in the same dropdown.',
       'Set <em>Rotation</em> to oblique (<em>oblimin</em>) unless you have reason to force independence.',
-      'Tick <em>KMO test</em> and <em>Bartlett’s test</em> under Assumption Checks.'
+      'Tick <em>KMO test</em> and <em>Bartlett’s test</em> under Assumption Checks.',
+      'Set <em>Method</em> to <em>Maximum likelihood</em> if you want the fit test, and tick <em>Residual matrix</em> under Output options to see how close the implied correlations come to the observed ones.',
+      'α has its own analysis here too: <strong>Reliability → Unidimensional Reliability</strong>, with <em>Cronbach’s α</em> ticked and <em>If item dropped</em> under Individual Items.'
     ],
     apa: '<p>Sampling adequacy was good, KMO = .84, and Bartlett’s test was significant, χ²(190) = 1438.2, <em>p</em> &lt; .001. Parallel analysis supported two factors, together explaining 58% of the variance. After oblimin rotation, nine items loading ≥ .40 defined a "sociability" factor and seven an "assertiveness" factor (loadings in Table 1).</p>',
     tips: [
-      'State the extraction method, the retention rule (parallel analysis / scree / eigenvalues), the rotation, and the variance explained: the four decisions reviewers look for.'
+      'State the extraction method, the retention rule (parallel analysis / scree / eigenvalues), the rotation, and the variance explained: the four decisions reviewers look for.',
+      'Name the extraction method and say why you chose it. Principal axis factoring assumes nothing about the shape of the data, which suits ordinal questionnaire items; maximum likelihood assumes multivariate normality and repays it with the goodness-of-fit test. Reporting one while describing the other is a common slip.',
+      'Report α beside the number of items it was computed on. It rises with scale length whatever the items are worth, so .88 on thirty items and .88 on six are not the same claim.'
     ]
   },
   "manova": {

@@ -142,7 +142,7 @@
           <li><a href="#stats-2"><span class="t">🔗 Stats 2 · Groups &amp; relationships</span><br><span class="m">21 problems · ANOVA → contrasts → factorial → regression → rank tests</span></a></li>
           <li><a href="#stats-2-exam"><span class="t">📝 Exam-style · A Stats 2 midterm</span><br><span class="m">8 problems · §2.1 to §2.5, tables completed and read backwards</span></a></li>
           <li><a href="#regression"><span class="t">📐 Regression · Several predictors</span><br><span class="m">11 problems · multiple regression → omitted-variable bias → missing data</span></a></li>
-          <li><a href="#advanced"><span class="t">🎲 Advanced · Modern methods</span><br><span class="m">7 problems · Bayes → model comparison</span></a></li>
+          <li><a href="#advanced"><span class="t">🎲 Advanced · Modern methods</span><br><span class="m">9 problems · Bayes → model comparison → latent variables</span></a></li>
           <li><a href="#toolkit"><span class="t">🔍 Research Toolkit · Spot the problem</span><br><span class="m">6 problems · design, sampling, ethics, writing</span></a></li>
         </ul>
 
@@ -4615,7 +4615,7 @@
           <article class="pb-card">
             <div class="pb-head">
               <h3 id="p3-9"><span class="pb-num">71</span>One slope, four columns</h3>
-              <span class="pb-chip warmup">Warm-up</span>
+              <span class="pb-chip warm">Warm-up</span>
             </div>
             <p class="pb-scenario">Forty-two first-year students record how many hours they slept the night before an exam, and their exam score out of 100 is regressed on that. Here is the whole printout, which is less than it looks.</p>
             <div class="pb-given">
@@ -4780,7 +4780,7 @@
              ================================================================== -->
         <section class="pb-set" id="advanced-set">
           <h2 id="advanced">🎲 Advanced · Modern methods</h2>
-          <p class="pb-set-sub">Seven problems from the <a href="stats-3/">Stats 3 syllabus</a>: updating a belief with Bayes' rule, pulling sensitivity apart from bias, reading a survival curve that never reaches zero, and choosing between models that all fit.</p>
+          <p class="pb-set-sub">Nine problems from the <a href="stats-3/">Stats 3 syllabus</a>: updating a belief with Bayes' rule, pulling sensitivity apart from bias, reading a survival curve that never reaches zero, choosing between models that all fit, and working a one-factor measurement model by hand.</p>
 
           <!-- ---------- 4.1 ----------
                verify: node -e 'const pr=.008,se=.95,sp=.92;const pp=pr*se+(1-pr)*(1-sp);
@@ -5258,6 +5258,127 @@
               <p class="pb-ref">From <a href="stats-2/model-comparison/">§2.14 Model Comparison</a> · the held-out version is <a href="stats-3/cross-validation-and-overfitting/">§3.11 Cross-Validation</a>.</p>
             </details>
           </article>
+
+          <!-- VERIFIED (P97), node -e:
+                 b=[.80,.60,.50]; implied = b_i*b_j -> .48, .40, .30
+                 observed .45, .38, .34 -> residuals -.03, -.02, +.04
+                 h2 = .64, .36, .25;  psi = .36, .64, .75;  sum h2 = 1.25 -> 41.7% of three items
+                 b1 that reproduces r12 exactly = .45/.60 = .75
+                   then r13 implied .375 (residual +.005) and r23 residual unchanged at +.04
+                   new h2_1 = .5625, psi_1 = .4375
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p4-8"><span class="pb-num">81</span>Three items, one factor, and what is left over</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A short wellbeing scale has three items. A one-factor solution reports loadings of .80, .60 and .50, and the paper prints the observed correlations beside them. Your job is to decide whether one factor accounts for what the items actually did.</p>
+            <div class="pb-given">
+              <span class="lbl">Fitted loadings and observed correlations</span>
+              β<sub>1</sub> = .80 &nbsp;·&nbsp; β<sub>2</sub> = .60 &nbsp;·&nbsp; β<sub>3</sub> = .50<br>
+              <em>r</em><sub>12</sub> = .45 &nbsp;·&nbsp; <em>r</em><sub>13</sub> = .38 &nbsp;·&nbsp; <em>r</em><sub>23</sub> = .34<br>
+              <span class="lbl" style="margin-top:.5rem">Formulas</span>
+              σ<sub><em>ij</em></sub> = β<sub><em>i</em></sub>β<sub><em>j</em></sub> &nbsp;·&nbsp; σ<sub><em>ii</em></sub> = β<sub><em>i</em></sub>² + ψ<sub><em>ii</em></sub>, with every item standardized so σ<sub><em>ii</em></sub> = 1
+            </div>
+            <ol class="pb-ask">
+              <li>Give the correlation the model implies for each of the three pairs.</li>
+              <li>Give each item's communality and uniqueness, and check them against the split.</li>
+              <li>Form the residuals and name the largest one.</li>
+              <li>Suppose β<sub>1</sub> were wrong. What value would reproduce <em>r</em><sub>12</sub> exactly, and what does it do to the other two residuals?</li>
+              <li>What share of the three items' variance does the single factor account for?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The implied correlations</span>
+                  <span class="pb-math">σ<sub>12</sub> = .80 × .60 = .48</span>
+                  <span class="pb-math">σ<sub>13</sub> = .80 × .50 = .40</span>
+                  <span class="pb-math">σ<sub>23</sub> = .60 × .50 = .30</span>
+                  <span class="pb-note">Multiply the two loadings and stop. Nothing else in the model connects one item to another, which is what makes a three-item correlation matrix a question about three numbers rather than about six.</span>
+                </li>
+                <li><span class="pb-lbl">Communality and uniqueness</span>
+                  <span class="pb-math">h² = .80² = .64,&nbsp; .60² = .36,&nbsp; .50² = .25</span>
+                  <span class="pb-math">ψ = 1 &minus; h² = .36,&nbsp; .64,&nbsp; .75</span>
+                  <span class="pb-note">Each pair adds to 1, because standardizing gave every item exactly one unit of variance to divide. Item 2 is the one to notice: the factor explains barely a third of it, so most of what that item measures is its own.</span>
+                </li>
+                <li><span class="pb-lbl">The residuals</span>
+                  <span class="pb-math">pair 1,2: .45 &minus; .48 = &minus;.03</span>
+                  <span class="pb-math">pair 1,3: .38 &minus; .40 = &minus;.02</span>
+                  <span class="pb-math">pair 2,3: .34 &minus; .30 = +.04</span>
+                  <span class="pb-note">The largest is +.04 between items 2 and 3: they correlate a little more than a single shared factor can account for. Every residual is comfortably under the .05 that usually prompts a second look, so one factor reproduces this matrix well.</span>
+                </li>
+                <li><span class="pb-lbl">Refitting one loading</span>
+                  <span class="pb-math">β<sub>1</sub> = <em>r</em><sub>12</sub> ÷ β<sub>2</sub> = .45 ÷ .60 = .75</span>
+                  <span class="pb-math">then σ<sub>13</sub> = .75 × .50 = .375, residual +.005</span>
+                  <span class="pb-math">σ<sub>23</sub> = .30 still, residual +.04 still</span>
+                  <span class="pb-note">Two of the three residuals improve, because β<sub>1</sub> appears in two of the three products. The third does not move at all, since item 1's loading is not in it. That is the useful habit: a residual can only be repaired by a loading that appears in it, so a stubborn residual between two particular items is a statement about those two items rather than about the solution as a whole. Item 1's communality would rise to .5625 and its uniqueness fall to .4375.</span>
+                </li>
+                <li><span class="pb-lbl">Variance accounted for</span>
+                  <span class="pb-math">Σh² = .64 + .36 + .25 = 1.25</span>
+                  <span class="pb-math">1.25 ÷ 3 = .417</span>
+                  <span class="pb-note">The factor accounts for 41.7% of the three items' standardized variance. The numerator, 1.25, is worth recognizing: the sum of squared loadings on a factor is that factor's eigenvalue, which is why an eigenvalue reads as "how many items' worth of variance this factor carries" and why a threshold of 1 is the variance of a single standardized item.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Implied .48, .40 and .30; communalities .64, .36 and .25 against uniquenesses .36, .64 and .75; residuals &minus;.03, &minus;.02 and +.04, the largest between items 2 and 3. A β<sub>1</sub> of .75 would reproduce <em>r</em><sub>12</sub> exactly and leave the 2,3 residual untouched. The factor accounts for Σh² ÷ 3 = 41.7% of the three items' variance.</p>
+              <p class="pb-ref">From <a href="stats-3/factor-analysis-pca/">§3.5 Factor Analysis / PCA</a> · the lesson's Loadings In, Correlations Out widget does the same arithmetic on four items, with the residual grid drawn for you.</p>
+            </details>
+          </article>
+
+          <!-- VERIFIED (P97), node -e:
+                 k=6, every item variance 1.20, every pair covariance 0.42
+                 total-score variance = 6(1.20) + 6*5(0.42) = 7.20 + 12.60 = 19.80
+                 alpha = (6/5)(1 - 7.20/19.80) = 1.2 * .636364 = .7636
+                 k=12: total = 14.40 + 55.44 = 69.84; alpha = (12/11)(1 - 14.40/69.84) = .8660
+                 closed form k*c/(v + (k-1)c): .7636, .8660, and .9282 at k=24
+                 rbar = .42/1.20 = .35; k*rbar/(1+(k-1)rbar) gives the same three
+                 Spearman-Brown 2a/(1+a) = .8660 ; 4a/(1+3a) = .9282
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p4-9"><span class="pb-num">82</span>The scale that got more reliable by getting longer</h3>
+              <span class="pb-chip warm">Warm-up</span>
+            </div>
+            <p class="pb-scenario">A six-item scale is piloted. Every item turns out to have a variance of 1.20, and every pair of items covaries 0.42. A colleague proposes writing six more items of exactly the same quality and reporting the twelve-item scale instead.</p>
+            <div class="pb-given">
+              <span class="lbl">Given</span>
+              <em>k</em> = 6 items &nbsp;·&nbsp; every σ<sub><em>ii</em></sub> = 1.20 &nbsp;·&nbsp; every σ<sub><em>ij</em></sub> = 0.42
+              <span class="lbl" style="margin-top:.5rem">Formulas</span>
+              α = (<em>k</em> ÷ (<em>k</em> &minus; 1)) × (1 &minus; Σσ<sub><em>ii</em></sub> ÷ σ²<sub>total</sub>) &nbsp;·&nbsp; Spearman-Brown for a scale made <em>m</em> times longer: <em>m</em>α ÷ (1 + (<em>m</em> &minus; 1)α)
+            </div>
+            <ol class="pb-ask">
+              <li>Work out the variance of the six-item total score.</li>
+              <li>Compute α.</li>
+              <li>Compute α for the twelve-item version, and check it against Spearman-Brown.</li>
+              <li>What is the average correlation between these items, and what does it say about the two α values?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The total-score variance</span>
+                  <span class="pb-math">σ²<sub>total</sub> = <em>k</em>σ<sub><em>ii</em></sub> + <em>k</em>(<em>k</em> &minus; 1)σ<sub><em>ij</em></sub></span>
+                  <span class="pb-math">= 6(1.20) + 6(5)(0.42) = 7.20 + 12.60 = 19.80</span>
+                  <span class="pb-note">A total score's variance is every item variance plus every covariance between items, and a six-item scale has 6 × 5 = 30 ordered pairs. The covariances contribute 12.60 of the 19.80, which is the shared part α is built to report.</span>
+                </li>
+                <li><span class="pb-lbl">Alpha on six items</span>
+                  <span class="pb-math">α = (6 ÷ 5)(1 &minus; 7.20 ÷ 19.80)</span>
+                  <span class="pb-math">= 1.200 × (1 &minus; .3636) = 1.200 × .6364 = .764</span>
+                  <span class="pb-note">Just past the conventional .70 floor, so reportable but nothing to boast about.</span>
+                </li>
+                <li><span class="pb-lbl">Alpha on twelve items, two ways</span>
+                  <span class="pb-math">σ²<sub>total</sub> = 12(1.20) + 12(11)(0.42) = 14.40 + 55.44 = 69.84</span>
+                  <span class="pb-math">α = (12 ÷ 11)(1 &minus; 14.40 ÷ 69.84) = 1.0909 × .7938 = .866</span>
+                  <span class="pb-math">Spearman-Brown: 2(.7636) ÷ (1 + .7636) = 1.5273 ÷ 1.7636 = .866</span>
+                  <span class="pb-note">The two routes agree to the last decimal, which is not a coincidence: doubling a scale with items of the same quality is exactly the case Spearman-Brown was written for. Twenty-four items of the same quality would give .928, by either route.</span>
+                </li>
+                <li><span class="pb-lbl">What the items are actually like</span>
+                  <span class="pb-math">average <em>r</em> = σ<sub><em>ij</em></sub> ÷ σ<sub><em>ii</em></sub> = 0.42 ÷ 1.20 = .35</span>
+                  <span class="pb-note">The items correlate .35 with each other, and that never changed. Nothing about the measurement improved between .76 and .87: the colleague bought a tenth of a reliability coefficient with six more questions on the form, which costs the respondent time and costs the study nothing else. The lesson to carry into a write-up is that α is not a property of the items on their own, so it belongs next to <em>k</em>. The same .35 items would post .50 at four items and .93 at twenty-four.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">σ²<sub>total</sub> = 19.80 and α = .76 on six items; 69.84 and α = .87 on twelve, which is exactly what Spearman-Brown predicts from doubling. The average inter-item correlation is .35 in both cases, so the gain is scale length rather than better items.</p>
+              <p class="pb-ref">From <a href="stats-3/factor-analysis-pca/">§3.5 Factor Analysis / PCA</a> · the reliability side is <a href="methods/reliability-and-validity/">Methods §1.3 Reliability &amp; Validity</a>.</p>
+            </details>
+          </article>
         </section>
 
 
@@ -5273,7 +5394,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-1"><span class="pb-num">81</span>The module that raises exam scores</h3>
+              <h3 id="p5-1"><span class="pb-num">83</span>The module that raises exam scores</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A university builds an optional online tutorial module for its introductory statistics course. Usage is tracked automatically. At the end of term the learning-technology team compares final exam marks and issues a press release.</p>
@@ -5322,7 +5443,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-2"><span class="pb-num">82</span>Four thousand responses and no answer</h3>
+              <h3 id="p5-2"><span class="pb-num">84</span>Four thousand responses and no answer</h3>
               <span class="pb-chip warm">Warm-up</span>
             </div>
             <p class="pb-scenario">A city council is deciding whether to pedestrianize the main square. It posts a survey link on the council website and its social media accounts, leaves it open for six weeks, and reports the result to the planning committee.</p>
@@ -5375,7 +5496,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-3"><span class="pb-num">83</span>Four questionable practices in one paragraph</h3>
+              <h3 id="p5-3"><span class="pb-num">85</span>Four questionable practices in one paragraph</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">You are reviewing a manuscript for a journal. The methods and results read as follows. Nothing in it is fabricated, and every number is real. It should still not be published in this form.</p>
@@ -5427,7 +5548,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-4"><span class="pb-num">84</span>The cleaning log that broke the data</h3>
+              <h3 id="p5-4"><span class="pb-num">86</span>The cleaning log that broke the data</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A research assistant hands you a cleaned dataset for a two-wave wellbeing study and, to their considerable credit, an actual log of what they did to it. Reading the log is faster than discovering each problem later.</p>
@@ -5499,7 +5620,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-5"><span class="pb-num">85</span>The figure that made 0.27 look enormous</h3>
+              <h3 id="p5-5"><span class="pb-num">87</span>The figure that made 0.27 look enormous</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A retail consultancy sends its client a one-page summary of a store-layout trial. The figure is the whole page, and you have been asked whether the client should spend two million on the rollout.</p>
@@ -5562,7 +5683,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-6"><span class="pb-num">86</span>Three things wrong with one sentence</h3>
+              <h3 id="p5-6"><span class="pb-num">88</span>Three things wrong with one sentence</h3>
               <span class="pb-chip warm">Warm-up</span>
             </div>
             <p class="pb-scenario">A results paragraph comes back from a co-author. The analysis is sound and every number was computed correctly, but the sentence breaks exactly three APA 7 formatting rules. Find them, then write the version that goes in the paper.</p>

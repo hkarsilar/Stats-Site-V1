@@ -199,7 +199,7 @@ window.CHECKS = {
   "factor-analysis-pca": [
     { q: "Factor analysis and PCA are used to…", o: ["compare group means", "reduce many correlated variables to a few underlying dimensions", "test causal claims", "handle missing data"], a: 1, why: "Twenty questionnaire items might really measure two or three latent constructs, and these methods find that structure." },
     { q: "A scree plot helps you decide…", o: ["which rotation to use", "how many factors/components to retain", "whether data are normal", "the sample size"], a: 1, why: "You look for the 'elbow' where additional components stop explaining meaningful variance (eigenvalues flatten out)." },
-    { q: "An item's loading on a factor represents…", o: ["its mean", "how strongly it correlates with that latent factor", "its measurement error", "its sample size"], a: 1, why: "Loadings map items to factors. Items loading ≥ ~.4 on a factor usually define its meaning." }
+    { q: "An item loads .60 on the single factor it belongs to. The share of its variance the factor does NOT explain is…", o: [".36", ".64", ".40", ".60"], a: 1, why: "Standardizing gives each item one unit of variance to divide. The communality is h² = .60² = .36, so the uniqueness, the item's own specific content plus its measurement error, is 1 − .36 = .64." }
   ],
   "manova": [
     { q: "The main reasons to use MANOVA instead of separate ANOVAs on each outcome are…", o: ["it's easier to run", "it controls alpha inflation AND uses the correlation between outcomes", "it needs fewer participants", "it requires no assumptions"], a: 1, why: "One multivariate test avoids stacking Type I error across outcomes, and the covariance structure lets it detect patterns no single outcome shows." },

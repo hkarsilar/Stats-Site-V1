@@ -16,22 +16,37 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Factor Analysis / PCA — StatsCapybara</title>
-  <meta name="description" content="When many variables move together, a few hidden dimensions explain most of it. Watch principal components find the axes of maximum variance in a data cloud." />
+  <meta name="description" content="Factor analysis is one line: an answer is a loading times a hidden factor plus the item&#39;s own error. Set four loadings and see which correlations follow." />
   <link rel="canonical" href="https://statscapybara.com/stats-3/factor-analysis-pca/" />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Factor Analysis / PCA — StatsCapybara" />
-  <meta property="og:description" content="When many variables move together, a few hidden dimensions explain most of it. Watch principal components find the axes of maximum variance in a data cloud." />
+  <meta property="og:description" content="Factor analysis is one line: an answer is a loading times a hidden factor plus the item&#39;s own error. Set four loadings and see which correlations follow." />
   <meta property="og:image" content="https://statscapybara.com/assets/og-stats-3.png" />
   <meta property="og:url" content="https://statscapybara.com/stats-3/factor-analysis-pca/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Factor Analysis / PCA — StatsCapybara" />
-  <meta name="twitter:description" content="When many variables move together, a few hidden dimensions explain most of it. Watch principal components find the axes of maximum variance in a data cloud." />
+  <meta name="twitter:description" content="Factor analysis is one line: an answer is a loading times a hidden factor plus the item&#39;s own error. Set four loadings and see which correlations follow." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-3.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <style>
+    /* Loadings In, Correlations Out: three 4 x 4 grids over the same four
+       items. Observed correlations, the ones the model implies from the
+       loadings alone, and what is left over. Down the diagonal the three
+       read 1 = h2 + psi. */
+    .lcwrap { display: flex; flex-wrap: wrap; gap: .9rem 1.1rem; margin: .2rem 0 .5rem; }
+    .lcbox { flex: 0 0 auto; }
+    .lccap { font-size: .78rem; font-weight: 700; color: var(--text-muted); margin: 0 0 .25rem; }
+    .lctab { border-collapse: collapse; font-size: .78rem; font-family: var(--mono); }
+    .lctab th, .lctab td { border: 1px solid var(--border); padding: .24rem .34rem; text-align: center; min-width: 46px; }
+    .lctab th { background: var(--surface-2); font-weight: 600; color: var(--text-muted); font-family: var(--font); }
+    .lctab td.lc-diag { color: var(--text-faint); }
+    .lctab td.lc-hot { color: #f97316; font-weight: 700; }
+    .lc-legend { font-size: .78rem; color: var(--text-muted); margin: .1rem 0 .75rem; }
+  </style>
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
-  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Factor Analysis / PCA", "description": "When many variables move together, a few hidden dimensions explain most of it. Watch principal components find the axes of maximum variance in a data cloud.", "url": "https://statscapybara.com/stats-3/factor-analysis-pca/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced & Elective Topics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Factor Analysis / PCA", "item": "https://statscapybara.com/stats-3/factor-analysis-pca/"}]}]
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Factor Analysis / PCA", "description": "Factor analysis is one line: an answer is a loading times a hidden factor plus the item&#39;s own error. Set four loadings and see which correlations follow.", "url": "https://statscapybara.com/stats-3/factor-analysis-pca/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced & Elective Topics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Factor Analysis / PCA", "item": "https://statscapybara.com/stats-3/factor-analysis-pca/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
   {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "My supervisor says 10 participants per item. Is that the rule?", "acceptedAnswer": {"@type": "Answer", "text": "It is one of two rules you will be handed, the other being a flat 300. Simulating the thing settles it better, and what matters most is neither: it is how strong your items are. Twelve items in three factors, 1,000 replications per cell, comparing the recovered loadings against the ones the data were built from. With strong items (loadings of .80, so communalities of .64) the average loading is off by .086 at N = 60, .064 at N = 100, and .037 at N = 300. With weak items (loadings of .50) the same design is off by .184 at N = 60 and still .067 at N = 300. So 100 people answering strong items recover the structure about as well as 300 answering weak ones, while the 10-per-item rule would have waved through the weak study at N = 120 (off by .118) and blocked the strong one at N = 100. Ask about the items first: several clear indicators per factor with high communalities buy you a small sample, and noisy items cannot be rescued by recruiting."}}, {"@type": "Question", "name": "What is rotation, and should I choose varimax or oblimin?", "acceptedAnswer": {"@type": "Answer", "text": "Extraction finds a set of factors that fits; rotation spins those factors to a position that a human can name, without changing how well the model fits or how much total variance it explains. The choice is a claim about your constructs. Varimax is orthogonal: it forces the factors to be uncorrelated, which gives the cleanest-looking loading table. Oblimin and its relatives are oblique: they let the factors correlate, and then report how much. In psychology the honest default is usually oblique, because real traits do correlate, and an oblique rotation will tell you so. A useful habit is to run oblimin first and inspect the factor correlations: if they all come out near zero, varimax was defensible after all and you now have evidence rather than an assumption. Note that oblique solutions print two tables, and it is the pattern matrix you interpret."}}, {"@type": "Question", "name": "What is a factor loading, and what value is good?", "acceptedAnswer": {"@type": "Answer", "text": "The correlation-like weight tying an observed variable to a factor — how much that item \"belongs.\" Conventional floors: |loading| ≥ .40 for a variable to count toward a factor (≥ .70 is excellent), while items loading ≥ .30–.40 on multiple factors (cross-loadings) make interpretation murky and are often revised or dropped in scale development."}}]}
@@ -78,25 +93,106 @@
 
         <p>That last readout is the one to watch. Two variables technically live in 2D, but when they're strongly correlated the cloud is really a slightly fattened <em>line</em>, close to one-dimensional. PCA quantifies that: if PC1 explains 95% of the variance, you can describe the data with one number per point instead of two and lose almost nothing. Scale that up from 2 variables to 50 and you have serious <a href="../../ml/dimensionality-reduction/">dimensionality reduction</a>, which is where the same machinery reappears in machine learning.</p>
 
-        <h2>How many components to keep</h2>
-        <p>The usual aids are the <strong>scree plot</strong> (variance explained by each component — look for the "elbow" where it levels off), the <strong>Kaiser criterion</strong> (keep components with eigenvalue &gt; 1), and simply keeping enough to reach a target like 80–90% of total variance. There's judgment involved; interpretability matters as much as the numbers.</p>
-        <p><strong>Parallel analysis</strong> asks the same question against a fairer benchmark, and it is the retention rule most methodologists now recommend: simulate many random datasets with your number of variables and your number of people, average their eigenvalues, and keep only the components whose real eigenvalue beats the matching random one. That comparison exists because 1 is a low bar. With 12 variables and 100 respondents of pure noise, the largest eigenvalue averages 1.61, and on average 5.6 of the 12 clear 1.0, so the Kaiser criterion happily keeps components built entirely from sampling variation.</p>
-
         <h2>PCA vs. factor analysis</h2>
         <div class="callout key">
           <p>They look similar but answer different questions. <strong>PCA</strong> is descriptive: it repackages the variance into uncorrelated components, no model assumed. <strong>Factor analysis</strong> is a model: it assumes real, unobserved <em>latent factors</em> (like "extraversion") that <em>cause</em> the observed responses, and separates shared variance from each variable's unique noise. Use PCA to compress; use factor analysis to argue that a hidden trait exists.</p>
         </div>
 
+        <h2>The model behind factor analysis</h2>
+        <p>What the method rests on is a <strong>measurement model</strong>: a claim about how an observed answer comes to be, written down. It is one line. For person <em>n</em> answering item <em>i</em>:</p>
+        <p style="text-align:center"><em>y</em><sub><em>i</em>,<em>n</em></sub> = μ<sub><em>i</em></sub> + β<sub><em>i</em></sub> ξ<sub><em>n</em></sub> + ε<sub><em>i</em>,<em>n</em></sub></p>
+        <p>Read it left to right. An answer is where that item usually sits (μ<sub><em>i</em></sub>, mu, the item's own mean), plus how strongly the item responds to the trait (β<sub><em>i</em></sub>, beta, its <strong>loading</strong>), multiplied by how much of the trait this person has (ξ<sub><em>n</em></sub>, xi, their <strong>factor score</strong>), plus whatever that answer had of its own (ε<sub><em>i</em>,<em>n</em></sub>, epsilon, the item's error).</p>
+        <p>ξ is never observed, so it arrives with no units and nothing to anchor it. Something has to fix the scale, and the convention is to standardize the factor: mean 0, variance 1. That choice is what makes every loading comparable, and it is why software reports loadings without ever asking what the factor is measured in. Standardize the items too and each β becomes the correlation between that item and the factor, which is how a loading table is normally read.</p>
+        <p>Two identities follow, and the rest of this lesson is consequences of them. The first is about <strong>two</strong> items. The errors are assumed uncorrelated with the factor and with each other, so the only route from item <em>i</em> to item <em>j</em> runs through ξ, and the trip costs one loading each way (σ, sigma, is the covariance between the two, which on standardized items is their correlation):</p>
+        <p style="text-align:center">σ<sub><em>ij</em></sub> = β<sub><em>i</em></sub> β<sub><em>j</em></sub></p>
+        <p>The second is about <strong>one</strong> item. Its variance splits into the part the factor drives and the part belonging to it alone, written ψ<sub><em>ii</em></sub> (psi):</p>
+        <p style="text-align:center">σ<sub><em>ii</em></sub> = β<sub><em>i</em></sub>² + ψ<sub><em>ii</em></sub></p>
+        <p>Three names come off that split, and they are three views of the same subtraction. β<sub><em>i</em></sub>² is the item's <strong>communality</strong>, written h²: the share of it the factor accounts for. ψ<sub><em>ii</em></sub> is its <strong>uniqueness</strong>, part genuinely specific content and part measurement error. And "the share of an item's variance the factor accounts for" is also what <a href="../../methods/reliability-and-validity/">reliability</a> means for a single indicator, so with one factor and standardized items, an item's communality <em>is</em> its reliability. Those two coincide because σ<sub><em>ii</em></sub> = 1 after standardizing; on raw, unstandardized items reliability is β<sub><em>i</em></sub>² ÷ σ<sub><em>ii</em></sub> and the two part company.</p>
+        <p>A worked trio makes the arithmetic concrete. Three items loading .80, .70 and .50 on one factor imply correlations of .56, .40 and .35 between them, communalities of .64, .49 and .25, and uniquenesses of .36, .51 and .75. Every pair adds back to 1, because standardizing gave each item exactly one unit of variance to divide.</p>
+        <p>One more consequence is worth stating because it explains something you will meet in print. Both identities are statements about <em>covariances</em>, and a correlation is a covariance divided by the two standard deviations, so the model has nothing to say about the item means: μ<sub><em>i</em></sub> drops out the moment you center. A factor analysis therefore runs on the <em>p</em> × <em>p</em> matrix of correlations rather than on the <em>N</em> × <em>p</em> raw data. That is why an article can print its correlation table and let you reproduce the whole analysis, and why SPSS will run one from a matrix typed in by hand.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="lcviz">
+          <p class="viz-title">🎮 Loadings In, Correlations Out</p>
+          <p class="viz-sub">The first four wellbeing items, one factor, and nothing but σ<sub><em>ij</em></sub> = β<sub><em>i</em></sub>β<sub><em>j</em></sub>. The sliders start at the fitted loadings. Pull one away and the implied grid moves with it, while the observed grid stays where the data put it; the difference between them blooms underneath.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:min(240px,100%)">
+              <label>q1 loading β<sub>1</sub> <span class="val" id="lc-b1-val">.79</span></label>
+              <input type="range" id="lc-b1" min="0" max="0.95" step="0.01" value="0.79" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:min(240px,100%)">
+              <label>q2 loading β<sub>2</sub> <span class="val" id="lc-b2-val">.74</span></label>
+              <input type="range" id="lc-b2" min="0" max="0.95" step="0.01" value="0.74" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:min(240px,100%)">
+              <label>q3 loading β<sub>3</sub> <span class="val" id="lc-b3-val">.71</span></label>
+              <input type="range" id="lc-b3" min="0" max="0.95" step="0.01" value="0.71" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:min(240px,100%)">
+              <label>q4 loading β<sub>4</sub> <span class="val" id="lc-b4-val">.62</span></label>
+              <input type="range" id="lc-b4" min="0" max="0.95" step="0.01" value="0.62" style="width:100%" />
+            </div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="lc-reset" type="button">Back to the fitted values</button></div>
+          </div>
+
+          <div class="lcwrap">
+            <div class="lcbox">
+              <p class="lccap">Observed (wellbeing-survey.csv, <em>n</em> = 75, q3 reverse-coded)</p>
+              <div class="hscroll"><table class="lctab" id="lc-obs"></table></div>
+            </div>
+            <div class="lcbox">
+              <p class="lccap">Model-implied β<sub><em>i</em></sub>β<sub><em>j</em></sub></p>
+              <div class="hscroll"><table class="lctab" id="lc-imp"></table></div>
+            </div>
+            <div class="lcbox">
+              <p class="lccap">Residual (observed &minus; implied)</p>
+              <div class="hscroll"><table class="lctab" id="lc-res"></table></div>
+            </div>
+          </div>
+          <p class="lc-legend">Read down the diagonal and the three grids say 1.000 = h² + ψ: an item's whole standardized variance, the part the factor explains, and the part that is its own. Off the diagonal, a residual past ±.05 turns orange, which is the size at which a solution is usually thought to have missed something.</p>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Largest residual</span><span class="v" id="lc-maxres">—</span></div>
+            <div class="stat"><span class="k">Between</span><span class="v" id="lc-maxpair" style="font-size:1rem">—</span></div>
+            <div class="stat"><span class="k">Root mean square residual</span><span class="v" id="lc-rmsr">—</span></div>
+            <div class="stat"><span class="k">Mean communality</span><span class="v" id="lc-mh2">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>The residual grid is the thing a factor solution is judged on, and it is worth sitting with for a minute. At the fitted loadings every residual is under .025 in absolute value, so the six observed correlations are recovered almost exactly by four numbers. Drag β<sub>1</sub> down to .40 and three residuals in q1's row jump past .20 at once, because one loading appears in three of the six products. That is what "the model reproduces the correlation matrix" means, said as arithmetic: extraction is a search for the loadings that make this grid as flat as it can be, and the goodness-of-fit test in the next section is a formal question about whether what is left is more than sampling noise.</p>
+        <p>The <strong>root mean square residual</strong> in the readout is the usual one-number summary of that grid, the square root of the average squared off-diagonal residual. Below about .05 a solution is generally considered to have reproduced the matrix; the fitted state here sits at .013. The number is a summary and not a verdict, so read the grid as well: one large residual in a grid of otherwise tiny ones is a pair of items sharing something the factor does not capture, which is usually a clue about wording rather than about the model.</p>
         <h2>Is the matrix worth factoring at all?</h2>
         <p>Before any of this, software asks whether your variables are correlated enough to have shared structure to find. Two screens come as standard, and both are worth understanding rather than ticking.</p>
         <p><strong>KMO</strong> (the Kaiser-Meyer-Olkin measure of sampling adequacy) compares the ordinary correlations between your variables with their <em>partial</em> correlations, the ones left after every other variable has been held constant. Shared structure means the plain correlations survive that adjustment and KMO climbs toward 1; variables that only correlate in unrelated pairs push it down. Kaiser's labels run from marvelous above .90 through middling in the .70s to unacceptable below .50, and .60 is the usual working floor. A clean two-factor dataset scores around .91; pure noise scores about .50.</p>
         <p><strong>Bartlett's test of sphericity</strong> asks a much weaker question: could your correlation matrix have come from variables that are all mutually uncorrelated? Treat a significant result as a formality rather than an achievement. With 20 variables and 100 people, true correlations of just .10 already give <em>p</em> = .00005, and at 300 people the same tiny correlations give <em>p</em> below 10⁻¹⁶. A non-significant Bartlett means stop; a significant one means almost nothing on its own, so read KMO and the scree plot for the real answer.</p>
+        <p><strong>Cronbach's α</strong> (alpha) is usually run in the same session and answers a third question, which is not the one the other two ask. KMO and Bartlett ask whether the matrix has shared structure worth looking for. α assumes you already believe these items belong together and asks how consistently they behave as one scale:</p>
+        <p style="text-align:center">α = (<em>k</em> / (<em>k</em> &minus; 1)) × (1 &minus; Σσ<sub><em>ii</em></sub> ÷ σ²<sub>total</sub>)</p>
+        <p><em>k</em> is the number of items, σ<sub><em>ii</em></sub> each item's variance and σ²<sub>total</sub> the variance of the total score. The ratio inside the bracket is the share of total-score variance the items carry separately; what is left over is the share they carry together, which is the quantity α is reporting. A working floor of .70 is conventional, .80 is comfortable for research use, and above about .95 is a warning rather than a triumph, since it usually means several items are near-duplicates of each other. The eight wellbeing items score .90.</p>
+        <p>Two honest caveats travel with that number, and both matter when a reviewer quotes it back at you.</p>
+        <p>The first is that <strong>α climbs with the number of items whatever those items are worth</strong>. Hold the average correlation between items at a mediocre .20 and simply keep adding more of the same:</p>
+        <table class="ref-table">
+          <thead><tr><th>Items <em>k</em></th><th>4</th><th>8</th><th>12</th><th>20</th><th>30</th></tr></thead>
+          <tbody><tr><td>α at average <em>r</em> = .20</td><td>.50</td><td>.67</td><td>.75</td><td>.83</td><td>.88</td></tr></tbody>
+        </table>
+        <p>Nothing about the items improved along that row. Thirty items correlating .20 with each other post a respectable .88, which is the same reliability logic the <a href="../../methods/reliability-and-validity/">Spearman-Brown formula</a> states directly: averaging more indicators cancels more item-specific noise. Report α beside <em>k</em>, and read a high α on a long scale as the arithmetic doing its job rather than as evidence the items are good.</p>
+        <p>The second is that <strong>α is about internal consistency, not about unidimensionality</strong>. It never asks how many factors there are. A questionnaire built from two clearly separate factors whose items correlate reasonably within each block can still return an α in the .80s, so a comfortable α is no defense against a scree plot that says two. Use α to report how consistently a scale you have already established behaves, and use the factor analysis to establish it.</p>
+
+        <h2>Choosing an extraction method</h2>
+        <p>Extraction is the step that turns a correlation matrix into loadings, and software offers a menu of ways to do it. Two of them account for nearly everything you will read.</p>
+        <p><strong>Principal axis factoring</strong> takes the identities above literally. It puts an estimate of each item's communality on the diagonal of the correlation matrix in place of the 1s, solves for the loadings, uses those loadings to re-estimate the communalities, puts the new values back on the diagonal, and repeats until they stop moving. What it is converging on is the flattest residual grid the widget above can be pushed to. It assumes nothing about the shape of the data, which is the reason to choose it: Likert answers are ordinal, often skewed, and rarely normal by any test you would care to run.</p>
+        <p><strong>Maximum likelihood</strong> asks a different question. Treating the variables as multivariate normal, which loadings make the observed data most likely? That assumption is a real cost, and it buys something principal axis factoring cannot offer: a likelihood, and with it a formal goodness-of-fit test of whether the number of factors you asked for is enough. The worked χ² further down this page came from maximum likelihood for exactly that reason, and no amount of iterating a principal-axis solution would have produced it.</p>
+        <p>So: reach for principal axis factoring when normality is doubtful and what you want is a defensible structure, and for maximum likelihood when the items are plausibly continuous and roughly normal and you want to test a specific number of factors. In SPSS both sit in one dropdown under <em>Extraction…</em>, and the default there is neither of them, so it is a box worth opening rather than accepting.</p>
+        <h2>How many components to keep</h2>
+        <p>The usual aids are the <strong>scree plot</strong> (variance explained by each component — look for the "elbow" where it levels off), the <strong>Kaiser criterion</strong> (keep components with eigenvalue &gt; 1), and simply keeping enough to reach a target like 80–90% of total variance. There's judgment involved; interpretability matters as much as the numbers.</p>
+        <p><strong>Parallel analysis</strong> asks the same question against a fairer benchmark, and it is the retention rule most methodologists now recommend: simulate many random datasets with your number of variables and your number of people, average their eigenvalues, and keep only the components whose real eigenvalue beats the matching random one. That comparison exists because 1 is a low bar. With 12 variables and 100 respondents of pure noise, the largest eigenvalue averages 1.61, and on average 5.6 of the 12 clear 1.0, so the Kaiser criterion happily keeps components built entirely from sampling variation.</p>
 
         <h2>Reading the result</h2>
         <p>Each component has <strong>loadings</strong>: how strongly each original variable contributes to it. You interpret a component by looking at which variables load heavily on it: if questions about parties, talking, and meeting strangers all load on one factor, you might name it "sociability." Naming factors is part science, part art.</p>
 
         <h2>How much of an item does the model explain?</h2>
-        <p>A loading answers one question about one item and one factor. The follow-up is how much of that item the whole model accounts for, and that quantity has its own name. The <strong>communality</strong>, written h², is the sum of an item's squared loadings across the factors you kept. Its complement, 1 − h², is the item's <strong>uniqueness</strong>: variance belonging to that item alone, part genuinely specific content and part measurement error. An item loading .70 on a single factor has h² = .49, so the model explains just under half of it.</p>
+        <p>With one factor the split above is all there is: h² is β<sub><em>i</em></sub>² and the uniqueness is what is left. With several factors the communality is the sum of an item's squared loadings across the ones you kept, and the arithmetic is otherwise unchanged. An item loading .70 on a single factor has h² = .49, so the model explains just under half of it.</p>
         <p>Fit a one-factor model to the eight wellbeing items in <a href="../../datasets.html#wellbeing">wellbeing-survey.csv</a> (after reverse-coding q3 and q6) and the loadings land between .67 and .76, with communalities from .44 to .58 and a mean of .54. One factor is enough: χ²(20) = 20.14, p = .45. Those same eight items have a Cronbach's α of .90. Both numbers are correct, and reading them together is the useful part: any single item is about half noise, while their average is not, because the item-specific halves are unrelated to each other and largely cancel. That is the argument for scoring a scale instead of asking one good question, and it is <a href="../../methods/reliability-and-validity/">reliability</a> viewed from the item's side.</p>
         <p>Communality is also where the two methods part company mechanically. PCA analyzes the correlation matrix with 1s down the diagonal, treating every variable as fully explainable and repackaging all of the variance, error included. Factor analysis puts estimated communalities on that diagonal instead, so it models only the variance the items share. With strong items the two solutions look almost identical; with weak ones PCA reports larger loadings and more variance explained than the data can support.</p>
         <p>Two habits follow. Read the communality column before dropping an item for a low loading, because an item can load modestly on each of three correlated factors and still be well explained. And treat a communality near .20 as a verdict on the item rather than on the model: whatever that item is measuring, the factors you kept do not contain it. If the items came from a questionnaire, the fix usually lives back in <a href="../../methods/survey-and-questionnaire-design/">how the item was worded</a>, not in the extraction settings.</p>
@@ -104,6 +200,8 @@
         <div class="callout">
           <p><strong>Why it matters:</strong> PCA and factor analysis are everywhere data is wide: psychometrics, genomics, image compression, recommender systems. They're how you find structure and signal when you have far more variables than you can reason about one at a time. In psychometrics especially they sit right next to <a href="../../methods/reliability-and-validity/">reliability and validity</a>: a factor structure is the evidence that a scale measures the one thing it claims to.</p>
         </div>
+
+        <p class="pb-xref"><a href="../../problems.html#p4-8">Problem 81 of the practice problems</a> hands you three loadings and the correlations the three items actually produced, and asks for the implied matrix, the communalities and the residuals, then what happens when you refit one loading. <a href="../../problems.html#p4-9">Problem 82</a> is the α caveat as arithmetic: a six-item scale, the same six items written twice over, and the reliability coefficient that climbs without a single item improving.</p>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
@@ -210,6 +308,125 @@
     window.addEventListener("resize", function () { fit(); update(); });
     VIZ.onTheme(update);
     fit(); reseed();
+  })();
+  </script>
+
+  <!-- ============ Loadings In, Correlations Out ============
+       Fully deterministic, so there is no noise to freeze and nothing is ever
+       reseeded. The observed correlations are frozen: they are the real ones
+       from the site's own assets/data/wellbeing-survey.csv, items q1 to q4,
+       listwise n = 75, with q3 reverse-coded first, rounded to the three
+       decimals the grid prints so every residual on screen can be redone by
+       hand from what is on screen. math-check.js section 18 recomputes them
+       from the shipped CSV and drives this widget through its own ?b= applier.
+
+       URL presets (SC.preset, applied last):
+         ?b=<b1,b2,b3,b4>   the four loadings, in item order q1 to q4, parsed
+                      by SC.dataParam so a single bad token rejects the whole
+                      parameter rather than half-loading a solution. Exactly
+                      four values are required; each is snapped to its own
+                      slider's step and clamped to its own min and max, so the
+                      lesson never restates those bounds here.
+  -->
+  <script>
+  (function () {
+    "use strict";
+    var ITEMS = ["q1", "q2", "q3", "q4"];
+    var IDS = ["lc-b1", "lc-b2", "lc-b3", "lc-b4"];
+    /* the maximum-likelihood one-factor solution for these four items,
+       rounded to the two decimals the sliders step in */
+    var FIT = [0.79, 0.74, 0.71, 0.62];
+    var OBS = [
+      [1.000, 0.585, 0.553, 0.504],
+      [0.585, 1.000, 0.539, 0.435],
+      [0.553, 0.539, 1.000, 0.449],
+      [0.504, 0.435, 0.449, 1.000]
+    ];
+    var HOT = 0.05;                               /* the residual size at which a cell turns orange */
+
+    function fmt(x) {
+      var s = Math.abs(x).toFixed(3).replace(/^0/, "");
+      return (x < 0 ? "−" : "") + s;
+    }
+    function betas() {
+      return IDS.map(function (id) { return +document.getElementById(id).value; });
+    }
+    function render(id, vals, hot) {
+      var h = "<thead><tr><th></th>";
+      for (var k = 0; k < 4; k++) { h += "<th>" + ITEMS[k] + "</th>"; }
+      h += "</tr></thead><tbody>";
+      for (var i = 0; i < 4; i++) {
+        h += "<tr><th>" + ITEMS[i] + "</th>";
+        for (var j = 0; j < 4; j++) {
+          var cls = i === j ? "lc-diag" : (hot && Math.abs(vals[i][j]) > HOT ? "lc-hot" : "");
+          h += '<td class="' + cls + '" id="' + id + "-" + i + "-" + j + '">' + fmt(vals[i][j]) + "</td>";
+        }
+        h += "</tr>";
+      }
+      document.getElementById(id).innerHTML = h + "</tbody>";
+    }
+
+    function update() {
+      var b = betas(), i, j;
+      /* the sliders step in hundredths, so their readouts print two decimals;
+         the grids print three, which is what a correlation table prints */
+      b.forEach(function (v, k) {
+        document.getElementById(IDS[k] + "-val").textContent = v.toFixed(2).replace(/^0/, "");
+      });
+
+      /* the whole model, twice over: sigma_ij = b_i b_j off the diagonal, and
+         sigma_ii = b_i^2 + psi_ii down it, so the three grids read 1 = h2 + psi */
+      var imp = [], res = [];
+      for (i = 0; i < 4; i++) {
+        imp[i] = []; res[i] = [];
+        for (j = 0; j < 4; j++) {
+          imp[i][j] = i === j ? b[i] * b[i] : b[i] * b[j];
+          res[i][j] = OBS[i][j] - imp[i][j];
+        }
+      }
+      render("lc-obs", OBS, false);
+      render("lc-imp", imp, false);
+      render("lc-res", res, true);
+
+      var big = 0, bi = 0, bj = 1, ss = 0, cnt = 0;
+      for (i = 0; i < 4; i++) {
+        for (j = i + 1; j < 4; j++) {
+          ss += res[i][j] * res[i][j]; cnt++;
+          if (Math.abs(res[i][j]) > Math.abs(big)) { big = res[i][j]; bi = i; bj = j; }
+        }
+      }
+      document.getElementById("lc-maxres").textContent = fmt(big);
+      document.getElementById("lc-maxpair").textContent = ITEMS[bi] + " with " + ITEMS[bj];
+      document.getElementById("lc-rmsr").textContent = fmt(Math.sqrt(ss / cnt));
+      document.getElementById("lc-mh2").textContent = fmt(b.reduce(function (a, v) { return a + v * v; }, 0) / 4);
+    }
+
+    IDS.forEach(function (id) {
+      document.getElementById(id).addEventListener("input", update);
+    });
+    document.getElementById("lc-reset").addEventListener("click", function () {
+      IDS.forEach(function (id, k) { document.getElementById(id).value = FIT[k]; });
+      update();
+    });
+    update();
+
+    /* ?b= : four loadings in item order, through the shared parser, so a
+       mangled paste loads the ordinary fitted solution instead of half of
+       one. Each value is snapped to its own control's step and clamped to
+       its own bounds rather than to bounds restated here. */
+    function loadB(raw) {
+      var got = (window.SC && SC.dataParam) ? SC.dataParam(String(raw), 4) : null;
+      if (!got || got.length !== 4) return;
+      IDS.forEach(function (id, k) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        var lo = parseFloat(el.min), hi = parseFloat(el.max), st = parseFloat(el.step) || 1;
+        var v = Math.round((got[k] - lo) / st) * st + lo;
+        el.value = Math.min(hi, Math.max(lo, v));
+      });
+      update();
+    }
+    if (window.SC && SC.preset) SC.preset({ b: loadB });
   })();
   </script>
 </body>
