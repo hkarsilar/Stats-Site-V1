@@ -56,6 +56,10 @@
     18. the measurement model — σ(ij) = β(i)β(j) and σ(ii) = β(i)² + ψ(ii) in
         stats-3/factor-analysis-pca, with the lesson's published one-factor
         solution refitted from the shipped wellbeing-survey.csv
+    19. factor retention and rotation — the eigenvalue as a sum of squared
+        loadings, the fit test's df as the count it comes from, and The
+        Rotation Dial driven under the DOM shim with every implied
+        correlation asserted invariant
 
    Note on section 7: the tool pages compute these inline against the DOM,
    so they can't be imported. What is asserted here is that viz.js still
@@ -3580,6 +3584,495 @@ try {
     src: 'stats-3/factor-analysis-pca' });
 }
 
+
+/* ============================================================
+   19 — how many factors, and rotation (stats-3/factor-analysis-pca)
+
+   P98 gave §3.5 the solution side of the midterm: the eigenvalue said in the
+   loadings that produce it, the goodness-of-fit df, rotation as an identity
+   rather than a word, and the pattern-versus-structure distinction that
+   decides which table a reader is allowed to interpret. The new widget, The
+   Rotation Dial, is driven here under the same DOM shim sections 8 to 18 use,
+   through the page's OWN ?rot= and ?angle= appliers, with applyControl and
+   applySeg lifted out of site.js by brace-matching rather than reimplemented.
+
+   FOUR THINGS ARE THE POINT OF IT, and each is asserted rather than described.
+
+   (a) An eigenvalue IS the sum of a factor's squared loadings, so the sum of
+       the eigenvalues is the sum of the communalities, exactly. That is what
+       makes "how many items' worth of variance" a statement rather than a
+       metaphor, and it is checked on the lesson's own eight-item solution,
+       refitted from the shipped CSV the way section 18 refits it.
+
+   (b) The df formula is a count, not a rule to memorize, so it is asserted
+       against that count over a whole p × m grid: a correlation matrix holds
+       p(p + 1)/2 numbers, the model spends pm + p of them and rotation hands
+       back m(m − 1)/2. The identity with ((p − m)² − (p + m))/2 has to hold
+       everywhere, not only at the two values the lesson prints.
+
+   (c) ROTATION CHANGES NOTHING THE MODEL SAYS, and that is exact rather than
+       approximate. Over a grid of angles in both modes, P Φ P' reproduces the
+       unrotated implied matrix to machine precision and every communality
+       holds still, which is what the widget's own "largest shift" readout
+       prints as .000. The oblique half carries the arithmetic consequence the
+       lesson warns about: with correlated factors an item's communality is NOT
+       the sum of its squared pattern coefficients, and the gap is asserted to
+       be real rather than rounding.
+
+   (d) The shipped widget is driven rather than trusted. Its frozen loadings
+       are READ OUT OF THE PAGE and compared with the transcription here; the
+       slider's bounds and the seg's default are read out of the markup, and
+       the default is read BEFORE any button is clicked, because a default
+       switched quietly in the HTML is exactly what that ordering catches (the
+       lesson sections 10, 11, 15 and 18 each learned). Both published
+       readings are then asserted on the solutions the prose names: at −44°
+       seven of the eight items load on one factor, and at −32° oblique the
+       pattern says seven and the structure says four, which is the
+       misreading the section exists to prevent.
+
+   The two new practice problems are recomputed here too, since both publish
+   numbers a reader is asked to reproduce by hand.
+   ============================================================ */
+head('factor retention and rotation (the shipped widget)');
+
+/* ---- (b) the df formula as the count it comes from ---- */
+const faDf = (p, m) => ((p - m) * (p - m) - (p + m)) / 2;
+const faCount = (p, m) => p * (p + 1) / 2 - (p * m + p) + m * (m - 1) / 2;
+for (let p = 3; p <= 20; p++) {
+  for (let m = 1; m < p; m++) {
+    eq(`df formula equals the parameter count at p = ${p}, m = ${m}`, faDf(p, m), faCount(p, m), 0,
+       'p(p+1)/2 numbers, pm + p parameters, m(m−1)/2 handed back by rotation');
+  }
+}
+[[8, 1, 20], [8, 2, 13], [8, 3, 7]].forEach(([p, m, want]) => {
+  is(`published df table: ${p} items, ${m} factor${m > 1 ? 's' : ''}`, faDf(p, m), want, "the lesson's own table");
+});
+[[6, 1, 9], [6, 2, 4], [6, 3, 0]].forEach(([p, m, want]) => {
+  is(`practice problem 83: ${p} items, ${m} factor${m > 1 ? 's' : ''}`, faDf(p, m), want, 'problems.html #p4-10');
+});
+is('a three-factor model on six items has nothing left to test', faDf(6, 3), 0,
+   'the problem\'s own closing point: a zero-df model fits by construction');
+
+/* ---- the two practice problems, recomputed ---- */
+{
+  const PL = [[0.78, 0.15, 0.21], [0.74, 0.10, -0.18], [0.70, 0.22, 0.12],
+              [0.25, 0.76, 0.19], [0.20, 0.72, -0.15], [0.18, 0.68, 0.10]];
+  const ev = [0, 1, 2].map(j => PL.reduce((a, r) => a + r[j] * r[j], 0));
+  eq('problem 83: eigenvalue of F1', ev[0], 1.781, 5e-4, 'problems.html #p4-10');
+  eq('problem 83: eigenvalue of F2', ev[1], 1.639, 5e-4, 'problems.html #p4-10');
+  eq('problem 83: eigenvalue of F3', ev[2], 0.1595, 5e-5, 'problems.html #p4-10');
+  eq('problem 83: the two retained factors explain', 100 * (ev[0] + ev[1]) / 6, 57.0, 5e-2,
+     'problems.html #p4-10');
+  eq('problem 83: all three would explain', 100 * (ev[0] + ev[1] + ev[2]) / 6, 59.66, 5e-3,
+     'problems.html #p4-10');
+  eq("problem 83: i1's communality over the two retained factors",
+     PL[0][0] * PL[0][0] + PL[0][1] * PL[0][1], 0.631, 5e-4, 'problems.html #p4-10');
+  eq("problem 83: i4's communality over the two retained factors",
+     PL[3][0] * PL[3][0] + PL[3][1] * PL[3][1], 0.640, 5e-4, 'problems.html #p4-10');
+  eq('problem 83: one factor is rejected', V.chiSqUpper(21.80, 9), 0.010, 5e-4, 'problems.html #p4-10');
+  eq('problem 83: two factors are not', V.chiSqUpper(3.42, 4), 0.490, 5e-4, 'problems.html #p4-10');
+
+  /* problem 84: an oblique pattern matrix, its structure matrix and the
+     communality that squaring-and-adding gets wrong */
+  const PP = [[0.81, 0.04], [0.77, -0.02], [0.74, 0.09], [0.69, 0.11],
+              [0.05, 0.79], [0.11, 0.71], [0.44, 0.41]];
+  const r84 = 0.48, THR84 = 0.32;
+  const str84 = PP.map(p => [p[0] + r84 * p[1], p[1] + r84 * p[0]]);
+  const h84 = PP.map(p => p[0] * p[0] + p[1] * p[1] + 2 * r84 * p[0] * p[1]);
+  eq('problem 84: i1 structure coefficients', str84[0][0], 0.8292, 5e-5, 'problems.html #p4-11');
+  eq('problem 84: and its second', str84[0][1], 0.4288, 5e-5, 'problems.html #p4-11');
+  eq('problem 84: i5 structure coefficients', str84[4][0], 0.4292, 5e-5, 'problems.html #p4-11');
+  eq('problem 84: and its second', str84[4][1], 0.8140, 5e-5, 'problems.html #p4-11');
+  eq('problem 84: i7 structure coefficients', str84[6][0], 0.6368, 5e-5, 'problems.html #p4-11');
+  eq('problem 84: and its second', str84[6][1], 0.6212, 5e-5, 'problems.html #p4-11');
+  const one = M => M.filter(x => (Math.abs(x[0]) >= THR84) !== (Math.abs(x[1]) >= THR84)).length;
+  is('problem 84: the pattern matrix puts six of seven items on one factor', one(PP), 6,
+     'problems.html #p4-11');
+  is('problem 84: the structure matrix puts NONE of them on one factor', one(str84), 0,
+     'the whole reason the pattern matrix is the one to read');
+  is('problem 84: i7 clears the threshold on both factors',
+     Math.abs(PP[6][0]) >= THR84 && Math.abs(PP[6][1]) >= THR84, true, 'the first half of the rule');
+  eq('problem 84: and its two loadings are .03 apart', Math.abs(PP[6][0] - PP[6][1]), 0.03, 1e-12,
+     'the second half of the rule, which is the half people drop');
+  eq("problem 84: i7's communality, properly", h84[6], 0.535, 5e-4, 'problems.html #p4-11');
+  eq('problem 84: squaring and adding gets .362 instead',
+     PP[6][0] * PP[6][0] + PP[6][1] * PP[6][1], 0.362, 5e-4,
+     'which is wrong whenever the factors correlate');
+  is('problem 84: the two differ by more than rounding',
+     Math.abs(h84[6] - (PP[6][0] * PP[6][0] + PP[6][1] * PP[6][1])) > 0.15, true,
+     'the overlap between two correlated factors is not a rounding error');
+}
+
+/* ---- (a), (c) and (d): the eight-item solution, the identity, the widget ---- */
+try {
+  const raw19 = fs.readFileSync(path.join(ROOT, 'assets/data/wellbeing-survey.csv'), 'utf8').trim().split(/\r?\n/);
+  const REV19 = new Set([3, 6]);
+  const rows19 = [];
+  for (let i = 1; i < raw19.length; i++) {
+    const cells = raw19[i].split(',').slice(1);
+    if (cells.length !== 8 || cells.some(c => c === '')) continue;
+    rows19.push(cells.map((c, j) => (REV19.has(j + 1) ? 6 - Number(c) : Number(c))));
+  }
+  const n19 = rows19.length, p19 = 8;
+  const mu19 = [...Array(p19)].map((_, j) => rows19.reduce((a, r) => a + r[j], 0) / n19);
+  const cov19 = (j, k) => rows19.reduce((a, r) => a + (r[j] - mu19[j]) * (r[k] - mu19[k]), 0) / (n19 - 1);
+  const sd19 = [...Array(p19)].map((_, j) => Math.sqrt(cov19(j, j)));
+  const R19 = [...Array(p19)].map((_, j) => [...Array(p19)].map((_, k) => cov19(j, k) / (sd19[j] * sd19[k])));
+  const fit19 = mlFactor(R19, n19, 1);
+
+  /* (a) the eigenvalue said in the loadings that make it */
+  const eig1 = fit19.L.reduce((a, b) => a + b * b, 0);
+  const com1 = fit19.L.map(b => b * b);
+  eq("the eight-item solution's eigenvalue is the sum of its squared loadings", eig1, 4.32, 5e-3,
+     'the lesson prints 4.32');
+  eq('the sum of the eigenvalues IS the sum of the communalities',
+     eig1 - com1.reduce((a, b) => a + b, 0), 0, 1e-12,
+     'the two are the same sum read down the column and across the rows');
+  eq('and that is 54% of the eight units of variance there are', 100 * eig1 / p19, 54.0, 5e-2,
+     'the lesson prints 54%');
+  eq('the smallest squared loading the lesson quotes', Math.min(...com1), 0.444, 5e-4, 'the lesson prints .444');
+  eq('the largest squared loading the lesson quotes', Math.max(...com1), 0.575, 5e-4, 'the lesson prints .575');
+  is('one factor clears the Kaiser threshold, which is one item of variance', eig1 > 1, true,
+     'the threshold of 1 is the variance of a single standardized item');
+
+  /* the large-sample caveat the lesson states on its OWN solution: the fit
+     statistic is the discrepancy times a multiplier linear in N, so the very
+     solution this page calls a good fit is rejected outright at N = 200 */
+  const mult19 = n19 - 1 - (2 * p19 + 5) / 6 - 2 / 3;
+  const disc19 = fit19.chi2 / mult19;
+  const chiAt = N => (N - 1 - (2 * p19 + 5) / 6 - 2 / 3) * disc19;
+  eq('the same discrepancy on 200 people', chiAt(200), 56.19, 5e-3, 'the lesson prints χ²(20) = 56.19');
+  eq('and on 1,000 people', chiAt(1000), 286.91, 5e-3, 'the lesson prints χ²(20) = 286.91');
+  is('which is significant where the published one is not',
+     V.chiSqUpper(chiAt(200), fit19.df) < 0.001 && V.chiSqUpper(fit19.chi2, fit19.df) > 0.4, true,
+     'nothing about the fit changed, only N');
+
+  /* the factor-score habit, measured rather than asserted from the literature:
+     the regression predictor's weights are R⁻¹λ, and on this scale they agree
+     with simply adding the eight items up */
+  const inv19 = (A) => {
+    const N = A.length;
+    const M = A.map((r, i) => r.concat([...Array(N)].map((_, j) => (i === j ? 1 : 0))));
+    for (let i = 0; i < N; i++) {
+      let piv = i;
+      for (let k = i; k < N; k++) if (Math.abs(M[k][i]) > Math.abs(M[piv][i])) piv = k;
+      const t = M[i]; M[i] = M[piv]; M[piv] = t;
+      const d = M[i][i];
+      for (let j = 0; j < 2 * N; j++) M[i][j] /= d;
+      for (let k = 0; k < N; k++) {
+        if (k === i) continue;
+        const f = M[k][i];
+        for (let j = 0; j < 2 * N; j++) M[k][j] -= f * M[i][j];
+      }
+    }
+    return M.map(r => r.slice(N));
+  };
+  {
+    const Ri = inv19(R19);
+    const wts = [...Array(p19)].map((_, i) => Ri[i].reduce((a, v, j) => a + v * fit19.L[j], 0));
+    const zs = rows19.map(r => r.map((v, j) => (v - mu19[j]) / sd19[j]));
+    const pred = zs.map(r => r.reduce((a, v, j) => a + v * wts[j], 0));
+    const tot = rows19.map(r => r.reduce((a, b) => a + b, 0));
+    const corr19 = (x, y) => {
+      const mx = x.reduce((a, b) => a + b, 0) / x.length, my = y.reduce((a, b) => a + b, 0) / y.length;
+      let sxy = 0, sxx = 0, syy = 0;
+      x.forEach((v, i) => { sxy += (v - mx) * (y[i] - my); sxx += (v - mx) * (v - mx); syy += (y[i] - my) * (y[i] - my); });
+      return sxy / Math.sqrt(sxx * syy);
+    };
+    eq('the regression factor score agrees with simply adding the items up',
+       corr19(pred, tot), 0.999, 5e-4, 'the lesson prints r = .999');
+  }
+
+  /* ---- the frozen two-factor solution, read OUT of the page ---- */
+  const FA_HTML = fs.readFileSync(path.join(ROOT, 'stats-3/factor-analysis-pca/index.html'), 'utf8');
+  const srcRot = [...FA_HTML.matchAll(/<script>([\s\S]*?)<\/script>/g)]
+    .map(m => m[1]).filter(s => /rot-canvas/.test(s))[0];
+  if (!srcRot) throw new Error('no inline script mentioning rot-canvas');
+
+  /* the sixteen numbers the widget is built on, transcribed here and then
+     compared with the page rather than trusted: a single edited loading has
+     to fail here rather than hope to move a printed readout */
+  const L0 = [
+    [0.686, -0.427], [0.602, -0.427], [0.627, -0.356], [0.761, -0.060],
+    [0.678, 0.411], [0.577, 0.422], [0.627, 0.345], [0.527, 0.323]
+  ];
+  const pageL0 = (() => {
+    const m = /var L0 = \[([\s\S]*?)\];/.exec(srcRot);
+    if (!m) throw new Error('no frozen L0 in the widget');
+    return [...m[1].matchAll(/\[\s*([-\d.]+)\s*,\s*([-\d.]+)\s*\]/g)].map(x => [Number(x[1]), Number(x[2])]);
+  })();
+  is('the widget still carries eight frozen items', pageL0.length, 8, 'the page itself');
+  L0.forEach((r, i) => {
+    eq(`frozen loading ${i + 1} on F1 matches the page`, pageL0[i][0], r[0], 0, 'the page itself');
+    eq(`frozen loading ${i + 1} on F2 matches the page`, pageL0[i][1], r[1], 0, 'the page itself');
+  });
+
+  /* the same solution, derived here from the sixteen numbers alone */
+  const PHI19 = 0.40, SEP19 = Math.acos(PHI19), THR19 = 0.32, NI = 8;
+  const H2 = L0.map(r => r[0] * r[0] + r[1] * r[1]);
+  function solve19(deg, obl) {
+    const t = deg * Math.PI / 180, u = obl ? t + SEP19 : t + Math.PI / 2;
+    const x1 = Math.cos(t), y1 = Math.sin(t), x2 = Math.cos(u), y2 = Math.sin(u);
+    const det = x1 * y2 - x2 * y1;
+    const pat = L0.map(r => [(r[0] * y2 - r[1] * x2) / det, (r[1] * x1 - r[0] * y1) / det]);
+    const str = L0.map(r => [r[0] * x1 + r[1] * y1, r[0] * x2 + r[1] * y2]);
+    const phi = x1 * x2 + y1 * y2;
+    return { pat, str, phi };
+  }
+  function implied19(P, phi) {
+    const Phi = [[1, phi], [phi, 1]], out = [];
+    for (let i = 0; i < NI; i++) {
+      out[i] = [];
+      for (let j = 0; j < NI; j++) {
+        let v = 0;
+        for (let a = 0; a < 2; a++) for (let b = 0; b < 2; b++) v += P[i][a] * Phi[a][b] * P[j][b];
+        out[i][j] = v;
+      }
+    }
+    return out;
+  }
+  function crit19(M) {
+    let V19 = 0;
+    const U = M.map(r => { const h = Math.hypot(r[0], r[1]) || 1; return [r[0] / h, r[1] / h]; });
+    for (let j = 0; j < 2; j++) {
+      let s2 = 0, s4 = 0;
+      for (let i = 0; i < NI; i++) { const q = U[i][j] * U[i][j]; s2 += q; s4 += q * q; }
+      V19 += s4 / NI - (s2 / NI) * (s2 / NI);
+    }
+    return V19;
+  }
+  const onOne19 = M => M.filter(r => (Math.abs(r[0]) >= THR19) !== (Math.abs(r[1]) >= THR19)).length;
+
+  /* (c) the identity, over a grid of angles in both modes */
+  const BASE19 = implied19(L0, 0);
+  for (const obl of [false, true]) {
+    for (const deg of [-90, -67, -44, -32, -13, 0, 11, 45, 78, 90]) {
+      const s = solve19(deg, obl);
+      const im = implied19(s.pat, s.phi);
+      let worst = 0, worstH = 0;
+      for (let i = 0; i < NI; i++) {
+        for (let j = 0; j < NI; j++) worst = Math.max(worst, Math.abs(im[i][j] - BASE19[i][j]));
+        worstH = Math.max(worstH, Math.abs(im[i][i] - H2[i]));
+      }
+      eq(`${obl ? 'oblique' : 'orthogonal'} rotation by ${deg}° moves no implied correlation`, worst, 0, 1e-14,
+         "the cancellation is exact: T meets its own inverse in the middle of P Φ P'");
+      eq(`${obl ? 'oblique' : 'orthogonal'} rotation by ${deg}° moves no communality`, worstH, 0, 1e-14,
+         'a communality is a diagonal entry of the same invariant matrix');
+      eq(`${obl ? 'oblique' : 'orthogonal'} rotation by ${deg}° holds the factor correlation`,
+         s.phi, obl ? PHI19 : 0, 1e-12, 'Φ = A′A, which the axes fix and the dial does not');
+    }
+  }
+  /* the arithmetic consequence the lesson warns about: under an oblique
+     rotation h² is NOT the row sum of squared pattern coefficients */
+  {
+    const s = solve19(-32, true);
+    let gap = 0;
+    for (let i = 0; i < NI; i++) {
+      gap = Math.max(gap, Math.abs(H2[i] - (s.pat[i][0] * s.pat[i][0] + s.pat[i][1] * s.pat[i][1])));
+    }
+    is('with correlated factors, squaring and adding the pattern misses the communality', gap > 0.05, true,
+       "the overlap would be double-counted, which is why the widget prints h² from the frozen solution");
+    const so = solve19(-44, false);
+    let same = 0;
+    for (let i = 0; i < NI; i++) {
+      same = Math.max(same, Math.abs(H2[i] - (so.pat[i][0] * so.pat[i][0] + so.pat[i][1] * so.pat[i][1])));
+    }
+    eq('with uncorrelated factors it is exactly the communality', same, 0, 1e-14,
+       'which is why the shortcut is taught, and why it needs its caveat');
+  }
+  /* the criterion peaks where the widget's button lands, in both modes */
+  for (const [obl, target] of [[false, -44], [true, -32]]) {
+    let best = { v: -1, t: 0 };
+    for (let t = -90; t <= 90; t += 0.01) {
+      const v = crit19(solve19(t, obl).pat);
+      if (v > best.v) best = { v, t };
+    }
+    is(`the ${obl ? 'oblique' : 'orthogonal'} criterion peaks at the button's whole degree`,
+       Math.round(best.t), target, 'where the widget jumps to');
+  }
+
+  /* ---- (d) the shipped widget ---- */
+  const ctx19 = {};
+  ['clearRect', 'fillRect', 'strokeRect', 'beginPath', 'moveTo', 'lineTo', 'arc', 'closePath',
+   'fill', 'stroke', 'setLineDash', 'fillText', 'setTransform', 'save', 'restore', 'translate',
+   'rotate'].forEach(n => { ctx19[n] = () => {}; });
+  ctx19.measureText = t => ({ width: String(t).length * 6 });
+
+  const els19 = {};
+  const mk19 = () => {
+    const on = {};
+    const node = {
+      innerHTML: '', textContent: '', value: '', type: 'range', min: '0', max: '100', step: '1',
+      style: {}, dataset: {}, tagName: 'INPUT',
+      clientWidth: 640, parentElement: { clientWidth: 640 }, getContext: () => ctx19,
+      classList: { add: () => {}, remove: () => {}, toggle: () => {} },
+      querySelectorAll: () => [], getAttribute: () => null,
+      addEventListener: (t, f) => { (on[t] = on[t] || []).push(f); },
+      fire: (t, e) => (on[t] || []).forEach(f => f.call(node, e)),
+      dispatchEvent: (e) => { node.fire(e.type, e); return true; }
+    };
+    return node;
+  };
+
+  /* the dial's bounds and default come out of the markup, never restated here */
+  const dm = FA_HTML.match(/<input type="range" id="rot-a" min="([-\d.]+)" max="([-\d.]+)" step="([-\d.]+)" value="([-\d.]+)"/);
+  if (!dm) throw new Error('no range input with id rot-a');
+  els19['rot-a'] = mk19();
+  els19['rot-a'].min = dm[1]; els19['rot-a'].max = dm[2]; els19['rot-a'].step = dm[3]; els19['rot-a'].value = dm[4];
+  is('the dial reaches both ends of a half turn', `${dm[1]}..${dm[2]}`, '-90..90',
+     'either way round, since a factor has no preferred sign');
+  is('and it boots unrotated, which is where extraction leaves you', Number(dm[4]), 0, 'the markup');
+
+  /* the seg is built from the page's OWN markup: which button carries
+     class="active" in the HTML is the page's default, and clicks are sticky,
+     so the default has to be read before anything is pressed */
+  const segM = /<div class="seg" id="rot-seg">([\s\S]*?)<\/div>/.exec(FA_HTML);
+  if (!segM) throw new Error('no #rot-seg markup');
+  const btns19 = [...segM[1].matchAll(/<button([^>]*)>/g)].map(m => ({
+    dataset: { r: (/data-r="([^"]*)"/.exec(m[1]) || [, ''])[1] },
+    active: /class="[^"]*\bactive\b/.test(m[1]),
+    closest: function () { return this; },
+    classList: { toggle: function () {} }
+  }));
+  is('the rotation seg offers two modes', btns19.length, 2, 'orthogonal and oblique');
+  is('and boots on the orthogonal one', (btns19.find(b => b.active) || {}).dataset.r, 'orthogonal',
+     'read out of the markup BEFORE any click, because a click is sticky');
+  const seg19 = mk19();
+  btns19.forEach(b => {
+    b.classList.toggle = (cls, on) => { if (cls === 'active') b.active = on; };
+    b.click = () => seg19.fire('click', { target: b });
+  });
+  seg19.querySelectorAll = () => btns19;
+  els19['rot-seg'] = seg19;
+
+  const siteSrc19 = fs.readFileSync(path.join(ROOT, 'assets/js/site.js'), 'utf8');
+  const grab19 = (name) => {
+    const i = siteSrc19.indexOf('function ' + name);
+    const j = siteSrc19.indexOf('\n  }\n', i);
+    if (i < 0 || j < 0) throw new Error('site.js no longer defines ' + name);
+    return siteSrc19.slice(i, j + 4);
+  };
+  const applyControl19 = new Function(grab19('numeric') + grab19('applyControl') + ';return applyControl;')();
+  const applySeg19 = new Function(grab19('numeric') + grab19('applySeg') + ';return applySeg;')();
+
+  let maps19 = [];
+  const c19 = { console };
+  c19.window = c19;
+  c19.document = {
+    documentElement: {},
+    getElementById: id => els19[id] || (els19[id] = mk19()),
+    querySelector: sel => (sel === '#rot-seg button.active'
+      ? (btns19.find(b => b.active) || null)
+      : (els19[sel.replace('#', '')] || (els19[sel.replace('#', '')] = mk19()))),
+    querySelectorAll: () => []
+  };
+  c19.getComputedStyle = () => ({ getPropertyValue: () => '#000000' });
+  c19.MutationObserver = function () { this.observe = () => {}; };
+  c19.ResizeObserver = function () { this.observe = () => {}; };
+  c19.requestAnimationFrame = cb => cb();
+  c19.addEventListener = () => {};
+  c19.Event = function (t) { this.type = t; };
+  c19.location = { search: '?x=1' };
+  c19.SC = { preset: m => { maps19.push(m); } };
+  vm.createContext(c19);
+  vm.runInContext(fs.readFileSync(path.join(ROOT, 'assets/js/viz.js'), 'utf8'), c19, { filename: 'viz.js' });
+  vm.runInContext(srcRot, c19, { filename: 'stats-3/factor-analysis-pca#the-rotation-dial' });
+
+  const map19 = maps19.filter(m => m.angle && m.rot)[0];
+  if (!map19) throw new Error('the widget registered no ?angle= / ?rot= map with SC.preset');
+  is('?rot= is applied before ?angle=, so the mode is settled first',
+     Object.keys(map19)[0], 'rot', 'SC.preset iterates its keys in insertion order');
+
+  /* the table is written as markup, so it is read back as markup, the way
+     section 9 reads tables.html's <tbody> */
+  const grid19 = () => [...String(els19['rot-tab'].innerHTML).matchAll(/<tr>([\s\S]*?)<\/tr>/g)]
+    .map(m => m[1]).slice(1)
+    .map(r => [...r.matchAll(/<td[^>]*>([^<]*)<\/td>/g)].map(m => m[1]));
+  const show19 = v => (v < 0 ? '−' : '') + Math.abs(v).toFixed(3).replace(/^0/, '');
+  const read19 = () => ({
+    vm: String(els19['rot-vm'].textContent), clean: String(els19['rot-clean'].textContent),
+    phi: String(els19['rot-phi'].textContent), shift: String(els19['rot-shift'].textContent),
+    cap: String(els19['rot-cap'].textContent), ang: String(els19['rot-a-val'].textContent)
+  });
+  if (!read19().vm) throw new Error('the readout row stayed empty on boot');
+
+  function checkState(tag, deg, obl) {
+    const want = solve19(deg, obl), got = grid19(), r = read19();
+    for (let i = 0; i < NI; i++) {
+      const cells = obl
+        ? [want.pat[i][0], want.pat[i][1], want.str[i][0], want.str[i][1], H2[i]]
+        : [want.pat[i][0], want.pat[i][1], H2[i]];
+      is(`${tag}: row ${i + 1} has ${cells.length} cells`, got[i].length, cells.length,
+         obl ? 'pattern, structure and h²' : 'the rotated loadings and h²');
+      cells.forEach((v, k) => {
+        is(`${tag}: row ${i + 1} cell ${k + 1}`, got[i][k], show19(v), 'derived from the frozen loadings');
+      });
+    }
+    is(`${tag}: the simple-structure criterion`, r.vm, show19(crit19(want.pat)),
+       "varimax's own criterion, on rows scaled to unit length");
+    is(`${tag}: items on exactly one factor`, r.clean, onOne19(want.pat) + ' of 8', 'the ±.32 threshold');
+    is(`${tag}: the factor correlation`, r.phi, show19(want.phi), 'Φ, which only the mode moves');
+    is(`${tag}: nothing the model says has moved`, r.shift, '.000',
+       'the invariance, printed rather than claimed');
+    is(`${tag}: the caption names the table(s) on screen`, r.cap,
+       obl ? 'Pattern and structure matrices' : 'Rotated factor matrix', 'the mode');
+  }
+
+  checkState('boots unrotated', 0, false);
+  is('boot: only one of the eight items is on a single factor', read19().clean, '1 of 8',
+     'the lesson: an unrotated solution is a general factor plus a bipolar one');
+
+  /* the varimax solution the prose publishes */
+  applyControl19(els19['rot-a'], '-44');
+  checkState('?angle=-44 orthogonal', -44, false);
+  is('after varimax, seven of the eight are', read19().clean, '7 of 8', 'the lesson prints seven of eight');
+  is('and the dial prints a real minus sign', read19().ang, '−44°', 'APA typography');
+
+  /* the oblique solution, and the misreading it is there to prevent */
+  applySeg19(seg19, 'oblique');
+  applyControl19(els19['rot-a'], '-32');
+  checkState('?rot=oblique&angle=-32', -32, true);
+  {
+    const s = solve19(-32, true);
+    is('the pattern matrix puts seven of the eight items on one factor', onOne19(s.pat), 7,
+       'the lesson prints seven');
+    is('the structure matrix puts only four', onOne19(s.str), 4, 'the lesson prints four');
+    [[0, 1, 0.002], [4, 0, 0.048], [6, 0, 0.076]].forEach(([i, j, want]) => {
+      eq(`i${i + 1} gains a structure loading past .32 whose pattern coefficient is ${want}`,
+         s.pat[i][j], want, 5e-4, "the lesson names all three");
+      is(`and its structure coefficient really does clear the threshold`,
+         Math.abs(s.str[i][j]) >= THR19, true, 'which is the phantom cross-loading');
+    });
+  }
+
+  /* a mangled parameter must leave the widget where it was */
+  const anchor19 = read19();
+  ['nonsense', '', 'NaN', '0x10', '12abc', 'Infinity'].forEach(bad => {
+    applyControl19(els19['rot-a'], bad);
+    is(`the dial ignores ?angle=${bad || '(empty)'}`, read19().ang, anchor19.ang,
+       "applyControl's rule: garbage leaves the control alone");
+  });
+  ['diagonal', '', 'obliquee', 'orthogona'].forEach(bad => {
+    applySeg19(seg19, bad);
+    is(`the seg ignores ?rot=${bad || '(empty)'}`, read19().cap, 'Pattern and structure matrices',
+       'applySeg only clicks on an exact match, so the mode stays where it was');
+  });
+  applySeg19(seg19, ' ORTHOGONAL ');
+  is('but a match in any case, with stray whitespace, is honored', read19().cap, 'Rotated factor matrix',
+     'applySeg trims and lowercases before comparing');
+  applySeg19(seg19, 'oblique');
+  /* out of range is snapped and clamped to the control's OWN bounds */
+  applyControl19(els19['rot-a'], '400');
+  is('?angle= clamps above the dial maximum', Number(els19['rot-a'].value), Number(els19['rot-a'].max),
+     "SC.preset's clamping rule");
+  applyControl19(els19['rot-a'], '-400');
+  is('?angle= clamps below the dial minimum', Number(els19['rot-a'].value), Number(els19['rot-a'].min),
+     'the same rule');
+} catch (e) {
+  failures.push({ section, label: 'the rotation widget could not be driven — ids or structure changed?',
+    got: String(e.message), want: 'a runnable rot-canvas script and a readable wellbeing-survey.csv', tol: 0, err: NaN,
+    src: 'stats-3/factor-analysis-pca' });
+}
 
 /* ============================================================
    Report

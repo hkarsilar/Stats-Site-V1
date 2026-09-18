@@ -99,7 +99,15 @@ PAGE_MAX_CHARS = {"problems.html": 500_000, "glossary.html": 120_000, "teachers.
 # the FAQ block at the end of the article. Nothing is over 20,000 today, so
 # the raise costs zero bytes now and simply stops the guard from becoming a
 # budget. Matches GUIDE_MAX_CHARS.
-LESSON_MAX_CHARS = 30_000
+#
+# P98 hit it, which is the fourth time this guard has been caught up with.
+# stats-3/factor-analysis-pca reached 30,000 characters the moment rotation,
+# the fit test, factor scores and the workflow landed on it, and the cut fell
+# exactly where it always falls, on the FAQ block at the end of the article.
+# 45,000 clears it by half again, costs about 1% more index text, and is set
+# BEFORE anything was trimmed, which is the standing rule: a guard a page keeps
+# catching up with gets moved, it does not become a budget the page writes to.
+LESSON_MAX_CHARS = 45_000
 
 # Guides get the same treatment, and for the same reason (P39 run 24). The
 # five long-form guides run 9.8k-17.5k characters and were being indexed with

@@ -16,16 +16,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Practice Problems — Worked Statistics Exam Questions — StatsCapybara</title>
-  <meta name="description" content="Eighty-three statistics problems with worked solutions: z-scores, t-tests, chi-square, ANOVA tables, contrasts, rank tests and regression, one step at a time." />
+  <meta name="description" content="Ninety statistics problems with worked solutions: z-scores, t-tests, chi-square, ANOVA tables, contrasts, rank tests and regression, one step at a time." />
   <link rel="canonical" href="https://statscapybara.com/problems.html" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Practice Problems — StatsCapybara" />
-  <meta property="og:description" content="Eighty-three worked statistics problems, from z-scores and ANOVA tables to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
+  <meta property="og:description" content="Ninety worked statistics problems, from z-scores and ANOVA tables to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
   <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
   <meta property="og:url" content="https://statscapybara.com/problems.html" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Practice Problems — StatsCapybara" />
-  <meta name="twitter:description" content="Eighty-three worked statistics problems, from z-scores and ANOVA tables to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
+  <meta name="twitter:description" content="Ninety worked statistics problems, from z-scores and ANOVA tables to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="assets/css/styles.css" />
@@ -142,7 +142,7 @@
           <li><a href="#stats-2"><span class="t">🔗 Stats 2 · Groups &amp; relationships</span><br><span class="m">21 problems · ANOVA → contrasts → factorial → regression → rank tests</span></a></li>
           <li><a href="#stats-2-exam"><span class="t">📝 Exam-style · A Stats 2 midterm</span><br><span class="m">8 problems · §2.1 to §2.5, tables completed and read backwards</span></a></li>
           <li><a href="#regression"><span class="t">📐 Regression · Several predictors</span><br><span class="m">11 problems · multiple regression → omitted-variable bias → missing data</span></a></li>
-          <li><a href="#advanced"><span class="t">🎲 Advanced · Modern methods</span><br><span class="m">9 problems · Bayes → model comparison → latent variables</span></a></li>
+          <li><a href="#advanced"><span class="t">🎲 Advanced · Modern methods</span><br><span class="m">11 problems · Bayes → model comparison → latent variables → rotation</span></a></li>
           <li><a href="#toolkit"><span class="t">🔍 Research Toolkit · Spot the problem</span><br><span class="m">6 problems · design, sampling, ethics, writing</span></a></li>
         </ul>
 
@@ -4780,7 +4780,7 @@
              ================================================================== -->
         <section class="pb-set" id="advanced-set">
           <h2 id="advanced">🎲 Advanced · Modern methods</h2>
-          <p class="pb-set-sub">Nine problems from the <a href="stats-3/">Stats 3 syllabus</a>: updating a belief with Bayes' rule, pulling sensitivity apart from bias, reading a survival curve that never reaches zero, choosing between models that all fit, and working a one-factor measurement model by hand.</p>
+          <p class="pb-set-sub">Eleven problems from the <a href="stats-3/">Stats 3 syllabus</a>: updating a belief with Bayes' rule, pulling sensitivity apart from bias, reading a survival curve that never reaches zero, choosing between models that all fit, and four on latent variables, from a one-factor measurement model worked by hand to a rotated two-factor solution with a cross-loading to diagnose.</p>
 
           <!-- ---------- 4.1 ----------
                verify: node -e 'const pr=.008,se=.95,sp=.92;const pp=pr*se+(1-pr)*(1-sp);
@@ -5379,6 +5379,142 @@
               <p class="pb-ref">From <a href="stats-3/factor-analysis-pca/">§3.5 Factor Analysis / PCA</a> · the reliability side is <a href="methods/reliability-and-validity/">Methods §1.3 Reliability &amp; Validity</a>.</p>
             </details>
           </article>
+
+          <!-- VERIFIED (P98), node -e:
+                 L = [[.78,.15,.21],[.74,.10,-.18],[.70,.22,.12],
+                      [.25,.76,.19],[.20,.72,-.15],[.18,.68,.10]]
+                 column sums of squares -> 1.7809, 1.6393, 0.1595 ; total 3.5797
+                 F1+F2 = 3.4202 = 57.00% of 6 ; all three = 59.66%
+                 h2 over the two retained: i1 .6309, i4 .6401
+                 df = ((p-m)^2-(p+m))/2 at p=6 -> m=1: 9, m=2: 4, m=3: 0
+                 VIZ.chiSqUpper(21.80, 9) = .0095 ; VIZ.chiSqUpper(3.42, 4) = .4901
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p4-10"><span class="pb-num">83</span>Three factors came out, and one of them is noise</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">Six items from a workplace questionnaire are put through maximum likelihood extraction, and the software is asked for three factors. The unrotated loading matrix comes back as below. The analyst now has to decide how many of the three to keep, and whether the solution fits.</p>
+            <div class="pb-given">
+              <span class="lbl">Unrotated loadings</span>
+              <span style="font-family:var(--mono);font-size:.85rem;display:block;margin-top:.3rem">
+                i1&nbsp; .78&nbsp; .15&nbsp; .21<br>
+                i2&nbsp; .74&nbsp; .10&nbsp; &minus;.18<br>
+                i3&nbsp; .70&nbsp; .22&nbsp; .12<br>
+                i4&nbsp; .25&nbsp; .76&nbsp; .19<br>
+                i5&nbsp; .20&nbsp; .72&nbsp; &minus;.15<br>
+                i6&nbsp; .18&nbsp; .68&nbsp; .10
+              </span>
+              <span class="lbl" style="margin-top:.5rem">Also given</span>
+              One factor: χ² = 21.80 &nbsp;·&nbsp; two factors: χ² = 3.42 &nbsp;·&nbsp; df = ((<em>p</em> &minus; <em>m</em>)² &minus; (<em>p</em> + <em>m</em>)) ÷ 2
+            </div>
+            <ol class="pb-ask">
+              <li>Compute each factor's eigenvalue, and say in words what the number means.</li>
+              <li>Apply the Kaiser criterion. How much of the total variance do the factors you keep explain?</li>
+              <li>Give the communality and uniqueness of i1 and of i4 over the retained factors.</li>
+              <li>Work out the degrees of freedom for one, two and three factors, and use the two χ² values to decide how many factors the fit test supports. Why is the three-factor model untestable?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Eigenvalues: sum the squared loadings down each column</span>
+                  <span class="pb-math">F1: .78² + .74² + .70² + .25² + .20² + .18² = .6084 + .5476 + .4900 + .0625 + .0400 + .0324 = 1.781</span>
+                  <span class="pb-math">F2: .15² + .10² + .22² + .76² + .72² + .68² = 1.639</span>
+                  <span class="pb-math">F3: .21² + .18² + .12² + .19² + .15² + .10² = 0.1595</span>
+                  <span class="pb-note">Each squared loading is the share of that item the factor explains, so the column total counts how many whole items' worth of variance the factor carries. F1 carries about one and three quarter items, F2 about one and two thirds, and F3 about a sixth of one item.</span>
+                </li>
+                <li><span class="pb-lbl">Kaiser: keep an eigenvalue above 1</span>
+                  <span class="pb-math">1.781 &gt; 1 and 1.639 &gt; 1, but 0.1595 &lt; 1</span>
+                  <span class="pb-math">kept variance = 1.781 + 1.639 = 3.420 of 6 items = 57.0%</span>
+                  <span class="pb-note">Standardizing gave each item one unit of variance, so a factor below 1 explains less than a single item does and is not worth the column. F3 is well below that bar; keeping all three would add only 0.1595 (2.7 percentage points, taking the total to 59.7%) for a third factor nobody could name.</span>
+                </li>
+                <li><span class="pb-lbl">Communalities over the retained factors</span>
+                  <span class="pb-math">i1: h² = .78² + .15² = .6084 + .0225 = .631, so ψ = 1 &minus; .631 = .369</span>
+                  <span class="pb-math">i4: h² = .25² + .76² = .0625 + .5776 = .640, so ψ = .360</span>
+                  <span class="pb-note">Read across the row rather than down the column, and stop at the factors you kept. Both items are about 64% accounted for, which is comfortable. The discarded third column would have added .044 to i1 and .036 to i4, which is the size of the contribution Kaiser just threw away.</span>
+                </li>
+                <li><span class="pb-lbl">The fit test</span>
+                  <span class="pb-math">m = 1: ((6 &minus; 1)² &minus; 7) ÷ 2 = (25 &minus; 7) ÷ 2 = 9</span>
+                  <span class="pb-math">m = 2: ((6 &minus; 2)² &minus; 8) ÷ 2 = (16 &minus; 8) ÷ 2 = 4</span>
+                  <span class="pb-math">m = 3: ((6 &minus; 3)² &minus; 9) ÷ 2 = (9 &minus; 9) ÷ 2 = 0</span>
+                  <span class="pb-math">χ²(9) = 21.80, <em>p</em> = .010 → reject: one factor is not enough</span>
+                  <span class="pb-math">χ²(4) = 3.42, <em>p</em> = .490 → retain: two factors reproduce the correlations</span>
+                  <span class="pb-note">The null hypothesis here says the model is adequate, so rejecting is the bad outcome and the two-factor result is the one you want. Three factors have zero degrees of freedom: the model would have exactly as many parameters as the correlation matrix has numbers, so it reproduces the matrix perfectly by construction and there is nothing left to test. Kaiser and the fit test agree on two, which is the comfortable case.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Eigenvalues 1.78, 1.64 and 0.16; Kaiser keeps the first two, explaining 57.0% of the total variance. i1 has h² = .63 and ψ = .37; i4 has h² = .64 and ψ = .36. The df run 9, 4 and 0, and the fit test rejects one factor (<em>p</em> = .010) but not two (<em>p</em> = .490), so two factors it is. Three cannot be tested because a zero-df model always fits.</p>
+              <p class="pb-ref">From <a href="stats-3/factor-analysis-pca/">§3.5 Factor Analysis / PCA</a> · check the <em>p</em>-values on <a href="tables.html">the tables tool</a>.</p>
+            </details>
+          </article>
+
+          <!-- VERIFIED (P98), node -e:
+                 pattern P (7 items x 2), factor correlation r = .48
+                 structure S = P * Phi, i.e. S_i1 = p1 + r*p2 and S_i2 = p2 + r*p1
+                   i1 .8292 .4288 | i2 .7604 .3496 | i3 .7832 .4452 | i4 .7428 .4412
+                   i5 .4292 .8140 | i6 .4508 .7628 | i7 .6368 .6212
+                 items on exactly one factor at .32 -> pattern 6 of 7, structure 0 of 7
+                 i7: both past .32 and |.44 - .41| = .03 < .20, so a genuine cross-loading
+                 h2 = p1^2 + p2^2 + 2*r*p1*p2 :
+                   .6888 .5785 .6196 .5611 .6645 .5912 .5349
+                 i7 squared pattern coefficients alone sum to .3617, which is NOT its h2
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p4-11"><span class="pb-num">84</span>The item that belongs to both factors</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A seven-item scale is extracted as two factors and rotated with direct oblimin. The factors correlate .48. The pattern matrix is below; the structure matrix has been left for you to work out. Items i1 to i4 were written as autonomy items and i5 to i7 as competence items.</p>
+            <div class="pb-given">
+              <span class="lbl">Pattern matrix</span>
+              <span style="font-family:var(--mono);font-size:.85rem;display:block;margin-top:.3rem">
+                i1&nbsp; .81&nbsp;&nbsp; .04<br>
+                i2&nbsp; .77&nbsp; &minus;.02<br>
+                i3&nbsp; .74&nbsp;&nbsp; .09<br>
+                i4&nbsp; .69&nbsp;&nbsp; .11<br>
+                i5&nbsp; .05&nbsp;&nbsp; .79<br>
+                i6&nbsp; .11&nbsp;&nbsp; .71<br>
+                i7&nbsp; .44&nbsp;&nbsp; .41
+              </span>
+              <span class="lbl" style="margin-top:.5rem">Also given</span>
+              Φ<sub>12</sub> = .48 &nbsp;·&nbsp; threshold .32 &nbsp;·&nbsp; structure = pattern combined with Φ, so <em>s</em><sub><em>i</em>1</sub> = <em>p</em><sub><em>i</em>1</sub> + .48<em>p</em><sub><em>i</em>2</sub> &nbsp;·&nbsp; h² = <em>p</em>₁² + <em>p</em>₂² + 2(.48)<em>p</em>₁<em>p</em>₂
+            </div>
+            <ol class="pb-ask">
+              <li>Using the pattern matrix and a .32 threshold, say which items define each factor.</li>
+              <li>Work out the structure matrix for i1, i5 and i7, and count how many items look like cross-loadings there. Which table should be interpreted, and why?</li>
+              <li>Apply the two-part cross-loading rule. Which item cross-loads, and which item only looks as though it might?</li>
+              <li>Compute h² for i7 two ways: by squaring and adding its pattern coefficients, and properly. Then choose a remedy for the cross-loading and justify the order you reached it in.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Reading the pattern matrix</span>
+                  <span class="pb-math">factor 1: i1 (.81), i2 (.77), i3 (.74), i4 (.69)</span>
+                  <span class="pb-math">factor 2: i5 (.79), i6 (.71)</span>
+                  <span class="pb-math">i7 loads .44 and .41, over the threshold on both</span>
+                  <span class="pb-note">Six of the seven items sit on exactly one factor, which is close to the simple structure rotation is aiming for. The naming writes itself from the item content: factor 1 is autonomy and factor 2 is competence.</span>
+                </li>
+                <li><span class="pb-lbl">The structure matrix, and the trap in it</span>
+                  <span class="pb-math">i1: .81 + .48(.04) = .83 &nbsp; and &nbsp; .04 + .48(.81) = .43</span>
+                  <span class="pb-math">i5: .05 + .48(.79) = .43 &nbsp; and &nbsp; .79 + .48(.05) = .81</span>
+                  <span class="pb-math">i7: .44 + .48(.41) = .64 &nbsp; and &nbsp; .41 + .48(.44) = .62</span>
+                  <span class="pb-note">Every one of the seven items clears .32 on both structure columns, so the structure matrix makes the whole scale look like one undifferentiated mess. Nothing is wrong with the solution: a structure coefficient is a plain correlation between item and factor, and when the factors themselves correlate .48 an autonomy item is bound to correlate respectably with competence too. Interpret the <strong>pattern</strong> matrix, which holds each factor's own contribution with the other held constant. Misreading this is the classic error on an oblique solution.</span>
+                </li>
+                <li><span class="pb-lbl">The cross-loading rule, both parts</span>
+                  <span class="pb-math">i7: .44 and .41, both ≥ .32, and |.44 &minus; .41| = .03, well inside .20 → cross-loading</span>
+                  <span class="pb-math">i4: .69 and .11, only one past the threshold → not a cross-loading</span>
+                  <span class="pb-note">The second half of the rule is the half people drop. An item reading .69 and .40 would be over the threshold twice and still be plainly a factor-1 item with a secondary echo, because the two are .29 apart. i7 is the real thing: it is .03 from being equally at home in both, so it identifies neither construct.</span>
+                </li>
+                <li><span class="pb-lbl">i7's communality, and what to do about it</span>
+                  <span class="pb-math">squaring and adding: .44² + .41² = .1936 + .1681 = .362 &nbsp; (wrong)</span>
+                  <span class="pb-math">properly: .1936 + .1681 + 2(.48)(.44)(.41) = .3617 + .1732 = .535</span>
+                  <span class="pb-note">Squaring and adding works only when the factors are uncorrelated. Here it misses the overlap the two factors share and understates the item by .17. So i7 is not a weak item, and that matters: it is a well-explained item pointing in two directions at once, which is a wording problem rather than a noise problem.</span>
+                  <span class="pb-note">Take the remedies in order. Re-specifying the count is first, but the two factors are clean and theory names them, so a third factor has nothing to be. Switching rotation is second, and it has already been tried: this is the oblique solution, and forcing it orthogonal would only smear i7 further. Dropping i7 is third, and it is the right call here, provided the write-up says so. But then check what is left: factor 2 falls to i5 and i6, two indicators, below the three each factor needs to be stable. So the honest report drops i7 for this analysis and says the competence subscale needs more items before it can be trusted, which is a finding about the questionnaire rather than about the data.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Factor 1 is i1 to i4, factor 2 is i5 and i6, and i7 cross-loads (.44 and .41, both past .32 and .03 apart). All seven items clear .32 on both structure columns, which is why the pattern matrix is the one to interpret. i7's communality is .535 rather than the .362 that squaring and adding gives. Drop i7, and report that factor 2 is then down to two indicators and needs more items.</p>
+              <p class="pb-ref">From <a href="stats-3/factor-analysis-pca/">§3.5 Factor Analysis / PCA</a> · the reliability angle is <a href="methods/reliability-and-validity/">Methods §1.3 Reliability &amp; Validity</a>.</p>
+            </details>
+          </article>
         </section>
 
 
@@ -5394,7 +5530,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-1"><span class="pb-num">83</span>The module that raises exam scores</h3>
+              <h3 id="p5-1"><span class="pb-num">85</span>The module that raises exam scores</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A university builds an optional online tutorial module for its introductory statistics course. Usage is tracked automatically. At the end of term the learning-technology team compares final exam marks and issues a press release.</p>
@@ -5443,7 +5579,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-2"><span class="pb-num">84</span>Four thousand responses and no answer</h3>
+              <h3 id="p5-2"><span class="pb-num">86</span>Four thousand responses and no answer</h3>
               <span class="pb-chip warm">Warm-up</span>
             </div>
             <p class="pb-scenario">A city council is deciding whether to pedestrianize the main square. It posts a survey link on the council website and its social media accounts, leaves it open for six weeks, and reports the result to the planning committee.</p>
@@ -5496,7 +5632,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-3"><span class="pb-num">85</span>Four questionable practices in one paragraph</h3>
+              <h3 id="p5-3"><span class="pb-num">87</span>Four questionable practices in one paragraph</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">You are reviewing a manuscript for a journal. The methods and results read as follows. Nothing in it is fabricated, and every number is real. It should still not be published in this form.</p>
@@ -5548,7 +5684,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-4"><span class="pb-num">86</span>The cleaning log that broke the data</h3>
+              <h3 id="p5-4"><span class="pb-num">88</span>The cleaning log that broke the data</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A research assistant hands you a cleaned dataset for a two-wave wellbeing study and, to their considerable credit, an actual log of what they did to it. Reading the log is faster than discovering each problem later.</p>
@@ -5620,7 +5756,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-5"><span class="pb-num">87</span>The figure that made 0.27 look enormous</h3>
+              <h3 id="p5-5"><span class="pb-num">89</span>The figure that made 0.27 look enormous</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A retail consultancy sends its client a one-page summary of a store-layout trial. The figure is the whole page, and you have been asked whether the client should spend two million on the rollout.</p>
@@ -5683,7 +5819,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-6"><span class="pb-num">88</span>Three things wrong with one sentence</h3>
+              <h3 id="p5-6"><span class="pb-num">90</span>Three things wrong with one sentence</h3>
               <span class="pb-chip warm">Warm-up</span>
             </div>
             <p class="pb-scenario">A results paragraph comes back from a co-author. The analysis is sound and every number was computed correctly, but the sentence breaks exactly three APA 7 formatting rules. Find them, then write the version that goes in the paper.</p>
