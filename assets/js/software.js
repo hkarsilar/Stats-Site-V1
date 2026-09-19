@@ -803,6 +803,29 @@ window.SOFTWARE = {
       'Show the reduced form alongside the two-stage estimate where you have room. If the instrument does not move the outcome at all, no amount of dividing will manufacture a finding, and readers can see that immediately.'
     ]
   },
+  "regression-discontinuity": {
+    spss: [
+      'There is no regression-discontinuity dialog in SPSS. The design is an ordinary regression on a variable you build yourself, so the work happens in <strong>Transform → Compute Variable</strong> before you open Regression at all.',
+      'Build three columns there. <em>x = score − 60</em>, the running variable centered on the cutoff, so that zero on the new scale is the threshold. <em>D = score >= 60</em>, which SPSS evaluates to 1 or 0 and is the treatment indicator. And <em>Dx = D * x</em>, the interaction that lets the two sides of the cutoff have their own slopes.',
+      'Restrict the window with <strong>Data → Select Cases → If</strong> and the condition <em>ABS(x) &lt;= 12</em>. This is the bandwidth, and you will be rerunning the analysis with several values of it, so keep the condition somewhere you can edit.',
+      '<strong>Analyze → Regression → Linear</strong>, outcome into <em>Dependent</em>, then <em>D</em>, <em>x</em> and <em>Dx</em> into <em>Independent(s)</em>. Read the unstandardized <em>B</em> on <strong>D</strong>: that row, and only that row, is the jump at the cutoff. Its <em>Sig.</em> and its confidence interval (tick <em>Statistics → Confidence intervals</em>) are the ones to report.',
+      'Drop <em>Dx</em> from the model and the two sides are forced to share one slope. Students do this by accident and it is the most common way to report a jump that is not there, so check that the interaction is in the box before believing the number.',
+      'For the density check, run <strong>Graphs → Chart Builder</strong> on a histogram of the raw score with a bin width of one point and look for a hole below the cutoff and a spike above it. SPSS has no formal density test, so a plot and an honest sentence is what it can give you.',
+      'A dedicated package adds three things SPSS cannot: a bandwidth chosen to minimize mean squared error rather than by hand, a local polynomial fit that weights nearby observations more heavily, and confidence intervals corrected for the bias that an optimal bandwidth leaves behind. If the design is the centerpiece of the paper rather than a robustness check, run it in R.'
+    ],
+    jasp: [
+      'JASP has no regression-discontinuity analysis. The manual route works the same way as in SPSS: build the centered score, the indicator and their product with <strong>Compute column</strong>, filter to the bandwidth with the filter row above the spreadsheet, then run <strong>Regression → Linear Regression</strong> with all three predictors.',
+      'Read the coefficient on the indicator, and tick <em>Statistics → Confidence intervals</em> so the interval is printed beside it.',
+      'For the published version, open the <strong>Rj</strong> module from the <strong>+</strong> menu and run <em>library(rdrobust); summary(rdrobust(dataset$grade, dataset$score, c = 60))</em> over the loaded data, which gives the optimal bandwidth, the local linear estimate and the robust interval in one table.'
+    ],
+    apa: '<p>Applicants scoring at or above the threshold received the scholarship. A local linear regression fitted within 12 points either side of the cutoff (<em>n</em> = 416) estimated the effect on first-year grade average at 4.70 points, <em>SE</em> = 1.05, <em>t</em>(412) = 4.48, <em>p</em> &lt; .001, 95% CI [2.64, 6.76]. The estimate was stable across bandwidths from 5 to 18 points, pre-treatment covariates showed no discontinuity at the cutoff, and a density test gave no evidence of sorting around the threshold. The estimate applies to applicants near the cutoff.</p>',
+    tips: [
+      'Say the bandwidth and the number of observations inside it, in the sentence that carries the estimate. A regression discontinuity coefficient with no window attached cannot be read at all.',
+      'Report the estimate at several bandwidths, even if only as a range in one clause. A finding that survives the choice and a finding that depends on it deserve different amounts of the reader\'s trust.',
+      'State the covariate and density checks as results, not as reassurances. "No discontinuity in prior grades or household income" is a finding; "we checked for manipulation" is not.',
+      'Write the limitation into the conclusion rather than the limitations paragraph. The estimate belongs to people at the cutoff, and a sentence that generalizes it to everyone has claimed something the design cannot support.'
+    ]
+  },
   "survival-analysis": {
     spss: [
       '<strong>Analyze → Survival → Kaplan-Meier…</strong>',

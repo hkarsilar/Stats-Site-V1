@@ -37,13 +37,13 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v57";  /* curriculum.js and site.js both changed
-                                    and both are precached: the P100 Stats 3
-                                    renumber moved five section numbers and
-                                    added three sections, and the new lesson
-                                    needs its QUIPS line. A returning visitor
-                                    on the old curriculum would see a sidebar
-                                    numbered against the previous course. */
+const CACHE_VERSION = "sc-v58";  /* curriculum.js and site.js both changed
+                                    and both are precached: P101 flipped
+                                    §3.14 to ready, added its QUIPS line, and
+                                    fixed prev/next to step over sections that
+                                    are still "coming soon". A visitor holding
+                                    the old pair would see §3.14 as unreachable
+                                    and follow a dead Next link out of §3.16. */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location

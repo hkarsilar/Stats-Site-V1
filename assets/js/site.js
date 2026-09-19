@@ -217,6 +217,7 @@
     "cross-validation-and-overfitting": "Memorizing the training data is not learning. Even capybaras generalize.",
     "causal-dags-and-confounding": "The pool didn't cause the chill. The capybara confounds us all.",
     "instrumental-variables": "A coin decided which capybaras got the warm spring. Only a coin was ever going to settle it.",
+    "regression-discontinuity": "The pond rule says capybaras 60 kilos and over get the sunny bank. Ask the one at 59.8.",
     "survival-analysis": "How long until the capybara leaves the spa? Right-censored. It never left.",
     "missing-data": "The missing capybaras were not missing at random. They found a better pond.",
     "meta-analysis": "One study is an anecdote. Twenty studies is a forest plot full of capybaras.",
@@ -1034,7 +1035,15 @@
     var flat = window.CURRICULUM_FLAT;
     var i = flat.findIndex(function (s) { return s.slug === HERE; });
     if (i < 0) return;
-    var prev = flat[i - 1], next = flat[i + 1];
+    /* Step over sections that are not ready yet. A reserved "coming soon"
+       section has no page on disk, so linking to it from prev/next is a live
+       404 that no link check can see, since this markup is generated here
+       rather than written into a file. */
+    function nearest(from, step) {
+      for (var k = from; k >= 0 && k < flat.length; k += step) if (flat[k].ready) return flat[k];
+      return null;
+    }
+    var prev = nearest(i - 1, -1), next = nearest(i + 1, 1);
     var html = "";
     var arrowL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>';
     var arrowR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
