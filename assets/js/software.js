@@ -782,6 +782,27 @@ window.SOFTWARE = {
       'Describe the random-effects structure in words ("random intercepts for classrooms; random slopes for time within person"): it’s part of the model, not a footnote.'
     ]
   },
+  "instrumental-variables": {
+    spss: [
+      'Two-stage least squares lives in <strong>Analyze → Regression → 2-Stage Least Squares…</strong>, and it ships with the <em>Regression</em> add-on rather than with base Statistics. If that menu item is missing, your license does not include it, and the fallback route is below.',
+      'Outcome into <em>Dependent</em>. Everything on the right-hand side of the structural equation, the endogenous regressor included, goes into <em>Explanatory</em>.',
+      '<em>Instrumental</em> takes the instruments <strong>and every exogenous control that is already in Explanatory</strong>. Leaving the controls out of this box is the single most common way to get a wrong answer from this dialog, because a control that is not listed as its own instrument is treated as endogenous too.',
+      'The output gives the coefficient on the endogenous regressor with a standard error computed the right way. SPSS does not print the first-stage F here, so run <strong>Analyze → Regression → Linear</strong> with the endogenous variable as the outcome and the instruments as predictors, and read the F from that ANOVA table.',
+      'Without the add-on you can still get the estimate: regress the endogenous variable on the instrument in Linear, tick <em>Save → Unstandardized predicted values</em>, then regress the outcome on the saved column. The coefficient is correct and <strong>the standard error is not</strong>, because the second regression treats the predicted column as data. Report it as an estimate only, or move the analysis to R.'
+    ],
+    jasp: [
+      'JASP has no instrumental-variables analysis of its own in the current release, so there is no menu path to give.',
+      'The practical route inside JASP is the <strong>Rj</strong> module from the <strong>+</strong> menu, which opens an R editor over your loaded data: <em>library(AER); summary(ivreg(y ~ x | z, data = dataset), diagnostics = TRUE)</em>.',
+      'That diagnostics table is what you want reported: a weak-instruments row, which is the first-stage F test, and a Wu-Hausman row testing whether the regressor was endogenous in the first place. With more instruments than endogenous regressors it adds a Sargan row.'
+    ],
+    apa: '<p>Winning the tutoring lottery increased attendance by 8.0 hours, <em>F</em>(1, 498) = 222.22, <em>p</em> &lt; .001, and raised end-of-term scores by 6.4 points. With the lottery as an instrument, two-stage least squares put the effect of an hour of tutoring at 0.80 points, <em>SE</em> = 0.18, 95% CI [0.45, 1.15]. This is a local average treatment effect: it describes applicants whose attendance the lottery actually changed, not the full applicant pool.</p>',
+    tips: [
+      'Report the first-stage F as a number, not as a significance verdict. A reader needs to know whether it was 12 or 400, and a p-value hides that.',
+      'Name the instrument and where its variation came from in the same sentence you name the estimate. A 2SLS coefficient with no account of the instrument is an uninterpretable number.',
+      'Say whose effect you estimated. When the effect varies across people, the instrument recovers the average for the compliers, and a results section that calls it "the effect" has overstated its reach.',
+      'Show the reduced form alongside the two-stage estimate where you have room. If the instrument does not move the outcome at all, no amount of dividing will manufacture a finding, and readers can see that immediately.'
+    ]
+  },
   "survival-analysis": {
     spss: [
       '<strong>Analyze → Survival → Kaplan-Meier…</strong>',

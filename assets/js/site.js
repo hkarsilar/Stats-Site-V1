@@ -216,6 +216,7 @@
     "mixed-and-multilevel-models": "Capybaras nested in herds nested in hot springs. Not one of them is independent.",
     "cross-validation-and-overfitting": "Memorizing the training data is not learning. Even capybaras generalize.",
     "causal-dags-and-confounding": "The pool didn't cause the chill. The capybara confounds us all.",
+    "instrumental-variables": "A coin decided which capybaras got the warm spring. Only a coin was ever going to settle it.",
     "survival-analysis": "How long until the capybara leaves the spa? Right-censored. It never left.",
     "missing-data": "The missing capybaras were not missing at random. They found a better pond.",
     "meta-analysis": "One study is an anecdote. Twenty studies is a forest plot full of capybaras.",

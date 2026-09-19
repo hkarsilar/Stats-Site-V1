@@ -37,9 +37,13 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v56";  /* site.js changed and is precached: the
-                                    per-lesson check questions now shuffle
-                                    their options on every render. */
+const CACHE_VERSION = "sc-v57";  /* curriculum.js and site.js both changed
+                                    and both are precached: the P100 Stats 3
+                                    renumber moved five section numbers and
+                                    added three sections, and the new lesson
+                                    needs its QUIPS line. A returning visitor
+                                    on the old curriculum would see a sidebar
+                                    numbered against the previous course. */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location

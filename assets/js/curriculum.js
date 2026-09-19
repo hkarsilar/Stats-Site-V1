@@ -95,11 +95,14 @@ window.CURRICULUM = [
       { n: "3.10", slug: "mixed-and-multilevel-models",        title: "Mixed & Multilevel Models (GLMMs)", ready: true },
       { n: "3.11", slug: "cross-validation-and-overfitting",   title: "Cross-Validation & Overfitting", ready: true },
       { n: "3.12", slug: "causal-dags-and-confounding",        title: "Causal DAGs & Confounding", ready: true },
-      { n: "3.13", slug: "survival-analysis",                  title: "Survival Analysis & Kaplan–Meier", ready: true },
-      { n: "3.14", slug: "missing-data",                       title: "Missing Data & Imputation", ready: true },
-      { n: "3.15", slug: "meta-analysis",                      title: "Meta-Analysis & Forest Plots", ready: true },
-      { n: "3.16", slug: "psychometric-functions",             title: "Psychometric Functions & the PSE", ready: true },
-      { n: "3.17", slug: "signal-detection-theory",            title: "Signal Detection Theory", ready: true }
+      { n: "3.13", slug: "instrumental-variables",             title: "Instrumental Variables & 2SLS", ready: true },
+      { n: "3.14", slug: "regression-discontinuity",           title: "Regression Discontinuity Design", ready: false },
+      { n: "3.15", slug: "difference-in-differences",          title: "Difference-in-Differences", ready: false },
+      { n: "3.16", slug: "survival-analysis",                  title: "Survival Analysis & Kaplan–Meier", ready: true },
+      { n: "3.17", slug: "missing-data",                       title: "Missing Data & Imputation", ready: true },
+      { n: "3.18", slug: "meta-analysis",                      title: "Meta-Analysis & Forest Plots", ready: true },
+      { n: "3.19", slug: "psychometric-functions",             title: "Psychometric Functions & the PSE", ready: true },
+      { n: "3.20", slug: "signal-detection-theory",            title: "Signal Detection Theory", ready: true }
     ]
   },
   {
