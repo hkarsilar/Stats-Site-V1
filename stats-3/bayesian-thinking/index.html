@@ -29,12 +29,30 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-3.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <style>
+    /* Bayes by Hand: the four columns of the rule, one row per hypothesis,
+       with the posterior drawn as bars beside them. max-width caps the box at
+       the column and min-width:0 lets the .hscroll inside it shrink, so a
+       six-column table scrolls inside itself at 360px instead of widening
+       the page (the lesson §3.5 learned). */
+    .bhwrap { display: flex; flex-wrap: wrap; gap: .9rem 1.1rem; align-items: flex-start; margin: .2rem 0 .5rem; }
+    .bhplot { flex: 1 1 min(300px, 100%); min-width: min(260px, 100%); max-width: 460px; }
+    .bhbox { flex: 1 1 min(330px, 100%); max-width: 100%; min-width: 0; }
+    .bhcap { font-size: .78rem; font-weight: 700; color: var(--text-muted); margin: 0 0 .25rem; }
+    .bhtab { border-collapse: collapse; font-size: .76rem; font-family: var(--mono); }
+    .bhtab th, .bhtab td { border: 1px solid var(--border); padding: .22rem .34rem; text-align: right; min-width: 52px; }
+    .bhtab th { background: var(--surface-2); font-weight: 600; color: var(--text-muted); font-family: var(--font); text-align: center; }
+    .bhtab td.bh-h { text-align: center; color: var(--text-muted); }
+    .bhtab tr.bh-in td { background: color-mix(in srgb, var(--primary) 9%, transparent); }
+    .bhtab td.bh-top { color: var(--primary); font-weight: 700; }
+    .bh-legend { font-size: .78rem; color: var(--text-muted); margin: .1rem 0 .75rem; }
+  </style>
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Bayesian Thinking", "description": "Bayesian statistics treats probability as belief and updates it with data. Watch a prior turn into a posterior as evidence arrives.", "url": "https://statscapybara.com/stats-3/bayesian-thinking/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced & Elective Topics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Bayesian Thinking", "item": "https://statscapybara.com/stats-3/bayesian-thinking/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the main difference between Bayesian and frequentist statistics?", "acceptedAnswer": {"@type": "Answer", "text": "What \"probability\" means. Frequentists treat parameters as fixed unknowns and put probability on data procedures (\"5% of such intervals miss\"); Bayesians put probability on parameter values themselves, as degrees of belief updated by evidence (\"the rate is 95% likely between .55 and .72\"). The Bayesian version answers the question people naturally ask — at the price of specifying a prior."}}, {"@type": "Question", "name": "How strong is my prior, in units of data?", "acceptedAnswer": {"@type": "Answer", "text": "For a proportion there is an exact answer, and the playground above is built on it. A Beta(α, β) prior updates to Beta(α + successes, β + failures), so the prior enters the arithmetic as though you had already run α + β trials of which α succeeded. That total is precisely what the \"prior confidence\" slider sets. At its default of 6, twenty real trials outvote your belief better than three to one, and a posterior mean of .65 sits almost on top of an observed .70. Push it to 80 and the same twenty trials barely move anything. Two habits follow: state the prior in the paper as the number of pseudo-observations it is worth, and refit under a couple of defensible alternatives, because a conclusion that survives only one prior is a conclusion about the prior."}}, {"@type": "Question", "name": "What is a Bayes factor?", "acceptedAnswer": {"@type": "Answer", "text": "The evidence ratio between two hypotheses: how much more probable the observed data is under H₁ than under H₀. BF = 10 means the data favors H₁ ten-to-one; BF = 1 means the data can't tell them apart. It's the Bayesian counterpart to significance testing, with two perks p-values lack: it can quantify evidence for a null, and it doesn't inflate with optional stopping."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the main difference between Bayesian and frequentist statistics?", "acceptedAnswer": {"@type": "Answer", "text": "What \"probability\" means. Frequentists treat parameters as fixed unknowns and put probability on data procedures (\"5% of such intervals miss\"); Bayesians put probability on parameter values themselves, as degrees of belief updated by evidence (\"the rate is 95% likely between .55 and .72\"). The Bayesian version answers the question people naturally ask — at the price of specifying a prior."}}, {"@type": "Question", "name": "Can a hypothesis I gave zero prior weight ever come back?", "acceptedAnswer": {"@type": "Answer", "text": "It cannot, and that is worth knowing before you write a prior down. The posterior is proportional to prior times likelihood, so a row whose prior is 0 has a product of 0 whatever the data say, and it stays at 0 through every later update too. Ruling a value out in the prior is permanent rather than provisional, and no amount of evidence reopens it. The habit that follows is to leave a little weight on anything you are not certain is impossible, however unlikely it looks. The mirror image deserves the same care: a hypothesis given a prior of 1 can never be dislodged either. Both are the same arithmetic saying the same thing, which is that Bayes' rule rescales beliefs you brought and cannot manufacture one you did not."}}, {"@type": "Question", "name": "What is a Bayes factor?", "acceptedAnswer": {"@type": "Answer", "text": "The evidence ratio between two hypotheses: how much more probable the observed data is under H₁ than under H₀. BF = 10 means the data favors H₁ ten-to-one; BF = 1 means the data can't tell them apart. It's the Bayesian counterpart to significance testing, with two perks p-values lack: it can quantify evidence for a null, and it doesn't inflate with optional stopping."}}]}
   </script>
 </head>
 <body data-course="stats-3" data-section="bayesian-thinking">
@@ -88,7 +106,118 @@
           <li>A <strong>strong prior</strong> encodes real prior knowledge, useful when data is scarce, but it should be defensible, because it genuinely shifts your conclusions.</li>
         </ul>
 
-        <h2>What "modern computing" actually does</h2>
+        <h2>The same rule as a table</h2>
+        <p>The playground draws Bayes' rule as three curves. An assignment almost always asks for it as a table, and the table is the version you can check by hand. Write down a short list of candidate values for the parameter, give each one a prior, work out how probable your data would be if that candidate were the truth, multiply the two columns together, and divide by the column's total.</p>
+        <p>Here it is on a concrete count. A bottle cap spun on its edge lands lip-up or lip-down at some rate nobody knows in advance, so take nine candidate rates, <em>p</em> = .1 through .9, and give each the same prior weight of 1/9. A prior like that is called a <strong>non-informative prior</strong>, or a flat one. What it buys is a posterior driven entirely by the data, which is what makes it both the usual default in an assignment and the easiest choice to defend when somebody pushes back. What it costs is worth naming too. It asserts, without saying so, that .1 and .7 were equally plausible for a spun cap, which they are not, and a list of nine rates has already ruled out every value in between. Non-informative is a statement, not the absence of one.</p>
+        <p>Now spin the cap twelve times and count nine lip-up. The likelihood column is the <a href="../../stats-1/binomial-distribution/">binomial</a> probability mass function read at each candidate:</p>
+        <p style="text-align:center">P(9 of 12 | <em>p</em>) = C(12, 9) &times; <em>p</em>&#8313; &times; (1 &minus; <em>p</em>)&sup3;</p>
+        <p>which at <em>p</em> = .7 is 220 &times; .7&#8313; &times; .3&sup3; = .2397. Do that nine times and the table writes itself.</p>
+        <table class="ref-table">
+          <thead><tr><th>Hypothesis <em>p</em></th><th>Prior</th><th>Likelihood</th><th>Prior &times; likelihood</th><th>Posterior</th></tr></thead>
+          <tbody>
+            <tr><td>.1</td><td>.1111</td><td>1.6e-7</td><td>1.8e-8</td><td>2.1e-7</td></tr>
+            <tr><td>.2</td><td>.1111</td><td>.0001</td><td>6.4e-6</td><td>.0001</td></tr>
+            <tr><td>.3</td><td>.1111</td><td>.0015</td><td>.0002</td><td>.0019</td></tr>
+            <tr><td>.4</td><td>.1111</td><td>.0125</td><td>.0014</td><td>.0162</td></tr>
+            <tr><td>.5</td><td>.1111</td><td>.0537</td><td>.0060</td><td>.0697</td></tr>
+            <tr><td>.6</td><td>.1111</td><td>.1419</td><td>.0158</td><td>.1841</td></tr>
+            <tr><td>.7</td><td>.1111</td><td>.2397</td><td>.0266</td><td>.3110</td></tr>
+            <tr><td>.8</td><td>.1111</td><td>.2362</td><td>.0262</td><td>.3065</td></tr>
+            <tr><td>.9</td><td>.1111</td><td>.0852</td><td>.0095</td><td>.1106</td></tr>
+            <tr><td><strong>total</strong></td><td><strong>1</strong></td><td></td><td><strong>.0856</strong></td><td><strong>1</strong></td></tr>
+          </tbody>
+        </table>
+        <p>Two columns in there carry names that sound harder than they are.</p>
+        <p>The <strong>denominator</strong> is the total of the fourth column, .0856. It goes by two grand titles, the <strong>marginal likelihood</strong> and the <strong>evidence</strong>, and the column makes both of them concrete: it is the probability of seeing 9 lip-up out of 12 at all, averaged over the nine hypotheses with their prior weights attached. Dividing each product by it is the step that forces the last column to sum to 1, which is the only thing a probability distribution over nine candidates ever had to do.</p>
+        <p>The <strong>likelihood</strong> column is a function, though not the kind the notation suggests. P(9 of 12 | <em>p</em>) is the ordinary binomial formula from <a href="../../stats-1/binomial-distribution/">&sect;1.8</a>, which normally answers "how many successes will a known rate produce?" Here the data sit still at 9 of 12 and <em>p</em> is what moves, and read that way round the same formula is called the <strong>likelihood function</strong>. It does not sum to 1 down the column, and nothing obliges it to: .0001 + .0015 + .0125 and the rest come to .7708, a number with no interpretation whatsoever. So a likelihood is not a probability distribution over the parameter and cannot be turned into one on its own. Supplying what it lacks is exactly the prior's job.</p>
+        <p>Read the posterior column and the answer is already sitting there. The most probable single candidate is .7 at .311, with .8 almost level at .307, which is an honest summary of twelve spins: the data cannot separate those two. Multiply each <em>p</em> by its posterior, add the nine products, and the posterior mean comes to .715. Everything at or below .4 has been all but eliminated, and .1 is down at two parts in ten million.</p>
+        <p>What the table performs is a <strong>grid approximation</strong>. The nine rows are a grid laid across the parameter's range, and each row does by hand the multiplication the smooth version does everywhere at once. Add rows and the grid gets finer: nineteen candidates .05 apart put the peak on .75 and move the posterior mean to .7143. It is the method to reach for whenever there is no closed form, which is most of the time, and it is the countable cousin of the <a href="#modern-computing">MCMC further down this page</a>. A sampler walks a parameter space too big to enumerate; a grid enumerates one small enough to print.</p>
+
+        <!-- ============ INTERACTIVE ============ -->
+        <div class="viz" id="bhviz">
+          <p class="viz-title">🎮 Bayes by Hand</p>
+          <p class="viz-sub">The table above, live. Choose how many hypotheses to spread across the range, set the prior, and pour in a count of successes out of trials. The four columns recompute on every move, the bars draw the posterior, and the shaded rows are the smallest set of hypotheses holding 95% of it. Nothing here is random.</p>
+
+          <div class="controls">
+            <div class="control" style="flex:1;min-width:min(220px,100%)">
+              <label>Hypotheses <span class="val" id="bh-hyp-val">9</span></label>
+              <input type="range" id="bh-hyp" min="5" max="21" step="2" value="9" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:min(220px,100%)">
+              <label>Trials <span class="val" id="bh-n-val">12</span></label>
+              <input type="range" id="bh-n" min="1" max="40" step="1" value="12" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:min(220px,100%)">
+              <label>Successes <span class="val" id="bh-k-val">9</span></label>
+              <input type="range" id="bh-k" min="0" max="40" step="1" value="9" style="width:100%" />
+            </div>
+          </div>
+          <div class="controls">
+            <div class="control">
+              <label>Prior</label>
+              <div class="seg" id="bh-seg">
+                <button data-p="uniform" class="active">Flat</button>
+                <button data-p="peaked">Informed</button>
+              </div>
+            </div>
+            <div class="control" style="flex:1;min-width:min(220px,100%)">
+              <label>Informed prior peaks at <span class="val" id="bh-peak-val">.30</span></label>
+              <input type="range" id="bh-peak" min="0.05" max="0.95" step="0.05" value="0.30" style="width:100%" />
+            </div>
+            <div class="control"><button class="btn btn-ghost btn-sm" id="bh-more" type="button">Combine a second sample</button></div>
+          </div>
+          <div class="controls" id="bh-more-row" style="display:none">
+            <div class="control" style="flex:1;min-width:min(220px,100%)">
+              <label>Second sample: trials <span class="val" id="bh-n2-val">8</span></label>
+              <input type="range" id="bh-n2" min="1" max="40" step="1" value="8" style="width:100%" />
+            </div>
+            <div class="control" style="flex:1;min-width:min(220px,100%)">
+              <label>Second sample: successes <span class="val" id="bh-k2-val">5</span></label>
+              <input type="range" id="bh-k2" min="0" max="40" step="1" value="5" style="width:100%" />
+            </div>
+          </div>
+
+          <div class="bhwrap">
+            <div class="bhplot">
+              <p class="bhcap" id="bh-plotcap">Posterior over the hypotheses</p>
+              <canvas id="bh-canvas" style="--viz-ar: 5 / 4"></canvas>
+            </div>
+            <div class="bhbox">
+              <p class="bhcap" id="bh-cap">Prior, likelihood, product, posterior</p>
+              <div class="hscroll"><table class="bhtab" id="bh-tab"></table></div>
+            </div>
+          </div>
+          <p class="bh-legend">The shaded rows are the highest-posterior hypotheses taken in order until their running total clears 95%, which is how <a href="../../stats-3/bayesian-estimation/">the next lesson</a> reads a credible region off a grid. The blue figure is the most probable single hypothesis.</p>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">Posterior mean</span><span class="v" id="bh-mean">—</span></div>
+            <div class="stat"><span class="k">Most probable</span><span class="v" id="bh-map">—</span></div>
+            <div class="stat"><span class="k">95% region</span><span class="v" id="bh-reg" style="font-size:1rem">—</span></div>
+            <div class="stat"><span class="k">Its actual mass</span><span class="v" id="bh-mass">—</span></div>
+            <div class="stat"><span class="k">Evidence (column total)</span><span class="v" id="bh-ev">—</span></div>
+            <div class="stat"><span class="k" id="bh-gap-k">Gap from the Beta posterior</span><span class="v" id="bh-gap">—</span></div>
+          </div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <p>Two moves are worth making before you leave it. Drag the hypothesis count from nine up to twenty-one and watch the posterior mean settle: a coarse grid is a real approximation, and its error is visible. Then switch the prior to Informed, leave the peak at .30, and the posterior mean falls from .715 to .542 on exactly the same twelve spins. A prior worth ten pretend trials is not a decoration, and that is the number a reader is entitled to see stated.</p>
+
+        <h2>Yesterday's posterior is today's prior</h2>
+        <p>Data rarely arrive all at once, and nothing in the rule says they must. Spin the cap eight more times, get five lip-up, and there are two ways to carry on. Treat the posterior from the first twelve as the prior for the next eight and run the table again. Or tip both samples into one bucket, call it 14 of 20, and run the table once from the original flat prior.</p>
+        <p>They land on the same posterior. Not nearly the same: identical, to the last digit the machine keeps. Press <em>Combine a second sample</em> and the two right-hand columns print the same nine numbers, .4026 at <em>p</em> = .7 by either route.</p>
+        <p>One line of algebra explains it. Updating twice multiplies the flat prior by <em>p</em>&#8313;(1 &minus; <em>p</em>)&sup3; and then by <em>p</em>&#8309;(1 &minus; <em>p</em>)&sup3;; pooling multiplies it by <em>p</em>&sup1;&#8308;(1 &minus; <em>p</em>)&#8310; in one go. Those are the same product. The binomial coefficients do differ between the routes, 220 &times; 56 against 38,760, but a coefficient is the same constant in every row, so it cancels in the division that normalizes the column.</p>
+        <p>That is a bigger result than it looks. Order does not matter, and neither does how the data are sliced, so a class exercise that has pairs pool into fours and fours into eights can be worked from either end and must agree. It also means a posterior is a complete summary of everything the data have said so far. Once you hold it, you can throw the counts away and keep updating.</p>
+
+        <h2>The conjugate shortcut</h2>
+        <p>The grid does the arithmetic the long way on purpose. For this particular pairing of prior and likelihood there is a shortcut, and it is the reason the playground at the top of the page can draw an exact curve rather than a histogram.</p>
+        <p>A <strong>Beta</strong> prior with a binomial likelihood gives a Beta posterior. That is the whole statement, and the update is pure bookkeeping:</p>
+        <p style="text-align:center">Beta(&alpha;, &beta;) prior + <em>k</em> successes in <em>n</em> trials &rarr; Beta(&alpha; + <em>k</em>, &beta; + <em>n</em> &minus; <em>k</em>)</p>
+        <p>Here &alpha; (alpha) and &beta; (beta) are the Beta distribution's two shape parameters. Add the successes to the first and the failures to the second, and nothing else happens. A prior family that hands back its own shape this way is <strong>conjugate</strong> to the likelihood, and Beta is the conjugate prior for a proportion.</p>
+        <p>The flat prior over nine candidates is the grid's version of Beta(1, 1), which is level across the whole interval. Nine of twelve therefore gives Beta(1 + 9, 1 + 3) = Beta(10, 4), with mean 10/14 = .7143 and mode 9/12 = .75. Read that density at .1, .2 and so on up to .9, scale the nine numbers so they sum to 1, and the posterior column of the table above comes back, digit for digit. The widget prints the largest gap between the grid’s posterior column and that Beta density, and it reads .0000 wherever the sliders go, informed prior included.</p>
+        <p>Conjugate families were most of practical Bayesian work before computers. They were the cases where the integral in the denominator had an answer somebody had already worked out, and a model without a conjugate partner was one you could write down and not use. MCMC ended that constraint, which is why applied Bayesian analysis stopped being a small catalogue of tractable cases. Two reasons keep conjugates in the toolkit anyway. They are exact, so they are the sanity check on a sampler: if a chain cannot reproduce Beta(10, 4) from nine of twelve, the problem is the chain and not the mathematics. And they make a prior legible, because Beta(&alpha;, &beta;) enters the arithmetic as &alpha; + &beta; trials already run, of which &alpha; succeeded, which is the plainest way to tell a reader how much belief you brought.</p>
+        <p>The grid needs none of that. Swap in a likelihood with no tidy partner and the five columns still work, which is why the table is the method that generalizes and the shortcut is the one that checks it.</p>
+
+        <h2 id="modern-computing">What "modern computing" actually does</h2>
         <p>The playground above draws an exact posterior because a proportion with a <a href="../../distributions.html">Beta</a> prior is one of a small number of textbook cases where the multiplication has a closed-form answer. Realistic models almost never do, and for most of the twentieth century that was the practical objection to the whole framework: the rule was simple and the integral was impossible.</p>
         <p><strong>MCMC</strong> (Markov chain Monte Carlo) is what changed. Rather than solving for the posterior, the computer takes a long guided walk through parameter space, arranged so that it lingers in each region in proportion to how probable that region is. The trail it leaves behind <em>is</em> the posterior, delivered as a pile of samples you can average, plot, or read quantiles off, in the same spirit as <a href="../../stats-3/bootstrap-and-resampling/">bootstrapping</a> replaces a formula with resampling. Stan, JAGS, PyMC and the Bayesian modules inside JASP all run some version of it, which is why a Bayesian analysis reports how many samples it drew and whether its chains agreed with each other.</p>
 
@@ -100,6 +229,7 @@
         </div>
 
         <p class="pb-xref"><a href="../../problems.html#p4-1">Problem 74 in the practice problems</a> runs the classic base-rate case by hand: a 95% sensitive test, a rare condition, and a positive result that leaves the patient at about 9%.</p>
+        <p class="pb-xref"><a href="../../problems.html#p4-12">Problem 85</a> builds a nine-row grid from scratch on thirteen germinated seeds out of twenty, and <a href="../../problems.html#p4-13">Problem 86</a> runs the same count through the Beta shortcut and asks where the two would stop agreeing.</p>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
@@ -109,8 +239,8 @@
             <div class="faq-a"><p>What "probability" means. Frequentists treat parameters as fixed unknowns and put probability on <em>data procedures</em> ("5% of such intervals miss"); Bayesians put probability on <em>parameter values themselves</em>, as degrees of belief updated by evidence ("the rate is 95% likely between .55 and .72"). The Bayesian version answers the question people naturally ask — at the price of specifying a prior.</p></div>
           </details>
           <details class="faq-item">
-            <summary>How strong is my prior, in units of data?</summary>
-            <div class="faq-a"><p>For a proportion there is an exact answer, and the playground above is built on it. A Beta(α, β) prior updates to Beta(α + successes, β + failures), so the prior enters the arithmetic as though you had already run α + β trials of which α succeeded. That total is precisely what the "prior confidence" slider sets. At its default of 6, twenty real trials outvote your belief better than three to one, and a posterior mean of .65 sits almost on top of an observed .70. Push it to 80 and the same twenty trials barely move anything. Two habits follow: state the prior in the paper as the number of pseudo-observations it is worth, and refit under a couple of defensible alternatives, because a conclusion that survives only one prior is a conclusion about the prior.</p></div>
+            <summary>Can a hypothesis I gave zero prior weight ever come back?</summary>
+            <div class="faq-a"><p>It cannot, and that is worth knowing before you write a prior down. The posterior is proportional to prior times likelihood, so a row whose prior is 0 has a product of 0 whatever the data say, and it stays at 0 through every later update too. Ruling a value out in the prior is permanent rather than provisional, and no amount of evidence reopens it. The habit that follows is to leave a little weight on anything you are not certain is impossible, however unlikely it looks. The mirror image deserves the same care: a hypothesis given a prior of 1 can never be dislodged either. Both are the same arithmetic saying the same thing, which is that Bayes' rule rescales beliefs you brought and cannot manufacture one you did not.</p></div>
           </details>
           <details class="faq-item">
             <summary>What is a Bayes factor?</summary>
@@ -209,6 +339,252 @@
       conf: "#ps-range",
       n: "#n-range",
       obs: { el: "#obs-range", scale: 100 }
+    });
+  })();
+  </script>
+
+  <!-- ============ Bayes by Hand: the grid posterior as a table ============
+       URL presets (P67/P99):
+         ?hyp=<5,7,…,21>     how many hypotheses are spread across (0, 1)
+         ?prior=uniform      the flat prior, or
+         ?prior=<0.05–0.95>  an informed Beta prior worth 10 trials, peaking there
+         ?n=<1–40>           trials in the first sample
+         ?k=<0–n>            successes in it  (listed after n: n sets k's maximum)
+       e.g.  ?hyp=9&n=12&k=9        →  the table this lesson prints
+             ?hyp=19&n=12&k=9       →  the same data on a finer grid
+             ?prior=0.3&n=12&k=9    →  what a confident prior costs
+       ?n= and ?prior= are shared with the playground at the top of the page,
+       where they mean the same two things (trials, and where the prior sits),
+       so one link moves both widgets coherently.
+  -->
+  <script>
+  (function () {
+    "use strict";
+    var HYP = document.getElementById("bh-hyp"), NN = document.getElementById("bh-n"),
+        KK = document.getElementById("bh-k"), PEAK = document.getElementById("bh-peak"),
+        NN2 = document.getElementById("bh-n2"), KK2 = document.getElementById("bh-k2"),
+        SEG = document.getElementById("bh-seg"), MORE = document.getElementById("bh-more"),
+        ROW2 = document.getElementById("bh-more-row"), TAB = document.getElementById("bh-tab");
+    var canvas = document.getElementById("bh-canvas"), ctx, W = 0, H = 236;
+    var shape = "uniform", twoSamples = false;
+    var STRENGTH = 10;            // an informed prior is worth ten pretend trials
+    var TARGET = 0.95;
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+
+    /* ---- the arithmetic, all of it exact and none of it random ---- */
+    function logChoose(n, k) { return VIZ.gammaln(n + 1) - VIZ.gammaln(k + 1) - VIZ.gammaln(n - k + 1); }
+    function binomPmf(n, k, p) {
+      if (k < 0 || k > n) return 0;
+      if (p <= 0) return k === 0 ? 1 : 0;
+      if (p >= 1) return k === n ? 1 : 0;
+      return Math.exp(logChoose(n, k) + k * Math.log(p) + (n - k) * Math.log(1 - p));
+    }
+    function betaPdf(p, a, b) {
+      if (p <= 0 || p >= 1) return 0;
+      return Math.exp((a - 1) * Math.log(p) + (b - 1) * Math.log(1 - p)
+        - (VIZ.gammaln(a) + VIZ.gammaln(b) - VIZ.gammaln(a + b)));
+    }
+    function normalize(v) {
+      var s = 0, i;
+      for (i = 0; i < v.length; i++) s += v[i];
+      return s > 0 ? v.map(function (x) { return x / s; }) : v.map(function () { return 1 / v.length; });
+    }
+    /* hypotheses sit at j/(m+1), so an odd count always includes .5 and none
+       of them lands on 0 or 1, where a likelihood would be identically zero */
+    function hypotheses(m) { var out = [], j; for (j = 1; j <= m; j++) out.push(j / (m + 1)); return out; }
+    /* the prior is a Beta density read at each hypothesis and normalized.
+       Flat is Beta(1, 1), which is constant, so both shapes are one code path. */
+    function priorShape() {
+      if (shape === "uniform") return { a: 1, b: 1 };
+      var c = +PEAK.value;
+      return { a: 1 + STRENGTH * c, b: 1 + STRENGTH * (1 - c) };
+    }
+
+    function state() {
+      var m = +HYP.value, Hy = hypotheses(m), sh = priorShape();
+      var n1 = +NN.value, k1 = Math.min(+KK.value, n1);
+      var w = normalize(Hy.map(function (p) { return betaPdf(p, sh.a, sh.b); }));
+      var post1 = normalize(Hy.map(function (p, i) { return w[i] * binomPmf(n1, k1, p); }));
+      var n2 = +NN2.value, k2 = Math.min(+KK2.value, n2);
+      var prior, like, n, k;
+      if (twoSamples) { prior = post1; like = Hy.map(function (p) { return binomPmf(n2, k2, p); }); n = n2; k = k2; }
+      else { prior = w; like = Hy.map(function (p) { return binomPmf(n1, k1, p); }); n = n1; k = k1; }
+      var prod = Hy.map(function (p, i) { return prior[i] * like[i]; });
+      var ev = prod.reduce(function (a, b) { return a + b; }, 0);
+      var post = ev > 0 ? prod.map(function (v) { return v / ev; }) : prior.slice();
+      /* the second column to compare against: pooling both samples in one step
+         when there are two, otherwise the closed-form Beta posterior */
+      var other = twoSamples
+        ? normalize(Hy.map(function (p, i) { return w[i] * binomPmf(n1 + n2, k1 + k2, p); }))
+        : normalize(Hy.map(function (p) { return betaPdf(p, sh.a + k1, sh.b + n1 - k1); }));
+      var gap = 0, i;
+      for (i = 0; i < m; i++) gap = Math.max(gap, Math.abs(post[i] - other[i]));
+      return { H: Hy, m: m, prior: prior, like: like, prod: prod, ev: ev, post: post,
+               other: other, gap: gap, n: n, k: k, prev: post1 };
+    }
+
+    /* the highest-posterior hypotheses, taken in order until they clear 95%.
+       A Beta prior times a binomial likelihood is unimodal, so the set that
+       comes out is always a run of neighbors. */
+    function region(post) {
+      var idx = post.map(function (v, i) { return i; })
+        .sort(function (a, b) { return post[b] - post[a]; });
+      var take = {}, run = 0, i;
+      for (i = 0; i < idx.length; i++) {
+        take[idx[i]] = true; run += post[idx[i]];
+        if (run >= TARGET - 1e-12) break;
+      }
+      return { set: take, mass: run };
+    }
+
+    /* ---- formatting ---- */
+    function trim(s) { return s.replace(/^0\./, ".").replace(/^-0\./, "-."); }
+    function sig(v) {
+      if (!isFinite(v) || v === 0) return "0";
+      if (v < 5e-5) return v.toExponential(1);
+      return trim(v.toFixed(4));
+    }
+    function pStr(p) { return trim(p.toFixed(3)); }
+
+    function renderTable(st, reg) {
+      var head = twoSamples
+        ? "<tr><th>p</th><th>Prior</th><th>Likelihood</th><th>Product</th><th>Posterior</th><th>Pooled</th></tr>"
+        : "<tr><th>p</th><th>Prior</th><th>Likelihood</th><th>Product</th><th>Posterior</th></tr>";
+      var best = st.post.indexOf(Math.max.apply(null, st.post));
+      var h = "<tbody>" + head, i;
+      for (i = 0; i < st.m; i++) {
+        h += "<tr" + (reg.set[i] ? ' class="bh-in"' : "") + ">"
+          + '<td class="bh-h">' + pStr(st.H[i]) + "</td>"
+          + "<td>" + sig(st.prior[i]) + "</td>"
+          + "<td>" + sig(st.like[i]) + "</td>"
+          + "<td>" + sig(st.prod[i]) + "</td>"
+          + "<td" + (i === best ? ' class="bh-top"' : "") + ">" + sig(st.post[i]) + "</td>"
+          + (twoSamples ? "<td>" + sig(st.other[i]) + "</td>" : "")
+          + "</tr>";
+      }
+      h += '<tr><td class="bh-h">total</td><td>1</td><td></td><td>' + sig(st.ev) + "</td><td>1</td>"
+        + (twoSamples ? "<td>1</td>" : "") + "</tr>";
+      TAB.innerHTML = h + "</tbody>";
+    }
+
+    function draw(st, reg) {
+      var pad = 26, baseY = H - 28, top = 16, i;
+      ctx.clearRect(0, 0, W, H);
+      var mx = Math.max.apply(null, st.post) || 1;
+      var bw = (W - 2 * pad) / st.m;
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(pad, baseY); ctx.lineTo(W - pad, baseY); ctx.stroke();
+      for (i = 0; i < st.m; i++) {
+        var x = pad + i * bw + bw * 0.14, w = Math.max(2, bw * 0.72);
+        var hgt = (st.post[i] / mx) * (baseY - top);
+        ctx.fillStyle = VIZ.css(reg.set[i] ? "--primary" : "--text-faint");
+        ctx.globalAlpha = reg.set[i] ? 1 : 0.45;
+        ctx.fillRect(x, baseY - hgt, w, hgt);
+        ctx.globalAlpha = 1;
+      }
+      if (twoSamples) {                       // where the first sample had left it
+        ctx.strokeStyle = "#f97316"; ctx.lineWidth = 1.6; ctx.setLineDash([4, 3]);
+        ctx.beginPath();
+        for (i = 0; i < st.m; i++) {
+          var cx = pad + i * bw + bw / 2, cy = baseY - (st.prev[i] / mx) * (baseY - top);
+          if (i === 0) ctx.moveTo(cx, cy); else ctx.lineTo(cx, cy);
+        }
+        ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = "#f97316"; ctx.font = "600 11px Inter,sans-serif"; ctx.textAlign = "left";
+        ctx.fillText("after the first sample", pad + 2, top - 4);
+      }
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center";
+      var every = bw >= 30 ? 1 : bw >= 18 ? 2 : 3;
+      for (i = 0; i < st.m; i++) {
+        if (i % every) continue;
+        ctx.fillText(pStr(st.H[i]), pad + i * bw + bw / 2, baseY + 13);
+      }
+      ctx.fillText("candidate value of p →", W / 2, H - 4);
+    }
+
+    function update() {
+      var st = state(), reg = region(st.post), i;
+      renderTable(st, reg);
+      draw(st, reg);
+      var lo = null, hi = null;
+      for (i = 0; i < st.m; i++) if (reg.set[i]) { if (lo === null) lo = st.H[i]; hi = st.H[i]; }
+      document.getElementById("bh-hyp-val").textContent = st.m;
+      document.getElementById("bh-n-val").textContent = NN.value;
+      document.getElementById("bh-k-val").textContent = KK.value;
+      document.getElementById("bh-n2-val").textContent = NN2.value;
+      document.getElementById("bh-k2-val").textContent = KK2.value;
+      document.getElementById("bh-peak-val").textContent = pStr(+PEAK.value).slice(0, 3);
+      document.getElementById("bh-mean").textContent =
+        trim(st.H.reduce(function (a, p, j) { return a + p * st.post[j]; }, 0).toFixed(4));
+      document.getElementById("bh-map").textContent =
+        pStr(st.H[st.post.indexOf(Math.max.apply(null, st.post))]);
+      document.getElementById("bh-reg").textContent = pStr(lo) + " to " + pStr(hi);
+      document.getElementById("bh-mass").textContent = (100 * reg.mass).toFixed(1) + "%";
+      document.getElementById("bh-ev").textContent = sig(st.ev);
+      document.getElementById("bh-gap").textContent = trim(st.gap.toFixed(4));
+      document.getElementById("bh-gap-k").textContent =
+        twoSamples ? "Gap between the two routes" : "Gap from the Beta posterior";
+      document.getElementById("bh-cap").textContent =
+        twoSamples ? "Step one's posterior, the second sample, and both routes"
+                   : "Prior, likelihood, product, posterior";
+      document.getElementById("bh-plotcap").textContent =
+        twoSamples ? "Posterior after both samples" : "Posterior over the hypotheses";
+    }
+
+    /* successes can never exceed trials, so each count slider's maximum
+       follows its own sample size rather than being restated anywhere */
+    function clampCounts() {
+      [[NN, KK], [NN2, KK2]].forEach(function (pair) {
+        pair[1].max = pair[0].value;
+        if (+pair[1].value > +pair[0].value) pair[1].value = pair[0].value;
+      });
+    }
+
+    [HYP, NN, KK, PEAK, NN2, KK2].forEach(function (el) {
+      el.addEventListener("input", function () { clampCounts(); update(); });
+    });
+    SEG.addEventListener("click", function (e) {
+      var btn = e.target.closest("button"); if (!btn) return;
+      shape = btn.dataset.p;
+      Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) {
+        x.classList.toggle("active", x.dataset.p === shape);
+      });
+      update();
+    });
+    MORE.addEventListener("click", function () {
+      twoSamples = !twoSamples;
+      ROW2.style.display = twoSamples ? "" : "none";
+      MORE.textContent = twoSamples ? "Back to one sample" : "Combine a second sample";
+      update();
+    });
+
+    window.addEventListener("resize", VIZ.rafThrottle(function () { fit(); update(); }));
+    if (window.ResizeObserver) new ResizeObserver(VIZ.rafThrottle(function () { fit(); update(); })).observe(canvas);
+    VIZ.onTheme(update);
+    clampCounts(); fit(); update();
+
+    /* URL preset, applied last (see the head comment). ?prior= carries both
+       halves of the prior control, so it takes a function rather than a
+       selector: a name picks the shape, a number picks the shape and the peak. */
+    if (window.SC && SC.preset) SC.preset({
+      hyp: "#bh-hyp",
+      prior: function (raw) {
+        var t = String(raw).trim().toLowerCase();
+        var btn = null;
+        if (t === "uniform" || t === "flat") btn = SEG.querySelector('[data-p="uniform"]');
+        else if (/^[-+]?(\d+(\.\d*)?|\.\d+)$/.test(t)) {
+          var v = Number(t);
+          if (!isFinite(v)) return;
+          var mn = +PEAK.min, mx = +PEAK.max, step = +PEAK.step;
+          v = Math.min(mx, Math.max(mn, Math.round((v - mn) / step) * step + mn));
+          PEAK.value = v;
+          btn = SEG.querySelector('[data-p="peaked"]');
+        }
+        if (btn) btn.click(); else update();
+      },
+      n: "#bh-n",
+      k: "#bh-k"
     });
   })();
   </script>

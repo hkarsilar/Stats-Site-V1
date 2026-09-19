@@ -709,6 +709,28 @@ window.SOFTWARE = {
       'Say how many resamples and which interval type (percentile vs. BCa) — the CI is the inference, no p-value needed.'
     ]
   },
+  "bayesian-thinking": {
+    spss: [
+      '<strong>Analyze → Bayesian Statistics → One Sample Binomial…</strong> (SPSS 25 and later). This is not the <em>Compare Means and Proportions → One-Sample Proportions</em> dialog, which runs the frequentist test.',
+      'Move the binary variable into <em>Test Variable(s)</em> and set the <em>Success Categories</em>, because SPSS has to be told which of the two values counts as a success before it can count any.',
+      'Choose <em>Characterize Posterior Distribution</em> for the posterior and its credible interval, <em>Estimate Bayes Factor</em> for the evidence ratio against a null proportion, or <em>Use Both Methods</em> to get both tables.',
+      '<em>Priors…</em> takes a conjugate Beta with its two shape parameters typed in. Leaving both at 1 is the flat prior, which is the continuous twin of a hand-worked grid with equal prior weights.',
+      'Read the <em>Posterior Distribution Characterization</em> table for the posterior mode, mean, variance and interval. <em>Criteria…</em> sets the credibility level, at 95% unless you move it.'
+    ],
+    jasp: [
+      '<strong>Frequencies → Bayesian Binomial Test</strong>.',
+      'Move the variable across, set the <em>Test value</em> (it starts at 0.5) and pick the hypothesis direction.',
+      'The prior is a Beta set by two fields labeled <em>a</em> and <em>b</em>, both starting at 1, which is the flat one.',
+      'Tick <em>Prior and posterior</em> for the plot that draws both curves on one axis with the test value marked, and <em>Sequential analysis</em> to watch the Bayes factor move case by case.',
+      'The table prints <em>BF</em><sub>10</sub> by default; the dropdown above it switches to <em>BF</em><sub>01</sub>, which is the same number upside down.'
+    ],
+    apa: '<p>Nine of twelve spins landed lip-up. A Bayesian binomial test against a chance rate of .50, with a uniform Beta(1, 1) prior, returned <em>BF</em><sub>10</sub> = 1.43, which is too close to 1 to count as evidence either way. The posterior mean was .71, 95% credible interval [.46, .91], and .95 of the posterior sat above .50.</p>',
+    tips: [
+      'The Bayes factor and the posterior answer different questions, and on one set of numbers they can look like they disagree. <em>BF</em><sub>10</sub> = 1.43 says the data barely separate a point null at .50 from the alternative; .95 of the posterior sitting above .50 is a statement about direction and says nothing about that point. Report the one your question asked for, and name which it is.',
+      'Put the prior in the sentence rather than in a footnote. Beta(<em>a</em>, <em>b</em>) enters the arithmetic as <em>a</em> + <em>b</em> trials already run, of which <em>a</em> succeeded, so "a uniform Beta(1, 1) prior" tells a reader exactly how much belief you brought to the data.',
+      'Open the prior fields rather than trusting the default. Both packages arrive at the flat Beta(1, 1) today, which is what makes their answer match a grid worked by hand with equal prior weights, but a default is a software decision and software changes.'
+    ]
+  },
   "bayesian-estimation": {
     spss: [
       '<strong>Analyze → Bayesian Statistics</strong> (SPSS 25+) covers t-tests, ANOVA, correlation, and regression.',

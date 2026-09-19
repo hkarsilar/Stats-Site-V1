@@ -16,16 +16,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Practice Problems — Worked Statistics Exam Questions — StatsCapybara</title>
-  <meta name="description" content="Ninety statistics problems with worked solutions: z-scores, t-tests, chi-square, ANOVA tables, contrasts, rank tests and regression, one step at a time." />
+  <meta name="description" content="Ninety-two statistics problems with worked solutions: z-scores, t-tests, chi-square, ANOVA tables, rank tests, regression and Bayes, one step at a time." />
   <link rel="canonical" href="https://statscapybara.com/problems.html" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Practice Problems — StatsCapybara" />
-  <meta property="og:description" content="Ninety worked statistics problems, from z-scores and ANOVA tables to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
+  <meta property="og:description" content="Ninety-two worked statistics problems, from z-scores and ANOVA tables to Bayesian grids, logistic regression and survival curves, plus six studies to find the flaw in." />
   <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
   <meta property="og:url" content="https://statscapybara.com/problems.html" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Practice Problems — StatsCapybara" />
-  <meta name="twitter:description" content="Ninety worked statistics problems, from z-scores and ANOVA tables to Bayes, logistic regression and survival curves, plus six studies to find the flaw in." />
+  <meta name="twitter:description" content="Ninety-two worked statistics problems, from z-scores and ANOVA tables to Bayesian grids, logistic regression and survival curves, plus six studies to find the flaw in." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="assets/css/styles.css" />
@@ -4780,7 +4780,7 @@
              ================================================================== -->
         <section class="pb-set" id="advanced-set">
           <h2 id="advanced">🎲 Advanced · Modern methods</h2>
-          <p class="pb-set-sub">Eleven problems from the <a href="stats-3/">Stats 3 syllabus</a>: updating a belief with Bayes' rule, pulling sensitivity apart from bias, reading a survival curve that never reaches zero, choosing between models that all fit, and four on latent variables, from a one-factor measurement model worked by hand to a rotated two-factor solution with a cross-loading to diagnose.</p>
+          <p class="pb-set-sub">Thirteen problems from the <a href="stats-3/">Stats 3 syllabus</a>: updating a belief with Bayes' rule, pulling sensitivity apart from bias, reading a survival curve that never reaches zero, choosing between models that all fit, four on latent variables, from a one-factor measurement model worked by hand to a rotated two-factor solution with a cross-loading to diagnose, and two that run one binomial count through a grid of hypotheses and then through its conjugate shortcut.</p>
 
           <!-- ---------- 4.1 ----------
                verify: node -e 'const pr=.008,se=.95,sp=.92;const pp=pr*se+(1-pr)*(1-sp);
@@ -5521,6 +5521,134 @@
         <!-- ==================================================================
              RESEARCH TOOLKIT — "spot the problem"
              ================================================================== -->
+
+          <!-- VERIFIED (P99), node -e:
+                 C(20,13) = 77520; L(p) = 77520 * p^13 * (1-p)^7 at p = .1 .. .9
+                   3.708e-9  .0000133  .0010178  .0145631  .0739288
+                   .1658823  .1642620  .0545499  .0019705      sum .4761876
+                 flat prior 1/9, so product = L/9 and evidence = sum/9 = .0529097
+                 posterior = L/sum:
+                   .0000 .0000 .0021 .0306 .1553 .3484 .3450 .1146 .0041
+                 posterior mean = .63635 (exact Beta mean 14/22 = .63636)
+                 sorted by mass: .6 .3484 | .7 .3450 (.6933) | .5 .1553 (.8486)
+                                 | .8 .1146 (.9631)  -> four hypotheses, .5 to .8
+                 the rounded likelihood column above reproduces every posterior
+                 to 4 dp, checked against the unrounded one
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p4-12"><span class="pb-num">85</span>Nine hypotheses and a packet of seeds</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A seed packet gives no germination rate, so a grower sows twenty seeds and counts how many come up. Thirteen do. Rather than estimate a single number, she writes down nine candidate rates and updates all nine at once, which is Bayes' rule done as a table.</p>
+            <div class="pb-given">
+              <span class="lbl">Hypotheses and prior</span>
+              <em>p</em> = .1, .2, .3, .4, .5, .6, .7, .8, .9, each with a flat prior of 1/9
+              <span class="lbl" style="margin-top:.5rem">Data</span>
+              13 germinated of 20 sown &nbsp;·&nbsp; C(20, 13) = 77,520
+              <span class="lbl" style="margin-top:.5rem">Likelihood P(13 of 20 | <em>p</em>), already computed</span>
+              <span style="font-family:var(--mono);font-size:.85rem;display:block;margin-top:.3rem">
+                .1&nbsp; 0.0000000037 &nbsp;&nbsp; .4&nbsp; 0.0145631 &nbsp;&nbsp; .7&nbsp; 0.1642620<br>
+                .2&nbsp; 0.0000133 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .5&nbsp; 0.0739288 &nbsp;&nbsp; .8&nbsp; 0.0545499<br>
+                .3&nbsp; 0.0010178 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .6&nbsp; 0.1658823 &nbsp;&nbsp; .9&nbsp; 0.0019705
+              </span>
+            </div>
+            <ol class="pb-ask">
+              <li>Complete the product and posterior columns. What is the total of the product column called, and what is its value here?</li>
+              <li>Which hypothesis is the most probable, and what is the posterior mean?</li>
+              <li>Build the smallest region holding at least 95% of the posterior. Name the hypotheses in it, its endpoints, and the mass it actually carries.</li>
+              <li>A classmate writes "95% credible region: .5 to .8". Say in one sentence what is wrong with that.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The product column, and the total that normalizes it</span>
+                  <span class="pb-math">product = prior &times; likelihood = likelihood &divide; 9 in every row</span>
+                  <span class="pb-math">total of the likelihood column = .4761876, so the product column totals .4761876 &divide; 9 = <strong>.0529097</strong></span>
+                  <span class="pb-math">posterior = product &divide; .0529097, which is the same as likelihood &divide; .4761876</span>
+                  <span class="pb-math">.0000 &nbsp; .0000 &nbsp; .0021 &nbsp; .0306 &nbsp; .1553 &nbsp; .3484 &nbsp; .3450 &nbsp; .1146 &nbsp; .0041</span>
+                  <span class="pb-note">That total is the <strong>marginal likelihood</strong>, also called the evidence. It says how probable 13 of 20 was before anyone knew the rate, with each candidate contributing in proportion to the prior it was handed. A flat prior makes the arithmetic shorter than it looks, because dividing every row by 9 and then normalizing does nothing the normalizing would not have done anyway. Check your posterior column sums to 1 before going on.</span>
+                </li>
+                <li><span class="pb-lbl">Most probable hypothesis and posterior mean</span>
+                  <span class="pb-math">largest posterior: <em>p</em> = .6 at .3484, with .7 close behind at .3450</span>
+                  <span class="pb-math">mean = .5(.1553) + .6(.3484) + .7(.3450) + .8(.1146) + smaller terms = <strong>.6364</strong></span>
+                  <span class="pb-note">Twenty seeds cannot separate .6 from .7, and the table says so honestly by putting almost the same mass on both. The mean sits between them and slightly below the observed 13/20 = .65, pulled down by the flat prior's weight on the low candidates.</span>
+                </li>
+                <li><span class="pb-lbl">The smallest region holding 95%</span>
+                  <span class="pb-math">take in descending order of mass: .6 (.3484), .7 (.6933), .5 (.8486), .8 (.9631)</span>
+                  <span class="pb-math">four hypotheses clear the target, so the region is <em>p</em> = .5, .6, .7, .8</span>
+                  <span class="pb-math">endpoints .5 and .8 &nbsp;·&nbsp; mass carried = <strong>96.3%</strong></span>
+                  <span class="pb-note">Three hypotheses hold only 84.9%, which is short, so the fourth has to come in. Because a flat prior times a binomial likelihood is single-peaked, the hypotheses you take are always neighbors and the region reads as a range rather than a scattering.</span>
+                </li>
+                <li><span class="pb-lbl">What is wrong with calling it 95%</span>
+                  <span class="pb-note">The region holds 96.3%, not 95%: a posterior spread over nine lumps cannot be cut to an exact percentage, because you can take a hypothesis or leave it and there is nothing in between. Report the mass you achieved, as in "the smallest 95% region runs from .5 to .8 and holds 96.3% of the posterior". The overshoot shrinks as the grid gets finer, and it never disappears.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">The product column totals .0529097, the marginal likelihood. The posterior runs .0000, .0000, .0021, .0306, .1553, .3484, .3450, .1146, .0041; the most probable hypothesis is .6 and the posterior mean is .6364. The smallest region clearing 95% is <em>p</em> = .5 to .8, which carries 96.3%, and that 96.3 is the number to report.</p>
+              <p class="pb-ref">From <a href="stats-3/bayesian-thinking/">&sect;3.7 Bayesian Thinking</a> and <a href="stats-3/bayesian-estimation/">&sect;3.8 Bayesian Estimation</a> · check it on <a href="stats-3/bayesian-thinking/?hyp=9&amp;n=20&amp;k=13">the grid widget</a>.</p>
+            </details>
+          </article>
+
+          <!-- VERIFIED (P99), node -e:
+                 flat prior = Beta(1,1); 13 of 20 -> Beta(1+13, 1+7) = Beta(14, 8)
+                   mean 14/22 = .63636, mode 13/20 = .65, sd = sqrt(14*8/(22^2*23)) = .10030
+                   central 95% [.4303, .8189], width .3886;  P(p > .5) = .9054
+                 normalized Beta(14,8) density at .1...9 equals problem 85's
+                   posterior column to 1.7e-16
+                 Beta(6,4) prior (worth 10 trials, mode 5/8 = .625) -> Beta(19, 11)
+                   mean 19/30 = .63333, mode 18/28 = .64286, sd = sqrt(19*11/(30^2*31)) = .08655
+                   central 95% [.4567, .7931], width .3364
+                 grid under the same Beta(6,4) prior matches Beta(19,11) to 1.9e-16
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p4-13"><span class="pb-num">86</span>The same seeds, without the table</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">The same twenty seeds, thirteen of which germinated, run through the shortcut instead of the grid. A Beta prior meeting a binomial likelihood gives a Beta posterior, which is the one case in this course where the answer can simply be written down.</p>
+            <div class="pb-given">
+              <span class="lbl">Data</span>
+              13 germinated of 20 sown
+              <span class="lbl" style="margin-top:.5rem">Beta facts</span>
+              mean = <em>a</em> &divide; (<em>a</em> + <em>b</em>) &nbsp;·&nbsp; mode = (<em>a</em> &minus; 1) &divide; (<em>a</em> + <em>b</em> &minus; 2) &nbsp;·&nbsp; SD = &radic;(<em>ab</em> &divide; ((<em>a</em> + <em>b</em>)&sup2;(<em>a</em> + <em>b</em> + 1)))
+              <span class="lbl" style="margin-top:.5rem">Quantiles, given</span>
+              Beta(14, 8): .025 &rarr; .430, .975 &rarr; .819 &nbsp;·&nbsp; Beta(19, 11): .025 &rarr; .457, .975 &rarr; .793
+            </div>
+            <ol class="pb-ask">
+              <li>A flat prior is Beta(1, 1). Write the posterior in Beta form, and give its mean, mode and standard deviation.</li>
+              <li>Give the central 95% credible interval, and say why it is a different object from the .5-to-.8 region of the previous problem.</li>
+              <li>A colleague reran it with a Beta(6, 4) prior. Give the new posterior, say how many trials that prior was worth, and describe what it did to the estimate and to the interval.</li>
+              <li>Why do the grid and the Beta route agree on all nine hypotheses? Name a situation in which the shortcut is not available at all.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The update is bookkeeping</span>
+                  <span class="pb-math">Beta(1, 1) + 13 successes and 7 failures &rarr; Beta(1 + 13, 1 + 7) = <strong>Beta(14, 8)</strong></span>
+                  <span class="pb-math">mean = 14 &divide; 22 = .6364 &nbsp;·&nbsp; mode = 13 &divide; 20 = .65</span>
+                  <span class="pb-math">SD = &radic;(14 &times; 8 &divide; (22&sup2; &times; 23)) = &radic;.010061 = .1003</span>
+                  <span class="pb-note">Add the successes to the first parameter and the failures to the second, and stop. The mode lands exactly on the observed 13/20, which is what a flat prior does: with no opinion to contribute, the most probable value is the one the data alone would pick. The mean sits a little below it because the posterior is skewed toward the long left tail.</span>
+                </li>
+                <li><span class="pb-lbl">The central interval</span>
+                  <span class="pb-math">95% central credible interval = [.430, .819], width .389</span>
+                  <span class="pb-note">This is a central interval, built by cutting 2.5% off each tail of a continuous posterior, and it can land on any two numbers in the range. The previous problem's region was a set of whole hypotheses chosen by mass, so its endpoints can only ever be grid values and its coverage overshot to 96.3%. The two are answering the same question with different resolution, and the grid version converges on this one as candidates are added.</span>
+                </li>
+                <li><span class="pb-lbl">An informed prior</span>
+                  <span class="pb-math">Beta(6, 4) + 13 and 7 &rarr; <strong>Beta(19, 11)</strong></span>
+                  <span class="pb-math">worth <em>a</em> + <em>b</em> = 6 + 4 = <strong>10 trials</strong>, of which 6 succeeded, i.e. a belief centered near .6</span>
+                  <span class="pb-math">mean = 19 &divide; 30 = .6333 &nbsp;·&nbsp; mode = 18 &divide; 28 = .6429 &nbsp;·&nbsp; SD = .0866</span>
+                  <span class="pb-math">95% interval = [.457, .793], width .336</span>
+                  <span class="pb-note">The estimate barely moved, from .6364 to .6333, because the prior already agreed with the data. The interval is the thing that changed: ten pretend trials were added to twenty real ones, so the posterior tightened by about 13% of its width. A prior that agrees with your data buys precision; one that disagrees buys an argument, which is why the prior belongs in the write-up either way.</span>
+                </li>
+                <li><span class="pb-lbl">Why they agree, and when the shortcut runs out</span>
+                  <span class="pb-note">With a flat prior the grid's posterior column is the likelihood divided by its own total, and the Beta(14, 8) density is proportional to that same likelihood. Two columns proportional to each other are identical once both are scaled to sum to 1, so the agreement is exact rather than close, and it survives an informed Beta prior too. What breaks it is a prior that is not a Beta, or a likelihood that is not binomial, or a model with several parameters at once. In any of those there is no conjugate partner to write down and the grid, or a sampler, is the only route left. The shortcut is the special case; the table is the method.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Beta(14, 8), with mean .6364, mode .65 and SD .1003; the central 95% interval is [.430, .819]. A Beta(6, 4) prior, worth 10 trials, gives Beta(19, 11) with mean .6333 and interval [.457, .793], so the estimate held still and the interval tightened. Grid and shortcut agree because both columns are proportional to the same likelihood, and the shortcut disappears the moment the prior or the likelihood leaves the conjugate pair.</p>
+              <p class="pb-ref">From <a href="stats-3/bayesian-thinking/">&sect;3.7 Bayesian Thinking</a> · the Beta shape itself lives in <a href="distributions.html">the distribution playground</a>.</p>
+            </details>
+          </article>
+
         <section class="pb-set" id="toolkit-set">
           <h2 id="toolkit">🔍 Research Toolkit · Spot the problem</h2>
           <p class="pb-set-sub">Six problems with almost no arithmetic in them. Each one hands you a study, a figure or a sentence that looks perfectly respectable, and asks what is wrong with it. These are the questions that separate someone who can run a test from someone you would trust with a dataset, and they draw on <a href="methods/">Methods</a>, <a href="data/">Data</a>, <a href="ethics/">Ethics</a> and <a href="writing/">Writing</a>.</p>
@@ -5530,7 +5658,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-1"><span class="pb-num">85</span>The module that raises exam scores</h3>
+              <h3 id="p5-1"><span class="pb-num">87</span>The module that raises exam scores</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A university builds an optional online tutorial module for its introductory statistics course. Usage is tracked automatically. At the end of term the learning-technology team compares final exam marks and issues a press release.</p>
@@ -5579,7 +5707,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-2"><span class="pb-num">86</span>Four thousand responses and no answer</h3>
+              <h3 id="p5-2"><span class="pb-num">88</span>Four thousand responses and no answer</h3>
               <span class="pb-chip warm">Warm-up</span>
             </div>
             <p class="pb-scenario">A city council is deciding whether to pedestrianize the main square. It posts a survey link on the council website and its social media accounts, leaves it open for six weeks, and reports the result to the planning committee.</p>
@@ -5632,7 +5760,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-3"><span class="pb-num">87</span>Four questionable practices in one paragraph</h3>
+              <h3 id="p5-3"><span class="pb-num">89</span>Four questionable practices in one paragraph</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">You are reviewing a manuscript for a journal. The methods and results read as follows. Nothing in it is fabricated, and every number is real. It should still not be published in this form.</p>
@@ -5684,7 +5812,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-4"><span class="pb-num">88</span>The cleaning log that broke the data</h3>
+              <h3 id="p5-4"><span class="pb-num">90</span>The cleaning log that broke the data</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A research assistant hands you a cleaned dataset for a two-wave wellbeing study and, to their considerable credit, an actual log of what they did to it. Reading the log is faster than discovering each problem later.</p>
@@ -5756,7 +5884,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-5"><span class="pb-num">89</span>The figure that made 0.27 look enormous</h3>
+              <h3 id="p5-5"><span class="pb-num">91</span>The figure that made 0.27 look enormous</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A retail consultancy sends its client a one-page summary of a store-layout trial. The figure is the whole page, and you have been asked whether the client should spend two million on the rollout.</p>
@@ -5819,7 +5947,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-6"><span class="pb-num">90</span>Three things wrong with one sentence</h3>
+              <h3 id="p5-6"><span class="pb-num">92</span>Three things wrong with one sentence</h3>
               <span class="pb-chip warm">Warm-up</span>
             </div>
             <p class="pb-scenario">A results paragraph comes back from a co-author. The analysis is sound and every number was computed correctly, but the sentence breaks exactly three APA 7 formatting rules. Find them, then write the version that goes in the paper.</p>

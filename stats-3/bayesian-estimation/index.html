@@ -92,6 +92,21 @@
         <h2>Central vs. highest-density intervals</h2>
         <p>The shaded band above is a <strong>central</strong> interval: equal probability trimmed from each tail. An alternative is the <strong>highest posterior density (HPD)</strong> interval: the <em>shortest</em> range containing the target probability. For a symmetric posterior they're identical; for a skewed one the HPD hugs the peak and is a little narrower. Both are legitimate. Central intervals are simpler, HPD intervals are tightest.</p>
 
+        <h2>Reading the region off a grid</h2>
+        <p>The posterior above is a curve, so its interval comes from a quantile function. A grid posterior, the kind <a href="../../stats-3/bayesian-thinking/">&sect;3.7</a> builds as a table of candidate values, has no quantile function and does not need one. The highest-density idea works straight on the rows.</p>
+        <p>Sort the hypotheses by posterior mass, biggest first, and take them one at a time until the running total clears your target. Whatever you took is the region. Because a Beta prior times a binomial likelihood is always single-peaked, the hypotheses that come out are always neighbors, so the region reads as a range rather than a scatter of separate values.</p>
+        <p>On the nine-row table from the previous lesson, where a spun bottle cap landed lip-up nine times in twelve:</p>
+        <table class="ref-table">
+          <thead><tr><th>Taken in order</th><th><em>p</em> = .7</th><th>.8</th><th>.6</th><th>.9</th><th>.5</th></tr></thead>
+          <tbody>
+            <tr><td>Posterior mass</td><td>.3110</td><td>.3065</td><td>.1841</td><td>.1106</td><td>.0697</td></tr>
+            <tr><td>Running total</td><td>.3110</td><td>.6175</td><td>.8016</td><td>.9122</td><td><strong>.9818</strong></td></tr>
+          </tbody>
+        </table>
+        <p>Four hypotheses hold 91.2%, which is short of the target, so the fifth comes in and the region is <em>p</em> = .5 through .9, carrying 98.2% of the posterior.</p>
+        <p>That overshoot is not an error, and rounding it away in a write-up would be. A discrete posterior cannot hold exactly 95% of itself, in the same way that five whole coins cannot be worth 4.75 of them, so the honest sentence names the region and the mass it actually carries: "the smallest 95% region runs from .5 to .9 and holds 98.2% of the posterior." Refine the grid and the overshoot shrinks. At nineteen candidates .05 apart the smallest region clearing 95% runs .50 to .90 and holds 95.8%, and the continuous Beta(10, 4) posterior sitting behind both of them has a 95% highest-density interval of [.486, .926]. You can watch all three on <a href="../../stats-3/bayesian-thinking/?hyp=19&amp;n=12&amp;k=9">the grid widget with nineteen hypotheses loaded</a>.</p>
+        <p>Two habits go with this. Report the level you achieved rather than the one you asked for, and say which rule produced the region, because central and highest-density intervals are different objects and a skewed posterior pulls them apart. Beta(10, 4) is skewed: its central interval is [.462, .909] and its highest-density interval [.486, .926], shifted right and about .008 narrower.</p>
+
         <h2>Watch it tighten</h2>
         <p>Slide the trials up and the posterior narrows, so the credible interval shrinks. More data, more certainty, exactly as it should. Crank the credibility from 90% to 99% and the band widens: demanding more certainty means admitting a wider range, the same precision-vs-confidence trade-off you saw with confidence intervals.</p>
 
@@ -100,6 +115,7 @@
         </div>
 
         <p class="pb-xref"><a href="../../problems.html#p4-2">Problem 75 of the practice problems</a> takes a Beta(8, 12) prior from last quarter, updates it on 33 completions out of 60 users, and asks for the posterior's mean, mode and standard deviation, then why that mean sits below the observed completion rate. To watch the Beta distribution itself change shape as its two parameters move, the <a href="../../distributions.html">distribution playground</a> has it alongside eight others.</p>
+        <p class="pb-xref"><a href="../../problems.html#p4-12">Problem 85</a> asks for the smallest 95% region of a nine-row grid posterior and for the mass it actually carries, which is the reading this section describes.</p>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
@@ -151,7 +167,7 @@
       var lo = betaInv(a, b, (1 - level) / 2), hi = betaInv(a, b, 1 - (1 - level) / 2);
       var mean = a / (a + b);
 
-      var baseY = H - 20, top = 14, peak = 0;
+      var baseY = H - 34, top = 14, peak = 0;   // room for the tick row AND the axis title
       for (var i = 0; i <= 200; i++) { var v = betaPdf(i / 200, a, b); if (v > peak) peak = v; }
       var scale = (baseY - top) / (peak || 1);
       ctx.clearRect(0, 0, W, H);
@@ -174,6 +190,14 @@
       ctx.fillText("possible value of p →", W / 2, H - 3);
       ctx.strokeStyle = VIZ.css("--primary"); ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]);
       [lo, hi].forEach(function (v) { ctx.beginPath(); ctx.moveTo(vx(v), top); ctx.lineTo(vx(v), baseY); ctx.stroke(); }); ctx.setLineDash([]);
+      /* print the band's own limits on it: the shaded region is the answer, and
+         a reader should be able to quote its ends without reaching for the
+         stat row. They sit at the top of each dashed line, where the posterior
+         is by construction near zero, and are clamped inside the plot. */
+      ctx.fillStyle = VIZ.css("--primary"); ctx.font = "600 11px Inter,sans-serif"; ctx.textAlign = "center";
+      [lo, hi].forEach(function (v) {
+        ctx.fillText(v.toFixed(3).replace(/^0\./, "."), Math.min(W - pad - 14, Math.max(pad + 14, vx(v))), top + 9);
+      });
       ctx.strokeStyle = "#f97316"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(vx(mean), top); ctx.lineTo(vx(mean), baseY); ctx.stroke();
       ctx.fillStyle = "#f97316"; ctx.textAlign = "center"; ctx.font = "600 11px Inter,sans-serif"; ctx.fillText("mean", vx(mean), top - 2);
 

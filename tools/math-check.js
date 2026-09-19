@@ -60,6 +60,10 @@
         loadings, the fit test's df as the count it comes from, and The
         Rotation Dial driven under the DOM shim with every implied
         correlation asserted invariant
+    20. Bayes as a table — the grid posterior in stats-3/bayesian-thinking,
+        asserted identical to its Beta conjugate, two updates asserted
+        identical to one pooled update, and the discrete 95% region's
+        overshoot and contiguity
 
    Note on section 7: the tool pages compute these inline against the DOM,
    so they can't be imported. What is asserted here is that viz.js still
@@ -4072,6 +4076,529 @@ try {
   failures.push({ section, label: 'the rotation widget could not be driven — ids or structure changed?',
     got: String(e.message), want: 'a runnable rot-canvas script and a readable wellbeing-survey.csv', tol: 0, err: NaN,
     src: 'stats-3/factor-analysis-pca' });
+}
+
+
+/* ============================================================
+   20 — Bayes as a table (stats-3/bayesian-thinking, stats-3/bayesian-estimation)
+
+   P99 gave §3.7 the arithmetic a Bayesian assignment actually asks for: a
+   handful of hypotheses, a prior column, a binomial likelihood column, their
+   product, and the normalizing step that turns the products into a posterior.
+   The new widget, Bayes by Hand, is driven here under the same DOM shim
+   sections 8 to 19 use, through the page's OWN ?hyp= / ?prior= / ?n= / ?k=
+   map, with applyControl lifted out of site.js by brace-matching rather than
+   reimplemented.
+
+   FOUR THINGS ARE THE POINT OF IT, and each is asserted rather than described.
+
+   (a) THE GRID AND THE CONJUGATE ARE THE SAME ANSWER, exactly. A Beta prior
+       density read at the grid points and normalized, times a binomial
+       likelihood and normalized again, IS the Beta posterior density read at
+       those points and normalized, because both columns are proportional to
+       p^(a+k-1)(1-p)^(b+n-k-1). So the agreement is an identity rather than a
+       close approximation, and it is asserted to 1e-15 over a grid of states
+       including the informed prior, not only on the lesson's default.
+
+   (b) TWO SAMPLES ARE ONE SAMPLE. Updating on (n1, k1) and then on (n2, k2)
+       has to land on the posterior that pooling gives in one step, because
+       the two routes multiply the prior by the same power of p. The binomial
+       coefficients differ between them, 220 x 56 against 38,760, which is
+       exactly why the check matters: a constant that varies between routes
+       but not between rows must cancel in the normalization. Both the
+       identity and that coefficient ratio are asserted.
+
+   (c) THE 95% REGION OVERSHOOTS, AND BY HOW MUCH IS THE POINT. A discrete
+       posterior cannot hold exactly 95% of itself, so the rule is to take
+       hypotheses in descending order of mass until the running total clears
+       the target and then report the mass achieved. The set is asserted to be
+       CONTIGUOUS at every state tested, which is what licenses printing it as
+       a range, and the published readings are checked: nine hypotheses give
+       .5 to .9 holding 98.2%, nineteen give .50 to .90 holding 95.8%.
+
+   (d) The shipped widget is driven rather than trusted. The table is written
+       as markup and is therefore read back as markup, the way section 9 reads
+       tables.html's <tbody>; the slider bounds and the seg's default come out
+       of the HTML, and the default is read BEFORE any button is clicked,
+       because a default switched quietly in the markup is exactly what that
+       ordering catches (the lesson sections 10, 11, 15, 18 and 19 each
+       learned). The prose table baked into the page is recomputed here too,
+       cell for cell, so the widget and the paragraph above it cannot drift.
+
+   The §3.8 additions and the two new practice problems are recomputed here as
+   well, since both publish numbers a reader is asked to reproduce by hand.
+   The widget is found by the literal "bh-canvas", so keep that marker.
+   ============================================================ */
+head('Bayes as a table (the shipped widget)');
+
+/* ---- the arithmetic, derived here and shared with nothing ---- */
+const bhLogChoose = (n, k) => V.gammaln(n + 1) - V.gammaln(k + 1) - V.gammaln(n - k + 1);
+function bhBinom(n, k, p) {
+  if (k < 0 || k > n) return 0;
+  if (p <= 0) return k === 0 ? 1 : 0;
+  if (p >= 1) return k === n ? 1 : 0;
+  return Math.exp(bhLogChoose(n, k) + k * Math.log(p) + (n - k) * Math.log(1 - p));
+}
+function bhBeta(p, a, b) {
+  if (p <= 0 || p >= 1) return 0;
+  return Math.exp((a - 1) * Math.log(p) + (b - 1) * Math.log(1 - p)
+    - (V.gammaln(a) + V.gammaln(b) - V.gammaln(a + b)));
+}
+const bhNorm = (v) => { const s = v.reduce((a, b) => a + b, 0); return v.map(x => x / s); };
+const bhHyp = (m) => [...Array(m)].map((_, j) => (j + 1) / (m + 1));
+const bhShape = (peak, strength) => (peak === null ? { a: 1, b: 1 }
+  : { a: 1 + strength * peak, b: 1 + strength * (1 - peak) });
+function bhGrid(m, n, k, peak, strength) {
+  const Hy = bhHyp(m), sh = bhShape(peak, strength);
+  const prior = bhNorm(Hy.map(p => bhBeta(p, sh.a, sh.b)));
+  const like = Hy.map(p => bhBinom(n, k, p));
+  const prod = Hy.map((p, i) => prior[i] * like[i]);
+  const ev = prod.reduce((a, b) => a + b, 0);
+  return { H: Hy, prior, like, prod, ev, post: prod.map(v => v / ev), sh };
+}
+function bhRegion(post, target) {
+  const idx = post.map((v, i) => i).sort((a, b) => post[b] - post[a]);
+  const take = [];
+  let run = 0;
+  for (const i of idx) { take.push(i); run += post[i]; if (run >= target - 1e-12) break; }
+  take.sort((a, b) => a - b);
+  return { take, mass: run, contiguous: take.every((v, i) => i === 0 || v === take[i - 1] + 1) };
+}
+
+/* ---- (a) the grid IS the conjugate posterior, over a spread of states ---- */
+for (const m of [5, 9, 13, 19, 21]) {
+  for (const [n, k] of [[12, 9], [20, 13], [1, 0], [40, 40], [8, 4]]) {
+    for (const peak of [null, 0.05, 0.3, 0.5, 0.95]) {
+      const g = bhGrid(m, n, k, peak, 10);
+      const conj = bhNorm(g.H.map(p => bhBeta(p, g.sh.a + k, g.sh.b + n - k)));
+      let worst = 0;
+      for (let i = 0; i < m; i++) worst = Math.max(worst, Math.abs(g.post[i] - conj[i]));
+      eq(`grid = Beta posterior at m = ${m}, ${k} of ${n}, peak ${peak === null ? 'flat' : peak}`,
+         worst, 0, 5e-15,
+         'both columns are proportional to p^(a+k-1)(1-p)^(b+n-k-1), so normalizing makes them equal');
+    }
+  }
+}
+/* the closed form the lesson prints, and the mode a flat prior puts on k/n */
+eq('Beta(10, 4) mean', 10 / 14, 0.7143, 5e-5, 'the lesson prints .7143');
+eq('Beta(10, 4) mode', 9 / 12, 0.75, 1e-12, 'a flat prior puts the mode on the observed rate');
+is('nine of twelve under a flat prior gives Beta(10, 4)',
+   `${1 + 9},${1 + 3}`, '10,4', 'add the successes to the first parameter and the failures to the second');
+
+/* ---- (b) two samples are one sample ---- */
+for (const m of [9, 19]) {
+  for (const [n1, k1, n2, k2] of [[12, 9, 8, 5], [20, 13, 5, 1], [3, 0, 7, 7], [40, 20, 40, 20]]) {
+    for (const peak of [null, 0.3]) {
+      const g1 = bhGrid(m, n1, k1, peak, 10);
+      const two = bhNorm(g1.H.map((p, i) => g1.post[i] * bhBinom(n2, k2, p)));
+      const pooled = bhGrid(m, n1 + n2, k1 + k2, peak, 10).post;
+      let worst = 0;
+      for (let i = 0; i < m; i++) worst = Math.max(worst, Math.abs(two[i] - pooled[i]));
+      eq(`updating twice equals pooling: ${k1}/${n1} then ${k2}/${n2}, m = ${m}, ` +
+         `${peak === null ? 'flat' : 'informed'} prior`, worst, 0, 1e-15,
+         'the two routes multiply the prior by the same power of p');
+    }
+  }
+}
+{
+  const c129 = Math.round(Math.exp(bhLogChoose(12, 9))), c85 = Math.round(Math.exp(bhLogChoose(8, 5)));
+  const c2014 = Math.round(Math.exp(bhLogChoose(20, 14)));
+  is('C(12, 9) as the lesson prints it', c129, 220, 'the lesson');
+  is('C(8, 5) as the lesson prints it', c85, 56, 'the lesson');
+  is('C(20, 14) as the lesson prints it', c2014, 38760, 'the lesson');
+  is('and the two routes really do carry different coefficients', c129 * c85 !== c2014, true,
+     'which is why the cancellation has to be argued rather than assumed');
+  eq('they differ by a factor constant across every row', c2014 / (c129 * c85), 3.1461, 5e-5,
+     'a per-route constant cancels in the division that normalizes the column');
+}
+
+/* ---- (c) the region, its overshoot and its contiguity ---- */
+for (const m of [5, 9, 13, 19, 21]) {
+  for (const [n, k] of [[12, 9], [20, 13], [6, 3], [30, 2]]) {
+    for (const peak of [null, 0.3]) {
+      const r = bhRegion(bhGrid(m, n, k, peak, 10).post, 0.95);
+      is(`the 95% region is a run of neighbours at m = ${m}, ${k} of ${n}` +
+         `${peak === null ? '' : ', informed prior'}`, r.contiguous, true,
+         'a Beta prior times a binomial likelihood is single-peaked, so the top-mass set is contiguous');
+      is(`and it really does clear 95% at m = ${m}, ${k} of ${n}` +
+         `${peak === null ? '' : ', informed prior'}`, r.mass >= 0.95, true, 'the stopping rule');
+    }
+  }
+}
+{
+  const g9 = bhGrid(9, 12, 9, null, 10), r9 = bhRegion(g9.post, 0.95);
+  eq('the published nine-row posterior mean', g9.H.reduce((a, p, i) => a + p * g9.post[i], 0),
+     0.7148, 5e-5, 'the lesson prints .7148 in the readout and .715 in prose');
+  eq('the published evidence, the total of the product column', g9.ev, 0.0856, 5e-5,
+     'the lesson prints .0856');
+  eq('its region runs from .5', g9.H[r9.take[0]], 0.5, 1e-12, 'the lesson prints .5 to .9');
+  eq('to .9', g9.H[r9.take[r9.take.length - 1]], 0.9, 1e-12, 'the lesson prints .5 to .9');
+  eq('and holds 98.2%', 100 * r9.mass, 98.2, 5e-2, 'the lesson prints 98.2%');
+  is('which takes five of the nine hypotheses', r9.take.length, 5, "§3.8's running-total table");
+  /* §3.8's running totals, printed row by row */
+  [[0.7, 0.3110, 0.3110], [0.8, 0.3065, 0.6175], [0.6, 0.1841, 0.8016],
+   [0.9, 0.1106, 0.9122], [0.5, 0.0697, 0.9818]].forEach(([p, mass, cum], step) => {
+    const idx = g9.post.map((v, i) => i).sort((a, b) => g9.post[b] - g9.post[a]);
+    eq(`§3.8 running total, step ${step + 1}: the hypothesis taken`, g9.H[idx[step]], p, 1e-12,
+       'stats-3/bayesian-estimation');
+    eq(`§3.8 running total, step ${step + 1}: its mass`, g9.post[idx[step]], mass, 5e-5,
+       'stats-3/bayesian-estimation');
+    eq(`§3.8 running total, step ${step + 1}: the cumulative total`,
+       idx.slice(0, step + 1).reduce((a, i) => a + g9.post[i], 0), cum, 5e-5,
+       'stats-3/bayesian-estimation');
+  });
+  const g19 = bhGrid(19, 12, 9, null, 10), r19 = bhRegion(g19.post, 0.95);
+  eq('nineteen rows move the posterior mean to the closed form',
+     g19.H.reduce((a, p, i) => a + p * g19.post[i], 0), 0.7143, 5e-5, 'the lesson prints .7143');
+  eq('and put the peak on the Beta mode', g19.H[g19.post.indexOf(Math.max(...g19.post))], 0.75,
+     1e-12, 'the lesson prints .75');
+  eq('the finer region starts at .50', g19.H[r19.take[0]], 0.5, 1e-12, '§3.8 prints .50 to .90');
+  eq('and ends at .90', g19.H[r19.take[r19.take.length - 1]], 0.9, 1e-12, '§3.8 prints .50 to .90');
+  eq('holding 95.8%', 100 * r19.mass, 95.8, 5e-2, '§3.8 prints 95.8%');
+  is('so the overshoot really does shrink with the grid', r19.mass < r9.mass, true,
+     'the whole reason §3.8 tells a reader to refine rather than round');
+  /* the informed prior the lesson quotes */
+  const gp = bhGrid(9, 12, 9, 0.3, 10);
+  eq('an informed prior peaking at .30 moves the mean to .542',
+     gp.H.reduce((a, p, i) => a + p * gp.post[i], 0), 0.5417, 5e-5, 'the lesson prints .542');
+  eq('and that is the Beta(13, 11) mean', (4 + 9) / (4 + 9 + 8 + 3), 0.5417, 5e-5,
+     'Beta(1 + 10(.3), 1 + 10(.7)) = Beta(4, 8), then + 9 and + 3');
+}
+/* §3.8's continuous comparisons */
+{
+  const binv = (a, b, t) => { let lo = 0, hi = 1; for (let i = 0; i < 90; i++) { const m = (lo + hi) / 2; if (V.betai(a, b, m) < t) lo = m; else hi = m; } return (lo + hi) / 2; };
+  eq('Beta(10, 4) central 95%, lower', binv(10, 4, 0.025), 0.462, 5e-4, '§3.8 prints [.462, .909]');
+  eq('Beta(10, 4) central 95%, upper', binv(10, 4, 0.975), 0.909, 5e-4, '§3.8 prints [.462, .909]');
+  /* the highest-density interval: the shortest one carrying the level */
+  let best = null;
+  for (let t = 0; t <= 0.05 + 1e-12; t += 2e-4) {
+    const lo = binv(10, 4, t), hi = binv(10, 4, t + 0.95);
+    if (!best || hi - lo < best.w) best = { lo, hi, w: hi - lo };
+  }
+  eq('Beta(10, 4) highest-density 95%, lower', best.lo, 0.486, 6e-4, '§3.8 prints [.486, .926]');
+  eq('Beta(10, 4) highest-density 95%, upper', best.hi, 0.926, 6e-4, '§3.8 prints [.486, .926]');
+  eq('and it is about .008 narrower than the central one',
+     (binv(10, 4, 0.975) - binv(10, 4, 0.025)) - best.w, 0.008, 6e-4, '§3.8 prints about .008');
+  is('with the skew pushing it to the right', best.lo > binv(10, 4, 0.025) && best.hi > binv(10, 4, 0.975),
+     true, 'which is why the two rules have to be named apart');
+  /* the software box's Bayes factor, against a point null at .5 */
+  const bf10 = Math.exp(V.gammaln(10) + V.gammaln(4) - V.gammaln(14)) / Math.pow(0.5, 12);
+  eq('software.js: the Bayesian binomial BF10 on 9 of 12', bf10, 1.43, 5e-3,
+     'assets/js/software.js, bayesian-thinking');
+  eq('software.js: the posterior mass above .50', 1 - V.betai(10, 4, 0.5), 0.95, 5e-3,
+     'assets/js/software.js, bayesian-thinking');
+}
+
+/* ---- the two new practice problems, recomputed ---- */
+{
+  const g = bhGrid(9, 20, 13, null, 10), r = bhRegion(g.post, 0.95);
+  is('problem 85: C(20, 13)', Math.round(Math.exp(bhLogChoose(20, 13))), 77520, 'problems.html #p4-12');
+  [3.708e-9, 1.332e-5, 1.0178e-3, 1.45631e-2, 7.39288e-2, 1.658823e-1, 1.642620e-1,
+   5.45499e-2, 1.9705e-3].forEach((want, i) => {
+    rel(`problem 85: the given likelihood at p = .${i + 1}`, g.like[i], want, 5e-4, 'problems.html #p4-12');
+  });
+  eq('problem 85: the marginal likelihood', g.ev, 0.0529097, 5e-8, 'problems.html #p4-12');
+  eq('problem 85: and it is the likelihood total over nine',
+     g.like.reduce((a, b) => a + b, 0) / 9, g.ev, 1e-15, 'a flat prior divides every row by the same 9');
+  [0, 0, 0.0021, 0.0306, 0.1553, 0.3484, 0.3450, 0.1146, 0.0041].forEach((want, i) => {
+    eq(`problem 85: posterior at p = .${i + 1}`, g.post[i], want, 5e-5, 'problems.html #p4-12');
+  });
+  eq('problem 85: the posterior mean', g.H.reduce((a, p, i) => a + p * g.post[i], 0), 0.6364, 5e-5,
+     'problems.html #p4-12');
+  is('problem 85: the most probable hypothesis', g.H[g.post.indexOf(Math.max(...g.post))], 0.6,
+     'problems.html #p4-12');
+  is('problem 85: the region takes four hypotheses', r.take.length, 4, 'problems.html #p4-12');
+  eq('problem 85: from .5', g.H[r.take[0]], 0.5, 1e-12, 'problems.html #p4-12');
+  eq('problem 85: to .8', g.H[r.take[3]], 0.8, 1e-12, 'problems.html #p4-12');
+  eq('problem 85: carrying 96.3%', 100 * r.mass, 96.3, 5e-2, 'problems.html #p4-12');
+  is('problem 85: three hypotheses would not have been enough',
+     g.post.slice().sort((a, b) => b - a).slice(0, 3).reduce((a, b) => a + b, 0) < 0.95, true,
+     'the fourth is what the rule forces in');
+
+  /* problem 86: the same count through the conjugate */
+  eq('problem 86: Beta(14, 8) mean', 14 / 22, 0.6364, 5e-5, 'problems.html #p4-13');
+  eq('problem 86: Beta(14, 8) mode', 13 / 20, 0.65, 1e-12, 'problems.html #p4-13');
+  eq('problem 86: Beta(14, 8) SD', Math.sqrt(14 * 8 / (22 * 22 * 23)), 0.1003, 5e-5,
+     'problems.html #p4-13');
+  eq('problem 86: Beta(19, 11) mean', 19 / 30, 0.6333, 5e-5, 'problems.html #p4-13');
+  eq('problem 86: Beta(19, 11) mode', 18 / 28, 0.6429, 5e-5, 'problems.html #p4-13');
+  eq('problem 86: Beta(19, 11) SD', Math.sqrt(19 * 11 / (30 * 30 * 31)), 0.0866, 5e-5,
+     'problems.html #p4-13');
+  const binv = (a, b, t) => { let lo = 0, hi = 1; for (let i = 0; i < 90; i++) { const m = (lo + hi) / 2; if (V.betai(a, b, m) < t) lo = m; else hi = m; } return (lo + hi) / 2; };
+  eq('problem 86: Beta(14, 8) .025 quantile', binv(14, 8, 0.025), 0.430, 5e-4, 'problems.html #p4-13');
+  eq('problem 86: Beta(14, 8) .975 quantile', binv(14, 8, 0.975), 0.819, 5e-4, 'problems.html #p4-13');
+  eq('problem 86: Beta(19, 11) .025 quantile', binv(19, 11, 0.025), 0.457, 5e-4, 'problems.html #p4-13');
+  eq('problem 86: Beta(19, 11) .975 quantile', binv(19, 11, 0.975), 0.793, 5e-4, 'problems.html #p4-13');
+  eq('problem 86: the flat interval is .389 wide',
+     binv(14, 8, 0.975) - binv(14, 8, 0.025), 0.389, 5e-4, 'problems.html #p4-13');
+  eq('problem 86: the informed one .336', binv(19, 11, 0.975) - binv(19, 11, 0.025), 0.336, 5e-4,
+     'problems.html #p4-13');
+  eq('problem 86: so ten pretend trials tightened it by about 13%',
+     100 * (1 - (binv(19, 11, 0.975) - binv(19, 11, 0.025)) / (binv(14, 8, 0.975) - binv(14, 8, 0.025))),
+     13, 0.6, 'problems.html #p4-13');
+  is("problem 86: the Beta(6, 4) prior is worth ten trials", 6 + 4, 10, 'problems.html #p4-13');
+}
+
+/* ---- (d) the shipped widget ---- */
+try {
+  const BT_HTML = fs.readFileSync(path.join(ROOT, 'stats-3/bayesian-thinking/index.html'), 'utf8');
+  const srcBH = [...BT_HTML.matchAll(/<script>([\s\S]*?)<\/script>/g)]
+    .map(m => m[1]).filter(s => /bh-canvas/.test(s))[0];
+  if (!srcBH) throw new Error('no inline script mentioning bh-canvas');
+
+  const ctx20 = {};
+  ['clearRect', 'fillRect', 'strokeRect', 'beginPath', 'moveTo', 'lineTo', 'arc', 'closePath',
+   'fill', 'stroke', 'setLineDash', 'fillText', 'setTransform', 'save', 'restore', 'translate',
+   'rotate'].forEach(n => { ctx20[n] = () => {}; });
+  ctx20.measureText = t => ({ width: String(t).length * 6 });
+
+  const els20 = {};
+  const mk20 = () => {
+    const on = {};
+    const node = {
+      innerHTML: '', textContent: '', value: '', type: 'range', min: '0', max: '100', step: '1',
+      style: {}, dataset: {}, tagName: 'INPUT',
+      clientWidth: 640, parentElement: { clientWidth: 640 }, getContext: () => ctx20,
+      classList: { add: () => {}, remove: () => {}, toggle: () => {} },
+      querySelector: () => null, querySelectorAll: () => [], getAttribute: () => null,
+      addEventListener: (t, f) => { (on[t] = on[t] || []).push(f); },
+      fire: (t, e) => (on[t] || []).forEach(f => f.call(node, e)),
+      dispatchEvent: (e) => { node.fire(e.type, e); return true; }
+    };
+    return node;
+  };
+
+  /* every slider's bounds and default come out of the markup, never restated here */
+  const seen20 = {};
+  for (const m of BT_HTML.matchAll(
+      /<input type="range" id="(bh-[a-z0-9]+)" min="([-\d.]+)" max="([-\d.]+)" step="([-\d.]+)" value="([-\d.]+)"/g)) {
+    const e = mk20();
+    e.min = m[2]; e.max = m[3]; e.step = m[4]; e.value = m[5];
+    els20[m[1]] = e; seen20[m[1]] = m;
+  }
+  ['bh-hyp', 'bh-n', 'bh-k', 'bh-peak', 'bh-n2', 'bh-k2'].forEach(id => {
+    if (!seen20[id]) throw new Error('no range input with id ' + id);
+  });
+  is('the hypothesis count runs from 5 to 21', `${seen20['bh-hyp'][2]}..${seen20['bh-hyp'][3]}`, '5..21',
+     'the markup');
+  is('in steps of 2, so .5 is always one of the hypotheses', seen20['bh-hyp'][4], '2', 'the markup');
+  is('and it boots on nine, the count the lesson prints', Number(seen20['bh-hyp'][5]), 9, 'the markup');
+  is('the widget boots on twelve trials', Number(seen20['bh-n'][5]), 12, 'the markup');
+  is('and nine successes', Number(seen20['bh-k'][5]), 9, 'the markup');
+
+  /* the seg is read out of the page's own markup, and its default is read
+     BEFORE any click, because a click is sticky */
+  const segM20 = /<div class="seg" id="bh-seg">([\s\S]*?)<\/div>/.exec(BT_HTML);
+  if (!segM20) throw new Error('no #bh-seg markup');
+  const btns20 = [...segM20[1].matchAll(/<button([^>]*)>/g)].map(m => ({
+    dataset: { p: (/data-p="([^"]*)"/.exec(m[1]) || [, ''])[1] },
+    active: /class="[^"]*\bactive\b/.test(m[1]),
+    closest: function () { return this; },
+    classList: { toggle: function () {} }
+  }));
+  is('the prior seg offers two shapes', btns20.length, 2, 'flat and informed');
+  is('and boots on the flat one', (btns20.find(b => b.active) || {}).dataset.p, 'uniform',
+     'read out of the markup before any click, because a click is sticky');
+  const seg20 = mk20();
+  btns20.forEach(b => {
+    b.classList.toggle = (cls, on) => { if (cls === 'active') b.active = on; };
+    b.click = () => seg20.fire('click', { target: b });
+  });
+  seg20.querySelectorAll = () => btns20;
+  seg20.querySelector = (sel) => {
+    const m = /\[data-p="([^"]*)"\]/.exec(sel);
+    return (m && btns20.find(b => b.dataset.p === m[1])) || null;
+  };
+  els20['bh-seg'] = seg20;
+
+  const siteSrc20 = fs.readFileSync(path.join(ROOT, 'assets/js/site.js'), 'utf8');
+  const grab20 = (name) => {
+    const i = siteSrc20.indexOf('function ' + name);
+    const j = siteSrc20.indexOf('\n  }\n', i);
+    if (i < 0 || j < 0) throw new Error('site.js no longer defines ' + name);
+    return siteSrc20.slice(i, j + 4);
+  };
+  const applyControl20 = new Function(grab20('numeric') + grab20('applyControl') + ';return applyControl;')();
+
+  let maps20 = [];
+  const c20 = { console };
+  c20.window = c20;
+  c20.document = {
+    documentElement: {},
+    getElementById: id => els20[id] || (els20[id] = mk20()),
+    querySelector: sel => els20[sel.replace('#', '')] || (els20[sel.replace('#', '')] = mk20()),
+    querySelectorAll: () => []
+  };
+  c20.getComputedStyle = () => ({ getPropertyValue: () => '#000000' });
+  c20.MutationObserver = function () { this.observe = () => {}; };
+  c20.ResizeObserver = function () { this.observe = () => {}; };
+  c20.requestAnimationFrame = cb => cb();
+  c20.addEventListener = () => {};
+  c20.Event = function (t) { this.type = t; };
+  c20.location = { search: '?x=1' };
+  c20.SC = { preset: m => { maps20.push(m); } };
+  vm.createContext(c20);
+  vm.runInContext(fs.readFileSync(path.join(ROOT, 'assets/js/viz.js'), 'utf8'), c20, { filename: 'viz.js' });
+  vm.runInContext(srcBH, c20, { filename: 'stats-3/bayesian-thinking#bayes-by-hand' });
+
+  const map20 = maps20.filter(m => m.hyp && m.prior && m.n && m.k)[0];
+  if (!map20) throw new Error('the widget registered no ?hyp=/?prior=/?n=/?k= map with SC.preset');
+  const keys20 = Object.keys(map20);
+  is('?n= is applied before ?k=, because n sets the successes slider maximum',
+     keys20.indexOf('n') < keys20.indexOf('k'), true, 'SC.preset iterates its keys in insertion order');
+
+  const rows20 = () => [...String(els20['bh-tab'].innerHTML).matchAll(/<tr([^>]*)>([\s\S]*?)<\/tr>/g)]
+    .map(m => ({ shaded: /bh-in/.test(m[1]),
+                 cells: [...m[2].matchAll(/<t[dh][^>]*>([^<]*)<\/t[dh]>/g)].map(x => x[1]) }));
+  const trim20 = s => s.replace(/^0\./, '.');
+  const sig20 = v => (!isFinite(v) || v === 0) ? '0'
+    : (v < 5e-5 ? v.toExponential(1) : trim20(v.toFixed(4)));
+  const pStr20 = p => trim20(p.toFixed(3));
+  const read20 = () => ({
+    mean: String(els20['bh-mean'].textContent), map: String(els20['bh-map'].textContent),
+    reg: String(els20['bh-reg'].textContent), mass: String(els20['bh-mass'].textContent),
+    ev: String(els20['bh-ev'].textContent), gap: String(els20['bh-gap'].textContent),
+    gapk: String(els20['bh-gap-k'].textContent), cap: String(els20['bh-cap'].textContent)
+  });
+  if (!read20().mean) throw new Error('the readout row stayed empty on boot');
+
+  function checkWidget(tag, m, n, k, peak) {
+    const g = bhGrid(m, n, k, peak, 10), r = bhRegion(g.post, 0.95);
+    const got = rows20(), body = got.slice(1, 1 + m);
+    is(`${tag}: the table has a header, ${m} hypotheses and a total row`, got.length, m + 2,
+       'one row per hypothesis');
+    for (let i = 0; i < m; i++) {
+      const want = [pStr20(g.H[i]), sig20(g.prior[i]), sig20(g.like[i]), sig20(g.prod[i]), sig20(g.post[i])];
+      want.forEach((v, c) => {
+        is(`${tag}: row ${i + 1} cell ${c + 1}`, body[i].cells[c], v, 'derived from the counts alone');
+      });
+      is(`${tag}: row ${i + 1} shading`, body[i].shaded, r.take.indexOf(i) >= 0,
+         'the shaded rows are the 95% region');
+    }
+    is(`${tag}: the product column's total`, got[m + 1].cells[3], sig20(g.ev),
+       'the marginal likelihood, printed rather than described');
+    const rd = read20();
+    is(`${tag}: the posterior mean`, rd.mean,
+       trim20(g.H.reduce((a, p, i) => a + p * g.post[i], 0).toFixed(4)), 'derived here');
+    is(`${tag}: the most probable hypothesis`, rd.map,
+       pStr20(g.H[g.post.indexOf(Math.max(...g.post))]), 'derived here');
+    is(`${tag}: the region`, rd.reg,
+       pStr20(g.H[r.take[0]]) + ' to ' + pStr20(g.H[r.take[r.take.length - 1]]), 'derived here');
+    is(`${tag}: the mass it carries`, rd.mass, (100 * r.mass).toFixed(1) + '%', 'derived here');
+    is(`${tag}: the evidence`, rd.ev, sig20(g.ev), 'derived here');
+    is(`${tag}: nothing separates the grid from the closed form`, rd.gap, '.0000',
+       'the identity, printed rather than claimed');
+  }
+
+  /* the boot state IS the table the lesson prints in prose, cell for cell */
+  checkWidget('boots on the printed table', 9, 12, 9, null);
+  is('and it names the check it is making', read20().gapk, 'Gap from the Beta posterior', 'the mode');
+  is('the caption names the four columns', read20().cap, 'Prior, likelihood, product, posterior', 'the mode');
+  {
+    /* the prose table in the page's own HTML, read back and recomputed */
+    const tbl = /Prior &times; likelihood<\/th><th>Posterior<\/th><\/tr>\s*<\/thead>\s*<tbody>([\s\S]*?)<\/tbody>/
+      .exec(BT_HTML);
+    if (!tbl) throw new Error('the printed grid table is no longer in the prose');
+    const prose = [...tbl[1].matchAll(/<tr>([\s\S]*?)<\/tr>/g)]
+      .map(m => [...m[1].matchAll(/<td>([\s\S]*?)<\/td>/g)].map(x => x[1].replace(/<[^>]+>/g, '')));
+    const g = bhGrid(9, 12, 9, null, 10);
+    is('the printed table carries nine hypotheses and a total row', prose.length, 10, 'the prose');
+    for (let i = 0; i < 9; i++) {
+      is(`the printed table's hypothesis ${i + 1}`, prose[i][0], pStr20(g.H[i]).replace(/0+$/, ''),
+         'the prose and the widget must not drift');
+      is(`the printed table's prior ${i + 1}`, prose[i][1], sig20(g.prior[i]), 'the prose');
+      is(`the printed table's likelihood ${i + 1}`, prose[i][2], sig20(g.like[i]), 'the prose');
+      is(`the printed table's product ${i + 1}`, prose[i][3], sig20(g.prod[i]), 'the prose');
+      is(`the printed table's posterior ${i + 1}`, prose[i][4], sig20(g.post[i]), 'the prose');
+    }
+    is("the printed table's evidence", prose[9][3], sig20(g.ev), 'the prose');
+  }
+
+  /* the preset map, on the lesson's own examples */
+  applyControl20(els20['bh-hyp'], '19');
+  checkWidget('?hyp=19', 19, 12, 9, null);
+  is('nineteen rows put the peak on the Beta mode', read20().map, '.750', 'the lesson prints .75');
+  applyControl20(els20['bh-hyp'], '9');
+
+  map20.prior('0.3');
+  checkWidget('?prior=0.3', 9, 12, 9, 0.3);
+  is('an informed prior moves the mean off .7148', read20().mean, '.5417', 'the lesson prints .542');
+  map20.prior('uniform');
+  is('?prior=uniform puts it back', read20().mean, '.7148', 'the flat prior');
+
+  applyControl20(els20['bh-n'], '20');
+  applyControl20(els20['bh-k'], '13');
+  checkWidget("?n=20&k=13, problem 85's numbers", 9, 20, 13, null);
+  is("problem 85's region, off the shipped widget", read20().reg, '.500 to .800', 'problems.html #p4-12');
+  is('and the mass it carries', read20().mass, '96.3%', 'problems.html #p4-12');
+  applyControl20(els20['bh-n'], '12');
+  applyControl20(els20['bh-k'], '9');
+
+  /* successes can never exceed trials, and the maximum follows the markup */
+  applyControl20(els20['bh-k'], '40');
+  applyControl20(els20['bh-n'], '5');
+  is('dropping the trials drags the successes down with them',
+     Number(els20['bh-k'].value) <= 5, true, 'k can never exceed n');
+  applyControl20(els20['bh-n'], '12');
+  applyControl20(els20['bh-k'], '9');
+
+  /* the second sample: two updates, then the same answer in one */
+  els20['bh-more'].fire('click');
+  {
+    const g1 = bhGrid(9, 12, 9, null, 10);
+    const two = bhNorm(g1.H.map((p, i) => g1.post[i] * bhBinom(8, 5, p)));
+    const pooled = bhGrid(9, 20, 14, null, 10).post;
+    const body = rows20().slice(1, 10);
+    for (let i = 0; i < 9; i++) {
+      is(`two samples: row ${i + 1} takes step one's posterior as its prior`, body[i].cells[1],
+         sig20(g1.post[i]), 'yesterday\'s posterior is today\'s prior');
+      is(`two samples: row ${i + 1} posterior`, body[i].cells[4], sig20(two[i]), 'derived here');
+      is(`two samples: row ${i + 1} pooled in one step`, body[i].cells[5], sig20(pooled[i]),
+         'derived here');
+      is(`two samples: row ${i + 1} agrees between the routes`, body[i].cells[4], body[i].cells[5],
+         'the two right-hand columns print the same nine numbers');
+    }
+    is('two samples: the table gains a sixth column', body[0].cells.length, 6, 'pooled beside step two');
+    is('two samples: the readout switches to the route comparison', read20().gapk,
+       'Gap between the two routes', 'the mode');
+    is('two samples: and finds nothing between them', read20().gap, '.0000', 'the identity');
+    is('two samples: the posterior mean the lesson prints', read20().mean,
+       trim20(g1.H.reduce((a, p, i) => a + p * two[i], 0).toFixed(4)), 'derived here');
+    is('two samples: .4026 at p = .7 by either route', body[6].cells[4], '.4026',
+       'the lesson prints .4026');
+    is('and the same by the other', body[6].cells[5], '.4026', 'the lesson prints .4026');
+  }
+  els20['bh-more'].fire('click');
+  is('and the button takes it back to one sample', read20().mean, '.7148', 'the toggle');
+
+  /* a mangled parameter must leave the widget where it was */
+  const anchor20 = read20();
+  ['nonsense', '', 'NaN', '0x10', '12abc', 'Infinity'].forEach(bad => {
+    applyControl20(els20['bh-n'], bad);
+    applyControl20(els20['bh-hyp'], bad);
+    is(`the widget ignores a mangled ?n=/?hyp=${bad || '(empty)'}`, read20().mean, anchor20.mean,
+       "applyControl's rule: garbage leaves the control alone");
+  });
+  ['nonsense', '', '0x10', 'uniforms', 'NaN'].forEach(bad => {
+    map20.prior(bad);
+    is(`the widget ignores ?prior=${bad || '(empty)'}`, read20().mean, anchor20.mean,
+       'a name that is not a shape and a string that is not a number are both left alone');
+  });
+  /* out of range is snapped and clamped to the control's OWN bounds */
+  map20.prior('2');
+  is('?prior= clamps above the peak slider maximum', Number(els20['bh-peak'].value),
+     Number(els20['bh-peak'].max), "SC.preset's clamping rule");
+  map20.prior('-1');
+  is('?prior= clamps below its minimum', Number(els20['bh-peak'].value), Number(els20['bh-peak'].min),
+     'the same rule');
+  map20.prior('uniform');
+  applyControl20(els20['bh-hyp'], '400');
+  is('?hyp= clamps to the dial maximum', Number(els20['bh-hyp'].value), Number(els20['bh-hyp'].max),
+     'the same rule');
+} catch (e) {
+  failures.push({ section, label: 'the Bayes-by-Hand widget could not be driven — ids or structure changed?',
+    got: String(e.message), want: 'a runnable bh-canvas script', tol: 0, err: NaN,
+    src: 'stats-3/bayesian-thinking' });
 }
 
 /* ============================================================
