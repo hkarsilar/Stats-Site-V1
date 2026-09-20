@@ -826,6 +826,29 @@ window.SOFTWARE = {
       'Write the limitation into the conclusion rather than the limitations paragraph. The estimate belongs to people at the cutoff, and a sentence that generalizes it to everyone has claimed something the design cannot support.'
     ]
   },
+  "difference-in-differences": {
+    spss: [
+      'There is no difference-in-differences dialog. The estimate is one coefficient in an ordinary regression, so the work is getting the file into the right shape and building two columns before you open Regression at all.',
+      'The data must be <strong>long</strong>: one row per unit per period, with an id column, a period column and the outcome. If your file has one row per school with a column per term, reshape it first with <strong>Data → Restructure → Variables to Cases</strong>. This is where most of the mistakes happen, and the rest of the analysis is trivial once it is right.',
+      'In <strong>Transform → Compute Variable</strong> build <em>treated</em> (1 for a unit that eventually gets the treatment, in every period, including the ones before it started) and <em>post</em> (1 in every period from the switch onward, for every unit, including the ones that never get treated). Then build <em>did = treated * post</em>, which is 1 only for treated units in treated periods.',
+      '<strong>Analyze → Regression → Linear</strong> with the outcome as <em>Dependent</em> and <em>treated</em>, <em>post</em> and <em>did</em> as <em>Independent(s)</em>. The unstandardized <em>B</em> on <strong>did</strong> is the estimate. Tick <em>Statistics → Confidence intervals</em>, and report that row only.',
+      'The same model runs in <strong>Analyze → General Linear Model → Univariate</strong> with <em>treated</em> and <em>post</em> as fixed factors, where the interaction is in the model by default and the <em>treated * post</em> line of the Tests of Between-Subjects Effects table is the same test. The regression route is easier to read because it prints the coefficient rather than only its F.',
+      'Here is where SPSS bites. Those standard errors treat every row as an independent observation, and a school observed in eight terms supplies eight rows that are largely one fact. <strong>Analyze → Mixed Models → Linear</strong> with the unit id as a <em>Subject</em> gets you standard errors that respect the clustering; the fixed-effects part of the model is the same three predictors. The Linear Regression dialog has no cluster option at all, so its Sig. column on a panel is optimistic and sometimes wildly so.',
+      'For an event study, build a dummy per period (leave the last pre-treatment period out as the reference), multiply each by <em>treated</em>, and put the whole set in the model. The coefficients on the pre-treatment dummies are the diagnostic, and a line chart of the group means by period is worth printing beside them.'
+    ],
+    jasp: [
+      'JASP needs the same long file and the same three computed columns. Build them with <strong>Compute column</strong>, using <em>treated * post</em> for the interaction, then run <strong>Regression → Linear Regression</strong> with all three predictors and tick <em>Statistics → Confidence intervals</em>.',
+      'For clustering, <strong>Mixed Models → Linear Mixed Models</strong> takes the unit id as a random-effects grouping factor, which is the closest built-in equivalent and reports standard errors that account for repeated observations of the same unit.',
+      'The <strong>Rj</strong> module from the <strong>+</strong> menu runs the published version over the loaded data: <em>library(fixest); feols(score ~ i(post, treated) | school + term, data = dataset, cluster = ~school)</em> gives the estimate and a clustered standard error in one line, and <em>i(term, treated, ref = 4)</em> in place of the first term gives the event study.'
+    ],
+    apa: '<p>Twenty-five of the 50 schools began the tutoring scheme in term 5, and all 50 were observed for four terms before and four terms after. A difference-in-differences regression with school and term fixed effects estimated the effect on mean end-of-term score at 2.60 points, <em>SE</em> = 0.63, <em>t</em>(48) = 4.13, <em>p</em> &lt; .001, 95% CI [1.33, 3.87], with standard errors clustered by school. An event study using term 4 as the reference gave pre-treatment coefficients of −0.21, 0.14 and −0.08, none of them distinguishable from zero, consistent with parallel trends over the observed pre-period.</p>',
+    tips: [
+      'Report one coefficient, not four. The treated and post terms are the baseline gap and the shared time change, and printing them with stars beside them invites a reader to interpret two quantities the design exists to remove.',
+      'Say how the standard errors were clustered, in the same sentence as the estimate. Unclustered panel standard errors can be half the honest ones, so a result with no clustering stated is a result a reader cannot weigh.',
+      'Show the pre-treatment periods rather than asserting parallel trends. How many there were and how precisely each was estimated is what turns the assumption into evidence, and a reader can tell a quiet pre-period from a wide one only if you print both.',
+      'If units started treatment at different dates, say which estimator you used. Plain two-way fixed effects can return the wrong sign under staggered timing, and a sentence naming a cohort-based estimator is now the expected one.'
+    ]
+  },
   "survival-analysis": {
     spss: [
       '<strong>Analyze → Survival → Kaplan-Meier…</strong>',

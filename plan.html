@@ -146,7 +146,8 @@
          ?test=<slug>   jump straight to a plan. slugs:
            ttest-ind ttest-paired ttest-one anova anova-factorial rm-anova
            ancova correlation regression regression-multiple chisq logistic
-           count survival   (a raw leaf key, e.g. ?test=indep_t, also works)
+           count survival iv rdd did
+           (a raw leaf key, e.g. ?test=indep_t, also works)
          ?es=<n> (or ?d= / ?r= / ?f= / ?w=)  preset the expected effect size
          ?k=<n>   groups, for ANOVA        ?df=<n>  degrees of freedom, for χ²
        e.g.  plan.html?test=ttest-ind&d=0.5   →  independent t, n = 64/group
@@ -208,7 +209,13 @@
         { label: "A number or score", desc: "test score, reaction time, blood pressure, rating…", next: "num_link" },
         { label: "A yes/no or a category", desc: "passed/failed, diagnosis, which option they chose", next: "cat" },
         { label: "A count of events", desc: "number of errors, visits, seizures (0, 1, 2, …)", leaf: "count" },
-        { label: "Time until an event happens", desc: "survival / dropout, some cases never observed", leaf: "survival" }
+        { label: "Time until an event happens", desc: "survival / dropout, some cases never observed", leaf: "survival" },
+        { label: "I need a causal effect and cannot randomize", desc: "a natural experiment assigned the treatment instead of you", next: "causal" }
+      ]},
+      causal: { q: "What decided who got the treatment?", opts: [
+        { label: "Something that shifted treatment without touching the outcome", desc: "a lottery, a random encouragement, a distance, a queue position", leaf: "iv" },
+        { label: "A strict cutoff on a score every unit has", desc: "a grant above a mark, a program below an income line", leaf: "rdd" },
+        { label: "A policy that arrived in some places before others", desc: "and you hold records from before and after, for both", leaf: "did" }
       ]},
       num_link: { q: "What are you relating that number to?", opts: [
         { label: "Differences between groups or conditions", desc: "comparing averages", next: "num_groups" },
@@ -363,6 +370,33 @@
           "Roughly <strong>10 outcome events per predictor</strong> (events-per-variable), since a rare outcome needs a big sample.",
           "Little multicollinearity; watch for complete separation."
         ], specialN: "Logistic-regression power hinges on the outcome's base rate and how many predictors you fit, so simulate it, or use G*Power. The rule of thumb is <strong>~10 events (of the rarer outcome) per predictor</strong>." },
+      iv: { slug: "iv", name: "Instrumental variables (2SLS)", why: "A variable that moved the regressor, was assigned as good as randomly, and reaches the outcome only through that regressor. The estimate is the reduced form divided by the first stage.",
+        lesson: "stats-3/instrumental-variables", label: "Instrumental Variables & 2SLS", sc: null, es: null, apa: null,
+        apaSkel: "Two-stage least squares estimated the effect of " + ph("[regressor]") + " on " + ph("[outcome]") + " using " + ph("[instrument]") + " as an instrument. The first stage was " + ph("[strong / weak]") + ", " + em("F") + " = " + ph("__") + ", and the estimated effect was " + ph("__") + ", " + em("SE") + " = " + ph("__") + ", 95% CI [" + ph("__") + ", " + ph("__") + "], " + em("p") + " = " + ph("__") + ". The estimate applies to compliers.",
+        assump: [
+          "<strong>Relevance</strong>: the instrument moves the regressor. This one is testable, from the first-stage <em>F</em>.",
+          "<strong>Independence</strong> and <strong>exclusion</strong>: the instrument is as good as randomly assigned and touches the outcome only through the regressor. Neither is testable, so both need an argument.",
+          "A first-stage <em>F</em> under about 10 is a warning: a weak instrument biases the estimate toward the uncorrected one.",
+          "Report the estimate as a <a href=\"stats-3/instrumental-variables/\">local average treatment effect</a>, not a population average."
+        ], specialN: "Power for an instrumental-variable design depends on the first stage as well as the effect, so the usable sample is far smaller than the row count suggests. Simulate it, or plan the study on the reduced form, which is an ordinary regression the <a href=\"power.html\">power calculator</a> can handle." },
+      rdd: { slug: "rdd", name: "Regression discontinuity", why: "A treatment handed out by a strict cutoff on a continuous score. Center the score on the cutoff, fit a line each side inside a window, and the treatment indicator's coefficient is the jump.",
+        lesson: "stats-3/regression-discontinuity", label: "Regression Discontinuity Design", sc: null, es: null, apa: null,
+        apaSkel: "A local linear regression fitted within " + ph("[bandwidth]") + " either side of the cutoff (" + em("n") + " = " + ph("__") + ") estimated the effect on " + ph("[outcome]") + " at " + ph("__") + ", " + em("SE") + " = " + ph("__") + ", 95% CI [" + ph("__") + ", " + ph("__") + "], " + em("p") + " = " + ph("__") + ". The estimate applies to units near the cutoff.",
+        assump: [
+          "Everything other than the treatment varies smoothly through the cutoff. Untestable, and the whole design.",
+          "Pre-treatment covariates should show <strong>no jump</strong> at the cutoff; one that does contradicts the design.",
+          "The density of the running variable should pass smoothly through the cutoff (the <strong>McCrary density test</strong>); a pile-up on the favorable side means sorting.",
+          "Let the two sides have their own slopes, and report the estimate across several bandwidths rather than one."
+        ], specialN: "A regression discontinuity uses only the units inside the bandwidth, so the effective sample is a fraction of the file and depends on the window you choose. Plan it by simulation, or by asking the <a href=\"power.html\">power calculator</a> for a two-group comparison of the size you expect to have near the cutoff." },
+      did: { slug: "did", name: "Difference-in-differences", why: "A treated group and a comparison group, each measured before and after. Subtract the comparison group's change from the treated group's, which cancels the gap they started with and whatever moved for everybody.",
+        lesson: "stats-3/difference-in-differences", label: "Difference-in-Differences", sc: null, es: null, apa: null,
+        apaSkel: "A difference-in-differences regression with unit and period fixed effects estimated the effect of " + ph("[treatment]") + " on " + ph("[outcome]") + " at " + ph("__") + ", " + em("SE") + " = " + ph("__") + ", 95% CI [" + ph("__") + ", " + ph("__") + "], " + em("p") + " = " + ph("__") + ", with standard errors clustered by " + ph("[unit]") + ".",
+        assump: [
+          "<strong>Parallel trends</strong>: absent the treatment, both groups would have changed by the same amount. Untestable, since it describes a path nobody observed.",
+          "Show the pre-treatment periods, ideally as an <strong>event study</strong>, and say how many there were.",
+          "<strong>Cluster the standard errors</strong> at the level the treatment was assigned at, or they will be far too small.",
+          "If units started treatment at different dates, plain two-way fixed effects can return the wrong sign; use a cohort-based estimator."
+        ], specialN: "Power here is driven by the number of treated <em>units</em> rather than the number of rows, because clustering means each unit counts once. A handful of treated clusters is underpowered however long the panel is, so plan on the unit count with the <a href=\"power.html\">power calculator</a>'s two-group comparison." },
       count: { slug: "count", name: "Poisson / negative-binomial regression", why: "A generalized linear model with a log link keeps count predictions positive; switch to negative binomial when the counts are overdispersed.",
         lesson: "stats-3/generalized-linear-models", label: "Generalized Linear Models", sc: null, es: null, apa: null,
         apaSkel: "A Poisson regression modeled " + ph("[count outcome]") + " as a function of " + ph("[predictors]") + ". " + ph("[Predictor]") + " was associated with the rate, incidence-rate ratio = " + ph("__") + ", 95% CI [" + ph("__") + ", " + ph("__") + "], " + em("p") + " = " + ph("__") + ".",

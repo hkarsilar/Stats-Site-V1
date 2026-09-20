@@ -37,13 +37,13 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v58";  /* curriculum.js and site.js both changed
-                                    and both are precached: P101 flipped
-                                    §3.14 to ready, added its QUIPS line, and
-                                    fixed prev/next to step over sections that
-                                    are still "coming soon". A visitor holding
-                                    the old pair would see §3.14 as unreachable
-                                    and follow a dead Next link out of §3.16. */
+const CACHE_VERSION = "sc-v59";  /* curriculum.js and site.js both changed
+                                    and both are precached: P102 flipped
+                                    §3.15 to ready and added its QUIPS line,
+                                    which is the last of the three causal
+                                    sections P100 reserved. A visitor holding
+                                    the old pair would see §3.15 as "coming
+                                    soon" and never reach a page that exists. */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location

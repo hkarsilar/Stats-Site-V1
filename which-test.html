@@ -86,6 +86,9 @@
             <tr><td>Nested / clustered / repeated data</td><td><a href="stats-3/mixed-and-multilevel-models/">Mixed (multilevel) model</a></td><td><a href="stats-3/mixed-and-multilevel-models/">3.10</a></td></tr>
             <tr><td>Time until an event, with dropouts</td><td><a href="stats-3/survival-analysis/">Kaplan–Meier / survival analysis</a></td><td><a href="stats-3/survival-analysis/">3.16</a></td></tr>
             <tr><td>Combining many studies</td><td><a href="stats-3/meta-analysis/">Meta-analysis</a></td><td><a href="stats-3/meta-analysis/">3.18</a></td></tr>
+            <tr><td>Causal effect, assigned by something as good as random</td><td><a href="stats-3/instrumental-variables/">Instrumental variables (2SLS)</a></td><td><a href="stats-3/instrumental-variables/">3.13</a></td></tr>
+            <tr><td>Causal effect, assigned by a strict cutoff on a score</td><td><a href="stats-3/regression-discontinuity/">Regression discontinuity</a></td><td><a href="stats-3/regression-discontinuity/">3.14</a></td></tr>
+            <tr><td>Causal effect, a policy that arrived in some places first</td><td><a href="stats-3/difference-in-differences/">Difference-in-differences</a></td><td><a href="stats-3/difference-in-differences/">3.15</a></td></tr>
             <tr><td>Predict as accurately as possible (not test a hypothesis)</td><td><a href="ml/prediction-vs-explanation/">Machine-learning models</a></td><td><a href="ml/prediction-vs-explanation/">ML&nbsp;5.1</a></td></tr>
           </tbody>
         </table>
@@ -115,7 +118,13 @@
         { label: "Can I predict an outcome from other variables?", desc: "Build a model with predictors", next: "predict" },
         { label: "Do category counts differ from what's expected?", desc: "Frequencies, not means", next: "chi" },
         { label: "How long until an event happens?", desc: "Time-to-event, some cases never observed", leaf: "survival" },
-        { label: "What do many studies say, combined?", desc: "Pooling published effects", leaf: "meta" }
+        { label: "What do many studies say, combined?", desc: "Pooling published effects", leaf: "meta" },
+        { label: "I want a causal effect and I cannot randomize", desc: "A natural experiment did the assigning instead", next: "causal" }
+      ]},
+      causal: { q: "What decided who got the treatment?", opts: [
+        { label: "Something that shifted treatment without touching the outcome", desc: "a lottery, a random encouragement, a distance or a queue position", leaf: "iv" },
+        { label: "A strict cutoff on a score everyone has", desc: "a grant above a mark, a program below an income line", leaf: "rdd" },
+        { label: "A policy that arrived in some places before others", desc: "and you have records from before and after, for both", leaf: "did" }
       ]},
       groups: { q: "How many groups are you comparing?", opts: [
         { label: "One group vs. a known value", desc: "e.g. is our class's mean IQ different from 100?", next: "g1" },
@@ -205,6 +214,9 @@
       survival: { name: "Survival analysis (Kaplan–Meier)", why: "Time-to-event data with censoring: Kaplan–Meier curves estimate survival over time, the log-rank test compares groups, and Cox regression adds predictors.", lesson: "stats-3/survival-analysis", label: "Survival Analysis & Kaplan–Meier", alts: [] },
       meta:     { name: "Meta-analysis", why: "Pool the effect sizes across studies, weighting by precision, and quantify how much the studies genuinely disagree (I²).", lesson: "stats-3/meta-analysis", label: "Meta-Analysis & Forest Plots", alts: [] },
       manova:   { name: "MANOVA", why: "One multivariate test across all the outcomes at once. It controls the false-alarm rate and uses the correlations between outcomes, catching patterns no single outcome shows.", lesson: "stats-3/manova", label: "MANOVA & Multivariate Tests", alts: [{ name: "MANCOVA", when: "if you also need to adjust for covariates", lesson: "stats-3/manova" }, { name: "Follow-up ANOVAs with a correction", when: "after a significant MANOVA", lesson: "stats-2/post-hoc-tests" }] },
+      iv:       { name: "Instrumental variables (2SLS)", why: "An instrument moves the regressor, was assigned as good as randomly, and reaches the outcome only through that regressor. The effect is the reduced form over the first stage, and it belongs to the people the instrument actually moved.", lesson: "stats-3/instrumental-variables", label: "Instrumental Variables & 2SLS", alts: [{ name: "Causal DAGs", when: "to work out first whether adjustment would have been enough", lesson: "stats-3/causal-dags-and-confounding" }] },
+      rdd:      { name: "Regression discontinuity", why: "Center the running variable on the cutoff, fit a line on each side inside a window, and the treatment indicator's coefficient is the jump. It is credible because it is local, so the estimate belongs to units at the threshold.", lesson: "stats-3/regression-discontinuity", label: "Regression Discontinuity Design", alts: [{ name: "Instrumental variables", when: "if the cutoff only shifts the probability of treatment, which makes the design fuzzy", lesson: "stats-3/instrumental-variables" }] },
+      did:      { name: "Difference-in-differences", why: "Subtract the comparison group's before-and-after change from the treated group's. In a regression it is one interaction coefficient, its standard errors need clustering, and it rests on trends that would have stayed parallel.", lesson: "stats-3/difference-in-differences", label: "Difference-in-Differences", alts: [{ name: "Quasi-experimental designs", when: "for the design vocabulary around all three of these", lesson: "methods/quasi-experiments" }] },
       ml_predict: { name: "Predictive modeling (machine learning)", why: "When the goal is the most accurate predictions on new cases, not an interpretable test of a hypothesis, you've crossed from statistics into machine learning. Fit flexible models, and judge them by honest held-out error rather than p-values.", lesson: "ml/prediction-vs-explanation", label: "Prediction vs Explanation", alts: [{ name: "Train/test splits & generalization", when: "to evaluate a predictive model honestly and avoid leakage", lesson: "ml/train-test-split-and-generalization" }, { name: "Random forests & ensembles", when: "a strong, low-tuning default predictor", lesson: "ml/random-forests-and-ensembles" }] }
     };
 

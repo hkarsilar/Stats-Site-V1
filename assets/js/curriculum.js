@@ -97,7 +97,7 @@ window.CURRICULUM = [
       { n: "3.12", slug: "causal-dags-and-confounding",        title: "Causal DAGs & Confounding", ready: true },
       { n: "3.13", slug: "instrumental-variables",             title: "Instrumental Variables & 2SLS", ready: true },
       { n: "3.14", slug: "regression-discontinuity",           title: "Regression Discontinuity Design", ready: true },
-      { n: "3.15", slug: "difference-in-differences",          title: "Difference-in-Differences", ready: false },
+      { n: "3.15", slug: "difference-in-differences",          title: "Difference-in-Differences", ready: true },
       { n: "3.16", slug: "survival-analysis",                  title: "Survival Analysis & Kaplan–Meier", ready: true },
       { n: "3.17", slug: "missing-data",                       title: "Missing Data & Imputation", ready: true },
       { n: "3.18", slug: "meta-analysis",                      title: "Meta-Analysis & Forest Plots", ready: true },

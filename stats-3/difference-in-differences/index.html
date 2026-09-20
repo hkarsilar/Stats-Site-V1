@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    /* Consent Mode: advertising storage denied outright. Analytics storage is
+       granted so page views are actually counted, while client_storage 'none'
+       keeps gtag from writing a cookie, so nobody is followed between visits. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'granted' });
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN', { client_storage: 'none' });
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Difference-in-Differences — StatsCapybara</title>
+  <meta name="description" content="The whole estimate is one interaction coefficient. Write the regression, cluster the standard errors, and put parallel trends on trial with an event study." />
+  <link rel="canonical" href="https://statscapybara.com/stats-3/difference-in-differences/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Difference-in-Differences — StatsCapybara" />
+  <meta property="og:description" content="The whole estimate is one interaction coefficient. Write the regression, cluster the standard errors, and put parallel trends on trial with an event study." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og-stats-3.png" />
+  <meta property="og:url" content="https://statscapybara.com/stats-3/difference-in-differences/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Difference-in-Differences — StatsCapybara" />
+  <meta name="twitter:description" content="A policy arrives somewhere and not somewhere else. Subtract the comparison group's change and one coefficient carries the answer." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-3.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Difference-in-Differences", "description": "The whole estimate is one interaction coefficient. Write the regression, cluster the standard errors, and put parallel trends on trial with an event study.", "url": "https://statscapybara.com/stats-3/difference-in-differences/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced & Elective Topics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Difference-in-Differences", "item": "https://statscapybara.com/stats-3/difference-in-differences/"}]}]
+  </script>
+  <script type="application/ld+json" data-faq>
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Do the same units have to appear in every period?", "acceptedAnswer": {"@type": "Answer", "text": "Two different data shapes both support the design, and knowing which one you have decides what the standard errors should do. A panel follows the same units over time, so school 14 appears in all eight terms, and clustering on the unit is the natural answer because those rows are repeated readings of one thing. Repeated cross-sections survey fresh people each period from the same populations, so nobody appears twice, and here the design compares group averages rather than individual changes; clustering then belongs at the level the treatment varies at, which is usually the region or the school rather than the respondent. The estimator is identical in both cases. What changes is the interpretation of a shifting composition: if the kind of person sampled in the treated areas changed between periods, that change is inside your estimate and no amount of clustering removes it, so report the composition of each cell alongside the result."}}, {"@type": "Question", "name": "How many pre-treatment periods do I need?", "acceptedAnswer": {"@type": "Answer", "text": "One is enough to compute the estimate and nowhere near enough to defend it. With a single period before the treatment there is nothing to compare against, so parallel trends is an assertion; the design still runs, and a careful reader will discount it heavily. Three or four pre-periods let an event study show whether the groups were tracking each other, which is the minimum most reviewers now expect. More than that is better still, with one caveat worth stating: a long pre-period gives a pre-trend test more power, so it starts flagging small drifts that a short one would have missed, and a design that looks clean on two pre-periods can look shaky on eight without anything about the world having changed. That is the test working, not failing. If the pre-period is short, say so in the sentence where you state the assumption rather than leaving a reader to count the columns in your figure."}}, {"@type": "Question", "name": "If I take logs of the outcome, does parallel trends still hold?", "acceptedAnswer": {"@type": "Answer", "text": "Not automatically, and this catches people out because the assumption is not invariant to how the outcome is written. Parallel trends in levels says the two groups would have changed by the same number of units; parallel trends in logs says they would have changed by the same percentage. Those are different claims, and both cannot be true at once unless the groups started at the same level. A comparison group at 40 and a treated group at 80, both growing 10% a year, are parallel in logs and diverging by four units a year in levels, so the level specification would report a treatment effect that is nothing but arithmetic. There is no test that settles it. Pick the scale the outcome is naturally generated on, say why in a sentence, and show the result on the other scale as a robustness check, because a finding that appears on only one of them is telling you about the transformation rather than the treatment."}}]}
+  </script>
+</head>
+<body data-course="stats-3" data-section="difference-in-differences">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="lesson-wrap">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <article class="lesson">
+        <span class="lesson-eyebrow">Section 3.15</span>
+        <h1>Difference-in-Differences</h1>
+
+        <p class="lede">Of all the causal designs, this is the one whose output looks least like an achievement. A policy arrived in some places and not others, you have records from before and after, and the entire answer is a single coefficient on a product of two dummy variables. <a href="../../methods/quasi-experiments/">Quasi-experiments</a> in the Research Toolkit shows why that subtraction works: comparing the groups afterward is fooled by whatever gap they started with, comparing the treated group's own change is fooled by whatever was moving anyway, and taking the difference of the two differences cancels both. This lesson starts where that one stops, with the regression that does the canceling, the standard errors it needs, and the assumption holding the whole thing up.</p>
+
+        <h2>One coefficient, four cells</h2>
+        <p>Here is the setup in its smallest form. A regional education authority put a peer-tutoring scheme into 25 of its 50 schools from the fifth term of an eight-term record, and the outcome is each school's mean end-of-term score. Average the terms before the switch and the terms after it, for each group, and you have four numbers:</p>
+        <table class="ref-table">
+          <caption>Mean end-of-term score, 50 schools, eight terms. Before is terms 1 to 4, after is terms 5 to 8.</caption>
+          <thead><tr><th scope="col">Group</th><th scope="col">Before</th><th scope="col">After</th><th scope="col">Change</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Tutoring schools (25)</th><td>64.1</td><td>70.6</td><td>+6.5</td></tr>
+            <tr><th scope="row">Comparison schools (25)</th><td>61.9</td><td>65.8</td><td>+3.9</td></tr>
+            <tr><th scope="row">Difference</th><td>2.2</td><td>4.8</td><td><strong>2.6</strong></td></tr>
+          </tbody>
+        </table>
+        <p>The bottom-right cell is the estimate, and it can be read two ways that give the same number: the tutoring schools gained 6.5 and the comparison schools gained 3.9, so 2.6 points of the gain are left over; or the gap between the groups widened from 2.2 to 4.8, and 2.6 is how much it widened. Those are the two differences the design is named after, and it does not matter which you difference first.</p>
+
+        <h2>The regression that does it</h2>
+        <p>Stack the data so that every school contributes one row per period, and build two indicators. <em>Treated</em> is 1 for a school in the scheme and 0 otherwise, in every period, including the ones before the scheme existed. <em>Post</em> is 1 in the periods after the switch and 0 before it, for every school, including the ones that never joined. Then fit</p>
+        <p class="formula">Y = b<sub>0</sub> + b<sub>1</sub>Treated + b<sub>2</sub>Post + b<sub>3</sub>(Treated × Post) + e</p>
+        <p>and the four coefficients are the four cells of that table, rearranged. b<sub>0</sub> is the comparison group before the switch, 61.9. b<sub>1</sub> is the baseline gap between the groups, 2.2. b<sub>2</sub> is the comparison group's own change over time, 3.9. And b<sub>3</sub>, the coefficient on the <a href="../../stats-2/interactions-in-regression/">interaction</a>, is 2.6, the estimate. Add all four together and you get 70.6, the treated group after, which is the check that the model has spent every number on something.</p>
+        <p>Two of those coefficients get misread often enough to be worth naming. b<sub>1</sub> is not an effect of the scheme; it is the difference between two kinds of school that existed before any scheme did, and the whole design is built around not believing it. b<sub>2</sub> is not an effect of time in any interesting sense either; it is whatever else happened to everybody between the two periods, which is exactly the thing being subtracted out. Only b<sub>3</sub> is an answer, and a results table that reports all four with stars beside them invites a reader to interpret three quantities that were never meant to carry meaning.</p>
+
+        <h2>The same model, written the way papers write it</h2>
+        <p>With two groups and two periods the specification above is complete. Real data usually have more of both, and then the standard form replaces each indicator with a full set of dummies:</p>
+        <p class="formula">Y<sub>it</sub> = a<sub>i</sub> + g<sub>t</sub> + bD<sub>it</sub> + e<sub>it</sub></p>
+        <p>where a<sub>i</sub> is a dummy for each unit, g<sub>t</sub> is a dummy for each period, and D<sub>it</sub> is 1 when unit <em>i</em> is being treated at time <em>t</em>. This is <strong>two-way fixed effects</strong>, and the unit dummies absorb anything about a school that never changes while the period dummies absorb anything that hit every school at once. It is the same estimator: with two groups and two periods, a dummy per unit and a dummy per period span exactly the same space as <em>Treated</em>, <em>Post</em> and an intercept, so b and b<sub>3</sub> are the identical number. The fixed-effects form is how it appears in almost every paper you will read, and it is what lets the design handle fifty schools rather than two.</p>
+        <p>What changes with the longer panel is the standard error. A school observed in eight terms contributes eight rows, and those eight rows are not eight independent facts about the world; a school that is unusually good is unusually good in all of them. Ordinary least squares takes the row count at face value and returns standard errors that are far too small, sometimes by a factor of two or three. The standard answer is <strong>clustered standard errors</strong>, grouped at the level the treatment was assigned at, which here is the school, so that each school counts as one draw rather than eight. In the small case this has an exact and reassuring form: reduce each school to a single number, its own after-minus-before change, and compare the 25 changes in one group with the 25 in the other with an <a href="../../stats-1/independent-samples-t-test/">independent-samples t-test</a>. That is the clustered standard error, computed by hand. In the tutoring data it gives 2.60 points, <em>SE</em> = 0.63, <em>t</em>(48) = 4.13, <em>p</em> &lt; .001, 95% CI [1.33, 3.87].</p>
+
+        <!-- ============ INTERACTIVE ============
+             Presets (SC.preset, P67): ?effect= the true effect of the scheme,
+             ?pretrend= extra points a term for the treated schools in every
+             period, ?noise= the term-to-term wobble, ?view= table | event
+             (the seg). Order in the map does not matter here: the view
+             changes only which picture is drawn, not the scale any slider is
+             snapped against, so the three sliders come first in the natural
+             reading order and the view last. ========= -->
+        <div class="viz" id="didviz">
+          <p class="viz-title">🎮 Trends, Parallel and Otherwise</p>
+          <p class="viz-sub">Fifty schools across eight terms. Twenty-five start the tutoring scheme in term 5 (indigo), twenty-five never do (teal). The 2 × 2 view averages the four cells the estimate is built from. The event study re-reads the same schools one term at a time against term 4, so the three coefficients before the switch become a visible test of nothing having happened yet.</p>
+
+          <div class="controls">
+            <div class="control">
+              <label>True effect of the scheme <span class="val" id="did-e-val">3.00</span></label>
+              <input type="range" id="did-e" min="0" max="6" step="0.25" value="3" />
+            </div>
+            <div class="control">
+              <label>Differential trend: extra points a term, tutoring schools <span class="val" id="did-p-val">0.00</span></label>
+              <input type="range" id="did-p" min="-0.6" max="0.6" step="0.05" value="0" />
+            </div>
+            <div class="control">
+              <label>Noise: how much a school bounces term to term <span class="val" id="did-n-val">1.0</span></label>
+              <input type="range" id="did-n" min="0.2" max="3" step="0.1" value="1" />
+            </div>
+            <div class="control">
+              <label>View</label>
+              <div class="seg" id="did-seg">
+                <button data-view="table" class="active">The 2 × 2 table</button>
+                <button data-view="event">The event study</button>
+              </div>
+            </div>
+            <div class="control"><button class="btn btn-primary btn-sm" id="did-resample">New sample</button></div>
+          </div>
+
+          <canvas id="did-canvas" style="--viz-ar: 8 / 5"></canvas>
+
+          <div class="stat-row">
+            <div class="stat"><span class="k">True effect</span><span class="v" id="did-true">—</span></div>
+            <div class="stat"><span class="k" style="color:#f97316">Estimate</span><span class="v" id="did-est">—</span></div>
+            <div class="stat"><span class="k">Its clustered SE</span><span class="v" id="did-se">—</span></div>
+            <div class="stat"><span class="k">Furthest pre-period coefficient</span><span class="v" id="did-pre">—</span></div>
+            <div class="stat"><span class="k">Schools × terms</span><span class="v" id="did-shape">—</span></div>
+          </div>
+          <p id="did-hint" style="margin:.75rem 0 0;font-size:.88rem;color:var(--text-muted)"></p>
+          <div id="did-panel" style="margin-top:1rem"></div>
+        </div>
+        <!-- ============ /INTERACTIVE ============ -->
+
+        <h2>Parallel trends, and why no test reaches it</h2>
+        <p>The subtraction works only if the comparison group's change is the right stand-in for what the treated group would have done untreated. That is the <strong>parallel-trends assumption</strong>, and reading it carefully is the whole skill. It permits the two groups to sit at different levels forever, which is why b<sub>1</sub> is allowed to be large. It does not permit them to be moving at different speeds. And it is a statement about a path nobody observed, the treated group's outcome in a world where the scheme never arrived, so there is no column in any dataset to test it against. Whatever a paper offers, it is offering evidence about a world it cannot see.</p>
+        <p>What it can offer is the periods before the treatment, where both groups were untreated and any divergence between them is a divergence the design cannot explain. The formal version is an <strong>event study</strong>: instead of one before-and-after contrast, estimate a separate coefficient for each period, measured against a chosen reference period just before the switch. In the tutoring data, with term 4 as the reference, that means seven coefficients for terms 1, 2, 3, 5, 6, 7 and 8, each one the gap between the groups in that term minus the gap in term 4. With only two groups you can compute them without any regression at all, which is what the widget above does.</p>
+        <p>Three of those coefficients sit before the scheme existed, and under parallel trends they should be noise around zero. Suppose instead that they come back at −1.8, −1.2 and −0.6, marching steadily toward the reference. That is a differential trend of 0.6 points a term, visible three terms early, and it does not stop at term 4 simply because the scheme started there. The average term before the switch sits 2.5 terms back and the average term after it sits 1.5 terms forward, four terms apart, so four terms of a 0.6-point drift is 2.4 points sitting inside the estimate. Of the 2.60 the table reported, 0.2 would be left. The 2 × 2 table cannot show you this. It has only four numbers in it, and four numbers have no room to hold a slope.</p>
+        <p>Pre-trends are evidence rather than proof, and the honest version of that sentence has teeth. A pre-trend test can pass because the trends really are parallel, or because the pre-period is short, or because the outcome is noisy enough that a real drift cannot be distinguished from zero. Turn the noise slider up in the widget with a differential trend already set and watch the coefficients before term 5 widen until they cover zero comfortably, while the estimate stays exactly as wrong as it was. A design with three quiet pre-periods and wide error bars has not been tested; it has been left untested more politely. Say how many pre-periods there were and how precisely each was estimated, and a reader can judge for themselves.</p>
+
+        <h2>Many periods, and treatments that start at different times</h2>
+        <p>Two extensions turn up constantly. The first is easy: more than two periods, with everyone treated at the same moment. The two-way fixed-effects regression handles that unchanged, the event study becomes the natural way to report it, and the only new question is whether the effect grows, fades or holds across the post-treatment periods, which the event study answers by showing each one separately.</p>
+        <p>The second is not easy. Under <strong>staggered adoption</strong>, units join the treatment at different dates: a few districts in 2015, more in 2017, the rest in 2019. Running the same two-way fixed-effects regression feels like the obvious move, and for two decades it was the obvious move. It can be badly wrong. The reason is that with staggered timing the regression is silently averaging many small comparisons, and some of them use already-treated units as the comparison group for later-treated ones. When the effect changes over time, those comparisons subtract one group's treatment effect from another's, and they can enter the average with negative weight, which is enough to flip the sign of an estimate whose every underlying effect is positive.</p>
+        <p>A decomposition published by Goodman-Bacon in 2021 made that arithmetic explicit by writing the two-way estimate as a weighted average of every two-group, two-period comparison inside the data, weights and all, and it is now standard practice to report it. The replacements avoid the bad comparisons by construction: the Callaway and Sant'Anna estimator computes a separate effect for each adoption cohort at each period against units not yet treated, and the Sun and Abraham interaction-weighted estimator does the same repair inside an event study. Both are one command in R or Python. The reason to know their names now is defensive, since a paper running plain two-way fixed effects on staggered timing without addressing the issue is a paper with a question to answer.</p>
+
+        <h2>What to report</h2>
+        <p>A difference-in-differences result is a coefficient, and the coefficient is the easy part. What makes it readable is the sentence around it: which units were treated and when, what the comparison group is and why it is plausible, how the standard errors were clustered, how many pre-periods were available and what the event study did in them. Three of those five are about the design rather than the arithmetic, which is the right proportion. Like the <a href="../../stats-3/instrumental-variables/">instrument</a> and the <a href="../../stats-3/regression-discontinuity/">cutoff</a> before it, this design buys its credibility with an assumption, and the assumption is the part a reader is entitled to see defended.</p>
+
+        <div class="callout">
+          <p><strong>Why it matters:</strong> policies arrive in one place before another, and every one of those staggered arrivals is a comparison somebody could run. Difference-in-differences is how most published evidence about minimum wages, school reforms, health insurance and traffic laws was produced, which makes it the design you are most likely to have to referee. Its arithmetic takes ten minutes to learn. Judging whether the comparison group was a fair stand-in takes the rest of the lesson, and sometimes the rest of the seminar. <a href="../../stats-3/causal-dags-and-confounding/">Section 3.12</a> is where the vocabulary for that argument lives.</p>
+        </div>
+
+        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
+        <section class="faq">
+          <h2>Common questions</h2>
+          <details class="faq-item">
+            <summary>Do the same units have to appear in every period?</summary>
+            <div class="faq-a"><p>Two different data shapes both support the design, and knowing which one you have decides what the standard errors should do. A <strong>panel</strong> follows the same units over time, so school 14 appears in all eight terms, and clustering on the unit is the natural answer because those rows are repeated readings of one thing. <strong>Repeated cross-sections</strong> survey fresh people each period from the same populations, so nobody appears twice, and here the design compares group averages rather than individual changes; clustering then belongs at the level the treatment varies at, which is usually the region or the school rather than the respondent. The estimator is identical in both cases. What changes is the interpretation of a shifting composition: if the kind of person sampled in the treated areas changed between periods, that change is inside your estimate and no amount of clustering removes it, so report the composition of each cell alongside the result.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>How many pre-treatment periods do I need?</summary>
+            <div class="faq-a"><p>One is enough to compute the estimate and nowhere near enough to defend it. With a single period before the treatment there is nothing to compare against, so parallel trends is an assertion; the design still runs, and a careful reader will discount it heavily. Three or four pre-periods let an event study show whether the groups were tracking each other, which is the minimum most reviewers now expect. More than that is better still, with one caveat worth stating: a long pre-period gives a pre-trend test more power, so it starts flagging small drifts that a short one would have missed, and a design that looks clean on two pre-periods can look shaky on eight without anything about the world having changed. That is the test working, not failing. If the pre-period is short, say so in the sentence where you state the assumption rather than leaving a reader to count the columns in your figure.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary>If I take logs of the outcome, does parallel trends still hold?</summary>
+            <div class="faq-a"><p>Not automatically, and this catches people out because the assumption is not invariant to how the outcome is written. Parallel trends in levels says the two groups would have changed by the same number of units; parallel trends in logs says they would have changed by the same percentage. Those are different claims, and both cannot be true at once unless the groups started at the same level. A comparison group at 40 and a treated group at 80, both growing 10% a year, are parallel in logs and diverging by four units a year in levels, so the level specification would report a treatment effect that is nothing but arithmetic. There is no test that settles it. Pick the scale the outcome is naturally generated on, say why in a sentence, and show the result on the other scale as a robustness check, because a finding that appears on only one of them is telling you about the transformation rather than the treatment.</p></div>
+          </details>
+        </section>
+        <!-- faq:end -->
+
+        <nav class="lesson-nav" id="lesson-nav"></nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/viz.js"></script>
+
+  <!-- ============ trends, parallel and otherwise ============ -->
+  <script>
+  (function () {
+    "use strict";
+    var NT = 25, NC = 25, N = NT + NC;          // tutoring schools, comparison schools
+    var P = 8, T0 = 5, REF = 4;                 // terms, first treated term, reference term
+    var effect = 3, pre = 0, noise = 1, view = "table";
+    var Y = [], POOL = null;
+    var canvas = document.getElementById("did-canvas"), ctx, W = 0, H = 440;
+    var TCRIT = 0;                              // filled once viz.js is available
+
+    /* Frozen noise: every school's own level, every term's shared shock and
+       every school-by-term wobble are drawn once. The sliders reshape the
+       SAME fifty schools, and only "New sample" reseeds them. */
+    function seed() {
+      var U = [], E = [], G = [], i, t;
+      for (i = 0; i < N; i++) {
+        U.push(VIZ.randn());
+        var row = [];
+        for (t = 0; t < P; t++) row.push(VIZ.randn());
+        E.push(row);
+      }
+      for (t = 0; t < P; t++) G.push(VIZ.randn());
+      POOL = { U: U, E: E, G: G };
+    }
+
+    /* The generating model, written the way the lesson writes it: a school
+       effect, a term effect shared by everyone, a differential trend that
+       runs through EVERY term for the tutoring schools, and the treatment
+       itself from term 5 on. */
+    function gen() {
+      Y = [];
+      for (var i = 0; i < N; i++) {
+        var tr = i < NT ? 1 : 0, row = [];
+        for (var t = 1; t <= P; t++) {
+          row.push(62 + 2.2 * tr + 0.55 * (t - 1) + 1.6 * POOL.U[i] + 0.7 * POOL.G[t - 1]
+                 + pre * tr * t + effect * tr * (t >= T0 ? 1 : 0) + noise * POOL.E[i][t - 1]);
+        }
+        Y.push(row);
+      }
+    }
+
+    function mean(a) { var s = 0; for (var i = 0; i < a.length; i++) s += a[i]; return s / a.length; }
+    /* n - 1, the exam dialect. VIZ.sd divides by n, which would understate
+       every standard error on this page. */
+    function sampVar(a) {
+      var m = mean(a), s = 0;
+      for (var i = 0; i < a.length; i++) s += (a[i] - m) * (a[i] - m);
+      return s / (a.length - 1);
+    }
+    /* One number per school, then a two-sample comparison of those numbers.
+       That IS the school-clustered standard error: each school counts once
+       however many terms it was observed for. */
+    function contrast(per) {
+      var A = per.slice(0, NT), B = per.slice(NT);
+      return { b: mean(A) - mean(B), se: Math.sqrt(sampVar(A) / NT + sampVar(B) / NC) };
+    }
+    function didEstimate() {
+      var per = [];
+      for (var i = 0; i < N; i++) {
+        per.push(mean(Y[i].slice(T0 - 1)) - mean(Y[i].slice(0, T0 - 1)));
+      }
+      return contrast(per);
+    }
+    function eventStudy() {
+      var out = [];
+      for (var t = 1; t <= P; t++) {
+        if (t === REF) { out.push({ t: t, b: 0, se: 0, ref: true }); continue; }
+        var per = [];
+        for (var i = 0; i < N; i++) per.push(Y[i][t - 1] - Y[i][REF - 1]);
+        var c = contrast(per);
+        out.push({ t: t, b: c.b, se: c.se, ref: false });
+      }
+      return out;
+    }
+    function cells() {
+      var i, tp = [], ta = [], cp = [], ca = [];
+      for (i = 0; i < N; i++) {
+        var b = mean(Y[i].slice(0, T0 - 1)), a = mean(Y[i].slice(T0 - 1));
+        if (i < NT) { tp.push(b); ta.push(a); } else { cp.push(b); ca.push(a); }
+      }
+      return { tb: mean(tp), ta: mean(ta), cb: mean(cp), ca: mean(ca) };
+    }
+    function termMeans(g) {
+      var out = [];
+      for (var t = 1; t <= P; t++) {
+        var v = [];
+        for (var i = g ? 0 : NT; i < (g ? NT : N); i++) v.push(Y[i][t - 1]);
+        out.push(mean(v));
+      }
+      return out;
+    }
+
+    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    function f2(v) { return isFinite(v) ? v.toFixed(2) : "—"; }
+
+    function axes(padL, padR, top, bot, ylo, yhi, label) {
+      ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, bot); ctx.lineTo(W - padR, bot); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(padL, top); ctx.lineTo(padL, bot); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px " + VIZ.css("--font");
+      ctx.textAlign = "center";
+      ctx.save(); ctx.translate(13, (top + bot) / 2); ctx.rotate(-Math.PI / 2);
+      ctx.fillText(label, 0, 0); ctx.restore();
+    }
+
+    function drawTable(est) {
+      var padL = 46, padR = 16, top = 16, bot = H - 40;
+      var A = termMeans(1), B = termMeans(0), i;
+      var ylo = Infinity, yhi = -Infinity;
+      for (i = 0; i < P; i++) {
+        ylo = Math.min(ylo, A[i], B[i]); yhi = Math.max(yhi, A[i], B[i]);
+      }
+      var pad = (yhi - ylo) * 0.16 || 1; ylo -= pad; yhi += pad;
+      function sx(t) { return padL + (t - 0.6) / (P - 0.2) * (W - padL - padR); }
+      function sy(v) { return bot - (v - ylo) / (yhi - ylo) * (bot - top); }
+      axes(padL, padR, top, bot, ylo, yhi, "mean end-of-term score →");
+
+      /* the pre half, shaded, so the two averaging windows are visible */
+      ctx.fillStyle = VIZ.css("--text-faint") + "10";
+      ctx.fillRect(sx(0.6), top, sx(REF + 0.5) - sx(0.6), bot - top);
+      ctx.strokeStyle = VIZ.css("--text-faint"); ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]);
+      ctx.beginPath(); ctx.moveTo(sx(REF + 0.5), top); ctx.lineTo(sx(REF + 0.5), bot); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px " + VIZ.css("--font");
+      ctx.textAlign = "left";
+      ctx.fillText("scheme starts", sx(REF + 0.5) + 5, top + 12);
+
+      /* the four cell averages, drawn as the flat segments they are */
+      var c = cells();
+      [[c.cb, c.ca, VIZ.css("--secondary")], [c.tb, c.ta, VIZ.css("--primary")]].forEach(function (r) {
+        ctx.strokeStyle = r[2]; ctx.lineWidth = 1.4; ctx.globalAlpha = 0.5; ctx.setLineDash([2, 3]);
+        ctx.beginPath(); ctx.moveTo(sx(1), sy(r[0])); ctx.lineTo(sx(REF), sy(r[0])); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(sx(T0), sy(r[1])); ctx.lineTo(sx(P), sy(r[1])); ctx.stroke();
+        ctx.setLineDash([]); ctx.globalAlpha = 1;
+      });
+
+      /* what the comparison group's change implies for the treated group */
+      var cf = c.tb + (c.ca - c.cb);
+      ctx.strokeStyle = "#f97316"; ctx.lineWidth = 2; ctx.setLineDash([6, 4]);
+      ctx.beginPath(); ctx.moveTo(sx(T0), sy(cf)); ctx.lineTo(sx(P), sy(cf)); ctx.stroke();
+      ctx.setLineDash([]);
+
+      /* the two series */
+      [[B, VIZ.css("--secondary")], [A, VIZ.css("--primary")]].forEach(function (r) {
+        ctx.strokeStyle = r[1]; ctx.lineWidth = 2.4;
+        ctx.beginPath();
+        for (i = 0; i < P; i++) { var x = sx(i + 1), y = sy(r[0][i]); if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y); }
+        ctx.stroke();
+        ctx.fillStyle = r[1];
+        for (i = 0; i < P; i++) { ctx.beginPath(); ctx.arc(sx(i + 1), sy(r[0][i]), 3.4, 0, 6.2832); ctx.fill(); }
+      });
+
+      /* the estimate, as the bracket between the treated average and the
+         path the comparison group's change would have put it on */
+      var xg = sx(P) - 4, y1 = sy(c.ta), y2 = sy(cf);
+      ctx.strokeStyle = "#f97316"; ctx.lineWidth = 1.6; ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.moveTo(xg, y1); ctx.lineTo(xg, y2); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.font = "700 12.5px " + VIZ.css("--font"); ctx.textAlign = "right";
+      var lab = (est.b >= 0 ? "+" : "") + est.b.toFixed(2);
+      ctx.lineWidth = 3.5; ctx.strokeStyle = VIZ.css("--surface"); ctx.lineJoin = "round";
+      ctx.strokeText(lab, xg - 6, (y1 + y2) / 2 + 4);
+      ctx.fillStyle = "#f97316"; ctx.fillText(lab, xg - 6, (y1 + y2) / 2 + 4);
+
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px " + VIZ.css("--font");
+      ctx.textAlign = "center";
+      for (i = 1; i <= P; i++) ctx.fillText(String(i), sx(i), bot + 15);
+      ctx.fillText("term →", (padL + W - padR) / 2, H - 8);
+    }
+
+    function drawEvent(ev) {
+      var padL = 46, padR = 16, top = 16, bot = H - 40, i;
+      var lo = 0, hi = 0;
+      for (i = 0; i < ev.length; i++) {
+        lo = Math.min(lo, ev[i].b - 2 * ev[i].se); hi = Math.max(hi, ev[i].b + 2 * ev[i].se);
+      }
+      var pad = (hi - lo) * 0.14 || 1; lo -= pad; hi += pad;
+      function sx(t) { return padL + (t - 0.6) / (P - 0.2) * (W - padL - padR); }
+      function sy(v) { return bot - (v - lo) / (hi - lo) * (bot - top); }
+      axes(padL, padR, top, bot, lo, hi, "gap against term 4 →");
+
+      ctx.fillStyle = VIZ.css("--text-faint") + "10";
+      ctx.fillRect(sx(0.6), top, sx(REF + 0.5) - sx(0.6), bot - top);
+      ctx.strokeStyle = VIZ.css("--text-faint"); ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]);
+      ctx.beginPath(); ctx.moveTo(sx(REF + 0.5), top); ctx.lineTo(sx(REF + 0.5), bot); ctx.stroke();
+      ctx.setLineDash([]);
+
+      /* zero, which is where the three pre-period coefficients belong */
+      ctx.strokeStyle = VIZ.css("--text-muted"); ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.moveTo(padL, sy(0)); ctx.lineTo(W - padR, sy(0)); ctx.stroke();
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px " + VIZ.css("--font");
+      ctx.textAlign = "left"; ctx.fillText("0", padL + 3, sy(0) - 4);
+
+      for (i = 0; i < ev.length; i++) {
+        var e = ev[i], x = sx(e.t), col = e.t >= T0 ? "#f97316" : VIZ.css("--secondary");
+        if (e.ref) {
+          ctx.strokeStyle = VIZ.css("--text-muted"); ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.arc(x, sy(0), 4.6, 0, 6.2832); ctx.stroke();
+          if (W > 460) {                      // at phone width the word lands on the dots
+            ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10.5px " + VIZ.css("--font");
+            ctx.textAlign = "center"; ctx.fillText("reference", x, sy(0) + 18);
+          }
+          continue;
+        }
+        ctx.strokeStyle = col; ctx.lineWidth = 1.8;
+        ctx.beginPath(); ctx.moveTo(x, sy(e.b - TCRIT * e.se)); ctx.lineTo(x, sy(e.b + TCRIT * e.se)); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(x - 4, sy(e.b - TCRIT * e.se)); ctx.lineTo(x + 4, sy(e.b - TCRIT * e.se)); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(x - 4, sy(e.b + TCRIT * e.se)); ctx.lineTo(x + 4, sy(e.b + TCRIT * e.se)); ctx.stroke();
+        ctx.fillStyle = col;
+        ctx.beginPath(); ctx.arc(x, sy(e.b), 4, 0, 6.2832); ctx.fill();
+      }
+
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px " + VIZ.css("--font");
+      ctx.textAlign = "center";
+      for (i = 1; i <= P; i++) ctx.fillText(String(i), sx(i), bot + 15);
+      ctx.fillText("term →", (padL + W - padR) / 2, H - 8);
+    }
+
+    /* site.js wraps every .ref-table in a .hscroll container at boot, and
+       these two tables are built afterwards, so they carry their own wrapper
+       and their own edge-fade wiring. Same classes, same behavior. */
+    function wrap(inner) { return '<div class="hscroll"><table class="ref-table">' + inner + '</table></div>'; }
+    function wireScroll() {
+      var el = document.querySelector("#did-panel .hscroll");
+      if (!el) return;
+      function upd() {
+        var can = el.scrollWidth > el.clientWidth + 1;
+        el.classList.toggle("hs-l", can && el.scrollLeft > 2);
+        el.classList.toggle("hs-r", can && el.scrollLeft < el.scrollWidth - el.clientWidth - 2);
+      }
+      el.addEventListener("scroll", upd, { passive: true });
+      upd();
+    }
+
+    function panelTable(est) {
+      var c = cells();
+      var rows =
+        '<tr><th scope="row">Tutoring schools</th><td>' + f2(c.tb) + '</td><td>' + f2(c.ta) + '</td><td>' + f2(c.ta - c.tb) + '</td></tr>' +
+        '<tr><th scope="row">Comparison schools</th><td>' + f2(c.cb) + '</td><td>' + f2(c.ca) + '</td><td>' + f2(c.ca - c.cb) + '</td></tr>' +
+        '<tr><th scope="row">Difference</th><td>' + f2(c.tb - c.cb) + '</td><td>' + f2(c.ta - c.ca) + '</td><td><strong>' + f2(est.b) + '</strong></td></tr>';
+      return wrap('<caption>Group means, averaged over the four terms each side of the switch.</caption>' +
+        '<thead><tr><th scope="col">Group</th><th scope="col">Before</th><th scope="col">After</th><th scope="col">Change</th></tr></thead>' +
+        '<tbody>' + rows + '</tbody>');
+    }
+    function panelEvent(ev) {
+      var rows = "", i;
+      for (i = 0; i < ev.length; i++) {
+        var e = ev[i];
+        var when = e.t < T0 ? "before" : "after";
+        rows += '<tr><th scope="row">' + e.t + '</th><td>' + when + '</td>' +
+          (e.ref ? '<td>0.00</td><td>reference</td>'
+                 : '<td>' + f2(e.b) + '</td><td>' + f2(e.se) + '</td>') + '</tr>';
+      }
+      return wrap('<caption>One coefficient per term, each the gap between the groups in that term minus the gap in term 4.</caption>' +
+        '<thead><tr><th scope="col">Term</th><th scope="col">Period</th><th scope="col">Coefficient</th><th scope="col">SE</th></tr></thead>' +
+        '<tbody>' + rows + '</tbody>');
+    }
+
+    function update() {
+      var est = didEstimate(), ev = eventStudy();
+      ctx.clearRect(0, 0, W, H);
+      if (view === "event") drawEvent(ev); else drawTable(est);
+
+      var worst = 0, worstSe = 0, i;
+      for (i = 0; i < ev.length; i++) {
+        if (ev[i].t < T0 && !ev[i].ref && Math.abs(ev[i].b) > Math.abs(worst)) { worst = ev[i].b; worstSe = ev[i].se; }
+      }
+
+      document.getElementById("did-true").textContent = effect.toFixed(2);
+      document.getElementById("did-est").textContent = f2(est.b);
+      document.getElementById("did-se").textContent = f2(est.se);
+      document.getElementById("did-pre").textContent = f2(worst);
+      document.getElementById("did-shape").textContent = N + " × " + P;
+      document.getElementById("did-panel").innerHTML = view === "event" ? panelEvent(ev) : panelTable(est);
+      wireScroll();
+
+      var bias = est.b - effect, drift = 4 * pre, msg;
+      /* The pre-period test passes when even the furthest of the three
+         coefficients has an interval covering zero. Keyed to the data rather
+         than to a noise setting, since a small trend can hide in quiet data
+         and a large one can show through loud data. */
+      var covered = Math.abs(worst) < TCRIT * worstSe;
+      if (Math.abs(pre) < 0.025) {
+        msg = "The trends are parallel here, so the comparison schools are a fair stand-in and the estimate lands on the truth. "
+            + "The three coefficients before term 5 are noise around zero, the furthest of them " + f2(worst) + ".";
+      } else if (covered) {
+        msg = "A differential trend of " + pre.toFixed(2) + " points a term is running through the data, and it has put " + drift.toFixed(2)
+            + " points of drift into an estimate of " + f2(est.b) + ". Every pre-period interval still covers zero, "
+            + "so the test passes and the answer is wrong anyway. That is what a noisy pre-period buys you.";
+      } else if (view === "table") {
+        msg = "The table below is as tidy as it was: four averages, two changes, one difference, and nothing in it out of place. "
+            + "The estimate now reads " + f2(est.b) + " against a truth of " + effect.toFixed(2) + ". Switch to the event study to see where the rest came from.";
+      } else {
+        msg = "The three coefficients before term 5 are marching rather than scattering, which is the differential trend showing itself "
+            + "one term at a time. Four terms of it is " + drift.toFixed(2) + " points, and the estimate is out by " + bias.toFixed(2) + ".";
+      }
+      document.getElementById("did-hint").textContent = msg;
+    }
+
+    function bind(id, valId, set, dp) {
+      var el = document.getElementById(id);
+      el.addEventListener("input", function () {
+        set(+this.value);
+        document.getElementById(valId).textContent = (+this.value).toFixed(dp);
+        gen(); update();
+      });
+    }
+    bind("did-e", "did-e-val", function (v) { effect = v; }, 2);
+    bind("did-p", "did-p-val", function (v) { pre = v; }, 2);
+    bind("did-n", "did-n-val", function (v) { noise = v; }, 1);
+
+    var seg = document.getElementById("did-seg");
+    seg.addEventListener("click", function (e) {
+      var b = e.target.closest("button");
+      if (!b) return;
+      seg.querySelectorAll("button").forEach(function (x) { x.classList.remove("active"); });
+      b.classList.add("active");
+      view = b.dataset.view;
+      update();
+    });
+    document.getElementById("did-resample").addEventListener("click", function () { seed(); gen(); update(); });
+    window.addEventListener("resize", VIZ.rafThrottle(function () { fit(); update(); }));
+    VIZ.onTheme(update);
+
+    TCRIT = VIZ.tInv(0.025, N - 2);
+    fit(); seed(); gen(); update();
+
+    /* Presets last, so they move controls a hand could have moved and never
+       reseed the fifty schools. */
+    if (window.SC && SC.preset) {
+      SC.preset({ effect: "#did-e", pretrend: "#did-p", noise: "#did-n", view: "#did-seg" });
+    }
+  })();
+  </script>
+</body>
+</html>
