@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-80HCM6EZVN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    /* Consent Mode: advertising storage denied outright. Analytics storage is
+       granted so page views are actually counted, while client_storage 'none'
+       keeps gtag from writing a cookie, so nobody is followed between visits. */
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'granted' });
+    gtag('js', new Date());
+    gtag('config', 'G-80HCM6EZVN', { client_storage: 'none' });
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reading a Causal-Inference Paper — StatsCapybara</title>
+  <meta name="description" content="How to referee a causal-inference paper: the seven questions a careful reader asks, the assumption no test reaches, and whose effect the estimate belongs to." />
+  <link rel="canonical" href="https://statscapybara.com/guides/reading-a-causal-paper/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Reading a Causal-Inference Paper — StatsCapybara" />
+  <meta property="og:description" content="How to referee a causal-inference paper: the seven questions a careful reader asks, the assumption no test reaches, and whose effect the estimate belongs to." />
+  <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
+  <meta property="og:url" content="https://statscapybara.com/guides/reading-a-causal-paper/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Reading a Causal-Inference Paper — StatsCapybara" />
+  <meta name="twitter:description" content="Journal-club preparation for instrumental variables, regression discontinuity and difference-in-differences: the design, the defense, and the questions to ask." />
+  <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
+  <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script type="application/ld+json">
+  [{"@context": "https://schema.org", "@type": "Article", "headline": "Reading a Causal-Inference Paper", "description": "How to referee a causal-inference paper: the seven questions a careful reader asks, the assumption no test reaches, and whose effect the estimate belongs to.", "url": "https://statscapybara.com/guides/reading-a-causal-paper/", "mainEntityOfPage": "https://statscapybara.com/guides/reading-a-causal-paper/", "image": "https://statscapybara.com/assets/og.png", "inLanguage": "en", "isAccessibleForFree": true, "datePublished": "2026-09-22", "dateModified": "2026-09-22", "author": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://statscapybara.com/guides/"}, {"@type": "ListItem", "position": 3, "name": "Reading a Causal-Inference Paper", "item": "https://statscapybara.com/guides/reading-a-causal-paper/"}]}]
+  </script>
+  <style>
+    .mock { border: 1px solid var(--border); border-radius: 12px; background: var(--surface); padding: 1rem 1.1rem; margin: 1.25rem 0; overflow-x: auto; }
+    .mock-cap { font-family: var(--mono); font-size: .74rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-faint); margin: 0 0 .6rem; }
+    .mock table { border-collapse: collapse; font-size: .84rem; width: 100%; }
+    .mock th, .mock td { border: 1px solid var(--border); padding: .38rem .6rem; text-align: right; color: var(--text-muted); white-space: nowrap; }
+    .mock th { background: var(--surface-2); color: var(--text); font-weight: 650; text-align: center; }
+    .mock td:first-child, .mock th:first-child { text-align: left; }
+    .mock .hl { background: color-mix(in srgb, var(--primary) 14%, transparent); color: var(--text); font-weight: 650; }
+    .mock .dim { color: var(--text-faint); }
+    .mock-note { font-size: .84rem; color: var(--text-faint); margin: .6rem 0 0; }
+    /* .ref-table sets its second column in the mono face, which is right for a
+       formula sheet and wrong for a table of sentences, so the prose tables on
+       this page opt out the way teachers.html's block maps do. */
+    .prose-table td:nth-child(2) { font-family: var(--font); color: var(--text-muted); }
+    .cl-printbar { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: 1rem 0 .2rem; }
+    .cl-printbar .cl-hint { color: var(--text-faint); font-size: .83rem; }
+    .cl-num td:first-child { text-align: center; font-weight: 700; color: var(--text-faint); width: 2.2rem; }
+    .cl-designs { margin: 1.1rem 0 0; }
+
+    /* ============================================================
+       PRINT — the seminar checklist on its own sheet. The button marks
+       the checklist section with .cl-printing and sets body.g-print-list,
+       which together drop every other part of the guide so the checklist
+       is the whole print job; both classes revert on afterprint. This is
+       teachers.html's block-map print path, keyed to a class for the same
+       reason: a second printable block would need a button and an id and
+       nothing else. The shared block in styles.css already hides the
+       chrome, forces the light palette and underlines links, so only the
+       sizing and the link decoration are set here.
+       ============================================================ */
+    @media print {
+      body.g-print-list .lesson > *:not(.cl-printing) { display: none !important; }
+      .cl-printbar { display: none !important; }   /* never print the button or its hint */
+      body.g-print-list .cl-printing > p { display: none !important; }
+      body.g-print-list .cl-printing h2 { font-size: 13pt; margin: 0 0 .3cm; }
+      body.g-print-list .cl-printing h3 { font-size: 10pt; margin: .4cm 0 .2cm; }
+      body.g-print-list .cl-table { font-size: 8.4pt; margin: 0; }
+      body.g-print-list .cl-table th,
+      body.g-print-list .cl-table td { padding: .14cm .18cm; line-height: 1.35; }
+      body.g-print-list .cl-table th { font-size: 7.5pt; }
+      body.g-print-list .cl-designs { font-size: 8.4pt; }
+      /* a sheet where every reference is underlined reads as a wall of
+         rules, so the checklist prints its links in plain black text */
+      body.g-print-list .cl-printing a { text-decoration: none !important; }
+    }
+  </style>
+</head>
+<body data-guide="reading-a-causal-paper">
+  <nav class="nav" id="nav"></nav>
+
+  <main>
+    <div class="container narrow">
+      <article class="lesson" style="margin:0 auto">
+        <span class="lesson-eyebrow">Guide</span>
+        <h1>Reading a Causal-Inference Paper</h1>
+
+        <p class="lede">Advanced courses tend to finish with a journal club. Somebody hands out a paper that claims a cause, everyone reads it on the train, and an hour later you are expected to say something useful about it. The skill being examined there is not running the analysis; it is refereeing a design, which has its own order of operations. This guide is that order. Seven questions, asked in sequence, then the whole route walked once on a study built for the purpose so every number can be checked, then a checklist short enough to take into the room.</p>
+
+        <nav class="lesson-toc" aria-label="In this guide">
+          <span class="toc-label">In this guide</span>
+          <a href="#question">1 · What is the causal question?</a>
+          <a href="#strategy">2 · Which of the three designs is it?</a>
+          <a href="#variation">3 · Where the variation comes from</a>
+          <a href="#assumption">4 · The assumption, and its defense</a>
+          <a href="#tables">5 · Reading the tables</a>
+          <a href="#magnitude">6 · The magnitude, and whose it is</a>
+          <a href="#mind">7 · What would change your mind</a>
+          <a href="#objections">The standing objections, by design</a>
+          <a href="#worked">The route walked once</a>
+          <a href="#checklist">A checklist for the room</a>
+          <a href="#keep-going">Keep going</a>
+        </nav>
+
+        <!--
+          ═══════════════════════════════════════════════════════════════════
+          P104 VERIFICATION — the worked study below is INVENTED. No real
+          paper is described or critiqued anywhere on this page. Every
+          number in it is internally consistent and was recomputed with
+          node + assets/js/viz.js. Load VIZ first:
+            node -e 'const fs=require("fs"),vm=require("vm");
+              const c={window:{},document:{addEventListener(){},documentElement:{}}};c.self=c;
+              vm.createContext(c);vm.runInContext(fs.readFileSync("assets/js/viz.js","utf8"),c);
+              const V=c.window.VIZ; /* ...checks below... */'
+
+          SET-UP  → N = 6,000 children; near a site n1 = 2,400, far n2 = 3,600.
+            Outcome SD = 15 in both groups, so every continuous SE below is
+            SD * sqrt(1/2400 + 1/3600) = SD * 0.0263523.
+            A proportion's SE is sqrt(pbar(1-pbar)(1/2400 + 1/3600)) with pbar
+            the pooled rate.
+
+          FIRST STAGE → .45 - .17 = .280 attenders.
+            1080 + 612 = 1692 attenders, pbar = 1692/6000 = .282
+            SE = sqrt(.282 * .718 * .00069444) = 0.011858  (table prints .012)
+            t = .28/.011858 = 23.613 · F = t^2 = 557.58  → printed 557.6
+
+          REDUCED FORM → 63.77 - 62.65 = 1.12 points.
+            SE = 15 * .0263523 = 0.395285 · t = 2.8334 · p = .0046
+            grand mean = (2400*63.77 + 3600*62.65)/6000 = 63.098
+
+          WALD RATIO → 1.12 / .280 = 4.00 points.
+            SE ~ SE(reduced form)/first stage = .395285/.28 = 1.411731
+            (the leading term of the delta method, which is what a strong
+            first stage makes accurate; the table prints 1.41)
+            t = 2.8334 · 95% CI from the printed SE = 4.00 +/- 1.96*1.41
+              = [1.24, 6.76]
+
+          NAIVE OLS → attenders 1692, non-attenders 4308, difference 9.00.
+            means forced to the grand mean: 69.56 and 60.56
+            (1692*69.56 + 4308*60.56 = 378588 = 6000*63.098 exactly)
+            SE = 15*sqrt(1/1692 + 1/4308) = 0.430357 → printed .430
+            t = 20.91 · 95% CI = 9.00 +/- 1.96*.430 = [8.16, 9.84]
+
+          COMPLIERS → always-takers .17 (1,020), compliers .28 (1,680),
+            never-takers .55 (3,300); the three shares sum to exactly 1.
+
+          BALANCE TABLE (near minus far; SEs as above) →
+            age 9.41 vs 9.39, SD 1.12  → +0.02, SE .030, t = 0.68, p = .50
+            girls .501 vs .489         → +.012, SE .013, t = 0.91, p = .36
+            prior score 58.92 vs 58.58, SD 15 → +0.34, SE .40, t = 0.86, p = .39
+            free meals .287 vs .312    → -.025, SE .012, t = -2.07, p = .038
+            income 33.5 vs 32.4, SD 14 → +1.10, SE .37, t = 2.98, p = .003
+
+          THE SENSITIVITY THAT MATTERS → a direct path worth 0.34 points
+            leaves 1.12 - 0.34 = 0.78 of reduced form, so 0.78/.28 = 2.79.
+            The bias itself is 0.34/.28 = 1.21 points; against a first stage
+            of .08 the same leak would be 0.34/.08 = 4.25 points.
+
+          PLACEBO (older siblings, never eligible) → +0.21, SE 0.58,
+            t = 0.36, p = .72. To reach t = 1.96 that test needs a gap of
+            1.14 points; the leak that would halve the estimate is 0.34,
+            which is t = 0.59. So the placebo passes and could not have
+            detected the violation that matters.
+
+          ROBUSTNESS COLUMNS are stipulated regression outputs (a paper
+            reports them; they cannot be recovered from four cell means).
+            Every interval printed beside one IS derived: estimate +/- 1.96*SE.
+            4.00/1.41 → [1.24, 6.76] · 3.12/1.44 → [0.30, 5.94]
+            2.85/1.79 → [-0.66, 6.36] · 4.31/1.86 → [0.66, 7.96]
+            3.94/1.49 → [1.02, 6.86]
+
+          MAGNITUDE → 4.00/15 = 0.267 SD · 9.00/15 = 0.60 SD ·
+            4.00/11 = 0.364 of a year of progress (11 points a year is a
+            stipulated descriptive of the invented test, not a derivation).
+
+          APA-QUOTE p VALUES (audit CHECK 9 recomputes these) →
+            t(5998) = 2.83 → 2*V.tUpper(2.83, 5998) = .004670 → prints .005
+          ═══════════════════════════════════════════════════════════════════
+        -->
+
+        <h2 id="question">1 · What is the causal question?</h2>
+        <p>Start by writing the paper's question down in your own words, as a comparison between two states of the world. Not a topic, not a pair of variables, a comparison: these units, under this treatment, against the same units under its absence, over this stretch of time. A paper that estimates the effect of a tutoring program on test scores is asking what a given child's score would have been had they not attended, and the whole apparatus exists because that second number does not exist anywhere. <a href="../../stats-3/causal-dags-and-confounding/">Causal DAGs &amp; Confounding</a> is where the site sets out that vocabulary.</p>
+        <p>Abstracts hedge, so read the hedge. "We examine the relationship between" is a different promise from "we estimate the effect of", and papers sometimes make the first promise in the abstract and the second in the conclusion. Note which one the paper is making, because everything you do next is a test of whether it earned the stronger one.</p>
+        <p>Four things belong in your sentence, and a paper that leaves one out has left you work to do. What the treatment is, precisely enough that you could administer it. Who the units are. What they are being compared with. And over what horizon, since a policy measured after six months and a policy measured after six years are different questions with the same title.</p>
+
+        <h2 id="strategy">2 · Which of the three designs is it?</h2>
+        <p>Almost every causal claim from observational data in this literature rests on one of three designs, and each announces itself in a single paragraph of the methods section. An <strong>instrumental variable</strong> is a variable the authors claim shifts the treatment while having no business in the outcome equation. A <strong>regression discontinuity</strong> is a strict rule applied to a continuous score, with a cutoff. A <strong>difference-in-differences</strong> is a policy that arrived somewhere at a known moment and did not arrive somewhere else.</p>
+        <p>Find that paragraph before you read anything else, because it tells you which assumption you are going to spend the hour on. If you cannot find it, the paper may be doing plain covariate adjustment and calling the result an effect, which is a fourth and much weaker position, and the thing to ask about then is the list of controls and what is missing from it.</p>
+        <table class="ref-table prose-table">
+          <caption>The three designs, and what each one asks you to believe. Section numbers are the lessons on this site.</caption>
+          <thead><tr><th>Design</th><th>Where the variation comes from</th><th>The assumption no test reaches</th><th>What a paper offers instead</th></tr></thead>
+          <tbody>
+            <tr><td><a href="../../stats-3/instrumental-variables/">Instrumental variables</a> (§3.13)</td><td>A variable that moves the treatment for reasons unconnected to the outcome</td><td>Exclusion: the instrument touches the outcome only through the treatment</td><td>The story of where the instrument came from, balance across its levels, falsification samples, an overidentification test if there are several instruments</td></tr>
+            <tr><td><a href="../../stats-3/regression-discontinuity/">Regression discontinuity</a> (§3.14)</td><td>A strict cutoff on a continuous running variable</td><td>Continuity: everything except the treatment varies smoothly through the cutoff</td><td>Covariate jumps at the cutoff, a McCrary density test, placebo cutoffs, the estimate across a range of bandwidths</td></tr>
+            <tr><td><a href="../../stats-3/difference-in-differences/">Difference-in-differences</a> (§3.15)</td><td>A treatment arriving at a known date in some units and not others</td><td>Parallel trends: the comparison group's path is what the treated group would have followed</td><td>An event study over the pre-periods, placebo dates, a second comparison group, results on both scales</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="variation">3 · Where the variation comes from</h2>
+        <p>Every one of these designs works by finding a slice of the treatment that arrived for a reason the outcome had nothing to do with. So locate the slice. Which units, at which moment, were treated differently, and why? The answer should be a short account of something that happened in the world: a lottery was drawn, a rule was written, a budget ran out, a border moved, a date was chosen by a legislature for reasons of its own.</p>
+        <p>Then ask the awkward follow-up. Who could have influenced that reason, and did they have a motive to? A rule written by an agency whose staff also deliver the treatment is not the same as a rule written into a statute years earlier. An eligibility score a caseworker can round up is not the same as an exam mark typed in by a machine. A policy date chosen because outcomes were already deteriorating is the worst case of all, because the choice was made using the very thing the design is trying to measure.</p>
+        <p>Also ask who is not in the comparison. Designs like these usually discard most of the sample: everyone far from the cutoff, everyone the instrument did not move, everyone in a region with no policy change. That is a legitimate price, and it is a price a reader should be told about rather than left to infer from a sample-size row.</p>
+
+        <h2 id="assumption">4 · The assumption, and its defense</h2>
+        <p>This is the part of the hour worth protecting. Write the identifying assumption out in one plain sentence, in the paper's own setting, with no symbols. For the tutoring study further down, it reads: living near a club site changes a child's test score only by getting them into the club, and by nothing else at all. Once it is in words rather than notation, a room full of people can argue about whether it is true, which is the entire purpose of the exercise.</p>
+        <p>The assumption is not testable. It is a statement about an outcome nobody observed, so no dataset contains the column that would settle it, and no diagnostic, goodness-of-fit measure or residual plot carries information about it. All three lessons say this in their own vocabulary, and it is the reason a causal paper is refereed rather than checked.</p>
+        <p>What an honest paper does instead is put the assumption in positions where it could visibly fail. There are four such offers, and it is worth naming which ones the paper made.</p>
+        <ul>
+          <li>An account of the variation good enough that a skeptic can attack the story rather than the statistics.</li>
+          <li>Balance on things fixed before the treatment existed, which the treatment cannot have caused.</li>
+          <li>A falsification: a sample, a period or a cutoff where the assumption implies nothing should happen.</li>
+          <li>A sensitivity calculation saying how large a violation would have to be before the conclusion changes.</li>
+        </ul>
+        <p>Now judge the offer, because this is the step that separates refereeing from nodding along. A falsification test that comes back insignificant has told you something only if it could have caught the violation that matters. Work out what size of effect it had the precision to detect, compare that with the size of violation that would overturn the result, and you will often find the test was never in a position to fail. The worked study below is exactly that case, and the arithmetic takes one line.</p>
+        <p>Balance tables invite the same misreading in reverse. A row with a large standard error and a small <em>t</em> is not a row that says zero; it is a row that says nobody knows. Read the point estimates, ask whether the imbalances line up into one story, and ask which direction that story would push the headline. An imbalance that works against the paper's finding is very different news from one that works in its favor, and papers rarely spell out which they have.</p>
+
+        <h2 id="tables">5 · Reading the tables</h2>
+        <p>Results sections are laid out to be read forward and are better read backward. The headline table is the one the abstract is about; the tables that decide whether to believe it usually sit in front of it or in an appendix. Go to those first, and arrive at the coefficient last.</p>
+        <p>For an instrumental-variables paper, three things should be visible. The <strong>first stage</strong> with its <em>F</em> statistic, which tests relevance and nothing else. The <strong>reduced form</strong>, the plain regression of the outcome on the instrument, which is the whole finding before any dividing happens. And the <strong>ordinary least squares</strong> estimate beside the two-stage one, so a reader can see how far apart they are and in which direction. A paper that reports only the two-stage coefficient has hidden the arithmetic: a ratio can be large because its numerator was large or because its denominator was small, and those are different papers.</p>
+        <p>Balance and placebo tables are the assumption's public exposure, and they are the tables to read with a pencil. Robustness columns are a different animal: work out what is being varied across them, and then ask whether the specification closest to the identifying concern is also the weakest one. That pattern is common and it is rarely flagged, since the column the authors trust least is the column they are least inclined to discuss.</p>
+        <p>Two habits cover most of the rest. Check that the sample size is the same across columns that claim to be comparable, because a specification that silently drops a third of the data has changed more than its controls. And check whether the standard errors were clustered at the level the treatment was assigned at, which for a policy that arrived by region means the region rather than the person. <a href="../../stats-3/difference-in-differences/">Difference-in-Differences</a> works through why that choice can move a standard error by a factor of two or three.</p>
+
+        <h2 id="magnitude">6 · The magnitude, and whose it is</h2>
+        <p>Read the coefficient in the units of the outcome, out loud, as a sentence. Then convert it into something a person can hold: a share of the outcome's standard deviation, a fraction of a year of progress, a percentage of the baseline mean. Stars tell you about the standard error and nothing about whether the effect is worth having.</p>
+        <p>An implausibly large estimate is a diagnostic rather than a triumph. Designs like these often produce big numbers, partly because they are estimating the effect on a particular subgroup and partly because a noisy estimate that clears significance has to be large to have done so. If an after-school club appears to be worth two thirds of a standard deviation, the first thing to suspect is the design, not the club.</p>
+        <p>Then say whose effect it is, because none of these designs estimates the average effect in the population. An instrument recovers the average among <a href="../../stats-3/instrumental-variables/">the compliers</a>, the units it actually moved. A cutoff recovers the effect for units sitting at the cutoff. A difference-in-differences recovers the effect on the treated units in the periods they were treated. The sentence you want the paper to have written is of the form "this is the effect of X on Y, among Z", and if the paper did not write it, write it yourself before the seminar and see whether anybody disagrees.</p>
+
+        <h2 id="mind">7 · What would change your mind</h2>
+        <p>Before you speak, name the one finding that would flip your verdict. If you are inclined to believe the paper, name the result that would make you stop: a covariate that jumps at the cutoff, a pre-trend, a comparison group that gives a different answer. If you are inclined to doubt it, name what would win you over.</p>
+        <p>Doing this converts a summary into a discussion, and it has a useful side effect: it exposes the cases where nothing would change your mind. When that happens you are not refereeing the paper, you are reporting a prior, and the room deserves to know which one is on offer. It also gives the authors, if they are ever in the room, something they can act on, which a list of grievances does not.</p>
+
+        <h2 id="objections">The standing objections, by design</h2>
+        <p>These are questions rather than accusations, and the difference in a seminar is not cosmetic. Each one has a good answer available; asking it gives the presenter the chance to give it.</p>
+        <h3>Instrumental variables</h3>
+        <ul>
+          <li>Where did the instrument come from, and who decided it?</li>
+          <li>What is the first stage, and what does the reduced form look like on its own?</li>
+          <li>Which direct routes from the instrument to the outcome have you ruled out, and on what evidence?</li>
+          <li>Who are the compliers here, and roughly what share of the sample are they?</li>
+          <li>If the instrument is a policy, is anything else in that policy also touching the outcome?</li>
+        </ul>
+        <h3>Regression discontinuity</h3>
+        <ul>
+          <li>What does the density of the running variable do at the cutoff?</li>
+          <li>Which pre-treatment covariates jump there, and how precisely were they measured?</li>
+          <li>How does the estimate move across bandwidths, and does the specification force one slope across the cutoff?</li>
+          <li>Is this threshold used by any other rule or program?</li>
+          <li>How many distinct values does the running variable take near the cutoff?</li>
+        </ul>
+        <h3>Difference-in-differences</h3>
+        <ul>
+          <li>How many pre-treatment periods are there, and how precisely was each one estimated?</li>
+          <li>Why this comparison group, and what happens with a different one?</li>
+          <li>Did units adopt at different dates, and if so which estimator was used?</li>
+          <li>Levels or logs, and does the answer survive the other choice?</li>
+          <li>What else happened at that date in the treated units alone?</li>
+        </ul>
+
+        <h2 id="worked">The route walked once</h2>
+        <div class="callout">
+          <p>The study below is invented, along with every number in it. Nothing here describes or criticizes a real paper or a real author, which is deliberate: a worked critique is only honest if the thing being critiqued cannot be misrepresented. Courses differ on how much help a student may take with an assigned reading, AI tools included, and the rules that bind you are the ones in your own handbook. Read them before you bring anything from this page to a paper you were set. <a href="../../ethics/ai-in-research-ethics/">Using AI Tools Ethically</a> covers where that line usually falls and the reasoning behind it.</p>
+        </div>
+        <p><strong>The paper.</strong> A city has run free after-school homework clubs for decades, sited in the 1970s under a population rule and unchanged since. Using administrative records on 6,000 children aged 8 to 11, the authors ask whether attending a club raises the end-of-year test score. Attendance is voluntary, so they instrument it with living within 800 meters of a club site. The outcome is scored out of 100 with a standard deviation of 15 in this sample.</p>
+
+        <p><strong>Question 1.</strong> The comparison is a child who attended a club against the same child in a year where they did not, measured at the end of that school year. The paper says "effect of attendance", so it has made the strong promise.</p>
+        <p><strong>Question 2.</strong> Instrumental variables. The cutoff language about 800 meters is tempting to read as a discontinuity, but no rule allocates anything at 800 meters; it is the authors' own dividing line on a continuous distance, used to define the instrument.</p>
+        <p><strong>Question 3.</strong> The variation is the accident of where a family's address sits relative to buildings chosen half a century ago. Nobody currently involved chose it, which is the good part. Families do choose where to live, which is the part to worry about.</p>
+
+        <p><strong>Question 4.</strong> The assumption in words: being near a site changes a child's score only by getting them into the club. Here is the paper's balance table, its main defense.</p>
+        <div class="mock">
+          <p class="mock-cap">Table 1 · Characteristics by distance to the nearest club site</p>
+          <table>
+            <thead><tr><th>Measured before the year began</th><th>Near (n = 2,400)</th><th>Far (n = 3,600)</th><th>Difference</th><th>SE</th><th>p</th></tr></thead>
+            <tbody>
+              <tr><td>Age at the start of the year</td><td>9.41</td><td>9.39</td><td>+0.02</td><td>0.030</td><td>.50</td></tr>
+              <tr><td>Girls</td><td>.501</td><td>.489</td><td>+.012</td><td>.013</td><td>.36</td></tr>
+              <tr><td>Previous year's test score</td><td>58.92</td><td>58.58</td><td class="hl">+0.34</td><td>0.40</td><td>.39</td></tr>
+              <tr><td>Free school meals</td><td>.287</td><td>.312</td><td>−.025</td><td>.012</td><td>.038</td></tr>
+              <tr><td>Household income (thousands)</td><td>33.5</td><td>32.4</td><td class="hl">+1.10</td><td>0.37</td><td>.003</td></tr>
+            </tbody>
+          </table>
+          <p class="mock-note">Three rows pass and two fail, and the two that fail tell one story: households near a site are better off. The highlighted row is the one the paper treats as reassuring.</p>
+        </div>
+        <p>The paper reports that the previous year's score is balanced, <em>t</em> = 0.86, and moves on. Look at the number rather than the verdict. Near children score 0.34 points higher before the club year begins, and the income gap is exactly the size that would produce it: 1.10 thousand at a gradient of roughly 0.30 points per thousand gives 0.33. So the balance table's most reassuring row is quantitatively consistent with a direct path from the instrument to the outcome worth about a third of a point. Hold that number.</p>
+        <p>The paper's falsification is a good one. Older siblings in the same households, aged 13 to 15 and never eligible for the clubs, show a near-versus-far score difference of +0.21 with a standard error of 0.58, <em>t</em> = 0.36. If distance were a proxy for neighborhood quality, it ought to move their scores too, and it does not. The offer is real. It is also weaker than it looks: to reach significance that test needed a gap of about 1.14 points, and the violation that would matter is 0.34, which would have shown up as <em>t</em> = 0.59. The falsification passes and could never have failed.</p>
+
+        <p><strong>Question 5.</strong> Now the tables, read in the order that decides things.</p>
+        <div class="mock">
+          <p class="mock-cap">Table 2 · First stage and reduced form</p>
+          <table>
+            <thead><tr><th></th><th>(1) Attended a club</th><th>(2) End-of-year score</th></tr></thead>
+            <tbody>
+              <tr><td>Near a site</td><td class="hl">0.280</td><td class="hl">1.12</td></tr>
+              <tr><td></td><td>(0.012)</td><td>(0.395)</td></tr>
+              <tr><td>Mean of the far group</td><td>0.170</td><td>62.65</td></tr>
+              <tr><td>First-stage <em>F</em></td><td>557.6</td><td class="dim">not applicable</td></tr>
+              <tr><td>Observations</td><td>6,000</td><td>6,000</td></tr>
+            </tbody>
+          </table>
+          <p class="mock-note">Column 1 is the first stage and column 2 the reduced form. Between them they contain the whole estimate, before any dividing.</p>
+        </div>
+        <div class="mock">
+          <p class="mock-cap">Table 3 · The effect of attending a club</p>
+          <table>
+            <thead><tr><th></th><th>Ordinary least squares</th><th>Two-stage least squares</th></tr></thead>
+            <tbody>
+              <tr><td>Attended a club</td><td>9.00</td><td class="hl">4.00</td></tr>
+              <tr><td></td><td>(0.430)</td><td>(1.41)</td></tr>
+              <tr><td>95% confidence interval</td><td>[8.16, 9.84]</td><td class="hl">[1.24, 6.76]</td></tr>
+              <tr><td>Observations</td><td>6,000</td><td>6,000</td></tr>
+            </tbody>
+          </table>
+          <p class="mock-note">4.00 is 1.12 divided by 0.280, which is the Wald ratio worked by hand. The ordinary estimate is more than twice as large and far more precise, and it is the one nobody should believe.</p>
+        </div>
+        <p>The first stage is enormous and answers the easiest of the three conditions. Nobody should be impressed by an <em>F</em> of 558, and a reader who treats it as a validation of the design has confused relevance with exclusion. The reduced form is the number that carries the finding, and at 1.12 points with a standard error of 0.395 it is a real but modest result, <em>t</em>(5998) = 2.83.</p>
+        <p>Now use the 0.34 from the balance table. If a third of a point of that 1.12 arrived by a route other than attendance, the honest numerator is 0.78, and dividing by the same first stage gives 2.79 rather than 4.00. The bias is 0.34 divided by 0.280, which is 1.21 points, and it is worth noticing that a weaker instrument would have magnified it: against a first stage of .08 the same leak would have been worth 4.25 points, more than the entire reported effect. That is the calculation to bring to the seminar.</p>
+        <div class="mock">
+          <p class="mock-cap">Table 4 · Robustness</p>
+          <table>
+            <thead><tr><th>Specification</th><th>Estimate</th><th>SE</th><th>95% CI</th></tr></thead>
+            <tbody>
+              <tr><td>(1) No controls</td><td>4.00</td><td>1.41</td><td>[1.24, 6.76]</td></tr>
+              <tr><td>(2) Household controls added</td><td>3.12</td><td>1.44</td><td>[0.30, 5.94]</td></tr>
+              <tr><td>(3) Neighborhood fixed effects added</td><td class="hl">2.85</td><td>1.79</td><td class="hl">[−0.66, 6.36]</td></tr>
+              <tr><td>(4) Near defined as 600 meters</td><td>4.31</td><td>1.86</td><td>[0.66, 7.96]</td></tr>
+              <tr><td>(5) Excluding households that moved</td><td>3.94</td><td>1.49</td><td>[1.02, 6.86]</td></tr>
+            </tbody>
+          </table>
+          <p class="mock-note">Every interval is the estimate plus or minus 1.96 standard errors. Column 3 is the one that speaks to the identifying worry, and it is the one whose interval covers zero.</p>
+        </div>
+        <p>Read the columns in the order of how much each one addresses the concern, rather than left to right. Adding household controls pulls the estimate down toward the 2.79 the sensitivity calculation predicted, which is a point in favor of the diagnosis. Neighborhood fixed effects pull it further and cost enough precision to cross zero. The paper's abstract quotes column 1.</p>
+
+        <p><strong>Question 6.</strong> Four points on a test with a standard deviation of 15 is 0.27 SD, and the paper describes a year of ordinary progress on this test as about 11 points, so the club buys something like a third of a school year. That is a substantial claim but not an absurd one, which is a reasonable place for an estimate to land. The naive comparison of 9.00 points, at 0.60 SD, would have been absurd, and its absurdity is a useful signal about what selection into an optional program does.</p>
+        <p>Whose effect it is follows from the first stage. Seventeen percent of children attend wherever they live, 55% attend nowhere, and the 28% in between are the compliers: children who went because a site was close and would not have gone otherwise. The 4.00 belongs to those 1,680 children and to nobody else. A city deciding whether to build more sites is asking about precisely that group, so the number is the policy-relevant one here. A claim about what clubs do for children in general it is not.</p>
+        <blockquote class="apa-quote">
+          <p>Living within 800 meters of a club site raised attendance by 28.0 percentage points, first-stage <em>F</em> = 557.6, and was associated with a 1.12-point difference in end-of-year scores, <em>t</em>(5998) = 2.83, <em>p</em> = .005. The implied effect of attendance is 4.00 points, <em>SE</em> = 1.41, 95% CI [1.24, 6.76], or 0.27 standard deviations, among the 28% of children whose attendance the proximity of a site changed.</p>
+        </blockquote>
+        <p><strong>Question 7.</strong> Two things would change the verdict. A falsification with the power to detect a third of a point, on a sample where the assumption implies a clean zero, would make the imbalance a curiosity rather than a live threat. And a neighborhood-fixed-effects estimate that held near 4.00 rather than falling to 2.85 would say the income gradient is not doing the work. In the other direction, an estimate that moved toward zero as the distance threshold tightened would suggest neighborhood rather than club, since a tighter ring should be more like its surroundings rather than less. The verdict to offer the room is that the design is plausible, the finding is probably real, and the reported magnitude is likely too large by somewhere between a quarter and a half.</p>
+
+        <section id="checklist">
+          <h2>A checklist for the room</h2>
+          <p>One page, whichever of the three designs the paper uses. Fill in the middle column while you read and the right-hand column is what you say.</p>
+          <div class="cl-printbar">
+            <button class="btn btn-secondary" id="print-checklist" type="button">🖨️ Print the checklist</button>
+            <span class="cl-hint">Prints on its own, one page, without the rest of the guide.</span>
+          </div>
+          <table class="ref-table prose-table cl-table cl-num">
+            <thead><tr><th>Q</th><th>Write this down</th><th>The tell that it is missing</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>The question as a comparison: effect of what, on whom, against what, over how long</td><td>The paper says "relationship" and never names the comparison</td></tr>
+              <tr><td>2</td><td>The design in one word: instrument, cutoff or policy date</td><td>The methods section names a software command instead of a design</td></tr>
+              <tr><td>3</td><td>Where the variation came from, and who could have influenced it</td><td>The variation is described but never argued to be as good as random</td></tr>
+              <tr><td>4</td><td>The identifying assumption in one plain sentence, plus which of the four defenses the paper offers</td><td>The assumption appears in symbols and never in words</td></tr>
+              <tr><td>5</td><td>First stage and reduced form, or balance and density, or the pre-period coefficients, with their numbers</td><td>Only the headline specification is shown</td></tr>
+              <tr><td>6</td><td>The estimate in outcome units, as a share of an SD, and the group it belongs to</td><td>The result is described by its stars</td></tr>
+              <tr><td>7</td><td>The one finding that would change your verdict</td><td>You cannot name one</td></tr>
+            </tbody>
+          </table>
+          <h3>The size of the violation</h3>
+          <p class="cl-designs">For the defense that is doing the most work, write down two numbers: how big a violation would have to be to overturn the conclusion, and how big a violation that test could have detected. If the second is larger than the first, the test passed without ever being in danger.</p>
+          <table class="ref-table prose-table cl-table cl-designs">
+            <thead><tr><th>If it is</th><th>Ask first</th><th>Then ask</th></tr></thead>
+            <tbody>
+              <tr><td>Instrumental variables</td><td>What is the reduced form on its own?</td><td>Which direct route to the outcome is ruled out, and how?</td></tr>
+              <tr><td>Regression discontinuity</td><td>What does the density do at the cutoff?</td><td>How does the estimate move across bandwidths?</td></tr>
+              <tr><td>Difference-in-differences</td><td>How many pre-periods, and how precise?</td><td>What happens with a different comparison group?</td></tr>
+            </tbody>
+          </table>
+          <p class="cl-designs">The two robustness checks that would most change your verdict, written before the discussion starts, are the most useful sentence you can bring.</p>
+        </section>
+
+        <h2 id="keep-going">Keep going</h2>
+        <ul>
+          <li><a href="../../stats-3/instrumental-variables/">Instrumental Variables &amp; 2SLS</a>: relevance, independence and exclusion, the Wald ratio, weak instruments and compliers.</li>
+          <li><a href="../../stats-3/regression-discontinuity/">Regression Discontinuity Design</a>: the running variable, the bandwidth decision, sharp and fuzzy cutoffs, and the three checks.</li>
+          <li><a href="../../stats-3/difference-in-differences/">Difference-in-Differences</a>: four cells, the interaction coefficient, clustered standard errors, event studies and staggered adoption.</li>
+          <li><a href="../../stats-3/causal-dags-and-confounding/">Causal DAGs &amp; Confounding</a>: the vocabulary of backdoor paths and colliders that every argument above is written in.</li>
+          <li><a href="../../methods/quasi-experiments/">Quasi-Experiments &amp; Natural Experiments</a>: the same trade made with other accidents, from the Research Toolkit.</li>
+          <li><a href="../../problems.html#stats-3-set">Practice Problems</a>: the Stats 3 set works an encouragement design, a cutoff and a two-by-two policy table by hand.</li>
+          <li><a href="../complete-worked-project/">One Study, Start to Finish</a>: the other side of the desk, where you are the one making the claim.</li>
+        </ul>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><span>© <span id="year"></span> Hakan Karsilar · StatsCapybara</span><span>Made for visual learners.</span></div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../../assets/js/curriculum.js"></script>
+  <script src="../../assets/js/site.js"></script>
+  <script>
+  /* The seminar checklist prints on its own: the button marks the checklist
+     section with .cl-printing and body.g-print-list hides the rest of the
+     guide. Both come off again on afterprint, with a timeout for the browsers
+     that never fire it. Mirrors teachers.html's block-map print path. */
+  (function () {
+    "use strict";
+    var btn = document.getElementById("print-checklist");
+    var sec = document.getElementById("checklist");
+    if (!btn || !sec) return;
+    function end() {
+      sec.classList.remove("cl-printing");
+      document.body.classList.remove("g-print-list");
+    }
+    window.addEventListener("afterprint", end);
+    btn.addEventListener("click", function () {
+      sec.classList.add("cl-printing");
+      document.body.classList.add("g-print-list");
+      window.print();
+      setTimeout(end, 1500);
+    });
+  })();
+  </script>
+</body>
+</html>

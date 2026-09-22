@@ -116,9 +116,17 @@ LESSON_MAX_CHARS = 45_000
 # reliability section (found in run 24 by searching the rebuilt index for the
 # terms that run had just written) fell past the cut. This is the same defect
 # run 13 fixed for lessons, left standing on the pages built to answer
-# high-intent thesis queries. 30,000 clears the longest guide with real slack,
-# per run 20's lesson that a cap chasing a growing corpus needs it.
-GUIDE_MAX_CHARS = 30_000
+# high-intent thesis queries. 30,000 cleared the longest guide with real slack
+# at the time, per run 20's lesson that a cap chasing a growing corpus needs it.
+#
+# P104 moved it to 45,000, again BEFORE anything was cut. Two guides now sit
+# above 23,000 characters (reading-a-causal-paper at 24,294 and
+# anova-and-regression-project at 23,757), which is 81% and 79% of a 30,000
+# guard, and both were written in the last two sessions. The raise costs zero
+# bytes today because nothing is being truncated; it simply stops the guard
+# from becoming a budget the next guide writes to. Same figure as
+# LESSON_MAX_CHARS, so there is one number to remember rather than two.
+GUIDE_MAX_CHARS = 45_000
 
 
 def textify(fragment: str) -> str:
@@ -248,6 +256,7 @@ for slug in [
     "clean-survey-data",
     "complete-worked-project",
     "anova-and-regression-project",
+    "reading-a-causal-paper",
 ]:
     p = ROOT / "guides" / slug / "index.html"
     if p.exists():
