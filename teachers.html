@@ -137,7 +137,7 @@
         <p>The exam results screen prints cleanly, so a student can hand you a marked mock paper, or keep it as a revision list.</p>
 
         <h3>Set a mock exam over the sections you have taught</h3>
-        <p>A midterm rarely covers a whole course, so exam scope is a course plus a span of its sections. Under each course in the scope picker sits a <em>from</em> and <em>to</em> pair, filled from that course's own section list, and narrowing it narrows the paper. Stats 1 and Stats 2 carry section tags on every question today; a course without them has no range control and comes in whole, which the line under the picker says out loud.</p>
+        <p>A midterm rarely covers a whole course, so exam scope is a course plus a span of its sections. Under each course in the scope picker sits a <em>from</em> and <em>to</em> pair, filled from that course's own section list, and narrowing it narrows the paper. Stats 1, Stats 2 and Stats 3 carry section tags on every question today; a course without them has no range control and comes in whole, which the line under the picker says out loud.</p>
         <p>The same scope fits in a link, so you can post one URL and every student sits the same paper. It opens exam mode with the scope and the length already set, and leaves the Start button to them.</p>
         <div class="try-code" style="margin:1rem 0">
           <div class="tc-head"><span class="tc-title">A mock exam in a link</span><button class="tc-copy" id="exam-copy" type="button">Copy</button></div>
@@ -146,6 +146,10 @@
         <div class="try-code" style="margin:1rem 0">
           <div class="tc-head"><span class="tc-title">The same, for a Stats 2 midterm</span><button class="tc-copy" id="exam2-copy" type="button">Copy</button></div>
           <pre id="exam2-snippet">https://statscapybara.com/quiz.html?exam=stats-2&amp;from=2.1&amp;to=2.5&amp;n=20</pre>
+        </div>
+        <div class="try-code" style="margin:1rem 0">
+          <div class="tc-head"><span class="tc-title">And for the Stats 3 factor-analysis midterm</span><button class="tc-copy" id="exam3-copy" type="button">Copy</button></div>
+          <pre id="exam3-snippet">https://statscapybara.com/quiz.html?exam=stats-3&amp;from=3.1&amp;to=3.5&amp;n=20</pre>
         </div>
         <p><code>exam=</code> takes one course slug, several separated by commas, or <code>all</code>. <code>from=</code> and <code>to=</code> take section numbers and apply when the link names a single course; either can be given on its own, and reversed ends are read the sensible way round. <code>n=</code> is 10, 20 or 40. Anything unrecognized is ignored and the page opens on its ordinary start screen, so a typo in front of a class costs nothing.</p>
 
@@ -572,7 +576,7 @@ https://statscapybara.com/stats-1/simple-linear-regression/?data=1:12,2:20,3:26,
     "use strict";
     /* the embed snippets and the data-URL snippet all copy identically */
     [["embed-copy", "embed-snippet"], ["preset-copy", "preset-snippet"], ["data-copy", "data-snippet"],
-     ["exam-copy", "exam-snippet"], ["exam2-copy", "exam2-snippet"],
+     ["exam-copy", "exam-snippet"], ["exam2-copy", "exam2-snippet"], ["exam3-copy", "exam3-snippet"],
      ["present-copy", "present-snippet"]].forEach(function (pair) {
       var btn = document.getElementById(pair[0]);
       var pre = document.getElementById(pair[1]);

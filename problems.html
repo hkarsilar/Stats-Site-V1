@@ -16,16 +16,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Practice Problems — Worked Statistics Exam Questions — StatsCapybara</title>
-  <meta name="description" content="Ninety-two statistics problems with worked solutions: z-scores, t-tests, chi-square, ANOVA tables, rank tests, regression and Bayes, one step at a time." />
+  <meta name="description" content="One hundred statistics problems with worked solutions: z-scores, t-tests, chi-square, ANOVA tables, rank tests, regression and Bayes, one step at a time." />
   <link rel="canonical" href="https://statscapybara.com/problems.html" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Practice Problems — StatsCapybara" />
-  <meta property="og:description" content="Ninety-two worked statistics problems, from z-scores and ANOVA tables to Bayesian grids, logistic regression and survival curves, plus six studies to find the flaw in." />
+  <meta property="og:description" content="One hundred worked statistics problems, from z-scores and ANOVA tables to Bayesian grids, factor loadings and the three causal designs, plus six studies to find the flaw in." />
   <meta property="og:image" content="https://statscapybara.com/assets/og.png" />
   <meta property="og:url" content="https://statscapybara.com/problems.html" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Practice Problems — StatsCapybara" />
-  <meta name="twitter:description" content="Ninety-two worked statistics problems, from z-scores and ANOVA tables to Bayesian grids, logistic regression and survival curves, plus six studies to find the flaw in." />
+  <meta name="twitter:description" content="One hundred worked statistics problems, from z-scores and ANOVA tables to Bayesian grids, factor loadings and the three causal designs, plus six studies to find the flaw in." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="assets/css/styles.css" />
@@ -142,7 +142,8 @@
           <li><a href="#stats-2"><span class="t">🔗 Stats 2 · Groups &amp; relationships</span><br><span class="m">21 problems · ANOVA → contrasts → factorial → regression → rank tests</span></a></li>
           <li><a href="#stats-2-exam"><span class="t">📝 Exam-style · A Stats 2 midterm</span><br><span class="m">8 problems · §2.1 to §2.5, tables completed and read backwards</span></a></li>
           <li><a href="#regression"><span class="t">📐 Regression · Several predictors</span><br><span class="m">11 problems · multiple regression → omitted-variable bias → missing data</span></a></li>
-          <li><a href="#advanced"><span class="t">🎲 Advanced · Modern methods</span><br><span class="m">11 problems · Bayes → model comparison → latent variables → rotation</span></a></li>
+          <li><a href="#advanced"><span class="t">🎲 Advanced · Modern methods</span><br><span class="m">13 problems · Bayes → model comparison → latent variables → rotation</span></a></li>
+          <li><a href="#stats-3"><span class="t">🧪 Stats 3 · Latent variables &amp; causal inference</span><br><span class="m">8 problems · loading matrices → factor scores → a posterior as a table → IV, RD and DiD</span></a></li>
           <li><a href="#toolkit"><span class="t">🔍 Research Toolkit · Spot the problem</span><br><span class="m">6 problems · design, sampling, ethics, writing</span></a></li>
         </ul>
 
@@ -5515,13 +5516,6 @@
               <p class="pb-ref">From <a href="stats-3/factor-analysis-pca/">§3.5 Factor Analysis / PCA</a> · the reliability angle is <a href="methods/reliability-and-validity/">Methods §1.3 Reliability &amp; Validity</a>.</p>
             </details>
           </article>
-        </section>
-
-
-        <!-- ==================================================================
-             RESEARCH TOOLKIT — "spot the problem"
-             ================================================================== -->
-
           <!-- VERIFIED (P99), node -e:
                  C(20,13) = 77520; L(p) = 77520 * p^13 * (1-p)^7 at p = .1 .. .9
                    3.708e-9  .0000133  .0010178  .0145631  .0739288
@@ -5648,6 +5642,561 @@
               <p class="pb-ref">From <a href="stats-3/bayesian-thinking/">&sect;3.7 Bayesian Thinking</a> · the Beta shape itself lives in <a href="distributions.html">the distribution playground</a>.</p>
             </details>
           </article>
+        </section>
+
+
+        <!-- ==================================================================
+             STATS 3 — latent variables and causal inference
+             ================================================================== -->
+
+        <section class="pb-set" id="stats-3-set">
+          <h2 id="stats-3">&#129514; Stats 3 &middot; Latent variables &amp; causal inference</h2>
+          <p class="pb-set-sub">Eight problems in the shapes the <a href="stats-3/">Stats 3</a> syllabus examines, covering the two halves of the course that ask you to produce a number by hand: a measurement model read off a loading matrix, a posterior built as a table, and the three causal designs that recover an effect from an assignment rule rather than from a covariate list. The latent-variable arithmetic of problems 81 to 86 above sits behind these; these carry it into the questions a paper puts to a reader.</p>
+
+          <!-- VERIFIED (P103), node -e:
+                 reverse code on a 1..7 scale is 8 - x:  mean 8 - 2.6 = 5.4, SD unchanged 1.10
+                 standardized alpha, k = 4, every sigma_ii = 1, alpha = (k/(k-1))(1 - k/var_total)
+                 corrected: var_total = 4 + 2(.55+.48+.50+.44+.47+.41) = 4 + 5.70 = 9.70
+                   alpha = (4/3)(1 - 4/9.70) = (4/3)(.587629) = .78350
+                 uncorrected: var_total = 4 + 2(.55-.48+.50-.44+.47-.41) = 4 + 0.38 = 4.38
+                   alpha = (4/3)(1 - 4/4.38) = (4/3)(.086758) = .11568
+                 Bartlett df = p(p-1)/2 = 6;  VIZ.chiSqUpper(48.2, 6) = 1.08e-8
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p8-1"><span class="pb-num">87</span>The item that runs the other way</h3>
+              <span class="pb-chip warm">Warm-up</span>
+            </div>
+            <p class="pb-scenario">A four-item wellbeing scale is answered on a 1 to 7 agreement scale. Items q1, q2 and q4 are worded so that agreeing means more wellbeing; q3 is worded so that agreeing means less. The correlation matrix below came out of SPSS before anyone had recoded anything, and three of its six entries are negative.</p>
+            <div class="pb-given">
+              <span class="lbl">Correlations, as they came out</span>
+              <em>r</em><sub>12</sub> = .55 &nbsp;&middot;&nbsp; <em>r</em><sub>13</sub> = &minus;.48 &nbsp;&middot;&nbsp; <em>r</em><sub>14</sub> = .50 &nbsp;&middot;&nbsp; <em>r</em><sub>23</sub> = &minus;.44 &nbsp;&middot;&nbsp; <em>r</em><sub>24</sub> = .47 &nbsp;&middot;&nbsp; <em>r</em><sub>34</sub> = &minus;.41
+              <span class="lbl" style="margin-top:.5rem">Also given</span>
+              q3 raw: mean 2.6, SD 1.10 &nbsp;&middot;&nbsp; KMO = .78 &nbsp;&middot;&nbsp; Bartlett &chi;&sup2; = 48.2 on 6 df
+              <span class="lbl" style="margin-top:.5rem">Formula</span>
+              standardized &alpha; = (<em>k</em> &divide; (<em>k</em> &minus; 1)) &times; (1 &minus; <em>k</em> &divide; &sigma;&sup2;<sub>total</sub>), every item scaled so &sigma;<sub><em>ii</em></sub> = 1
+            </div>
+            <ol class="pb-ask">
+              <li>Recode q3 and give the corrected correlation matrix, plus q3's new mean and SD.</li>
+              <li>Where do Bartlett's 6 degrees of freedom come from, and what does rejecting actually license?</li>
+              <li>What does a KMO of .78 say about this matrix?</li>
+              <li>Compute &alpha; on the corrected matrix, then on the matrix exactly as printed above.</li>
+              <li>If nobody ever recodes q3, does the one-factor solution break? Say what changes and what does not.</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The recode, and what it moves</span>
+                  <span class="pb-math">q3&prime; = 8 &minus; q3, because the constant is (scale minimum + scale maximum) = 1 + 7</span>
+                  <span class="pb-math"><em>r</em><sub>13</sub> = <strong>+.48</strong> &nbsp;&middot;&nbsp; <em>r</em><sub>23</sub> = <strong>+.44</strong> &nbsp;&middot;&nbsp; <em>r</em><sub>34</sub> = <strong>+.41</strong>, and <em>r</em><sub>12</sub>, <em>r</em><sub>14</sub>, <em>r</em><sub>24</sub> are untouched</span>
+                  <span class="pb-math">mean = 8 &minus; 2.6 = <strong>5.4</strong> &nbsp;&middot;&nbsp; SD = <strong>1.10</strong>, unchanged</span>
+                  <span class="pb-note">Reversing is subtracting from a constant, so it flips direction and leaves every distance alone. The SD cannot move and no correlation can change size, only sign. The constant is 8 rather than 7: check it by confirming that a 1 becomes a 7 and a 7 becomes a 1, which is the one arithmetic slip that survives a whole analysis without announcing itself.</span>
+                </li>
+                <li><span class="pb-lbl">Bartlett's degrees of freedom</span>
+                  <span class="pb-math">df = <em>p</em>(<em>p</em> &minus; 1) &divide; 2 = 4 &times; 3 &divide; 2 = <strong>6</strong>, one per correlation in the matrix</span>
+                  <span class="pb-math">&chi;&sup2;(6) = 48.2, <em>p</em> &lt; .001</span>
+                  <span class="pb-note">The null is that the population correlation matrix is an identity matrix, meaning no two items share anything. Rejecting it licenses one thing only: there is some shared variance to factor. It rejects easily at any reasonable sample size, so treat it as a floor rather than as encouragement. A Bartlett test that fails to reject is a red light; one that rejects is not a green one.</span>
+                </li>
+                <li><span class="pb-lbl">KMO</span>
+                  <span class="pb-math">.78 sits in Kaiser's <strong>middling</strong> band (.90 marvelous, .80 meritorious, .70 middling, .60 mediocre, .50 miserable, below .50 unacceptable)</span>
+                  <span class="pb-note">KMO sets the ordinary correlations against the partial correlations: if items correlate because they share a factor, partialling the others out should leave little behind. Middling is enough to proceed. Four items is the real constraint on this analysis, not the sampling adequacy.</span>
+                </li>
+                <li><span class="pb-lbl">&alpha; twice</span>
+                  <span class="pb-math">corrected: &sigma;&sup2;<sub>total</sub> = 4 + 2(.55 + .48 + .50 + .44 + .47 + .41) = 4 + 5.70 = 9.70</span>
+                  <span class="pb-math">&alpha; = (4 &divide; 3)(1 &minus; 4 &divide; 9.70) = (4 &divide; 3)(.5876) = <strong>.784</strong></span>
+                  <span class="pb-math">as printed: &sigma;&sup2;<sub>total</sub> = 4 + 2(.55 &minus; .48 + .50 &minus; .44 + .47 &minus; .41) = 4 + 0.38 = 4.38</span>
+                  <span class="pb-math">&alpha; = (4 &divide; 3)(1 &minus; 4 &divide; 4.38) = (4 &divide; 3)(.0868) = <strong>.116</strong></span>
+                  <span class="pb-note">&alpha; adds covariances with their signs, so three negative ones very nearly cancel three positive ones and the total-score variance collapses from 9.70 to 4.38. A reliability near zero on a scale you have reason to believe in is the classic symptom of a reverse-worded item nobody recoded, and it is worth recognizing on sight because the fix takes one line.</span>
+                </li>
+                <li><span class="pb-lbl">Why the factor solution is not the thing that breaks</span>
+                  <span class="pb-note">It survives. q3 simply loads about &minus;.6 where it would have loaded +.6, its communality is the square either way and so is unchanged, every implied correlation reproduces the printed signs correctly, and the fit statistics are identical. That is exactly what makes the mistake dangerous: extraction looks healthy, rotation looks healthy, the variance explained looks healthy, and reliability is the only place the error shows at all. Recode first, before anything else in the workflow, and check a recoded item's mean against the scale midpoint as a second pair of eyes.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">q3&prime; = 8 &minus; q3 gives <em>r</em><sub>13</sub> = .48, <em>r</em><sub>23</sub> = .44 and <em>r</em><sub>34</sub> = .41 with the other three unchanged; its mean becomes 5.4 and its SD stays 1.10. Bartlett's 6 df is one per correlation, and rejecting says only that the matrix is not an identity. KMO .78 is middling. &alpha; is .784 corrected and .116 uncorrected, while the loadings change only in sign and the fit not at all.</p>
+              <p class="pb-ref">From <a href="stats-3/factor-analysis-pca/">&sect;3.5 Factor Analysis / PCA</a> &middot; reliability itself is <a href="methods/reliability-and-validity/">Methods &sect;1.3</a>, and the descriptives calculator will check a recoded item's mean for you at <a href="descriptives.html">Quick Descriptives</a>.</p>
+            </details>
+          </article>
+
+          <!-- VERIFIED (P103), node -e:
+                 P = [[.80,.10],[.70,.15],[.75,.05],[.10,.78],[.15,.72],[.05,.68]]
+                 h2 = .65 .5125 .565 .6184 .5409 .4649,  sum 3.3517
+                 eigenvalues = column sums of squares: 1.7275 and 1.6242, sum 3.3517
+                   3.3517/6 = 55.86%
+                 implied = b_i1 b_j1 + b_i2 b_j2:
+                   1,2 .575  1,4 .158  3,4 .114  4,5 .5766  3,6 .0715  2,5 .213
+                 observed  .59  .17  .11  .57  .16  .20
+                 residuals +.015 +.012 -.004 -.0066 +.0885 -.013
+                 df = ((p-m)^2 - (p+m))/2 with p = 6: m=1 -> 9, m=2 -> 4, m=3 -> 0
+                 VIZ.chiSqUpper(26.4, 9) = .0018;  VIZ.chiSqUpper(3.10, 4) = .5412
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p8-2"><span class="pb-num">88</span>Two factors, and the residual that stays</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">Six items go through maximum likelihood extraction with two factors, rotated to an orthogonal solution, so the factors are uncorrelated and the loading matrix below is the whole model. The paper prints six of the fifteen observed correlations beside it, along with the fit statistic for a one-factor and a two-factor solution.</p>
+            <div class="pb-given">
+              <span class="lbl">Loadings (orthogonal, so pattern = structure)</span>
+              i1&nbsp; .80&nbsp; .10 &nbsp;&middot;&nbsp; i2&nbsp; .70&nbsp; .15 &nbsp;&middot;&nbsp; i3&nbsp; .75&nbsp; .05<br>
+              i4&nbsp; .10&nbsp; .78 &nbsp;&middot;&nbsp; i5&nbsp; .15&nbsp; .72 &nbsp;&middot;&nbsp; i6&nbsp; .05&nbsp; .68
+              <span class="lbl" style="margin-top:.5rem">Observed correlations</span>
+              <em>r</em><sub>12</sub> = .59 &nbsp;&middot;&nbsp; <em>r</em><sub>14</sub> = .17 &nbsp;&middot;&nbsp; <em>r</em><sub>25</sub> = .20 &nbsp;&middot;&nbsp; <em>r</em><sub>34</sub> = .11 &nbsp;&middot;&nbsp; <em>r</em><sub>36</sub> = .16 &nbsp;&middot;&nbsp; <em>r</em><sub>45</sub> = .57
+              <span class="lbl" style="margin-top:.5rem">Formulas and fit</span>
+              &sigma;<sub><em>ij</em></sub> = &beta;<sub><em>i</em>1</sub>&beta;<sub><em>j</em>1</sub> + &beta;<sub><em>i</em>2</sub>&beta;<sub><em>j</em>2</sub> &nbsp;&middot;&nbsp; df = ((<em>p</em> &minus; <em>m</em>)&sup2; &minus; (<em>p</em> + <em>m</em>)) &divide; 2<br>
+              one factor: &chi;&sup2; = 26.4 &nbsp;&middot;&nbsp; two factors: &chi;&sup2; = 3.10
+            </div>
+            <ol class="pb-ask">
+              <li>Give the correlation the model implies for each of the six printed pairs.</li>
+              <li>Give every communality and uniqueness, then both eigenvalues, and say what share of the six items' variance the solution carries.</li>
+              <li>Form the six residuals and name the largest. What is it telling you?</li>
+              <li>Work out the fit-test degrees of freedom for one, two and three factors. What does the three-factor answer mean?</li>
+              <li>How many factors do you report, and does the largest residual change that?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The implied correlations</span>
+                  <span class="pb-math">&sigma;<sub>12</sub> = .80(.70) + .10(.15) = .560 + .015 = .575</span>
+                  <span class="pb-math">&sigma;<sub>14</sub> = .80(.10) + .10(.78) = .080 + .078 = .158</span>
+                  <span class="pb-math">&sigma;<sub>25</sub> = .70(.15) + .15(.72) = .105 + .108 = .213</span>
+                  <span class="pb-math">&sigma;<sub>34</sub> = .75(.10) + .05(.78) = .075 + .039 = .114</span>
+                  <span class="pb-math">&sigma;<sub>36</sub> = .75(.05) + .05(.68) = .0375 + .034 = .0715</span>
+                  <span class="pb-math">&sigma;<sub>45</sub> = .10(.15) + .78(.72) = .015 + .5616 = .5766</span>
+                  <span class="pb-note">With two factors the implied correlation is a sum of two products rather than a single one, and that is the whole difference from the one-factor case. Notice what it does to the cross-block pairs: i1 and i4 are implied to correlate .158 even though neither loads meaningfully on the other's factor, because each has a small loading on the other side and the two contributions add.</span>
+                </li>
+                <li><span class="pb-lbl">Communalities, uniquenesses, eigenvalues</span>
+                  <span class="pb-math">h&sup2; = .65, .5125, .565, .6184, .5409, .4649</span>
+                  <span class="pb-math">&psi; = 1 &minus; h&sup2; = .35, .4875, .435, .3816, .4591, .5351</span>
+                  <span class="pb-math">&lambda;<sub>1</sub> = .80&sup2; + .70&sup2; + .75&sup2; + .10&sup2; + .15&sup2; + .05&sup2; = <strong>1.7275</strong></span>
+                  <span class="pb-math">&lambda;<sub>2</sub> = .10&sup2; + .15&sup2; + .05&sup2; + .78&sup2; + .72&sup2; + .68&sup2; = <strong>1.6242</strong></span>
+                  <span class="pb-math">&Sigma;&lambda; = 3.3517 = &Sigma;h&sup2; &nbsp;&middot;&nbsp; 3.3517 &divide; 6 = <strong>55.86%</strong></span>
+                  <span class="pb-note">An eigenvalue is the sum of squared loadings down its own column and a communality is the sum along a row, so the two totals are the same number read two ways. That is why the sum of the eigenvalues divided by the number of items is the variance explained, and why an eigenvalue of 1 is worth exactly one standardized item.</span>
+                </li>
+                <li><span class="pb-lbl">The residuals</span>
+                  <span class="pb-math">1,2: .59 &minus; .575 = +.015 &nbsp;&middot;&nbsp; 1,4: .17 &minus; .158 = +.012 &nbsp;&middot;&nbsp; 2,5: .20 &minus; .213 = &minus;.013</span>
+                  <span class="pb-math">3,4: .11 &minus; .114 = &minus;.004 &nbsp;&middot;&nbsp; 4,5: .57 &minus; .5766 = &minus;.007</span>
+                  <span class="pb-math">3,6: .16 &minus; .0715 = <strong>+.089</strong></span>
+                  <span class="pb-note">Five of the six sit under .02, which is as good as a correlation matrix gets. The sixth is past the .05 that usually prompts a second look, and it is the only pair whose two items sit on opposite factors and still correlate more than the model allows. A residual is a statement about the pair it belongs to, so the thing to do is read items 3 and 6 side by side: shared wording, a shared response format, or a reversed pair of items in the same block will do this, and none of those is a third factor.</span>
+                </li>
+                <li><span class="pb-lbl">Degrees of freedom</span>
+                  <span class="pb-math"><em>m</em> = 1: ((6 &minus; 1)&sup2; &minus; (6 + 1)) &divide; 2 = (25 &minus; 7) &divide; 2 = <strong>9</strong></span>
+                  <span class="pb-math"><em>m</em> = 2: ((6 &minus; 2)&sup2; &minus; (6 + 2)) &divide; 2 = (16 &minus; 8) &divide; 2 = <strong>4</strong></span>
+                  <span class="pb-math"><em>m</em> = 3: ((6 &minus; 3)&sup2; &minus; (6 + 3)) &divide; 2 = (9 &minus; 9) &divide; 2 = <strong>0</strong></span>
+                  <span class="pb-note">Zero degrees of freedom means the model has exactly as many free parameters as the matrix has numbers to reproduce, so it will fit perfectly and there is no test to run. Six items cannot support three factors, whatever the software prints, and the count that settles it is arithmetic rather than judgment: 21 numbers in the matrix, 18 loadings and 6 uniquenesses, 3 handed back by rotation.</span>
+                </li>
+                <li><span class="pb-lbl">The verdict</span>
+                  <span class="pb-math">one factor: &chi;&sup2;(9) = 26.4, <em>p</em> = .0018 &rarr; rejected</span>
+                  <span class="pb-math">two factors: &chi;&sup2;(4) = 3.10, <em>p</em> = .54 &rarr; retained</span>
+                  <span class="pb-note">Report two. One factor leaves misfit the test can see; two leaves a discrepancy smaller than sampling noise would produce. The residual does not change the count, and that is the point worth taking away: a global fit statistic averages over every pair in the matrix, so a single local misfit of .089 can sit inside a comfortable &chi;&sup2; without moving it. Read the residual matrix as well as the test, every time, because they answer different questions.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Implied .575, .158, .213, .114, .0715 and .5766; communalities .65, .5125, .565, .6184, .5409 and .4649 against uniquenesses .35, .4875, .435, .3816, .4591 and .5351; eigenvalues 1.7275 and 1.6242, carrying 55.86% of the six items' variance. The largest residual is +.089 between items 3 and 6. df is 9, 4 and 0 for one, two and three factors, so three cannot be tested at all. Report two factors, and read items 3 and 6 for shared wording rather than adding a factor.</p>
+              <p class="pb-ref">From <a href="stats-3/factor-analysis-pca/">&sect;3.5 Factor Analysis / PCA</a> &middot; the lesson's Loadings In, Correlations Out widget draws the residual grid, and <a href="tables.html">the printed tables</a> hold the &chi;&sup2; criticals.</p>
+            </details>
+          </article>
+
+          <!-- VERIFIED (P103), node -e:
+                 weights w = [.35,.30,.10,.32]
+                 A z = [1.20,0.80,-0.40,1.00] -> .35(1.2)+.30(.8)+.10(-.4)+.32(1.0) = .94
+                   unit mean = (1.20+0.80-0.40+1.00)/4 = 2.60/4 = .65
+                 B z = [0.50,1.40,0.90,0.30] -> .175+.42+.09+.096 = .781
+                   unit mean = (0.50+1.40+0.90+0.30)/4 = 3.10/4 = .775
+                 so refined ranks A above B (.94 > .781) and unit ranks B above A (.775 > .65)
+                 determinacy .92: .92^2 = .8464;  Guttman bound 2(.92^2) - 1 = .6928
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p8-3"><span class="pb-num">89</span>Two people, two ways to score them</h3>
+              <span class="pb-chip warm">Warm-up</span>
+            </div>
+            <p class="pb-scenario">A one-factor solution on four items is finished, and the analyst now wants a score per respondent to carry into a regression. SPSS offers to save factor scores; a colleague says just to average the four items. Two respondents make the choice concrete.</p>
+            <div class="pb-given">
+              <span class="lbl">Factor score coefficients (factor 1)</span>
+              w = .35, .30, .10, .32
+              <span class="lbl" style="margin-top:.5rem">Two respondents, in <em>z</em> units</span>
+              A: 1.20, 0.80, &minus;0.40, 1.00 &nbsp;&middot;&nbsp; B: 0.50, 1.40, 0.90, 0.30
+              <span class="lbl" style="margin-top:.5rem">Also given</span>
+              factor score determinacy = .92 &nbsp;&middot;&nbsp; two equally defensible score sets correlate at least 2&rho;&sup2; &minus; 1
+            </div>
+            <ol class="pb-ask">
+              <li>Compute each respondent's regression factor score.</li>
+              <li>Compute each respondent's unit-weighted mean of the same four <em>z</em> scores.</li>
+              <li>The two methods disagree about who scores higher. Explain why, from the numbers.</li>
+              <li>What does a determinacy of .92 mean, and what is the lowest two defensible score sets could correlate?</li>
+              <li>Why is a factor score called predicted rather than computed, and what do regression and Bartlett scores each buy?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The refined scores</span>
+                  <span class="pb-math">A: .35(1.20) + .30(0.80) + .10(&minus;0.40) + .32(1.00) = .42 + .24 &minus; .04 + .32 = <strong>0.94</strong></span>
+                  <span class="pb-math">B: .35(0.50) + .30(1.40) + .10(0.90) + .32(0.30) = .175 + .42 + .09 + .096 = <strong>0.781</strong></span>
+                </li>
+                <li><span class="pb-lbl">The unit-weighted scores</span>
+                  <span class="pb-math">A: (1.20 + 0.80 &minus; 0.40 + 1.00) &divide; 4 = 2.60 &divide; 4 = <strong>0.65</strong></span>
+                  <span class="pb-math">B: (0.50 + 1.40 + 0.90 + 0.30) &divide; 4 = 3.10 &divide; 4 = <strong>0.775</strong></span>
+                </li>
+                <li><span class="pb-lbl">Why they swap</span>
+                  <span class="pb-note">The refined score puts A ahead by .16; the simple average puts B ahead by .125. Item 3 is the reason. It carries a coefficient of .10, a third of what item 1 carries, because it is the weakest indicator of the factor, and a unit-weighted average gives it exactly the same say as the rest. A is high on the two heavily weighted items and low on the light one; B is the reverse. Weighting decides the comparison whenever two people are close and their profiles run in opposite directions, which is most of the time in the middle of a distribution. In practice the two sets of scores usually correlate above .95 across a whole sample, and that is the honest defense of the simple average: it is nearly the same ranking for nearly everyone, and it transfers to a new sample where the weights do not.</span>
+                </li>
+                <li><span class="pb-lbl">Determinacy</span>
+                  <span class="pb-math">.92&sup2; = <strong>.846</strong>, so about 85% of the score's variance is the factor it estimates</span>
+                  <span class="pb-math">2(.92&sup2;) &minus; 1 = 1.6928 &minus; 1 = <strong>.693</strong></span>
+                  <span class="pb-note">That second number is the uncomfortable one. Two sets of scores, each correlating .92 with the factor and each perfectly consistent with the fitted model, can correlate as little as .69 with each other, which is enough to reorder a sample substantially. This is factor score indeterminacy, and it is a property of the model rather than of the software: a factor is defined by its relationships to the items and those relationships do not pin down one value per person.</span>
+                </li>
+                <li><span class="pb-lbl">Predicted, and which method</span>
+                  <span class="pb-note">A factor is unobserved by construction, so nothing in the data is its value. What the software returns is the best guess the model supports for this person given their answers, which is a prediction in exactly the sense a regression line predicts: a fitted value with error around it, not a measurement. Calling it computed invites the reader to treat it as data. Regression (Thurstone) scores maximize the correlation with their own factor, at the price of being shrunk toward the mean and of correlating with the other factors' scores even in an orthogonal solution. Bartlett scores are unbiased, so the expected score for a person at a given factor level is that level, and they stay uncorrelated with the other factors. Take Bartlett when the score is going into a further model as a variable; take regression when you want the best per-person ordering; say in the write-up which one you took, because the numbers differ.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Refined scores 0.94 for A and 0.781 for B; unit-weighted means 0.65 and 0.775, so the two methods disagree about who is higher because item 3 is weighted .10 by one and .25 by the other. A determinacy of .92 leaves 85% of the score's variance as the factor, and two defensible score sets need correlate only .693 with each other. Factor scores are predicted rather than computed because the factor is never observed; regression scores maximize correlation with the factor, Bartlett scores are unbiased and uncorrelated with the other factors.</p>
+              <p class="pb-ref">From <a href="stats-3/factor-analysis-pca/">&sect;3.5 Factor Analysis / PCA</a> &middot; what a predicted value is in the ordinary case is <a href="stats-1/simple-linear-regression/">&sect;1.18 Simple Linear Regression</a>.</p>
+            </details>
+          </article>
+
+          <!-- VERIFIED (P103), node -e:
+                 nine hypotheses .1..9, flat prior 1/9
+                 batch 1 = 7 of 10, C(10,7) = 120;  batch 2 = 5 of 6, C(6,5) = 6; product 720
+                 pooled = 12 of 16, C(16,12) = 1820
+                 posterior after batch 1: 0 .0009 .0099 .0467 .1288 .2363 .2932 .2212 .0631
+                   mean .6670;  product-column total (evidence) = .10111
+                 sequential final : 0 0 .0004 .0067 .0472 .1722 .3465 .3398 .0873  mean .7226
+                 pooled           : identical, max abs difference 5.55e-17
+                 reversed order   : identical, max abs difference 5.55e-17
+                 normalized Beta(13,5) density on the same grid: max difference 1.11e-16
+                 Beta(13,5) exact mean 13/18 = .72222
+                 region by descending mass: .7 (.3465) .8 (.6862) .6 (.8584) .9 (.9457) .5 (.9929)
+                   so four hypotheses reach .9457, five reach .9929; the set .5 to .9 is contiguous
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p8-4"><span class="pb-num">90</span>Two batches, one posterior</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A group sows seeds in two sittings. The first tray has 10 seeds and 7 come up; a week later a second tray of 6 gives 5. Half the group updates once on each batch in turn; the other half waits and updates once on the pooled count. They get different-looking arithmetic and argue about which is right.</p>
+            <div class="pb-given">
+              <span class="lbl">Hypotheses and prior</span>
+              <em>p</em> = .1, .2, .3, .4, .5, .6, .7, .8, .9, each with a flat prior of 1/9
+              <span class="lbl" style="margin-top:.5rem">Data and coefficients</span>
+              batch 1: 7 of 10, C(10, 7) = 120 &nbsp;&middot;&nbsp; batch 2: 5 of 6, C(6, 5) = 6 &nbsp;&middot;&nbsp; pooled: 12 of 16, C(16, 12) = 1820
+              <span class="lbl" style="margin-top:.5rem">Posterior after batch 1, already normalized</span>
+              .1&nbsp; .0000 &nbsp;&middot;&nbsp; .2&nbsp; .0009 &nbsp;&middot;&nbsp; .3&nbsp; .0099 &nbsp;&middot;&nbsp; .4&nbsp; .0467 &nbsp;&middot;&nbsp; .5&nbsp; .1288<br>
+              .6&nbsp; .2363 &nbsp;&middot;&nbsp; .7&nbsp; .2932 &nbsp;&middot;&nbsp; .8&nbsp; .2212 &nbsp;&middot;&nbsp; .9&nbsp; .0631
+            </div>
+            <ol class="pb-ask">
+              <li>Take the batch-1 posterior above as the prior and update it on batch 2. Give the posterior to four decimals and its mean.</li>
+              <li>Now update the flat prior once on the pooled 12 of 16. What do you get?</li>
+              <li>The two routes multiply by different constants, 720 against 1820. Why does that not change the answer? Would reversing the order of the batches?</li>
+              <li>Build the smallest region holding at least 95% of the final posterior. Name its hypotheses, its endpoints and the mass it actually carries.</li>
+              <li>The conjugate shortcut gives Beta(13, 5), whose mean is 13/18 = .7222, while the grid's mean is .7226. Which is wrong?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Sequential: yesterday's posterior is today's prior</span>
+                  <span class="pb-math">product = (batch-1 posterior) &times; 6<em>p</em>&#8309;(1 &minus; <em>p</em>), then divide by the column total</span>
+                  <span class="pb-math">.0000&nbsp; .0000&nbsp; .0004&nbsp; .0067&nbsp; .0472&nbsp; .1722&nbsp; <strong>.3465</strong>&nbsp; .3398&nbsp; .0873</span>
+                  <span class="pb-math">mean = &Sigma;<em>p</em> &times; posterior = <strong>.7226</strong></span>
+                  <span class="pb-note">The batch-1 posterior had its peak at .7 and a fat shoulder at .6; five of six germinating shifts the whole column right and sharpens it, so .7 and .8 now hold 68% between them. This is the sequential form of Bayes' rule, and it is the one worth internalizing, because it is how evidence actually arrives.</span>
+                </li>
+                <li><span class="pb-lbl">Pooled: one update on 12 of 16</span>
+                  <span class="pb-math">product = (1/9) &times; 1820<em>p</em>&sup1;&sup2;(1 &minus; <em>p</em>)&#8308;, then normalize</span>
+                  <span class="pb-math">.0000&nbsp; .0000&nbsp; .0004&nbsp; .0067&nbsp; .0472&nbsp; .1722&nbsp; .3465&nbsp; .3398&nbsp; .0873</span>
+                  <span class="pb-note">The same nine numbers, and not approximately: the two columns agree to the last bit a computer stores. The un-normalized products do not agree at all, which is what makes the result look surprising the first time.</span>
+                </li>
+                <li><span class="pb-lbl">Why the constants cannot matter</span>
+                  <span class="pb-math">two-step: every row carries 120 &times; 6 = 720 &nbsp;&middot;&nbsp; pooled: every row carries 1820</span>
+                  <span class="pb-math">720<em>p</em>&sup1;&sup2;(1 &minus; <em>p</em>)&#8308; &divide; &Sigma;720<em>p</em>&sup1;&sup2;(1 &minus; <em>p</em>)&#8308; = <em>p</em>&sup1;&sup2;(1 &minus; <em>p</em>)&#8308; &divide; &Sigma;<em>p</em>&sup1;&sup2;(1 &minus; <em>p</em>)&#8308;</span>
+                  <span class="pb-note">Each route's coefficient is the same for every row, so it survives into the column total and divides straight back out. A constant has to vary between rows to change a posterior, and a binomial coefficient counts arrangements of the data rather than anything about <em>p</em>. The exponents are what carry the evidence, and 7 + 5 = 12 successes against 3 + 1 = 4 failures either way. Reversing the order does the same thing for the same reason: multiplication commutes, so the posterior after both batches cannot depend on which arrived first. Sequential and pooled updating are one procedure.</span>
+                </li>
+                <li><span class="pb-lbl">The 95% region</span>
+                  <span class="pb-math">take in descending order of mass: .7 (.3465), .8 (.6862), .6 (.8584), .9 (.9457), .5 (<strong>.9929</strong>)</span>
+                  <span class="pb-math">region = {.5, .6, .7, .8, .9}, endpoints <strong>.5 to .9</strong>, holding <strong>99.3%</strong></span>
+                  <span class="pb-note">Four hypotheses reach 94.6%, which is short of the target, so the fifth has to come in and the region overshoots badly. Two things to notice. The set came out contiguous, which is what licenses reporting it as a range rather than as a list; nothing guarantees that in general, and a bimodal posterior will not oblige. And the overshoot is the price of a coarse grid: with nine candidates the smallest step available is a whole hypothesis, so 95% is not a level you can land on. More candidates shrink the overshoot.</span>
+                </li>
+                <li><span class="pb-lbl">Neither is wrong</span>
+                  <span class="pb-note">A flat prior is Beta(1, 1), and 12 successes with 4 failures takes it to Beta(1 + 12, 1 + 4) = Beta(13, 5), whose mean is 13/18 = .7222. The grid's .7226 is the mean of the same posterior read at nine points and renormalized, so it is a discretization rather than a rival answer. Check it the other way round: the Beta(13, 5) density evaluated at those nine values and scaled to sum to 1 reproduces the grid column exactly, because both are proportional to <em>p</em>&sup1;&sup2;(1 &minus; <em>p</em>)&#8308;. Add candidates and the grid mean walks toward .7222. The grid is the general method and the conjugate is the special case where the answer can be written down.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">Both routes give .0000, .0000, .0004, .0067, .0472, .1722, .3465, .3398, .0873 with a mean of .7226, and order does not matter, because each route's binomial coefficient is constant down its own column and normalizing divides it out. The 95% region is {.5, .6, .7, .8, .9}, running .5 to .9 and holding 99.3%, because four hypotheses reach only 94.6%. The conjugate Beta(13, 5) mean of .7222 and the grid's .7226 are the same posterior at two resolutions.</p>
+              <p class="pb-ref">From <a href="stats-3/bayesian-thinking/">&sect;3.7 Bayesian Thinking</a> &middot; the Bayes by Hand grid does this table live, and <a href="problems.html#p4-12">Problem 85</a> and <a href="problems.html#p4-13">Problem 86</a> run the single-batch version.</p>
+            </details>
+          </article>
+
+          <!-- VERIFIED (P103), node -e:
+                 n = 400, 200 per arm
+                 first stage = .60 - .20 = .40;  reduced form = 63.2 - 60.0 = 3.2
+                 Wald = 3.2/.40 = 8.0
+                 pooled p = .40; SE = sqrt(.40*.60*(1/200+1/200)) = sqrt(.0024) = .0489898
+                   t = .40/.0489898 = 8.1650;  F = t^2 = .16/.0024 = 66.667
+                   VIZ.fUpper(66.667, 1, 398) = 4.29e-15
+                 attenders 160, non-attenders 240; 160(70.0) + 240(56.0) = 24640
+                   overall mean 24640/400 = 61.6 = (200(63.2)+200(60.0))/400  [consistent]
+                   naive difference 70.0 - 56.0 = 14.0
+                 always-takers .20, compliers .40, never-takers .40 (monotonicity assumed)
+                 exclusion violation of 1.0 mark: (3.2 - 1.0)/.40 = 5.5, bias 1.0/.40 = 2.5
+                   same 1.0 with a first stage of .10: 1.0/.10 = 10.0
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p8-5"><span class="pb-num">91</span>The letter that nobody had to open</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A faculty runs an optional tutoring program. Because students choose whether to attend, a straight comparison of attenders with non-attenders is worth little. So 400 students are split by lottery and 200 are sent a letter encouraging them to sign up. Nobody is required to attend and nobody is barred, whichever side of the lottery they landed on.</p>
+            <div class="pb-given">
+              <span class="lbl">The lottery</span>
+              200 sent the letter, 200 not &nbsp;&middot;&nbsp; attended: 60% of the letter group, 20% of the rest
+              <span class="lbl" style="margin-top:.5rem">Exam marks</span>
+              letter group 63.2 &nbsp;&middot;&nbsp; control group 60.0<br>
+              attenders (160) 70.0 &nbsp;&middot;&nbsp; non-attenders (240) 56.0
+              <span class="lbl" style="margin-top:.5rem">Formula</span>
+              SE of a difference in proportions = &radic;(<em>p&#772;</em>(1 &minus; <em>p&#772;</em>)(1/<em>n</em><sub>1</sub> + 1/<em>n</em><sub>2</sub>))
+            </div>
+            <ol class="pb-ask">
+              <li>Give the first stage, the reduced form and the Wald ratio.</li>
+              <li>Compute the first-stage <em>F</em>. Which of the instrument's three conditions does it test, and which does it leave untouched?</li>
+              <li>The naive comparison gives 14.0 marks and the instrument gives 8.0. What accounts for the gap, and which way did the bias run?</li>
+              <li>Split the 400 into always-takers, compliers and never-takers. Whose effect is the 8.0?</li>
+              <li>Suppose the letter itself lifted marks by 1.0, quite apart from attendance. What is the honest estimate now, and what would that same 1.0 have done to a study whose first stage was .10?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">Three numbers, and the ratio between two of them</span>
+                  <span class="pb-math">first stage: .60 &minus; .20 = <strong>.40</strong> more of the letter group attended</span>
+                  <span class="pb-math">reduced form: 63.2 &minus; 60.0 = <strong>3.2</strong> marks</span>
+                  <span class="pb-math">Wald ratio = 3.2 &divide; .40 = <strong>8.0 marks</strong></span>
+                  <span class="pb-note">Both halves are differences between randomized groups, so both are clean. The letter moved attendance by 40 percentage points and marks by 3.2; if the only route from the letter to a mark runs through attendance, then attendance is worth 3.2/.40. Note what is being scaled: the reduced form is diluted because only 40% of the letter group changed behavior, and dividing by the first stage undoes exactly that dilution.</span>
+                </li>
+                <li><span class="pb-lbl">The first-stage <em>F</em></span>
+                  <span class="pb-math"><em>p&#772;</em> = 160 &divide; 400 = .40</span>
+                  <span class="pb-math">SE = &radic;(.40 &times; .60 &times; (1/200 + 1/200)) = &radic;.0024 = .0490</span>
+                  <span class="pb-math"><em>t</em> = .40 &divide; .0490 = 8.16 &nbsp;&middot;&nbsp; <em>F</em> = <em>t</em>&sup2; = <strong>66.7</strong></span>
+                  <span class="pb-note">Far past the rule of thumb of 10, so the instrument is not weak. That is all it says. Relevance is the one condition of the three that leaves a footprint in the data, because it is a claim about two things you can both see. Independence is bought by the lottery. Exclusion is a claim about a path that does not exist, and no statistic computed from this dataset can confirm or refute it, which is why an <em>F</em> of 66.7 is not a validation of the design.</span>
+                </li>
+                <li><span class="pb-lbl">Why the naive comparison is nearly twice as large</span>
+                  <span class="pb-math">naive: 70.0 &minus; 56.0 = 14.0 &nbsp;&middot;&nbsp; instrument: 8.0 &nbsp;&middot;&nbsp; gap 6.0</span>
+                  <span class="pb-note">Selection, running upward. Students who go to optional tutoring are the ones who were already going to do better: more motivated, better organized, more likely to have kept up. The naive comparison adds that difference to whatever the program does, so it overstates by 6.0 marks here. The instrument does not adjust for motivation, which nobody measured. It sidesteps it, by comparing groups that a lottery made alike.</span>
+                </li>
+                <li><span class="pb-lbl">Three kinds of student</span>
+                  <span class="pb-math">always-takers: 20% = <strong>80</strong> students, who attend whatever the post brings</span>
+                  <span class="pb-math">compliers: .60 &minus; .20 = 40% = <strong>160</strong>, who attended because of the letter</span>
+                  <span class="pb-math">never-takers: 1 &minus; .60 = 40% = <strong>160</strong>, who stay away either way</span>
+                  <span class="pb-note">The three add to 400 only if nobody was actually put off by being encouraged, which is the monotonicity assumption and is usually easy to believe. The 8.0 belongs to the 160 compliers and to nobody else. It is not the effect on the always-takers, who are probably the students who need it least, and it says nothing at all about the never-takers, who are often the students a faculty most wants to reach. A different encouragement, one strong enough to move a different 40%, would recover a different number, and both would be correct.</span>
+                </li>
+                <li><span class="pb-lbl">What one mark of exclusion violation costs</span>
+                  <span class="pb-math">reduced form left for attendance: 3.2 &minus; 1.0 = 2.2</span>
+                  <span class="pb-math">honest ratio = 2.2 &divide; .40 = <strong>5.5</strong>, so the reported 8.0 was 2.5 marks too high</span>
+                  <span class="pb-math">with a first stage of .10 instead: 1.0 &divide; .10 = <strong>10.0 marks</strong> of bias</span>
+                  <span class="pb-note">A violation enters the numerator and is then divided by the first stage, so the weaker the instrument the more it is magnified. That is the second and less familiar reason to care about a small <em>F</em>: a weak instrument is not merely imprecise, it turns a small breach of an assumption you cannot test into a large error in the estimate. And here the breach is plausible. A letter from the faculty saying the exam matters may well move a student who never books a session, so the write-up owes the reader an argument, not a statistic.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">First stage .40, reduced form 3.2 marks, Wald ratio 8.0 marks per attender. The first-stage <em>F</em> is 66.7, testing relevance alone. The naive 14.0 overstates by 6.0 because attenders self-select on motivation. The sample splits into 80 always-takers, 160 compliers and 160 never-takers, and the 8.0 is the compliers' effect. A direct effect of 1.0 mark would cut the honest estimate to 5.5, and the same 1.0 against a first stage of .10 would bias it by 10.0.</p>
+              <p class="pb-ref">From <a href="stats-3/instrumental-variables/">&sect;3.13 Instrumental Variables &amp; 2SLS</a> &middot; why adjustment could not have done this is <a href="stats-3/causal-dags-and-confounding/">&sect;3.12 Causal DAGs &amp; Confounding</a>.</p>
+            </details>
+          </article>
+
+          <!-- VERIFIED (P103), node -e:
+                 below bins x = -5,-3,-1 with y = 55.5, 56.5, 57.5
+                   xbar -3, ybar 56.5, Sxy 4.0, Sxx 8 -> b = .50, intercept at x=0 = 58.0
+                 above bins x = +1,+3 with y = 62.2, 62.6
+                   xbar 2, ybar 62.4, Sxy 0.4, Sxx 2 -> b = .20, intercept at x=0 = 62.0
+                 separate-slopes jump = 62.0 - 58.0 = 4.0
+                 common slope b = (4.0 + 0.4)/(8 + 2) = .44
+                   c = (62.4 - 56.5) - .44(2 - (-3)) = 5.9 - 2.2 = 3.7
+                   full OLS of y on [1, x, D] over the five bins returns [57.82, .44, 3.7] -- agrees
+                 covariate jump t = 4200/1100 = 3.8182, two-tailed p = 1.34e-4
+                 bandwidth t values: 4.0/1.2 = 3.33 and 4.3/2.1 = 2.05
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p8-6"><span class="pb-num">92</span>A bursary at sixty marks</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A merit bursary goes to every applicant scoring 60 or more on an entrance exam, and to nobody scoring less. An analyst centers the running variable at the cutoff, bins applicants in two-point bands and reports the first-year average in each band. High scorers are scarce, so the window reaches 6 points below the cutoff and only 4 above.</p>
+            <div class="pb-given">
+              <span class="lbl">Bin means, <em>x</em> = score &minus; 60 (equal numbers per bin)</span>
+              below: <em>x</em> = &minus;5 &rarr; 55.5 &nbsp;&middot;&nbsp; &minus;3 &rarr; 56.5 &nbsp;&middot;&nbsp; &minus;1 &rarr; 57.5<br>
+              above: <em>x</em> = +1 &rarr; 62.2 &nbsp;&middot;&nbsp; +3 &rarr; 62.6
+              <span class="lbl" style="margin-top:.5rem">Robustness, as reported</span>
+              bandwidth &plusmn;6: estimate 4.0, SE 1.2 &nbsp;&middot;&nbsp; bandwidth &plusmn;3: estimate 4.3, SE 2.1
+              <span class="lbl" style="margin-top:.5rem">Two checks</span>
+              scores of 59: 38 applicants &nbsp;&middot;&nbsp; scores of 60: 41 applicants<br>
+              mean parental income just above the cutoff, minus just below: +4,200 (SE 1,100)
+            </div>
+            <ol class="pb-ask">
+              <li>Fit a line to each side and give the estimated jump. Why is the running variable centered?</li>
+              <li>Fit the same five bins with one common slope and a treatment dummy. Which of the two numbers do you report, and what decides it?</li>
+              <li>What does comparing the two bandwidths buy, and what does it cost?</li>
+              <li>Read the two checks. What is your verdict on the design?</li>
+              <li>Had the design survived, whose effect would the estimate have been?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">A line on each side</span>
+                  <span class="pb-math">below: <em>x&#772;</em> = &minus;3, <em>y&#772;</em> = 56.5, &Sigma;(<em>x</em> &minus; <em>x&#772;</em>)(<em>y</em> &minus; <em>y&#772;</em>) = 4.0, &Sigma;(<em>x</em> &minus; <em>x&#772;</em>)&sup2; = 8</span>
+                  <span class="pb-math"><em>b</em> = 4.0 &divide; 8 = 0.50, intercept = 56.5 &minus; 0.50(&minus;3) = <strong>58.0</strong></span>
+                  <span class="pb-math">above: <em>x&#772;</em> = 2, <em>y&#772;</em> = 62.4, &Sigma;(<em>x</em> &minus; <em>x&#772;</em>)(<em>y</em> &minus; <em>y&#772;</em>) = 0.4, &Sigma;(<em>x</em> &minus; <em>x&#772;</em>)&sup2; = 2</span>
+                  <span class="pb-math"><em>b</em> = 0.4 &divide; 2 = 0.20, intercept = 62.4 &minus; 0.20(2) = <strong>62.0</strong></span>
+                  <span class="pb-math">jump = 62.0 &minus; 58.0 = <strong>4.0 marks</strong></span>
+                  <span class="pb-note">Centering is what makes the intercept difference the quantity of interest. Each line's intercept is its own fitted value at <em>x</em> = 0, which is the cutoff, so their difference is the vertical gap exactly where the rule changes. Leave the running variable uncentered and the same two intercepts are fitted values at a score of zero, extrapolated far outside the window, and their difference means nothing.</span>
+                </li>
+                <li><span class="pb-lbl">The same bins with one slope</span>
+                  <span class="pb-math">pooled within-side slope = (4.0 + 0.4) &divide; (8 + 2) = <strong>0.44</strong></span>
+                  <span class="pb-math">jump = (62.4 &minus; 56.5) &minus; 0.44(2 &minus; (&minus;3)) = 5.9 &minus; 2.2 = <strong>3.7</strong></span>
+                  <span class="pb-note">Report the 4.0. The two sides' slopes are 0.50 and 0.20, so the restriction that one slope fits both is simply false here, and a false restriction has to go somewhere. Where it goes depends on the window: had the window been symmetric, the two models would have agreed even with slopes this different, because the misfit either side would have canceled at the cutoff. This window is lopsided, six points below and four above, so it does not cancel and 0.3 marks of it lands on the jump. Lopsided is the normal case at a selective cutoff, where high scorers are always scarcer, which is why letting the slopes differ is the default rather than a refinement.</span>
+                </li>
+                <li><span class="pb-lbl">Two bandwidths</span>
+                  <span class="pb-math">&plusmn;6: 4.0 with SE 1.2, <em>t</em> = 3.33 &nbsp;&middot;&nbsp; &plusmn;3: 4.3 with SE 2.1, <em>t</em> = 2.05</span>
+                  <span class="pb-note">The estimates agree within a fraction of a standard error, which is the evidence that the 4.0 is a jump rather than an artifact of the line fitted through it: the narrow window leans on functional form far less, so a result that survives the narrowing was not manufactured by the fit. The cost is precision, and it is steep, with the standard error nearly doubling. That trade is the design's whole character, and it is the reason a paper shows a row of bandwidths rather than defending one.</span>
+                </li>
+                <li><span class="pb-lbl">The checks, and the verdict</span>
+                  <span class="pb-math">density: 38 applicants at 59 against 41 at 60, no pile-up on the winning side</span>
+                  <span class="pb-math">covariate: 4,200 &divide; 1,100 = <em>t</em> = <strong>3.82</strong>, <em>p</em> &lt; .001</span>
+                  <span class="pb-note">The density check passes. Nothing suggests applicants placed themselves just above the line, which a McCrary density test asks formally by fitting the density on each side of the cutoff and testing whether the two meet. The covariate check fails, and it is the one that settles this. Parental income is fixed long before anyone sits the exam, so a bursary awarded afterwards cannot possibly have caused it. Something other than the bursary changes at 60. Perhaps a second scheme uses the same threshold, perhaps admissions treat 60 as a band boundary, perhaps richer applicants are coached to clear exactly that line. The honest report is that the design is broken as it stands and the 4.0 cannot be read as the bursary's effect. Go and find the other rule; that is the finding.</span>
+                </li>
+                <li><span class="pb-lbl">Whose effect it would have been</span>
+                  <span class="pb-note">Applicants scoring at or very near 60, and nobody else. The comparison works because people a mark either side of the line are alike in everything that varies smoothly, and that argument gets weaker with every point you move away from the cutoff. The design says nothing about an applicant who scored 45 or 85, and extending the two fitted lines out to them is extrapolation wearing the clothes of an estimate. Credible and local are the same property here, which is the trade regression discontinuity makes.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">The two fits are 58.0 + 0.50<em>x</em> below and 62.0 + 0.20<em>x</em> above, so the jump is 4.0 marks; centering makes each intercept a fitted value at the cutoff. One common slope of 0.44 gives 3.7, and the 4.0 is the one to report, because the slopes genuinely differ and the window is lopsided. The two bandwidths agree at the cost of precision. The density check passes, but parental income jumps with <em>t</em> = 3.82, so the design is broken and the 4.0 is not the bursary alone. Had it held, the estimate would belong to applicants at the cutoff.</p>
+              <p class="pb-ref">From <a href="stats-3/regression-discontinuity/">&sect;3.14 Regression Discontinuity Design</a> &middot; the fuzzy case hands the cutoff to <a href="stats-3/instrumental-variables/">&sect;3.13 Instrumental Variables</a>, and the lesson's Jump at the Cutoff widget moves the bandwidth for you.</p>
+            </details>
+          </article>
+
+          <!-- VERIFIED (P103), node -e:
+                 treated 96 (2020), 120 (2022), 168 (2024);  control 98, 110, 134
+                 2022->2024: treated +48, control +24, DiD = 48 - 24 = +24
+                 regression: b0 = 110, b1 = 120 - 110 = 10, b2 = 134 - 110 = 24, b3 = 24
+                   check 110 + 10 + 24 + 24 = 168 = treated post
+                 2020->2022: treated +24, control +12, differential pre-trend +12
+                 event study with 2022 as reference:
+                   2020 coefficient = (96 - 120) - (98 - 110) = -24 + 12 = -12
+                   2024 coefficient = (168 - 120) - (134 - 110) = 48 - 24 = +24
+                 linear-trend counterfactual 2024 = 120 + 24 + 12 = 156
+                   adjusted effect = 168 - 156 = +12, half the naive 24
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p8-7"><span class="pb-num">93</span>Bike lanes in two cities</h3>
+              <span class="pb-chip exam">Exam-level</span>
+            </div>
+            <p class="pb-scenario">A city builds a connected bike-lane network in 2023. A comparable neighboring city does not. A transport team has counts of cycling trips per 1,000 residents for both cities in 2022 and 2024, and later finds a 2020 count in an older report.</p>
+            <div class="pb-given">
+              <span class="lbl">Trips per 1,000 residents per month</span>
+              treated city:&nbsp; 2020 &rarr; 96 &nbsp;&middot;&nbsp; 2022 &rarr; 120 &nbsp;&middot;&nbsp; 2024 &rarr; 168<br>
+              control city:&nbsp; 2020 &rarr; 98 &nbsp;&middot;&nbsp; 2022 &rarr; 110 &nbsp;&middot;&nbsp; 2024 &rarr; 134
+              <span class="lbl" style="margin-top:.5rem">Model</span>
+              <em>y</em> = <em>b</em><sub>0</sub> + <em>b</em><sub>1</sub>Treated + <em>b</em><sub>2</sub>Post + <em>b</em><sub>3</sub>(Treated &times; Post)
+            </div>
+            <ol class="pb-ask">
+              <li>Using 2022 and 2024 only, give each city's change and the difference-in-differences estimate.</li>
+              <li>Give all four regression coefficients, and say what <em>b</em><sub>1</sub> and <em>b</em><sub>2</sub> mean. What do they not mean?</li>
+              <li>Take 2022 as the reference period and give the event-study coefficients for 2020 and 2024. What does the 2020 one say?</li>
+              <li>Extend the pre-period difference linearly. What does the estimate become, and what have you assumed instead?</li>
+              <li>What must the standard errors do here, and what is the limit with these data?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The two-by-two</span>
+                  <span class="pb-math">treated: 168 &minus; 120 = <strong>+48</strong> &nbsp;&middot;&nbsp; control: 134 &minus; 110 = <strong>+24</strong></span>
+                  <span class="pb-math">DiD = 48 &minus; 24 = <strong>+24 trips per 1,000</strong></span>
+                  <span class="pb-note">The first difference removes anything about each city that did not change; the second removes anything that changed the same way in both, such as a national fuel price, a weather year or a pandemic recovering. What survives is the change that happened in one city and not the other.</span>
+                </li>
+                <li><span class="pb-lbl">The same thing as a regression</span>
+                  <span class="pb-math"><em>b</em><sub>0</sub> = <strong>110</strong>, the control city before</span>
+                  <span class="pb-math"><em>b</em><sub>1</sub> = 120 &minus; 110 = <strong>+10</strong>, the gap between the cities before anything happened</span>
+                  <span class="pb-math"><em>b</em><sub>2</sub> = 134 &minus; 110 = <strong>+24</strong>, what happened to the control city over the same period</span>
+                  <span class="pb-math"><em>b</em><sub>3</sub> = <strong>+24</strong>, and 110 + 10 + 24 + 24 = 168 reproduces the treated city's 2024 count</span>
+                  <span class="pb-note">Only <em>b</em><sub>3</sub> is an effect, and the other two are worth stating precisely because they are routinely reported as findings. <em>b</em><sub>1</sub> is the standing difference between the cities, exactly the confound the design exists to difference away, so reading it as "the treated city cycles more" is reading the confound as the result. <em>b</em><sub>2</sub> is the common time shock, what would have happened anyway, and reading it as an effect of time is at best a description of the control city. Written with unit and time fixed effects instead of two dummies, the model says the same thing, and with two units and two periods it is arithmetically identical.</span>
+                </li>
+                <li><span class="pb-lbl">The pre-period coefficient</span>
+                  <span class="pb-math">2020: (96 &minus; 120) &minus; (98 &minus; 110) = &minus;24 &minus; (&minus;12) = <strong>&minus;12</strong></span>
+                  <span class="pb-math">2024: (168 &minus; 120) &minus; (134 &minus; 110) = 48 &minus; 24 = <strong>+24</strong></span>
+                  <span class="pb-note">With 2022 as the reference, a period in which nothing had yet happened should return a coefficient of zero, and this one returns &minus;12. The treated city was already pulling away by 12 trips per 1,000 every two years before a single lane was painted. That is a differential pre-trend, and it is the visible part of the assumption: parallel trends is a claim about the treated city's unobserved path after 2023, which nothing can check, but a treated city that was not moving in parallel beforehand is poor evidence that it would have started.</span>
+                </li>
+                <li><span class="pb-lbl">Letting the trend continue</span>
+                  <span class="pb-math">counterfactual 2024 = 120 + 24 (the control's change) + 12 (its own drift) = <strong>156</strong></span>
+                  <span class="pb-math">adjusted effect = 168 &minus; 156 = <strong>+12</strong>, half the naive 24</span>
+                  <span class="pb-note">Be clear about what has happened here. Parallel trends was not tested and repaired; it was swapped for a different untestable assumption, that the pre-period drift would have continued at exactly the same rate. That assumption is sometimes reasonable and sometimes badly wrong, since a drift can flatten on its own. What the exercise does establish is the size of the stake: the answer moves from 24 to 12 on a choice between two assumptions and no data can arbitrate. Report it as a sensitivity analysis beside the main estimate, and let the reader see both.</span>
+                </li>
+                <li><span class="pb-lbl">Standard errors, and the honest limit</span>
+                  <span class="pb-note">The same two cities are counted three times each, so the observations are not independent: whatever makes one city cycle more than expected in 2022 is still there in 2024. The standard answer is to cluster the standard errors by unit, and with a real panel of, say, forty cities that is exactly what to do. It does not rescue this study. Cluster-robust standard errors are an asymptotic result in the number of clusters, and two clusters is not a small number of clusters but effectively none. This design has one treated unit and one control unit, so no conventional standard error on the 24 is trustworthy, whatever the software prints. That is a limit of the design rather than a choice of estimator, and the way out is more untreated comparison cities, not a different command.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">The treated city gained 48 and the control 24, so the DiD estimate is +24 trips per 1,000. The coefficients are <em>b</em><sub>0</sub> = 110, <em>b</em><sub>1</sub> = +10 (the standing gap, not an effect), <em>b</em><sub>2</sub> = +24 (the common time shock, not an effect) and <em>b</em><sub>3</sub> = +24. The 2020 event-study coefficient is &minus;12 against a reference of zero, so parallel trends is already in doubt; continuing that drift linearly halves the estimate to +12. Standard errors must be clustered by city, and with two clusters none is trustworthy.</p>
+              <p class="pb-ref">From <a href="stats-3/difference-in-differences/">&sect;3.15 Difference-in-Differences</a> &middot; the design intuition and its two canceled biases are <a href="methods/quasi-experiments/">Methods &sect;1.6 Quasi-Experiments</a>.</p>
+            </details>
+          </article>
+
+          <!-- VERIFIED (P103): no arithmetic in this problem by design; it is a
+               design-recognition item in the shape of the course's interpretation
+               questions and of the journal club. Every claim in the solution is a
+               restatement of what the lessons teach:
+                 RD  -> continuity at the cutoff, local to the cutoff
+                 IV  -> exclusion, LATE over compliers (monotonicity assumed)
+                 DiD -> parallel trends, effect on the treated in those periods
+          -->
+          <article class="pb-card">
+            <div class="pb-head">
+              <h3 id="p8-8"><span class="pb-num">94</span>Three studies, three strategies</h3>
+              <span class="pb-chip stretch">Stretch</span>
+            </div>
+            <p class="pb-scenario">A journal club reads three papers in a fortnight. None of them randomizes anything, and all three claim a causal effect. Your job is to say what each one is leaning on, and what would knock it over. There is no arithmetic in this problem; the work is in naming things precisely.</p>
+            <div class="pb-given">
+              <span class="lbl">Paper A</span>
+              A pension reform applies to everyone born on or after 1 January 1960 and to nobody born before. The outcome is age at retirement.
+              <span class="lbl" style="margin-top:.5rem">Paper B</span>
+              Military service was assigned by a draft lottery number. The treatment is years served; the outcome is lifetime earnings.
+              <span class="lbl" style="margin-top:.5rem">Paper C</span>
+              One region raised its minimum wage in 2022 while neighboring regions did not. The outcome is teenage employment.
+            </div>
+            <ol class="pb-ask">
+              <li>Name the design in each paper.</li>
+              <li>State each paper's identifying assumption in one sentence.</li>
+              <li>For each, name the single piece of evidence that would most undermine it.</li>
+              <li>Which estimate is a local average treatment effect, and over whom? Which population does each of the other two belong to?</li>
+              <li>What do all three have in common that the adjustment strategy of &sect;3.12 does not?</li>
+            </ol>
+            <details class="pb-sol">
+              <summary>Worked solution</summary>
+              <ol class="pb-steps">
+                <li><span class="pb-lbl">The designs</span>
+                  <span class="pb-math">A: regression discontinuity, with date of birth as the running variable</span>
+                  <span class="pb-math">B: instrumental variables, with the lottery number instrumenting years served</span>
+                  <span class="pb-math">C: difference-in-differences, one region against its neighbors before and after</span>
+                  <span class="pb-note">The giveaway in each case is the assignment mechanism rather than the analysis. A strict rule on a continuous variable is a discontinuity; a random nudge that only some people act on is an instrument; a policy switching on for one group at one moment, with a comparison group available, is a difference-in-differences.</span>
+                </li>
+                <li><span class="pb-lbl">The assumptions</span>
+                  <span class="pb-math">A, continuity: absent the pension rule, everything relevant varies smoothly across 1 January 1960</span>
+                  <span class="pb-math">B, exclusion: a person's lottery number affects their earnings only through service</span>
+                  <span class="pb-math">C, parallel trends: absent the wage rise, the two regions' teenage employment would have moved together</span>
+                  <span class="pb-note">All three are statements about something nobody observed, which is why no software reports a test for any of them. Say each one out loud in the seminar before discussing a single coefficient, because a reader who cannot state the assumption cannot evaluate the paper.</span>
+                </li>
+                <li><span class="pb-lbl">What would knock each one over</span>
+                  <span class="pb-note">A: a second rule keyed to the same birthdate. School-entry cohorts, conscription and tax bands all use January boundaries, and if any of them changes at 1 January 1960 then the treatment is a bundle and the jump belongs to the bundle. The check that looks for it is a covariate that should not move and does.</span>
+                  <span class="pb-note">B: men with low numbers staying in education to avoid the draft. That is a second path from the number to earnings, running around service rather than through it, and it breaks exclusion outright. Note that it would not show up in a first-stage <em>F</em>, which would look excellent.</span>
+                  <span class="pb-note">C: pre-period employment already diverging, or any evidence the region raised its wage because its labor market was changing. Policy is rarely random in time, and a region that legislates when conditions shift is the standard way parallel trends fails.</span>
+                </li>
+                <li><span class="pb-lbl">Whose effects these are</span>
+                  <span class="pb-math">B is the local average treatment effect, over compliers</span>
+                  <span class="pb-note">B's compliers are the men who served because their number came up and would not have otherwise, so the estimate covers neither volunteers, who would have served whatever the number, nor those who would have avoided service either way. A belongs to people at the cutoff, those born within days of 1 January 1960, and says nothing about someone born in 1955. C is the effect on the treated region in those periods, which need not transfer to a region with a different labor market or to a different size of increase. All three estimates are local; they are local in three different ways, and a discussion that skips this is a discussion about the wrong quantity.</span>
+                </li>
+                <li><span class="pb-lbl">What they share</span>
+                  <span class="pb-note">Every one of them gets its leverage from an assignment rule rather than from a list of covariates. The backdoor criterion closes a confounding path by adjusting for a variable you measured, and it has nothing whatever to offer against a path running through motivation, ability or health before anyone was recruited. These three designs do not try to block the contaminated comparison. They go looking for a slice of variation in the treatment that arrived clean: a rule, a lottery, a clock. The price is paid in two places, and it is the same price each time. The estimate is local, so it belongs to a population the design picked rather than the one you were curious about. And it rests on an assumption that no test settles, so what a paper offers instead of a test, and how good that offer is, becomes the thing a reader judges.</span>
+                </li>
+              </ol>
+              <p class="pb-answer">A is regression discontinuity on date of birth, assuming continuity, broken by a second rule using the same boundary. B is instrumental variables with the lottery number, assuming exclusion, broken by draft avoidance through education. C is difference-in-differences, assuming parallel trends, broken by a pre-existing divergence or by the policy responding to conditions. B is the LATE, over compliers; A belongs to people at the cutoff and C to the treated region in those periods. All three take their leverage from an assignment rule rather than a covariate list, so all three buy credibility at the price of a local estimate resting on an untestable assumption.</p>
+              <p class="pb-ref">From <a href="stats-3/instrumental-variables/">&sect;3.13</a>, <a href="stats-3/regression-discontinuity/">&sect;3.14</a> and <a href="stats-3/difference-in-differences/">&sect;3.15</a> &middot; the adjustment strategy they replace is <a href="stats-3/causal-dags-and-confounding/">&sect;3.12 Causal DAGs &amp; Confounding</a>, and the design intuition is <a href="methods/quasi-experiments/">Methods &sect;1.6</a>.</p>
+            </details>
+          </article>
+        </section>
+
+        <!-- ==================================================================
+             RESEARCH TOOLKIT — "spot the problem"
+             ================================================================== -->
+
 
         <section class="pb-set" id="toolkit-set">
           <h2 id="toolkit">🔍 Research Toolkit · Spot the problem</h2>
@@ -5658,7 +6207,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-1"><span class="pb-num">87</span>The module that raises exam scores</h3>
+              <h3 id="p5-1"><span class="pb-num">95</span>The module that raises exam scores</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A university builds an optional online tutorial module for its introductory statistics course. Usage is tracked automatically. At the end of term the learning-technology team compares final exam marks and issues a press release.</p>
@@ -5707,7 +6256,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-2"><span class="pb-num">88</span>Four thousand responses and no answer</h3>
+              <h3 id="p5-2"><span class="pb-num">96</span>Four thousand responses and no answer</h3>
               <span class="pb-chip warm">Warm-up</span>
             </div>
             <p class="pb-scenario">A city council is deciding whether to pedestrianize the main square. It posts a survey link on the council website and its social media accounts, leaves it open for six weeks, and reports the result to the planning committee.</p>
@@ -5760,7 +6309,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-3"><span class="pb-num">89</span>Four questionable practices in one paragraph</h3>
+              <h3 id="p5-3"><span class="pb-num">97</span>Four questionable practices in one paragraph</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">You are reviewing a manuscript for a journal. The methods and results read as follows. Nothing in it is fabricated, and every number is real. It should still not be published in this form.</p>
@@ -5812,7 +6361,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-4"><span class="pb-num">90</span>The cleaning log that broke the data</h3>
+              <h3 id="p5-4"><span class="pb-num">98</span>The cleaning log that broke the data</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A research assistant hands you a cleaned dataset for a two-wave wellbeing study and, to their considerable credit, an actual log of what they did to it. Reading the log is faster than discovering each problem later.</p>
@@ -5884,7 +6433,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-5"><span class="pb-num">91</span>The figure that made 0.27 look enormous</h3>
+              <h3 id="p5-5"><span class="pb-num">99</span>The figure that made 0.27 look enormous</h3>
               <span class="pb-chip exam">Exam-level</span>
             </div>
             <p class="pb-scenario">A retail consultancy sends its client a one-page summary of a store-layout trial. The figure is the whole page, and you have been asked whether the client should spend two million on the rollout.</p>
@@ -5947,7 +6496,7 @@
           -->
           <article class="pb-card">
             <div class="pb-head">
-              <h3 id="p5-6"><span class="pb-num">92</span>Three things wrong with one sentence</h3>
+              <h3 id="p5-6"><span class="pb-num">100</span>Three things wrong with one sentence</h3>
               <span class="pb-chip warm">Warm-up</span>
             </div>
             <p class="pb-scenario">A results paragraph comes back from a co-author. The analysis is sound and every number was computed correctly, but the sentence breaks exactly three APA 7 formatting rules. Find them, then write the version that goes in the paper.</p>

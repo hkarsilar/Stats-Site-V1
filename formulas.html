@@ -62,16 +62,28 @@
        bias) and that took the sheet to six pages. The table type and padding
        came down a further notch, from 8.2pt/.13cm to 7.9pt/.10cm, which puts
        it back at FIVE pages at both sizes. Re-measure the same way after any
-       further rows: the sheet fitting on one handout is part of what it is. */
+       further rows: the sheet fitting on one handout is part of what it is.
+
+       P103 added ten (the one-factor measurement model and its two identities,
+       communality and uniqueness, the eigenvalue, Cronbach's alpha, the EFA
+       fit-test df, Bayes as a grid, and the regression discontinuity and
+       difference-in-differences equations), extended the Beta-Binomial row to
+       name the conjugate pair, and moved the bootstrap row into course order.
+       Ten rows put US Letter over at six pages while A4 was still at five, so
+       Letter is the binding size: 7.9pt gave 1318.7mm against a 5 x 261mm
+       budget of 1305mm. At 7.7pt/.09cm it measures A4 1267.2mm of 1395mm and
+       Letter 1242.8mm of 1305mm, FIVE pages at both with about a quarter of a
+       page to spare on the binding side, which is more slack than the sheet
+       carried before these rows landed. */
     @media print {
       @page { margin: 1.2cm 1.2cm 1.5cm; }
       .lesson { font-size: 9pt; }
       .lesson h1 { font-size: 16pt; margin-bottom: .2cm; }
       .lesson h2 { font-size: 11.5pt; margin: .45cm 0 .1cm; }
       .lesson .lede { font-size: 8.5pt; margin: .1cm 0 .25cm; }
-      .ref-table { font-size: 7.9pt; margin: .12cm 0 .26cm; }
-      .ref-table th, .ref-table td { padding: .10cm .20cm; }
-      .ref-table caption { font-size: 7.4pt; line-height: 1.4; padding-bottom: .12cm; }
+      .ref-table { font-size: 7.7pt; margin: .11cm 0 .24cm; }
+      .ref-table th, .ref-table td { padding: .09cm .19cm; }
+      .ref-table caption { font-size: 7.2pt; line-height: 1.35; padding-bottom: .11cm; }
       .callout { font-size: 8.2pt; }
     }
   </style>
@@ -191,18 +203,27 @@
 
         <h2 style="color:var(--success)"><a href="./#curriculum" style="color:inherit">Stats 3: Advanced &amp; Elective Topics</a></h2>
         <table class="ref-table">
-          <caption><b>Notation.</b> Greek letters are population quantities: θ (theta) whatever is being estimated, τ² (tau squared) variance between clusters or studies, σ² (sigma squared) variance within them, μ (mu) a mean on the link scale. Latin letters are estimates from data.</caption>
+          <caption><b>Notation, one convention per family.</b> Greek letters are population quantities: θ (theta) whatever is being estimated, τ² (tau squared) variance between clusters or studies, σ² (sigma squared) variance within them, μ (mu) a mean on the link scale. Latin letters are estimates from data. Factor analysis: <em>p</em> indicators and <em>m</em> factors, so <em>p</em> here is not the Stats 2 table's predictor count; <em>k</em> items in a scale, β (beta) a loading, ξ (xi) the factor itself, ψ (psi) a uniqueness, <em>h</em>² a communality, λ (lambda) an eigenvalue, <em>r̄</em> the average correlation between items. Causal designs: <em>x</em> the running variable, <em>c</em> the cutoff, <em>D</em> an indicator that is 1 where the treatment applies.</caption>
           <thead><tr><th>Concept</th><th>Formula</th><th>Read it as</th></tr></thead>
           <tbody>
             <tr><td>Indirect effect</td><td>a × b</td><td>X→M path times M→Y path; test it with a bootstrap CI.</td></tr>
             <tr><td>Effect decomposition</td><td>c = c′ + a·b</td><td>Total effect = direct + indirect (through the mediator).</td></tr>
-            <tr><td>Bayes' theorem</td><td>P(θ | data) ∝ P(data | θ) · P(θ)</td><td>Posterior ∝ likelihood × prior. θ (theta) stands for whatever you are estimating.</td></tr>
-            <tr><td>Beta–Binomial update</td><td>Beta(a, b) → Beta(a + k, b + n − k)</td><td>See k successes in n trials: add them straight into the prior.</td></tr>
+            <tr><td>One-factor model</td><td>y<sub>in</sub> = μ<sub>i</sub> + β<sub>i</sub> ξ<sub>n</sub> + ε<sub>in</sub></td><td>Item <em>i</em> for person <em>n</em> is its own mean, plus a loading times the one factor, plus what is left over. ξ (xi) is standardized to mean 0 and variance 1, which is what lets every row below read in correlation units.</td></tr>
+            <tr><td>Model-implied correlation and variance</td><td>σ<sub>ij</sub> = β<sub>i</sub>β<sub>j</sub> &nbsp;&nbsp; σ<sub>ii</sub> = β<sub>i</sub>² + ψ<sub>ii</sub></td><td>Two items correlate only because they share the factor, so multiply their loadings and stop. An item's own variance splits into the part the factor explains and the part it does not. With <em>m</em> factors the first becomes a sum of <em>m</em> products.</td></tr>
+            <tr><td>Communality and uniqueness</td><td><em>h</em><sub>i</sub>² = Σ<sub>j</sub> β<sub>ij</sub>² &nbsp;&nbsp; ψ<sub>ii</sub> = 1 − <em>h</em><sub>i</sub>²</td><td>Read along a row: the share of a standardized item the factors account for, and the share left to itself. Observed minus implied is a residual, and one past about .05 is a reason to read those two items side by side.</td></tr>
+            <tr><td>Eigenvalue</td><td>λ<sub>j</sub> = Σ<sub>i</sub> β<sub>ij</sub>²</td><td>Read down a column instead: a factor's eigenvalue is the total of its squared loadings, so Σλ = Σ<em>h</em>² and Σλ / <em>p</em> is the variance explained. An eigenvalue of 1 is worth exactly one standardized item, which is where the Kaiser criterion comes from.</td></tr>
+            <tr><td>Cronbach's α</td><td>α = (<em>k</em> / (<em>k</em> − 1))(1 − Σσ<sub>ii</sub> / σ²<sub>total</sub>) &nbsp;&nbsp; = <em>k</em> <em>r̄</em> / (1 + (<em>k</em> − 1)<em>r̄</em>)</td><td>How much of a total score's variance the items share. The second form is the caveat: α (alpha) climbs with the number of items at a fixed average correlation, so a long scale reads as reliable while its items barely agree. Covariances enter with their signs, so a reverse-worded item nobody recoded drives α toward zero.</td></tr>
+            <tr><td>EFA fit-test df</td><td>df = ((<em>p</em> − <em>m</em>)² − (<em>p</em> + <em>m</em>)) / 2</td><td><em>p</em>(<em>p</em> + 1)/2 numbers in the matrix, less the <em>pm</em> + <em>p</em> parameters, plus the <em>m</em>(<em>m</em> − 1)/2 that rotation hands back. Zero degrees of freedom means the model has as many parameters as numbers to fit, so it cannot be tested at all.</td></tr>
             <tr><td>Percentile bootstrap CI</td><td>[2.5th, 97.5th percentile]</td><td>…of the statistic across thousands of with-replacement resamples.</td></tr>
+            <tr><td>Bayes' theorem</td><td>P(θ | data) ∝ P(data | θ) · P(θ)</td><td>Posterior ∝ likelihood × prior. θ (theta) stands for whatever you are estimating.</td></tr>
+            <tr><td>Bayes as a grid</td><td>P(H<sub>i</sub> | data) = P(H<sub>i</sub>)P(data | H<sub>i</sub>) / Σ<sub>j</sub> P(H<sub>j</sub>)P(data | H<sub>j</sub>)</td><td>The theorem as a table: a prior column times a likelihood column, divided by its own total, and that total is the evidence. Any constant shared by every row, a binomial coefficient included, cancels in the division, which is why updating batch by batch and updating on the pooled count land on the same posterior.</td></tr>
+            <tr><td>Beta–Binomial update</td><td>Beta(<em>a</em>, <em>b</em>) → Beta(<em>a</em> + <em>k</em>, <em>b</em> + <em>n</em> − <em>k</em>)</td><td>See <em>k</em> successes in <em>n</em> trials: add them straight into the prior. This is the conjugate pair for a binomial likelihood, and <em>a</em> + <em>b</em> is the number of trials the prior is worth. Normalize the grid above over the same hypotheses and the two agree exactly.</td></tr>
             <tr><td>GLM</td><td>g(μ) = b₀ + b₁x₁ + …</td><td>Link g puts the line on the right scale: logit (binary), log (counts).</td></tr>
             <tr><td>Intraclass correlation</td><td>ICC = τ² / (τ² + σ²)</td><td>Share of total variance sitting between clusters.</td></tr>
             <tr><td>Wald ratio (IV)</td><td>b<sub>IV</sub> = r₁ / a₁</td><td>Reduced form over first stage: the outcome the instrument delivered, divided by the regressor it bought. Equals two-stage least squares when there is one instrument.</td></tr>
             <tr><td>First-stage F</td><td>F = (a₁ / SE(a₁))²</td><td>Relevance as a number, and the only one of the three instrument conditions the data can check. Below about 10 the instrument is weak, and the estimate goes both imprecise and biased toward ordinary least squares.</td></tr>
+            <tr><td>Regression discontinuity</td><td>y = a + b(x − c) + d·D + e(x − c)·D, &nbsp; D = 1 when x ≥ c</td><td>Center the running variable at the cutoff <em>c</em> so that <em>d</em> reads as the jump exactly there, and keep the interaction so each side gets its own slope. Forcing one slope across the cutoff is the standard way to report a jump that is not there.</td></tr>
+            <tr><td>Difference-in-differences</td><td>y = b₀ + b₁·Treated + b₂·Post + b₃·(Treated × Post)</td><td>b₃ is the whole estimate. b₁ is the standing gap between the groups before anything happened and b₂ the change both would have seen anyway, so neither one is an effect. With two groups and two periods this is identical to unit and time fixed effects.</td></tr>
             <tr><td>Kaplan–Meier</td><td>Ŝ(t) = Π (1 − dᵢ / nᵢ)</td><td>Multiply survival through each event time (censored cases stay in nᵢ while observed). Π is a capital pi and means multiply, the way Σ (sigma) means add.</td></tr>
             <tr><td>Cox model</td><td>h(t) = h₀(t) · e<sup>b₁x₁ + …</sup></td><td>e<sup>b</sup> is the hazard ratio for that predictor.</td></tr>
             <tr><td>Meta-analysis weight</td><td>wᵢ = 1 / vᵢ &nbsp;(random-effects: 1 / (vᵢ + τ²))</td><td>Precise studies pull the pooled estimate hardest.</td></tr>
