@@ -401,6 +401,9 @@ const NAMED_ENTITIES = {
   le: '≤', ge: '≥', ne: '≠', asymp: '≈', plusmn: '±', deg: '°', sup2: '²', sup3: '³',
   frac12: '½', radic: '√', infin: '∞', sum: '∑', alpha: 'α', beta: 'β', chi: 'χ', divide: '÷',
   eta: 'η', mu: 'μ', sigma: 'σ', rho: 'ρ', phi: 'φ', lambda: 'λ', omega: 'ω', delta: 'δ', epsilon: 'ε',
+  /* P105: each of these survived undecoded and its trailing ";" was counted
+     as a semicolon, 82 phantoms sitewide, 44 of them &sect; on teachers.html. */
+  sect: '§', psi: 'ψ', xi: 'ξ', prime: '′', sup1: '¹', frac14: '¼',
 };
 function decodeEntities(s) {
   return s

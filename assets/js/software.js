@@ -782,6 +782,48 @@ window.SOFTWARE = {
       'Describe the random-effects structure in words ("random intercepts for classrooms; random slopes for time within person"): it’s part of the model, not a footnote.'
     ]
   },
+  "cross-validation-and-overfitting": {
+    spss: [
+      'SPSS has no k-fold cross-validation for an ordinary regression, so the honest route through the menus is a single holdout: fit the model on part of the data and score it on the rest.',
+      'Make the split once and keep it. Fix the seed first with <strong>Transform → Random Number Generators</strong> → <em>Set Starting Point</em> → <em>Fixed Value</em>, so the split can be reproduced, then <strong>Transform → Compute Variable</strong> with <em>train = RV.BERNOULLI(0.7)</em>, which marks about 70% of cases 1 and the rest 0.',
+      'For a polynomial like the one in the lesson, build the powers in <strong>Compute Variable</strong> too (<em>x2 = x**2</em>, <em>x3 = x**3</em>, and so on). Center <em>x</em> before squaring it, or the powers correlate so strongly that their coefficients stop meaning anything.',
+      '<strong>Analyze → Regression → Linear</strong>: outcome into <em>Dependent</em> and <em>x</em> into <em>Independent(s)</em>, then <em>Next</em> and add <em>x2</em>, <em>Next</em> and add <em>x3</em>, one block per degree. Put <em>train</em> into <em>Selection Variable</em>, click <em>Rule…</em> and set it to <em>equal to</em> 1.',
+      'The Model Summary now carries two R columns, one for the selected cases and one for the unselected. The first is the fit the model was built on and can only rise as a block is added; the second is how well it predicts cases it never saw, and it is the one that turns down once the model starts fitting noise. Choose the degree where it peaks.',
+      'The one SPSS dialog with k-fold validation built in is the decision tree, <strong>Analyze → Classify → Tree…</strong> → <em>Validation</em> → <em>Crossvalidation</em>. For the lesson’s polynomial, the five-fold loop is a few lines of R or Python in the Try it yourself box below.'
+    ],
+    jasp: [
+      'Enable the <strong>Machine Learning</strong> module from the <strong>+</strong> menu. Its regression methods, k-nearest neighbors and regularized linear regression among them, share a section on how the data are split.',
+      'Set aside a holdout test set there first, as a percentage of cases or as an indicator column you made yourself. Then choose how the remaining cases are divided for tuning: one validation sample or, for some methods, k folds.',
+      'The output reports the validation error and the test error separately. The validation figure was used to tune the model and the test figure was not, so the test figure is the one to report.',
+      'For an ordinary polynomial regression like the lesson’s, run the same k-fold loop in the <strong>Rj</strong> module from the <strong>+</strong> menu, using the R lines in the Try it yourself box below.'
+    ],
+    apa: '<p>Of 160 observations, 40 were set aside as a test set before any model was fitted. Polynomial degree was chosen by 5-fold cross-validation on the remaining 120: cross-validated mean squared error was lowest for the cubic model (4.12, against 4.38 for the quadratic and 4.51 at degree 6). Refitted to all 120 training cases and scored once on the test set, the cubic model gave a mean squared error of 4.30.</p>',
+    tips: [
+      'Report the error on data the model never saw, and say which data that was. A training R² describes the sample the model was built on and says nothing about the next one.',
+      'If cross-validation chose anything, a degree, a penalty or a set of predictors, its own error estimate flatters the winner. Report a test set the tuning never touched, or a nested cross-validation, and expect it to come out a little worse.',
+      'Give k, whether the folds were repeated or stratified, and the random seed, so that somebody else can reproduce the split.'
+    ]
+  },
+  "causal-dags-and-confounding": {
+    spss: [
+      'No statistics package reads a causal diagram, SPSS and JASP included. Draw the graph and derive the adjustment set before opening either one, on paper or with the free DAGitty tool at dagitty.net, which lists the adjustment sets for a graph you draw in the browser.',
+      '<strong>Analyze → Regression → Linear</strong>: outcome into <em>Dependent</em> and the exposure alone into <em>Independent(s)</em>. Click <em>Next</em> and add the adjustment set as the second block, and nothing else. Tick <em>Statistics → Confidence intervals</em>.',
+      'Read the exposure’s <em>B</em> in both models of the Coefficients table. Model 1 is the naive slope, backdoor paths and all; Model 2 is the slope with those paths closed, provided the graph is right. The difference between them is what the adjustment changed.',
+      'Keep colliders out of both blocks, and mediators too unless the direct effect is the question. SPSS will fit whatever goes in the box, and if you tick <em>R squared change</em> it rises for a collider exactly as it does for a confounder, so nothing in the output can tell you which of the two you added.'
+    ],
+    jasp: [
+      'JASP cannot read a diagram either, so derive the adjustment set first, then open <strong>Regression → Linear Regression</strong> with the outcome as <em>Dependent Variable</em>.',
+      'Add the exposure and the adjustment set as covariates, and under <em>Model</em> tick <em>Add to null model</em> beside the exposure alone. The Coefficients table then shows the exposure’s slope twice, without the adjustment set and with it.',
+      'Leave any collider out of the model entirely, for the same reason as in SPSS: a better fit is not evidence that a variable belongs in a causal model.'
+    ],
+    apa: '<p>The causal diagram (Figure 1) identified prior grade as the one common cause of tutoring and exam score, so the model adjusted for it; course satisfaction, measured after the exam and caused by both, was left out. Unadjusted, each weekly hour of tutoring was associated with 0.42 more points, <em>b</em> = 0.42, <em>SE</em> = 0.21, <em>t</em>(238) = 2.00, <em>p</em> = .047. Adjusted for prior grade, the estimate rose to 0.95 points, <em>SE</em> = 0.17, <em>t</em>(237) = 5.59, <em>p</em> &lt; .001, 95% CI [0.62, 1.28], because students with weaker prior grades sought more tutoring. The adjusted estimate is causal only if no common cause is missing from the diagram.</p>',
+    tips: [
+      'Put the diagram in the paper as a figure and name the adjustment set it implies in the text. A reader can then disagree with an arrow instead of guessing why a covariate is in the model.',
+      'Say what was deliberately left out and why: a collider, a mediator, a variable measured after the outcome. An omission with a reason reads as design, and one without reads as an oversight.',
+      'Report the unadjusted and the adjusted estimate side by side. The gap is what the adjustment did, and a reader can check that it moved in the direction the diagram predicts.',
+      'Keep the causal language conditional on the diagram. No regression can close a backdoor path through a variable nobody measured, and the sentence that says so belongs next to the estimate.'
+    ]
+  },
   "instrumental-variables": {
     spss: [
       'Two-stage least squares lives in <strong>Analyze → Regression → 2-Stage Least Squares…</strong>, and it ships with the <em>Regression</em> add-on rather than with base Statistics. If that menu item is missing, your license does not include it, and the fallback route is below.',
@@ -916,6 +958,26 @@ window.SOFTWARE = {
     apa: '<p>Proportions of &ldquo;long&rdquo; responses were fit with a logistic psychometric function per condition. The bright condition shifted the curve leftward relative to baseline, PSE = 462 ms vs. 508 ms, Δ = −46 ms, 95% CI [−72, −20], <em>z</em> = 3.46, <em>p</em> &lt; .001, with no reliable change in precision (JND = 84 ms vs. 79 ms, <em>p</em> = .62).</p>',
     tips: [
       'Report the fitted family (logistic, cumulative Gaussian, or Weibull), the number of trials per level, the PSE and JND per condition, and how lapses were handled. The PSE is robust to the family choice, the JND less so.'
+    ]
+  },
+  "signal-detection-theory": {
+    spss: [
+      'Reduce the data to one row per participant (and per condition, if there is more than one) holding four counts: hits, misses, false alarms and correct rejections. <strong>Data → Aggregate</strong> builds this from a trial-level file, with the participant as the break variable.',
+      '<strong>Transform → Compute Variable</strong>, once per new column, with the log-linear correction applied to every participant: <em>H = (hits + 0.5) / (hits + misses + 1)</em> and <em>FA = (fa + 0.5) / (fa + cr + 1)</em>.',
+      'Then the z-scores. <em>IDF.NORMAL</em> is SPSS’s name for the inverse normal: <em>zH = IDF.NORMAL(H, 0, 1)</em> and <em>zFA = IDF.NORMAL(FA, 0, 1)</em>, then <em>dprime = zH - zFA</em> and <em>c = -(zH + zFA) / 2</em>.',
+      'd′ and c are now ordinary variables. Compare conditions or groups on each with the t-test or ANOVA the design calls for, and always analyze both: a shift in c with d′ unchanged is a change in willingness to say yes, not in skill.',
+      'With confidence ratings, <strong>Analyze → Classify → ROC Curve…</strong> (directly under <strong>Analyze</strong> in older versions) draws the empirical ROC. The rating goes in <em>Test Variable</em>, coded so that higher means more confident a signal was there; the signal indicator goes in <em>State Variable</em> with value 1; tick <em>Standard error and confidence interval</em> for the area. That area is nonparametric and needs no equal-variance assumption, which the plain d′ does.'
+    ],
+    jasp: [
+      'JASP has no signal detection analysis, and the route is the one SPSS takes: one row per participant with the four counts, then new columns.',
+      'Add each column with the <strong>+</strong> at the end of the data header, choosing R as the formula language: <em>(hits + 0.5) / (hits + misses + 1)</em> for H, the same shape for FA, then <em>qnorm(H) - qnorm(FA)</em> for d′ and <em>-(qnorm(H) + qnorm(FA)) / 2</em> for c.',
+      'Compare conditions on d′ and on c separately with <strong>T-Tests</strong> or <strong>ANOVA</strong>, exactly as for any other outcome.'
+    ],
+    apa: '<p>Recognition was scored with signal detection measures, computed for each participant after a log-linear correction. After a night of restricted sleep, sensitivity fell from <em>d</em>′ = 1.63 (<em>SD</em> = 0.52) to 1.21 (<em>SD</em> = 0.48), <em>t</em>(29) = 3.87, <em>p</em> &lt; .001, <em>d<sub>z</sub></em> = 0.71, while the criterion barely moved, <em>c</em> = 0.14 against 0.18, <em>t</em>(29) = 0.61, <em>p</em> = .55. Mean hit and false-alarm rates are given in Table 2.</p>',
+    tips: [
+      'Report d′ and c together, with the correction you used for rates of 0 and 1 and whether it went to every participant or only the extreme ones. Two papers using different corrections can disagree about the same data.',
+      'Give the hit and false-alarm rates as well, at least as group means. They are what a reader needs to check your d′, or to compute the index their own field prefers.',
+      'If you collected confidence ratings, check the zROC slope before quoting d′. A slope well below 1 means the equal-variance model does not fit, and d<sub>a</sub> or A<sub>z</sub> is the index to report instead, named as such.'
     ]
   },
 
