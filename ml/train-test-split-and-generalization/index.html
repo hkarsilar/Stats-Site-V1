@@ -213,12 +213,17 @@
       ctx.textAlign = "left"; ctx.fillStyle = VIZ.css("--text-faint"); ctx.fillText("50% = chance", bx(0.5), 212);
       // each bar carries its label ABOVE it (so nothing clips at narrow widths)
       function bar(yl, v, color, label) {
-        ctx.fillStyle = VIZ.css("--text"); ctx.font = "600 13px " + VIZ.css("--font"); ctx.textAlign = "left";
-        ctx.fillText(label, x0, yl);
+        ctx.font = "600 13px " + VIZ.css("--font"); ctx.textAlign = "left";
+        // on a patch of background, so the gridlines stop short of the words
+        ctx.fillStyle = VIZ.css("--bg-soft"); ctx.fillRect(x0 - 2, yl - 12, ctx.measureText(label).width + 4, 16);
+        ctx.fillStyle = VIZ.css("--text"); ctx.fillText(label, x0, yl);
         var yb = yl + 9, h = 40, x = bx(v);
         ctx.fillStyle = color; ctx.beginPath();
         (ctx.roundRect ? ctx.roundRect(x0, yb, Math.max(2, x - x0), h, 6) : ctx.rect(x0, yb, x - x0, h)); ctx.fill();
-        ctx.font = "700 15px " + VIZ.css("--font"); ctx.fillText((v * 100).toFixed(1) + "%", x + 8, yb + h / 2 + 5);
+        ctx.font = "700 15px " + VIZ.css("--font");
+        var pt = (v * 100).toFixed(1) + "%";
+        ctx.fillStyle = VIZ.css("--bg-soft"); ctx.fillRect(x + 6, yb + h / 2 - 9, ctx.measureText(pt).width + 4, 19);
+        ctx.fillStyle = color; ctx.fillText(pt, x + 8, yb + h / 2 + 5);
       }
       bar(40, reported, "#f97316", "Reported accuracy");
       bar(112, truth, "#22c55e", "True accuracy (on new data)");

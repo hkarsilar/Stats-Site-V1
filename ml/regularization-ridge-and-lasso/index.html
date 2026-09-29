@@ -147,7 +147,7 @@
     "use strict";
     var P = 8, N = 90, NOISE = 1.0, REAL = 3, GN = 60, K = 5;
     var betaTrue = [2.5, -2.0, 1.5, 0, 0, 0, 0, 0];
-    var canvas = document.getElementById("reg-canvas"), ctx, W = 0, H = 430;
+    var canvas = document.getElementById("reg-canvas"), ctx, W = 0, H = 460;
     var method = "lasso", lamIdx = 20, seed = 1;
     var grids = {}, paths = {}, trainMSE = {}, cvMSE = {}, cvOpt = {}, CMAX = 3;
     var foldGrams = [];
@@ -230,8 +230,10 @@
     function draw() {
       ctx.clearRect(0, 0, W, H);
       var grid = grids[method], path = paths[method], cv = cvMSE[method], tr = trainMSE[method], opt = cvOpt[method];
-      /* top panel: coefficient paths */
-      var t0 = 12, t1 = 250, mid = (t0 + t1) / 2;
+      /* top panel: coefficient paths. Each panel's legend has a band of its
+         own above the plot: the largest path used to run straight through
+         "signal (3 real predictors)", and the lambda lines through the rest. */
+      var t0 = 40, t1 = 270, mid = (t0 + t1) / 2;
       function yc(v) { return mid - v / CMAX * ((t1 - t0) / 2); }
       ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(padL, yc(0)); ctx.lineTo(W - padR, yc(0)); ctx.stroke();
@@ -239,7 +241,8 @@
       ctx.fillText(CMAX.toFixed(1), padL - 5, t0 + 8); ctx.fillText("0", padL - 5, yc(0) + 3); ctx.fillText((-CMAX).toFixed(1), padL - 5, t1);
       // best-lambda marker (both panels)
       ctx.strokeStyle = VIZ.css("--success"); ctx.setLineDash([4, 4]); ctx.lineWidth = 1.4;
-      ctx.beginPath(); ctx.moveTo(xAt(opt), t0); ctx.lineTo(xAt(opt), H - 22); ctx.stroke(); ctx.setLineDash([]);
+      var b0 = t1 + 50, b1 = H - 30;   // bottom panel, used here for the marker
+      ctx.beginPath(); ctx.moveTo(xAt(opt), t0); ctx.lineTo(xAt(opt), t1); ctx.moveTo(xAt(opt), b0); ctx.lineTo(xAt(opt), b1); ctx.stroke(); ctx.setLineDash([]);
       // coefficient lines: noise (gray) first, then signal (indigo) on top
       function coefLine(j, color, wid) {
         ctx.strokeStyle = color; ctx.lineWidth = wid; ctx.beginPath();
@@ -254,12 +257,11 @@
       // dots for current coefficients
       for (var j3 = 0; j3 < P; j3++) { ctx.fillStyle = j3 < REAL ? VIZ.css("--primary") : VIZ.css("--text-faint"); ctx.beginPath(); ctx.arc(xAt(lamIdx), yc(path[lamIdx][j3]), j3 < REAL ? 3.4 : 2.4, 0, 6.2832); ctx.fill(); }
       ctx.font = "600 11px " + VIZ.css("--font"); ctx.textAlign = "left";
-      ctx.fillStyle = VIZ.css("--primary"); ctx.fillText("signal (3 real predictors)", padL + 4, t0 + 10);
-      ctx.fillStyle = VIZ.css("--text-faint"); ctx.fillText("noise (5 fake predictors)", padL + 4, t0 + 24);
-      ctx.fillStyle = VIZ.css("--text-muted"); ctx.textAlign = "right"; ctx.fillText("coefficient value", W - padR, t0 + 10);
+      ctx.fillStyle = VIZ.css("--primary"); ctx.fillText("signal (3 real predictors)", padL + 4, 16);
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.fillText("noise (5 fake predictors)", padL + 4, 30);
+      ctx.fillStyle = VIZ.css("--text-muted"); ctx.textAlign = "right"; ctx.fillText("coefficient value", W - padR, 16);
 
       /* bottom panel: train + CV error (log scale) vs lambda */
-      var b0 = 288, b1 = H - 22;
       var all = tr.concat(cv).map(function (v) { return Math.log10(Math.max(v, 1e-3)); });
       var lo = Math.min.apply(null, all) - 0.06, hi = Math.max.apply(null, all) + 0.06;
       function by(v) { return b1 - (Math.log10(Math.max(v, 1e-3)) - lo) / (hi - lo) * (b1 - b0); }
@@ -272,11 +274,13 @@
       ctx.strokeStyle = VIZ.css("--text"); ctx.lineWidth = 1.4;
       ctx.beginPath(); ctx.moveTo(xAt(lamIdx), b0); ctx.lineTo(xAt(lamIdx), b1); ctx.stroke();
       ctx.font = "600 11px " + VIZ.css("--font"); ctx.textAlign = "left";
-      ctx.fillStyle = VIZ.css("--secondary"); ctx.fillText("training error", padL + 4, b0 + 8);
-      ctx.fillStyle = "#f97316"; ctx.fillText("cross-validated error", padL + 4, b0 + 22);
-      ctx.fillStyle = VIZ.css("--success"); ctx.textAlign = "center"; ctx.fillText("best λ", xAt(opt), b1 + 15);
-      ctx.fillStyle = VIZ.css("--text-faint"); ctx.textAlign = "left"; ctx.fillText("← weaker penalty", padL, H - 5);
-      ctx.textAlign = "right"; ctx.fillText("stronger penalty →", W - padR, H - 5);
+      ctx.fillStyle = VIZ.css("--secondary"); ctx.fillText("training error", padL + 4, t1 + 26);
+      ctx.fillStyle = "#f97316"; ctx.fillText("cross-validated error", padL + 4, t1 + 40);
+      // "best λ" has a row of its own: on the penalty row it collided with
+      // "← weaker penalty" whenever the best lambda was small
+      ctx.fillStyle = VIZ.css("--success"); ctx.textAlign = "center"; ctx.fillText("best λ", xAt(opt), b1 + 14);
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.textAlign = "left"; ctx.fillText("← weaker penalty", padL, H - 3);
+      ctx.textAlign = "right"; ctx.fillText("stronger penalty →", W - padR, H - 3);
     }
 
     function update() {

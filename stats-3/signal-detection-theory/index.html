@@ -223,7 +223,7 @@
     var dIn = document.getElementById("sdt-d"), cIn = document.getElementById("sdt-c");
     var d = +dIn.value, c = +cIn.value;
 
-    var canvas = document.getElementById("sdt-canvas"), ctx, W = 0, H = 290;
+    var canvas = document.getElementById("sdt-canvas"), ctx, W = 0, H = 322;
     var roc = document.getElementById("sdt-roc"), rctx, RW = 0;
     var padL = 12, padR = 12, padT = 30, padB = 44;
     function fitCv() {
@@ -243,7 +243,9 @@
 
     function drawMain(lam) {
       var base = H - padB, top = padT + 8;
-      var yScale = (base - top) / 0.42;
+      // the two label rows (top + 8, top + 24) sit above the curves' peaks:
+      // scaled to reach the top, the curves ran through "correct rejections"
+      var yScale = (base - top - 32) / 0.4;
       ctx.clearRect(0, 0, W, H);
 
       // axis + ticks

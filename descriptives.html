@@ -212,7 +212,14 @@
       ctx.clearRect(0, 0, W, H);
       if (!st) {
         ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "600 13px Inter,sans-serif"; ctx.textAlign = "center";
-        ctx.fillText("Paste some numbers above and press Calculate. The capybara is ready.", W / 2, H / 2);
+        // word-wrapped: on one line it ran off both sides of a phone
+        var lines = [], cur = "";
+        "Paste some numbers above and press Calculate. The capybara is ready.".split(" ").forEach(function (w) {
+          var next = cur ? cur + " " + w : w;
+          if (cur && ctx.measureText(next).width > W - 24) { lines.push(cur); cur = w; } else cur = next;
+        });
+        lines.push(cur);
+        lines.forEach(function (ln, k) { ctx.fillText(ln, W / 2, H / 2 + 18 * (k - (lines.length - 1) / 2)); });
         return;
       }
       var pad = 34, span = st.max - st.min || 1;

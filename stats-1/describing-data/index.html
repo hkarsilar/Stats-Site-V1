@@ -507,7 +507,15 @@
 
       ctx.fillStyle = VIZ.css("--text-muted");
       ctx.font = (small ? 10 : 11.5) + "px Inter, sans-serif"; ctx.textAlign = "left";
-      ctx.fillText(caption(st), PAD, H - 8);
+      // the caption wraps upward from the bottom edge (up to three lines fit
+      // under the box): on one line the longer steps ran off a phone's canvas
+      var words = caption(st).split(" "), lines = [], cur = "";
+      words.forEach(function (w) {
+        var next = cur ? cur + " " + w : w;
+        if (cur && ctx.measureText(next).width > W - 2 * PAD) { lines.push(cur); cur = w; } else cur = next;
+      });
+      lines.push(cur);
+      lines.slice(0, 3).forEach(function (ln, k, arr) { ctx.fillText(ln, PAD, H - 8 - 13 * (arr.length - 1 - k)); });
     }
 
     function readouts() {

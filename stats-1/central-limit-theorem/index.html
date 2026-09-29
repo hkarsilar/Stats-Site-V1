@@ -269,7 +269,9 @@
 
     /* sampling distribution: density-scaled histogram + theoretical normal */
     function drawSampling(c) {
-      var ctx = c.ctx, w = c.w, h = c.h, pad = 8, bins = 60;
+      // pad keeps the tallest bar and the curve's peak below the "μ = …" label
+      // at the top, which the dashed curve used to run straight through
+      var ctx = c.ctx, w = c.w, h = c.h, pad = 22, bins = 60;
       ctx.clearRect(0, 0, w, h);
       axis(ctx, w, h);
       var se = popSD / Math.sqrt(n);

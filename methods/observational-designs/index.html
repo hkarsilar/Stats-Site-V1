@@ -269,7 +269,8 @@
       ctx.beginPath(); ctx.moveTo(padL, tTop); ctx.lineTo(padL, tBot); ctx.lineTo(padL + plotW, tBot); ctx.stroke();
       ctx.fillStyle = VIZ.css("--text-muted"); ctx.font = "11px system-ui,sans-serif";
       ctx.textAlign = "center"; ctx.fillText("Year 0", X(0), tBot + 14);
-      ctx.fillText("Year 20", X(YEARS), tBot + 14);
+      ctx.textAlign = "right"; ctx.fillText("Year 20", X(YEARS), tBot + 14);   // right-aligned: centered, it ran off the edge
+      ctx.textAlign = "center";
       ctx.save(); ctx.translate(12, (tTop + tBot) / 2); ctx.rotate(-Math.PI / 2);
       ctx.fillText("cumulative incidence", 0, 0); ctx.restore();
 
@@ -303,13 +304,16 @@
         ctx.fillText("follow everyone forward →", (X(0) + X(YEARS)) / 2, tTop + 12);
       }
 
-      // legend
+      // legend, on the axis row between "Year 0" and "Year 20": at the top it
+      // shared a line with the design caption and the two overprinted on a phone
       ctx.textAlign = "left"; ctx.font = "600 11px system-ui,sans-serif";
-      ctx.fillStyle = COL_CASE; ctx.fillText("■ exposed", padL + 46, tTop + 12);
-      ctx.fillStyle = COL_UN; ctx.fillText("■ unexposed", padL + 118, tTop + 12);
+      var lw1 = ctx.measureText("■ exposed").width, lw2 = ctx.measureText("■ unexposed").width;
+      var lx = (X(0) + X(YEARS)) / 2 - (lw1 + 14 + lw2) / 2;
+      ctx.fillStyle = COL_CASE; ctx.fillText("■ exposed", lx, tBot + 14);
+      ctx.fillStyle = COL_UN; ctx.fillText("■ unexposed", lx + lw1 + 14, tBot + 14);
 
       // ---------- bottom: the observed slice (dot grid) ----------
-      var gTop = 150, gBot = H - 8;
+      var gTop = 156, gBot = H - 8;
       ctx.fillStyle = VIZ.css("--text"); ctx.font = "600 12px system-ui,sans-serif"; ctx.textAlign = "left";
       ctx.fillText("The people you observe", padL, gTop - 6);
 

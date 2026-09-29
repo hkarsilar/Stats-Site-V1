@@ -209,9 +209,20 @@
       ctx.beginPath(); ctx.moveTo(tpx, dTop - 2); ctx.lineTo(tpx, dBase); ctx.stroke(); ctx.setLineDash([]);
       ctx.fillStyle = "#f97316";
       ctx.beginPath(); ctx.arc(tpx, dTop + 2, 4, 0, 6.2832); ctx.fill();
-      ctx.font = "600 11px " + VIZ.css("--font"); ctx.textAlign = "center";
-      ctx.fillStyle = VIZ.css("--secondary"); ctx.fillText("healthy", dx(0), dBase - 4);
-      ctx.fillStyle = "#f97316"; ctx.fillText("condition", Math.min(dx(d), W - dpadR - 26), dTop + 12);
+      // each class label sits over its own peak, but steps to one side of the
+      // threshold line when the line would run through it (the line is dragged
+      // anywhere, and at the default it crossed both labels on a phone)
+      ctx.font = "600 11px " + VIZ.css("--font"); ctx.textAlign = "left";
+      function dodge(txt, cx, y, color) {
+        var w = ctx.measureText(txt).width, x = cx - w / 2;
+        if (tpx > x - 4 && tpx < x + w + 4) x = cx < tpx ? tpx - 7 - w : tpx + 7;
+        x = Math.max(dpadL + 2, Math.min(x, W - dpadR - 2 - w));
+        // a halo of background, so a curve's tail under the word breaks around it
+        ctx.lineJoin = "round"; ctx.lineWidth = 4; ctx.strokeStyle = VIZ.css("--bg-soft"); ctx.strokeText(txt, x, y);
+        ctx.fillStyle = color; ctx.fillText(txt, x, y);
+      }
+      dodge("healthy", dx(0), dBase - 4, VIZ.css("--secondary"));
+      dodge("condition", dx(d), dTop + 12, "#f97316");
     }
 
     /* ---- bottom band: ROC square ---- */
@@ -253,8 +264,10 @@
       ctx.fillText("true-positive rate →", 0, 0); ctx.restore();
       ctx.textAlign = "left"; ctx.fillStyle = VIZ.css("--text-faint");
       ctx.fillText("↖ perfect", px(0) + 4, py(1) + 12);
-      ctx.save(); ctx.translate(px(0.52), py(0.46)); ctx.rotate(-Math.PI / 4);
-      ctx.textAlign = "center"; ctx.fillText("chance", 0, -3); ctx.restore();
+      // "chance" runs along the diagonal just below it: anchored off the line
+      // and drawn back toward it, the dashes ran through the word
+      ctx.save(); ctx.translate(px(0.55), py(0.55)); ctx.rotate(-Math.PI / 4);
+      ctx.textAlign = "center"; ctx.fillText("chance", 0, 13); ctx.restore();
     }
 
     function draw() { ctx.clearRect(0, 0, W, H); drawDist(); drawRoc(); }

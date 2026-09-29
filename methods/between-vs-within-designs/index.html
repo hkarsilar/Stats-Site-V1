@@ -196,8 +196,7 @@
       // 80% target line
       ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([4, 4]);
       ctx.beginPath(); ctx.moveTo(padL, Y(TARGET)); ctx.lineTo(padL + plotW, Y(TARGET)); ctx.stroke(); ctx.setLineDash([]);
-      ctx.fillStyle = VIZ.css("--text-muted"); ctx.font = "11px system-ui,sans-serif"; ctx.textAlign = "left";
-      ctx.fillText("80% power", padL + 4, Y(TARGET) - 4);
+      ctx.fillStyle = VIZ.css("--text-muted"); ctx.font = "11px system-ui,sans-serif";
       ctx.textAlign = "right";
       ctx.fillText("0", padL - 6, padT + plotH + 4);
       ctx.fillText("1", padL - 6, padT + 4);
@@ -226,6 +225,19 @@
       }
       marker(peopleB, VIZ.css("--primary"));
       marker(peopleW, "#f97316");
+
+      // the 80% label goes on last, on a patch of background: drawn first, the
+      // steep within-subjects curve ran straight through it on a phone. It
+      // takes the first spot along the line that clears both marker dots.
+      ctx.font = "11px system-ui,sans-serif"; ctx.textAlign = "left";
+      var lw = ctx.measureText("80% power").width, dots = [peopleB, peopleW].filter(function (p) { return isFinite(p) && p <= Pmax; }).map(X);
+      var spots = [padL + 4].concat(dots.map(function (x) { return x + 10; }));
+      var lx = spots.filter(function (x) {
+        return x + lw < padL + plotW && dots.every(function (dx) { return dx < x - 8 || dx > x + lw + 8; });
+      })[0];
+      if (lx === undefined) lx = padL + 4;
+      ctx.fillStyle = VIZ.css("--bg-soft"); ctx.fillRect(lx - 2, Y(TARGET) - 15, lw + 4, 13);
+      ctx.fillStyle = VIZ.css("--text-muted"); ctx.fillText("80% power", lx, Y(TARGET) - 4);
 
       // legend
       ctx.textAlign = "left"; ctx.font = "600 12px system-ui,sans-serif";

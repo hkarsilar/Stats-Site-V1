@@ -289,8 +289,12 @@
       for (var t = 20; t <= 80; t += 10) { var x = vx(t); ctx.globalAlpha = 0.5; ctx.beginPath(); ctx.moveTo(x, 10); ctx.lineTo(x, H - 18); ctx.stroke(); ctx.globalAlpha = 1; ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center"; ctx.fillText(t, x, H - 4); }
       strip(A, H * 0.32, VIZ.css("--primary"));
       strip(B, H * 0.68, "#f97316");
-      ctx.fillStyle = VIZ.css("--primary"); ctx.font = "600 11px Inter,sans-serif"; ctx.textAlign = "left"; ctx.fillText("group 1", 8, 12);
-      ctx.fillStyle = "#f97316"; ctx.fillText("group 2", 8, H * 0.68 - 30);
+      // each label on a patch of background, so the gridlines stop short of it
+      ctx.font = "600 11px Inter,sans-serif"; ctx.textAlign = "left";
+      [["group 1", 12, VIZ.css("--primary")], ["group 2", H * 0.68 - 30, "#f97316"]].forEach(function (g) {
+        ctx.fillStyle = VIZ.css("--bg-soft"); ctx.fillRect(6, g[1] - 10, ctx.measureText(g[0]).width + 4, 13);
+        ctx.fillStyle = g[2]; ctx.fillText(g[0], 8, g[1]);
+      });
     }
 
     function update() {
@@ -310,13 +314,15 @@
       var dec = document.getElementById("stat-dec");
       dec.textContent = reject ? "Significant difference" : "Not significant";
       dec.style.color = reject ? "#22c55e" : VIZ.css("--text");
+      // "p < .001", not the "p = < .001" that "p = " + "< .001" used to print
+      var pPhrase = function (v) { return v < 0.001 ? "p < .001" : "p = " + v.toFixed(3).replace(/^0/, ""); };
       var others = ["cons", "welch", "pool"].filter(function (m) { return m !== dfMode; });
       var txt = "Reading t = " + tval.toFixed(2) + " against the " + DF_LABEL[dfMode] + " rule: df = " +
-                (dfv % 1 === 0 ? dfv : dfv.toFixed(2)) + ", so p = " + (p < 0.001 ? "< .001" : p.toFixed(3).replace(/^0/, "")) + ". ";
+                (dfv % 1 === 0 ? dfv : dfv.toFixed(2)) + ", so " + pPhrase(p) + ". ";
       txt += "The other two leave the statistic alone and change only the curve it is read against: ";
       txt += others.map(function (m) {
         var d = dfFor(m, s1, s2), q = 2 * VIZ.tUpper(Math.abs(tval), d);
-        return DF_SHORT[m] + " gives df = " + (d % 1 === 0 ? d : d.toFixed(2)) + " and p = " + (q < 0.001 ? "< .001" : q.toFixed(3).replace(/^0/, ""));
+        return DF_SHORT[m] + " gives df = " + (d % 1 === 0 ? d : d.toFixed(2)) + " and " + pPhrase(q);
       }).join(", ");
       txt += ". The conservative rule always has the fewest degrees of freedom and so the largest p, which is why an exam accepts it.";
       document.getElementById("it-work").textContent = txt;
@@ -475,7 +481,7 @@
       if (st.lap > 0 && st.p < 0.05) head = "The two intervals overlap by " + f2(st.lap) + " points, and the test rejects anyway.";
       else if (st.lap > 0) head = "The two intervals overlap by " + f2(st.lap) + " points, and this time the test agrees with the picture.";
       else head = "The two intervals are clear of each other, and the test rejects, which on two groups this evenly matched it always must once the bars separate.";
-      el("ov-work").textContent = head + " t = " + f2(st.t) + " on " + st.dfP + " degrees of freedom, p = " + pf(st.p) +
+      el("ov-work").textContent = head + " t = " + f2(st.t) + " on " + st.dfP + " degrees of freedom, " + (st.p < 0.001 ? "p < .001" : "p = " + pf(st.p)) +
         ", and the interval for the difference is [" + f2(gap - st.mD) + ", " + f2(gap + st.mD) + "]. " +
         "Each group's margin is " + f2(st.mE) + ", so the two together reach " + f2(2 * st.mE) +
         "; the margin on the difference is only " + f2(st.mD) + ", because its standard error is √(" +

@@ -384,9 +384,14 @@
         ctx.strokeStyle = line; ctx.lineWidth = 1.2;
         ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
         if (!label) return;
-        ctx.fillStyle = faint; ctx.font = small + "px " + font;
+        ctx.font = small + "px " + font;
         ctx.textAlign = x2 < x1 ? "right" : "left";
-        ctx.fillText(label, (x1 + x2) / 2 + (x2 < x1 ? -4 : 4), (y1 + y2) / 2 + 3);
+        // on a patch of background, so the branch it labels runs behind the
+        // number rather than along its bottom edge
+        var lx = (x1 + x2) / 2 + (x2 < x1 ? -4 : 4), ly = (y1 + y2) / 2 + 3, lw = ctx.measureText(label).width;
+        ctx.fillStyle = VIZ.css("--bg-soft") || "#f8fafc";
+        ctx.fillRect(x2 < x1 ? lx - lw - 2 : lx - 2, ly - small, lw + 4, small + 4);
+        ctx.fillStyle = faint; ctx.fillText(label, lx, ly);
       }
       function node(cx, cy, w, h, title, count, color, filled) {
         pill(ctx, cx, cy, w, h, color, filled ? color : line, filled ? 0.16 : 0.06);

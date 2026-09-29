@@ -142,7 +142,7 @@
   <script>
   (function () {
     "use strict";
-    var canvas = document.getElementById("rf-canvas"), ctx, W = 0, H = 440;
+    var canvas = document.getElementById("rf-canvas"), ctx, W = 0, H = 470;
     var NT = 60, NTR = 110, NTE = 500, NOISE = 0.18, MAXD = 8;
     var sp = 1;                       // seed offset — sp=1 is the verified demo (ensemble climbs .74 -> .79 vs .70 single)
     var tr, te, trees, ensCurve = [], singleAcc = 0, nShown = 1;
@@ -212,7 +212,18 @@
     }
 
     /* ---- drawing ---- */
-    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    /* The caption breaks onto a second line when the canvas is too narrow for
+       it (it ran off both sides of a phone). The test uses the widest count,
+       "60-tree vote", so dragging the slider never changes the layout. */
+    function capWraps() {
+      ctx.font = "11px " + VIZ.css("--font");
+      return ctx.measureText("training data · faint = newest single tree · shading = " + NT + "-tree vote").width > W - 16;
+    }
+    function fit() {
+      var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w;
+      var need = 470 + (capWraps() ? 14 : 0);
+      if (need !== H) { H = need; o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    }
     function plotGeom() { var top = 8, size = Math.min(212, W - 40); return { x0: (W - size) / 2, y0: top, size: size }; }
     function ensembleP(xx, yy) { var v = 0; for (var t = 0; t < nShown; t++) v += predict(trees[t], [xx, yy]); return v / nShown; }
     function draw() {
@@ -238,11 +249,18 @@
         ctx.beginPath(); ctx.arc(px, py, 3, 0, 6.2832); ctx.fill();
         ctx.strokeStyle = VIZ.css("--bg"); ctx.lineWidth = 1; ctx.stroke();
       }
-      ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px " + VIZ.css("--font"); ctx.textAlign = "center";
-      ctx.fillText("training data · faint = newest single tree · shading = " + nShown + "-tree vote", W / 2, g.y0 + g.size + 15);
+      var wrap = capWraps(), capY = g.y0 + g.size + 15;
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.textAlign = "center";
+      if (wrap) {
+        ctx.fillText("training data · faint = newest single tree", W / 2, capY);
+        ctx.fillText("shading = " + nShown + "-tree vote", W / 2, capY + 14);
+        capY += 14;
+      } else ctx.fillText("training data · faint = newest single tree · shading = " + nShown + "-tree vote", W / 2, capY);
 
-      // accuracy vs #trees chart
-      var cTop = g.y0 + g.size + 32, cBot = H - 22, cL = 40, cR = W - 16;
+      // accuracy vs #trees chart: the legend sits in a band above the plot,
+      // where the forest's curve used to run through it, and the axis title
+      // has its own row below the tick numbers
+      var legY = capY + 20, cTop = legY + 26, cBot = H - 32, cL = 40, cR = W - 16;
       var lo = 0.5, hi = 0.9;
       function bx(t) { return cL + (t - 1) / (NT - 1) * (cR - cL); }
       function by(a) { return cBot - (a - lo) / (hi - lo) * (cBot - cTop); }
@@ -263,8 +281,8 @@
       ctx.stroke();
       ctx.fillStyle = VIZ.css("--secondary"); ctx.beginPath(); ctx.arc(bx(nShown), by(ensCurve[nShown - 1]), 3.2, 0, 6.2832); ctx.fill();
       ctx.font = "600 11px " + VIZ.css("--font"); ctx.textAlign = "left";
-      ctx.fillStyle = VIZ.css("--secondary"); ctx.fillText("forest (vote)", cL + 4, cTop + 10);
-      ctx.fillStyle = VIZ.css("--text-muted"); ctx.fillText("avg. single tree", cL + 4, cTop + 24);
+      ctx.fillStyle = VIZ.css("--secondary"); ctx.fillText("forest (vote)", cL + 4, legY);
+      ctx.fillStyle = VIZ.css("--text-muted"); ctx.fillText("avg. single tree", cL + 4, legY + 14);
     }
 
     function update() {

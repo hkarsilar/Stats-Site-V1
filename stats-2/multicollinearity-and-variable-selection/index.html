@@ -201,8 +201,10 @@
       for (var t = LOB; t <= HIB; t += 2) { ctx.fillText(t, bx(t), baseY + 14); }
       // true value line at +1
       ctx.strokeStyle = "#f97316"; ctx.setLineDash([5, 4]); ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(bx(1), 8); ctx.lineTo(bx(1), baseY); ctx.stroke(); ctx.setLineDash([]);
-      ctx.fillStyle = "#f97316"; ctx.fillText("true b₁ = +1", bx(1), 6);
+      // the label sits on a baseline of 13 so its caps clear the top edge,
+      // and the line starts below it rather than running through it
+      ctx.beginPath(); ctx.moveTo(bx(1), 18); ctx.lineTo(bx(1), baseY); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = "#f97316"; ctx.fillText("true b₁ = +1", bx(1), 13);
       // estimate dots
       ctx.fillStyle = VIZ.css("--primary"); ctx.globalAlpha = 0.6;
       estimates.forEach(function (b, i) { ctx.beginPath(); ctx.arc(bx(b), baseY - 12 - (i % 9) * 7, 3.5, 0, 2 * Math.PI); ctx.fill(); });

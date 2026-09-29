@@ -237,9 +237,20 @@
       ctx.fillStyle = VIZ.css("--text");
       ctx.beginPath(); ctx.moveTo(tpx, top + 1); ctx.lineTo(tpx - 5, top - 7); ctx.lineTo(tpx + 5, top - 7); ctx.closePath(); ctx.fill();
       // labels
-      ctx.font = "600 11px " + VIZ.css("--font"); ctx.textAlign = "center";
-      ctx.fillStyle = VIZ.css("--secondary"); ctx.fillText("healthy", sx(0), base - 4);
-      ctx.fillStyle = "#f97316"; ctx.fillText("has condition", Math.min(sx(d), W - padR - 34), top + 12);
+      // each class label sits over its own peak, but steps to one side of the
+      // threshold line when the line would run through it (the line is dragged
+      // anywhere, and at the default it crossed both labels on a phone)
+      ctx.font = "600 11px " + VIZ.css("--font"); ctx.textAlign = "left";
+      function dodge(txt, cx, y, color) {
+        var w = ctx.measureText(txt).width, x = cx - w / 2;
+        if (tpx > x - 4 && tpx < x + w + 4) x = cx < tpx ? tpx - 6 - w : tpx + 6;
+        x = Math.max(padL + 2, Math.min(x, W - padR - 2 - w));
+        // a halo of background, so a curve's tail under the word breaks around it
+        ctx.lineJoin = "round"; ctx.lineWidth = 4; ctx.strokeStyle = VIZ.css("--bg-soft"); ctx.strokeText(txt, x, y);
+        ctx.fillStyle = color; ctx.fillText(txt, x, y);
+      }
+      dodge("healthy", sx(0), base - 4, VIZ.css("--secondary"));
+      dodge("has condition", sx(d), top + 12, "#f97316");
       ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px " + VIZ.css("--font");
       ctx.textAlign = "left"; ctx.fillText("← predicted negative", padL + 2, base + 15);
       ctx.textAlign = "right"; ctx.fillText("predicted positive →", W - padR - 2, base + 15);

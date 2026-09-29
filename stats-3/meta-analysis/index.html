@@ -192,7 +192,16 @@
     }
     function draw(m) {
       ctx.clearRect(0, 0, W, H);
-      var padL = 66, padR = 118;
+      // both text columns are measured rather than guessed: a negative
+      // interval ("-0.09 [-0.68, 0.50]") is wider than a positive one and
+      // ran off the right edge, most of all on a phone
+      ctx.font = "10.5px ui-monospace, monospace";
+      function ciText(s) { return s.d.toFixed(2) + " [" + (s.d - 1.96 * s.se).toFixed(2) + ", " + (s.d + 1.96 * s.se).toFixed(2) + "]"; }
+      var padR = 16, padL = 66;
+      studies.forEach(function (s, i) {
+        padR = Math.max(padR, Math.ceil(ctx.measureText(ciText(s)).width) + 16);
+        padL = Math.max(padL, Math.ceil(ctx.measureText("S" + (i + 1) + "  n=" + s.n).width) + 16);
+      });
       var lo = 0, hi = 0;
       studies.forEach(function (s) {
         lo = Math.min(lo, s.d - 1.96 * s.se); hi = Math.max(hi, s.d + 1.96 * s.se);
@@ -204,7 +213,8 @@
       ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(padL, base); ctx.lineTo(W - padR, base); ctx.stroke();
       ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px ui-monospace, monospace"; ctx.textAlign = "center";
-      for (var t = Math.ceil(lo * 2) / 2; t <= hi; t += 0.5) ctx.fillText(t.toFixed(1), sx(t), base + 15);
+      var tstep = sx(0.5) - sx(0) < 36 ? 1 : 0.5;   // a phone-width plot has no room for every half
+      for (var t = Math.ceil(lo / tstep) * tstep; t <= hi + 1e-9; t += tstep) ctx.fillText((Math.abs(t) < 1e-9 ? 0 : t).toFixed(1), sx(t), base + 15);
       ctx.fillText("effect size (d) →", (padL + W - padR) / 2, base + 30);
       ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([3, 4]);
       ctx.beginPath(); ctx.moveTo(sx(0), 8); ctx.lineTo(sx(0), base); ctx.stroke(); ctx.setLineDash([]);
@@ -223,7 +233,7 @@
         ctx.fillRect(sx(s.d) - half, y - half, 2 * half, 2 * half);
         ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10.5px ui-monospace, monospace";
         ctx.fillText("S" + (i + 1) + "  n=" + s.n, 8, y + 4);
-        ctx.fillText(s.d.toFixed(2) + " [" + (s.d - 1.96 * s.se).toFixed(2) + ", " + (s.d + 1.96 * s.se).toFixed(2) + "]", W - padR + 8, y + 4);
+        ctx.fillText(ciText(s), W - padR + 8, y + 4);
       });
       // pooled diamonds
       function diamond(d, se, y, color, label) {
@@ -247,7 +257,7 @@
       document.getElementById("stat-fe").textContent = ci(m.dF, m.seF);
       document.getElementById("stat-i2").textContent = m.I2.toFixed(0) + "%";
       document.getElementById("stat-tau").textContent = Math.sqrt(m.tau2).toFixed(2);
-      document.getElementById("stat-q").textContent = "Q(" + m.df + ") = " + m.Q.toFixed(1) + (m.pQ < 0.0001 ? ", p < .0001" : ", p = " + m.pQ.toFixed(3));
+      document.getElementById("stat-q").textContent = "Q(" + m.df + ") = " + m.Q.toFixed(1) + (m.pQ < 0.001 ? ", p < .001" : ", p = " + m.pQ.toFixed(3));   // at 3 dp, .0001-.0005 printed "p = 0.000"
     }
 
     document.getElementById("k-range").addEventListener("input", function () {

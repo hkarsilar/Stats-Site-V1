@@ -153,26 +153,28 @@
     var x0 = 50, b1 = 0.12, data = [];
     var LO = 0, HI = 100, YLO = -0.18, YHI = 1.18;
     var canvas = document.getElementById("lr-canvas"), ctx, W = 0, H = 240, pad = 30;
+    // the y labels ("1 (yes)") need a wider gutter than the other three sides
+    var padL = 54;
 
     function trueP(x) { return 1 / (1 + Math.exp(-0.14 * (x - 48))); }
     function gen() { data = []; for (var i = 0; i < 60; i++) { var x = 5 + Math.random() * 90; data.push({ x: x, y: Math.random() < trueP(x) ? 1 : 0 }); } update(); }
     function P(x) { return 1 / (1 + Math.exp(-b1 * (x - x0))); }
 
     function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
-    function vx(x) { return pad + ((x - LO) / (HI - LO)) * (W - 2 * pad); }
+    function vx(x) { return padL + ((x - LO) / (HI - LO)) * (W - padL - pad); }
     function vy(y) { return (H - pad) - ((y - YLO) / (YHI - YLO)) * (H - 2 * pad); }
 
     function update() {
       ctx.clearRect(0, 0, W, H);
       // 0 and 1 reference bands
       ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "right";
-      [0, 0.5, 1].forEach(function (yv) { var y = vy(yv); ctx.globalAlpha = yv === 0.5 ? 0.3 : 0.6; ctx.setLineDash(yv === 0.5 ? [4, 4] : []); ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(W - pad, y); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1; ctx.fillText(yv === 0 ? "0 (no)" : yv === 1 ? "1 (yes)" : "0.5", pad - 4, y + 3); });
+      [0, 0.5, 1].forEach(function (yv) { var y = vy(yv); ctx.globalAlpha = yv === 0.5 ? 0.3 : 0.6; ctx.setLineDash(yv === 0.5 ? [4, 4] : []); ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - pad, y); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1; ctx.fillText(yv === 0 ? "0 (no)" : yv === 1 ? "1 (yes)" : "0.5", padL - 6, y + 3); });
       // naive linear fit (least squares of y on x) — shows the problem
       var mx = VIZ.mean(data.map(function (p) { return p.x; })), my = VIZ.mean(data.map(function (p) { return p.y; }));
       var sxy = 0, sxx = 0; data.forEach(function (p) { sxy += (p.x - mx) * (p.y - my); sxx += (p.x - mx) * (p.x - mx); });
       var c1 = sxy / sxx, c0 = my - c1 * mx;
       ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([6, 4]); ctx.lineWidth = 1.5;
-      ctx.save(); ctx.beginPath(); ctx.rect(pad, 2, W - 2 * pad, H - 4); ctx.clip();
+      ctx.save(); ctx.beginPath(); ctx.rect(padL, 2, W - padL - pad, H - 4); ctx.clip();
       ctx.beginPath(); ctx.moveTo(vx(LO), vy(c0 + c1 * LO)); ctx.lineTo(vx(HI), vy(c0 + c1 * HI)); ctx.stroke(); ctx.restore(); ctx.setLineDash([]);
       // data points
       data.forEach(function (p) { ctx.fillStyle = p.y ? "#f97316" : VIZ.css("--primary"); ctx.globalAlpha = 0.55; ctx.beginPath(); ctx.arc(vx(p.x), vy(p.y === 1 ? 1 : 0) + (p.y ? 1 : -1) * ((p.x % 5)), 4, 0, 2 * Math.PI); ctx.fill(); });
@@ -182,7 +184,7 @@
       for (var px = 0; px <= W; px += 1.5) { var x = LO + (px / W) * (HI - LO); var y = vy(P(x)); if (px === 0) ctx.moveTo(vx(x), y); else ctx.lineTo(vx(x), y); }
       ctx.stroke();
       ctx.fillStyle = VIZ.css("--text-faint"); ctx.textAlign = "center"; ctx.font = "10px Inter,sans-serif"; ctx.fillText("x →", W / 2, H - 6);
-      ctx.fillStyle = VIZ.css("--text-faint"); ctx.textAlign = "left"; ctx.fillText("- - - naive linear fit (leaves 0–1!)", pad + 4, 14);
+      ctx.fillStyle = VIZ.css("--text-faint"); ctx.textAlign = "left"; ctx.fillText("- - - naive linear fit (leaves 0–1!)", padL + 4, 14);
 
       // stats
       var acc = 0; data.forEach(function (p) { if ((P(p.x) >= 0.5 ? 1 : 0) === p.y) acc++; });

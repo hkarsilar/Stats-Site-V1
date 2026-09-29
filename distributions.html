@@ -340,11 +340,13 @@
       var m = d.mean(P), s = d.sd(P);
       if (isFinite(m)) {
         ctx.strokeStyle = "#f97316"; ctx.setLineDash([4, 4]); ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.moveTo(toX(m), top); ctx.lineTo(toX(m), baseY); ctx.stroke();
+        // all three guides start below the "mean" label (top + 10), which the
+        // mean line used to run straight through
+        ctx.beginPath(); ctx.moveTo(toX(m), top + 15); ctx.lineTo(toX(m), baseY); ctx.stroke();
         if (isFinite(s)) {
           ctx.setLineDash([2, 4]); ctx.lineWidth = 1.2; ctx.globalAlpha = 0.7;
           [m - s, m + s].forEach(function (g) {
-            if (g > xmin && g < xmax) { ctx.beginPath(); ctx.moveTo(toX(g), top + 8); ctx.lineTo(toX(g), baseY); ctx.stroke(); }
+            if (g > xmin && g < xmax) { ctx.beginPath(); ctx.moveTo(toX(g), top + 15); ctx.lineTo(toX(g), baseY); ctx.stroke(); }
           });
           ctx.globalAlpha = 1;
         }
@@ -524,7 +526,7 @@
       var ink = V.css("--primary"), face = V.css("--surface");
       ctx.font = "10px " + V.css("--mono"); ctx.textAlign = "center";
       // counts above the bars, drawn only when every one of them has room
-      var widest = 0, labels = d.total <= 1296;
+      var widest = 0, labels = d.total <= 1296, counts = [];
       if (labels) {
         for (i = 0; i < nb; i++) widest = Math.max(widest, ctx.measureText(d.counts[i] + "/" + d.total).width);
         labels = widest + 8 <= bw;
@@ -546,10 +548,7 @@
           ctx.fillRect(x + bw * 0.12, baseY - h, bw * 0.76, h);
           ctx.globalAlpha = 1;
         }
-        if (labels) {
-          ctx.fillStyle = V.css("--text-faint");
-          ctx.fillText(d.counts[i] + "/" + d.total, x + bw / 2, baseY - h - 5);
-        }
+        if (labels) counts.push([d.counts[i] + "/" + d.total, x + bw / 2, baseY - h - 5]);
       }
 
       // normal curve of the same mean and SD
@@ -586,6 +585,15 @@
       ctx.setLineDash([]);
       ctx.fillStyle = "#f97316"; ctx.font = "bold 12px " + V.css("--mono");
       ctx.fillText("mean " + fmt(mo.mean), Math.min(Math.max(xOf(mo.mean), pad + 34), W - pad - 34), top - 6);
+      // the counts go on last, each on a patch of background, so the mean line
+      // passes behind "6/36" instead of through it
+      ctx.font = "10px " + V.css("--mono");
+      var bg = V.css("--bg-soft"), faint = V.css("--text-faint");
+      counts.forEach(function (c) {
+        var cw = ctx.measureText(c[0]).width;
+        ctx.fillStyle = bg; ctx.fillRect(c[1] - cw / 2 - 2, c[2] - 9, cw + 4, 12);
+        ctx.fillStyle = faint; ctx.fillText(c[0], c[1], c[2]);
+      });
     }
 
     function update() { renderStats(); draw(); }

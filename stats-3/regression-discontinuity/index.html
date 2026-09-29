@@ -319,9 +319,10 @@
       ctx.beginPath(); ctx.moveTo(padL, s1); ctx.lineTo(W - padR, s1); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(padL, s0); ctx.lineTo(padL, s1); ctx.stroke();
 
-      /* the cutoff */
+      /* the cutoff, in both panels but not across the gap between them,
+         where it used to run through the "entrance exam score" title */
       ctx.strokeStyle = VIZ.css("--text-faint"); ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]);
-      ctx.beginPath(); ctx.moveTo(sx(C), s0); ctx.lineTo(sx(C), hb1); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(sx(C), s0); ctx.lineTo(sx(C), s1); ctx.moveTo(sx(C), hb); ctx.lineTo(sx(C), hb1); ctx.stroke();
       ctx.setLineDash([]);
 
       /* the applicants: faint outside the window, solid inside it */

@@ -194,7 +194,35 @@
     }
 
     /* ---- geometry ---- */
-    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    /* The canvas height follows the layout rather than a constant: below the
+       main view come the caption, the trio's heading (two lines on a phone)
+       and three small panels whose labels also wrap on a phone. A fixed 528
+       overprinted the caption with the heading and left a blank band. */
+    var HEAD = "Same data, one nonlinear method, three perplexity settings, and the shape lies:";
+    var TRIO = [["perplexity 5", "over-split"], ["perplexity 30", "just right"], ["perplexity 80", "collapsed"]];
+    function wrapText(text, maxW) {
+      var lines = [], cur = "";
+      text.split(" ").forEach(function (w) {
+        var next = cur ? cur + " " + w : w;
+        if (cur && ctx.measureText(next).width > maxW) { lines.push(cur); cur = w; } else cur = next;
+      });
+      lines.push(cur);
+      return lines;
+    }
+    function layout() {
+      var g = mainGeom(), gap = 10, tS = Math.min((W - 2 * gap) / 3 - 6, 150);
+      ctx.font = "600 11px " + VIZ.css("--font");
+      var head = wrapText(HEAD, W - 16);
+      ctx.font = "10px " + VIZ.css("--font");
+      var two = TRIO.some(function (t) { return ctx.measureText(t[0] + " · " + t[1]).width > tS + gap - 4; });
+      var top = g.y0 + g.S + 46 + 14 * (head.length - 1);
+      return { g: g, gap: gap, tS: tS, head: head, two: two, top: top, bottom: top + tS + (two ? 29 : 17) };
+    }
+    function fit() {
+      var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w;
+      var need = Math.ceil(layout().bottom + 6);
+      if (need !== H) { H = need; o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    }
     function mainGeom() { var S = Math.min(300, W - 32); return { S: S, x0: (W - S) / 2, y0: 6 }; }
     function rot(p) {
       var x = p[0] - c3[0], y = p[1] - c3[1], z = p[2] - c3[2];
@@ -239,17 +267,20 @@
       P.forEach(function (p) { var e = fn(p), ex = x0 + (0.06 + 0.88 * e[0]) * S, ey = y0 + (0.06 + 0.88 * (1 - e[1])) * S; ctx.beginPath(); ctx.arc(ex, ey, rad, 0, 6.2832); ctx.fillStyle = gcol(p.g); ctx.fill(); });
     }
     function drawTrio(g) {
-      var top = g.y0 + g.S + 30, gap = 10, tS = Math.min((W - 2 * gap) / 3 - 6, 150);
+      var L = layout(), top = L.top, gap = L.gap, tS = L.tS;
       var totalW = tS * 3 + gap * 2, x0 = (W - totalW) / 2;
-      var fns = [embLow, embMed, embHigh], labs = ["perplexity 5", "perplexity 30", "perplexity 80"], subs = ["over-split", "just right", "collapsed"];
+      var fns = [embLow, embMed, embHigh];
       ctx.fillStyle = VIZ.css("--text"); ctx.font = "600 11px " + VIZ.css("--font"); ctx.textAlign = "center";
-      ctx.fillText("Same data, one nonlinear method, three perplexity settings, and the shape lies:", W / 2, top - 8);
+      L.head.forEach(function (ln, k) { ctx.fillText(ln, W / 2, top - 12 - 14 * (L.head.length - 1 - k)); });
       for (var i = 0; i < 3; i++) {
         var xx = x0 + i * (tS + gap);
         ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.strokeRect(xx, top, tS, tS);
         drawEmbed(fns[i], xx, top, tS, 2.1);
         ctx.fillStyle = VIZ.css("--text-muted"); ctx.font = "10px " + VIZ.css("--font"); ctx.textAlign = "center";
-        ctx.fillText(labs[i] + " · " + subs[i], xx + tS / 2, top + tS + 13);
+        if (L.two) {   // too narrow for one line: the setting, then what it did
+          ctx.fillText(TRIO[i][0], xx + tS / 2, top + tS + 13);
+          ctx.fillText(TRIO[i][1], xx + tS / 2, top + tS + 25);
+        } else ctx.fillText(TRIO[i][0] + " · " + TRIO[i][1], xx + tS / 2, top + tS + 13);
       }
     }
 

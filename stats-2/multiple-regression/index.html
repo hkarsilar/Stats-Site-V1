@@ -379,8 +379,10 @@
     "use strict";
     var N = 40, K = 8, REAL = 2;          // 8 candidate predictors, first 2 real
     var X = [], y = [], r2s = [], adjs = [], np = 3;
-    var canvas = document.getElementById("mr2-canvas"), ctx, W = 0, H = 280;
-    var padL = 44, padR = 14, padT = 24, padB = 34;
+    var canvas = document.getElementById("mr2-canvas"), ctx, W = 0, H = 296;
+    // padT leaves a row above the plot for the legend, which sat inside it where
+    // the real/noise divider and the current-p marker ran through it
+    var padL = 44, padR = 14, padT = 40, padB = 34;
 
     /* Frozen data: the predictor columns and the outcome are drawn once, so
        the slider only changes HOW MANY columns enter the model — it never
@@ -465,8 +467,8 @@
       curve(adjs, "#f97316");
       // legend (top-left)
       ctx.textAlign = "left"; ctx.font = "600 11px Inter,sans-serif";
-      ctx.fillStyle = VIZ.css("--primary"); ctx.fillText("● R²", padL + 4, topY + 12);
-      ctx.fillStyle = "#f97316"; ctx.fillText("● adjusted R²", padL + 44, topY + 12);
+      ctx.fillStyle = VIZ.css("--primary"); ctx.fillText("● R²", padL + 4, 16);
+      ctx.fillStyle = "#f97316"; ctx.fillText("● adjusted R²", padL + 16 + ctx.measureText("● R²").width, 16);
 
       document.getElementById("np-val").textContent = np;
       document.getElementById("stat-r2").textContent = r2s[np].toFixed(3);

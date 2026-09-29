@@ -179,7 +179,18 @@
 
     function draw(m) {
       ctx.clearRect(0, 0, W, H);
-      var padL = 40, padR = 14, padT = 26, padB = 30;
+      var COL_C = VIZ.css("--secondary"), COL_T = VIZ.css("--primary"), COL_CF = "#f97316";
+      // the legend flows onto a second line when the canvas is too narrow for
+      // one (it ran off the right edge on a phone), and the plot moves down
+      ctx.font = "600 12px system-ui,sans-serif";
+      var legend = [["■ Treated", COL_T], ["■ Comparison", COL_C], ["▪ counterfactual", COL_CF]];
+      var lines = 1, lx = 46;
+      legend.forEach(function (it) {
+        var w = ctx.measureText(it[0]).width;
+        if (lx > 46 && lx + w > W - 4) { lx = 46; lines++; }
+        it.push(lx, lines); lx += w + 14;   // [label, color, x, line]
+      });
+      var padL = 40, padR = 14, padT = 26 + 16 * (lines - 1), padB = 30;
       var plotW = W - padL - padR, plotH = H - padT - padB;
       var vals = [m.cB, m.cA, m.tB, m.tA, m.tCounter];
       var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
@@ -200,8 +211,6 @@
       }
       function dot(x, y, color) { ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, 5, 0, 6.2832); ctx.fill(); }
 
-      var COL_C = VIZ.css("--secondary"), COL_T = VIZ.css("--primary"), COL_CF = "#f97316";
-
       // counterfactual (what treated would do under parallel trends)
       line(xB, Y(m.tB), xA, Y(m.tCounter), COL_CF, 2, [5, 4]);
       // control + treatment
@@ -220,9 +229,7 @@
 
       // legend
       ctx.textAlign = "left"; ctx.font = "600 12px system-ui,sans-serif";
-      ctx.fillStyle = COL_T; ctx.fillText("■ Treated", padL + 6, padT + 2);
-      ctx.fillStyle = COL_C; ctx.fillText("■ Comparison", padL + 74, padT + 2);
-      ctx.fillStyle = COL_CF; ctx.fillText("▪ counterfactual", padL + 172, padT + 2);
+      legend.forEach(function (it) { ctx.fillStyle = it[1]; ctx.fillText(it[0], it[2], 28 + 16 * (it[3] - 1)); });
     }
 
     function sign(x) { return (x >= 0 ? "+" : "−") + Math.abs(x).toFixed(0); }

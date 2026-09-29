@@ -280,7 +280,15 @@
         ctx.lineTo(sx(x2) - ah * Math.cos(angA + 0.4), sy(y2) - ah * Math.sin(angA + 0.4));
         ctx.closePath(); ctx.fill();
         ctx.font = "600 11px Inter,sans-serif"; ctx.textAlign = "left";
-        ctx.fillText("discriminant direction", sx(x2) + 6, sy(y2) + 4);
+        // beside the arrowhead when there is room; on a narrow canvas it ran off
+        // the right edge, so it moves in and sits above the tip instead
+        var dw = ctx.measureText("discriminant direction").width, dx = sx(x2) + 6, dy = sy(y2) + 4;
+        if (dx + dw > W - 4) { dx = W - 4 - dw; dy = sy(y2) - 12; }
+        // a halo, not a patch: it keeps an ellipse or a dot from crossing the
+        // words without hiding the points underneath
+        ctx.lineJoin = "round"; ctx.lineWidth = 4; ctx.strokeStyle = VIZ.css("--bg-soft");
+        ctx.strokeText("discriminant direction", Math.max(4, dx), dy);
+        ctx.fillStyle = "#22c55e"; ctx.fillText("discriminant direction", Math.max(4, dx), dy);
       }
       // legend
       ctx.font = "600 11px Inter,sans-serif"; ctx.textAlign = "left";

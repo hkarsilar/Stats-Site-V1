@@ -669,8 +669,17 @@
         var gy = vy(st.gm);
         ctx.strokeStyle = VIZ.css("--text-faint"); ctx.setLineDash([5, 4]); ctx.lineWidth = 1.5;
         ctx.beginPath(); ctx.moveTo(padL, gy); ctx.lineTo(W, gy); ctx.stroke(); ctx.setLineDash([]);
-        ctx.textAlign = "left"; ctx.fillStyle = VIZ.css("--text-faint");
-        ctx.fillText("grand mean " + f2(st.gm), padL + 4, gy - 5);
+      }
+      /* labels sit on a patch of background, so no line runs through one (the
+         Low mean of 17 sits right under the grand mean of 18, and the grand-
+         mean line ran straight through its label). Each is drawn before the
+         dots, so a patch never hides a data point: the scores go on top. */
+      var bg = VIZ.css("--bg-soft");
+      function plate(txt, x, y) { ctx.fillStyle = bg; ctx.fillRect(x - 2, y - 9, ctx.measureText(txt).width + 4, 12); }
+      if (step >= 2 || mode === "exam") {
+        ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "left";
+        plate("grand mean " + f2(st.gm), padL + 4, gy - 5);
+        ctx.fillStyle = VIZ.css("--text-faint"); ctx.fillText("grand mean " + f2(st.gm), padL + 4, gy - 5);
       }
       for (i = 0; i < K; i++) {
         var cx = gx(i), m = st.means[i], my = vy(m);
@@ -695,6 +704,9 @@
           ctx.strokeStyle = IND; ctx.lineWidth = 3;
           ctx.beginPath(); ctx.moveTo(cx, vy(st.gm)); ctx.lineTo(cx, my); ctx.stroke();
         }
+        ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "left";
+        plate(f2(m), cx - colW * 0.3, my - 7);
+        ctx.fillStyle = VIZ.css("--text-faint"); ctx.fillText(f2(m), cx - colW * 0.3, my - 7);
         ctx.fillStyle = VIZ.css("--secondary");
         for (j = 0; j < G[i].length; j++) {
           var jx = cx + (j - (G[i].length - 1) / 2) * Math.min(14, colW / (G[i].length + 1));
@@ -705,9 +717,6 @@
         ctx.beginPath(); ctx.moveTo(cx - colW * 0.3, my); ctx.lineTo(cx + colW * 0.3, my); ctx.stroke();
         ctx.fillStyle = VIZ.css("--text-faint"); ctx.textAlign = "center"; ctx.font = "600 11px Inter,sans-serif";
         ctx.fillText(labels[i], cx, H - 7);
-        ctx.font = "10px ui-monospace,monospace";
-        ctx.textAlign = "left";
-        ctx.fillText(f2(m), cx - colW * 0.3, my - 7);
         ctx.textAlign = "center";
       }
     }
@@ -728,7 +737,7 @@
       if (step === 5) return "Total: every score against the grand mean gives " + f2(st.sst) + ". And " + f2(st.ssb) + " + " + f2(st.ssw) + " = " + f2(st.sst) + ", which is the identity, not a coincidence.";
       if (step === 6) return "Degrees of freedom: " + K + " groups leave " + st.dfb + " between, " + st.N + " values in " + K + " groups leave " + st.dfw + " within, and they add to " + st.dft + ".";
       if (step === 7) return "Mean squares: " + f2(st.ssb) + " / " + st.dfb + " = " + f2(st.msb) + " between, " + f2(st.ssw) + " / " + st.dfw + " = " + f2(st.msw) + " within. Their ratio is F = " + f2(st.f) + " on (" + st.dfb + ", " + st.dfw + ").";
-      return "p = " + pTxt(st.p) + ". The pooled standard deviation is √" + f2(st.msw) + " = " + f2(st.sp) + ", and η² = " + f2(st.ssb) + " / " + f2(st.sst) + " = " + etaTxt(st.eta) + ".";
+      return (st.p < 0.0001 ? "p < .0001" : "p = " + pTxt(st.p)) + ". The pooled standard deviation is √" + f2(st.msw) + " = " + f2(st.sp) + ", and η² = " + f2(st.ssb) + " / " + f2(st.sst) + " = " + etaTxt(st.eta) + ".";
     }
 
     /* ---------- the whole readout ---------- */

@@ -154,7 +154,7 @@
   (function () {
     "use strict";
     var N = 60, DMAX = 6, K = 5, GAMMA = 0.10, NOISE = 0.55;
-    var canvas = document.getElementById("pve-canvas"), ctx, W = 0, H = 400;
+    var canvas = document.getElementById("pve-canvas"), ctx, W = 0, H = 424;
     var deg = 1, seed = 8;
     var us = [], ys = [], foldOf = [], cvR = [], trR = [], coefs = [];
     var explBest = 1, predBest = 3;
@@ -247,11 +247,22 @@
       curve(coefs[explBest], VIZ.css("--secondary"), [], deg === explBest ? 1.2 : 1.6);
       curve(coefs[predBest], "#f97316", [], deg === predBest ? 1.2 : 1.6);
       curve(coefs[deg], VIZ.css("--text"), [], 2.8);
+      // the caption wraps at its " · " breaks when the canvas is narrow (it ran
+      // off a phone), and everything below it moves down to make room
       ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px " + VIZ.css("--font"); ctx.textAlign = "left";
-      ctx.fillText("truth (dashed) · your model (bold) · explanation (teal) · prediction (orange)", padL, t1 + 15);
+      var capLines = [], cur = "";
+      ["truth (dashed)", "your model (bold)", "explanation (teal)", "prediction (orange)"].forEach(function (pt) {
+        var next = cur ? cur + " · " + pt : pt;
+        if (cur && ctx.measureText(next).width > W - padL - padR) { capLines.push(cur); cur = pt; } else cur = next;
+      });
+      capLines.push(cur);
+      capLines.forEach(function (ln, k) { ctx.fillText(ln, padL, t1 + 15 + 14 * k); });
+      var legY = t1 + 15 + 14 * (capLines.length - 1) + 22;
 
-      /* bottom: the two cost curves vs degree */
-      var b0 = 276, b1 = H - 24;
+      /* bottom: the two cost curves vs degree. The legend has its own band
+         above the plot, where neither the curves nor the degree marker reach,
+         and the axis title its own row below the tick numbers. */
+      var b0 = legY + 26, b1 = H - 34;
       var costsE = cvR.map(function (v, d) { return v + GAMMA * d; });
       var all = cvR.concat(costsE);
       var lo = Math.min.apply(null, all) - 0.03, hi = Math.max.apply(null, all) + 0.03;
@@ -278,8 +289,8 @@
       star(explBest, costsE[explBest], VIZ.css("--secondary"));
       star(predBest, cvR[predBest], "#f97316");
       ctx.font = "600 11px " + VIZ.css("--font"); ctx.textAlign = "left";
-      ctx.fillStyle = VIZ.css("--secondary"); ctx.fillText("explanation cost (error + interpretability tax)", padL + 4, b0 + 6);
-      ctx.fillStyle = "#f97316"; ctx.fillText("prediction cost (held-out error)", padL + 4, b0 + 20);
+      ctx.fillStyle = VIZ.css("--secondary"); ctx.fillText("explanation cost (error + interpretability tax)", padL + 4, legY);
+      ctx.fillStyle = "#f97316"; ctx.fillText("prediction cost (held-out error)", padL + 4, legY + 14);
     }
 
     function terms(d) { return (d + 1) + (d + 1 === 1 ? " term" : " terms"); }

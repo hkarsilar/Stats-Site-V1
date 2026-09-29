@@ -275,7 +275,7 @@
   <script>
   (function () {
     "use strict";
-    var canvas = document.getElementById("bayes-canvas"), ctx, W = 0, H = 258, pad = 28;
+    var canvas = document.getElementById("bayes-canvas"), ctx, W = 0, H = 274, pad = 28;
     function val(id) { return +document.getElementById(id).value; }
     function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
     function vx(p) { return pad + p * (W - 2 * pad); }
@@ -293,7 +293,18 @@
       var n = val("n-range"), obs = val("obs-range") / 100, k = Math.round(obs * n);
       var a1 = a0 + k, b1 = b0 + (n - k);
 
-      var baseY = H - 38, top = 14;
+      /* the legend has a row of its own above the plot (two on a phone):
+         every curve is scaled to peak at the top, so a legend written there
+         was crossed by whichever curve peaked beneath it */
+      ctx.font = "600 11px Inter,sans-serif";
+      var LEG = [["- - prior", VIZ.css("--text-faint")], ["· · likelihood (data)", VIZ.css("--secondary")], ["posterior", VIZ.css("--primary")]];
+      var lx = pad + 4, row = 0;
+      LEG.forEach(function (it) {
+        var w = ctx.measureText(it[0]).width;
+        if (lx > pad + 4 && lx + w > W - 4) { lx = pad + 4; row++; }
+        it.push(lx, row); lx += w + 16;   // [label, color, x, row]
+      });
+      var baseY = H - 38, top = 30 + 15 * row;
       ctx.clearRect(0, 0, W, H);
       ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(pad, baseY); ctx.lineTo(W - pad, baseY); ctx.stroke();
       ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center";
@@ -315,7 +326,7 @@
       plot(post, VIZ.css("--primary"), 3.5);
       // legend
       ctx.textAlign = "left"; ctx.font = "600 11px Inter,sans-serif";
-      ctx.fillStyle = VIZ.css("--text-faint"); ctx.fillText("- - prior", pad + 4, top); ctx.fillStyle = VIZ.css("--secondary"); ctx.fillText("· · likelihood (data)", pad + 64, top); ctx.fillStyle = VIZ.css("--primary"); ctx.fillText("posterior", pad + 184, top);
+      LEG.forEach(function (it) { ctx.fillStyle = it[1]; ctx.fillText(it[0], it[2], 14 + 15 * it[3]); });
 
       document.getElementById("pm-val").textContent = pm.toFixed(2);
       document.getElementById("ps-val").textContent = strength < 12 ? "weak" : strength < 35 ? "moderate" : "strong";

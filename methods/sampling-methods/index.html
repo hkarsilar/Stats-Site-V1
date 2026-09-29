@@ -185,7 +185,7 @@
   <script>
   (function () {
     "use strict";
-    var canvas = document.getElementById("sm-canvas"), ctx, W = 0, H = 400;
+    var canvas = document.getElementById("sm-canvas"), ctx, W = 0, H = 432;
     var N = 400, method = "srs", n = 80;
     var people = [];            // frozen population: {x,y,q,op}
     var truth = 0;
@@ -284,7 +284,9 @@
     function draw() {
       ctx.clearRect(0, 0, W, H);
       var COL_YES = VIZ.css("--primary"), COL_NO = VIZ.css("--text-faint");
-      var padL = 10, padR = 10, mapTop = 8, mapH = 250, mapW = W - padL - padR;
+      // mapTop leaves a row above the map for its legend, which used to sit on
+      // top of the people in the north-east corner
+      var padL = 10, padR = 10, mapTop = 24, mapH = 250, mapW = W - padL - padR;
       function MX(x) { return padL + x * mapW; }
       function MY(y) { return mapTop + (1 - y) * mapH; }
 
@@ -312,11 +314,13 @@
       ctx.fillText("campus", kx + 10, ky + 4);
       // map legend
       ctx.textAlign = "right";
-      ctx.fillStyle = COL_YES; ctx.fillText("● in favor", padL + mapW - 74, mapTop + 14);
-      ctx.fillStyle = COL_NO; ctx.fillText("● against", padL + mapW - 4, mapTop + 14);
+      ctx.fillStyle = COL_NO; ctx.fillText("● against", padL + mapW - 4, 14);
+      ctx.fillStyle = COL_YES; ctx.fillText("● in favor", padL + mapW - 16 - ctx.measureText("● against").width, 14);
 
       // ---------- sampling-distribution strip ----------
-      var sTop = mapTop + mapH + 26, sBot = H - 22, sL = padL + 30, sR = W - padR - 10;
+      // the strip's heading has a row of its own, above the "truth" label's:
+      // on one shared row the two collided whenever the truth sat on the left
+      var sTop = mapTop + mapH + 42, sBot = H - 22, sL = padL + 30, sR = W - padR - 10;
       var dLo = 0.05, dHi = 0.95;
       function SX(v) { return sL + (v - dLo) / (dHi - dLo) * (sR - sL); }
       ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
@@ -327,7 +331,7 @@
         ctx.strokeStyle = VIZ.css("--border"); ctx.beginPath(); ctx.moveTo(SX(t), sBot); ctx.lineTo(SX(t), sBot + 3); ctx.stroke();
       });
       ctx.textAlign = "left"; ctx.fillStyle = VIZ.css("--text"); ctx.font = "600 11px system-ui,sans-serif";
-      ctx.fillText("Estimates from repeated draws", sL, sTop - 8);
+      ctx.fillText("Estimates from repeated draws", sL, sTop - 26);
 
       // truth line
       ctx.strokeStyle = "#22c55e"; ctx.lineWidth = 2;

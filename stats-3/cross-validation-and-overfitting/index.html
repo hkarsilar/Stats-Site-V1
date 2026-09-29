@@ -133,7 +133,7 @@
   (function () {
     "use strict";
     var N = 45, NOISE = 0.22, DMAX = 9, K = 5;
-    var canvas = document.getElementById("cv-canvas"), ctx, W = 0, H = 380;
+    var canvas = document.getElementById("cv-canvas"), ctx, W = 0, H = 408;
     var deg = 3, xs = [], ys = [], us = [], foldOf = [];
     var trainMSE = [], cvMSE = [], coefs = [];
 
@@ -237,8 +237,10 @@
       ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "11px " + VIZ.css("--font");
       ctx.textAlign = "left"; ctx.fillText("truth (dashed)  ·  fit (orange)  ·  data (blue)", padL, t1 + 16);
 
-      /* bottom panel: error vs degree, log10 scale */
-      var b0 = 262, b1 = H - 26;
+      /* bottom panel: error vs degree, log10 scale. The legend has its own
+         band above the plot, where the error curves used to run through it,
+         and the axis title its own row below the tick numbers. */
+      var legY = t1 + 38, b0 = legY + 26, b1 = H - 34;
       var all = trainMSE.concat(cvMSE).map(function (v) { return Math.log10(Math.max(v, 1e-4)); });
       var lo = Math.min.apply(null, all) - 0.08, hi = Math.max.apply(null, all) + 0.08;
       function bx(d) { return padL + d / DMAX * (W - padL - padR); }
@@ -262,8 +264,8 @@
       line(trainMSE, VIZ.css("--secondary"));
       line(cvMSE, "#f97316");
       ctx.font = "600 11px " + VIZ.css("--font"); ctx.textAlign = "left";
-      ctx.fillStyle = VIZ.css("--secondary"); ctx.fillText("training error", padL + 4, b0 + 4);
-      ctx.fillStyle = "#f97316"; ctx.fillText("5-fold CV error", padL + 4, b0 + 18);
+      ctx.fillStyle = VIZ.css("--secondary"); ctx.fillText("training error", padL + 4, legY);
+      ctx.fillStyle = "#f97316"; ctx.fillText("5-fold CV error", padL + 4, legY + 14);
     }
 
     function update() {

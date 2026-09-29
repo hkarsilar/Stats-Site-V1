@@ -168,7 +168,22 @@
     var LOX = -3.6, HIX = 5.7, padX = 12;                       // shared x-axis (outcome, SD units)
     var GREEN = "#22c55e", RED = "#ef4444", ORANGE = "#f97316";
 
-    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    var LEGEND = [[GREEN, "power: real effect detected"], ["#9ca3af", "β: real effect missed"], [RED, "α — false alarm"]];
+    function legendRows() {           // the legend flows onto more rows on a phone
+      ctx.font = "11px Inter,sans-serif";
+      var lx = padX + 2, rows = 1;
+      LEGEND.forEach(function (it) {
+        var iw = 14 + ctx.measureText(it[1]).width;
+        if (lx > padX + 2 && lx + iw > W - padX) { lx = padX + 2; rows++; }
+        lx += iw + 16;
+      });
+      return rows;
+    }
+    function fit() {
+      var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w;
+      var need = 430 + 17 * (legendRows() - 1);
+      if (need !== H) { H = need; o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    }
     function vx(v) { return padX + ((v - LOX) / (HIX - LOX)) * (W - 2 * padX); }
 
     /* two-sample test on the observed standardized difference d̂, SE = √(2/n).
@@ -228,9 +243,9 @@
       ctx.closePath();
       ctx.fillStyle = color; ctx.globalAlpha = alphaF; ctx.fill(); ctx.globalAlpha = 1;
     }
-    function panelTitle(text, y) {
+    function panelTitle(text, short, y) {
       ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "600 11.5px Inter,sans-serif"; ctx.textAlign = "left";
-      ctx.fillText(text, padX + 2, y);
+      ctx.fillText(ctx.measureText(text).width > W - 2 * padX - 4 ? short : text, padX + 2, y);
     }
     function legendDot(x, y, color, label) {
       ctx.fillStyle = color; ctx.globalAlpha = 0.75;
@@ -246,8 +261,11 @@
       var primary = VIZ.css("--primary"), border = VIZ.css("--border"), faint = VIZ.css("--text-faint");
 
       /* ---------- panel 1: the populations ---------- */
-      var base1 = 168, top1 = 34, scale1 = (base1 - top1) / VIZ.normPdf(0, 0, 1);
-      panelTitle("1 · THE POPULATIONS — what “d = " + d.toFixed(2) + "” means in the world", 16);
+      // top1 leaves a clear row between the panel title and the d bracket's
+      // label, which used to touch the title's descenders
+      var base1 = 168, top1 = 44, scale1 = (base1 - top1) / VIZ.normPdf(0, 0, 1);
+      panelTitle("1 · THE POPULATIONS — what “d = " + d.toFixed(2) + "” means in the world",
+                 "1 · THE POPULATIONS (d = " + d.toFixed(2) + ")", 16);
       ctx.strokeStyle = border; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(padX, base1); ctx.lineTo(W - padX, base1); ctx.stroke();
       // overlap region
@@ -269,12 +287,17 @@
         ctx.fillText("d = " + d.toFixed(2), vx(d / 2), by - 5);
       }
       ctx.font = "600 11px Inter,sans-serif"; ctx.textAlign = "center";
-      ctx.fillStyle = primary; ctx.fillText("control", vx(0), base1 + 14);
-      ctx.fillStyle = ORANGE; ctx.fillText("treatment", vx(Math.max(d, 0.65)), base1 + 14);
+      // each label under its own mean, pushed apart around the midpoint when
+      // d is too small for both (a fixed 0.65 SD offset was not enough on a phone)
+      var lc = vx(0), lt = vx(d), need = (ctx.measureText("control").width + ctx.measureText("treatment").width) / 2 + 10;
+      if (lt - lc < need) { var lm = (lc + lt) / 2; lc = lm - need / 2; lt = lm + need / 2; }
+      ctx.fillStyle = primary; ctx.fillText("control", lc, base1 + 14);
+      ctx.fillStyle = ORANGE; ctx.fillText("treatment", lt, base1 + 14);
 
       /* ---------- panel 2: what the test sees ---------- */
       var base2 = 396, top2 = 244, peak2 = VIZ.normPdf(0, 0, s), scale2 = (base2 - top2) / peak2;
-      panelTitle("2 · YOUR STUDY (n = " + n + "/group) · possible results d̂ and the " + (tails === 2 ? "two" : "one") + "-tailed cutoff at α = " + alpha, 210);
+      panelTitle("2 · YOUR STUDY (n = " + n + "/group) · possible results d̂ and the " + (tails === 2 ? "two" : "one") + "-tailed cutoff at α = " + alpha,
+                 "2 · YOUR STUDY · n = " + n + "/group, α = " + alpha, 210);
       ctx.strokeStyle = border; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(padX, base2); ctx.lineTo(W - padX, base2); ctx.stroke();
 
@@ -302,6 +325,8 @@
         ctx.font = font; ctx.textAlign = align;
         var tw = ctx.measureText(txt).width;
         var x0 = align === "center" ? x - tw / 2 : (align === "right" ? x - tw : x);
+        var nudge = Math.max(4 - x0, 0) + Math.min(W - 4 - (x0 + tw), 0);   // keep it on the canvas
+        x0 += nudge; x += nudge;
         ctx.fillStyle = VIZ.css("--bg-soft"); ctx.globalAlpha = 0.9;
         ctx.fillRect(x0 - 4, y - 11, tw + 8, 15); ctx.globalAlpha = 1;
         ctx.fillStyle = color; ctx.fillText(txt, x, y);
@@ -315,15 +340,22 @@
 
       // big power number inside the green mass
       if (pw > 0.02) {
-        ctx.fillStyle = GREEN; ctx.font = "800 " + (pw > 0.35 ? 21 : 14) + "px Inter,sans-serif"; ctx.textAlign = "left";
-        ctx.fillText((pw * 100).toFixed(0) + "%", vx(Math.max(c, d) ) + 8, base2 - 12);
+        ctx.font = "800 " + (pw > 0.35 ? 21 : 14) + "px Inter,sans-serif"; ctx.textAlign = "left";
+        var ptx = (pw * 100).toFixed(0) + "%", px0 = Math.min(vx(Math.max(c, d)) + 8, W - 4 - ctx.measureText(ptx).width);
+        // a background halo rather than a plate, so the green shows round the
+        // digits but the H₁ curve no longer runs through them
+        ctx.lineJoin = "round"; ctx.lineWidth = 5; ctx.strokeStyle = VIZ.css("--bg-soft");
+        ctx.strokeText(ptx, px0, base2 - 12);
+        ctx.fillStyle = GREEN; ctx.fillText(ptx, px0, base2 - 12);
       }
 
       // legend
-      var lx = padX + 2;
-      lx = legendDot(lx, 426, GREEN, "power: real effect detected");
-      lx = legendDot(lx, 426, "#9ca3af", "β: real effect missed");
-      legendDot(lx, 426, RED, "α — false alarm");
+      var lx = padX + 2, ly = 426;
+      LEGEND.forEach(function (it) {
+        ctx.font = "11px Inter,sans-serif";
+        if (lx > padX + 2 && lx + 14 + ctx.measureText(it[1]).width > W - padX) { lx = padX + 2; ly += 17; }
+        lx = legendDot(lx, ly, it[0], it[1]);
+      });
     }
 
     function update() {

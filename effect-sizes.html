@@ -191,8 +191,13 @@
       ctx.strokeStyle = ORANGE; ctx.beginPath(); ctx.moveTo(vx(d), baseY); ctx.lineTo(vx(d), top); ctx.stroke();
       ctx.setLineDash([]);
       ctx.font = "600 11px Inter,sans-serif"; ctx.textAlign = "center";
-      ctx.fillStyle = VIZ.css("--primary"); ctx.fillText("control", vx(0), H - 8);
-      ctx.fillStyle = ORANGE; ctx.fillText("treatment", vx(d), H - 8);
+      // each label sits under its own mean unless d is too small for both to
+      // fit, and then they are pushed apart around the midpoint (on a phone
+      // they printed over each other)
+      var lc = vx(0), lt = vx(d), need = (ctx.measureText("control").width + ctx.measureText("treatment").width) / 2 + 10;
+      if (Math.abs(lt - lc) < need) { var mid = (lc + lt) / 2, dir = d < 0 ? -1 : 1; lc = mid - dir * need / 2; lt = mid + dir * need / 2; }
+      ctx.fillStyle = VIZ.css("--primary"); ctx.fillText("control", lc, H - 8);
+      ctx.fillStyle = ORANGE; ctx.fillText("treatment", lt, H - 8);
       // d bracket
       if (Math.abs(d) > 0.04) {
         ctx.strokeStyle = VIZ.css("--text-faint"); ctx.lineWidth = 1.5;

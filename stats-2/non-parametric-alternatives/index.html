@@ -70,7 +70,7 @@
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="npviz">
           <p class="viz-title">🎮 Outlier Stress Test</p>
-          <p class="viz-sub">Two small groups. Drag one of group 2's points out to an extreme and watch the two p-values diverge: the t-test lurches, the rank-based Mann-Whitney barely flinches.</p>
+          <p class="viz-sub">Two small groups. Slide one of group 2's points out to an extreme and watch the two p-values diverge: the t-test lurches, the rank-based Mann-Whitney barely flinches.</p>
 
           <div class="controls">
             <div class="control" style="flex:1;min-width:280px">
@@ -268,7 +268,7 @@
     "use strict";
     var A = [44, 47, 49, 51, 52, 55], Bbase = [50, 53, 56, 58, 60], outlier = 62;
     var LO = 38, HI = 102;
-    var canvas = document.getElementById("np-canvas"), ctx, W = 0, H = 150;
+    var canvas = document.getElementById("np-canvas"), ctx, W = 0, H = 164;
 
     function groupB() { return Bbase.concat([outlier]); }
 
@@ -306,16 +306,23 @@
       }
       ctx.globalAlpha = 1;
       var m = VIZ.mean(arr), mx = vx(m);
-      ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(mx, y - 22); ctx.lineTo(mx, y + 22); ctx.stroke();
+      ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(mx, y - 16); ctx.lineTo(mx, y + 16); ctx.stroke();
     }
     function draw() {
       ctx.clearRect(0, 0, W, H);
       ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1; ctx.fillStyle = VIZ.css("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center";
       for (var t = 40; t <= 100; t += 20) { var x = vx(t); ctx.globalAlpha = 0.4; ctx.beginPath(); ctx.moveTo(x, 12); ctx.lineTo(x, H - 14); ctx.stroke(); ctx.globalAlpha = 1; ctx.fillText(t, x, H - 2); }
-      strip(A, H * 0.34, VIZ.css("--secondary"), false);
-      strip(groupB(), H * 0.66, "#f97316", true);
-      ctx.fillStyle = VIZ.css("--secondary"); ctx.textAlign = "left"; ctx.font = "600 11px Inter,sans-serif"; ctx.fillText("group 1", 8, H * 0.34 - 26);
-      ctx.fillStyle = "#f97316"; ctx.fillText("group 2 (drag the ringed point)", 8, H * 0.66 - 26);
+      // each label has a row of its own above its strip: group 1's mean bar
+      // used to reach down into group 2's label. And the ringed point is moved
+      // by the slider above the chart; the canvas never took a drag, whatever
+      // the old label said
+      strip(A, 46, VIZ.css("--secondary"), false);
+      strip(groupB(), 112, "#f97316", true);
+      ctx.textAlign = "left"; ctx.font = "600 11px Inter,sans-serif";
+      [["group 1", 18, VIZ.css("--secondary")], ["group 2 (the slider moves the ringed point)", 84, "#f97316"]].forEach(function (g) {
+        ctx.fillStyle = VIZ.css("--bg-soft"); ctx.fillRect(6, g[1] - 10, ctx.measureText(g[0]).width + 4, 13);   // gridlines stop short of it
+        ctx.fillStyle = g[2]; ctx.fillText(g[0], 8, g[1]);
+      });
     }
 
     function update() {
@@ -690,12 +697,8 @@
       // raw axis
       ctx.strokeStyle = cc("--border"); ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(pad, yAx); ctx.lineTo(W - pad, yAx); ctx.stroke();
-      ctx.fillStyle = cc("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center";
-      var stepT = Math.max(5, Math.round((d.hi - d.lo) / 5 / 5) * 5);
-      for (var t = Math.ceil(d.lo / stepT) * stepT; t <= d.hi; t += stepT) { var xt = sx(t); ctx.globalAlpha = 0.5; ctx.beginPath(); ctx.moveTo(xt, yAx - 3); ctx.lineTo(xt, yAx + 3); ctx.stroke(); ctx.globalAlpha = 1; ctx.fillText(t, xt, yAx + 14); }
-      // strip captions
-      ctx.fillStyle = cc("--text-muted"); ctx.textAlign = "left"; ctx.font = "600 10px Inter,system-ui,sans-serif";
-      ctx.fillText("raw values", pad, yRaw - 20); ctx.fillText("ranks", rpad, yRank - 18);
+      var stepT = Math.max(5, Math.round((d.hi - d.lo) / 5 / 5) * 5), ticks = [];
+      for (var t = Math.ceil(d.lo / stepT) * stepT; t <= d.hi; t += stepT) { var xt = sx(t); ticks.push([t, xt]); ctx.globalAlpha = 0.5; ctx.beginPath(); ctx.moveTo(xt, yAx - 3); ctx.lineTo(xt, yAx + 3); ctx.stroke(); ctx.globalAlpha = 1; }
       // dots + connectors
       for (var i = 0; i < d.pts.length; i++) {
         var p = d.pts[i], col = d.colors[p.g], xr = sx(p.v), xk = rx(p.rank), xa = xr + (xk - xr) * anim;
@@ -705,6 +708,19 @@
         ctx.fillStyle = cc("--text"); ctx.font = "600 10px ui-monospace,monospace"; ctx.textAlign = "center"; ctx.globalAlpha = anim;
         ctx.fillText(p.rank, xa, yRank + 18); ctx.globalAlpha = 1;
       }
+      // tick numbers and strip captions go on last, each on a patch of
+      // background, so the connectors pass behind them instead of through
+      var bg = cc("--bg-soft");
+      function knock(txt, x, y, align) {
+        var w = ctx.measureText(txt).width, x0 = align === "center" ? x - w / 2 : x;
+        ctx.fillStyle = bg; ctx.fillRect(x0 - 2, y - 9, w + 4, 12);
+      }
+      ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center";
+      ticks.forEach(function (tk) { knock(String(tk[0]), tk[1], yAx + 14, "center"); ctx.fillStyle = cc("--text-faint"); ctx.fillText(tk[0], tk[1], yAx + 14); });
+      ctx.textAlign = "left"; ctx.font = "600 10px Inter,system-ui,sans-serif";
+      [["raw values", pad, yRaw - 20], ["ranks", rpad, yRank - 18]].forEach(function (c) {
+        knock(c[0], c[1], c[2], "left"); ctx.fillStyle = cc("--text-muted"); ctx.fillText(c[0], c[1], c[2]);
+      });
       legend(d.names.map(function (nm, i2) { return { t: nm, c: d.colors[i2] }; }));
     }
     function drawSigned(d) {
@@ -717,13 +733,9 @@
       ctx.strokeStyle = cc("--border"); ctx.setLineDash([3, 3]); ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(x0, yRaw - 18); ctx.lineTo(x0, yAx); ctx.stroke(); ctx.setLineDash([]);
       ctx.beginPath(); ctx.moveTo(pad, yAx); ctx.lineTo(W - pad, yAx); ctx.stroke();
-      ctx.fillStyle = cc("--text-faint"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center";
-      ctx.fillText("0", x0, yAx + 14);
-      var stepT = Math.max(5, Math.round((d.dmax - d.dmin) / 6 / 5) * 5);
-      for (var t = Math.ceil(d.dmin / stepT) * stepT; t <= d.dmax; t += stepT) { if (t === 0) continue; var xt = sx(t); ctx.globalAlpha = 0.5; ctx.beginPath(); ctx.moveTo(xt, yAx - 3); ctx.lineTo(xt, yAx + 3); ctx.stroke(); ctx.globalAlpha = 1; ctx.fillText(t, xt, yAx + 14); }
+      var stepT = Math.max(5, Math.round((d.dmax - d.dmin) / 6 / 5) * 5), ticks = [[0, x0]];
+      for (var t = Math.ceil(d.dmin / stepT) * stepT; t <= d.dmax; t += stepT) { if (t === 0) continue; var xt = sx(t); ticks.push([t, xt]); ctx.globalAlpha = 0.5; ctx.beginPath(); ctx.moveTo(xt, yAx - 3); ctx.lineTo(xt, yAx + 3); ctx.stroke(); ctx.globalAlpha = 1; }
       ctx.strokeStyle = cc("--border"); ctx.beginPath(); ctx.moveTo(cx, yRank - 18); ctx.lineTo(cx, yRank + 20); ctx.stroke();
-      ctx.fillStyle = cc("--text-muted"); ctx.textAlign = "left"; ctx.font = "600 10px Inter,system-ui,sans-serif";
-      ctx.fillText("difference (after − before)", pad, yRaw - 20); ctx.fillText("signed ranks", pad, yRank - 18);
       var pos = cc("--secondary"), neg = "#f97316";
       for (var i = 0; i < d.pts.length; i++) {
         var p = d.pts[i], col = p.sign > 0 ? pos : neg, xr = sx(p.diff), xk = rankX(p.rank, p.sign), xa = xr + (xk - xr) * anim;
@@ -733,6 +745,18 @@
         ctx.fillStyle = cc("--text"); ctx.font = "600 10px ui-monospace,monospace"; ctx.textAlign = "center"; ctx.globalAlpha = anim;
         ctx.fillText((p.sign > 0 ? "+" : "−") + p.rank, xa, yRank + 18); ctx.globalAlpha = 1;
       }
+      // as in drawLine: labels last, on patches, so the connectors pass behind
+      var bg = cc("--bg-soft");
+      function knock(txt, x, y, align) {
+        var w = ctx.measureText(txt).width, xl = align === "center" ? x - w / 2 : x;
+        ctx.fillStyle = bg; ctx.fillRect(xl - 2, y - 9, w + 4, 12);
+      }
+      ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center";
+      ticks.forEach(function (tk) { knock(String(tk[0]), tk[1], yAx + 14, "center"); ctx.fillStyle = cc("--text-faint"); ctx.fillText(tk[0], tk[1], yAx + 14); });
+      ctx.textAlign = "left"; ctx.font = "600 10px Inter,system-ui,sans-serif";
+      [["difference (after − before)", pad, yRaw - 20], ["signed ranks", pad, yRank - 18]].forEach(function (c) {
+        knock(c[0], c[1], c[2], "left"); ctx.fillStyle = cc("--text-muted"); ctx.fillText(c[0], c[1], c[2]);
+      });
       legend([{ t: "improved", c: pos }, { t: "declined", c: neg }]);
     }
     function drawGrid(d) {

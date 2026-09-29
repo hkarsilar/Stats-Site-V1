@@ -308,12 +308,16 @@
       for (var px = 0; px <= W; px += 1.5) { var v = LO + (px / W) * (HI - LO); var y = baseY - pdf(v) * scale; if (px === 0) ctx.moveTo(vx(v), y); else ctx.lineTo(vx(v), y); }
       ctx.stroke();
 
-      // observed-statistic marker
+      // observed-statistic marker: the line starts below its label (it used to
+      // run straight through it), and the label is kept inside the canvas so
+      // it is not cut off when the slider sits at either end
       var zx = vx(z);
+      ctx.font = "600 12px Inter, sans-serif";
+      var half = ctx.measureText("your result").width / 2 + 2;
       ctx.strokeStyle = "#f97316"; ctx.lineWidth = 2.5;
-      ctx.beginPath(); ctx.moveTo(zx, 6); ctx.lineTo(zx, baseY); ctx.stroke();
-      ctx.fillStyle = "#f97316"; ctx.textAlign = "center"; ctx.font = "600 12px Inter, sans-serif";
-      ctx.fillText("your result", zx, 16);
+      ctx.beginPath(); ctx.moveTo(zx, 22); ctx.lineTo(zx, baseY); ctx.stroke();
+      ctx.fillStyle = "#f97316"; ctx.textAlign = "center";
+      ctx.fillText("your result", Math.min(Math.max(zx, half), W - half), 15);
     }
 
     function update() {
@@ -517,9 +521,18 @@
       ctx.font = "11px ui-monospace, monospace"; ctx.textAlign = "center"; ctx.fillStyle = VIZ.css("--text-faint");
       ctx.fillText(s.lo.toFixed(3), px(s.lo), baseY + 15);
       ctx.fillText(s.hi.toFixed(3), px(s.hi), baseY + 15);
+      // both labels stay on the top row, above where the cutoff lines start.
+      // When the two means are too close for both, the labels spread apart
+      // around their midpoint: a fixed 60px test for dropping one a row still
+      // let them overprint on a phone, where the labels are wider than that
       ctx.font = "600 12px Inter, sans-serif";
-      ctx.fillStyle = VIZ.css("--primary"); ctx.fillText("H₀: μ = " + MU0.toFixed(1), px(MU0), 14);
-      ctx.fillStyle = "#f97316"; ctx.fillText("truth: μ = " + mu1.toFixed(2), px(mu1), Math.abs(px(mu1) - px(MU0)) < 60 ? 30 : 14);
+      var l0 = "H₀: μ = " + MU0.toFixed(1), l1 = "truth: μ = " + mu1.toFixed(2);
+      var w0 = ctx.measureText(l0).width, w1 = ctx.measureText(l1).width;
+      var c0 = px(MU0), c1 = px(mu1), need = (w0 + w1) / 2 + 12;
+      if (Math.abs(c1 - c0) < need) { var cm = (c0 + c1) / 2, dir = c1 >= c0 ? 1 : -1; c0 = cm - dir * need / 2; c1 = cm + dir * need / 2; }
+      var shift = Math.max(0, 4 - Math.min(c0 - w0 / 2, c1 - w1 / 2)) + Math.min(0, W - 4 - Math.max(c0 + w0 / 2, c1 + w1 / 2));
+      ctx.fillStyle = VIZ.css("--primary"); ctx.fillText(l0, c0 + shift, 14);
+      ctx.fillStyle = "#f97316"; ctx.fillText(l1, c1 + shift, 14);
     }
 
     function update() {

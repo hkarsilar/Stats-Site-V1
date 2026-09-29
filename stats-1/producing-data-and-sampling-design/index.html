@@ -294,7 +294,9 @@
       var H = Math.max(150, Math.round((hisC.clientWidth || 640) / 3));
       var o = VIZ.fit(hisC, H), ctx = o.ctx, W = o.w;
       ctx.clearRect(0, 0, W, H);
-      var padL = 34, padR = 12, padB = 24, padT = 10;
+      // padT leaves a row above the tallest bar for the "truth" label, and
+      // padR is half the "100%" tick label, which is centered on the edge
+      var padL = 34, padR = 22, padB = 24, padT = 24;
       var plotW = W - padL - padR, plotH = H - padT - padB;
       var BINS = 40, counts = new Array(BINS).fill(0), i;
       for (i = 0; i < REPS; i++) {
@@ -312,7 +314,7 @@
       // truth marker
       var tx = padL + truth * plotW;
       ctx.strokeStyle = "#f97316"; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(tx, padT); ctx.lineTo(tx, padT + plotH); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(tx, padT - 6); ctx.lineTo(tx, padT + plotH); ctx.stroke();
       // axis
       ctx.strokeStyle = VIZ.css("--border") || "#d5dbe4"; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(padL, padT + plotH); ctx.lineTo(padL + plotW, padT + plotH); ctx.stroke();
@@ -323,8 +325,9 @@
         var v = i / 4, x = padL + v * plotW;
         ctx.fillText(Math.round(v * 100) + "%", x, H - 7);
       }
-      ctx.textAlign = "left";
-      ctx.fillText("truth", tx + 5, padT + 11);
+      var flip = tx + 5 + ctx.measureText("truth").width > W - 2;
+      ctx.textAlign = flip ? "right" : "left";
+      ctx.fillText("truth", flip ? tx - 5 : tx + 5, padT - 8);
     }
 
     function readouts() {

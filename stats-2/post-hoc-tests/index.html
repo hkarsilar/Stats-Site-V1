@@ -353,7 +353,32 @@
     var canvas = document.getElementById("ph-canvas"), ctx, W = 0, H = 290;
 
     function comps() { return k * (k - 1) / 2; }
-    function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    /* Each half's title and tally wrap onto more lines when the half is too
+       narrow for them (on a phone the two titles ran into each other). The
+       line counts are measured on the widest text either can ever print, so
+       the layout holds still while experiments run. */
+    function wrap(txt, maxW) {
+      var lines = [], cur = "";
+      txt.split(" ").forEach(function (w) {
+        var next = cur ? cur + " " + w : w;
+        if (cur && ctx.measureText(next).width > maxW) { lines.push(cur); cur = w; } else cur = next;
+      });
+      lines.push(cur);
+      return lines;
+    }
+    function layout() {
+      var half = (W - 36) / 2;
+      ctx.font = "700 12px Inter,sans-serif";
+      var tl = Math.max(wrap("No correction: every pair at α = .05", half - 4).length, wrap("Bonferroni: each pair needs p < 0.0000", half - 4).length);
+      ctx.font = "600 10.5px Inter,sans-serif";
+      var fl = wrap("fooled in 100% of 9999 runs (theory 100%)", half - 4).length;
+      return { half: half, tl: tl, fl: fl };
+    }
+    function fit() {
+      var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w;
+      var L = layout(), need = 290 + 15 * (L.tl - 1) + 13 * (L.fl - 1);
+      if (need !== H) { H = need; o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
+    }
 
     function experiment() {
       var m = comps(), bonf = ALPHA / m, anyU = false, anyB = false;
@@ -368,13 +393,13 @@
     }
 
     /* one half of the canvas: title, triangle of tiles, tally bar */
-    function drawHalf(x0, width, title, thresh, hits, theory, color) {
+    function drawHalf(x0, width, title, thresh, hits, theory, color, L) {
       var m = comps();
       ctx.fillStyle = VIZ.css("--text"); ctx.font = "700 12px Inter,sans-serif"; ctx.textAlign = "left";
-      ctx.fillText(title, x0, 16);
+      wrap(title, width - 4).forEach(function (ln, q) { ctx.fillText(ln, x0, 16 + 15 * q); });
 
       // triangle of comparison tiles: row i = group i+1, col j = group j
-      var gridTop = 26, gridH = 168;
+      var gridTop = 26 + 15 * (L.tl - 1), gridH = 168;
       var cell = Math.min(20, gridH / (k - 1), (width - 4) / (k - 1));
       var gap = Math.max(2, cell * 0.14), c = 0, flashed = 0;
       for (var i = 1; i < k; i++) {
@@ -412,7 +437,8 @@
       ctx.beginPath(); ctx.moveTo(tx, by - 3); ctx.lineTo(tx, by + bh + 3); ctx.stroke(); ctx.setLineDash([]);
       ctx.fillStyle = VIZ.css("--text-muted"); ctx.font = "600 10.5px Inter,sans-serif"; ctx.textAlign = "left";
       var pct = runs ? Math.round((hits / runs) * 100) + "%" : "—";
-      ctx.fillText("fooled in " + pct + " of " + runs + " runs (theory " + Math.round(theory * 100) + "%)", x0, by + bh + 15);
+      wrap("fooled in " + pct + " of " + runs + " runs (theory " + Math.round(theory * 100) + "%)", width - 4)
+        .forEach(function (ln, q) { ctx.fillText(ln, x0, by + bh + 15 + 13 * q); });
     }
 
     function draw() {
@@ -420,9 +446,9 @@
       var thU = 1 - Math.pow(1 - ALPHA, m);
       var thB = 1 - Math.pow(1 - bonf, m);
       ctx.clearRect(0, 0, W, H);
-      var half = (W - 36) / 2;
-      drawHalf(6, half, "No correction: every pair at α = .05", ALPHA, hitU, thU, "#ef4444");
-      drawHalf(30 + half, half, "Bonferroni: each pair needs p < " + bonf.toFixed(4), bonf, hitB, thB, "#22c55e");
+      var L = layout(), half = L.half;
+      drawHalf(6, half, "No correction: every pair at α = .05", ALPHA, hitU, thU, "#ef4444", L);
+      drawHalf(30 + half, half, "Bonferroni: each pair needs p < " + bonf.toFixed(4), bonf, hitB, thB, "#22c55e", L);
 
       document.getElementById("k-val").textContent = k;
       document.getElementById("m-val").textContent = m;
@@ -722,6 +748,12 @@
       ctx.fillStyle = VIZ.css("--text-muted"); ctx.font = "700 11px Inter,sans-serif"; ctx.textAlign = "left";
       ctx.fillText("Group means", 4, 13);
       ctx.strokeStyle = VIZ.css("--border"); ctx.lineWidth = 1;
+      // the group names take two staggered rows when a column is too narrow
+      // for them side by side (on a phone "None LowMediumHigh" ran together)
+      ctx.font = "600 10px Inter,sans-serif";
+      var widest = 0;
+      for (i = 0; i < K; i++) widest = Math.max(widest, ctx.measureText(labels[i]).width);
+      var stagger = widest > colW - 4;
       for (i = 0; i < K; i++) {
         var cx = padL + (i + 0.5) * colW, my = vy(b.means[i]);
         var a = A[i], col = a > 0 ? IND : (a < 0 ? ORA : VIZ.css("--text-faint"));
@@ -730,7 +762,7 @@
         ctx.fillStyle = VIZ.css("--text-faint"); ctx.textAlign = "center"; ctx.font = "10px ui-monospace,monospace";
         ctx.fillText(f2(b.means[i]), cx, my - 6);
         ctx.font = "600 10px Inter,sans-serif";
-        ctx.fillText(labels[i], cx, H - 14);
+        ctx.fillText(labels[i], cx, H - 14 - (stagger && i % 2 ? 11 : 0));
         if (mode === "one") {
           ctx.fillStyle = col; ctx.font = "700 10.5px ui-monospace,monospace";
           ctx.fillText(coefTxt(a), cx, H - 3);

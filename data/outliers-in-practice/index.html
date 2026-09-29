@@ -292,23 +292,38 @@
       V.fit(canvas, 150);
       var W = canvas.clientWidth, H = canvas.clientHeight;
       ctx.clearRect(0,0,W,H);
-      var pad = 34;
       var all = A.concat(B);
       var lo = Math.min.apply(null, all), hi = Math.max.apply(null, all);
       var span = hi - lo || 1; lo -= span*0.06; hi += span*0.06;
-      var x = function(v){ return pad + (v-lo)/(hi-lo) * (W - pad - 12); };
+      // round ticks (1, 2 or 5 times a power of ten) rather than quarters of
+      // the range, which printed -910 and 25410 and put a negative reaction
+      // time on the axis
+      var raw = (hi - lo) / 4, mag = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / mag;
+      var step = (f < 1.5 ? 1 : f < 3.5 ? 2 : f < 7.5 ? 5 : 10) * mag;
+      var ticks = [];
+      for (var tv = Math.ceil(lo / step) * step; tv <= hi + 1e-9; tv += step) ticks.push(tv);
+      var fmt = function(v){ return (Math.round(v) || 0).toLocaleString("en-US"); };   // || 0: no "-0"
+      // gutters sized to what they hold: the group labels on the left, half
+      // the widest tick label on the right, so neither is cut off
+      ctx.font = "11px system-ui, sans-serif";
+      var pad = Math.max(34, Math.ceil(ctx.measureText("Control").width) + 16);
+      var padR = Math.max(12, Math.ceil(ctx.measureText(fmt(ticks[ticks.length - 1])).width / 2) + 6);
+      var x = function(v){ return pad + (v-lo)/(hi-lo) * (W - pad - padR); };
+      // on a phone, 5,000 apart is too close for five-digit labels: take every
+      // other tick until neighbors clear each other
+      while (ticks.length > 2 && x(ticks[1]) - x(ticks[0]) < ctx.measureText(fmt(ticks[ticks.length - 1])).width + 14)
+        ticks = ticks.filter(function(_, i){ return i % 2 === 0; });
       var muted = V.css("--text-faint") || "#9aa";
       var border = V.css("--border") || "#ccc";
       // axis
       ctx.strokeStyle = border; ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(pad, H-22); ctx.lineTo(W-12, H-22); ctx.stroke();
-      ctx.fillStyle = muted; ctx.font = "11px system-ui, sans-serif"; ctx.textAlign = "center";
-      for (var g=0; g<=4; g++){
-        var vv = lo + (hi-lo)*g/4;
+      ctx.beginPath(); ctx.moveTo(pad, H-22); ctx.lineTo(W-padR, H-22); ctx.stroke();
+      ctx.fillStyle = muted; ctx.textAlign = "center";
+      ticks.forEach(function(vv){
         var px = x(vv);
-        ctx.fillText(Math.round(vv), px, H-8);
+        ctx.fillText(fmt(vv), px, H-8);
         ctx.strokeStyle = border; ctx.beginPath(); ctx.moveTo(px, H-25); ctx.lineTo(px, H-22); ctx.stroke();
-      }
+      });
       ctx.textAlign = "left"; ctx.fillText("reaction time (ms)", pad, 14);
       function row(vals, y, color, label){
         ctx.fillStyle = V.css("--text-muted") || "#667"; ctx.textAlign = "right"; ctx.font = "11px system-ui, sans-serif";

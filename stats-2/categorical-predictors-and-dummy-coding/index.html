@@ -167,7 +167,7 @@
   (function () {
     "use strict";
     var names = ["Control", "Drug A", "Drug B"], ref = 0;
-    var canvas = document.getElementById("dc-canvas"), ctx, W = 0, H = 220, padL = 36, padB = 26, padT = 12;
+    var canvas = document.getElementById("dc-canvas"), ctx, W = 0, H = 236, padL = 36, padB = 26, padT = 30;
     function m(i) { return +document.getElementById("m" + i).value; }
     function fit() { var o = VIZ.fit(canvas, H); ctx = o.ctx; W = o.w; }
     function vy(v) { return (H - padB) - (v / 100) * (H - padB - padT); }
@@ -182,7 +182,11 @@
       var ry = vy(refMean);
       ctx.strokeStyle = "#f97316"; ctx.setLineDash([5, 4]); ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(padL, ry); ctx.lineTo(W, ry); ctx.stroke(); ctx.setLineDash([]);
-      ctx.fillStyle = "#f97316"; ctx.textAlign = "left"; ctx.font = "10px Inter,sans-serif"; ctx.fillText("reference (" + names[ref] + ")", padL + 4, ry - 4);
+      // the line's key sits in a row above the plot: written on the line, it
+      // collided with the reference bar's own value label on a phone
+      ctx.strokeStyle = "#f97316"; ctx.setLineDash([5, 4]); ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(padL + 4, 10); ctx.lineTo(padL + 22, 10); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = "#f97316"; ctx.textAlign = "left"; ctx.font = "10px Inter,sans-serif"; ctx.fillText("reference (" + names[ref] + ")", padL + 28, 14);
       // bars
       for (var i = 0; i < 3; i++) {
         var cx = padL + (i + 0.5) * colW, bw = colW * 0.5;

@@ -319,7 +319,7 @@
       explored[comboId(path)] = true;
       var p = analyze(data, path);
       var sig = p < 0.05;
-      pEl.textContent = "p = " + fmtP(p);
+      pEl.textContent = p < 0.001 ? "p < .001" : "p = " + fmtP(p);   // not "p = < .001"
       pEl.classList.toggle("sig", sig);
 
       if (preregEl.checked) {
@@ -342,10 +342,7 @@
       countsEl.textContent = "Paths you've explored: " + nExplored + " / 16   ·   Paths that “work” on this dataset: " + sigCount + " / 16";
     }
 
-    function fmtP(p) {
-      if (p < 0.001) return "&lt; .001";
-      return p.toFixed(3).replace(/^0/, "");
-    }
+    function fmtP(p) { return p.toFixed(3).replace(/^0/, ""); }   // p ≥ .001 only: render() writes the other case
 
     preregEl.addEventListener("change", function () {
       var locked = preregEl.checked;
