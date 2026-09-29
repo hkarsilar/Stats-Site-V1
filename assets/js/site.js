@@ -2278,6 +2278,92 @@
       if (name) field.setAttribute("aria-label", name);
     });
   }
+  /* ---------- symbols keep their case inside capitalized labels ----------
+     Readout labels (.stat .k), reference-table headers and the problem-set
+     labels are set in capitals by CSS, and text-transform cannot tell a symbol
+     from a word: it turned α into Α, which reads as "A" ("THRESHOLD A"), σ into
+     Σ, a summation sign ("SE = Σ/√N"), x̄ into X̄, and n into N, which in APA
+     terms is a different sample. So every symbol run inside those labels is
+     wrapped in <span class="sym"> (text-transform: none), once for the page and
+     again for anything a lesson script writes later; no label needs hand markup
+     and no new one can bring the bug back. A symbol is a Greek letter, a Latin
+     letter standing alone (x, n, p̂, b₁, the t in t-test) or one of SYM_WORDS;
+     the article "a" counts only when it touches an operator, as in (a×b).
+     Symbols joined by operators, digits and capitals are wrapped as one run, so
+     σ² = E(X²) − μ² stays a single formula. Ordinary words still capitalize. */
+  var SYM_SEL = ".stat .k, .ref-table th, .pb-lbl, .pb-given .lbl, .ptable th";
+  var SYM_WORDS = { df: 1, ms: 1, np: 1 };
+  var SYM_MOD = /[\u0300-\u036F\u2070-\u209F\u00B2\u00B3\u00B9\u2032\u2033*]/;
+  var SYM_GREEK = /[\u03B1-\u03C9\u03D1\u03D5\u03D6\u03F0\u03F1\u03F5]/;
+  // Latin letters, accented ones included (ȳ is often one precomposed character);
+  // U+00D7 × and U+00F7 ÷ sit inside that block and are operators, not letters
+  var SYM_LATIN = /[A-Za-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u024F]/;
+  var SYM_LETTER = /[A-Za-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u024F\u0370-\u03FF]/;
+  var SYM_GLUE = /^[\s\d.,:;=<>\u2264\u2265\u00B1\u2212\-+\u00D7\u00B7\/\u221A()\[\]|%A-Z\u0391-\u03A9\u0300-\u036F\u2070-\u209F\u00B2\u00B3\u00B9\u2032\u2033*]*$/;
+  function symRuns(s) {
+    var toks = [], i, j, w, prev, next, end;
+    for (i = 0; i < s.length; i++) {                 // Greek letters: always symbols
+      if (SYM_GREEK.test(s.charAt(i))) {
+        for (end = i + 1; end < s.length && SYM_MOD.test(s.charAt(end)); end++) {}
+        toks.push([i, end]);
+      }
+    }
+    for (i = 0; i < s.length; i = j) {               // Latin: only a letter standing alone
+      if (!SYM_LATIN.test(s.charAt(i))) { j = i + 1; continue; }
+      for (j = i + 1; j < s.length && SYM_LATIN.test(s.charAt(j)); j++) {}
+      w = s.slice(i, j); prev = s.charAt(i - 1); next = s.charAt(j);
+      if (w !== w.toLowerCase() || SYM_LETTER.test(prev) || SYM_LETTER.test(next) || prev === "'" || prev === "\u2019") continue;
+      if (!(SYM_WORDS[w] || (w.length === 1 && (w !== "a" || /[\u00D7\u00B7*=()]/.test(prev + next))))) continue;
+      for (end = j; end < s.length && SYM_MOD.test(s.charAt(end)); end++) {}
+      toks.push([i, end]);
+    }
+    toks.sort(function (a, b) { return a[0] - b[0]; });
+    var runs = [];
+    toks.forEach(function (t) {
+      var last = runs[runs.length - 1];
+      if (last && SYM_GLUE.test(s.slice(last[1], t[0]))) last[1] = Math.max(last[1], t[1]);
+      else runs.push([t[0], t[1]]);
+    });
+    return runs;
+  }
+  function symWrapText(node) {
+    var s = node.nodeValue, runs = symRuns(s), at = 0;
+    if (!runs.length) return;
+    var frag = document.createDocumentFragment();
+    runs.forEach(function (r) {
+      if (r[0] > at) frag.appendChild(document.createTextNode(s.slice(at, r[0])));
+      var sp = document.createElement("span");
+      sp.className = "sym"; sp.textContent = s.slice(r[0], r[1]);
+      frag.appendChild(sp); at = r[1];
+    });
+    if (at < s.length) frag.appendChild(document.createTextNode(s.slice(at)));
+    node.parentNode.replaceChild(frag, node);
+  }
+  function protectSymbols(root) {
+    var hosts = [];
+    if (root.matches && root.matches(SYM_SEL)) hosts.push(root);
+    if (root.querySelectorAll) Array.prototype.push.apply(hosts, root.querySelectorAll(SYM_SEL));
+    hosts.forEach(function (el) {
+      if (el.style.textTransform === "none") return;          // hand-set already
+      var walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null), list = [], t;
+      while ((t = walk.nextNode())) if (!t.parentNode.closest(".sym")) list.push(t);
+      list.forEach(symWrapText);
+    });
+  }
+  function watchSymbols() {
+    if (!window.MutationObserver) return;
+    new MutationObserver(function (muts) {
+      for (var i = 0; i < muts.length; i++) {
+        for (var k = 0; k < muts[i].addedNodes.length; k++) {
+          var nd = muts[i].addedNodes[k];
+          if (nd.nodeType === 3) nd = nd.parentNode;          // a label rewritten via textContent
+          if (!nd || nd.nodeType !== 1 || nd.closest(".sym")) continue;
+          protectSymbols(nd.closest(SYM_SEL) || nd);
+        }
+      }
+    }).observe(document.body, { childList: true, subtree: true });
+  }
+
   function injectHead() {
     var head = document.head;
     function link(attrs) {
@@ -2367,6 +2453,8 @@
   function init() {
     injectHead();
     injectA11y();
+    protectSymbols(document.body);   // embed and present modes too: "THRESHOLD A" on a projector is worse
+    watchSymbols();
     // embed mode: skip all the chrome, keep the widget, add one footer line.
     // The viz still runs (its inline script is independent of site.js).
     if (EMBED) {

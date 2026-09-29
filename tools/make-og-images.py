@@ -33,6 +33,9 @@ Reproducible: rerunning regenerates byte-stable PNGs on the same machine
 (no timestamps embedded). Fonts are resolved from a portable candidate
 list (Arial on macos/Windows, DejaVu on Linux); the visual result is a
 neutral bold grotesque that matches the site's self-hosted Inter closely.
+DejaVu runs wider than Arial, so every text block is measured and shrunk
+to fit its space (fit_text) rather than drawn at a fixed size; look at the
+main og.png after any wording change all the same.
 """
 
 import argparse
@@ -204,6 +207,43 @@ def wrap(draw, text, font, max_w):
     return lines
 
 
+def fit_text(draw, text, bold, size, min_size, max_w, max_h, leading):
+    """Largest font size <= `size` at which `text`, wrapped to `max_w`, stands
+    no taller than `max_h`. Returns (font, lines, line_step).
+
+    The layout used to wrap at a fixed size, which only fits with Arial. On
+    Linux find_font() falls back to DejaVu Sans, whose bold runs about 12%
+    wider, so the main headline wrapped to four lines and its last line ran
+    into the subtitle (the og.png every shared homepage link showed until
+    Sep 2026). Measuring the block is what keeps it clear of the text below it
+    whichever font this machine has; at the design size nothing moves."""
+    s = size
+    while True:
+        font = find_font(s, bold=bold)
+        lines = wrap(draw, text, font, max_w)
+        step = int(round(s * leading))
+        ascent, descent = font.getmetrics()
+        block = (len(lines) - 1) * step + ascent + descent
+        widest = max(draw.textlength(ln, font=font) for ln in lines)
+        if (block <= max_h and widest <= max_w) or s <= min_size:
+            return font, lines, step
+        s -= SS
+
+
+def draw_main_text(draw, margin, text_max, headline, subtitle, fill, sub_fill):
+    """The brand card's wrapped headline and its subtitle underneath, with the
+    headline sized to finish at least 24px above the subtitle."""
+    top, sub_y = 190 * SS, 545 * SS
+    hf, lines, step = fit_text(draw, headline, True, 80 * SS, 48 * SS,
+                               text_max, sub_y - top - 24 * SS, 1.2)
+    y = top
+    for ln in lines:
+        draw.text((margin, y), ln, font=hf, fill=fill)
+        y += step
+    draw.text((margin, sub_y), subtitle,
+              font=find_font(34 * SS, bold=False), fill=sub_fill)
+
+
 def draw_capybara(draw, cx, cy, height):
     """Port of site.js capy() (viewBox 0 0 64 60) to canvas coords, centered on
     (cx, cy) at the given pixel height. Cream palette; dark eyes/nostrils."""
@@ -293,27 +333,25 @@ def make_card(out_path, accent_hex, eyebrow, title, subtitle, footer,
 
     if big_headline is not None:
         # main og.png — one wrapped headline + a bottom subtitle
-        hf = find_font(80 * SS, bold=True)
-        lines = wrap(draw, big_headline, hf, text_max)
-        y = 190 * SS
-        for ln in lines:
-            draw.text((margin, y), ln, font=hf, fill=white)
-            y += int(96 * SS)
-        draw.text((margin, 545 * SS), subtitle,
-                  font=find_font(34 * SS, bold=False), fill=faint)
+        draw_main_text(draw, margin, text_max, big_headline, subtitle, white, faint)
     else:
-        # course card — eyebrow (track) + big title + wrapped subtitle
+        # course card — eyebrow (track) + big title + wrapped subtitle, each
+        # fitted so a longer course name or subtitle shrinks instead of
+        # running under the capybara or into the footer
         if eyebrow:
             draw_tracked(draw, (margin + 2 * SS, 232 * SS), eyebrow.upper(),
                          find_font(25 * SS, bold=True), (255, 255, 255, 180),
                          4 * SS)
-        tf = find_font(100 * SS, bold=True)
+        one_line = sum(find_font(100 * SS, bold=True).getmetrics())
+        tf, _, _ = fit_text(draw, title, True, 100 * SS, 56 * SS,
+                            text_max, one_line, 1.2)
         draw.text((margin, 262 * SS), title, font=tf, fill=white)
-        sf = find_font(46 * SS, bold=False)
+        sf, sub_lines, step = fit_text(draw, subtitle, False, 46 * SS, 30 * SS,
+                                       text_max, 552 * SS - 400 * SS - 16 * SS, 1.26)
         y = 400 * SS
-        for ln in wrap(draw, subtitle, sf, text_max):
+        for ln in sub_lines:
             draw.text((margin, y), ln, font=sf, fill=faint)
-            y += int(58 * SS)
+            y += step
         draw.text((margin, 552 * SS), footer,
                   font=find_font(28 * SS, bold=False), fill=(255, 255, 255, 170))
 
@@ -363,13 +401,8 @@ def _remake_main(courses):
     margin = 72 * SS
     draw.text((margin, 60 * SS), "StatsCapybara",
               font=find_font(44 * SS, bold=True), fill=white)
-    hf = find_font(80 * SS, bold=True)
-    y = 190 * SS
-    for ln in wrap(draw, MAIN_HEADLINE, hf, int(0.60 * w)):
-        draw.text((margin, y), ln, font=hf, fill=white)
-        y += int(96 * SS)
-    draw.text((margin, 545 * SS), MAIN_SUBTITLE,
-              font=find_font(34 * SS, bold=False), fill=(255, 255, 255, 200))
+    draw_main_text(draw, margin, int(0.60 * w), MAIN_HEADLINE, MAIN_SUBTITLE,
+                   white, (255, 255, 255, 200))
     img = img.convert("RGB").resize((W, H), Image.LANCZOS)
     img.save(os.path.join(ASSETS, "og.png"), "PNG", optimize=True)
 

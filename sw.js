@@ -37,13 +37,13 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v59";  /* curriculum.js and site.js both changed
-                                    and both are precached: P102 flipped
-                                    §3.15 to ready and added its QUIPS line,
-                                    which is the last of the three causal
-                                    sections P100 reserved. A visitor holding
-                                    the old pair would see §3.15 as "coming
-                                    soon" and never reach a page that exists. */
+const CACHE_VERSION = "sc-v60";  /* site.js and styles.css both changed and
+                                    both are precached: protectSymbols() and
+                                    the .sym rule keep α, σ, x̄ and n in their
+                                    own case inside capitalized labels. A
+                                    visitor holding only one of the pair would
+                                    get spans with no rule, or a rule with no
+                                    spans, and still read "THRESHOLD A". */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location

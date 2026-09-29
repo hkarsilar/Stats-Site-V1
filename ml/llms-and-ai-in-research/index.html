@@ -266,11 +266,15 @@
     document.getElementById("llm-new").addEventListener("click", newRun);
     renderOut(); renderBars("The", null);
 
-    /* --- spot-the-fake-citation --- */
+    /* --- spot-the-fake-citation ---
+       The two real entries are real papers, checked by DOI: 10.1016/j.neuron.2004.08.031
+       and 10.1038/nn1078. The third is invented on purpose. Until Sep 2026 the two "real"
+       slots held invented references as well (one borrowed another paper's article number),
+       so check any replacement at its DOI before calling it real. */
     var REFS = [
-      { html: 'Alvarez, M., &amp; Whitcombe, R. (2019). Sleep duration and working-memory consolidation in young adults. <em>Journal of Sleep Research, 28</em>(4), e12811.', fake: false, note: 'Checks out: the volume, year and article ID are internally consistent and the record resolves.' },
-      { html: 'Osei, D., Lindqvist, K., &amp; Romano, P. (2021). Caffeine, vigilance, and the speed–accuracy trade-off: a preregistered replication. <em>Psychological Science, 32</em>(9), 1442–1455.', fake: false, note: 'Checks out: page range and issue are plausible and the record resolves.' },
-      { html: 'Nakamura, T., &amp; Boone, E. (2020). A meta-analytic review of daytime napping and episodic memory. <em>Nature Reviews Neuroscience, 21</em>, 233–247.', fake: true, note: 'Invented. The DOI leads nowhere and no such article appears in the journal’s 2020 index. Notice it was the most prestigious-looking of the three, as fabrications often are. The only reliable test is to look it up.' }
+      { html: 'Walker, M. P., &amp; Stickgold, R. (2004). Sleep-dependent learning and memory consolidation. <em>Neuron, 44</em>(1), 121–133.', fake: false, note: 'Checks out: its DOI, 10.1016/j.neuron.2004.08.031, opens this exact article, with the same authors, title, volume and pages.' },
+      { html: 'Mednick, S., Nakayama, K., &amp; Stickgold, R. (2003). Sleep-dependent learning: A nap is as good as a night. <em>Nature Neuroscience, 6</em>(7), 697–698.', fake: false, note: 'Checks out: its DOI, 10.1038/nn1078, opens this exact article, and the journal, volume, issue and pages all match.' },
+      { html: 'Nakamura, T., &amp; Boone, E. (2020). A meta-analytic review of daytime napping and episodic memory. <em>Nature Reviews Neuroscience, 21</em>, 233–247.', fake: true, note: 'Invented. No article with this title or these authors exists, although real meta-analyses of napping and memory do. It borrows a real journal and a believable page range, so nothing in its wording gives it away. The only reliable test is to look it up.' }
     ];
     var refsEl = document.getElementById("llm-refs"), refResult = document.getElementById("llm-ref-result"), answered = false;
     REFS.forEach(function (r, i) {
@@ -289,7 +293,7 @@
       });
       refResult.innerHTML = REFS[pick].fake
         ? '<strong style="color:#16a34a">You caught it.</strong> But be honest: could you have known for sure without checking? The tell-tale signs only appear when you try to <em>find</em> the paper, which is why the habit worth keeping is to verify every reference at the source.'
-        : '<strong style="color:#ef4444">Not this one.</strong> The fabricated reference was the third, and it read as the most authoritative. You genuinely cannot tell a real citation from an invented one by reading it. You have to look it up, every time.';
+        : '<strong style="color:#ef4444">Not this one: it is real.</strong> The fabricated reference was the third, and nothing in its wording set it apart from the other two. You genuinely cannot tell a real citation from an invented one by reading it. You have to look it up, every time.';
     });
   })();
   </script>
