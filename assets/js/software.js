@@ -114,7 +114,7 @@ window.SOFTWARE = {
     jasp: [
       "<b>Regression &rsaquo; Linear Regression</b>, then <b>Plots &rsaquo; Residuals vs. Predicted</b> to see the curvature.",
       "Create the transformed variable in the data tab with a computed column (<code>ln(x)</code>, or <code>x^2</code> after centering), then add it as a covariate.",
-      "Enter the linear and squared terms in the <b>same</b> block, since the pair is what defines the curve.",
+      "Enter the linear and squared terms in the <b>same</b> block, because the curve is defined by the two terms together.",
       "Re-check the residual plot after refitting; the arch should be gone."
     ],
     apa: '<p>The relationship between practice hours and performance was clearly curved, with a pronounced arch in the residuals from a linear fit. A model using the natural log of practice hours removed the pattern and fitted well, <em>b</em> = 8.04, <em>SE</em> = 1.21, <em>t</em>(58) = 6.64, <em>p</em> &lt; .001, <em>R</em>&sup2; = .43. On this scale each doubling of practice time was associated with a gain of about 5.6 points.</p>',
@@ -122,7 +122,7 @@ window.SOFTWARE = {
       "Report the effect in units a reader can picture. For a logged predictor that means \"per doubling of x\" (<em>b</em>&#8321; &times; ln 2); for a logged outcome it means the multiplicative factor <em>e</em><sup><em>b</em>&#8321;</sup>, not the raw coefficient.",
       "The 100<em>b</em>&#8321; percentage shortcut for a logged outcome is fine while <em>b</em>&#8321; is under about 0.1. At <em>b</em>&#8321; = 0.5 it says 50% when the truth is 64.9%, so exponentiate instead.",
       "Never compare <em>R</em>&sup2; between a model of <em>y</em> and a model of log <em>y</em>. They explain variation in different quantities, and the logged one usually wins for reasons that have nothing to do with prediction.",
-      "Say in the write-up that you transformed, and why, before giving the coefficient. A slope on an undeclared log scale is the fastest way to have a result misread by a factor of several."
+      "Say in the write-up that you transformed, and why, before giving the coefficient. A slope on an undeclared log scale can easily be misread by a factor of several."
     ]
   },
   "inference-for-regression": {
@@ -139,9 +139,9 @@ window.SOFTWARE = {
       "The Coefficients table gives <em>b</em>, SE, <em>t</em>, <em>p</em> and the 95% interval; the ANOVA table gives <em>F</em> on 1 and <em>n</em> &minus; 2 df.",
       "Under <b>Plots &rsaquo; Residuals</b>, add the residuals-versus-predicted plot before trusting any of it."
     ],
-    apa: '<p>Screen time did not significantly predict sleep quality, <em>b</em> = &minus;0.23, <em>SE</em> = 0.15, <em>t</em>(58) = &minus;1.60, <em>p</em> = .115, 95% CI [&minus;0.53, 0.06], <em>R</em>&sup2; = .04. The interval is wide enough to include both a half-point drop in sleep quality per screen hour and a small increase, so these data leave the question open rather than settling it.</p>',
+    apa: '<p>Screen time did not significantly predict sleep quality, <em>b</em> = &minus;0.23, <em>SE</em> = 0.15, <em>t</em>(58) = &minus;1.60, <em>p</em> = .115, 95% CI [&minus;0.53, 0.06], <em>R</em>&sup2; = .04. The interval is wide enough to include both a half-point drop in sleep quality per screen hour and a small increase, so these data do not settle the question.</p>',
     tips: [
-      "Report the slope with its confidence interval, not only its <em>p</em>-value. The interval is what tells a reader the size of the effect the data are compatible with.",
+      "Report the slope with its confidence interval, not only its <em>p</em>-value. The interval shows a reader which effect sizes the data are compatible with.",
       "Give <em>b</em> in the units of the variables (\"0.23 points of sleep quality per screen hour\"), and add the standardized &beta; only if readers need to compare predictors.",
       "In simple regression the ANOVA <em>F</em> and the slope <em>t</em> are the same test. Report one of them; reporting both as separate findings is double counting.",
       "SPSS's \"Std. Error of the Estimate\" is <em>s</em>, the residual standard error, and not the standard error of the slope. They are different numbers in different tables."
@@ -357,9 +357,9 @@ window.SOFTWARE = {
     ],
     apa: '<p>Assumptions were checked before analysis. Q-Q plots of the residuals showed no marked departure from normality, and Levene’s test indicated unequal variances, <em>F</em>(1, 58) = 8.42, <em>p</em> = .005, so Welch’s correction was applied throughout.</p>',
     tips: [
-      'Report the assumption check only when it changed what you did, or when a reader would otherwise wonder. A paragraph reciting four non-significant tests is noise.',
-      'For ANOVA and regression it is the <strong>residuals</strong> that carry the normality assumption, not the raw outcome and never the predictors.',
-      'Levene’s and Shapiro-Wilk both scale with <em>n</em>: near-certain to flag a harmless wobble in a large sample, near-powerless in a small one. The plot is the better evidence, and it is what belongs in a supplement.'
+      'Report the assumption check only when it changed what you did, or when a reader would otherwise wonder. A paragraph listing four non-significant tests adds nothing.',
+      'For ANOVA and regression the normality assumption applies to the <strong>residuals</strong>, not to the raw outcome, and never to the predictors.',
+      'The power of Levene’s and Shapiro-Wilk tests grows with <em>n</em>. In a large sample they almost always flag a harmless departure, and in a small one they often miss a serious one. The plot is the better evidence, so put the plot in a supplement.'
     ]
   },
   "non-parametric-alternatives": {
@@ -470,7 +470,7 @@ window.SOFTWARE = {
     apa: '<p>Inspection of residual plots showed no evidence of nonlinearity or heteroscedasticity; standardized residuals were approximately normal (all |<em>z</em>| &lt; 3), and no case was unduly influential (all Cook’s <em>D</em> &lt; 0.25). Diagnostics are reported narratively like this in the Results, before the model estimates.</p>',
     tips: [
       'One or two sentences confirming the checks (and what you did about violations) is standard; plots themselves usually go to supplementary materials.',
-      'SPSS’s Linear Regression dialog has no heteroscedasticity-consistent (robust) standard-error option, which catches out people who read the usual advice and go looking for the checkbox. The practical SPSS routes are the <em>Bootstrap…</em> button in the same dialog or an add-on macro; in R and Python the correction is one argument (<code>sandwich</code>/<code>car</code> in R, <code>cov_type="HC3"</code> in statsmodels).',
+      'SPSS’s Linear Regression dialog has no heteroscedasticity-consistent (robust) standard-error option, so don’t go looking for a checkbox. The practical SPSS routes are the <em>Bootstrap…</em> button in the same dialog or an add-on macro; in R and Python the correction is one argument (<code>sandwich</code>/<code>car</code> in R, <code>cov_type="HC3"</code> in statsmodels).',
       'The Durbin-Watson statistic in the <em>Statistics…</em> box only tests independence against <em>order</em>. It says nothing about clustering (several rows per participant, per class, per clinic), which needs a model that knows about the grouping.'
     ]
   },
@@ -494,13 +494,13 @@ window.SOFTWARE = {
       'Report the overall model (<em>R</em>², <em>F</em>) first, then the coefficients. A full coefficient table is usually clearer than prose for 3+ predictors.',
       'Say explicitly that coefficients are adjusted effects ("controlling for the other predictors").',
       'SPSS prints the standardized β in the <em>Coefficients</em> table without being asked, under <em>Standardized Coefficients</em>. Anywhere that doesn’t, z-score every variable and refit: the raw slopes come back as the βs.',
-      'The degrees of freedom are printed once, in the <em>ANOVA</em> table’s <em>Residual</em> row, and every <em>t</em> in the Coefficients box below runs on that same <em>n</em> &minus; <em>p</em> &minus; 1. A write-up quoting <em>t</em>(<em>n</em> &minus; 1) has forgotten to charge for the predictors.'
+      'The degrees of freedom are printed once, in the <em>ANOVA</em> table’s <em>Residual</em> row, and every <em>t</em> in the Coefficients box below uses that same <em>n</em> &minus; <em>p</em> &minus; 1. A write-up that quotes <em>t</em>(<em>n</em> &minus; 1) has forgotten to subtract the predictors.'
     ]
   },
   "multicollinearity-and-variable-selection": {
     spss: [
       'In <strong>Analyze → Regression → Linear… → Statistics…</strong>, tick <em>Collinearity diagnostics</em>.',
-      'The <em>Coefficients</em> table gains <em>Tolerance</em> and <em>VIF</em> columns — worry above VIF ≈ 5, alarm above 10.',
+      'The <em>Coefficients</em> table gains <em>Tolerance</em> and <em>VIF</em> columns. Be concerned above VIF ≈ 5 and alarmed above 10.',
       'Inspect the predictor correlation matrix first: <strong>Analyze → Correlate → Bivariate</strong>.',
       'Fixes: drop or combine redundant predictors, or center them (for interaction-induced collinearity).'
     ],
@@ -512,7 +512,7 @@ window.SOFTWARE = {
     apa: '<p>Collinearity was acceptable across predictors (all VIFs ≤ 2.3, all tolerances ≥ .43), so all three predictors were retained in the final model.</p>',
     tips: [
       'A single sentence reporting the largest VIF (or "all VIFs below X") is the convention; VIF is an abbreviation, not a statistic symbol, so it isn’t italicized.',
-      'Tolerance and VIF carry the same information (tolerance = 1 / VIF), so report one, not both. VIF is the usual choice in write-ups; tolerance reads more naturally as a share, since .08 says only 8% of that predictor is its own.',
+      'Tolerance and VIF carry the same information (tolerance = 1 / VIF), so report one, not both. VIF is the usual choice in write-ups. Tolerance is easier to read as a share: .08 means only 8% of that predictor’s variance is not explained by the others.',
       'To see where a VIF comes from, run the side regression yourself: make the suspect predictor the <em>Dependent</em>, put every other predictor in <em>Independent(s)</em>, and leave the real outcome out altogether. The Model Summary’s <em>R</em>&sup2; is the R&sup2;<sub>j</sub> inside 1/(1 &minus; R&sup2;<sub>j</sub>).'
     ]
   },
@@ -530,7 +530,7 @@ window.SOFTWARE = {
     ],
     apa: '<p>Teaching format predicted scores. Compared with the reference category (lecture), workshops raised scores by 4.6 points, <em>b</em> = 4.60, <em>SE</em> = 1.70, <em>p</em> = .008, while online delivery did not differ, <em>b</em> = 1.10, <em>SE</em> = 1.80, <em>p</em> = .54.</p>',
     tips: [
-      'Always name the reference category — dummy coefficients are meaningless without it.'
+      'Always name the reference category. Without it, a reader cannot tell what each dummy coefficient is compared with.'
     ]
   },
   "ancova": {
@@ -548,9 +548,9 @@ window.SOFTWARE = {
     ],
     apa: '<p>After adjusting for pretest scores, the training effect remained significant, <em>F</em>(1, 57) = 6.84, <em>p</em> = .011, η<sub>p</sub>² = .11. Adjusted means were 74.2 (<em>SE</em> = 1.1) for training and 70.3 (<em>SE</em> = 1.1) for control. The homogeneity-of-slopes assumption held, <em>F</em>(1, 56) = 0.42, <em>p</em> = .52.</p>',
     tips: [
-      'Report <em>adjusted</em> means (with SEs), not raw means: they’re what ANCOVA compares.',
+      'Report <em>adjusted</em> means (with SEs), not raw means, because ANCOVA compares the adjusted means.',
       'Reporting the slopes-homogeneity check briefly reassures reviewers you tested the key assumption.',
-      'The effect size both programs hand you is labeled <em>Partial Eta Squared</em>. Because the covariate’s variance has already left the denominator, it is not the same quantity as an unadjusted η² and the two should never share a column in a table.'
+      'Both programs label the effect size <em>Partial Eta Squared</em>. Because the covariate’s variance has already been removed from the denominator, it is not the same quantity as an unadjusted η², and the two should never share a column in a table.'
     ]
   },
   "interactions-in-regression": {
@@ -567,7 +567,7 @@ window.SOFTWARE = {
     ],
     apa: '<p>The preparation × anxiety interaction was significant, <em>b</em> = −0.21, <em>SE</em> = 0.08, <em>t</em>(114) = 2.63, <em>p</em> = .010, Δ<em>R</em>² = .04. Simple-slopes analysis showed preparation predicted scores at low anxiety (−1 <em>SD</em>), <em>b</em> = 0.61, <em>p</em> &lt; .001, but not at high anxiety (+1 <em>SD</em>), <em>b</em> = 0.12, <em>p</em> = .31.</p>',
     tips: [
-      'Report the interaction term, the R² it adds, and then the simple slopes. The interaction coefficient alone doesn’t tell the story.'
+      'Report the interaction term, the R² it adds, and then the simple slopes. The interaction coefficient alone does not show how the effect changes.'
     ]
   },
   "mediation-and-indirect-effects": {
@@ -592,7 +592,7 @@ window.SOFTWARE = {
     spss: [
       '<strong>Analyze → Regression → Binary Logistic…</strong>',
       'Outcome into <em>Dependent</em>; predictors into <em>Covariates</em>; declare categorical ones via the <em>Categorical…</em> button.',
-      '<em>Options…</em>: tick <em>CI for exp(B)</em> — exp(B) is the odds ratio.',
+      '<em>Options…</em>: tick <em>CI for exp(B)</em>. Exp(B) is the odds ratio.',
       'Read: <em>Omnibus Tests</em> (model χ²), <em>Model Summary</em> (Nagelkerke R²), <em>Variables in the Equation</em> (B, Wald, Exp(B)).',
       'The <em>Classification Table</em> SPSS prints by default uses a fixed cut value of .500; change it under <em>Options… → Classification cutoff</em> if a different operating point suits your problem.'
     ],
@@ -605,9 +605,9 @@ window.SOFTWARE = {
     apa: '<p>Each additional study hour increased the odds of passing, <em>b</em> = 0.85, <em>SE</em> = 0.21, Wald χ²(1) = 16.40, <em>p</em> &lt; .001, <em>OR</em> = 2.34, 95% CI [1.55, 3.53]. The full model outperformed the null, χ²(2) = 28.7, <em>p</em> &lt; .001, Nagelkerke <em>R</em>² = .29.</p>',
     tips: [
       'Readers think in odds ratios, not logits, so always report <em>OR</em> with its CI (an OR is significant when its CI excludes 1, not 0).',
-      'An Exp(B) in the thousands with a CI running from near-0 to near-infinity means <strong>separation</strong>, not a spectacular predictor: some variable splits the outcome perfectly and the estimate has run off to infinity. Look for a category with an empty cell, merge sparse levels, or fit a penalized (Firth) model.',
+      'An Exp(B) in the thousands with a CI running from near-0 to near-infinity means <strong>separation</strong>, not a very strong predictor: some variable splits the outcome perfectly, and the estimate has grown without limit. Look for a category with an empty cell, merge sparse levels, or fit a penalized (Firth) model.',
       'The Wald test each row prints is the least trustworthy part of the output when a coefficient is large. For a predictor worth arguing about, refit without it and compare models by likelihood ratio (SPSS: enter it in its own block; JASP: the model-comparison table).',
-      'The <em>Overall Percentage</em> in that classification table is plain accuracy at a .500 cutoff, so on a rare outcome it flatters the model badly. Report the four cells and the metrics that match your costs instead; §5.4 works through why.'
+      'The <em>Overall Percentage</em> in that classification table is plain accuracy at a .500 cutoff, so on a rare outcome it makes the model look much better than it is. Report the four cells and the metrics that match your costs; §5.4 explains why.'
     ]
   },
   "model-comparison": {
