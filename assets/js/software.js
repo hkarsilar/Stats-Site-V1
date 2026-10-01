@@ -242,10 +242,10 @@ window.SOFTWARE = {
       'Outcome into <em>Dependent List</em>, group into <em>Factor</em>.',
       '<em>Options…</em>: tick <em>Descriptive</em>, <em>Homogeneity of variance test</em> (Levene), and <em>Welch</em> (robust F for unequal variances). Recent SPSS also offers effect-size estimates here.',
       '<em>Post Hoc…</em>: tick <em>Tukey</em> for pairwise follow-ups.',
-      '<em>Contrasts…</em> is the other follow-up button in the same dialog, and it is the one to reach for when the study had a specific question rather than every pair. Type one coefficient per group, in the order SPSS lists the factor levels, pressing <em>Next</em> to add each one; the reading of its output is in the post-hoc walkthrough.',
+      '<em>Contrasts…</em> is the other follow-up button in the same dialog, and it is the one to use when the study had a specific question rather than every pair. Type one coefficient per group, in the order SPSS lists the factor levels, pressing <em>Next</em> to add each one. The post-hoc walkthrough explains its output.',
       'Alternative with η² built in: <strong>Analyze → General Linear Model → Univariate</strong>, then <em>Options → Estimates of effect size</em>.',
-      'Reading the ANOVA table it prints, row by row: <em>Between Groups</em> is the group effect, so its <em>Sum of Squares</em> is SS<sub>G</sub> and its <em>df</em> is the number of groups minus one. <em>Within Groups</em> is the error term, giving SS<sub>E</sub> on N minus the number of groups, and its <em>Mean Square</em> is the MSE every follow-up test reuses. <em>Total</em> carries SS<sub>T</sub> on N minus one and prints no mean square, because nothing uses it. The <em>F</em> column is the two mean squares divided, and <em>Sig.</em> is the p-value.',
-      'η² is not in that table, but it is one division away from it: SS<sub>G</sub> divided by SS<sub>T</sub>, both read off the rows above. That is worth knowing, since the One-Way ANOVA dialog in older versions offers no effect size at all.',
+      'Reading the ANOVA table it prints, row by row: <em>Between Groups</em> is the group effect, so its <em>Sum of Squares</em> is SS<sub>G</sub> and its <em>df</em> is the number of groups minus one. <em>Within Groups</em> is the error term, giving SS<sub>E</sub> on N minus the number of groups, and its <em>Mean Square</em> is the MSE every follow-up test reuses. <em>Total</em> gives SS<sub>T</sub> on N minus one and prints no mean square, because nothing uses it. The <em>F</em> column is the two mean squares divided, and <em>Sig.</em> is the p-value.',
+      'η² is not in that table, but you can get it with one division: SS<sub>G</sub> divided by SS<sub>T</sub>, both read off the rows above. This matters because the One-Way ANOVA dialog in older versions offers no effect size at all.',
       'The <em>Descriptives</em> box is the one to keep if you plan to check the arithmetic by hand. Its per-group <em>N</em>, <em>Mean</em> and <em>Std. Deviation</em> are everything SS<sub>G</sub> and SS<sub>E</sub> need, the second of them through SS<sub>E</sub> = Σ (n − 1)s². SPSS reports the sample standard deviation, on n − 1, which is the form that identity wants.'
     ],
     jasp: [
@@ -267,13 +267,13 @@ window.SOFTWARE = {
   "post-hoc-tests": {
     spss: [
       'In <strong>One-Way ANOVA → Post Hoc…</strong> (or <strong>GLM Univariate → Post Hoc…</strong>).',
-      'Tick <em>Tukey</em> for all-pairwise comparisons with honest error rates; <em>Bonferroni</em> if you have only a few planned comparisons.',
+      'Tick <em>Tukey</em> for all pairwise comparisons with a controlled error rate, or <em>Bonferroni</em> if you have only a few planned comparisons.',
       'If variances are unequal, use the <em>Games-Howell</em> option in the "Equal Variances Not Assumed" panel instead.',
-      'If every treatment is being compared against one control rather than against each other, tick <em>Dunnett</em> and set the control category; it corrects for only the comparisons you made, so it is more powerful than Tukey here.',
+      'If every treatment is compared against one control and not against each other, tick <em>Dunnett</em> and set the control category. It corrects only for the comparisons you made, so it is more powerful than Tukey here.',
       'The output’s <em>Multiple Comparisons</em> table gives each pair’s mean difference, adjusted p, and CI.',
-      'Read that <em>Sig.</em> column the right way round. Under Bonferroni, SPSS has already multiplied each p-value by the number of comparisons, so it is compared against .05 like any other p-value. Dividing .05 by the number of comparisons first and testing against that would apply the same correction twice, and the two conventions are covered in the lesson above.',
-      'For a planned comparison, use <strong>One-Way ANOVA → Contrasts…</strong> instead of the Post Hoc button. Type a coefficient for every group in the order the factor levels are listed, press <em>Next</em> for a second contrast, and SPSS prints two tables: <em>Contrast Coefficients</em>, which is your own row echoed back so you can check it landed on the groups you meant, and <em>Contrast Tests</em>, carrying the estimate, its standard error, t and Sig.',
-      'The <em>Contrast Tests</em> table has two rows per contrast. <em>Assume equal variances</em> is the pooled version taught here, with df = N minus the number of groups; <em>Does not assume equal variances</em> is the Welch analogue, with fractional df. Take the first when Levene is happy and the second when it is not, and say which you took.'
+      'Read that <em>Sig.</em> column the right way round. Under Bonferroni, SPSS has already multiplied each p-value by the number of comparisons, so it is compared against .05 like any other p-value. Dividing .05 by the number of comparisons first and testing against that would apply the same correction twice. The lesson above covers the two conventions.',
+      'For a planned comparison, use <strong>One-Way ANOVA → Contrasts…</strong> instead of the Post Hoc button. Type a coefficient for every group in the order the factor levels are listed, and press <em>Next</em> for a second contrast. SPSS prints two tables. <em>Contrast Coefficients</em> repeats your coefficients so you can check they went to the groups you meant. <em>Contrast Tests</em> gives the estimate, its standard error, t and Sig.',
+      'The <em>Contrast Tests</em> table has two rows per contrast. <em>Assume equal variances</em> is the pooled version taught here, with df = N minus the number of groups; <em>Does not assume equal variances</em> is the Welch analogue, with fractional df. Use the first when Levene\'s test is not significant and the second when it is, and say which you used.'
     ],
     jasp: [
       'In <strong>ANOVA → Post Hoc Tests</strong>, move your factor to the right panel.',
@@ -284,9 +284,9 @@ window.SOFTWARE = {
     apa: '<p>The omnibus ANOVA was significant, <em>F</em>(3, 116) = 7.21, <em>p</em> &lt; .001, η² = .16. The planned contrast setting the two active treatments against the two control conditions favored treatment, ψ&#770; = 5.60, <em>SE</em> = 1.42, <em>t</em>(116) = 3.94, <em>p</em> &lt; .001, 95% CI [2.79, 8.41]. Tukey’s HSD comparisons showed the drug group improved more than placebo, <em>M</em><sub>diff</sub> = 5.2, 95% CI [1.4, 9.0], <em>p</em> = .003, and than waitlist, <em>M</em><sub>diff</sub> = 6.0, 95% CI [2.1, 9.9], <em>p</em> &lt; .001; the two control groups did not differ, <em>p</em> = .84.</p>',
     tips: [
       'Always name the correction method ("Tukey-corrected", "Bonferroni-adjusted"): a bare p-value from multiple comparisons is meaningless.',
-      'Write <em>p</em> &lt; .001 only when p is genuinely below .001; otherwise give the exact value to 2–3 decimals (<em>p</em> = .003).',
+      'Write <em>p</em> &lt; .001 only when p is below .001; otherwise give the exact value to 2–3 decimals (<em>p</em> = .003).',
       'Both post-hoc dialogs are built around family-wise methods (Tukey, Bonferroni, Holm, Šidák, Games-Howell). For a false-discovery-rate correction across a list of p-values, apply Benjamini–Hochberg yourself, one line in R or Python, in the snippet below.',
-      'Report a contrast with its estimate and interval, not only its t. The estimate is in the outcome\'s own units when the coefficients are written as fractions, and a reader who is told the difference was 5.6 points learns something a t of 3.94 does not tell them.',
+      'Report a contrast with its estimate and interval, not only its t. When the coefficients are written as fractions, the estimate is in the outcome\'s own units, and a difference of 5.6 points tells a reader something a t of 3.94 does not.',
       'Say which Bonferroni convention you used. Writing "p &lt; .017" means the raw p-value was tested against a divided alpha; writing an adjusted p against .05 means the p-value itself was multiplied. Both are correct, and a reader cannot tell them apart without the number of comparisons.'
     ]
   },
@@ -295,8 +295,8 @@ window.SOFTWARE = {
       '<strong>Analyze → General Linear Model → Univariate…</strong>',
       'Outcome into <em>Dependent Variable</em>; both factors into <em>Fixed Factor(s)</em>. The A × B interaction is included automatically.',
       '<em>Options…</em>: tick <em>Estimates of effect size</em> (partial η²), <em>Descriptive statistics</em> and <em>Homogeneity tests</em>.',
-      '<em>Plots…</em>: put one factor on the horizontal axis and the other as separate lines, then press <em>Add</em> before <em>Continue</em>, which is the step people forget. Non-parallel lines are the interaction.',
-      'Read <em>Tests of Between-Subjects Effects</em> from the bottom up. The <em>Error</em> row gives MS<sub>E</sub> and its df (N − IJ); the <em>Corrected Total</em> row gives SS<sub>T</sub> on N − 1. Above them sit one row per factor and one for the interaction, each with SS, df, MS, F, Sig. and partial η². Ignore the <em>Intercept</em> and <em>Corrected Model</em> rows: the first tests whether the grand mean is zero, the second is the omnibus test of all three effects together.',
+      '<em>Plots…</em>: put one factor on the horizontal axis and the other as separate lines, then press <em>Add</em> before <em>Continue</em> (people often forget this step). Non-parallel lines are the interaction.',
+      'Read <em>Tests of Between-Subjects Effects</em> from the bottom up. The <em>Error</em> row gives MS<sub>E</sub> and its df (N − IJ); the <em>Corrected Total</em> row gives SS<sub>T</sub> on N − 1. Above them are one row per factor and one for the interaction, each with SS, df, MS, F, Sig. and partial η². Ignore the <em>Intercept</em> and <em>Corrected Model</em> rows: the first tests whether the grand mean is zero, the second is the omnibus test of all three effects together.',
       'The <em>Sig.</em> column is a p-value even where it prints .000, which means p &lt; .001 and is never reported as zero.',
       '<em>EM Means…</em>: move both factors and the <em>(factorname*factorname)</em> interaction term into <em>Display Means for</em>. The one-factor boxes print the marginal means; the interaction box prints the cell means.',
       'For simple main effects, tick <em>Compare main effects</em>, choose <em>Bonferroni</em> and press <em>Paste</em> rather than OK. In the syntax window, edit the <code>/EMMEANS</code> line for the interaction to read <code>/EMMEANS = TABLES(a*b) COMPARE(a) ADJ(BONFERRONI)</code> and run it: that tests A at each level of B. Swap the two names inside <code>COMPARE()</code> for the other direction.',
@@ -307,7 +307,7 @@ window.SOFTWARE = {
       'The <em>Model</em> section shows main effects and the interaction (included by default).',
       'Tick <em>Estimates of effect size</em>; use <em>Descriptives plots</em> with one factor on the x-axis and one as separate lines.',
       'JASP prints the same table without the intercept row, so the rows you see are the two factors, the interaction and Residuals, where Residuals is what SPSS calls Error.',
-      'Open <em>Marginal Means</em> for the margins, and <em>Simple Main Effects</em> for the follow-ups: put the factor you want tested in <em>Simple effect factor</em> and the factor whose levels you want to split by in <em>Moderator factor 1</em>.'
+      'Open <em>Marginal Means</em> for the margins, and <em>Simple Main Effects</em> for the follow-ups. Put the factor you want tested in <em>Simple effect factor</em>, and the factor whose levels you want to split by in <em>Moderator factor 1</em>.'
     ],
     apa: '<p>There was a significant caffeine × time-of-day interaction, <em>F</em>(1, 76) = 6.87, <em>p</em> = .011, η<sub>p</sub>² = .08: caffeine improved performance in the morning, <em>F</em>(1, 76) = 16.09, <em>p</em> &lt; .001, but not in the evening, <em>F</em>(1, 76) = 0.09, <em>p</em> = .76. There was also a main effect of caffeine, <em>F</em>(1, 76) = 9.31, <em>p</em> = .003, η<sub>p</sub>² = .11, qualified by the interaction above.</p>',
     tips: [
@@ -321,9 +321,9 @@ window.SOFTWARE = {
     spss: [
       '<strong>Analyze → General Linear Model → Repeated Measures…</strong>',
       'Name the within-subject factor (e.g. <em>time</em>), enter its number of levels, click <em>Add</em> then <em>Define</em>, and map each level to its column. The data have to be in wide format: one row per person, one column per condition.',
-      'For a <strong>mixed design</strong>, put the grouping variable into <em>Between-Subjects Factor(s)</em> in the same dialog. Nothing else changes, and the output grows a second table.',
+      'For a <strong>mixed design</strong>, put the grouping variable into <em>Between-Subjects Factor(s)</em> in the same dialog. Nothing else changes, and the output adds a second table.',
       'Check <em>Mauchly’s Test of Sphericity</em> in the output; if <em>p</em> &lt; .05, read the <em>Greenhouse-Geisser</em> row of the within-subjects table.',
-      'Read <em>Tests of Within-Subjects Effects</em> in pairs of rows. The factor’s block prints four versions of the same test (<em>Sphericity Assumed</em>, <em>Greenhouse-Geisser</em>, <em>Huynh-Feldt</em>, <em>Lower-bound</em>): the SS and the <em>F</em> are identical in all four and only the df and <em>p</em> move. Directly beneath sits <em>Error(factor)</em>, which is the (n − 1)(k − 1) error the <em>F</em> divided by.',
+      'Read <em>Tests of Within-Subjects Effects</em> in pairs of rows. The factor’s block prints four versions of the same test (<em>Sphericity Assumed</em>, <em>Greenhouse-Geisser</em>, <em>Huynh-Feldt</em>, <em>Lower-bound</em>): the SS and the <em>F</em> are identical in all four and only the df and <em>p</em> move. Directly beneath is <em>Error(factor)</em>, the (n − 1)(k − 1) error term the <em>F</em> was divided by.',
       'The subjects row is in the other table, <em>Tests of Between-Subjects Effects</em>, as <em>Error</em> on n − 1 df. In a mixed design that table is also where the grouping factor is tested; the within-subjects table holds the repeated factor and the group × factor interaction.',
       '<em>Options…</em>: tick <em>Estimates of effect size</em>; <em>EM Means…</em> with <em>Compare main effects</em> (Bonferroni) for pairwise follow-ups.'
     ],
@@ -366,8 +366,8 @@ window.SOFTWARE = {
     spss: [
       '<strong>Analyze → Nonparametric Tests → Independent Samples…</strong> (Mann-Whitney, Kruskal-Wallis) or <strong>Related Samples…</strong> (Wilcoxon, Friedman); SPSS picks the right test from your design.',
       'The classic dialogs live under <strong>Legacy Dialogs</strong> if you prefer them (e.g. <em>2 Independent Samples → Mann-Whitney U</em>), and they are the route that prints the statistic itself rather than a verdict card.',
-      'The Legacy <em>Test Statistics</em> table has four rows worth knowing. <em>Mann-Whitney U</em> is the smaller of the two U values, the one your table wants. <em>Wilcoxon W</em> on this output is not the signed-rank statistic at all: it is the rank SUM of the smaller sample, so on the lesson\'s data it reads 23 while the paired test\'s W is 1. <em>Z</em> is the normal approximation, and <em>Asymp. Sig. (2-tailed)</em> is that approximation\'s p.',
-      'Below those, <em>Exact Sig. [2*(1-tailed Sig.)]</em> appears when the samples are small. That is the counted p, the same number a critical-value table is built from, and it is the one to report when SPSS offers it. The two can differ by a fair margin: on the lesson\'s six-versus-six data the asymptotic p is .013 and the exact p is .009.',
+      'The Legacy <em>Test Statistics</em> table has four rows. <em>Mann-Whitney U</em> is the smaller of the two U values, the one your table wants. <em>Wilcoxon W</em> on this output is not the signed-rank statistic. It is the rank SUM of the smaller sample, so on the lesson\'s data it reads 23, while the paired test\'s W is 1. <em>Z</em> is the normal approximation, and <em>Asymp. Sig. (2-tailed)</em> is that approximation\'s p.',
+      'Below those, <em>Exact Sig. [2*(1-tailed Sig.)]</em> appears when the samples are small. That is the counted p, the same number a critical-value table is built from, and it is the one to report when SPSS offers it. The two can differ noticeably: on the lesson\'s six-versus-six data the asymptotic p is .013 and the exact p is .009.',
       'For the paired test, <em>2 Related Samples → Wilcoxon</em> prints a <em>Ranks</em> table whose <em>Sum of Ranks</em> column gives T₊ and T₋ directly. The smaller of the two is W, which SPSS never labels as such.',
       'Spearman lives elsewhere: <strong>Analyze → Correlate → Bivariate…</strong> and tick <em>Spearman</em>. SPSS prints the coefficient and its p, never Σ<em>d</em>².',
       'Double-click the output for the <em>Model Viewer</em>, which includes the standardized test statistic (z).',
@@ -382,9 +382,9 @@ window.SOFTWARE = {
     ],
     apa: '<p>Pain ratings were lower in the treatment group (<em>Mdn</em> = 3, <em>n</em> = 30) than in the control group (<em>Mdn</em> = 5, <em>n</em> = 30), Mann–Whitney <em>U</em> = 306, <em>z</em> = −2.13, <em>p</em> = .033, rank-biserial <em>r</em> = .32. For three or more groups: <em>H</em>(2) = 7.61, <em>p</em> = .022 (Kruskal–Wallis).</p>',
     tips: [
-      'Report medians (<em>Mdn</em>) rather than means — that’s what these tests respect.',
-      'When your course examines this by hand, the software still checks your work: the U it prints is the smaller one you looked up, and its exact p should agree with the verdict your critical-value table gave. A U on the wrong side of the cell and a significant p on the same output means you read the larger U.',
-      'An effect size still applies, but the two in circulation are not the same number. JASP’s rank-biserial correlation is the win rate minus the loss rate across every cross-group pairing; <em>r</em> = <em>z</em>/√<em>N</em> is the SPSS-era fallback and will usually be smaller on the same data. The sentence above is a case in point: .32 as a rank-biserial correlation, .27 as <em>z</em>/√<em>N</em>. Say which one you computed.'
+      'Report medians (<em>Mdn</em>) rather than means. Like the ranks these tests use, the median is not pulled around by extreme values.',
+      'If your course examines this by hand, you can still use the software to check your work. The U it prints is the smaller one you looked up, and its exact p should agree with the decision from your critical-value table. If your U is on the wrong side of the cell while the output\'s p is significant, you read the larger U.',
+      'Report an effect size too, and say which one. JASP’s rank-biserial correlation is the win rate minus the loss rate across every cross-group pairing. The other, <em>r</em> = <em>z</em>/√<em>N</em>, is the fallback when the output gives only <em>z</em>, as SPSS does, and it is usually smaller on the same data. In the sentence above, the rank-biserial correlation is .32, and <em>z</em>/√<em>N</em> would give .27.'
     ]
   },
   "chi-square-tests": {
