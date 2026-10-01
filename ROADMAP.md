@@ -65,7 +65,7 @@ This file is the master plan. The copy-paste prompts that execute it live in **[
 | **17 — Teaching alongside Stats 1** | P79–P87 | textbook-dialect conventions labeled (quartiles, conservative df, σ-known z procedures) · printed Tables A/D/F + lookup drill · the probability lecture built out (rules, conditional, Bayes, random variables) · tails/practical significance/power in Stats 1 terms · t, χ² and regression by hand · section-range mock exams + exam-style problems · `?data=` presets, 7-week block map, present mode |
 | **18 — Teaching alongside Stats 2** | P88–P96 | the ANOVA table as the interface (one-way, contrasts, two-way, repeated measures, each built cell by cell with `?g=` presets) · non-parametric tests by hand + U/W/ρₛ critical tables · omitted-variable bias with its sign rule, n − p − 1, general-to-specific labeled · Stats 2 exam-style set + the problem-numbering repair · the ANOVA-and-regression project guide · Stats 2 block map |
 | **19 — Teaching alongside Stats 3** | P97–P105 | the factor-analysis measurement model, rotation, scores and the fit test (a computer-room exam block) · Bayes as the hypothesis table an assignment asks for, conjugates named · **three new lessons**, §3.13 Instrumental Variables & 2SLS, §3.14 Regression Discontinuity, §3.15 Difference-in-Differences (with the one-time Stats 3 renumber) · Stats 3 section tags, exam-style problems and formula rows · a guide to reading a causal-inference paper · the third block map |
-| **20 — De-AI round three** | P106–P133 | the Opus 5 voice: a catalog of its documented habits measured on this site, a report-only `prose-lint --manner` mode, then 26 sentence-level editing passes in chunks of 10–18k words (every lesson with its FAQs, checks and software entry; guides; tool pages; `problems.html` in four parts; the glossary; the quiz bank) and a finisher that looks for new tics and runs a cold read |
+| **20 — De-AI round three** | P106–P121 | the Opus 5 voice: a catalog of its documented habits measured on this site, a report-only `prose-lint --manner` mode, then 14 sentence-level editing passes in chunks of 18–33k words (every lesson with its FAQs, checks and software entry; guides and posters; site and tool pages; `problems.html` in two parts; the glossary with the quiz bank) and a finisher that looks for new tics and runs a cold read |
 
 **Recommended order** (content and tools interleaved so the site visibly improves every week):
 
@@ -83,7 +83,7 @@ Hard dependencies: **P2 before any new course** (P4+). **P32 after at least two 
 
 **Teaching-alongside order (Phase 19, added 18 Sep 2026):** P97 → P98 → P99 → **P100** → P101 → P102 → P103 → P104 → P105, one at a time. **P100 carries the one-time Stats 3 renumber and P101/P102 depend on it** — it reserves §3.13–§3.15 in `curriculum.js` with the last two `ready: false`, so neither later prompt renumbers again. Block 3 runs February to April, so the whole phase has runway. Reasoning, costs and the slide notes in the Phase 19 addendum.
 
-**De-AI round three order (Phase 20, added 1 Oct 2026):** P106 first (the catalog, the exemplars and `prose-lint --manner`), then P107, which defines the editing pass and shows whether it works. Then P108–P132 in any order, one at a time (they share `faq_data.py`, `checks.js`, `software.js` and the search index), and P133 last. Details in the Phase 20 addendum.
+**De-AI round three order (Phase 20, added 1 Oct 2026):** P106 first (the catalog, the exemplars and `prose-lint --manner`), then P107, which defines the editing pass and shows whether it works. Then P108–P120 in any order, one at a time (they share `faq_data.py`, `checks.js`, `software.js` and the search index), and P121 last. Details in the Phase 20 addendum.
 
 ---
 
@@ -432,14 +432,14 @@ What a bad rewrite looks like, using the fourth row:
 ### Rules for the phase
 
 - **The iron rule and the Phase 16 guardrail carry over unchanged:** prose only, and no claim or hint that a person wrote the site.
-- **Chunks of roughly 10,000–18,000 words** so each session can read every sentence it edits. Earlier rounds ran up to 59 lessons in one session; that was fine for counting em-dashes, but this round works at sentence level.
+- **Chunks of roughly 18,000–33,000 words**, 14 editing sessions in all. This round works at sentence level, so a session has to read every sentence it edits; the largest chunk (Methods and Data) is the plainest text on the site. A session that runs short of context commits what it finished and lists the rest under its tick, and P121 picks up anything left.
 - **Sessions read only VOICE.md, this addendum and Phase 20 of PROMPTS.md**, to save tokens.
-- **CLAUDE.md, ROADMAP.md and PROMPTS.md are written in the voice this round removes** and every session loads CLAUDE.md, so every prompt says not to copy their style. Rewriting the planning docs is out of scope: visitors never see them (P78 took them off the domain).
+- **CLAUDE.md was rewritten in plain style on 1 Oct 2026** (38,600 words to about 6,600), because every session loads it and copies its voice; that also cut the fixed cost of a session from roughly 50,000 tokens to roughly 9,000, which is what makes the larger chunks practical. ROADMAP.md and PROMPTS.md are still largely in the old voice, so every prompt says not to copy their style. Visitors never see the planning docs (P78 took them off the domain).
 - **Word count goes down.** Expect 10–25% fewer words on the dense Phase 17–19 pages and little change on pages that are already plain.
 
 ### Running order
 
-P106 first (the standard and the `--manner` report). P107 second: it defines the pass, and its report shows whether the method works before 25 more sessions repeat it. Then P108–P132 in any order, one at a time, because they share `faq_data.py`, `checks.js`, `software.js` and the search index. P133 last. That is 28 sessions.
+P106 first (the standard and the `--manner` report). P107 second: it defines the pass, and its report shows whether the method works before the other sessions repeat it. Then P108–P120 in any order, one at a time, because they share `faq_data.py`, `checks.js`, `software.js` and the search index. P121 last. That is 16 sessions.
 
 Sources: [paddo.dev, "A Dial Worth Turning"](https://paddo.dev/blog/a-dial-worth-turning/) · [Hacker News, "Why does Opus 5 feel worse to work with?"](https://news.ycombinator.com/item?id=49296740) and [its top comment](https://news.ycombinator.com/item?id=49296860) · [Hacker News, Opus 5 vs Fable 5 writing](https://news.ycombinator.com/item?id=49040857) · [explainx, "Claude Opus 5 Claudisms"](https://explainx.ai/blog/claude-opus-5-load-bearing-claudisms-writing-tells-2026) · [explainx, mannered prose prompt](https://www.explainx.ai/blog/mannered-prose-prompt-claude-fable-5-1-writing-2026) · [hyperdev, "The Word Problem"](https://hyperdev.matsuoka.com/p/the-word-problem-why-developers-cant) · [Botmonster, "Reddit says Opus 5 is a genius that will not shut up"](https://botmonster.com/ai/claude-opus-5-reddit-reception/) · [disler/fixing-smartass-opus-5](https://github.com/disler/fixing-smartass-opus-5) · [Los Techies, "Using Opus 5 Without Going Insane"](https://lostechies.com/ryansvihla/2026/09/18/using-opus-5-without-going-insane/) · [dev.to, "Opus 5 is a Jargon Douche"](https://dev.to/altryne/its-not-just-you-opus-5-is-a-jargon-douche-but-theres-a-fix-3d8m) · [The Decoder, Anthropic engineer on why Claude's writing got worse](https://the-decoder.com/anthropic-engineer-explains-why-claudes-writing-got-worse-although-the-model-got-smarter/) · [Arize, "Anthropic says it fixed Claude's writing"](https://arize.com/blog/anthropic-says-it-fixed-claudes-writing/) · [BleepingComputer, Opus 5.5 em-dashes](https://www.bleepingcomputer.com/news/artificial-intelligence/claude-opus-55-uses-95-percent-fewer-em-dashes-but-its-answers-are-getting-longer/) · [StashBase, Opus 5.5 writing](https://stashbase.ai/blog/claude-opus-5-5-writing/)
 
@@ -1010,30 +1010,18 @@ Tick these as sessions complete them (each prompt ends by updating this list).
   - **One linter fix: prose-lint's entity map was missing `&sect;`**, along with `&psi;`, `&xi;`, `&prime;`, `&sup1;` and `&frac14;`, and each undecoded entity's trailing ";" was counted as a semicolon: **82 phantom semicolons sitewide, 47 of them on teachers.html** (which reported 63 against 16 real). Same class as P73's `&divide;`. Report-only metric; no gate moves.
   - **Gates.** `audit.js` **0 errors**, 20 warnings (the standing baseline), 61 info (three fewer: the "no SOFTWARE entry" notes for the three new entries). `math-check` not required and not run: no `viz.js` or tool-page math changed. `prose-lint --strict` **green**; teachers.html at **0 em-dashes in 7,257 words** and no pattern hits, software.js at 11 of its 15, reader-visible em-dashes sitewide unchanged at **343**. `advice-terms`, `link-promises`, `destination-promises`, `worked-examples`, `untaught-names`, `prescription-terms`, `symbol-names` and `widget-terms` all exit 0 in `--strict`. Search index rebuilt: teachers.html indexes at **43,121 of its 60,000 guard** (72%, up from 33,872 at P96), nothing cut, and the new sections are findable in it; worth watching, since two sessions of growth would reach it. Under the subpath server all **186 links** in the page's maps and prose resolve and none escapes the base path. No horizontal scroll at 360px in light or dark on teachers.html or on the three lessons whose software blocks are new, and no page errors. **No `CACHE_VERSION` bump**: nothing in `sw.js`'s precached `SHELL` changed (`software.js` and the search index are served stale-while-revalidate, not precached), and HTML is network-first.
 - [ ] P106 · de-AI v3 — the Opus 5 catalog + exemplars in VOICE.md, report-only `prose-lint --manner`, baseline (Powerful · Extra)
-- [ ] P107 · de-AI v3 — Stats 1 §1.1–§1.7 + course page (defines the pass) (Extra Powerful · Max)
-- [ ] P108 · de-AI v3 — Stats 1 §1.8–§1.13 (Extra Powerful · Max)
-- [ ] P109 · de-AI v3 — Stats 1 §1.14–§1.18 (Extra Powerful · Max)
-- [ ] P110 · de-AI v3 — Stats 2 §2.1–§2.3 + course page (Extra Powerful · Max)
-- [ ] P111 · de-AI v3 — Stats 2 §2.4–§2.7 (Extra Powerful · Max)
-- [ ] P112 · de-AI v3 — Stats 2 §2.8–§2.17 (Extra Powerful · Max)
-- [ ] P113 · de-AI v3 — Stats 3 §3.1–§3.5 + course page (Extra Powerful · Max)
-- [ ] P114 · de-AI v3 — Stats 3 §3.6–§3.12 (Extra Powerful · Max)
-- [ ] P115 · de-AI v3 — Stats 3 §3.13–§3.15, the causal trio (Extra Powerful · Max)
-- [ ] P116 · de-AI v3 — Stats 3 §3.16–§3.20 (Extra Powerful · Max)
-- [ ] P117 · de-AI v3 — ML & AI 1–6 + course page (Extra Powerful · Max)
-- [ ] P118 · de-AI v3 — ML & AI 7–12 (Extra Powerful · Max)
-- [ ] P119 · de-AI v3 — Methods + course page (Extra Powerful · Max)
-- [ ] P120 · de-AI v3 — Data + course page (Extra Powerful · Max)
-- [ ] P121 · de-AI v3 — Ethics + course page (Extra Powerful · Max)
-- [ ] P122 · de-AI v3 — Writing + course page (Extra Powerful · Max)
-- [ ] P123 · de-AI v3 — guides I (causal paper, ANOVA-and-regression project, worked project) (Extra Powerful · Max)
-- [ ] P124 · de-AI v3 — guides II, guides hub, three posters (Extra Powerful · Max)
-- [ ] P125 · de-AI v3 — teachers.html, homepage, privacy, license, small pages, site.js strings (Extra Powerful · Max)
-- [ ] P126 · de-AI v3 — tool pages (Extra Powerful · Max)
-- [ ] P127 · de-AI v3 — problems.html I (problems 1–33) (Extra Powerful · Max)
-- [ ] P128 · de-AI v3 — problems.html II (problems 34–62) (Extra Powerful · Max)
-- [ ] P129 · de-AI v3 — problems.html III (problems 63–86) (Extra Powerful · Max)
-- [ ] P130 · de-AI v3 — problems.html IV (problems 87–100) (Extra Powerful · Max)
-- [ ] P131 · de-AI v3 — glossary definitions (Extra Powerful · Max)
-- [ ] P132 · de-AI v3 — quiz bank + snippet comments + leftover inline strings (Extra Powerful · Max)
-- [ ] P133 · de-AI v3 — finisher: re-measure, new-tic check, budgets, cold read (Extra Powerful · Max)
+- [ ] P107 · de-AI v3 — Stats 1 §1.1–§1.10 + course page (defines the pass) (Extra Powerful · Max)
+- [ ] P108 · de-AI v3 — Stats 1 §1.11–§1.18 (Extra Powerful · Max)
+- [ ] P109 · de-AI v3 — Stats 2 §2.1–§2.5 + course page (Extra Powerful · Max)
+- [ ] P110 · de-AI v3 — Stats 2 §2.6–§2.17 (Extra Powerful · Max)
+- [ ] P111 · de-AI v3 — Stats 3 §3.1–§3.10 + course page (Extra Powerful · Max)
+- [ ] P112 · de-AI v3 — Stats 3 §3.11–§3.20 (Extra Powerful · Max)
+- [ ] P113 · de-AI v3 — ML & AI + course page (Extra Powerful · Max)
+- [ ] P114 · de-AI v3 — Methods + Data + course pages (Extra Powerful · Max)
+- [ ] P115 · de-AI v3 — Ethics + Writing + course pages (Extra Powerful · Max)
+- [ ] P116 · de-AI v3 — all guides, the guides hub, three posters (Extra Powerful · Max)
+- [ ] P117 · de-AI v3 — teachers.html, homepage, site pages, site.js strings, tool pages (Extra Powerful · Max)
+- [ ] P118 · de-AI v3 — problems.html I (problems 1–54) (Extra Powerful · Max)
+- [ ] P119 · de-AI v3 — problems.html II (problems 55–100) (Extra Powerful · Max)
+- [ ] P120 · de-AI v3 — glossary definitions, quiz bank, snippet comments, leftover inline strings (Extra Powerful · Max)
+- [ ] P121 · de-AI v3 — finisher: leftovers, re-measure, new-tic check, budgets, cold read (Extra Powerful · Max)
