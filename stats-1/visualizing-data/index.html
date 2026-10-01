@@ -16,25 +16,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Visualizing Data — StatsCapybara</title>
-  <meta name="description" content="A histogram's bin width changes the whole story. Slide the dial to see the same data's shape appear, blur, and shatter." />
+  <meta name="description" content="Too few histogram bins hide the shape and too many add noise. Change the bin count on the same data, then compare a bar chart, boxplot and scatterplot." />
   <link rel="canonical" href="https://statscapybara.com/stats-1/visualizing-data/" />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Visualizing Data — StatsCapybara" />
-  <meta property="og:description" content="A histogram's bin width changes the whole story. Slide the dial to see the same data's shape appear, blur, and shatter." />
+  <meta property="og:description" content="Too few histogram bins hide the shape and too many add noise. Change the bin count on the same data, then compare a bar chart, boxplot and scatterplot." />
   <meta property="og:image" content="https://statscapybara.com/assets/og-stats-1.png" />
   <meta property="og:url" content="https://statscapybara.com/stats-1/visualizing-data/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Visualizing Data — StatsCapybara" />
-  <meta name="twitter:description" content="A histogram's bin width changes the whole story. Slide the dial to see the same data's shape appear, blur, and shatter." />
+  <meta name="twitter:description" content="Too few histogram bins hide the shape and too many add noise. Change the bin count on the same data, then compare a bar chart, boxplot and scatterplot." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-1.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
-  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Visualizing Data", "description": "A histogram's bin width changes the whole story. Slide the dial to see the same data's shape appear, blur, and shatter.", "url": "https://statscapybara.com/stats-1/visualizing-data/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Introduction to Statistics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Visualizing Data", "item": "https://statscapybara.com/stats-1/visualizing-data/"}]}]
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Visualizing Data", "description": "Too few histogram bins hide the shape and too many add noise. Change the bin count on the same data, then compare a bar chart, boxplot and scatterplot.", "url": "https://statscapybara.com/stats-1/visualizing-data/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Introduction to Statistics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Visualizing Data", "item": "https://statscapybara.com/stats-1/visualizing-data/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "I only have 15 data points. Is a histogram still the right picture?", "acceptedAnswer": {"@type": "Answer", "text": "Sturges' rule asks for 5 bins at n = 15, and in 50,000 simulated samples drawn from a perfect bell, 62% of those histograms showed a dip with a taller bar on either side of it: a second peak that exists nowhere in the population. At n = 400 with 10 bins that false pattern appears 11% of the time, so at 15 the histogram is mostly reporting where the bin edges fell. Show every observation instead. A dot plot or strip plot puts one mark per value along the axis, and a boxplot with the raw points drawn over it gives you the summary and the evidence at once. Our descriptives calculator will also just list the numbers, which for 15 values is a perfectly respectable figure."}}, {"@type": "Question", "name": "Why do people say never to use a pie chart?", "acceptedAnswer": {"@type": "Answer", "text": "Because pie charts make readers judge angles and areas, which humans do poorly — classic perception experiments (Cleveland &amp; McGill, 1984) show we compare aligned bar lengths far more accurately. With more than two or three slices, \"which is bigger?\" becomes guesswork that a sorted bar chart answers instantly. The defensible pie is rare: a single part-of-whole message with two or three very different slices. Our chart chooser has a whole \"resist the pie\" verdict explaining the alternatives."}}, {"@type": "Question", "name": "When should I use a boxplot instead of a histogram?", "acceptedAnswer": {"@type": "Answer", "text": "Use a boxplot when comparing several groups side by side (five boxplots fit neatly where five histograms would be a mess), or when you want outliers flagged automatically by the 1.5 × IQR rule. Use a histogram when the shape matters (skew, two peaks), because a boxplot can't show bimodality. Our descriptives calculator draws both from pasted data."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "I only have 15 data points. Is a histogram still the right picture?", "acceptedAnswer": {"@type": "Answer", "text": "Sturges' rule asks for 5 bins at n = 15. In 50,000 simulated samples of 15 drawn from a perfect bell, 62% of those histograms showed a dip with a taller bar on either side of it: a second peak that does not exist in the population. At n = 400 with 10 bins that false pattern appears 11% of the time, so at 15 the histogram mostly shows where the bin edges happened to fall. Show every observation instead. A dot plot or strip plot puts one mark per value along the axis, and a boxplot with the raw points drawn over it gives you the summary and the evidence at once. The descriptives calculator will also list the numbers, and for 15 values a plain list is a perfectly good figure."}}, {"@type": "Question", "name": "Why do people say never to use a pie chart?", "acceptedAnswer": {"@type": "Answer", "text": "Because pie charts make readers judge angles and areas, which humans do poorly — classic perception experiments (Cleveland &amp; McGill, 1984) show we compare aligned bar lengths far more accurately. With more than two or three slices, \"which is bigger?\" becomes guesswork that a sorted bar chart answers instantly. The defensible pie is rare: a single part-of-whole message with two or three very different slices. Our chart chooser has a whole \"resist the pie\" verdict explaining the alternatives."}}, {"@type": "Question", "name": "When should I use a boxplot instead of a histogram?", "acceptedAnswer": {"@type": "Answer", "text": "Use a boxplot when comparing several groups side by side (five boxplots fit neatly where five histograms would be a mess), or when you want outliers flagged automatically by the 1.5 × IQR rule. Use a histogram when the shape matters (skew, two peaks), because a boxplot can't show bimodality. Our descriptives calculator draws both from pasted data."}}]}
   </script>
 </head>
 <body data-course="stats-1" data-section="visualizing-data">
@@ -48,15 +48,15 @@
         <span class="lesson-eyebrow">Section 1.4</span>
         <h1>Visualizing Data</h1>
 
-        <p class="lede">A good picture shows you in a second what a table of numbers hides for an hour. The single most useful chart for one quantitative variable is the <strong>histogram</strong>. It comes with a hidden dial, the <strong>bin width</strong>, that can reveal a distribution's true shape or completely distort it.</p>
+        <p class="lede">A good chart shows you quickly what a table of numbers hides. The most useful chart for one quantitative variable is the <strong>histogram</strong>. It has one setting, the <strong>bin width</strong>, that can reveal a distribution's true shape or completely distort it.</p>
 
         <h2>What a histogram shows</h2>
-        <p>A histogram chops the number line into equal-width <strong>bins</strong> and draws a bar for how many values land in each. Unlike a bar chart (which compares separate categories), a histogram's bars touch, because they cover a continuous range. At a glance it reveals the three things you most want to know about a distribution: its <strong>shape</strong> (symmetric and bell-like, skewed to one side, or with multiple peaks), its <strong>center</strong> (roughly where the values pile up), and its <strong>spread</strong> (tightly clustered or widely scattered, and whether any outliers are stranded out in the tails).</p>
+        <p>A histogram divides the number line into equal-width <strong>bins</strong> and draws a bar showing how many values are in each. Unlike a bar chart (which compares separate categories), a histogram's bars touch, because they cover a continuous range. At a glance it shows three things about a distribution: its <strong>shape</strong> (symmetric and bell-like, skewed to one side, or with multiple peaks), its <strong>center</strong> (roughly where the values pile up), and its <strong>spread</strong> (tightly clustered or widely scattered). It also shows whether any outliers are stranded out in the tails.</p>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="vdviz">
           <p class="viz-title">🎮 The Bin-Width Dial</p>
-          <p class="viz-sub">Same data, different number of bins. Too few bins hides the shape; too many turns it into noise. Find the bin count that tells the truth.</p>
+          <p class="viz-sub">Same data, different number of bins. Too few bins hides the shape; too many turns it into noise. Find the bin count that shows the real shape.</p>
 
           <div class="controls">
             <div class="control" style="flex:1;min-width:240px">
@@ -82,27 +82,27 @@
         <!-- ============ /INTERACTIVE ============ -->
 
         <div class="callout key">
-          <p><strong>The bin-width lesson:</strong> with only 2–3 bins, a two-peaked distribution looks like a single blob, its structure smoothed away. With 50+ bins, even bell-shaped data looks jagged and random. The right number of bins (often somewhere around 10–20 for a few hundred points) shows the real shape without inventing fake detail. Always try a couple of bin widths before you trust a histogram.</p>
+          <p><strong>The bin-width lesson:</strong> with only 2–3 bins, a two-peaked distribution looks like a single blob, its structure smoothed away. With 50+ bins, even bell-shaped data looks jagged and random. The right number of bins (often somewhere around 10–20 for a few hundred points) shows the shape without adding false detail. Always try a couple of bin widths before you trust a histogram.</p>
         </div>
 
         <h2>How wide should a bin be?</h2>
-        <p>"Try a couple of widths" is honest advice, and it's also where most people stop. Statistics has three standard answers, and your plotting software has already picked one of them on your behalf, so it's worth knowing which:</p>
+        <p>Statistics also has three standard rules for choosing the width, and your plotting software already uses one of them:</p>
         <ul>
-          <li><strong>Sturges' rule</strong> counts bins instead of measuring them: <code>k = ⌈log₂ n⌉ + 1</code>. It's the oldest of the three and assumes an idealized bell.</li>
+          <li><strong>Sturges' rule</strong> sets the number of bins rather than their width: <code>k = ⌈log₂ n⌉ + 1</code>. It's the oldest of the three and assumes an idealized bell.</li>
           <li><strong>Scott's rule</strong> sets a width from the standard deviation: <code>h = 3.49 s / ∛n</code>.</li>
           <li><strong>Freedman–Diaconis</strong> swaps that standard deviation for the interquartile range: <code>h = 2 × IQR / ∛n</code>. Because the IQR ignores the tails, one wild value can't stretch every bin in the plot.</li>
         </ul>
-        <p>Run all three on the bell shape above (400 observations, SD near 13, spread across roughly 80 points of the scale) and they return <strong>10, 13 and 17 bins</strong>. The dial's default of 12 sits inside that range, which is why the picture looks sensible before you touch anything. A fourth default you'll meet in spreadsheet software is the square-root rule, √<em>n</em> bins, which is cruder but rarely disastrous.</p>
-        <p>Now switch the shape to two peaks and run the rules again. Scott and Freedman–Diaconis both fall to <strong>9</strong> bins, <em>fewer</em> than they wanted for the bell, because the gap between the humps inflates the SD and the IQR alike. The rules measure spread; they can't see shape. Here the peaks are far enough apart to survive the coarser bins, but that's the data being kind, not the rule protecting you. No formula knows what you are looking for, which is the argument for moving the dial yourself.</p>
+        <p>Run all three on the bell shape above (400 observations, SD near 13, spread across roughly 80 points of the scale) and they give <strong>10, 13 and 17 bins</strong>. The slider starts at 12, inside that range, so the first picture already looks sensible. Spreadsheet software often uses a fourth rule, the square-root rule (√<em>n</em> bins), which is cruder but rarely badly wrong.</p>
+        <p>Now switch the shape to two peaks and run the rules again. Scott and Freedman–Diaconis both drop to <strong>9</strong> bins, <em>fewer</em> than they gave for the bell, because the gap between the humps inflates both the SD and the IQR. The rules use only the spread, not the shape. Here the peaks are far enough apart to stay visible with the coarser bins, but with closer peaks the same rules could hide them. So check the shape yourself by moving the slider.</p>
 
-        <h2>Other workhorses</h2>
+        <h2>Other common charts</h2>
         <ul>
           <li><strong>Bar chart.</strong> For categorical data: one bar per category, with gaps between them (the categories aren't a continuum).</li>
-          <li><strong>Boxplot.</strong> The median, the quartiles, and whiskers reaching as far as the most extreme value still within 1.5 × IQR of the box. Anything beyond gets drawn as its own point, which is what makes a boxplot good at flagging outliers and at lining several groups up side by side. Every boxplot on this page takes its quartiles the way R and Python do, by interpolating between neighboring values; <a href="../../stats-1/describing-data/">§1.3</a> sets that convention beside the textbook one you would use on paper, and the <a href="../../descriptives.html">descriptives calculator</a> will draw the box either way.</li>
-          <li><strong>Scatterplot.</strong> For two quantitative variables at once; the gateway to <a href="../../stats-1/correlation/">correlation</a> and <a href="../../stats-1/simple-linear-regression/">regression</a>.</li>
+          <li><strong>Boxplot.</strong> The median, the quartiles, and whiskers reaching as far as the most extreme value still within 1.5 × IQR of the box. Anything beyond is drawn as its own point, so a boxplot flags outliers, and several boxplots line up well side by side. Every boxplot on this page computes its quartiles the way R and Python do, by interpolating between neighboring values. <a href="../../stats-1/describing-data/">§1.3</a> compares that convention with the textbook one you would use on paper, and the <a href="../../descriptives.html">descriptives calculator</a> will draw the box either way.</li>
+          <li><strong>Scatterplot.</strong> For two quantitative variables at once; the starting point for <a href="../../stats-1/correlation/">correlation</a> and <a href="../../stats-1/simple-linear-regression/">regression</a>.</li>
         </ul>
 
-        <p>Which of the three you can even draw is settled by the variables in front of you. Count one categorical variable and a bar chart is the display. Split one quantitative variable by a categorical one and you get boxplots lined up side by side. Put two quantitative variables together and it is a scatterplot. The survey below carries all three kinds at once: a room of students, the revision method each of them leaned on, the hours they put in, and what they scored.</p>
+        <p>Which of the three you can draw depends on your variables. For one categorical variable, use a bar chart of counts. For one quantitative variable split by a categorical one, use boxplots side by side. For two quantitative variables, use a scatterplot. The survey below supports all three: for each student in a class, it records the revision method they relied on most, the hours they studied, and their score.</p>
 
         <!-- ============ INTERACTIVE 2 ============ -->
         <div class="viz" id="vd2viz">
@@ -130,7 +130,7 @@
           </label>
 
           <canvas id="vd2-canvas" style="--viz-ar: 5 / 2"></canvas>
-          <p class="viz-sub" id="vd2-cap" style="margin:.55rem 0 0">One categorical variable. Bar heights are counts of students, and the gaps say the four methods are separate things rather than points on a scale.</p>
+          <p class="viz-sub" id="vd2-cap" style="margin:.55rem 0 0">One categorical variable. Bar heights are counts of students, and the gaps show that the four methods are separate categories, not points on a scale.</p>
 
           <div class="stat-row">
             <div class="stat"><span class="k" id="vd2-k1">Tallest bar</span><span class="v" id="vd2-v1" style="font-size:1rem">—</span></div>
@@ -141,12 +141,12 @@
         </div>
         <!-- ============ /INTERACTIVE 2 ============ -->
 
-        <p>Every view keeps one thing and drops another. The bar chart counts students and says nothing about how any of them did. The boxplot compares the four groups, but it draws much the same box whether a group's scores gather around one value or split into two camps, which is the argument for switching the raw scores on. The scatterplot keeps every student on screen and hides the group comparison until you color the dots. Then walk the survey down to 16 students. Most of what you were confidently reading a moment ago stops being there.</p>
+        <p>Each view shows one thing and leaves out another. The bar chart counts students and says nothing about how any of them did. The boxplot compares the four groups, but it draws much the same box whether a group's scores gather around one value or split into two clusters, so switch the raw scores on to check. The scatterplot keeps every student on screen but hides the group comparison until you color the dots. Then reduce the survey to 16 students. Most of the patterns you could see a moment ago are no longer clear.</p>
 
-        <p>Torn between them for a real dataset? The <a href="../../which-chart.html">Which Chart Should I Use?</a> chooser walks you to the right display in a few clicks. And when the picture is headed for a paper, <a href="../../writing/tables-and-figures/">Tables &amp; Figures That Don't Lie</a> shows how to keep it honest.</p>
+        <p>For your own dataset, the <a href="../../which-chart.html">Which Chart Should I Use?</a> chooser leads you to the right display in a few clicks. When the chart is going into a paper, <a href="../../writing/tables-and-figures/">Tables &amp; Figures That Don't Lie</a> shows how to avoid a misleading figure.</p>
 
         <div class="callout">
-          <p><strong>Why it matters:</strong> visualizing first is a discipline, not a decoration. The shape you see decides which summaries are honest (mean vs. median) and which tests are valid, so the picture always comes before the formula. Once you have looked, the <a href="../../which-test.html">test chooser</a> turns what you saw into a shortlist.</p>
+          <p><strong>Why it matters:</strong> plot your data before you compute anything. The shape determines which summaries are appropriate (mean or median) and which tests are valid. Once you have looked, the <a href="../../which-test.html">test chooser</a> turns what you saw into a shortlist of tests.</p>
         </div>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
@@ -154,7 +154,7 @@
           <h2>Common questions</h2>
           <details class="faq-item">
             <summary>I only have 15 data points. Is a histogram still the right picture?</summary>
-            <div class="faq-a"><p>Sturges' rule asks for 5 bins at <em>n</em> = 15, and in 50,000 simulated samples drawn from a perfect bell, <strong>62% of those histograms showed a dip with a taller bar on either side of it</strong>: a second peak that exists nowhere in the population. At <em>n</em> = 400 with 10 bins that false pattern appears 11% of the time, so at 15 the histogram is mostly reporting where the bin edges fell. Show every observation instead. A dot plot or strip plot puts one mark per value along the axis, and a boxplot with the raw points drawn over it gives you the summary and the evidence at once. Our <a href="../../descriptives.html">descriptives calculator</a> will also just list the numbers, which for 15 values is a perfectly respectable figure.</p></div>
+            <div class="faq-a"><p>Sturges' rule asks for 5 bins at <em>n</em> = 15. In 50,000 simulated samples of 15 drawn from a perfect bell, <strong>62% of those histograms showed a dip with a taller bar on either side of it</strong>: a second peak that does not exist in the population. At <em>n</em> = 400 with 10 bins that false pattern appears 11% of the time, so at 15 the histogram mostly shows where the bin edges happened to fall. Show every observation instead. A dot plot or strip plot puts one mark per value along the axis, and a boxplot with the raw points drawn over it gives you the summary and the evidence at once. The <a href="../../descriptives.html">descriptives calculator</a> will also list the numbers, and for 15 values a plain list is a perfectly good figure.</p></div>
           </details>
           <details class="faq-item">
             <summary>Why do people say never to use a pie chart?</summary>
@@ -519,12 +519,12 @@
     }
 
     var CAPS = {
-      bar: "One categorical variable. Bar heights are counts of students, and the gaps say the four methods are separate things rather than points on a scale.",
+      bar: "One categorical variable. Bar heights are counts of students, and the gaps show that the four methods are separate categories, not points on a scale.",
       pie: "The same four counts as slices. Rank the methods from this picture, then switch the pie back off and rank them again.",
-      box: "One quantitative variable split by a categorical one. Each box holds the middle half of that group's scores (its bottom edge is the first quartile Q1, its top edge the third quartile Q3, and the distance between them is the IQR), the line inside is the median, and a red dot is a score more than 1.5 IQRs past the box.",
+      box: "One quantitative variable split by a categorical one. Each box holds the middle half of that group's scores: its bottom edge is the first quartile Q1, its top edge the third quartile Q3, and the distance between them is the IQR. The line inside is the median, and a red dot is a score more than 1.5 IQRs past the box.",
       boxdots: "With every score drawn in, you can see what the box smooths away: how few students some groups hold, and whether the scores gather in one lump or two.",
       scatter: "Two quantitative variables. Each dot is one student, placed by revision hours across and exam score up.",
-      scattercol: "Coloring by method puts the categorical variable back in, so you can see whether a group sits high or low inside the same trend."
+      scattercol: "Coloring by method puts the categorical variable back in, so you can see whether a group is above or below the overall trend."
     };
     function label() {
       var t = chart === "bar" ? "draw it as a pie instead"

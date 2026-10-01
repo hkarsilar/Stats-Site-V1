@@ -28,18 +28,18 @@ window.CHECKS = {
     { q: "A bar chart's y-axis starts at 50 instead of 0, making a small difference look huge. The data are…", o: ["wrong", "unchanged, but the picture is misleading", "skewed", "non-significant"], a: 1, why: "Truncated axes exaggerate differences visually without changing a single number — a classic misleading-graph trick." }
   ],
   "z-scores-and-the-normal-distribution": [
-    { q: "A test has mean 100 and SD 15. A score of 130 has a z-score of…", o: ["+1", "+2", "+3", "+30"], a: 1, why: "z = (130 − 100) / 15 = 2, so the score sits two standard deviations above the mean." },
-    { q: "In a normal distribution, roughly what share of values lies within ±2 SD of the mean?", o: ["50%", "68%", "95%", "99.7%"], a: 2, why: "The 68–95–99.7 rule: ±1 SD ≈ 68%, ±2 SD ≈ 95%, ±3 SD ≈ 99.7%." },
+    { q: "A test has mean 100 and SD 15. A score of 130 has a z-score of…", o: ["+1", "+2", "+3", "+30"], a: 1, why: "z = (130 − 100) / 15 = 2, so the score is two standard deviations above the mean." },
+    { q: "In a normal distribution, roughly what share of values is within ±2 SD of the mean?", o: ["50%", "68%", "95%", "99.7%"], a: 2, why: "The 68–95–99.7 rule: ±1 SD ≈ 68%, ±2 SD ≈ 95%, ±3 SD ≈ 99.7%." },
     { q: "Z-scores let you compare a math score to a reading score because they…", o: ["remove measurement error", "put both on a common 'SDs from the mean' scale", "make the data normal", "increase the sample size"], a: 1, why: "Standardizing strips away the original units, so any two measurements can be compared on the same scale." }
   ],
   "probability-basics": [
     { q: "P(A) = .6, P(B) = .5, and the two events can happen together. What is the largest P(A or B) could be?", o: ["1.1", "1.0", "0.9", "0.3"], a: 1, why: "The general addition rule is P(A) + P(B) − P(A and B), and no probability may exceed 1. Adding .6 and .5 alone gives 1.1, which is the giveaway that the overlap was counted twice. The overlap here is at least .1, so P(A or B) tops out at 1.0." },
     { q: "Which quantity does a screening test's 99% sensitivity actually report?", o: ["P(ill | positive)", "P(positive | ill)", "P(ill and positive)", "the share of all results that are correct"], a: 1, why: "Sensitivity conditions on being ill and asks what the test does. The person holding a positive letter is in the opposite position and needs P(ill | positive), which at a low prevalence can be under 10%. Bayes' rule is the arithmetic that converts one into the other, and the two are only equal by accident." },
-    { q: "Cards are dealt without replacement. P(two aces in a row) is…", o: ["(4/52) × (4/52)", "(4/52) × (3/51)", "(4/52) + (3/51)", "4/52"], a: 1, why: "The general multiplication rule, P(A) × P(B | A), because the second probability has to know what the first draw removed. Multiplying (4/52) twice would assume independence, which replacement is exactly what buys you." }
+    { q: "Cards are dealt without replacement. P(two aces in a row) is…", o: ["(4/52) × (4/52)", "(4/52) × (3/51)", "(4/52) + (3/51)", "4/52"], a: 1, why: "The general multiplication rule, P(A) × P(B | A), because the second probability depends on what the first draw removed. Multiplying (4/52) twice would assume independence, and only drawing with replacement gives you that." }
   ],
   "producing-data-and-sampling-design": [
     { q: "A researcher surveys shoppers at one supermarket on a Tuesday morning. The main problem is…", o: ["the sample is too small", "the sample is a convenience sample, so it cannot represent the population", "the questions may be leading", "shoppers cannot be trusted to answer"], a: 1, why: "Whoever happens to be there is not a random draw from the population, and Tuesday-morning shoppers differ from everyone else in ways that touch what you are measuring. Adding shoppers makes the estimate more precise and no less wrong." },
-    { q: "Stratified sampling improves on a simple random sample mainly when…", o: ["the population is very large", "the strata differ from each other on what you are measuring", "you cannot list the population", "you want a bigger sample"], a: 1, why: "Stratifying removes between-stratum variation from the sampling error. If the strata all have the same mean there is nothing to remove, and the design buys you nothing." },
+    { q: "Stratified sampling improves on a simple random sample mainly when…", o: ["the population is very large", "the strata differ from each other on what you are measuring", "you cannot list the population", "you want a bigger sample"], a: 1, why: "Stratifying removes between-stratum variation from the sampling error. If the strata all have the same mean there is nothing to remove, so stratifying gives no gain in precision." },
     { q: "You take a proper random sample of 500 people and 120 reply. What has happened?", o: ["nothing, 120 is still random", "non-response has turned it into something closer to a voluntary sample", "undercoverage", "response bias"], a: 1, why: "Selection was random; participation was not. If the 380 who declined differ from the 120 who replied, the responders are self-selected on exactly the trait that made them reply." }
   ],
   "nonlinear-relationships-and-transformations": [
@@ -64,7 +64,7 @@ window.CHECKS = {
   ],
   "sampling-distributions": [
     { q: "The sampling distribution of the mean is the distribution of…", o: ["the raw scores in one sample", "sample means across many repeated samples", "the population", "the residuals"], a: 1, why: "Imagine re-running the study endlessly and collecting each sample's mean. That pile of means is the sampling distribution." },
-    { q: "The standard error of the mean equals…", o: ["σ / √n", "σ × √n", "σ / n", "the sample SD"], a: 0, why: "SE = σ/√n: the mean's sample-to-sample wobble shrinks as n grows, but only with the square root of n." },
+    { q: "The standard error of the mean equals…", o: ["σ / √n", "σ × √n", "σ / n", "the sample SD"], a: 0, why: "SE = σ/√n: the mean's sample-to-sample variation shrinks as n grows, but only with the square root of n." },
     { q: "To cut the standard error in half, you need to multiply your sample size by…", o: ["2", "4", "8", "√2"], a: 1, why: "Because of the √n, halving the SE takes four times the data — precision is expensive." }
   ],
   "central-limit-theorem": [

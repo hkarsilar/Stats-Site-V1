@@ -11,7 +11,7 @@ window.SNIPPETS = {
     py: 'import numpy as np\nrng = np.random.default_rng()\npop = rng.normal(68, 11, 2000)      # the whole population\nsamp = rng.choice(pop, 25)          # the part you actually measure\nprint(samp.mean(), pop.mean())      # statistic vs parameter'
   },
   "types-of-data": {
-    r: 'df <- data.frame(\n  group = factor(c("ctrl", "drug", "drug")),          # nominal\n  pain  = ordered(c("low", "mid", "high"),\n                  levels = c("low", "mid", "high")),  # ordinal\n  rt_ms = c(512, 430, 388)                             # continuous (ratio)\n)\nstr(df)   # check how R sees each variable',
+    r: 'df <- data.frame(\n  group = factor(c("ctrl", "drug", "drug")),          # nominal\n  pain  = ordered(c("low", "mid", "high"),\n                  levels = c("low", "mid", "high")),  # ordinal\n  rt_ms = c(512, 430, 388)                             # continuous (ratio)\n)\nstr(df)   # check the type R gave each variable',
     py: 'import pandas as pd\ndf = pd.DataFrame({\n    "group": pd.Categorical(["ctrl", "drug", "drug"]),\n    "pain": pd.Categorical(["low", "mid", "high"],\n                           categories=["low", "mid", "high"], ordered=True),\n    "rt_ms": [512, 430, 388],\n})\nprint(df.dtypes)'
   },
   "describing-data": {
