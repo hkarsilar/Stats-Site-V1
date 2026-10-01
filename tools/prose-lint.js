@@ -14,6 +14,10 @@
      node tools/prose-lint.js --bold          # bold-lead bullets, worst pages first
      node tools/prose-lint.js --duplicates    # every cross-page duplicate passage
      node tools/prose-lint.js --strict        # exit 1 if any hard budget is exceeded
+     node tools/prose-lint.js --manner        # round three (P106): the Opus 5 voice, report only
+     node tools/prose-lint.js --manner --page <path>   # every hit on one page + its own surfaces
+     node tools/prose-lint.js --manner --all           # one row per page, for before/after tables
+     node tools/prose-lint.js --manner --sample <id> [n] [seed]   # re-measure one pattern
 
    The PATTERNS table + budget constants below MIRROR VOICE.md's
    HARD RULES — if you change a rule there, change it here in the
@@ -93,6 +97,19 @@
    Enforcement is rule 12 only, for the reason snippet comments are:
    a chart axis label is not paragraph prose. Everything else here is
    reported, not gated.
+
+   ROUND THREE (P106, 1 Oct 2026). Every budget above was green and the
+   site still read machine-written, because most of it was written by
+   one model whose habits the old rules never measured: stock
+   evaluatives (honest, genuinely, earns its keep), "X is what makes Y"
+   reveals, trailing ", which is why…" commentary, values that sit and
+   land, tests that want things, and long sentences. --manner measures
+   them. It reports sentence length (mean words per sentence, share of
+   sentences of 35+ words) and the rate per 1,000 words of each pattern
+   in the MANNER table, which mirrors the catalog in VOICE.md, plus a
+   relocation watch for the synonyms a lazy pass would swap in. It
+   gates nothing. It runs before the rule-12 scan, so it takes about a
+   second; the rest of this script takes several minutes.
    ============================================================ */
 
 'use strict';
@@ -342,6 +359,162 @@ const PATTERNS = [
     label: `British spellings (the site is American English)`,
     res: [new RegExp(BRIT_INVENTORY, 'gi'), new RegExp(BRIT_GENERATIVE, 'gi')],
   },
+];
+
+/* ------------------------------------------------------------------
+   ROUND THREE (P106, 1 Oct 2026) — the MANNER table, for --manner.
+   MIRROR of the catalog in VOICE.md's "Round three (P106): the Opus 5
+   voice". If you change an entry there, change it here in the same
+   commit, and the other way round (VOICE.md says the same).
+   REPORT ONLY: nothing below gates --strict.
+
+   How every entry was chosen, the P73 way: run the candidate over the
+   whole corpus (page prose, FAQ answers, checks.js, software.js,
+   glossary-data.js, snippet comments, inline-script strings), read a
+   seeded random sample of hits in context (`--manner --sample <id>`),
+   and keep it only if at least two thirds of the sample is the habit
+   rather than ordinary statistical English. The count beside each
+   entry is that sample. `cat` is the entry's number in the VOICE.md
+   catalog. Order matters: where two entries match overlapping text,
+   the earlier one takes the hit, so ", which is exactly why" counts
+   once, as trailing commentary.
+
+   Measured and DROPPED (catalog entries that stay judgment-only):
+     • ", not Y." at a sentence end (cat 5): 21 of 40 decorative over
+       two samples. The shape cannot tell a slogan ("a plan, not a
+       promise") from a correction that teaches ("four outcomes, not
+       three"). Counted on the unscored shape-watch line instead.
+     • "rather than" (cat 5): 4 of 20 decorative; the rest carry the
+       contrast the sentence is about. Shape-watch line too.
+     • "a reader" / "the reader" (cat 11): 2 of 20 meant the student;
+       18 meant the reader of the student's paper, which VOICE.md keeps.
+     • "costs" (cat 6): 6 of 14; mostly literal, or a term of art
+       (cost-complexity pruning, a bit of entropy). "spend": mostly
+       literal or alpha spending.
+     • "carries" in general (cat 6): about half mean "has" ("carries a
+       sign"). Only the narrow frame below survived.
+     • "exactly" in general: 12 of 20 emphatic; the rest state a
+       mathematical identity ("span exactly the same space").
+     • Narrating the site (cat 12): no shape found. "verified against",
+       "this page is", "on purpose" and "frozen" are each either tiny or
+       mostly ordinary.
+   Catalog entries 4 (beyond "nobody"), 8 and 9 have no lintable shape;
+   entry 10 is the sentence-length measure, not a pattern.
+   ------------------------------------------------------------------ */
+const MANNER_LONG = 35;         // a sentence this many words or longer counts as long (VOICE.md soft rule)
+const MANNER_MEAN_SOFT = 18;    // a lesson's mean words per sentence should end at or under this
+const MANNER_RATE_FLOOR = 500;  // hits per 1,000 words divide by at least this many words, so one hit on a 150-word page doesn't top the worklist
+
+const PERSON_VERBS = 'cares?|wants?|knows?|insists?|refuses?|forgives?|punishes?|rewards?|believes?|worries|worry|trusts?|demands?|minds?|remembers?|forgets?|pretends?|hopes?|likes|hates?|loves?|thinks?|sees|notices?|celebrates?|panics?|shrugs?|tolerates?';
+const NONPERSON_SUBJECTS = 'tests?|models?|software|SPSS|JASP|R|Python|pandas|formulas?|statistics?|estimators?|ANOVA|regression|algorithms?|computers?|programs?|procedures?|methods?|intervals?|p-values?|correlations?|chi-square|t-tests?|calculators?|designs?|machines?|trees?|forests?|k-means|lasso|ridge|classifiers?|metrics?|accuracy|mean|median|average|alpha|α|rule|criterion|index|coefficient';
+
+const MANNER = [
+  {
+    id: 'which-is', cat: 3, label: 'trailing commentary (", which is why / what / exactly / the X…")',
+    // 20 of 20 sampled hits comment on the whole clause before them
+    res: [/,\s+which\s+(?:is|was)\s+(?:why|what|exactly|precisely|how|where|worth|the\s+(?:whole|entire|real|same|point|reason|check|lesson|price|cost|trade|catch|trap|habit|move|fix|idea|definition|question|answer|job|difference|thing|one|part|key|heart|signature|shape)\b)/gi],
+  },
+  {
+    id: 'reveal', cat: 2, label: 'pseudo-cleft reveal ("X is what makes Y", "is the one thing that")',
+    // "is what <verb>s": 17 of 20 sampled hits a reveal (the misses: "is what SPSS reads", "what arrives is what shows")
+    // "is the one/only thing that": 8 of 9 (the miss: "which mean is the only thing that changes")
+    res: [
+      /\b(?:is|was|are|were|that['’]s|it['’]s)\s+(?:exactly\s+|precisely\s+|really\s+|also\s+|just\s+)?what\s+(?!is\b|this\b|its\b|was\b|has\b|as\b|does\b|SPSS\b|JASP\b)[a-z]+s\b/gi,
+      /\b(?:is|was|are)\s+the\s+(?:one|only)\s+(?:thing|part|step|number|piece|question|place|choice|move|assumption|condition|quantity)\s+(?:that|which|you|a|the|nobody|no)\b/gi,
+    ],
+  },
+  {
+    id: 'exactly', cat: 2, label: 'emphatic "exactly" ("that\'s exactly what / why")',
+    // 18 of 20 emphatic (the misses state a literal identity: "are exactly what a boxplot draws")
+    res: [/\b(?:is|was|are|that['’]s|it['’]s|this\s+is|does|do|did|says|said)\s+exactly\s+(?:what|why|how|where|when|the\s+(?:point|reason|problem|situation|case|trap|move|mistake|question|job|check|thing|one|kind|sort|habit))\b/gi],
+  },
+  {
+    id: 'worth', cat: 1, label: 'worth + -ing as a signpost ("worth knowing", "worth pausing on")',
+    // 20 of 20 announce a point before making it. The verb list is narrowed on purpose: across ALL
+    // -ing verbs only 14 of 20 were the habit, because "worth running a check" is plain advice.
+    res: [/\bworth\s+(?:knowing|naming|stating|saying|remembering|noting|noticing|mentioning|recognizing|keeping|holding|carrying|memorizing|understanding|pausing|internalizing|repeating|pointing|flagging|quoting|seeing|having|reporting|taking|spelling|underlining|stressing|emphasizing|separating|asking|talking|dwelling|reading|rereading|looking|learning|writing)\b/gi],
+  },
+  {
+    id: 'honest', cat: 1, label: 'honest / honestly (Tukey\'s "honestly significant difference" excluded)',
+    // outside Ethics, 16 of 20 evaluative ("the honest move", "honest arithmetic").
+    // Inside Ethics honesty is often the subject: 25 of 39 hits there were literal ("an honest
+    // mistake", "an honest design" against a deceptive one). So Ethics counts only the evaluative
+    // frame "the honest X is/for", which samples 6 of 7 there.
+    res: [/\bhonest(?:ly)?\b(?!\s+significant)/gi],
+    ethicsRes: [/\bthe\s+(?:more\s+|most\s+|only\s+)?honest\s+\w+\s+(?:is|are|was|for)\b/gi],
+  },
+  {
+    id: 'genuine', cat: 1, label: 'genuine / genuinely',
+    // 17 of 20 intensifiers ("genuinely hard to detect"); the misses contrast real with error
+    res: [/\bgenuine(?:ly)?\b/gi],
+  },
+  {
+    id: 'earn', cat: 1, label: 'earns (its place / keep / a claim)',
+    // 19 of 20 ("earns its keep", "claims you haven't earned"); the miss: "guessing already earns 50%"
+    res: [/\bearn(?:s|ed|ing)?\b/gi],
+  },
+  {
+    id: 'the-real', cat: 1, label: '"the real X" (lesson, answer, constraint, story…)',
+    // 12 of 13. "source", "shape" and "aim" were dropped from the noun list after sampling: there
+    // they are literal (a real citation against an invented one, a distribution's true shape).
+    res: [/\bthe\s+real\s+(?:lesson|thing|constraint|meaning|answer|decision|fix|story|habit|question|problem|issue|point|work|test|danger|risk|trap|culprit|payoff|cost|difference|reason|tension|win|job|value|skill|insight|trouble|catch|worry|message|choice|limit|limitation|gap|difficulty|challenge|target|goal|bottleneck|advantage|benefit|key|takeaway|surprise|mistake|failure|argument|news|concern|purpose|weakness|strength|price|lever|engine)s?\b/gi],
+  },
+  {
+    id: 'nobody', cat: 4, label: '"nobody" (the dramatic absolute most slogan closers turn on)',
+    // 16 of 20 flourish ("a study nobody ran", "Nobody picks β"); the misses are literal
+    // ("nobody appears in two conditions")
+    res: [/\bnobody\b/gi],
+  },
+  {
+    id: 'sits-lands', cat: 6, label: 'values that sit or land',
+    // 21 of 24; the three misses were coins landing heads and "the same sitting", now excluded
+    res: [/(?<!\b(?:same|one|single)\s)\b(?:sits?|sitting|lands?|landing|landed)\b(?!\s+(?:heads|tails|lip-up|face\s+up|on\s+(?:heads|tails|a\s+six|six)))/gi],
+  },
+  {
+    id: 'hands', cat: 6, label: 'hands you / hands back',
+    // 18 of 19 ("Problem 37 hands you", "R hands back"); the miss is a colleague handing you data
+    res: [/\bhand(?:s|ed|ing)?\s+(?:you\b|back\b|it\s+back|them\s+back|over\b|the\s+(?:software|test|student|reader|exam)\b)/gi],
+  },
+  {
+    id: 'buys-pays', cat: 6, label: 'designs and tests that buy or pay',
+    // 18 of 20 ("buys power", "pays for it with order effects"); "paid" left out (participants are paid)
+    res: [/\b(?:buys?|buying|bought|pays|paying|pay\s+(?:for|off)|dividends?)\b/gi],
+  },
+  {
+    id: 'carries', cat: 6, label: 'carries the claim / meaning / finding',
+    // 11 of 14 in this narrow frame ("the degrees of freedom carry the design")
+    res: [/\bcarr(?:y|ies|ied|ying)\s+(?:the\s+|a\s+|its\s+|their\s+|all\s+the\s+|most\s+of\s+the\s+)?(?:argument|weight|load|day|story|claim|finding|design|meaning|signal|burden|message|point|evidence|conclusion|lesson|idea|result|case|explanation|answer|interpretation)s?\b/gi],
+  },
+  {
+    id: 'personified', cat: 7, label: 'tests and software that want, know, care or see',
+    // 28 of 30 with a non-person subject and a strongly personal verb ("the median only cares",
+    // "the formula rewards length"). "asks" is left out ("the t-test asks whether…" is ordinary
+    // teaching English), and so are "it" and "they", which mostly mean people.
+    res: [new RegExp(`\\b(?:${NONPERSON_SUBJECTS})\\s+(?:only\\s+|never\\s+|still\\s+|also\\s+|does\\s+not\\s+|doesn['’]t\\s+|do\\s+not\\s+|don['’]t\\s+|will\\s+not\\s+|won['’]t\\s+|cannot\\s+|can['’]t\\s+)?(?:${PERSON_VERBS})\\b`, 'gi')],
+  },
+];
+
+/* The relocation watch: the synonyms a lazy pass swaps in for a catalog word
+   without fixing the sentence (honest → fair, genuinely → truly or really,
+   sits → lies, "is what makes" → "is how", "rather than" → "instead of").
+   Counted, never scored. A pass that cuts catalog hits and raises these has
+   moved the habit rather than removed it. "fair coin" and its kin are
+   probability vocabulary and excluded. */
+const RELOCATION = [
+  { id: 'instead-of', label: 'instead of', re: /\binstead\s+of\b/gi },
+  { id: 'fair', label: 'fair / fairly', re: /\bfair(?:ly|er|est)?\b(?!\s+(?:coins?|dice|die|six-sided|games?|bets?|wagers?|spinners?|lotter(?:y|ies)|draws?|share))/gi },
+  { id: 'lies', label: 'lies at / in / between', re: /\b(?:lies|lie|lying)\s+(?:at|in|on|between|within|above|below|inside|outside|near|just|close|far|well|along|beyond|under|over|around)\b/gi },
+  { id: 'is-how', label: '"is how"', re: /\b(?:is|was|that['’]s|it['’]s)\s+(?:exactly\s+)?how\b/gi },
+  { id: 'plainly', label: 'plainly', re: /\bplainly\b/gi },
+  { id: 'truly', label: 'truly', re: /\btruly\b/gi },
+  { id: 'really', label: 'really', re: /\breally\b/gi },
+];
+
+/* Catalog entry 5's two shapes, which failed the sample above but which the
+   editing passes will still cut. Counted so P121 can compare, never scored. */
+const SHAPE_WATCH = [
+  { id: 'not-tail', label: 'sentence-final ", not Y."', re: /,\s+not\s+[^,.;:!?()]{1,60}[.!?](?=\s|$|["”’)])/g },
+  { id: 'rather-than', label: '"rather than"', re: /\brather\s+than\b/gi },
 ];
 
 /* FAQ answers must not open with a verdict word + dash (VOICE.md rule 7);
@@ -728,7 +901,10 @@ function inlineScriptStrings() {
   return items;
 }
 
-function jsSurfaces() {
+/* The surfaces' strings, unscanned. Split out of jsSurfaces() in P106 so
+   --manner can read the same strings without paying for the rule-12 scan,
+   which is most of this script's running time. */
+function surfaceItems() {
   const out = [];
   const inj = loadWindow([
     path.join(ROOT, 'assets/js/checks.js'),
@@ -794,13 +970,19 @@ function jsSurfaces() {
      dash rate and its "the point is" are not paragraph-prose questions. */
   const gloss = [];
   for (const g of loadWindow([path.join(ROOT, 'assets/js/glossary-data.js')]).GLOSSARY || []) {
-    gloss.push({ key: g.t, text: stripTags(g.t + '. ' + g.d) });
+    /* link: the entry's lesson back-link, which --manner uses to file the
+       definition under its lesson. Nothing else reads it. */
+    gloss.push({ key: g.t, text: stripTags(g.t + '. ' + g.d), link: g.s || null });
   }
   out.push({ file: 'assets/js/glossary-data.js', strict: 'spell', items: gloss });
 
   /* one token before the space, so --page inline-scripts inspects it. */
   out.push({ file: 'inline-scripts (every page)', strict: 'spell', items: inlineScriptStrings(), spellAll: true });
+  return out;
+}
 
+function jsSurfaces() {
+  const out = surfaceItems();
   for (const s of out) {
     s.hits = [];
     s.dashes = 0;
@@ -835,6 +1017,351 @@ function jsSurfaces() {
     for (const p of PATTERNS) s.counts[p.id] = s.hits.filter((h) => h.pattern === p.id).length;
   }
   return out;
+}
+
+/* report helpers, shared by --manner and the reports further down */
+const median = (xs) => {
+  if (!xs.length) return 0;
+  const s = [...xs].sort((a, b) => a - b);
+  return s.length % 2 ? s[(s.length - 1) / 2] : (s[s.length / 2 - 1] + s[s.length / 2]) / 2;
+};
+const pad = (s, n) => String(s).padEnd(n);
+const rpad = (s, n) => String(s).padStart(n);
+const line = (n) => '─'.repeat(n);
+
+/* ============================================================
+   --manner (P106) — see the MANNER table at the top. It runs here,
+   before the rule-12 scan below, because it needs none of it: the
+   full report takes about a second instead of several minutes.
+   ============================================================ */
+
+/* A sentence never spans two of these. Every other tag (a, em, strong,
+   span, code, sub, sup…) is inline and stays inside its sentence. */
+const BLOCK_TAGS = 'p|div|li|ul|ol|h[1-6]|td|th|tr|table|thead|tbody|tfoot|caption|figcaption|figure|section|article|aside|nav|header|footer|main|blockquote|dt|dd|dl|br|hr|label|button|option|select|summary|details|form|fieldset|legend|canvas|svg|input|textarea';
+const BLOCK_RE = new RegExp(`</?(?:${BLOCK_TAGS})\\b[^>]*>`, 'gi');
+
+/* A page's prose as a list of blocks: the same masking as extractProse,
+   plus the baked footer (the same two sentences on every page), with each
+   block-level tag ending a block. Words here are tokens holding a letter or
+   a digit, so "=" and "→" are not words, and a page's count is lower than
+   the em-dash report's, which splits on spaces and keeps the footer. */
+function proseBlocks(html, stripFaq) {
+  let s = html;
+  const bodyAt = s.search(/<body\b/i);
+  if (bodyAt >= 0) s = s.slice(bodyAt);
+  if (stripFaq) s = s.replace(/<!--\s*faq:start[\s\S]*?<!--\s*faq:end\s*-->/g, ' ');
+  s = s
+    .replace(/<footer\b[\s\S]*?<\/footer>/gi, ' ')
+    .replace(/<script\b[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style\b[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<pre\b[\s\S]*?<\/pre>/gi, ' ')
+    .replace(/<!--[\s\S]*?-->/g, ' ')
+    .replace(READOUT_PLACEHOLDER, '$1')
+    .replace(BLOCK_RE, '\u0001')
+    .replace(/<[^>]+>/g, '');
+  return decodeEntities(s).split('\u0001').map((b) => b.replace(/\s+/g, ' ').trim()).filter(Boolean);
+}
+
+/* Sentences. A break is . ! ? or … (plus any closing quote or bracket),
+   whitespace, then anything but a lowercase letter, so "§1.14 is…" and
+   "β is…" start new sentences while "e.g. the" does not. A segment counts
+   as a sentence only if it ends in . ! ? … or : and holds two real words;
+   headings, labels, table cells and formula steps have no stop and drop
+   out. Blind spots: a sentence that opens with a lowercase symbol
+   ("p = .03 means…") is merged into the one before it, and an
+   abbreviation missing from NOT_A_STOP splits a sentence in two. */
+const SENT_BREAK = /[.!?…]["”’)\]]*\s+(?=["“‘(\[]?[^a-z\s])/g;
+const NOT_A_STOP = /(?:^|[\s(])(?:e\.g|i\.e|vs|cf|al|approx|Dr|Mr|Ms|Mrs|St|Figs?|Eq|Vol|pp|ca|resp|(?:[A-Za-z]\.)+[A-Za-z])\.$/i;
+const SENT_END = /[.!?…:]["”’)\]]*$/;
+const wordsIn = (s) => (s.match(/\S*[\p{L}\p{N}]\S*/gu) || []).length;
+function sentencesOf(block) {
+  const out = [];
+  let last = 0, m;
+  SENT_BREAK.lastIndex = 0;
+  while ((m = SENT_BREAK.exec(block))) {
+    if (block[m.index] === '.' && NOT_A_STOP.test(block.slice(Math.max(last, m.index - 12), m.index + 1))) continue;
+    out.push(block.slice(last, m.index + m[0].trimEnd().length).trim());
+    last = m.index + m[0].length;
+  }
+  out.push(block.slice(last).trim());
+  return out.filter((s) => SENT_END.test(s) && (s.match(/\p{L}{2,}/gu) || []).length >= 2);
+}
+
+const snip = (t, at, len) => `…${t.slice(Math.max(0, at - 45), at)}»${t.slice(at, at + len)}«${t.slice(at + len, at + len + 45)}…`;
+
+/* Measure one unit (a page, or one surface, or one page's share of a
+   surface). `entries` are [source label, text, ethics?] triples. */
+function measureManner(kind, label, entries) {
+  const u = {
+    kind, label, words: 0, sents: 0, sentWords: 0, long: [], hits: [], reloc: [], shapes: [],
+    counts: Object.fromEntries(MANNER.map((p) => [p.id, 0])),
+    relocCounts: Object.fromEntries(RELOCATION.map((p) => [p.id, 0])),
+    shapeCounts: Object.fromEntries(SHAPE_WATCH.map((p) => [p.id, 0])),
+  };
+  for (const [src, text, ethics] of entries) {
+    u.words += wordsIn(text);
+    for (const s of sentencesOf(text)) {
+      const w = wordsIn(s);
+      u.sents++; u.sentWords += w;
+      if (w >= MANNER_LONG) u.long.push({ src, w, s });
+    }
+    const taken = [];
+    for (const p of MANNER) {
+      for (const re of (ethics && p.ethicsRes) || p.res) {
+        re.lastIndex = 0;
+        for (const m of text.matchAll(re)) {
+          const a = m.index, b = m.index + m[0].length;
+          if (taken.some(([x, y]) => a < y && x < b)) continue;
+          taken.push([a, b]);
+          u.counts[p.id]++;
+          u.hits.push({ id: p.id, src, snippet: snip(text, a, m[0].length) });
+        }
+      }
+    }
+    for (const [list, counts, out] of [[RELOCATION, u.relocCounts, u.reloc], [SHAPE_WATCH, u.shapeCounts, u.shapes]]) {
+      for (const p of list) {
+        p.re.lastIndex = 0;
+        for (const m of text.matchAll(p.re)) { counts[p.id]++; out.push({ id: p.id, src, snippet: snip(text, m.index, m[0].length) }); }
+      }
+    }
+  }
+  u.total = u.hits.length;
+  u.relocTotal = u.reloc.length;
+  u.mean = u.sents ? u.sentWords / u.sents : 0;
+  u.longShare = u.sents ? u.long.length / u.sents : 0;
+  u.rate = (u.total * 1000) / Math.max(u.words, MANNER_RATE_FLOOR);
+  /* The combined score: catalog hits per 1,000 words, plus one point for
+     each word of mean sentence length above the soft rule. A page at 24
+     words per sentence with 6 hits per 1,000 words scores 12. */
+  u.score = u.rate + Math.max(0, u.mean - MANNER_MEAN_SOFT);
+  return u;
+}
+
+/* Everything --manner reads: every page prose-lint scans, and every
+   injected surface except QUIPS (exempt brand voice, VOICE.md). Each
+   surface string is also filed under the page it belongs to (`owner`),
+   so --manner --page shows a lesson together with its FAQ answers,
+   checks, software entry, snippet comments, glossary entries and the
+   prose its own inline script prints. */
+function mannerCorpus() {
+  const lessonOf = {};
+  for (const s of READY) lessonOf[s.slug] = `${s.course}/${s.slug}/`;
+  const isEthics = (owner) => !!owner && owner.startsWith('ethics/');
+
+  const pageDefs = [
+    ...READY.map((s) => ['lesson', `${s.course}/${s.slug}/`, path.join(ROOT, s.course, s.slug, 'index.html'), true]),
+    ...GUIDES.map((g) => ['guide', `guides/${g}/`, path.join(ROOT, 'guides', g, 'index.html'), false]),
+    ...COURSE_PAGES.map((c) => ['course', `${c}/`, path.join(ROOT, c, 'index.html'), false]),
+    ...HUB_FOLDERS.map((h) => ['hub', `${h}/`, path.join(ROOT, h, 'index.html'), false]),
+    ...ROOT_PAGES.map((f) => ['root', f, path.join(ROOT, f), false]),
+  ];
+  const pageList = pageDefs.map(([kind, label, file, stripFaq]) =>
+    measureManner(kind, label, proseBlocks(read(file), stripFaq).map((b) => ['prose', b, isEthics(label)])));
+
+  /* surface items: { key, owner, text } */
+  const surf = [];
+  const faq = [];
+  for (const [slug, answers] of Object.entries(FAQ_ANSWERS)) {
+    answers.forEach((a, i) => faq.push({ key: `${slug} · FAQ answer ${i + 1}`, owner: lessonOf[slug] || null, text: a }));
+  }
+  surf.push({ file: 'tools/faq_data.py', name: 'FAQ answers', items: faq });
+  const bySlug = (key) => lessonOf[key.split(' · ')[0]] || null;
+  for (const s of surfaceItems()) {
+    if (s.file.includes('QUIPS')) continue;
+    let items;
+    if (s.file.startsWith('inline-scripts')) {
+      items = s.items.filter((it) => it.text).map((it) => ({ key: it.key, owner: it.key.replace(/index\.html$/, ''), text: it.text }));
+    } else if (s.file.includes('glossary')) {
+      items = s.items.map((it) => ({ key: it.key, owner: it.link ? `${it.link}/` : null, text: it.text }));
+    } else {
+      items = s.items.map((it) => ({ key: it.key, owner: bySlug(it.key), text: it.text }));
+    }
+    const name = { 'assets/js/checks.js': 'checks', 'assets/js/software.js': 'software', 'assets/js/snippets.js (comments)': 'snippets', 'assets/js/glossary-data.js': 'glossary', 'inline-scripts (every page)': 'inline' }[s.file];
+    surf.push({ file: s.file, name, items });
+  }
+  const surfaces = surf.map((s) => Object.assign(
+    measureManner('surface', s.file, s.items.map((it) => [it.key, it.text, isEthics(it.owner)])),
+    { name: s.name, items: s.items }));
+
+  /* each page's own share of every surface */
+  const owned = surfaces.map((s) => {
+    const m = new Map();
+    for (const it of s.items) if (it.owner) (m.get(it.owner) || m.set(it.owner, []).get(it.owner)).push(it);
+    return m;
+  });
+  for (const pg of pageList) {
+    pg.own = surfaces.map((s, i) => {
+      const mine = owned[i].get(pg.label);
+      return mine ? Object.assign(measureManner('own', s.file, mine.map((it) => [it.key, it.text, isEthics(it.owner)])), { name: s.name }) : null;
+    }).filter(Boolean);
+    pg.ownTotal = pg.own.reduce((n, o) => n + o.total, 0);
+  }
+  return { pages: pageList, surfaces };
+}
+
+function runManner(argv) {
+  const { pages: mp, surfaces } = mannerCorpus();
+  const f1 = (x) => x.toFixed(1);
+  const pct = (x) => `${(x * 100).toFixed(1)}%`;
+  const per1k = (n, words) => (words ? (n * 1000) / words : 0);
+  const MW = 118;
+  const head = pad('page', 46) + rpad('words', 7) + rpad('sents', 6) + rpad('w/s', 6) + rpad('≥35', 7)
+    + rpad('hits', 6) + rpad('/1k', 6) + rpad('reloc', 7) + rpad('+own', 6) + rpad('score', 7);
+  const row = (u) => pad(u.label, 46) + rpad(u.words, 7) + rpad(u.sents, 6) + rpad(f1(u.mean), 6) + rpad(pct(u.longShare), 7)
+    + rpad(u.total, 6) + rpad(f1(u.rate), 6) + rpad(u.relocTotal, 7) + rpad(u.ownTotal ?? '·', 6) + rpad(f1(u.score), 7);
+  const legend = `  w/s = mean words per sentence (soft rule ≤ ${MANNER_MEAN_SOFT} for a lesson) · ≥35 = share of sentences of ${MANNER_LONG}+ words`
+    + ` · hits = catalog hits in the page prose · /1k = per 1,000 words (at least ${MANNER_RATE_FLOOR} words assumed)`
+    + `\n  reloc = relocation-watch words · +own = catalog hits in the page's own FAQ answers, checks, software entry, snippet comments,`
+    + `\n  glossary entries and inline-script prose · score = /1k + words per sentence above ${MANNER_MEAN_SOFT}`;
+
+  const printHits = (u, list, defs, title) => {
+    for (const p of defs) {
+      const hs = list.filter((h) => h.id === p.id);
+      if (!hs.length) continue;
+      console.log(`\n${title ? title + ' · ' : ''}${p.label} — ${hs.length}×`);
+      for (const h of hs) console.log(`  [${h.src}] ${h.snippet}`);
+    }
+  };
+  const printLong = (u, title) => {
+    if (!u.long.length) return;
+    console.log(`\n${title ? title + ' · ' : ''}sentences of ${MANNER_LONG}+ words — ${u.long.length}×`);
+    for (const l of [...u.long].sort((a, b) => b.w - a.w)) {
+      console.log(`  [${l.w}w${l.src === 'prose' ? '' : ' · ' + l.src}] ${l.s.length > 220 ? l.s.slice(0, 220) + '…' : l.s}`);
+    }
+  };
+  const hitsWord = (n) => `${n} catalog hit${n === 1 ? '' : 's'}`;
+  const unitLine = (u) => `${u.words} words · ${u.sents} sentences · ${f1(u.mean)} words/sentence · ${pct(u.longShare)} of ${MANNER_LONG}+ words`
+    + ` · ${hitsWord(u.total)} (${f1(per1k(u.total, u.words))}/1k) · relocation watch ${u.relocTotal} · score ${f1(u.score)}`;
+
+  /* ---- --manner --sample <id> [n] [seed] — the P73 measuring step ---- */
+  if (argv[0] === '--sample') {
+    const id = argv[1];
+    const n = +(argv[2] || 20);
+    let seed = +(argv[3] || 1);
+    const all = [...mp.flatMap((u) => [...u.hits, ...u.reloc, ...u.shapes].map((h) => ({ ...h, where: u.label }))),
+      ...surfaces.flatMap((u) => [...u.hits, ...u.reloc, ...u.shapes].map((h) => ({ ...h, where: u.name })))].filter((h) => h.id === id);
+    const known = [...MANNER, ...RELOCATION, ...SHAPE_WATCH].map((p) => p.id);
+    if (!known.includes(id)) { console.error(`prose-lint: no manner pattern "${id}" (one of: ${known.join(', ')})`); process.exit(2); }
+    const rnd = () => { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; };
+    console.log(`${id}: ${all.length} hits · ${Math.min(n, all.length)} drawn with seed ${argv[3] || 1}. Keep a pattern only if at least two thirds are the habit.`);
+    const pool = all.slice();
+    for (let i = 0; i < n && pool.length; i++) {
+      const h = pool.splice(Math.floor(rnd() * pool.length), 1)[0];
+      console.log(`${rpad(i + 1, 3)}. [${h.where} · ${h.src}] ${h.snippet}`);
+    }
+    return;
+  }
+
+  /* ---- --manner --page <path> ---- */
+  if (argv[0] === '--page') {
+    const want = (argv[1] || '').replace(/^\.\//, '');
+    const s = surfaces.find((x) => x.label.split(' ')[0] === want);
+    if (s) {
+      console.log(`${s.label} — ${s.items.length} strings · ${unitLine(s)}`);
+      printHits(s, s.hits, MANNER, '');
+      printHits(s, s.reloc, RELOCATION, 'relocation watch');
+      printLong(s);
+      return;
+    }
+    const key = want.replace(/\/?(index\.html)?$/, '');
+    const u = mp.find((p) => p.label.replace(/\/$/, '') === key || p.label === want);
+    if (!u) { console.error(`prose-lint: no such page or surface "${argv[1]}" (e.g. stats-1/central-limit-theorem, problems.html, assets/js/glossary-data.js, inline-scripts)`); process.exit(2); }
+    console.log(`${u.label} — page prose: ${unitLine(u)}`);
+    for (const o of u.own) console.log(`  + its ${o.name}: ${o.words} words · ${f1(o.mean)} words/sentence · ${hitsWord(o.total)} · relocation watch ${o.relocTotal}`);
+    printHits(u, u.hits, MANNER, '');
+    printHits(u, u.reloc, RELOCATION, 'relocation watch');
+    for (const o of u.own) {
+      printHits(o, o.hits, MANNER, `its ${o.name}`);
+      printHits(o, o.reloc, RELOCATION, `its ${o.name} · relocation watch`);
+    }
+    printLong(u);
+    for (const o of u.own) printLong(o, `its ${o.name}`);
+    return;
+  }
+
+  /* ---- --manner --all — one row per page, for before/after tables ---- */
+  if (argv[0] === '--all') {
+    console.log(`prose-lint --manner --all — every page, in curriculum order (report only)\n${legend}`);
+    console.log(line(MW));
+    console.log(head);
+    for (const u of mp) console.log(row(u));
+    return;
+  }
+
+  if (argv.length) { console.error(`prose-lint: unknown --manner option "${argv[0]}" (expected --page, --all or --sample)`); process.exit(2); }
+
+  /* ---- --manner — sitewide summary, lesson medians, worst 30 ---- */
+  const lessons = mp.filter((u) => u.kind === 'lesson');
+  const sum = (us, f) => us.reduce((n, u) => n + f(u), 0);
+  const problems = mp.find((u) => u.label === 'problems.html');
+  const others = mp.filter((u) => u !== problems);
+  const sfc = (name) => surfaces.find((s) => s.name === name);
+  const cols = [['pages*', others], ['problems', problems ? [problems] : []], ...['FAQ answers', 'checks', 'software', 'glossary', 'inline', 'snippets'].map((n) => [n === 'FAQ answers' ? 'FAQ' : n, [sfc(n)]])];
+  const everyUnit = [...mp, ...surfaces];
+  const allWords = sum(everyUnit, (u) => u.words);
+  const allSents = sum(everyUnit, (u) => u.sents);
+
+  console.log(`prose-lint --manner — round three (P106): the Opus 5 voice. REPORT ONLY, nothing here gates --strict.`);
+  console.log(`${mp.length} pages + ${surfaces.length} injected surfaces (QUIPS exempt) · ${allWords} words · ${allSents} sentences`);
+  console.log(line(MW));
+  console.log('\nSENTENCE LENGTH');
+  console.log(line(MW));
+  console.log(pad('', 24) + rpad('words', 9) + rpad('sentences', 11) + rpad('w/s', 7) + rpad(`≥${MANNER_LONG}`, 8));
+  const lenRow = (name, us) => {
+    const w = sum(us, (u) => u.sentWords), n = sum(us, (u) => u.sents), l = sum(us, (u) => u.long.length);
+    console.log(pad(name, 24) + rpad(sum(us, (u) => u.words), 9) + rpad(n, 11) + rpad(f1(n ? w / n : 0), 7) + rpad(pct(n ? l / n : 0), 8));
+  };
+  lenRow('every page', mp);
+  for (const k of ['lesson', 'guide', 'course', 'hub', 'root']) lenRow(`  ${k} pages`, mp.filter((u) => u.kind === k));
+  if (problems) lenRow('  of which problems.html', [problems]);
+  for (const s of surfaces) lenRow(s.name === 'FAQ answers' ? 'FAQ answers' : s.name, [s]);
+  lenRow('everything', everyUnit);
+
+  console.log(`\nLESSON MEDIANS (${lessons.length} lessons, page prose only)`);
+  console.log(line(MW));
+  console.log(`  words/sentence ${f1(median(lessons.map((u) => u.mean)))} (soft rule ≤ ${MANNER_MEAN_SOFT}; ${lessons.filter((u) => u.mean > MANNER_MEAN_SOFT).length} lessons above it)`
+    + ` · sentences of ${MANNER_LONG}+ words ${pct(median(lessons.map((u) => u.longShare)))}`
+    + ` · catalog hits ${f1(median(lessons.map((u) => u.rate)))}/1k · relocation watch ${f1(median(lessons.map((u) => per1k(u.relocTotal, u.words))))}/1k`
+    + ` · score ${f1(median(lessons.map((u) => u.score)))}`);
+  const byMean = [...lessons].sort((a, b) => a.mean - b.mean);
+  console.log(`  plainest: ${byMean.slice(0, 5).map((u) => `${u.label} ${f1(u.mean)}`).join(' · ')}`);
+  console.log(`  densest:  ${byMean.slice(-5).reverse().map((u) => `${u.label} ${f1(u.mean)}`).join(' · ')}`);
+
+  console.log('\nCATALOG PATTERNS (VOICE.md round three; scored)');
+  console.log(line(MW));
+  console.log(pad('pattern', 46) + cols.map(([n]) => rpad(n, 9)).join('') + rpad('total', 7) + rpad('/1k', 6));
+  const patRow = (label, f) => {
+    const vals = cols.map(([, us]) => sum(us, f));
+    const tot = sum(everyUnit, f);
+    console.log(pad(label.length > 45 ? label.slice(0, 44) + '…' : label, 46) + vals.map((v) => rpad(v, 9)).join('') + rpad(tot, 7) + rpad(per1k(tot, allWords).toFixed(2), 6));
+  };
+  for (const p of MANNER) patRow(`${p.cat}. ${p.label}`, (u) => u.counts[p.id]);
+  patRow('ALL CATALOG HITS', (u) => u.total);
+  console.log(`  * pages = every scanned page except problems.html, which gets its own column. Words: `
+    + cols.map(([n, us]) => `${n} ${sum(us, (u) => u.words)}`).join(' · '));
+
+  console.log('\nRELOCATION WATCH (synonyms a pass might swap in; counted, never scored)');
+  console.log(line(MW));
+  for (const p of RELOCATION) patRow(p.label, (u) => u.relocCounts[p.id]);
+  patRow('ALL RELOCATION-WATCH WORDS', (u) => u.relocTotal);
+
+  console.log('\nSHAPE WATCH (catalog entry 5; failed the precision sample, so counted and never scored)');
+  console.log(line(MW));
+  for (const p of SHAPE_WATCH) patRow(p.label, (u) => u.shapeCounts[p.id]);
+
+  console.log('\nWORST 30 PAGES (by score; the worklist for P107–P120)');
+  console.log(line(MW));
+  console.log(legend);
+  console.log(head);
+  for (const u of [...mp].sort((a, b) => b.score - a.score).slice(0, 30)) console.log(row(u));
+  console.log(`\n  node tools/prose-lint.js --manner --page <path>   every hit on one page and its own surfaces, plus its long sentences`);
+  console.log(`  node tools/prose-lint.js --manner --all           one row per page`);
+  console.log(`  node tools/prose-lint.js --manner --sample <id>   a seeded sample of one pattern's hits, to re-measure it`);
+}
+
+if (process.argv[2] === '--manner') {
+  runManner(process.argv.slice(3));
+  process.exit(0);
 }
 
 const JS_SURFACES = jsSurfaces();
@@ -931,11 +1458,6 @@ const descPages = pages.filter((pg) => pg.desc);
 const andWatchPages = pages.filter((pg) => pg.andWatch);
 const andWatchShare = descPages.length ? andWatchPages.length / descPages.length : 0;
 
-const median = (xs) => {
-  if (!xs.length) return 0;
-  const s = [...xs].sort((a, b) => a - b);
-  return s.length % 2 ? s[(s.length - 1) / 2] : (s[s.length / 2 - 1] + s[s.length / 2]) / 2;
-};
 
 function strictCheck() {
   const fails = [];
@@ -965,9 +1487,6 @@ function strictCheck() {
    Reports
    ============================================================ */
 
-const pad = (s, n) => String(s).padEnd(n);
-const rpad = (s, n) => String(s).padStart(n);
-const line = (n) => '─'.repeat(n);
 
 function pageRow(pg) {
   return pad(pg.label, 46) + rpad(pg.words, 6) + rpad(pg.dashes, 5) + rpad(pg.rate.toFixed(1), 6)

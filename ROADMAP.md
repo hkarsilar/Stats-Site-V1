@@ -1009,7 +1009,118 @@ Tick these as sessions complete them (each prompt ends by updating this list).
   - **Four stale sentences on teachers.html fixed in passing, none of which anything enforces.** The lede's "Ninety-seven interactive lessons" (105 today) now reads "More than a hundred", and "without reading all eighty-three" (problems) reads "without reading the whole library", so neither goes stale again with the next lesson or problem. **The Stats 2 map's Project row linked `problems.html#toolkit` as "81–86"**, stale since P97 moved the toolkit set to 83–88 and then three more times to 95–100; CHECK 11 only resolves prose of the form "Problem N", so a bare range in a link's text was invisible to it. A one-off scan of every `problems.html#…` link sitewide against the badge map found that row and nothing else. The problem-sheet paragraph also gained the Stats 3 set beside the two midterm sets.
   - **One linter fix: prose-lint's entity map was missing `&sect;`**, along with `&psi;`, `&xi;`, `&prime;`, `&sup1;` and `&frac14;`, and each undecoded entity's trailing ";" was counted as a semicolon: **82 phantom semicolons sitewide, 47 of them on teachers.html** (which reported 63 against 16 real). Same class as P73's `&divide;`. Report-only metric; no gate moves.
   - **Gates.** `audit.js` **0 errors**, 20 warnings (the standing baseline), 61 info (three fewer: the "no SOFTWARE entry" notes for the three new entries). `math-check` not required and not run: no `viz.js` or tool-page math changed. `prose-lint --strict` **green**; teachers.html at **0 em-dashes in 7,257 words** and no pattern hits, software.js at 11 of its 15, reader-visible em-dashes sitewide unchanged at **343**. `advice-terms`, `link-promises`, `destination-promises`, `worked-examples`, `untaught-names`, `prescription-terms`, `symbol-names` and `widget-terms` all exit 0 in `--strict`. Search index rebuilt: teachers.html indexes at **43,121 of its 60,000 guard** (72%, up from 33,872 at P96), nothing cut, and the new sections are findable in it; worth watching, since two sessions of growth would reach it. Under the subpath server all **186 links** in the page's maps and prose resolve and none escapes the base path. No horizontal scroll at 360px in light or dark on teachers.html or on the three lessons whose software blocks are new, and no page errors. **No `CACHE_VERSION` bump**: nothing in `sw.js`'s precached `SHELL` changed (`software.js` and the search index are served stale-while-revalidate, not precached), and HTML is network-first.
-- [ ] P106 · de-AI v3 — the Opus 5 catalog + exemplars in VOICE.md, report-only `prose-lint --manner`, baseline (Powerful · Extra)
+- [x] P106 · de-AI v3 — the Opus 5 catalog + exemplars in VOICE.md, report-only `prose-lint --manner`, baseline (Powerful · Extra)
+  - VOICE.md has a new section, "Round three (P106): the Opus 5 voice": the guide's definition of mannered prose and its one-line fix, a twelve-entry catalog with one real example and a plain rewrite each, fourteen exemplar pairs (the addendum's ten, each checked against the live sentence and the fact it carries, plus four new ones), three anti-rules (no relocation into synonyms, no new bold lead-ins or lists, no overcorrection), the sentence-length soft rule, "you" over "a reader", and the line about the planning docs.
+  - `prose-lint.js --manner` is report-only and gates nothing. It reads every page prose-lint scans plus the FAQ answers, checks.js, software.js, glossary-data.js, snippet comments and inline-script prose (QUIPS stay exempt). It reports mean words per sentence, the share of sentences of 35+ words, each MANNER pattern per 1,000 words, a relocation watch (instead of, fair/fairly, lies at/in, is how, plainly, truly, really), and a combined score: catalog hits per 1,000 words plus each word of mean sentence length above 18. Modes: the sitewide report, `--page <path>` (a lesson together with its FAQ answers, checks, software entry, snippet comments, linked glossary entries and inline-script prose, every hit as a »snippet«, plus its long sentences), `--all` (one row per page, for before/after tables) and `--sample <id>` (a seeded sample of one pattern's hits). It runs before the slow spelling scan, so it takes under a second. `jsSurfaces()` was split so `--manner` can read the surface strings without that scan; `--strict` prints a byte-identical report before and after.
+  - Every pattern was sampled in context before it was kept, with a two-thirds bar, and the result is in a comment beside it. Kept: trailing ", which is why/what/exactly" (20 of 20), "is what makes" reveals (17 of 20, plus "is the one thing that" 8 of 9), emphatic "is exactly what/why" (18 of 20), worth + a signposting verb (20 of 20), honest (16 of 20 outside Ethics; Ethics counts only "the honest X is", 6 of 7, because 25 of 39 Ethics hits are about honesty itself), genuine (17 of 20), earn (19 of 20), "the real X" (12 of 13), nobody (16 of 20), sits/lands (21 of 24, misses now excluded), hands you/back (18 of 19), buys/pays (18 of 20), "carries the claim/meaning" (11 of 14), personified tests and software (28 of 30). Dropped: ", not Y." (21 of 40 decorative) and "rather than" (4 of 20), both kept as an unscored shape watch; "a reader" (2 of 20 meant the student); "costs" (6 of 14); "carries" and "exactly" in general; and narration of the site, for which no shape was found.
+  - Baseline, 1 Oct 2026 (`node tools/prose-lint.js --manner`):
+
+    ```
+    prose-lint --manner — round three (P106): the Opus 5 voice. REPORT ONLY, nothing here gates --strict.
+    146 pages + 6 injected surfaces (QUIPS exempt) · 342810 words · 17486 sentences
+    ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+    SENTENCE LENGTH
+    ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+                                words  sentences    w/s     ≥35
+    every page                 228933      11310   18.2    7.8%
+      lesson pages             131905       6694   18.4    7.1%
+      guide pages               17349        885   17.4    7.1%
+      course pages               1757         88   18.6   11.4%
+      hub pages                   467         22   21.0    9.1%
+      root pages                77455       3621   18.1    9.1%
+      of which problems.html    54924       2523   19.2   10.5%
+    FAQ answers                 31548       1367   23.1   16.2%
+    checks                      17638        885   13.0    0.3%
+    software                    16940       1000   16.9    4.1%
+    snippets                     3280         34    8.2    0.0%
+    glossary                    14069       1031   13.5    2.2%
+    inline                      30402       1859   12.3    0.3%
+    everything                 342810      17486   17.3    6.7%
+
+    LESSON MEDIANS (105 lessons, page prose only)
+    ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+      words/sentence 18.0 (soft rule ≤ 18; 51 lessons above it) · sentences of 35+ words 5.9% · catalog hits 5.9/1k · relocation watch 1.1/1k · score 6.6
+      plainest: stats-1/types-of-data/ 11.9 · methods/variables-and-operationalization/ 13.5 · methods/bias-and-blinding/ 13.7 · stats-2/regression-diagnostics/ 14.2 · stats-1/what-is-statistics/ 14.3
+      densest:  stats-3/difference-in-differences/ 23.7 · methods/quasi-experiments/ 23.6 · stats-3/cross-validation-and-overfitting/ 23.0 · stats-3/psychometric-functions/ 22.9 · stats-3/meta-analysis/ 22.2
+
+    CATALOG PATTERNS (VOICE.md round three; scored)
+    ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    pattern                                          pages* problems      FAQ   checks software glossary   inline snippets  total   /1k
+    3. trailing commentary (", which is why / wh…       149       69       31       11        4       18       15        0    297  0.87
+    2. pseudo-cleft reveal ("X is what makes Y",…        45        8        5        5        5        9        7        0     84  0.25
+    2. emphatic "exactly" ("that's exactly what …        17        4        6        1        0        0        6        0     34  0.10
+    1. worth + -ing as a signpost ("worth knowin…        73       15        9        0        2        1        2        0    102  0.30
+    1. honest / honestly (Tukey's "honestly sign…       135       29       34       10        5       10       25        3    251  0.73
+    1. genuine / genuinely                               81        9       38        4        3        9       18        0    162  0.47
+    1. earns (its place / keep / a claim)                47        6       11        3        0        2        5        0     74  0.22
+    1. "the real X" (lesson, answer, constraint,…        10        2        1        0        0        0        0        0     13  0.04
+    4. "nobody" (the dramatic absolute most slog…        69       32       13        2        3        2        5        0    126  0.37
+    6. values that sit or land                          222       68       34       10        9       13       21        0    377  1.10
+    6. hands you / hands back                            66        7        7        0        2        1        3        0     86  0.25
+    6. designs and tests that buy or pay                 82       37       12        7        0        2        5        0    145  0.42
+    6. carries the claim / meaning / finding              5        4        2        0        1        0        0        0     12  0.04
+    7. tests and software that want, know, care …        18        3        2        2        0        1        3        2     31  0.09
+    ALL CATALOG HITS                                   1019      293      205       55       34       68      115        5   1794  5.23
+      * pages = every scanned page except problems.html, which gets its own column. Words: pages* 174009 · problems 54924 · FAQ 31548 · checks 17638 · software 16940 · glossary 14069 · inline 30402 · snippets 3280
+
+    RELOCATION WATCH (synonyms a pass might swap in; counted, never scored)
+    ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    instead of                                           66       17       14        9        4        6        9        3    128  0.37
+    fair / fairly                                        19        2        6        2        1        1       11        3     45  0.13
+    lies at / in / between                                9        5        0        5        1        2        2        0     24  0.07
+    "is how"                                             40        6        7        1        1        1        1        0     57  0.17
+    plainly                                               9        3        3        0        0        1        0        0     16  0.05
+    truly                                                16        2        2        3        0        0        0        0     23  0.07
+    really                                               44        6       10        2        0        2        6        0     70  0.20
+    ALL RELOCATION-WATCH WORDS                          203       41       42       22        7       13       29        6    363  1.06
+
+    SHAPE WATCH (catalog entry 5; failed the precision sample, so counted and never scored)
+    ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    sentence-final ", not Y."                           160       34       52       17       23        5       37        0    328  0.96
+    "rather than"                                       267       94       95       14       28       29       30        0    557  1.62
+
+    WORST 30 PAGES (by score; the worklist for P107–P120)
+    ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+      w/s = mean words per sentence (soft rule ≤ 18 for a lesson) · ≥35 = share of sentences of 35+ words · hits = catalog hits in the page prose · /1k = per 1,000 words (at least 500 words assumed)
+      reloc = relocation-watch words · +own = catalog hits in the page's own FAQ answers, checks, software entry, snippet comments,
+      glossary entries and inline-script prose · score = /1k + words per sentence above 18
+    page                                            words sents   w/s    ≥35  hits   /1k  reloc  +own  score
+    ml/train-test-split-and-generalization/           956    55  16.5   1.8%    15  15.7      2     9   15.7
+    stats-3/meta-analysis/                            828    34  22.2  17.6%     9  10.9      0     6   15.1
+    stats-3/cross-validation-and-overfitting/         740    30  23.0  13.3%     6   8.1      0     3   13.1
+    stats-3/difference-in-differences/               2046    81  23.7  17.3%    15   7.3      6    11   13.0
+    stats-2/multiple-regression/                     2240    98  20.6   6.1%    23  10.3      4     4   12.9
+    writing/nonsignificant-results/                  1130    68  16.0   1.5%    14  12.4      2    11   12.4
+    stats-2/multicollinearity-and-variable-selection/   1353    66  19.6  12.1%    14  10.3      2     2   11.9
+    stats-1/sampling-distributions/                   889    50  16.2   2.0%    10  11.2      1     3   11.2
+    ml/clustering-kmeans/                             904    48  18.0   2.1%    10  11.1      3     3   11.1
+    stats-3/factor-analysis-pca/                     5798   262  21.3  14.9%    43   7.4      8    16   10.7
+    methods/preregistration-and-open-science/         605    31  18.7   9.7%     6   9.9      2     9   10.6
+    stats-2/non-parametric-alternatives/             3226   150  20.2  10.0%    27   8.4      2     1   10.5
+    stats-3/effect-size-and-power/                   1247    70  16.9   5.7%    13  10.4      1     2   10.4
+    stats-2/repeated-measures-anova/                 3173   131  21.1   9.9%    23   7.2      2     3   10.3
+    stats-3/psychometric-functions/                  2403   101  22.9  14.9%    13   5.4      3     3   10.3
+    stats-1/central-limit-theorem/                   1002    55  16.1   5.5%    10  10.0      3     2   10.0
+    ml/random-forests-and-ensembles/                 1118    56  19.0   5.4%    10   8.9      0     1   10.0
+    stats-1/producing-data-and-sampling-design/      1309    67  18.7   6.0%    12   9.2      0     5    9.9
+    distributions.html                                715    39  17.4  10.3%     7   9.8      3     1    9.8
+    methods/quasi-experiments/                        958    39  23.6  10.3%     4   4.2      0     4    9.8
+    methods/from-question-to-hypothesis/              521    33  14.8   3.0%     5   9.6      0     0    9.6
+    ml/dimensionality-reduction/                      917    42  21.0  16.7%     6   6.5      1     2    9.6
+    methods/sampling-methods/                        1323    59  20.8   8.5%     9   6.8      2     3    9.6
+    methods/experimental-design-and-randomization/    667    34  18.3   2.9%     6   9.0      1     4    9.3
+    stats-3/causal-dags-and-confounding/              889    38  21.6  10.5%     5   5.6      2     2    9.3
+    writing/                                          248    11  21.2   9.1%     3   6.0      0     0    9.2
+    methods/between-vs-within-designs/                624    30  19.2  10.0%     5   8.0      0     2    9.2
+    ml/regularization-ridge-and-lasso/                989    53  17.6   3.8%     9   9.1      1     2    9.1
+    stats-1/chi-square-tests/                        1913    94  19.3   8.5%    15   7.8      4     1    9.1
+    stats-1/visualizing-data/                         999    56  16.8   5.4%     9   9.0      1     5    9.0
+    ```
+
+  - Against the addendum's scratch counts. Sentence length is lower everywhere (lesson median 18.0 against 19.9; types-of-data 11.9 against 14.6; teachers.html 22.5 against 32.4) because the tool splits at block boundaries and counts only text that ends in a stop, where the scratch script split the flat page text at full stops, so headings, labels and table cells ran into the next sentence and "=" counted as a word. Re-running the scratch method reproduces its figures (types-of-data 14.3, teachers.html 34.8). So 18 still sits at the lesson median, as it did on the scratch scale, and still marks the denser half (51 of 105 lessons). Pattern counts: honest (251 against 250), nobody (126 against 121) and hands (86 against 74) agree. genuine is higher (162 against 135) because inline strings and the glossary are now read. Four patterns grew because sampling showed a wider net was still the habit: earn 74 against 33 (every "earn", not only "earns its place/keep"), sits/lands 377 against 151 (every sits/lands, not a narrow frame), worth + -ing 102 against 46 (36 signposting verbs), reveals 84 against 54. Two shrank because sampling showed the scratch net caught ordinary English: trailing commentary 297 against 454 (the scratch counted every ", which is the…", including plain definitions), and "exactly" 34 against 169 (half of bare "exactly the/what" is a mathematical identity). ", not Y." (328) and "rather than" (557) are a little higher because inline strings are read, and they are no longer scored.
+  - CLAUDE.md: the `--manner` commands in the editorial-checkers table and one sentence in the Voice section; copied over AGENTS.md with its first paragraph kept.
+  - Gates. `audit.js` 0 errors, 20 warnings (the standing baseline). `node --check tools/prose-lint.js` clean. `prose-lint --strict` green, its report unchanged. Every `--manner` mode runs (`--page` on a lesson, a root page, a course page, a guide and all six surfaces; `--all`; `--sample`; bad input exits 2). `math-check` not required: no site content or math changed.
 - [ ] P107 · de-AI v3 — Stats 1 §1.1–§1.10 + course page (defines the pass) (Extra Powerful · Max)
 - [ ] P108 · de-AI v3 — Stats 1 §1.11–§1.18 (Extra Powerful · Max)
 - [ ] P109 · de-AI v3 — Stats 2 §2.1–§2.5 + course page (Extra Powerful · Max)
