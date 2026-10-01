@@ -200,7 +200,7 @@ window.SOFTWARE = {
       '<strong>Analyze → Compare Means → Independent-Samples T Test…</strong> (in SPSS 29+ the submenu is named <em>Compare Means and Proportions</em>).',
       'Move the outcome into <em>Test Variable(s)</em> and the group variable into <em>Grouping Variable</em>; click <em>Define Groups…</em> and enter the two codes.',
       'Tick <em>Estimate effect sizes</em> for Cohen’s d. <strong>In SPSS 31+ also tick the homogeneity-of-variance option</strong> in the same dialog: Levene’s test used to print automatically and is now opt-in.',
-      'Output shows two rows, and they are two degrees-of-freedom conventions rather than two tests: <em>Equal variances assumed</em> is the pooled t with df = n₁ + n₂ − 2, and <em>Equal variances not assumed</em> is Welch, with a fractional df of its own. Check Levene’s test first; if it is significant, read the Welch row. Many statisticians recommend simply always reading that row.',
+      'The output shows two rows. They are two degrees-of-freedom conventions, not two tests: <em>Equal variances assumed</em> is the pooled t with df = n₁ + n₂ − 2, and <em>Equal variances not assumed</em> is Welch, with a fractional df of its own. Check Levene’s test first; if it is significant, read the Welch row. Many statisticians recommend simply always reading that row.',
       'Scroll right in that same table for <em>Mean Difference</em> and the <em>95% Confidence Interval of the Difference</em>. That interval is the one APA asks you to report beside the effect size.'
     ],
     jasp: [
@@ -211,7 +211,7 @@ window.SOFTWARE = {
     ],
     apa: '<p>The treatment group (<em>M</em> = 34.1, <em>SD</em> = 8.2, <em>n</em> = 30) outperformed the control group (<em>M</em> = 29.4, <em>SD</em> = 7.6, <em>n</em> = 30), Welch’s <em>t</em>(57.7) = 2.30, <em>p</em> = .025, <em>d</em> = 0.59, 95% CI of the difference [0.6, 8.8].</p>',
     tips: [
-      'Welch’s df is usually fractional (57.7) — report it as the software gives it; that’s the signal you used the robust version.',
+      'Welch’s df is usually fractional (57.7). Report it as the software gives it, so readers can see you used Welch’s version.',
       'The conservative df an exam asks for, min(n₁ − 1, n₂ − 1), appears on neither row, so a hand answer and an SPSS answer will not match. Both are right. The hand rule deliberately uses fewer degrees of freedom, so its p is a little larger and its interval a little wider than either printed row.',
       'Report both group <em>M</em>s and <em>SD</em>s, the test, <em>p</em>, and an effect size with its CI. Significance alone is never enough.'
     ]
