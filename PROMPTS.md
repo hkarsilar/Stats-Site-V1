@@ -1979,5 +1979,502 @@ Verify: audit; prose-lint --strict; light + dark + 360px; all three block maps p
 
 ---
 
-*End of prompt library. Phases 17, 18 and 19 (P79–P105, Sep 2026) are the phases written from the outside in — and Phase 19 is the first of them to find a whole third of a real course missing from the site rather than merely spoken in the wrong dialect: a real course's slides and syllabus read against the site, and the site brought to speak the textbook dialect its students are examined in. After P72 the site is built: 9 courses with landing pages, 97 interactive lessons, an exam mode, a 43-problem worked-problems library, 20+ tools, 5 guides, 3 posters, print/offline/a11y polish, instructor embeds that carry their configuration, math under regression test, honest analytics honestly disclosed, and forgiving search. From there the roadmap IS the loops — P37 (waiting on a Search Console export), P38 quarterly (its next run should sweep the P61–P68 surfaces), P39 refresh — plus the human-only checklist, which is now the growth engine: distribution, not construction. Phases 12–15 (P49–P72) were review-driven punch-lists; anything proposed beyond them should have to argue its way past "the site doesn't need it". Phase 16 (P73–P78) argued its way past it with a measurement: the de-AI job was budget-met, not finished — a paydown and a provenance fix, not a feature.*
+## Phase 20 — De-AI round three: the Opus 5 voice (P106–P133)
 
+Phases 10 and 16 removed the older AI tells: em-dash frequency, "Here's the…", the contrast punch, verdict-word FAQ openers. Those budgets are still green. The site still reads as machine-written because most of it was written by Claude Opus 5, and that model has a voice of its own that the old rules do not measure. Its habits are well documented on Reddit, Hacker News and in Anthropic's own prompting guide. ROADMAP.md's Phase 20 addendum has the research, the sources, the counts on this site, a catalog of the habits, and before/after examples.
+
+P106 writes the standard and builds the measuring stick. P107 is the first editing pass and defines how every later pass works. P108–P132 apply the same pass to the rest of the site in chunks of roughly 10,000–18,000 words, so that each session can read every sentence in its chunk. P133 measures the result and closes the phase.
+
+**Rules for the whole phase:**
+
+- **The iron rule, unchanged since Phase 10.** Prose only. No number, statistical claim, formula, code block, element id/class/anchor, link target or interactive behavior may change. A technical qualifier survives every rewrite with the same meaning.
+- **The Phase 16 guardrail.** De-AI is style, never a claim. Nothing may say or imply that a person wrote a page. The About section and `privacy.html` stay exactly as accurate as they are.
+- **Save tokens.** Every prompt tells the session to read only VOICE.md, the Phase 20 addendum and this Phase 20 section, not all of ROADMAP.md and PROMPTS.md. CLAUDE.md loads on its own and cannot be skipped.
+- **The planning docs are not a style model.** CLAUDE.md, ROADMAP.md and PROMPTS.md are internal notes written in the voice this phase removes. A session that has just read 25,000 words of CLAUDE.md will drift toward that voice unless it is told not to.
+- **One at a time.** Every pass edits `tools/faq_data.py`, `assets/js/checks.js`, `assets/js/software.js` and the search index, so sessions must not run in parallel.
+
+**Order:** P106 first. P107 second, because its report shows whether the method works before 25 more sessions repeat it. Then P108–P132 in any order, one at a time. P133 last.
+
+### P106 — Round three's baseline: the catalog, the exemplars, prose-lint `--manner`
+
+**→ Powerful · Extra**
+
+```
+StatsCapybara roadmap prompt P106 (see ROADMAP.md, Phase 20 addendum). To save tokens, read only VOICE.md, tools/prose-lint.js, the Phase 20 addendum in ROADMAP.md and the Phase 20 section of PROMPTS.md. Do not read the rest of ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --strict first; both should be clean.
+
+The site still reads as AI-written, but the cause has changed. Phases 10 and 16 removed the older tells and their budgets are still green. What is left is the voice of Claude Opus 5, which wrote most of the site. This prompt writes the standard and builds the measuring stick. P107–P132 do the editing. Do not change any site content in this prompt.
+
+1. VOICE.md: add a section called "Round three (P106): the Opus 5 voice". Write it plainly; it is the model every later session copies. It should contain:
+   - What mannered prose is, in Anthropic's words from the Fable 5.1 prompting guide: prose that "substitutes metaphor and flourish for direct statement", as in "a dial worth turning" for "a parameter worth varying". The guide's one-line fix, "Please remove all mannered prose", is the instruction for this whole round.
+   - The catalog from the addendum. Give each entry one real example from this site and its plain rewrite. Measure each entry in context before you list it (the "What not to build" rule still applies). Two known exceptions: "honestly significant difference" is Tukey's HSD, a term; and in the Ethics course "honest" is often the subject, not a tic.
+   - The exemplar pairs from the addendum. Check that every rewrite keeps its fact. Add a few pairs of your own from pages you read.
+   - Three new anti-rules. Do not relocate a tic into a synonym (honest → fair, sits → lies, "is what makes" → "is how"). Do not add bold lead-ins or new bullet lists (Opus 5.5's own measured habit). Do not overcorrect into fragments, slang, exclamation marks or a forced casual tone.
+   - Sentence length as a soft rule: a lesson's mean should be 18 words per sentence or less, and a sentence over about 35 words gets split unless it is a list or a formula. The site's plainer older pages sit at 14–16 words (types-of-data, variables-and-operationalization, data-cleaning-workflow); the Opus 5 pages sit at 23–32.
+   - Who the site talks to: the student, as "you". "A reader" is right only when it means the reader of the student's paper.
+   - One line: CLAUDE.md, ROADMAP.md and PROMPTS.md are internal notes in the voice this round removes, and never a style model for site prose.
+
+2. tools/prose-lint.js v3: add a report-only --manner mode. Nothing in it gates --strict yet. It covers every page and surface prose-lint already scans (pages, FAQ answers, checks.js, software.js, glossary-data.js, snippets comments, inline-script strings) and reports:
+   - mean words per sentence, and the share of sentences of 35 words or more;
+   - the rate per 1,000 words of each catalog pattern, from a MANNER table at the top of the script. That table mirrors the catalog in VOICE.md, and both files say so, the way PATTERNS already does;
+   - a combined manner score per page;
+   - a separate "relocation watch" line that counts the likely synonyms a lazy pass would swap in (instead of, fair/fairly, lies at/in, is how, plainly, truly), so a later pass that swaps words without fixing sentences shows up.
+   Output: a sitewide summary with lesson medians, a worst-30 worklist, and --manner --page <path> listing every hit as a »snippet«.
+   Measure each pattern before you keep it, the P73 way: run it over the corpus, read 10 random hits in context, and keep it only if most hits are the habit and not ordinary statistical English. Record the result in a comment beside the pattern ("honest: 17 of 20 sampled hits evaluative"). Drop the ones that fail.
+
+3. Run it. Paste the sitewide summary, the lesson medians and the worst-30 list into your report and under P106's tick in ROADMAP.md. Compare with the addendum's scratch counts and explain any large difference.
+
+4. CLAUDE.md: add the --manner commands to the Commands block and one sentence to the Voice note. Change nothing else in CLAUDE.md.
+
+Verification: node tools/audit.js 0 errors; node --check tools/prose-lint.js; prose-lint --strict still green, since nothing new gates; every --manner mode runs. Tick P106 in ROADMAP.md, then commit and push to main (CLAUDE.md's "Finishing a session" rule).
+```
+
+### P107 — Opus 5 pass: Stats 1 §1.1–§1.7 (defines the pass)
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P107 (see ROADMAP.md, Phase 20 addendum). Requires P106. To save tokens, read only VOICE.md (all of it, it is short), the Phase 20 addendum in ROADMAP.md and the Phase 20 section of PROMPTS.md. Do not read the rest of ROADMAP.md or PROMPTS.md. CLAUDE.md, ROADMAP.md and PROMPTS.md are internal notes written in the voice this pass removes: do not copy their style. Run node tools/audit.js and node tools/prose-lint.js --manner first, and keep this batch's numbers as the "before".
+
+Scope: Stats 1 §1.1–§1.7 (read curriculum.js for the slugs) and the course landing page stats-1/index.html. For each lesson, every surface a student reads:
+- the lesson body: prose, callouts, captions, viz titles and subtitles, and the sentences its inline script prints (verdicts, interpretations, captions);
+- its three FAQ answers in tools/faq_data.py. Edit them there and run ./tools/inject-faqs.py; never hand-edit the FAQ block in the HTML. Leave the questions alone unless one is mannered, because they are written to match search queries;
+- its three checks.js entries (question, options, why);
+- its software.js entry if it has one (steps and tips; the APA sentence's numbers and typography are untouchable, the words around them are not);
+- its snippets.js comments, a quick skim only;
+- its meta description, only if it is mannered. Keep it 50–160 characters and unique sitewide, and keep the og:, twitter: and JSON-LD copies identical.
+The glossary, the quiz bank and problems.html have their own prompts later; leave them alone.
+
+What the pass is for: remove mannered prose. The reader is a student who wants the statistics explained plainly. Do not hunt em-dashes or "Here's the…" here; Phases 10 and 16 already did that and prose-lint --strict keeps it that way.
+
+Method, paragraph by paragraph:
+1. Work out what the paragraph claims. If you cannot say it in one plain sentence, restructure the paragraph before you touch its wording.
+2. Leave plain sentences alone. Most sentences on this site are fine. Rewriting everything only produces a new uniform voice.
+3. Find the sentences that match the catalog in VOICE.md: stock evaluatives (honest/honestly, genuine/genuinely, earns its place/keep, "the real X", worth + -ing); "X is what makes Y" reveals; trailing ", which is why/what/the…" commentary; closing lines that restate the paragraph as a slogan; ", not Y." tails; physical metaphors for statistics (sits, lands, carries, hands you, buys, pays, costs); tests and software described as if they act or want things; labels used before they are defined; paragraphs that hold the point back and reveal it at the end.
+4. Fix each one by stating the literal claim, or delete it if it only repeats the sentence before. If a metaphor was hiding a real fact, write the fact out. The exemplars in VOICE.md show both moves.
+5. Split sentences over about 35 words. The lesson mean should end at 18 words per sentence or less. Keep the lengths varied; a page of only short sentences is its own tic.
+6. Talk to the student as "you". Keep "a reader" only where it means the reader of the student's paper.
+7. Cut sentences about the site itself ("the widget's frozen default", "measured over 40 loads", "the page prints a dash because…") unless the student needs them to use the page.
+
+Do not move the tic somewhere else. Swapping a word for its synonym (honest → fair, rather than → instead of, sits → lies, is what makes → is how) leaves the habit in place, and the relocation watch in --manner will show it. If the sentence needed the word, keep it. If it did not, cut it.
+
+Do not overcorrect. VOICE.md's anti-rules apply, plus: no sentence fragments for effect; no slang or forced casualness ("basically", "super", "pretty much"); no exclamation marks; no new bullet lists or bold lead-ins; no semicolon swaps; no invented anecdotes, opinions or hints that a person wrote the page. Keep the warmth, the capybara and the quips.
+
+The iron rule: prose only. Never change a number, statistical claim, formula, code, element id/class/anchor, link target, or how an interactive behaves. A qualifier ("under equal variances", "given the null") keeps its meaning. In an inline script, edit only display text: never a string the code compares, parses or keys on, and never a literal marker that tools/math-check.js uses to find a script.
+
+Word count should go down. Expect 10–25% less on long, dense lessons and little change on lessons that are already plain.
+
+Verification:
+- node tools/audit.js 0 errors; node tools/prose-lint.js --strict green.
+- node tools/prose-lint.js --manner: paste a before/after table for every page in scope (words, mean sentence length, share of sentences ≥ 35 words, catalog hits per 1,000 words, relocation-watch hits).
+- The editorial checkers end where they started: node tools/widget-terms.js --strict, link-promises.js --strict, symbol-names.js --strict, untaught-names.js --strict, search-reach.js --strict, faq-audit.js --strict. A new flag means an edit deleted something that was teaching. Put it back.
+- If you touched an inline script: node --check its largest <script> block (the CLAUDE.md one-liner), round-trip its controls, and run node tools/math-check.js.
+- ./tools/build-search-index.py once at the end.
+- Open two edited lessons in the preview, light and dark: the prose renders, the FAQ opens, the checks score, no console errors.
+- In the report: five before/after sentence pairs from this batch, and your verdict after reading one rewritten lesson start to finish. Say plainly if any part still reads machine-written.
+
+Tick P107 in ROADMAP.md, then commit and push to main (CLAUDE.md's "Finishing a session" rule).
+```
+
+### P108 — Opus 5 pass: Stats 1 §1.8–§1.13
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P108 (see ROADMAP.md, Phase 20 addendum). Requires P106 and P107. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md (P107 has the full method). Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner first and keep this batch's "before".
+
+The same pass as P107 (same surfaces per lesson, method, anti-rules, iron rule and verification), applied to Stats 1 §1.8–§1.13: binomial distribution, sampling distributions, central limit theorem, confidence intervals, hypothesis-testing logic, one-sample and paired t-tests.
+
+Extra care: these lessons define the p-value, the confidence level and the null hypothesis. Those definitions are where students lose marks, so every one must keep its exact meaning ("assuming the null is true", "95% of intervals built this way", "fail to reject"). Shorten the sentences around a definition; do not reword the definition itself unless it is mannered, and then keep every condition in it.
+
+Tick P108 in ROADMAP.md, then commit and push to main.
+```
+
+### P109 — Opus 5 pass: Stats 1 §1.14–§1.18
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P109 (see ROADMAP.md, Phase 20 addendum). Requires P106 and P107. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md (P107 has the full method). Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner first and keep this batch's "before".
+
+The same pass as P107, applied to Stats 1 §1.14–§1.18: independent-samples t-test, inference for proportions, chi-square tests, correlation, simple linear regression.
+
+Extra care: the "exam way" and "textbook" labels from Phase 17 (the conservative df, the success-failure condition, Table D bracket readings) are terms students are tested on, not tics; keep them. math-check section 11 drives chi-square's Build a Table widget and audit CHECK 9 checks every APA sentence's p, so run math-check whether or not you think you touched a script.
+
+Tick P109 in ROADMAP.md, then commit and push to main.
+```
+
+### P110 — Opus 5 pass: Stats 2 §2.1–§2.3
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P110 (see ROADMAP.md, Phase 20 addendum). Requires P106 and P107. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md (P107 has the full method). Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner first and keep this batch's "before".
+
+The same pass as P107, applied to Stats 2 §2.1–§2.3 (non-parametric alternatives, one-way ANOVA, post-hoc tests) and the course landing page stats-2/index.html.
+
+These three are among the densest pages on the site (2,800–3,400 words each, means of 23–24 words per sentence) and were written late, in the Opus 5 voice at its strongest. Expect the largest cuts of the phase here. Post-hoc tests is the source of several exemplars in the addendum ("Red tiles are the lies your data just told you", "the practical dividend the omnibus table pays", "honest arithmetic").
+
+Extra care: math-check sections 12–14 drive the Build the ANOVA Table and Contrast Builder widgets and read their output back. Edit only display text in those scripts, keep every marker string, and run node tools/math-check.js at the end.
+
+Tick P110 in ROADMAP.md, then commit and push to main.
+```
+
+### P111 — Opus 5 pass: Stats 2 §2.4–§2.7
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P111 (see ROADMAP.md, Phase 20 addendum). Requires P106 and P107. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md (P107 has the full method). Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner first and keep this batch's "before".
+
+The same pass as P107, applied to Stats 2 §2.4–§2.7: factorial ANOVA, repeated-measures ANOVA, assumptions and when they break, inference for regression.
+
+Extra care: math-check sections 15 and 16 drive the factorial and repeated-measures widgets (the repeated-measures script is found by the literal "rm-t2"; keep it). The SPSS output readings in software.js for these lessons name real table rows ("Tests of Within-Subjects Effects", "Error(factor)"); those are quotations from the software and stay exact. Run node tools/math-check.js at the end.
+
+Tick P111 in ROADMAP.md, then commit and push to main.
+```
+
+### P112 — Opus 5 pass: Stats 2 §2.8–§2.17
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P112 (see ROADMAP.md, Phase 20 addendum). Requires P106 and P107. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md (P107 has the full method). Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner first and keep this batch's "before".
+
+The same pass as P107, applied to the ten remaining Stats 2 lessons, §2.8–§2.17: regression diagnostics, multiple regression, categorical predictors, interactions, multicollinearity, assumptions of regression, model comparison, ANCOVA, logistic regression, nonlinear relationships.
+
+Most of these lessons are short. Multiple regression (2,365 words) is the exception: it carries the omitted-variable bias section from P93 and needs the full treatment.
+
+Extra care: math-check section 17 drives the multiple-regression widget (found by the literal "mr-canvas") and recomputes §2.10's ANOVA-as-regression numbers from the shipped CSV. Run node tools/math-check.js at the end.
+
+Tick P112 in ROADMAP.md, then commit and push to main.
+```
+
+### P113 — Opus 5 pass: Stats 3 §3.1–§3.5
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P113 (see ROADMAP.md, Phase 20 addendum). Requires P106 and P107. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md (P107 has the full method). Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner first and keep this batch's "before".
+
+The same pass as P107, applied to Stats 3 §3.1–§3.5 (effect size and power, power for complex designs, mediation, MANOVA, factor analysis and PCA) and the course landing page stats-3/index.html.
+
+Factor analysis and PCA is the longest lesson on the site (about 6,000 words, mean 23 words per sentence). Give it most of the session. Look for paragraphs that explain the same idea twice in different words; P97 and P98 each added a layer, and the joins between layers are where repetition sits.
+
+Extra care: math-check sections 18 and 19 drive Loadings In, Correlations Out and the Rotation Dial (found by the literals "lc-obs" and "rot-canvas"), and section 19 reads the sixteen frozen loadings out of the page. Keep every marker and number. Pattern matrix, structure matrix, communality, uniqueness and the fit test's df are terms students are examined on; keep each one named where it is defined. Run node tools/math-check.js at the end.
+
+Tick P113 in ROADMAP.md, then commit and push to main.
+```
+
+### P114 — Opus 5 pass: Stats 3 §3.6–§3.12
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P114 (see ROADMAP.md, Phase 20 addendum). Requires P106 and P107. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md (P107 has the full method). Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner first and keep this batch's "before".
+
+The same pass as P107, applied to Stats 3 §3.6–§3.12: bootstrap, Bayesian thinking, Bayesian estimation, generalized linear models, mixed and multilevel models, cross-validation, causal DAGs.
+
+Extra care: math-check section 20 recomputes the nine-row Bayes table printed in bayesian-thinking's prose, cell by cell, and drives its widget (found by the literal "bh-canvas"). Do not touch the table or any number around it. Bayesian statements are easy to bend while shortening: "the probability the parameter lies in this interval" and "95% of such intervals" mean different things, so check each rewritten sentence says which one it means. Run node tools/math-check.js at the end.
+
+Tick P114 in ROADMAP.md, then commit and push to main.
+```
+
+### P115 — Opus 5 pass: Stats 3 §3.13–§3.15, the causal trio
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P115 (see ROADMAP.md, Phase 20 addendum). Requires P106 and P107. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md (P107 has the full method). Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner first and keep this batch's "before".
+
+The same pass as P107, applied to the three causal-inference lessons written in P100–P102: instrumental variables, regression discontinuity, difference-in-differences. They are the newest pages on the site and difference-in-differences has the longest sentences of any lesson (25 words on average).
+
+Edit the three as a set, in one voice: they share vocabulary and point at each other. Two exemplars in the addendum come from difference-in-differences ("Of all the causal designs, this is the one whose output looks least like an achievement", and "the check that the model has spent every number on something").
+
+Extra care: the assumptions have names students must learn (relevance, independence, exclusion; continuity at the cutoff, no manipulation; parallel trends). Keep each name where it is introduced. The widgets draw fresh samples on each load, so any sentence quoting a readout as a range stays a range. The ?preset parameters these lessons document in comments stay exactly as they are.
+
+Tick P115 in ROADMAP.md, then commit and push to main.
+```
+
+### P116 — Opus 5 pass: Stats 3 §3.16–§3.20
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P116 (see ROADMAP.md, Phase 20 addendum). Requires P106 and P107. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md (P107 has the full method). Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner first and keep this batch's "before".
+
+The same pass as P107, applied to Stats 3 §3.16–§3.20: survival analysis, missing data, meta-analysis, psychometric functions, signal detection theory.
+
+Extra care: psychometric functions and signal detection theory are long (about 2,400 and 2,200 words) and their widgets print many readouts. widget-terms.js checks that each printed quantity is explained in the prose, so run it at --strict before and after and make sure every explanation survives the edit.
+
+Tick P116 in ROADMAP.md, then commit and push to main.
+```
+
+### P117 — Opus 5 pass: ML & AI 1–6
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P117 (see ROADMAP.md, Phase 20 addendum). Requires P106 and P107. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md (P107 has the full method). Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner first and keep this batch's "before".
+
+The same pass as P107, applied to the first six ML & AI lessons (prediction vs explanation, train/test split, regularization, classification metrics, ROC curves, decision trees) and the course landing page ml/index.html.
+
+Extra care: "leverage" and "robust" are statistics vocabulary here, not consultant-speak (VOICE.md's "What not to build" note). The same goes for "bias", "variance" and "overfitting".
+
+Tick P117 in ROADMAP.md, then commit and push to main.
+```
+
+### P118 — Opus 5 pass: ML & AI 7–12
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P118 (see ROADMAP.md, Phase 20 addendum). Requires P106 and P107. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md (P107 has the full method). Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner first and keep this batch's "before".
+
+The same pass as P107, applied to the last six ML & AI lessons: random forests, k-NN, k-means clustering, dimensionality reduction, neural networks, LLMs and AI in research.
+
+Extra care: llms-and-ai-in-research is a page about AI written by an AI, so a student is most likely to notice the voice there. Give it the deepest pass in this batch. Its "Spot the fabricated citation" exercise contains two real references checked at their DOIs (see CLAUDE.md); do not touch any reference text. Its legitimate mentions of Claude and ChatGPT stay.
+
+Tick P118 in ROADMAP.md, then commit and push to main.
+```
+
+### P119 — Opus 5 pass: Methods
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P119 (see ROADMAP.md, Phase 20 addendum). Requires P106 and P107. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md (P107 has the full method). Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner first and keep this batch's "before".
+
+The same pass as P107, applied to the twelve Methods lessons and the course landing page methods/index.html.
+
+Extra care: these lessons tell stories (Clever Hans, WEIRD samples, the replication crisis). Every historical fact and cited figure keeps its meaning. Scenario text inside interactives is in scope; the logic that scores a scenario right or wrong is not, so round-trip any interactive you touch.
+
+Tick P119 in ROADMAP.md, then commit and push to main.
+```
+
+### P120 — Opus 5 pass: Data
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P120 (see ROADMAP.md, Phase 20 addendum). Requires P106 and P107. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md (P107 has the full method). Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner first and keep this batch's "before".
+
+The same pass as P107, applied to the ten Data lessons and the course landing page data/index.html.
+
+Extra care: "silently" is used in this course for real failure modes (a join that silently drops rows, listwise deletion that silently discards cases), and it was also the word Phase 10 suggested in place of "quietly". Keep it where the silence is the point (no warning, no error message); cut it where it is decoration. Code shown in the cleaning lessons is untouchable.
+
+Tick P120 in ROADMAP.md, then commit and push to main.
+```
+
+### P121 — Opus 5 pass: Ethics
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P121 (see ROADMAP.md, Phase 20 addendum). Requires P106 and P107. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md (P107 has the full method). Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner first and keep this batch's "before".
+
+The same pass as P107, applied to the eight Ethics lessons and the course landing page ethics/index.html.
+
+Extra care: the Ethics course keeps its sober register; removing mannered phrasing must not add lightness. Honesty is the subject of several lessons, so "honest" is often the right word here: keep it where it describes research conduct, cut it where it is a stock evaluative ("the honest default", "the honest word is"). Tuskegee, Milgram, Stapel and the other cases keep every fact. ai-in-research-ethics is about AI and is one of the pages a student is most likely to read with suspicion; give it the deepest pass.
+
+Tick P121 in ROADMAP.md, then commit and push to main.
+```
+
+### P122 — Opus 5 pass: Writing
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P122 (see ROADMAP.md, Phase 20 addendum). Requires P106 and P107. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md (P107 has the full method). Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner first and keep this batch's "before".
+
+The same pass as P107, applied to the eight Writing lessons and the course landing page writing/index.html.
+
+Extra care: this course teaches students how to write. After the pass, its advice and its own prose must agree. Check two things explicitly and report them: that no lesson's advice recommends a move from the catalog (a closing line that restates the paragraph as a slogan, a stock evaluative), and that each lesson follows its own advice. "A reader" is correct in much of this course, because it means the reader of the student's paper. The find-the-errors exercises contain deliberate mistakes (for example "Smith (2019)" in final-checklist); keep them.
+
+Tick P122 in ROADMAP.md, then commit and push to main.
+```
+
+### P123 — Opus 5 pass: guides I
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P123 (see ROADMAP.md, Phase 20 addendum). Requires P106 and P107. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md (P107 has the full method). Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner first and keep this batch's "before".
+
+The same pass as P107, applied to the three long guides: guides/reading-a-causal-paper, guides/anova-and-regression-project and guides/complete-worked-project (about 11,400 words together). A guide has no FAQ, checks or software entry; the page itself is the whole scope, plus its meta description.
+
+Extra care:
+- The H2/H3 headings match search queries; edit the body, not the headings.
+- Every number in a mock output table or worked step stays byte-identical. anova-and-regression-project prints t(147) = −0.275 to three decimals on purpose (audit CHECK 9 fails at two); keep it.
+- reading-a-causal-paper's worked study is invented and says so to the reader. Keep that statement. Its checklist section prints alone on one page through a page-local print path; shorter text can only help, but if any paragraph there gets longer, re-measure the print fit the P30 way.
+
+Rerun ./tools/build-search-index.py at the end. Tick P123 in ROADMAP.md, then commit and push to main.
+```
+
+### P124 — Opus 5 pass: guides II, the guides hub and the posters
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P124 (see ROADMAP.md, Phase 20 addendum). Requires P106 and P107. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md (P107 has the full method). Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner first and keep this batch's "before".
+
+The same pass as P107, applied to the four shorter guides (spss-output-to-apa, analyze-thesis-data-jasp, clean-survey-data, choose-statistics-dissertation), the guides hub guides/index.html, and the three posters (cheat-test-chooser.html, cheat-apa.html, cheat-assumptions.html).
+
+Extra care: guide headings stay (search queries); every number in a mock SPSS or JASP table stays. Posters are terse reference text and cheat-apa.html has the longest sentences of any page its size (26 words on average), so shorten there, but keep every APA rule exact. Re-verify that each poster still fits one page at A4 and US Letter by the P30/P35 CSSOM method if any text got longer. Rerun ./tools/build-search-index.py at the end.
+
+Tick P124 in ROADMAP.md, then commit and push to main.
+```
+
+### P125 — Opus 5 pass: teachers.html, the homepage and the site's own pages
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P125 (see ROADMAP.md, Phase 20 addendum). Requires P106 and P107. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md (P107 has the full method). Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner first and keep this batch's "before".
+
+The same method as P107, applied to:
+- teachers.html (7,250 words, the longest sentences on the site at 32 words on average). It is written for instructors, who are the most likely visitors to recognize the voice.
+- privacy.html and license.html.
+- index.html (hero, About section, accessibility statement), toolbox.html, and the copy on quiz.html, flashcards.html, progress.html, glossary.html, 404.html and offline.html (not the quiz bank or the glossary definitions; later prompts own those).
+- Reader-facing strings in assets/js/site.js: TOOLBOX descriptions, TOOLBOX_GROUPS blurbs, search empty states, the resume banner, footer links, certificate wording. QUIPS are brand voice and stay exempt. The TRACKS desc lines in curriculum.js are prose and in scope; course titles and subtitles are not (audit check 7 matches them against the homepage JSON-LD).
+
+Extra care:
+- teachers.html: the block maps, preset tables and copy-ready links are untouchable apart from their prose cells. The sentences that quote widget readouts as ranges measured over repeated loads can be shortened (an instructor needs the range, not how it was measured) but each range stays as it is. Each block map prints on one page; shorter text can only help, but if a cell grows, re-measure the print fit.
+- privacy.html: every statement about what is collected and what is not keeps its exact meaning. This page is a commitment to students; edit style only. The H1 brand line and its <title>/og copies stay (the P46 precedent).
+- If site.js changes, bump CACHE_VERSION in sw.js (a new string, never one used before).
+
+Rerun ./tools/build-search-index.py at the end. Browser-check the homepage, teachers.html and privacy.html in light and dark, plus one search with no results to see the empty-state text. Tick P125 in ROADMAP.md, then commit and push to main.
+```
+
+### P126 — Opus 5 pass: the tool pages
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P126 (see ROADMAP.md, Phase 20 addendum). Requires P106 and P107. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md (P107 has the full method). Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner first and keep this batch's "before".
+
+The same method as P107, applied to the tool pages' prose and their reader-facing inline-script strings: formulas.html (the captions and notes, never a formula), tables.html, distributions.html (including the dice lab), datasets.html (stories and worked solutions; every number untouchable), apa.html, power.html, descriptives.html, correlation.html, effect-sizes.html, which-test.html and plan.html (including the leaf recommendations in their NODES/LEAVES scripts), and which-chart.html.
+
+Extra care:
+- UI microcopy (button labels, control labels, table headers, seg options) is chrome; leave its wording alone unless it is mannered prose.
+- math-check sections 8, 9 and 10 drive distributions.html, tables.html and descriptives.html and find their scripts by literal markers ("tb-a-body", "ntb-u5-body" and others). Run node tools/math-check.js at the end.
+- The which-test and plan leaves are prescriptions. Run node tools/prescription-terms.js --strict and node tools/destination-promises.js --strict before and after; a new flag means a method name or a link got separated from what teaches it.
+- formulas.html prints at five pages for A4 and Letter; if any caption gets longer, re-measure.
+
+Rerun ./tools/build-search-index.py at the end. Do one real calculation on power.html, descriptives.html and apa.html to show nothing changed. Tick P126 in ROADMAP.md, then commit and push to main.
+```
+
+### P127 — Opus 5 pass: problems.html I (problems 1–33)
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P127 (see ROADMAP.md, Phase 20 addendum). Requires P106 and P107. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md (P107 has the full method). Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner --page problems.html first and keep the "before".
+
+problems.html holds 61,000 words, a quarter of the site's prose, so it is split over four prompts by problem set. This one covers the page's intro and index plus the first two sets: Stats 1 (badges 1–25) and the Stats 1 exam-style set (badges 26–33), about 16,500 words.
+
+The same method as P107, applied to the scenario text, the sub-questions, the prose between solution steps, the decision sentences and the answer lines.
+
+Extra care:
+- Every number in every step stays exactly as it is, and so does every formula line.
+- The HTML comments carrying each problem's verification one-liners are not reader-visible; leave them alone.
+- Problem numbers: audit CHECK 11 matches every "Problem N" reference to its badge. Do not renumber or move a card, and keep each card inside its <section class="pb-set">.
+- A decision sentence ("reject H₀: the evidence suggests…") is what a student copies into an exam answer, so keep it complete and correct while you shorten it.
+
+Rerun ./tools/build-search-index.py at the end. In the browser, open three solutions and use "Print problems" once to check the print path still hides solutions. Tick P127 in ROADMAP.md, then commit and push to main.
+```
+
+### P128 — Opus 5 pass: problems.html II (problems 34–62)
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P128 (see ROADMAP.md, Phase 20 addendum). Requires P106, P107 and P127. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md (P107 has the method, P127 the problems.html rules). Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner --page problems.html first and keep the "before".
+
+The same pass as P127, applied to the Stats 2 set (badges 34–54) and the Stats 2 exam-style set (badges 55–62), about 18,000 words. Match the voice P127 settled on for the first two sets.
+
+Tick P128 in ROADMAP.md, then commit and push to main.
+```
+
+### P129 — Opus 5 pass: problems.html III (problems 63–86)
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P129 (see ROADMAP.md, Phase 20 addendum). Requires P106, P107 and P127. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md (P107 has the method, P127 the problems.html rules). Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner --page problems.html first and keep the "before".
+
+The same pass as P127, applied to the Regression set (badges 63–73) and the Advanced set (badges 74–86), about 14,800 words.
+
+Tick P129 in ROADMAP.md, then commit and push to main.
+```
+
+### P130 — Opus 5 pass: problems.html IV (problems 87–100)
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P130 (see ROADMAP.md, Phase 20 addendum). Requires P106, P107 and P127. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md (P107 has the method, P127 the problems.html rules). Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner --page problems.html first and keep the "before".
+
+The same pass as P127, applied to the Stats 3 set (badges 87–94) and the Research Toolkit set (badges 95–100), about 11,500 words. Then read the page's intro and the first and last problem of each of the eight sets in a row, and smooth any set that now sounds different from the others.
+
+Tick P130 in ROADMAP.md, then commit and push to main.
+```
+
+### P131 — Opus 5 pass: the glossary
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P131 (see ROADMAP.md, Phase 20 addendum). Requires P106 and P107. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md (P107 has the full method). Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner --page assets/js/glossary-data.js first and keep the "before".
+
+The same method as P107, applied to every definition in assets/js/glossary-data.js (about 18,000 words). A definition is the most reference-like text on the site, so it should be the plainest: the first sentence says what the term is, the rest says how it is used or how it differs from a neighbor. The tails the addendum lists ("…rather than a gap somewhere nobody stands", "dividing by it is what makes the posterior sum to 1") are common here.
+
+Extra care:
+- Never change a term string. It is the key for the glossary's anchors, for glossSlug in site.js and for the flashcards' sc-cards storage, so an edited term would orphan students' saved progress.
+- Never change a back-link ({ s, l }).
+- The glossary text is indexed for search: run node tools/search-reach.js --strict before and after, and rerun ./tools/build-search-index.py at the end.
+
+Browser-check glossary.html (filter, A–Z bar, print) and flashcards.html (one card flipped). Tick P131 in ROADMAP.md, then commit and push to main.
+```
+
+### P132 — Opus 5 pass: the quiz bank and the snippet comments
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P132 (see ROADMAP.md, Phase 20 addendum). Requires P106 and P107. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md (P107 has the full method). Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner first and keep the "before" for the inline-script and snippets surfaces.
+
+The same method as P107, applied to:
+- quiz.html's BANK (280 questions): the question text, the four options and the why. A question's correct option must stay correct and every wrong option must stay wrong; the a index, the c course tag and the s section tag are untouchable.
+- the comments in assets/js/snippets.js across all lessons (the code itself is never touched).
+- any reader-facing inline-script strings on lesson or tool pages that the earlier passes left mannered. Use node tools/prose-lint.js --manner --page inline-scripts as the worklist.
+
+Extra care: options shuffle at render time, so an option must not depend on its position ("both of the above"). Keep each why to what the student needs to see why the answer is right.
+
+Run node --check on quiz.html's largest script block and on snippets.js. Play one practice quiz and one 10-question exam to the end in the browser. Tick P132 in ROADMAP.md, then commit and push to main.
+```
+
+### P133 — Round three's finisher: measure, look for new tics, cold read
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P133 (see ROADMAP.md, Phase 20 addendum). Requires P106–P132; run it last. To save tokens, read only VOICE.md, the Phase 20 addendum and the Phase 20 section of PROMPTS.md. Do not copy the style of CLAUDE.md, ROADMAP.md or PROMPTS.md. Run node tools/audit.js and node tools/prose-lint.js --manner first.
+
+1. Re-measure sitewide against P106's baseline: lesson median sentence length, the share of sentences ≥ 35 words, every catalog pattern, the relocation watch, and total words. Paste the table into the report and under P133's tick.
+
+2. Look for new tics. Twenty-six sessions of one model editing one site tend to settle on a new set of shared phrases. Compare word 3- and 4-grams between P106's baseline and now, and list the 20 phrases whose sitewide count rose the most (candidates: "This means", "In practice", "The key", "In other words", "That said", "Note that", "In short"). Also run node tools/prose-lint.js --duplicates. Thin out any phrase that now reads like a template.
+
+3. Promote to hard budgets only what is unambiguous after measurement, with prose-lint's tables and VOICE.md changed in the same commit. Likely candidates: "load-bearing" 0, "earns its place/keep" 0, "X is what makes Y" at most 1 per page. Keep judgment metrics report-only (sentence length, "rather than", "a reader"), following faq-audit's precedent that gating a judgment teaches the next session to write around it.
+
+4. Cold read. Pick nine paragraphs: three rewritten in this phase, three from the older plain pages (types-of-data, variables-and-operationalization, data-cleaning-workflow) and three at random. Give them shuffled and unlabeled to a fresh subagent that has no project context, and ask it to mark every sentence it would guess was machine-written and say why. Fix what it flags in the rewritten set if the flag holds up. Report its verdicts, including any on the older pages.
+
+5. Apply the fixes from steps 2–4. Run ./tools/inject-faqs.py if any FAQ changed, ./tools/build-search-index.py, and every editorial checker at --strict.
+
+6. Update CLAUDE.md's Voice note in two or three plain sentences about round three, and add one line to ROADMAP.md's human-only checklist: ask two students to read three lessons cold and mark anything that still sounds generated, and feed the marks into the next P39 run.
+
+Verification: node tools/audit.js 0 errors; prose-lint --strict green; node tools/math-check.js passes; browser-check the homepage, one lesson from each course and problems.html. Tick P133 in ROADMAP.md, then commit and push to main.
+```
+
+---
+
+*End of prompt library. Phases 17, 18 and 19 (P79–P105, Sep 2026) are the phases written from the outside in — and Phase 19 is the first of them to find a whole third of a real course missing from the site rather than merely spoken in the wrong dialect: a real course's slides and syllabus read against the site, and the site brought to speak the textbook dialect its students are examined in. After P72 the site is built: 9 courses with landing pages, 97 interactive lessons, an exam mode, a 43-problem worked-problems library, 20+ tools, 5 guides, 3 posters, print/offline/a11y polish, instructor embeds that carry their configuration, math under regression test, honest analytics honestly disclosed, and forgiving search. From there the roadmap IS the loops — P37 (waiting on a Search Console export), P38 quarterly (its next run should sweep the P61–P68 surfaces), P39 refresh — plus the human-only checklist, which is now the growth engine: distribution, not construction. Phases 12–15 (P49–P72) were review-driven punch-lists; anything proposed beyond them should have to argue its way past "the site doesn't need it". Phase 16 (P73–P78) argued its way past it with a measurement: the de-AI job was budget-met, not finished — a paydown and a provenance fix, not a feature. Phase 20 (P106–P133) is a third de-AI round. It targets the habits of the model that wrote most of the site, Claude Opus 5, which the first two rounds did not measure.*

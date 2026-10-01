@@ -65,6 +65,7 @@ This file is the master plan. The copy-paste prompts that execute it live in **[
 | **17 — Teaching alongside Stats 1** | P79–P87 | textbook-dialect conventions labeled (quartiles, conservative df, σ-known z procedures) · printed Tables A/D/F + lookup drill · the probability lecture built out (rules, conditional, Bayes, random variables) · tails/practical significance/power in Stats 1 terms · t, χ² and regression by hand · section-range mock exams + exam-style problems · `?data=` presets, 7-week block map, present mode |
 | **18 — Teaching alongside Stats 2** | P88–P96 | the ANOVA table as the interface (one-way, contrasts, two-way, repeated measures, each built cell by cell with `?g=` presets) · non-parametric tests by hand + U/W/ρₛ critical tables · omitted-variable bias with its sign rule, n − p − 1, general-to-specific labeled · Stats 2 exam-style set + the problem-numbering repair · the ANOVA-and-regression project guide · Stats 2 block map |
 | **19 — Teaching alongside Stats 3** | P97–P105 | the factor-analysis measurement model, rotation, scores and the fit test (a computer-room exam block) · Bayes as the hypothesis table an assignment asks for, conjugates named · **three new lessons**, §3.13 Instrumental Variables & 2SLS, §3.14 Regression Discontinuity, §3.15 Difference-in-Differences (with the one-time Stats 3 renumber) · Stats 3 section tags, exam-style problems and formula rows · a guide to reading a causal-inference paper · the third block map |
+| **20 — De-AI round three** | P106–P133 | the Opus 5 voice: a catalog of its documented habits measured on this site, a report-only `prose-lint --manner` mode, then 26 sentence-level editing passes in chunks of 10–18k words (every lesson with its FAQs, checks and software entry; guides; tool pages; `problems.html` in four parts; the glossary; the quiz bank) and a finisher that looks for new tics and runs a cold read |
 
 **Recommended order** (content and tools interleaved so the site visibly improves every week):
 
@@ -81,6 +82,8 @@ Hard dependencies: **P2 before any new course** (P4+). **P32 after at least two 
 **Teaching-alongside order (Phase 18, added 8 Sep 2026):** P89 → P90 → P88 → P91 → P92 → P94 → P93 → P95 → P96, all before block 2 starts in mid-November; one at a time (shared registries), P96 last. Dates and the reasoning in the Phase 18 addendum.
 
 **Teaching-alongside order (Phase 19, added 18 Sep 2026):** P97 → P98 → P99 → **P100** → P101 → P102 → P103 → P104 → P105, one at a time. **P100 carries the one-time Stats 3 renumber and P101/P102 depend on it** — it reserves §3.13–§3.15 in `curriculum.js` with the last two `ready: false`, so neither later prompt renumbers again. Block 3 runs February to April, so the whole phase has runway. Reasoning, costs and the slide notes in the Phase 19 addendum.
+
+**De-AI round three order (Phase 20, added 1 Oct 2026):** P106 first (the catalog, the exemplars and `prose-lint --manner`), then P107, which defines the editing pass and shows whether it works. Then P108–P132 in any order, one at a time (they share `faq_data.py`, `checks.js`, `software.js` and the search index), and P133 last. Details in the Phase 20 addendum.
 
 ---
 
@@ -344,6 +347,103 @@ P97–P104 all touch shared registries (`curriculum.js`, `faq_data.py`, `glossar
 - **Slide 55**'s distinction that factor scores are *predicted* rather than computed or estimated is a good one and does not appear in most textbooks; it is worth keeping and is what P98 borrows.
 - **Arithmetic checked and correct:** 0.32² = 10.2% of an item's variance (slide 21); the fit-test df formula gives 20 for eight indicators and one factor and 13 for two, which matches the site's own worked example; and the piano-competition IV estimate of about 0.18 per rank is exactly a reduced form of about −0.54 over a first stage of about −3 positions (slides 79, 86), so the Wald ratio on the slides is internally consistent.
 - **The site can replace two external links** (a human step, see the checklist): the UCLA factor-analysis seminar the module is built on (slide 2) has no site equivalent today but will after P97 and P98, and the M&M's exercise (slides 92–94) becomes a preset URL on §3.7 once P99 lands.
+
+## Phase 20 addendum (1 Oct 2026) — de-AI, round three: the Opus 5 voice
+
+Hakan's concern: visitors, mostly students, can tell the site was written by an AI, and some will be put off by it. Phases 10 and 16 already removed the older tells, and their budgets are still green (`prose-lint --strict` passes, every banned construction reads 0, the lesson em-dash median is 1). So this round looked at what people actually complain about in the model that wrote most of the site, Claude Opus 5, and then counted those habits on the site.
+
+### What people complained about
+
+Reddit and Hacker News could not be opened directly from the session that wrote this (the environment's network policy blocked reddit.com, news.ycombinator.com and most blogs), so the findings below come from search-result summaries of those threads and from articles that quote them. The figures are as the sources report them; they were not re-measured here.
+
+- **Mannered prose.** Anthropic's own Fable 5.1 prompting guide names the problem: prose that "substitutes metaphor and flourish for direct statement", as in "a dial worth turning" for "a parameter worth varying", or "this point earns its keep" for "this point still matters". Its recommended fix is the one-line instruction "Please remove all mannered prose." Commentators noted that Anthropic had in effect written a style guide against its own model.
+- **Stock words.** "load-bearing" became the joke: an r/ClaudeAI post quoted Opus 5 describing a build step as "deliberate and load-bearing rather than tidy", a Hacker News thread about the phrase passed 1,700 points, and a 946-upvote r/ClaudeAI thread went back to an older model because "no human being communicates this way". The others named again and again: honest/honestly, genuine/genuinely, frankly, quietly, "the real story", "earns its keep", "worth stating plainly", "carry the argument", "the real tension".
+- **Elliptical writing.** The top comment in the Hacker News thread "Why does Opus 5 feel worse to work with?" (993 points, 873 comments): sentences "orbit a point, then jump to it like it's a revealed insight". Others added abstract phrasing, constant metaphor, and "the x" used with no antecedent, where x is a coined word for something that already has a name. Non-native English speakers found it especially hard to read.
+- **Density and length.** Measurements quoted in several write-ups: 510 words per response against 158 for Opus 4.5, sentences 58% longer with 46% more clauses, em-dashes 2.3 times as often. Jackson Kernion, who works on Claude fine-tuning at Anthropic, explained (The Decoder) that training aimed at math, code and explanations for other models pushed the writing toward "overly-dense info dumps".
+- **Shape habits.** Negative parallelism ("isn't X, it's Y"), em-dash chaining, and "heading and bold theater" (disler/fixing-smartass-opus-5, a widely shared system prompt that fixes them).
+- **Verbosity and codas.** A 903-upvote r/ClaudeCode rant about explaining simple things at doctoral length; Botmonster's summary of r/ClaudeAI, r/ClaudeCode, r/Anthropic and r/singularity found the top complaint was that the model "talks too much". A widely shared CLAUDE.md (Los Techies) bans closing paragraphs that open "Worth noting", "One thing worth noting", "Worth flagging", "One caveat" or "For what it's worth".
+- **Consultant register.** "Write like a senior engineer talking to a colleague, not a consultant" (dev.to). Here that complaint mostly does not apply: "leverage" and "robust" are statistics vocabulary on this site.
+- **Opus 5.5 improved but kept some habits.** Em-dashes fell from about 15 per 1,000 words to under 1, and the other habits roughly halved (Arize: "better, but not fixed"). But Opus 5.5 uses about 2.5 times as many bold lead-in bullets and more lists, summaries and caveats (BleepingComputer). This matters because the sessions that run Phase 20 may be Opus 5.5 themselves, so the prompts forbid adding lists and bold lead-ins.
+
+### What this site shows (scratch measurement, 1 Oct 2026)
+
+Counted with a throwaway script over the same rendered prose prose-lint reads (148 pages, 242,933 words), the FAQ answers in `faq_data.py`, and the raw text of the JS surfaces. P106 re-measures with the real tool, so treat these as approximate.
+
+| Habit | Pages | problems.html | FAQ | checks.js | software.js | glossary | Total |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| honest / honestly (Tukey's "honestly significant" excluded) | 153 | 29 | 44 | 13 | 5 | 4 | 250 |
+| genuine / genuinely | 81 | 9 | 38 | 4 | 3 | 0 | 135 |
+| earns its place / keep / space | 23 | 2 | 6 | 2 | 0 | 0 | 33 |
+| "X is what makes / turns / lets Y" | 32 | 8 | 2 | 2 | 3 | 7 | 54 |
+| trailing ", which is why / what / the…" | 264 | 104 | 42 | 16 | 14 | 14 | 454 |
+| sentence-final ", not Y." | 155 | 40 | 52 | 14 | 24 | 4 | 289 |
+| "rather than" | 267 | 94 | 96 | 13 | 28 | 17 | 515 |
+| "a reader" / "the reader" | 56 | 14 | 24 | 4 | 25 | 0 | 123 |
+| "nobody" | 69 | 32 | 13 | 2 | 3 | 2 | 121 |
+| sits / lands (as a metaphor for a value) | 88 | 35 | 18 | 3 | 2 | 5 | 151 |
+| "hands you" / "hand back" | 60 | 6 | 5 | 0 | 2 | 1 | 74 |
+| "exactly the / what / why…" | 100 | 33 | 22 | 7 | 3 | 4 | 169 |
+| worth + -ing ("worth knowing", "worth holding onto") | 33 | 2 | 9 | 0 | 2 | 0 | 46 |
+
+The internet's word list mostly does not apply: "load-bearing" appears once, "delve", "tapestry" and "it turns out" never. What applies is the habits underneath. Read in context, most "honest" hits are evaluative ("the honest default", "the honest word is", "honest arithmetic"), and many "rather than" and ", not Y." hits are the negative parallelism the forums describe, in a quieter form.
+
+**Sentence length shows where the problem is concentrated.** The site's plainer older lessons average 14–16 words per sentence (types-of-data 14.6, variables-and-operationalization 15.2, data-cleaning-workflow 15.6). The pages written or rebuilt in Phases 17–19 run 23–25 (difference-in-differences 25.1, repeated-measures ANOVA 24.4, multiple regression 24.3, one-way ANOVA 23.9, factor analysis 23.3), and `teachers.html` is the worst on the site at 32.4. The lesson median is 19.9. `problems.html` is 61,000 words on its own, a quarter of all page prose.
+
+Two FAQ answers show the two voices side by side. The older one: "Psychology rarely sees field correlations above .5, while physics laughs at anything below .95." The newer one: "The typography is APA's and the substance is everyone's … whatever the house style dresses them in."
+
+### The catalog this round removes
+
+1. **Stock evaluatives**: honest/honestly, genuine/genuinely, earns its place/keep, "the real X", worth + -ing.
+2. **Pseudo-cleft reveals**: "X is what makes Y", "that is what turns…", "is the one thing that…".
+3. **Trailing commentary**: a sentence that ends ", which is why…", ", which is exactly…", ", which is the check that…".
+4. **Slogan closers**: a last line that restates the paragraph as something quotable ("one fact stated twice", "a defensible choice nobody marks down").
+5. **Negative-parallel tails**: ", not Y." and "rather than Y" where the contrast is decoration and not content.
+6. **Physical metaphors for statistics**: values that sit, land or carry; tests that hand you things; designs that buy, pay or cost.
+7. **Personified tests and software**: "the shape you hand the software decides which one it answers".
+8. **Labels before definitions**: a coined name ("the exam dialect", "the divisor") used before the student has been told what it refers to.
+9. **Orbit-then-reveal paragraphs**: the point held back to the last sentence.
+10. **Over-long sentences**: more than about 35 words, several clauses, one idea per clause.
+11. **"A reader" for "you"**: the site talks about an abstract reader when it is speaking to the student.
+12. **Narrating the site**: sentences about how a page or widget was built or verified, which the student does not need.
+
+### Exemplars (real sentences from the site)
+
+| Before | After |
+|---|---|
+| "Red tiles are the lies your data just told you." (§2.3 viz) | "Each red tile is a false positive." |
+| "Six comparisons is what you pay for arriving at the data with no question. Most studies arrive with one or two." (§2.3) | "Four groups give six possible pairs, but most studies are designed to answer one or two specific questions." |
+| "This is the practical dividend the omnibus table pays. A comparison between two groups of four is tested on 12 degrees of freedom rather than 6, because MS_E was estimated from all sixteen seedlings." (§2.3) | "Because MS_E comes from all sixteen seedlings, a comparison between two groups of four gets 12 degrees of freedom. Its own two groups would give only 6." |
+| "…halving the two-tailed p to .00004 is honest arithmetic." (§2.3) | "…so you may halve the two-tailed p to get .00004." |
+| "The typography is APA's and the substance is everyone's." (FAQ, reporting-statistics-apa) | "APA sets the formatting. What you must report is the same under any style guide." |
+| "Centering it on the cutoff is what makes the treatment indicator's coefficient read as the jump at the threshold rather than a gap somewhere nobody stands." (glossary, Running variable) | "Center it at the cutoff so that the treatment coefficient is the jump at the threshold. Uncentered, with separate slopes on each side, that coefficient is the gap at a score of zero, which may be far from any real data." |
+| "Of all the causal designs, this is the one whose output looks least like an achievement. A policy arrived in some places and not others…" (§3.15) | Delete the first sentence. The paragraph starts at "A policy arrived in some places and not others…" |
+| "Add all four together and you get 70.6, the treated group after, which is the check that the model has spent every number on something." (§3.15) | "Add all four and you get 70.6, the treated group's mean after the switch. So the four coefficients reproduce all four cell means." |
+| "One link is a semester of students." (teachers.html) | "Put one lesson link in your syllabus and every student can use it." |
+| "You can, and the answer is usually humbling." (FAQ, correlation) | "You can, but two correlations usually have to be far apart before the test finds a difference." |
+
+The sixth row shows the most important move: the metaphor ("somewhere nobody stands") was hiding a real fact, and the rewrite states the fact. The seventh shows the most common one: delete the sentence.
+
+What a bad rewrite looks like, using the fourth row:
+
+- Relocation: "…halving the two-tailed p to .00004 is fair arithmetic." The habit is still there.
+- Overcorrection: "Halve it. .00004. Done." Fragments are a tic too.
+- Reformatting: turning the paragraph into three bold-lead bullets. That is Opus 5.5's habit.
+
+### Rules for the phase
+
+- **The iron rule and the Phase 16 guardrail carry over unchanged:** prose only, and no claim or hint that a person wrote the site.
+- **Chunks of roughly 10,000–18,000 words** so each session can read every sentence it edits. Earlier rounds ran up to 59 lessons in one session; that was fine for counting em-dashes, but this round works at sentence level.
+- **Sessions read only VOICE.md, this addendum and Phase 20 of PROMPTS.md**, to save tokens.
+- **CLAUDE.md, ROADMAP.md and PROMPTS.md are written in the voice this round removes** and every session loads CLAUDE.md, so every prompt says not to copy their style. Rewriting the planning docs is out of scope: visitors never see them (P78 took them off the domain).
+- **Word count goes down.** Expect 10–25% fewer words on the dense Phase 17–19 pages and little change on pages that are already plain.
+
+### Running order
+
+P106 first (the standard and the `--manner` report). P107 second: it defines the pass, and its report shows whether the method works before 25 more sessions repeat it. Then P108–P132 in any order, one at a time, because they share `faq_data.py`, `checks.js`, `software.js` and the search index. P133 last. That is 28 sessions.
+
+Sources: [paddo.dev, "A Dial Worth Turning"](https://paddo.dev/blog/a-dial-worth-turning/) · [Hacker News, "Why does Opus 5 feel worse to work with?"](https://news.ycombinator.com/item?id=49296740) and [its top comment](https://news.ycombinator.com/item?id=49296860) · [Hacker News, Opus 5 vs Fable 5 writing](https://news.ycombinator.com/item?id=49040857) · [explainx, "Claude Opus 5 Claudisms"](https://explainx.ai/blog/claude-opus-5-load-bearing-claudisms-writing-tells-2026) · [explainx, mannered prose prompt](https://www.explainx.ai/blog/mannered-prose-prompt-claude-fable-5-1-writing-2026) · [hyperdev, "The Word Problem"](https://hyperdev.matsuoka.com/p/the-word-problem-why-developers-cant) · [Botmonster, "Reddit says Opus 5 is a genius that will not shut up"](https://botmonster.com/ai/claude-opus-5-reddit-reception/) · [disler/fixing-smartass-opus-5](https://github.com/disler/fixing-smartass-opus-5) · [Los Techies, "Using Opus 5 Without Going Insane"](https://lostechies.com/ryansvihla/2026/09/18/using-opus-5-without-going-insane/) · [dev.to, "Opus 5 is a Jargon Douche"](https://dev.to/altryne/its-not-just-you-opus-5-is-a-jargon-douche-but-theres-a-fix-3d8m) · [The Decoder, Anthropic engineer on why Claude's writing got worse](https://the-decoder.com/anthropic-engineer-explains-why-claudes-writing-got-worse-although-the-model-got-smarter/) · [Arize, "Anthropic says it fixed Claude's writing"](https://arize.com/blog/anthropic-says-it-fixed-claudes-writing/) · [BleepingComputer, Opus 5.5 em-dashes](https://www.bleepingcomputer.com/news/artificial-intelligence/claude-opus-55-uses-95-percent-fewer-em-dashes-but-its-answers-are-getting-longer/) · [StashBase, Opus 5.5 writing](https://stashbase.ai/blog/claude-opus-5-5-writing/)
+
+---
 
 ## The human-only checklist (no AI can do these)
 
@@ -909,3 +1009,31 @@ Tick these as sessions complete them (each prompt ends by updating this list).
   - **Four stale sentences on teachers.html fixed in passing, none of which anything enforces.** The lede's "Ninety-seven interactive lessons" (105 today) now reads "More than a hundred", and "without reading all eighty-three" (problems) reads "without reading the whole library", so neither goes stale again with the next lesson or problem. **The Stats 2 map's Project row linked `problems.html#toolkit` as "81–86"**, stale since P97 moved the toolkit set to 83–88 and then three more times to 95–100; CHECK 11 only resolves prose of the form "Problem N", so a bare range in a link's text was invisible to it. A one-off scan of every `problems.html#…` link sitewide against the badge map found that row and nothing else. The problem-sheet paragraph also gained the Stats 3 set beside the two midterm sets.
   - **One linter fix: prose-lint's entity map was missing `&sect;`**, along with `&psi;`, `&xi;`, `&prime;`, `&sup1;` and `&frac14;`, and each undecoded entity's trailing ";" was counted as a semicolon: **82 phantom semicolons sitewide, 47 of them on teachers.html** (which reported 63 against 16 real). Same class as P73's `&divide;`. Report-only metric; no gate moves.
   - **Gates.** `audit.js` **0 errors**, 20 warnings (the standing baseline), 61 info (three fewer: the "no SOFTWARE entry" notes for the three new entries). `math-check` not required and not run: no `viz.js` or tool-page math changed. `prose-lint --strict` **green**; teachers.html at **0 em-dashes in 7,257 words** and no pattern hits, software.js at 11 of its 15, reader-visible em-dashes sitewide unchanged at **343**. `advice-terms`, `link-promises`, `destination-promises`, `worked-examples`, `untaught-names`, `prescription-terms`, `symbol-names` and `widget-terms` all exit 0 in `--strict`. Search index rebuilt: teachers.html indexes at **43,121 of its 60,000 guard** (72%, up from 33,872 at P96), nothing cut, and the new sections are findable in it; worth watching, since two sessions of growth would reach it. Under the subpath server all **186 links** in the page's maps and prose resolve and none escapes the base path. No horizontal scroll at 360px in light or dark on teachers.html or on the three lessons whose software blocks are new, and no page errors. **No `CACHE_VERSION` bump**: nothing in `sw.js`'s precached `SHELL` changed (`software.js` and the search index are served stale-while-revalidate, not precached), and HTML is network-first.
+- [ ] P106 · de-AI v3 — the Opus 5 catalog + exemplars in VOICE.md, report-only `prose-lint --manner`, baseline (Powerful · Extra)
+- [ ] P107 · de-AI v3 — Stats 1 §1.1–§1.7 + course page (defines the pass) (Extra Powerful · Max)
+- [ ] P108 · de-AI v3 — Stats 1 §1.8–§1.13 (Extra Powerful · Max)
+- [ ] P109 · de-AI v3 — Stats 1 §1.14–§1.18 (Extra Powerful · Max)
+- [ ] P110 · de-AI v3 — Stats 2 §2.1–§2.3 + course page (Extra Powerful · Max)
+- [ ] P111 · de-AI v3 — Stats 2 §2.4–§2.7 (Extra Powerful · Max)
+- [ ] P112 · de-AI v3 — Stats 2 §2.8–§2.17 (Extra Powerful · Max)
+- [ ] P113 · de-AI v3 — Stats 3 §3.1–§3.5 + course page (Extra Powerful · Max)
+- [ ] P114 · de-AI v3 — Stats 3 §3.6–§3.12 (Extra Powerful · Max)
+- [ ] P115 · de-AI v3 — Stats 3 §3.13–§3.15, the causal trio (Extra Powerful · Max)
+- [ ] P116 · de-AI v3 — Stats 3 §3.16–§3.20 (Extra Powerful · Max)
+- [ ] P117 · de-AI v3 — ML & AI 1–6 + course page (Extra Powerful · Max)
+- [ ] P118 · de-AI v3 — ML & AI 7–12 (Extra Powerful · Max)
+- [ ] P119 · de-AI v3 — Methods + course page (Extra Powerful · Max)
+- [ ] P120 · de-AI v3 — Data + course page (Extra Powerful · Max)
+- [ ] P121 · de-AI v3 — Ethics + course page (Extra Powerful · Max)
+- [ ] P122 · de-AI v3 — Writing + course page (Extra Powerful · Max)
+- [ ] P123 · de-AI v3 — guides I (causal paper, ANOVA-and-regression project, worked project) (Extra Powerful · Max)
+- [ ] P124 · de-AI v3 — guides II, guides hub, three posters (Extra Powerful · Max)
+- [ ] P125 · de-AI v3 — teachers.html, homepage, privacy, license, small pages, site.js strings (Extra Powerful · Max)
+- [ ] P126 · de-AI v3 — tool pages (Extra Powerful · Max)
+- [ ] P127 · de-AI v3 — problems.html I (problems 1–33) (Extra Powerful · Max)
+- [ ] P128 · de-AI v3 — problems.html II (problems 34–62) (Extra Powerful · Max)
+- [ ] P129 · de-AI v3 — problems.html III (problems 63–86) (Extra Powerful · Max)
+- [ ] P130 · de-AI v3 — problems.html IV (problems 87–100) (Extra Powerful · Max)
+- [ ] P131 · de-AI v3 — glossary definitions (Extra Powerful · Max)
+- [ ] P132 · de-AI v3 — quiz bank + snippet comments + leftover inline strings (Extra Powerful · Max)
+- [ ] P133 · de-AI v3 — finisher: re-measure, new-tic check, budgets, cold read (Extra Powerful · Max)
