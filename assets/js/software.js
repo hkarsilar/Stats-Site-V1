@@ -628,14 +628,14 @@ window.SOFTWARE = {
   },
   "factor-analysis-pca": {
     spss: [
-      '<strong>Analyze → Dimension Reduction → Factor…</strong>, moving every item into <em>Variables</em>. Reverse-code the negatively worded items first, under <em>Transform → Recode into Different Variables</em>, or the analysis reads them as a second factor.',
+      '<strong>Analyze → Dimension Reduction → Factor…</strong>, moving every item into <em>Variables</em>. Reverse-code the negatively worded items first, under <em>Transform → Recode into Different Variables</em>, or they can come out as a second factor.',
       '<em>Descriptives…</em>: tick <em>KMO and Bartlett’s test of sphericity</em>, and <em>Reproduced</em> under Correlation Matrix. That second box prints the model-implied correlations with the residuals beneath them, and a footnote counts the residuals above .05 for you.',
-      '<em>Extraction…</em>: the <em>Method</em> dropdown is where <em>Principal components</em>, <em>Principal axis factoring</em> and <em>Maximum likelihood</em> live, and the default is principal components rather than either factor method, so it is a box worth opening. Maximum likelihood is the one that adds a goodness-of-fit test to the output. Under <em>Extract</em>, switch from <em>Based on Eigenvalue</em> to <em>Fixed number of factors</em> once theory or a scree plot has settled the count; tick the <em>Scree plot</em> either way.',
-      '<em>Rotation…</em>: <em>Varimax</em> if you expect independent factors, <em>Direct Oblimin</em> or <em>Promax</em> if they may correlate (usually the safer bet in psychology). Tick <em>Loading plot(s)</em> in the same box, which draws the items in the rotated factor space and is the fastest way to see a cross-loading sitting between two clusters. Leave <em>Rotated solution</em> ticked or you get no rotated table at all.',
-      '<em>Scores…</em>: tick <em>Save as variables</em> and pick the <em>Method</em>. <em>Regression</em> is the default and is what you want after an oblique rotation; <em>Bartlett</em> gives unbiased scores that stay tied to their own factor. New columns appear at the end of the data file named FAC1_1, FAC2_1 and so on, and the numbering restarts at _2 the next time you run the procedure, so label them before you forget which run they came from. <em>Display factor score coefficient matrix</em> prints the weights if you have to report them.',
-      '<em>Options…</em>: tick <em>Sorted by size</em> and <em>Suppress small coefficients</em> with <em>Absolute value below</em> set to your stated threshold, usually .32 or .40. That pair is what turns an unreadable grid of thirty numbers into the block-diagonal table an exam answer is written from. Set the threshold before you look, not after.',
-      'Interpret the <em>Rotated Component Matrix</em> after varimax. After an oblique rotation SPSS prints both a <em>Pattern Matrix</em> and a <em>Structure Matrix</em>, plus a <em>Factor Correlation Matrix</em> underneath them: interpret the pattern one, which holds each factor’s contribution with the others held constant, and read the structure one only as the plain correlations it is. Loadings ≥ .40 conventionally define a factor, with .32 as the looser floor.',
-      'Cronbach’s α is not part of this procedure and never appears in its output. It has a dialog of its own: <strong>Analyze → Scale → Reliability Analysis</strong> with <em>Model: Alpha</em>, and <em>Scale if item deleted</em> under <em>Statistics…</em> shows which item is holding the scale back. Run it on the reverse-coded variables, one factor at a time.'
+      '<em>Extraction…</em>: the <em>Method</em> dropdown is where <em>Principal components</em>, <em>Principal axis factoring</em> and <em>Maximum likelihood</em> live, and the default is principal components rather than either factor method, so always check it. Maximum likelihood is the one that adds a goodness-of-fit test to the output. Under <em>Extract</em>, switch from <em>Based on Eigenvalue</em> to <em>Fixed number of factors</em> once theory or a scree plot has settled the count; tick the <em>Scree plot</em> either way.',
+      '<em>Rotation…</em>: <em>Varimax</em> if you expect independent factors, <em>Direct Oblimin</em> or <em>Promax</em> if they may correlate (usually the safer bet in psychology). Tick <em>Loading plot(s)</em> in the same box, which draws the items in the rotated factor space and is the fastest way to spot a cross-loading item between two clusters. Leave <em>Rotated solution</em> ticked or you get no rotated table at all.',
+      '<em>Scores…</em>: tick <em>Save as variables</em> and pick the <em>Method</em>. <em>Regression</em> is the default and is what you want after an oblique rotation; <em>Bartlett</em> gives unbiased scores that stay tied to their own factor. New columns named FAC1_1, FAC2_1 and so on appear at the end of the data file. The next run of the procedure adds a set ending in _2, so label each set before you forget which run it came from. <em>Display factor score coefficient matrix</em> prints the weights if you have to report them.',
+      '<em>Options…</em>: tick <em>Sorted by size</em> and <em>Suppress small coefficients</em> with <em>Absolute value below</em> set to your stated threshold, usually .32 or .40. Together they turn an unreadable grid of thirty numbers into the block-diagonal table an exam answer is written from. Set the threshold before you look, not after.',
+      'Interpret the <em>Rotated Component Matrix</em> after varimax. After an oblique rotation SPSS prints both a <em>Pattern Matrix</em> and a <em>Structure Matrix</em>, plus a <em>Factor Correlation Matrix</em> underneath them. Interpret the pattern matrix, which holds each factor’s contribution with the others held constant. The structure matrix holds plain correlations and should be read only as that. Loadings ≥ .40 conventionally define a factor, with .32 as the looser floor.',
+      'Cronbach’s α is not part of this procedure and never appears in its output. It has a dialog of its own: <strong>Analyze → Scale → Reliability Analysis</strong> with <em>Model: Alpha</em>, and <em>Scale if item deleted</em> under <em>Statistics…</em> shows how α would change if each item were removed. Run it on the reverse-coded variables, one factor at a time.'
     ],
     jasp: [
       '<strong>Factor → Exploratory Factor Analysis</strong> (or <em>Principal Component Analysis</em>).',
@@ -649,7 +649,7 @@ window.SOFTWARE = {
     apa: '<p>Sampling adequacy was good, KMO = .84, and Bartlett’s test was significant, χ²(190) = 1438.2, <em>p</em> &lt; .001. Parallel analysis supported two factors, together explaining 58% of the variance. After oblimin rotation, nine items loading ≥ .40 defined a "sociability" factor and seven an "assertiveness" factor (loadings in Table 1).</p>',
     tips: [
       'State the extraction method, the retention rule (parallel analysis / scree / eigenvalues), the rotation, and the variance explained: the four decisions reviewers look for.',
-      'Name the extraction method and say why you chose it. Principal axis factoring assumes nothing about the shape of the data, which suits ordinal questionnaire items; maximum likelihood assumes multivariate normality and repays it with the goodness-of-fit test. Reporting one while describing the other is a common slip.',
+      'Name the extraction method and say why you chose it. Principal axis factoring assumes nothing about the shape of the data, which suits ordinal questionnaire items; maximum likelihood assumes multivariate normality and in return gives a goodness-of-fit test. Reporting one while describing the other is a common slip.',
       'Report α beside the number of items it was computed on. It rises with scale length whatever the items are worth, so .88 on thirty items and .88 on six are not the same claim.',
       'Name the rotation and, if it was oblique, say you interpreted the pattern matrix and give the factor correlation. A table labeled only "factor loadings" after an oblimin rotation leaves a reader unable to tell which of the two tables they are looking at.',
       'State the loading threshold before applying it, and apply the cross-loading rule in full: over the threshold on two factors AND within about .20 of each other. Dropping an item is the third remedy rather than the first, and whichever you choose belongs in the write-up.'
@@ -660,7 +660,7 @@ window.SOFTWARE = {
       '<strong>Analyze → General Linear Model → Multivariate…</strong>',
       'All outcome variables into <em>Dependent Variables</em>; the group into <em>Fixed Factor(s)</em>.',
       '<em>Options…</em>: tick <em>Estimates of effect size</em> and <em>Homogeneity tests</em> (Box’s M).',
-      'The <em>Multivariate Tests</em> table lists Pillai’s trace, Wilks’ Λ, Hotelling’s trace and Roy’s largest root, of which Pillai is the robust default. SPSS labels the third one after Hotelling alone; §3.4 calls it the Hotelling–Lawley trace, which is the same statistic.',
+      'The <em>Multivariate Tests</em> table lists Pillai’s trace, Wilks’ Λ, Hotelling’s trace and Roy’s largest root, of which Pillai is the robust default. SPSS calls the third one Hotelling’s trace, and §3.4 calls it the Hotelling–Lawley trace. They are the same statistic.',
       'Follow up with the univariate <em>Tests of Between-Subjects Effects</em> (apply a Bonferroni-style correction across outcomes).',
       'MANCOVA: same dialog, add baseline variables into <em>Covariate(s)</em>.'
     ],
@@ -684,9 +684,9 @@ window.SOFTWARE = {
     jasp: [
       'Enable the <strong>Power</strong> module (+ button) for t-tests, ANOVA, and correlations.',
       'Enter effect size, α, and target power; JASP plots power curves across n.',
-      'For designs the module doesn’t cover (e.g. mixed models), simulation in R (<em>simr</em>) is the honest route.'
+      'For designs the module doesn’t cover (e.g. mixed models), simulate in R with <em>simr</em>.'
     ],
-    apa: '<p>An a priori power analysis for the 2 × 3 between-subjects design (G*Power 3.1; <em>f</em> = 0.25, α = .05, power = .80) indicated a required total sample of 158. For the mixed-effects analysis, a Monte Carlo simulation (1,000 datasets at the pilot effect size) confirmed power ≥ .80 with 40 clusters.</p>',
+    apa: '<p>An a priori power analysis for the 2 × 3 between-subjects design (G*Power 3.1; <em>f</em> = 0.25, α = .05, power = .80) indicated a required total sample of 158. For the mixed-effects analysis, a Monte Carlo simulation (1,000 datasets at the expected effect size) confirmed power ≥ .80 with 40 clusters.</p>',
     tips: [
       'Name the software, the effect-size metric (<em>f</em>, <em>d</em>, η²) and its value, α, the target power, and the resulting n. All five belong in the Method section.',
       'G*Power returns the smallest total <em>N</em> that reaches your target and does not check whether it divides evenly into your cells. The 158 above fills six cells of 26.3 people; a balanced 2 × 3 needs 162. Round up to a multiple of your cell count, then report the number you actually recruited.'
@@ -722,13 +722,13 @@ window.SOFTWARE = {
       'Move the variable across, set the <em>Test value</em> (it starts at 0.5) and pick the hypothesis direction.',
       'The prior is a Beta set by two fields labeled <em>a</em> and <em>b</em>, both starting at 1, which is the flat one.',
       'Tick <em>Prior and posterior</em> for the plot that draws both curves on one axis with the test value marked, and <em>Sequential analysis</em> to watch the Bayes factor move case by case.',
-      'The table prints <em>BF</em><sub>10</sub> by default; the dropdown above it switches to <em>BF</em><sub>01</sub>, which is the same number upside down.'
+      'The table prints <em>BF</em><sub>10</sub> by default; the dropdown above it switches to <em>BF</em><sub>01</sub>, its reciprocal.'
     ],
-    apa: '<p>Nine of twelve spins landed lip-up. A Bayesian binomial test against a chance rate of .50, with a uniform Beta(1, 1) prior, returned <em>BF</em><sub>10</sub> = 1.43, which is too close to 1 to count as evidence either way. The posterior mean was .71, 95% credible interval [.46, .91], and .95 of the posterior sat above .50.</p>',
+    apa: '<p>Nine of twelve spins landed lip-up. A Bayesian binomial test against a chance rate of .50, with a uniform Beta(1, 1) prior, returned <em>BF</em><sub>10</sub> = 1.43, which is too close to 1 to count as evidence either way. The posterior mean was .71, 95% credible interval [.46, .91], and .95 of the posterior was above .50.</p>',
     tips: [
-      'The Bayes factor and the posterior answer different questions, and on one set of numbers they can look like they disagree. <em>BF</em><sub>10</sub> = 1.43 says the data barely separate a point null at .50 from the alternative; .95 of the posterior sitting above .50 is a statement about direction and says nothing about that point. Report the one your question asked for, and name which it is.',
+      'The Bayes factor and the posterior answer different questions, and on one set of numbers they can seem to disagree. <em>BF</em><sub>10</sub> = 1.43 says the data barely separate a point null at .50 from the alternative. The .95 of the posterior above .50 is a statement about direction and says nothing about that point. Report the one your question asked for, and name which it is.',
       'Put the prior in the sentence rather than in a footnote. Beta(<em>a</em>, <em>b</em>) enters the arithmetic as <em>a</em> + <em>b</em> trials already run, of which <em>a</em> succeeded, so "a uniform Beta(1, 1) prior" tells a reader exactly how much belief you brought to the data.',
-      'Open the prior fields rather than trusting the default. Both packages arrive at the flat Beta(1, 1) today, which is what makes their answer match a grid worked by hand with equal prior weights, but a default is a software decision and software changes.'
+      'Check the prior fields rather than trusting the default. Both packages currently start at the flat Beta(1, 1), so their answer matches a grid worked by hand with equal prior weights, but defaults can change between versions.'
     ]
   },
   "bayesian-estimation": {
@@ -738,11 +738,11 @@ window.SOFTWARE = {
       'Defaults use reference priors; the options let you specify informative ones.'
     ],
     jasp: [
-      'This is JASP’s home turf: every major analysis has a Bayesian twin (e.g. <strong>T-Tests → Bayesian Independent Samples T-Test</strong>).',
+      'Bayesian analysis is JASP’s specialty: every major analysis has a Bayesian version (e.g. <strong>T-Tests → Bayesian Independent Samples T-Test</strong>).',
       'Read <em>BF₁₀</em>: evidence for H₁ over H₀ (3–10 moderate, 10–30 strong).',
       'Tick <em>Posterior distribution</em> plots for the estimate with its 95% credible interval, and <em>Sequential analysis</em> to watch evidence accumulate.'
     ],
-    apa: '<p>A Bayesian independent-samples t-test yielded strong evidence for a group difference, <em>BF</em>₁₀ = 8.3. The posterior mean difference was 4.2 points, 95% credible interval [1.1, 7.4], with a default Cauchy prior (scale = 0.707).</p>',
+    apa: '<p>A Bayesian independent-samples t-test yielded moderate evidence for a group difference, <em>BF</em>₁₀ = 8.3. The posterior mean difference was 4.2 points, 95% credible interval [1.1, 7.4], with a default Cauchy prior (scale = 0.707).</p>',
     tips: [
       'Say "credible interval," never "confidence interval," for Bayesian intervals, and report the prior you used.'
     ]
@@ -761,7 +761,7 @@ window.SOFTWARE = {
     ],
     apa: '<p>A Poisson regression with log link showed that each mentoring session predicted more weekly logins, <em>b</em> = 0.28, <em>SE</em> = 0.06, Wald χ²(1) = 21.80, <em>p</em> &lt; .001, rate ratio = 1.32, 95% CI [1.18, 1.48]. The dispersion statistic (1.08) indicated no meaningful overdispersion.</p>',
     tips: [
-      'Name the family and link function, and report exponentiated coefficients (rate/odds ratios), because raw log-scale slopes are unreadable.'
+      'Name the family and link function, and report exponentiated coefficients (rate/odds ratios), because raw log-scale slopes are hard to interpret.'
     ]
   },
   "mixed-and-multilevel-models": {

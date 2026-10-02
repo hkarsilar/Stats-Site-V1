@@ -16,25 +16,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>MANOVA &amp; Multivariate Tests — StatsCapybara</title>
-  <meta name="description" content="Several outcome variables, one honest test. See how MANOVA finds differences separate ANOVAs miss, and decode Wilks' Λ, Pillai's trace, and Hotelling's T²." />
+  <meta name="description" content="Several outcome variables, one test. See how MANOVA finds differences separate ANOVAs miss, and decode Wilks' Λ, Pillai's trace, and Hotelling's T²." />
   <link rel="canonical" href="https://statscapybara.com/stats-3/manova/" />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="MANOVA &amp; Multivariate Tests — StatsCapybara" />
-  <meta property="og:description" content="Several outcome variables, one honest test. See how MANOVA finds differences separate ANOVAs miss, and decode Wilks' Λ, Pillai's trace, and Hotelling's T²." />
+  <meta property="og:description" content="Several outcome variables, one test. See how MANOVA finds differences separate ANOVAs miss, and decode Wilks' Λ, Pillai's trace, and Hotelling's T²." />
   <meta property="og:image" content="https://statscapybara.com/assets/og-stats-3.png" />
   <meta property="og:url" content="https://statscapybara.com/stats-3/manova/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="MANOVA &amp; Multivariate Tests — StatsCapybara" />
-  <meta name="twitter:description" content="Several outcome variables, one honest test. See how MANOVA finds differences separate ANOVAs miss, and decode Wilks' Λ, Pillai's trace, and Hotelling's T²." />
+  <meta name="twitter:description" content="Several outcome variables, one test. See how MANOVA finds differences separate ANOVAs miss, and decode Wilks' Λ, Pillai's trace, and Hotelling's T²." />
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-3.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
   <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
-  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "MANOVA & Multivariate Tests", "description": "Several outcome variables, one honest test. See how MANOVA finds differences separate ANOVAs miss, and decode Wilks' Λ, Pillai's trace, and Hotelling's T².", "url": "https://statscapybara.com/stats-3/manova/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced & Elective Topics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "MANOVA & Multivariate Tests", "item": "https://statscapybara.com/stats-3/manova/"}]}]
+  [{"@context": "https://schema.org", "@type": "LearningResource", "name": "MANOVA & Multivariate Tests", "description": "Several outcome variables, one test. See how MANOVA finds differences separate ANOVAs miss, and decode Wilks' Λ, Pillai's trace, and Hotelling's T².", "url": "https://statscapybara.com/stats-3/manova/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced & Elective Topics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "MANOVA & Multivariate Tests", "item": "https://statscapybara.com/stats-3/manova/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does a significant MANOVA protect my follow-up ANOVAs from multiple testing?", "acceptedAnswer": {"@type": "Answer", "text": "It doesn't, and the belief that it does is one of the most durable habits in the multivariate literature. The idea borrows from the omnibus F in ANOVA: pass the overall test, and you have earned the right to look closer. The borrowing fails here because the multivariate test and the univariate ones ask different questions of different quantities, so clearing the first says nothing about the false-positive rate of the several tests that follow. Correct those on their own terms, with Bonferroni or an FDR procedure across the outcomes. The logic breaks in the other direction too: MANOVA can be significant when no single outcome is, which is what the ✨ demo above is built to show."}}, {"@type": "Question", "name": "Should I report Wilks' lambda or Pillai's trace?", "acceptedAnswer": {"@type": "Answer", "text": "Wilks' Λ is the traditional default and what most textbooks tabulate. Pillai's trace is the most robust when assumptions wobble (unequal covariance matrices, unequal group sizes), so many methodologists recommend it outright. With two groups they (and Hotelling's T²) agree exactly; when they disagree materially with 3+ groups, that itself hints at assumption trouble, and Pillai is the safer citation."}}, {"@type": "Question", "name": "What should I do after a significant MANOVA?", "acceptedAnswer": {"@type": "Answer", "text": "Localize the effect. The standard route: univariate ANOVAs on each outcome with a multiplicity correction, to see which variables carry the difference. The more multivariate route: descriptive discriminant analysis, which reveals what combination of outcomes best separates the groups — often the more faithful summary, since a combination is what MANOVA actually tested."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does a significant MANOVA protect my follow-up ANOVAs from multiple testing?", "acceptedAnswer": {"@type": "Answer", "text": "It doesn't, although many researchers believe it does. The belief comes from the omnibus F in ANOVA, where passing the overall test is treated as permission to look closer. Here the multivariate test and the univariate ones test different hypotheses, so passing the first does nothing to control the false-positive rate of the tests that follow. Correct those separately, with Bonferroni or an FDR procedure across the outcomes. The logic fails in the other direction too: MANOVA can be significant when no single outcome is, as the ✨ demo above shows."}}, {"@type": "Question", "name": "Should I report Wilks' lambda or Pillai's trace?", "acceptedAnswer": {"@type": "Answer", "text": "Wilks' Λ is the traditional default and what most textbooks tabulate. Pillai's trace is the most robust when assumptions are violated (unequal covariance matrices, unequal group sizes), so many methodologists recommend it outright. With two groups they (and Hotelling's T²) agree exactly. When they disagree materially with 3+ groups, that itself hints at assumption trouble, and Pillai's is the safer one to report."}}, {"@type": "Question", "name": "What should I do after a significant MANOVA?", "acceptedAnswer": {"@type": "Answer", "text": "Find out where the effect is. The standard route is a univariate ANOVA on each outcome with a multiplicity correction, to see which variables differ. The more multivariate route is descriptive discriminant analysis, which shows what combination of outcomes best separates the groups. That is often the more faithful summary, because a combination is what MANOVA actually tested."}}]}
   </script>
 </head>
 <body data-course="stats-3" data-section="manova">
@@ -48,10 +48,10 @@
         <span class="lesson-eyebrow">Section 3.4</span>
         <h1>MANOVA &amp; Multivariate Tests</h1>
 
-        <p class="lede">A therapy trial tracks anxiety, depression and sleep. A memory experiment logs accuracy alongside reaction time. Measuring a single outcome is the exception, not the rule. <strong>MANOVA</strong> (Multivariate ANOVA) tests whether groups differ on a whole <em>set</em> of outcomes at once, and it can see differences that testing each outcome separately will flat-out miss.</p>
+        <p class="lede">A therapy trial tracks anxiety, depression and sleep. A memory experiment logs accuracy alongside reaction time. <strong>MANOVA</strong> (Multivariate ANOVA) tests whether groups differ on a whole <em>set</em> of outcomes at once, and it can detect differences that separate tests on each outcome miss.</p>
 
         <h2>Why not just run several ANOVAs?</h2>
-        <p>Two reasons. First, the familiar <a href="../../stats-2/post-hoc-tests/">multiple-testing problem</a>: five outcomes at α = .05 gives you roughly a 23% chance of at least one false alarm. The second is less obvious: separate ANOVAs are <strong>blind to the correlation structure</strong>. Outcomes usually travel together, and a pattern that's unremarkable variable-by-variable can be wildly improbable as a <em>combination</em>. MANOVA looks at the cloud of outcomes as a shape, not as a list.</p>
+        <p>Separate ANOVAs run into the familiar <a href="../../stats-2/post-hoc-tests/">multiple-testing problem</a>: five outcomes at α = .05 give you roughly a 23% chance of at least one false alarm. They also <strong>ignore the correlation structure</strong>. Outcomes usually move together, and a pattern that is unremarkable on each variable separately can be very improbable as a <em>combination</em>. MANOVA analyzes the outcomes jointly, so it takes those correlations into account.</p>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="mnviz">
@@ -88,10 +88,10 @@
 
         <h2>How it works: the smartest composite</h2>
         <p>MANOVA effectively asks: <em>is there any weighted combination of the outcomes on which the groups clearly differ?</em> It finds the combination that maximizes the between-group difference relative to the within-group spread (the <strong>discriminant direction</strong> in the plot) and tests the groups on that. Distance is measured the multivariate way (<strong>Mahalanobis distance</strong>): not "how far apart are the means?" but "how far apart are they <em>given the shape of the cloud</em>?"</p>
-        <p>That's the secret behind the ✨ button. When two outcomes are strongly correlated, they normally move together, so a treatment that pushes them in <em>opposite</em> directions is extremely surprising, even if each individual shift is small. Each univariate ANOVA sees a small, non-significant nudge; MANOVA sees a pattern the correlation structure says should almost never happen.</p>
+        <p>Mahalanobis distance explains what the ✨ button does. When two outcomes are strongly correlated, they normally move together, so a treatment that pushes them in <em>opposite</em> directions is extremely surprising, even if each individual shift is small. Each univariate ANOVA finds only a small, non-significant difference. MANOVA tests the combination, and given the correlation, that combination should almost never happen by chance.</p>
 
         <div class="callout key">
-          <p><strong>Don't skip the ✨ demo:</strong> small opposite differences (+0.35 and −0.35) with a strong correlation (r ≈ 0.8). Both univariate p-values hover far above .05, so separately there is nothing to see. The MANOVA p-value collapses below .001. Now drag the correlation to 0 and watch the advantage evaporate: with independent outcomes, MANOVA is roughly just the two tests glued together.</p>
+          <p><strong>Try the ✨ demo.</strong> It sets small opposite differences (+0.35 and −0.35) and a strong correlation (r ≈ 0.8). Both univariate p-values are well above .05, so neither outcome shows a difference on its own, but the MANOVA p-value is below .001. Now drag the correlation to 0 and the advantage disappears: with independent outcomes, MANOVA is roughly the two tests combined.</p>
         </div>
 
         <h2>The statistics you'll meet in the output</h2>
@@ -99,14 +99,14 @@
         <ul>
           <li><strong>Wilks' Λ (lambda).</strong> The share of variance <em>not</em> explained by groups; smaller = stronger effect. The most commonly reported.</li>
           <li><strong>Pillai's trace.</strong> The most robust to assumption violations; many texts recommend it as your default.</li>
-          <li><strong>Hotelling–Lawley trace</strong> (SPSS prints it as <em>Hotelling's trace</em>) and <strong>Roy's largest root</strong> are variations on the same theme; Roy's focuses only on the single best discriminant direction.</li>
+          <li><strong>Hotelling–Lawley trace</strong> (SPSS prints it as <em>Hotelling's trace</em>) and <strong>Roy's largest root</strong> are variations on the same idea. Roy's uses only the single best discriminant direction.</li>
         </ul>
-        <p>With exactly two groups they all collapse into one number: <strong>Hotelling's T²</strong>, the multivariate cousin of the t-test, which is what the playground above computes. With three-plus groups and several outcomes they can disagree slightly; that's when Pillai's robustness earns its keep.</p>
+        <p>With exactly two groups they all reduce to one test, <strong>Hotelling's T²</strong>, the multivariate version of the t-test. The playground above computes it. With three or more groups and several outcomes they can disagree slightly, and then Pillai's trace is the safer choice because it is the most robust.</p>
 
         <h2>How big is the effect?</h2>
-        <p>Those four statistics say whether the groups differ, not by how much, and a multivariate table of p-values with no effect size beside it has the same weakness as any other. The standard multivariate effect size falls straight out of Wilks' Λ:</p>
+        <p>Those four statistics test whether the groups differ, not by how much, so a multivariate result needs an effect size as much as any other result does. The standard multivariate effect size comes straight from Wilks' Λ:</p>
         <p style="text-align:center;font-size:1.15rem;margin:1.25rem 0"><strong>η² = 1 − Λ<sup>1/s</sup></strong> &nbsp; (s = the smaller of: number of outcomes, number of groups − 1)</p>
-        <p>With two groups s = 1 and the formula collapses to η² = 1 − Λ, so a Wilks' Λ of 0.62 says the grouping accounts for 38% of the variance in the outcome set taken as a whole. Statistical software will print a partial η² beside each multivariate test if you ask it to. Report one for the multivariate result, then an effect size per outcome in the follow-ups, since that is where a reader finds out which measures actually moved. The <a href="../../effect-sizes.html">effect-size converter</a> will turn those per-outcome numbers into d or r if that is the currency of your field.</p>
+        <p>With two groups s = 1 and the formula reduces to η² = 1 − Λ. So a Wilks' Λ of 0.62 means the grouping accounts for 38% of the variance in the outcome set taken as a whole. Statistical software will print a partial η² beside each multivariate test if you ask it to. Report one for the multivariate result, then an effect size for each outcome in the follow-ups, because those tell a reader which measures changed. The <a href="../../effect-sizes.html">effect-size converter</a> will turn the per-outcome numbers into d or r if your field reports those.</p>
 
         <h2>The wider multivariate family</h2>
         <ul>
@@ -116,14 +116,14 @@
           <li><strong>Canonical correlation</strong> is the fully symmetric version: find the linked combinations of two whole <em>sets</em> of variables.</li>
         </ul>
 
-        <p>A significant MANOVA is a license to look closer, not a final answer. Standard follow-ups: univariate ANOVAs on each outcome (with a <a href="../../stats-2/post-hoc-tests/">correction</a>) to see <em>which</em> outcomes carry the difference, or a discriminant analysis to see <em>what combination</em> separates the groups.</p>
+        <p>After a significant MANOVA you still need to find where the difference is. The standard follow-ups are univariate ANOVAs on each outcome (with a <a href="../../stats-2/post-hoc-tests/">correction</a>) to see <em>which</em> outcomes differ, or a discriminant analysis to see <em>what combination</em> separates the groups.</p>
 
         <div class="callout">
-          <p><strong>Assumptions, briefly:</strong> independent observations, multivariate normality (roughly: each outcome normal, jointly well-behaved), and similar covariance matrices across groups (Box's M test, though it's oversensitive; with equal group sizes MANOVA is fairly forgiving). And choose outcomes that <em>belong together conceptually</em>. Stuffing ten unrelated variables into a MANOVA dilutes real effects instead of revealing them.</p>
+          <p><strong>Assumptions, briefly:</strong> independent observations, multivariate normality (roughly: each outcome normal, jointly well-behaved), and similar covariance matrices across groups (Box's M tests this, but it is oversensitive, and with equal group sizes MANOVA is robust to modest violations). And choose outcomes that <em>belong together conceptually</em>. Adding ten unrelated variables to a MANOVA dilutes real effects.</p>
         </div>
 
         <div class="callout">
-          <p><strong>Why it matters:</strong> multivariate outcomes are the rule, not the exception: batteries of symptoms, panels of biomarkers, bundles of test scores. MANOVA and its family are how you test the <em>profile</em> honestly, without either alpha inflation or throwing away the structure that makes your measures informative.</p>
+          <p><strong>Why it matters:</strong> many studies measure several related outcomes, such as a set of symptoms, a panel of biomarkers or a battery of test scores. MANOVA and its relatives test the whole <em>profile</em> at once, without inflating alpha and without ignoring the correlations between the measures.</p>
         </div>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
@@ -131,15 +131,15 @@
           <h2>Common questions</h2>
           <details class="faq-item">
             <summary>Does a significant MANOVA protect my follow-up ANOVAs from multiple testing?</summary>
-            <div class="faq-a"><p>It doesn't, and the belief that it does is one of the most durable habits in the multivariate literature. The idea borrows from the omnibus F in ANOVA: pass the overall test, and you have earned the right to look closer. The borrowing fails here because the multivariate test and the univariate ones ask different questions of different quantities, so clearing the first says nothing about the false-positive rate of the several tests that follow. Correct those on their own terms, with <a href="../../stats-2/post-hoc-tests/">Bonferroni or an FDR procedure</a> across the outcomes. The logic breaks in the other direction too: MANOVA can be significant when no single outcome is, which is what the ✨ demo above is built to show.</p></div>
+            <div class="faq-a"><p>It doesn't, although many researchers believe it does. The belief comes from the omnibus F in ANOVA, where passing the overall test is treated as permission to look closer. Here the multivariate test and the univariate ones test different hypotheses, so passing the first does nothing to control the false-positive rate of the tests that follow. Correct those separately, with <a href="../../stats-2/post-hoc-tests/">Bonferroni or an FDR procedure</a> across the outcomes. The logic fails in the other direction too: MANOVA can be significant when no single outcome is, as the ✨ demo above shows.</p></div>
           </details>
           <details class="faq-item">
             <summary>Should I report Wilks' lambda or Pillai's trace?</summary>
-            <div class="faq-a"><p>Wilks' Λ is the traditional default and what most textbooks tabulate. Pillai's trace is the most robust when assumptions wobble (unequal covariance matrices, unequal group sizes), so many methodologists recommend it outright. With two groups they (and Hotelling's T²) agree exactly; when they disagree materially with 3+ groups, that itself hints at assumption trouble, and Pillai is the safer citation.</p></div>
+            <div class="faq-a"><p>Wilks' Λ is the traditional default and what most textbooks tabulate. Pillai's trace is the most robust when assumptions are violated (unequal covariance matrices, unequal group sizes), so many methodologists recommend it outright. With two groups they (and Hotelling's T²) agree exactly. When they disagree materially with 3+ groups, that itself hints at assumption trouble, and Pillai's is the safer one to report.</p></div>
           </details>
           <details class="faq-item">
             <summary>What should I do after a significant MANOVA?</summary>
-            <div class="faq-a"><p>Localize the effect. The standard route: univariate ANOVAs on each outcome with a multiplicity correction, to see which variables carry the difference. The more multivariate route: descriptive discriminant analysis, which reveals <em>what combination</em> of outcomes best separates the groups — often the more faithful summary, since a combination is what MANOVA actually tested.</p></div>
+            <div class="faq-a"><p>Find out where the effect is. The standard route is a univariate ANOVA on each outcome with a multiplicity correction, to see which variables differ. The more multivariate route is descriptive discriminant analysis, which shows <em>what combination</em> of outcomes best separates the groups. That is often the more faithful summary, because a combination is what MANOVA actually tested.</p></div>
           </details>
         </section>
         <!-- faq:end -->
