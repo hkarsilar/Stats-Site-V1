@@ -784,11 +784,11 @@ window.SOFTWARE = {
   },
   "cross-validation-and-overfitting": {
     spss: [
-      'SPSS has no k-fold cross-validation for an ordinary regression, so the honest route through the menus is a single holdout: fit the model on part of the data and score it on the rest.',
-      'Make the split once and keep it. Fix the seed first with <strong>Transform → Random Number Generators</strong> → <em>Set Starting Point</em> → <em>Fixed Value</em>, so the split can be reproduced, then <strong>Transform → Compute Variable</strong> with <em>train = RV.BERNOULLI(0.7)</em>, which marks about 70% of cases 1 and the rest 0.',
+      'SPSS has no k-fold cross-validation for an ordinary regression, so the closest the menus come is a single holdout: fit the model on part of the data and score it on the rest.',
+      'Make the split once and keep it. Fix the seed first with <strong>Transform → Random Number Generators</strong> → <em>Set Starting Point</em> → <em>Fixed Value</em>, so the split can be reproduced. Then use <strong>Transform → Compute Variable</strong> with <em>train = RV.BERNOULLI(0.7)</em>, which marks about 70% of cases 1 and the rest 0.',
       'For a polynomial like the one in the lesson, build the powers in <strong>Compute Variable</strong> too (<em>x2 = x**2</em>, <em>x3 = x**3</em>, and so on). Center <em>x</em> before squaring it, or the powers correlate so strongly that their coefficients stop meaning anything.',
       '<strong>Analyze → Regression → Linear</strong>: outcome into <em>Dependent</em> and <em>x</em> into <em>Independent(s)</em>, then <em>Next</em> and add <em>x2</em>, <em>Next</em> and add <em>x3</em>, one block per degree. Put <em>train</em> into <em>Selection Variable</em>, click <em>Rule…</em> and set it to <em>equal to</em> 1.',
-      'The Model Summary now carries two R columns, one for the selected cases and one for the unselected. The first is the fit the model was built on and can only rise as a block is added; the second is how well it predicts cases it never saw, and it is the one that turns down once the model starts fitting noise. Choose the degree where it peaks.',
+      'The Model Summary now carries two R columns, one for the selected cases and one for the unselected. The first is the fit on the cases the model was built on, and it can only rise as a block is added. The second shows how well the model predicts cases it never saw. That one turns down once the model starts fitting noise, so choose the degree where it peaks.',
       'The one SPSS dialog with k-fold validation built in is the decision tree, <strong>Analyze → Classify → Tree…</strong> → <em>Validation</em> → <em>Crossvalidation</em>. For the lesson’s polynomial, the five-fold loop is a few lines of R or Python in the Try it yourself box below.'
     ],
     jasp: [
@@ -800,35 +800,35 @@ window.SOFTWARE = {
     apa: '<p>Of 160 observations, 40 were set aside as a test set before any model was fitted. Polynomial degree was chosen by 5-fold cross-validation on the remaining 120: cross-validated mean squared error was lowest for the cubic model (4.12, against 4.38 for the quadratic and 4.51 at degree 6). Refitted to all 120 training cases and scored once on the test set, the cubic model gave a mean squared error of 4.30.</p>',
     tips: [
       'Report the error on data the model never saw, and say which data that was. A training R² describes the sample the model was built on and says nothing about the next one.',
-      'If cross-validation chose anything, a degree, a penalty or a set of predictors, its own error estimate flatters the winner. Report a test set the tuning never touched, or a nested cross-validation, and expect it to come out a little worse.',
+      'If cross-validation chose anything, a degree, a penalty or a set of predictors, its own error estimate is too optimistic about the winner. Report a test set the tuning never touched, or a nested cross-validation, and expect it to come out a little worse.',
       'Give k, whether the folds were repeated or stratified, and the random seed, so that somebody else can reproduce the split.'
     ]
   },
   "causal-dags-and-confounding": {
     spss: [
-      'No statistics package reads a causal diagram, SPSS and JASP included. Draw the graph and derive the adjustment set before opening either one, on paper or with the free DAGitty tool at dagitty.net, which lists the adjustment sets for a graph you draw in the browser.',
+      'No statistics package reads a causal diagram, SPSS and JASP included. Draw the graph and derive the adjustment set before opening either one. You can do it on paper or with the free DAGitty tool at dagitty.net, which lists the adjustment sets for a graph you draw in the browser.',
       '<strong>Analyze → Regression → Linear</strong>: outcome into <em>Dependent</em> and the exposure alone into <em>Independent(s)</em>. Click <em>Next</em> and add the adjustment set as the second block, and nothing else. Tick <em>Statistics → Confidence intervals</em>.',
       'Read the exposure’s <em>B</em> in both models of the Coefficients table. Model 1 is the naive slope, backdoor paths and all; Model 2 is the slope with those paths closed, provided the graph is right. The difference between them is what the adjustment changed.',
-      'Keep colliders out of both blocks, and mediators too unless the direct effect is the question. SPSS will fit whatever goes in the box, and if you tick <em>R squared change</em> it rises for a collider exactly as it does for a confounder, so nothing in the output can tell you which of the two you added.'
+      'Keep colliders out of both blocks, and mediators too unless the direct effect is the question. SPSS will fit whatever goes in the box. If you tick <em>R squared change</em>, it rises for a collider just as it does for a confounder, so nothing in the output can tell you which of the two you added.'
     ],
     jasp: [
       'JASP cannot read a diagram either, so derive the adjustment set first, then open <strong>Regression → Linear Regression</strong> with the outcome as <em>Dependent Variable</em>.',
       'Add the exposure and the adjustment set as covariates, and under <em>Model</em> tick <em>Add to null model</em> beside the exposure alone. The Coefficients table then shows the exposure’s slope twice, without the adjustment set and with it.',
       'Leave any collider out of the model entirely, for the same reason as in SPSS: a better fit is not evidence that a variable belongs in a causal model.'
     ],
-    apa: '<p>The causal diagram (Figure 1) identified prior grade as the one common cause of tutoring and exam score, so the model adjusted for it; course satisfaction, measured after the exam and caused by both, was left out. Unadjusted, each weekly hour of tutoring was associated with 0.42 more points, <em>b</em> = 0.42, <em>SE</em> = 0.21, <em>t</em>(238) = 2.00, <em>p</em> = .047. Adjusted for prior grade, the estimate rose to 0.95 points, <em>SE</em> = 0.17, <em>t</em>(237) = 5.59, <em>p</em> &lt; .001, 95% CI [0.62, 1.28], because students with weaker prior grades sought more tutoring. The adjusted estimate is causal only if no common cause is missing from the diagram.</p>',
+    apa: '<p>The causal diagram (Figure 1) identified prior grade as the one common cause of tutoring and exam score, so the model adjusted for it. Course satisfaction, measured after the exam and caused by both, was left out. Unadjusted, each weekly hour of tutoring was associated with 0.42 more points, <em>b</em> = 0.42, <em>SE</em> = 0.21, <em>t</em>(238) = 2.00, <em>p</em> = .047. Adjusted for prior grade, the estimate rose to 0.95 points, <em>SE</em> = 0.17, <em>t</em>(237) = 5.59, <em>p</em> &lt; .001, 95% CI [0.62, 1.28], because students with weaker prior grades sought more tutoring. The adjusted estimate is causal only if no common cause is missing from the diagram.</p>',
     tips: [
-      'Put the diagram in the paper as a figure and name the adjustment set it implies in the text. A reader can then disagree with an arrow instead of guessing why a covariate is in the model.',
-      'Say what was deliberately left out and why: a collider, a mediator, a variable measured after the outcome. An omission with a reason reads as design, and one without reads as an oversight.',
-      'Report the unadjusted and the adjusted estimate side by side. The gap is what the adjustment did, and a reader can check that it moved in the direction the diagram predicts.',
-      'Keep the causal language conditional on the diagram. No regression can close a backdoor path through a variable nobody measured, and the sentence that says so belongs next to the estimate.'
+      'Put the diagram in the paper as a figure and name the adjustment set it implies in the text. A reader who disagrees can then point to a specific arrow, without having to guess why a covariate is in the model.',
+      'Say what was deliberately left out and why: a collider, a mediator, a variable measured after the outcome. An omission without a reason looks like an oversight.',
+      'Report the unadjusted and the adjusted estimate side by side. The gap shows what the adjustment changed, and a reader can check that it moved in the direction the diagram predicts.',
+      'Keep the causal language conditional on the diagram. No regression can close a backdoor path through an unmeasured variable, so say so next to the estimate.'
     ]
   },
   "instrumental-variables": {
     spss: [
       'Two-stage least squares lives in <strong>Analyze → Regression → 2-Stage Least Squares…</strong>, and it ships with the <em>Regression</em> add-on rather than with base Statistics. If that menu item is missing, your license does not include it, and the fallback route is below.',
       'Outcome into <em>Dependent</em>. Everything on the right-hand side of the structural equation, the endogenous regressor included, goes into <em>Explanatory</em>.',
-      '<em>Instrumental</em> takes the instruments <strong>and every exogenous control that is already in Explanatory</strong>. Leaving the controls out of this box is the single most common way to get a wrong answer from this dialog, because a control that is not listed as its own instrument is treated as endogenous too.',
+      '<em>Instrumental</em> takes the instruments <strong>and every exogenous control that is already in Explanatory</strong>. Leaving the controls out of this box is the most common way to get a wrong answer from this dialog. A control that is not listed as its own instrument is treated as endogenous too.',
       'The output gives the coefficient on the endogenous regressor with a standard error computed the right way. SPSS does not print the first-stage F here, so run <strong>Analyze → Regression → Linear</strong> with the endogenous variable as the outcome and the instruments as predictors, and read the F from that ANOVA table.',
       'Without the add-on you can still get the estimate: regress the endogenous variable on the instrument in Linear, tick <em>Save → Unstandardized predicted values</em>, then regress the outcome on the saved column. The coefficient is correct and <strong>the standard error is not</strong>, because the second regression treats the predicted column as data. Report it as an estimate only, or move the analysis to R.'
     ],
@@ -842,7 +842,7 @@ window.SOFTWARE = {
       'Report the first-stage F as a number, not as a significance verdict. A reader needs to know whether it was 12 or 400, and a p-value hides that.',
       'Name the instrument and where its variation came from in the same sentence you name the estimate. A 2SLS coefficient with no account of the instrument is an uninterpretable number.',
       'Say whose effect you estimated. When the effect varies across people, the instrument recovers the average for the compliers, and a results section that calls it "the effect" has overstated its reach.',
-      'Show the reduced form alongside the two-stage estimate where you have room. If the instrument does not move the outcome at all, no amount of dividing will manufacture a finding, and readers can see that immediately.'
+      'Show the reduced form alongside the two-stage estimate where you have room. If the instrument does not change the outcome at all, dividing by the first stage cannot produce an effect, and readers can see that at once.'
     ]
   },
   "regression-discontinuity": {
@@ -852,7 +852,7 @@ window.SOFTWARE = {
       'Restrict the window with <strong>Data → Select Cases → If</strong> and the condition <em>ABS(x) &lt;= 12</em>. This is the bandwidth, and you will be rerunning the analysis with several values of it, so keep the condition somewhere you can edit.',
       '<strong>Analyze → Regression → Linear</strong>, outcome into <em>Dependent</em>, then <em>D</em>, <em>x</em> and <em>Dx</em> into <em>Independent(s)</em>. Read the unstandardized <em>B</em> on <strong>D</strong>: that row, and only that row, is the jump at the cutoff. Its <em>Sig.</em> and its confidence interval (tick <em>Statistics → Confidence intervals</em>) are the ones to report.',
       'Drop <em>Dx</em> from the model and the two sides are forced to share one slope. Students do this by accident and it is the most common way to report a jump that is not there, so check that the interaction is in the box before believing the number.',
-      'For the density check, run <strong>Graphs → Chart Builder</strong> on a histogram of the raw score with a bin width of one point and look for a hole below the cutoff and a spike above it. SPSS has no formal density test, so a plot and an honest sentence is what it can give you.',
+      'For the density check, run <strong>Graphs → Chart Builder</strong> on a histogram of the raw score with a bin width of one point and look for a hole below the cutoff and a spike above it. SPSS has no formal density test, so report what the plot shows.',
       'A dedicated package adds three things SPSS cannot: a bandwidth chosen to minimize mean squared error rather than by hand, a local polynomial fit that weights nearby observations more heavily, and confidence intervals corrected for the bias that an optimal bandwidth leaves behind. If the design is the centerpiece of the paper rather than a robustness check, run it in R.'
     ],
     jasp: [
@@ -875,7 +875,7 @@ window.SOFTWARE = {
       'In <strong>Transform → Compute Variable</strong> build <em>treated</em> (1 for a unit that eventually gets the treatment, in every period, including the ones before it started) and <em>post</em> (1 in every period from the switch onward, for every unit, including the ones that never get treated). Then build <em>did = treated * post</em>, which is 1 only for treated units in treated periods.',
       '<strong>Analyze → Regression → Linear</strong> with the outcome as <em>Dependent</em> and <em>treated</em>, <em>post</em> and <em>did</em> as <em>Independent(s)</em>. The unstandardized <em>B</em> on <strong>did</strong> is the estimate. Tick <em>Statistics → Confidence intervals</em>, and report that row only.',
       'The same model runs in <strong>Analyze → General Linear Model → Univariate</strong> with <em>treated</em> and <em>post</em> as fixed factors, where the interaction is in the model by default and the <em>treated * post</em> line of the Tests of Between-Subjects Effects table is the same test. The regression route is easier to read because it prints the coefficient rather than only its F.',
-      'Here is where SPSS bites. Those standard errors treat every row as an independent observation, and a school observed in eight terms supplies eight rows that are largely one fact. <strong>Analyze → Mixed Models → Linear</strong> with the unit id as a <em>Subject</em> gets you standard errors that respect the clustering; the fixed-effects part of the model is the same three predictors. The Linear Regression dialog has no cluster option at all, so its Sig. column on a panel is optimistic and sometimes wildly so.',
+      'This is the step that needs care in SPSS. Those standard errors treat every row as an independent observation, but a school observed in eight terms supplies eight rows that largely repeat the same information. <strong>Analyze → Mixed Models → Linear</strong> with the unit id as a <em>Subject</em> gets you standard errors that respect the clustering; the fixed-effects part of the model is the same three predictors. The Linear Regression dialog has no cluster option at all, so on a panel its Sig. column is too optimistic, sometimes by a wide margin.',
       'For an event study, build a dummy per period (leave the last pre-treatment period out as the reference), multiply each by <em>treated</em>, and put the whole set in the model. The coefficients on the pre-treatment dummies are the diagnostic, and a line chart of the group means by period is worth printing beside them.'
     ],
     jasp: [
@@ -886,8 +886,8 @@ window.SOFTWARE = {
     apa: '<p>Twenty-five of the 50 schools began the tutoring scheme in term 5, and all 50 were observed for four terms before and four terms after. A difference-in-differences regression with school and term fixed effects estimated the effect on mean end-of-term score at 2.60 points, <em>SE</em> = 0.63, <em>t</em>(48) = 4.13, <em>p</em> &lt; .001, 95% CI [1.33, 3.87], with standard errors clustered by school. An event study using term 4 as the reference gave pre-treatment coefficients of −0.21, 0.14 and −0.08, none of them distinguishable from zero, consistent with parallel trends over the observed pre-period.</p>',
     tips: [
       'Report one coefficient, not four. The treated and post terms are the baseline gap and the shared time change, and printing them with stars beside them invites a reader to interpret two quantities the design exists to remove.',
-      'Say how the standard errors were clustered, in the same sentence as the estimate. Unclustered panel standard errors can be half the honest ones, so a result with no clustering stated is a result a reader cannot weigh.',
-      'Show the pre-treatment periods rather than asserting parallel trends. How many there were and how precisely each was estimated is what turns the assumption into evidence, and a reader can tell a quiet pre-period from a wide one only if you print both.',
+      'Say how the standard errors were clustered, in the same sentence as the estimate. Unclustered panel standard errors can be half the size of clustered ones, so readers cannot judge a result whose clustering is not stated.',
+      'Do not just assert parallel trends: show the pre-treatment periods. Report how many there were and how precisely each was estimated, because readers can tell a precise, flat pre-period from a noisy one only if you print both.',
       'If units started treatment at different dates, say which estimator you used. Plain two-way fixed effects can return the wrong sign under staggered timing, and a sentence naming a cohort-based estimator is now the expected one.'
     ]
   },
@@ -923,7 +923,7 @@ window.SOFTWARE = {
     ],
     apa: '<p>Missingness was 12% overall and consistent with MCAR, Little’s χ²(48) = 54.10, <em>p</em> = .25. We nonetheless used multiple imputation (<em>m</em> = 20, predictive mean matching, all analysis variables in the imputation model); pooled estimates are reported throughout.</p>',
     tips: [
-      'Report the missingness rate, your assumed mechanism, the method (MI/FIML), and m. "We deleted incomplete cases" needs justifying, not hiding.'
+      'Report the missingness rate, your assumed mechanism, the method (MI/FIML), and m. "We deleted incomplete cases" needs a stated justification.'
     ]
   },
   "meta-analysis": {
@@ -940,7 +940,7 @@ window.SOFTWARE = {
     apa: '<p>Across <em>k</em> = 18 studies (<em>N</em> = 2,104), the random-effects pooled effect was <em>d</em> = 0.42, 95% CI [0.29, 0.55], <em>z</em> = 6.28, <em>p</em> &lt; .001. Heterogeneity was moderate, <em>Q</em>(17) = 38.62, <em>p</em> = .002, <em>I</em>² = 56%, τ = 0.21, giving a 95% prediction interval of [−0.04, 0.89] for the true effect in a new study. The funnel plot and Egger’s test, <em>p</em> = .31, showed no clear small-study asymmetry.</p>',
     tips: [
       'The trio to report: pooled effect with CI, heterogeneity (<em>Q</em>, <em>I</em>², τ), and a publication-bias check.',
-      'Add the <strong>prediction interval</strong> whenever the model is random effects. The confidence interval says where the <em>average</em> effect sits; the prediction interval says where the <em>next</em> study is likely to land, and with real heterogeneity it is far wider: here [−0.04, 0.89] against a CI of [0.29, 0.55].'
+      'Add the <strong>prediction interval</strong> whenever the model is random effects. The confidence interval estimates the <em>average</em> effect. The prediction interval gives a range for the true effect in the <em>next</em> study, and with real heterogeneity it is far wider: here [−0.04, 0.89] against a CI of [0.29, 0.55].'
     ]
   },
   "psychometric-functions": {
@@ -955,7 +955,7 @@ window.SOFTWARE = {
       'PSE and JND come from the same two coefficients: PSE = −intercept/slope, JND = ln(3)/slope.',
       'Add the condition factor plus its interaction with duration to test a PSE shift (main effect) versus a slope change (interaction).'
     ],
-    apa: '<p>Proportions of &ldquo;long&rdquo; responses were fit with a logistic psychometric function per condition. The bright condition shifted the curve leftward relative to baseline, PSE = 462 ms vs. 508 ms, Δ = −46 ms, 95% CI [−72, −20], <em>z</em> = 3.46, <em>p</em> &lt; .001, with no reliable change in precision (JND = 84 ms vs. 79 ms, <em>p</em> = .62).</p>',
+    apa: '<p>Proportions of &ldquo;long&rdquo; responses were fit with a logistic psychometric function per condition. The bright condition shifted the curve leftward relative to baseline, PSE = 462 ms vs. 508 ms, Δ = −46 ms, 95% CI [−72, −20], <em>z</em> = 3.46, <em>p</em> &lt; .001. Precision did not change reliably (JND = 84 ms vs. 79 ms, <em>p</em> = .62).</p>',
     tips: [
       'Report the fitted family (logistic, cumulative Gaussian, or Weibull), the number of trials per level, the PSE and JND per condition, and how lapses were handled. The PSE is robust to the family choice, the JND less so.'
     ]
@@ -965,7 +965,7 @@ window.SOFTWARE = {
       'Reduce the data to one row per participant (and per condition, if there is more than one) holding four counts: hits, misses, false alarms and correct rejections. <strong>Data → Aggregate</strong> builds this from a trial-level file, with the participant as the break variable.',
       '<strong>Transform → Compute Variable</strong>, once per new column, with the log-linear correction applied to every participant: <em>H = (hits + 0.5) / (hits + misses + 1)</em> and <em>FA = (fa + 0.5) / (fa + cr + 1)</em>.',
       'Then the z-scores. <em>IDF.NORMAL</em> is SPSS’s name for the inverse normal: <em>zH = IDF.NORMAL(H, 0, 1)</em> and <em>zFA = IDF.NORMAL(FA, 0, 1)</em>, then <em>dprime = zH - zFA</em> and <em>c = -(zH + zFA) / 2</em>.',
-      'd′ and c are now ordinary variables. Compare conditions or groups on each with the t-test or ANOVA the design calls for, and always analyze both: a shift in c with d′ unchanged is a change in willingness to say yes, not in skill.',
+      'd′ and c are now ordinary variables. Compare conditions or groups on each with the t-test or ANOVA the design calls for, and always analyze both. A shift in c with d′ unchanged is a change in willingness to say yes, not in skill.',
       'With confidence ratings, <strong>Analyze → Classify → ROC Curve…</strong> (directly under <strong>Analyze</strong> in older versions) draws the empirical ROC. The rating goes in <em>Test Variable</em>, coded so that higher means more confident a signal was there; the signal indicator goes in <em>State Variable</em> with value 1; tick <em>Standard error and confidence interval</em> for the area. That area is nonparametric and needs no equal-variance assumption, which the plain d′ does.'
     ],
     jasp: [

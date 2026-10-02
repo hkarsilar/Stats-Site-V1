@@ -214,7 +214,7 @@ window.SNIPPETS = {
     py: 'import pandas as pd\nfrom lifelines import KaplanMeierFitter, CoxPHFitter\nfrom lifelines.statistics import logrank_test\nkm = KaplanMeierFitter()\nfor g, sub in df.groupby("group"):\n    km.fit(sub.time, sub.event, label=g).plot_survival_function()\na, b = [s for _, s in df.groupby("group")]\nprint(logrank_test(a.time, b.time, a.event, b.event).p_value)\n# Cox wants numeric covariates, so code the group first\ncxdf = df[["time", "event", "age"]].assign(grp=pd.factorize(df.group)[0])\ncx = CoxPHFitter().fit(cxdf, "time", "event")\ncx.check_assumptions(cxdf)   # proportional hazards, from Schoenfeld residuals'
   },
   "missing-data": {
-    r: 'library(mice)   # multiple imputation, the modern default\nimp  <- mice(df, m = 20, printFlag = FALSE)\nfits <- with(imp, lm(score ~ hours + sleep))\npool(fits)      # estimates + SEs that honestly include the holes\nmd.pattern(df)  # visualize where the holes are',
+    r: 'library(mice)   # multiple imputation, the modern default\nimp  <- mice(df, m = 20, printFlag = FALSE)\nfits <- with(imp, lm(score ~ hours + sleep))\npool(fits)      # estimates + SEs that include the uncertainty from the holes\nmd.pattern(df)  # visualize where the holes are',
     py: 'from sklearn.experimental import enable_iterative_imputer\nfrom sklearn.impute import IterativeImputer\nimport pandas as pd\nimp = IterativeImputer(sample_posterior=True, random_state=0)\ndf_imp = pd.DataFrame(imp.fit_transform(df), columns=df.columns)\n# proper pooled inference: run several imputations and combine'
   },
   "meta-analysis": {
