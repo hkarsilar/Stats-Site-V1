@@ -997,8 +997,8 @@ window.SOFTWARE = {
       'Drag the scale’s items into <em>Variables</em>; under <em>Reverse-Scaled Items</em>, move any negatively worded ones across.',
       'Tick <em>Cronbach’s α</em>, and under <em>Individual Items</em> tick <em>α (if item dropped)</em> and the <em>item-rest correlation</em>.',
       'JASP also reports <em>McDonald’s ω</em> — a modern alternative many methodologists now prefer over α.',
-      '<strong>Reliability → Standard Error of Measurement</strong> is a separate entry in the same group, and it is the one to run when a score describes an individual rather than a group: it turns the coefficient into a band around one person’s score.',
-      'Rater agreement sits two entries further down. <strong>Reliability → Rater Agreement</strong> gives Cohen’s κ for two raters and Fleiss’ κ for more; <strong>Reliability → Intraclass Correlation</strong> is the one to use when the ratings are continuous.'
+      '<strong>Reliability → Standard Error of Measurement</strong> is a separate entry in the same group. Run it when a score describes an individual rather than a group: it turns the coefficient into a band around one person’s score.',
+      'Rater agreement is two entries further down. <strong>Reliability → Rater Agreement</strong> gives Cohen’s κ for two raters and Fleiss’ κ for more; <strong>Reliability → Intraclass Correlation</strong> is the one to use when the ratings are continuous.'
     ],
     apa: '<p>Internal consistency was acceptable: the 10-item Perceived Stress Scale had a Cronbach’s α of .82 in this sample, 95% CI [.78, .86]. One reverse-worded item was recoded before scoring, and all item–rest correlations exceeded .30.</p>',
     tips: [
@@ -1025,7 +1025,7 @@ window.SOFTWARE = {
     tips: [
       'Always state the transformation you used and the scale you analyzed on, then back-transform your summaries for the reader (the mean of the logs → the <em>geometric</em> mean).',
       'z-standardizing changes units, never shape — it does <strong>not</strong> fix skew or normality. Use a log or root for that.',
-      'If Box–Cox hands you λ̂ = 0.41, report the rung you actually used (√<em>x</em>) rather than the estimate. At thesis sample sizes the 95% interval around λ̂ is about 0.8 units wide at <em>n</em> = 50 and 0.6 at <em>n</em> = 100, so a transform quoted to two decimals claims a precision the method does not have.',
+      'If Box–Cox gives λ̂ = 0.41, report the rung you actually used (√<em>x</em>) rather than the estimate. At thesis sample sizes the 95% interval around λ̂ is about 0.8 units wide at <em>n</em> = 50 and 0.6 at <em>n</em> = 100. A transform quoted to two decimals claims a precision the method does not have.',
       'Reverse-code before computing a composite, or the reversed items cancel the rest and deflate the scale. Recompute reliability afterwards to confirm.'
     ]
   }

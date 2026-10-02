@@ -34,7 +34,7 @@
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "From Question to Hypothesis", "description": "Turn a vague hunch into a testable, falsifiable prediction. Build a hypothesis step by step — population, variables, direction — and watch it sharpen.", "url": "https://statscapybara.com/methods/from-question-to-hypothesis/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Methods: Research Design", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "From Question to Hypothesis", "item": "https://statscapybara.com/methods/from-question-to-hypothesis/"}]}]
   </script>
   <script type="application/ld+json" data-faq>
-  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "My hypothesis has three parts. Is that one hypothesis or three?", "acceptedAnswer": {"@type": "Answer", "text": "Count the tests, not the sentences. \"Music lowers recall, slows reading, and raises reported stress\" is three predictions sharing a subject: each will get its own statistical test, its own chance of a false positive, and its own line in your results. Packing them into one sentence doesn't merge them. Decide in advance which ones are the confirmatory tests you are willing to be judged on, write that down in your preregistration, and correct across that set the way multiple-comparison corrections describe. A compound prediction is perfectly good science; it turns bad when it stays vague about which part had to survive."}}, {"@type": "Question", "name": "What makes a hypothesis falsifiable?", "acceptedAnswer": {"@type": "Answer", "text": "There has to be some possible result that would count as evidence against it. \"Music changes recall\" is falsifiable: a clear no-difference result contradicts it. \"Music affects people somehow\" is not, because any outcome at all can be squeezed to fit, so it can never be wrong and therefore never informative. Falsifiability, following Popper, is the line between a scientific claim and an empty one."}}, {"@type": "Question", "name": "Should I use a one-tailed or a two-tailed hypothesis?", "acceptedAnswer": {"@type": "Answer", "text": "Default to two-tailed (non-directional) unless strong theory or prior evidence really justifies predicting the direction. A one-tailed test is more powerful if you guessed the direction correctly, but it's blind to a real effect in the opposite direction, and switching to one-tailed after peeking at the data is a form of p-hacking. Whichever you choose, choose it before you collect data."}}]}
+  {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "My hypothesis has three parts. Is that one hypothesis or three?", "acceptedAnswer": {"@type": "Answer", "text": "Count the tests. \"Music lowers recall, slows reading, and raises reported stress\" is three predictions about one subject. Each will get its own statistical test, its own chance of a false positive, and its own line in your results, and packing them into one sentence doesn't change that. Decide in advance which ones are the confirmatory tests you are willing to be judged on, write that down in your preregistration, and correct across that set the way multiple-comparison corrections describe. A compound prediction is perfectly good science, as long as you say in advance which parts must hold for it to count as supported."}}, {"@type": "Question", "name": "What makes a hypothesis falsifiable?", "acceptedAnswer": {"@type": "Answer", "text": "There has to be some possible result that would count as evidence against it. \"Music changes recall\" is falsifiable: a clear no-difference result contradicts it. \"Music affects people somehow\" is not, because any outcome at all can be squeezed to fit, so it can never be wrong and therefore never informative. Falsifiability, following Popper, is the line between a scientific claim and an empty one."}}, {"@type": "Question", "name": "Should I use a one-tailed or a two-tailed hypothesis?", "acceptedAnswer": {"@type": "Answer", "text": "Default to two-tailed (non-directional) unless strong theory or prior evidence justifies predicting the direction. A one-tailed test is more powerful if you guessed the direction correctly, but it cannot detect a real effect in the opposite direction. Switching to one-tailed after peeking at the data is a form of p-hacking. Whichever you choose, choose it before you collect data."}}]}
   </script>
 </head>
 <body data-course="methods" data-section="from-question-to-hypothesis">
@@ -48,7 +48,7 @@
         <span class="lesson-eyebrow">Section 1.1</span>
         <h1>From Question to Hypothesis</h1>
 
-        <p class="lede">Every study starts as a hunch: "I bet music helps people study." That's a fine <em>question</em>, but it isn't yet something you can test. The whole craft of research design begins with sharpening a fuzzy idea into a prediction so specific that reality could prove it wrong.</p>
+        <p class="lede">Every study starts as a hunch: "I bet music helps people study." That's a fine <em>question</em>, but it isn't yet something you can test. Research design begins by sharpening a fuzzy idea into a prediction so specific that the data could prove it wrong.</p>
 
         <h2>The ladder from idea to prediction</h2>
         <p>A good hypothesis is built in stages. Each rung makes the claim more concrete, and more <strong>falsifiable</strong>.</p>
@@ -59,13 +59,13 @@
         </ol>
 
         <div class="callout key">
-          <p><strong>Falsifiability is the whole game.</strong> A hypothesis is scientific only if there's some result that would show it's <em>wrong</em>. "Music affects people somehow" can never be refuted (every outcome fits it), so it's useless. "Music lowers recall" sticks its neck out, and that's exactly what makes it testable.</p>
+          <p><strong>Falsifiability comes first.</strong> A hypothesis is scientific only if there's some result that would show it's <em>wrong</em>. "Music affects people somehow" can never be refuted (every outcome fits it), so it's useless. "Music lowers recall" is testable, because a study that finds no drop in recall would refute it.</p>
         </div>
 
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="hm">
           <p class="viz-title">🛠️ The Hypothesis Machine</p>
-          <p class="viz-sub">Pick a vague claim, then sharpen each part. The falsifiability meter climbs as your prediction gets specific enough for reality to push back on.</p>
+          <p class="viz-sub">Pick a vague claim, then sharpen each part. The falsifiability meter climbs as your prediction gets specific enough for a result to contradict it.</p>
 
           <div class="controls" style="margin-bottom:1.1rem">
             <div class="control" style="flex:1;min-width:220px">
@@ -96,16 +96,16 @@
         <h2>Directional or not?</h2>
         <p>Once you pick a direction, you're choosing between two flavors of alternative hypothesis:</p>
         <ul>
-          <li><strong>Non-directional (two-tailed):</strong> "music <em>changes</em> recall" — you predict a difference but not which way. Safer when you genuinely don't know.</li>
+          <li><strong>Non-directional (two-tailed):</strong> "music <em>changes</em> recall" — you predict a difference but not which way. Safer when you don't know the direction.</li>
           <li><strong>Directional (one-tailed):</strong> "music <em>lowers</em> recall", a bolder, riskier bet that puts all your statistical power on one side. Justified only when theory or prior evidence points clearly one way.</li>
         </ul>
 
         <h2>Where H₀ and H₁ come from</h2>
-        <p>Your prediction becomes the <strong>alternative hypothesis</strong> (H₁). Its mirror image, "nothing is going on, no effect, no difference," is the <strong>null hypothesis</strong> (H₀). You never test H₁ directly; instead you assume H₀ and ask how surprising your data would be under it. That machinery is the subject of <a href="../../stats-1/hypothesis-testing-logic/">hypothesis testing logic</a>; here it's enough that a sharp, falsifiable prediction is what makes that test <em>possible</em> in the first place.</p>
+        <p>Your prediction becomes the <strong>alternative hypothesis</strong> (H₁). Its mirror image, "nothing is going on, no effect, no difference," is the <strong>null hypothesis</strong> (H₀). You never test H₁ directly; instead you assume H₀ and ask how surprising your data would be under it. How that test works is the subject of <a href="../../stats-1/hypothesis-testing-logic/">hypothesis testing logic</a>. It can only be run on a prediction sharp enough to be falsified.</p>
 
         <div class="callout">
-          <p><strong>Why it matters:</strong> a study is only as good as the prediction it started from. Fuzzy questions produce fuzzy results that can be spun to fit any story. Nail down the population, the variables, and the direction <em>before</em> you collect data, and you've already done the hardest and most honest part of the work. Writing that prediction somewhere you cannot later revise it is what <a href="../../methods/preregistration-and-open-science/">preregistration</a> is for, and a preregistration has to name the analysis, which is what the <a href="../../which-test.html">test chooser</a> is for.</p>
-          <p style="margin-top:.6rem">To see the whole sequence run once, the <a href="../../guides/complete-worked-project/">complete worked project</a> starts at a question this vague and does not stop until the results paragraph. Once your own prediction is sharp enough to name an outcome and a comparison, <a href="../../plan.html">Plan My Analysis</a> will carry it the rest of the way to a test and a sample size, and <a href="../../guides/choose-statistics-dissertation/">Choosing Statistics for Your Dissertation</a> talks the same decision through in prose if you would rather read it than click it.</p>
+          <p><strong>Why it matters:</strong> a study is only as good as the prediction it started from. Fuzzy questions produce fuzzy results that can be spun to fit any story. Nail down the population, the variables, and the direction <em>before</em> you collect data, and you've already done the hardest part of the work. <a href="../../methods/preregistration-and-open-science/">Preregistration</a> records that prediction where you cannot later revise it. A preregistration also has to name the analysis, and the <a href="../../which-test.html">test chooser</a> helps you pick one.</p>
+          <p style="margin-top:.6rem">The <a href="../../guides/complete-worked-project/">complete worked project</a> runs the whole sequence once, from a question this vague to the results paragraph. Once your own prediction names an outcome and a comparison, <a href="../../plan.html">Plan My Analysis</a> suggests a test and a sample size for it. <a href="../../guides/choose-statistics-dissertation/">Choosing Statistics for Your Dissertation</a> covers the same decision in prose.</p>
         </div>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
@@ -113,7 +113,7 @@
           <h2>Common questions</h2>
           <details class="faq-item">
             <summary>My hypothesis has three parts. Is that one hypothesis or three?</summary>
-            <div class="faq-a"><p>Count the tests, not the sentences. "Music lowers recall, slows reading, and raises reported stress" is three predictions sharing a subject: each will get its own statistical test, its own chance of a false positive, and its own line in your results. Packing them into one sentence doesn't merge them. Decide in advance which ones are the confirmatory tests you are willing to be judged on, write that down in your <a href="../../methods/preregistration-and-open-science/">preregistration</a>, and correct across that set the way <a href="../../stats-2/post-hoc-tests/">multiple-comparison corrections</a> describe. A compound prediction is perfectly good science; it turns bad when it stays vague about which part had to survive.</p></div>
+            <div class="faq-a"><p>Count the tests. "Music lowers recall, slows reading, and raises reported stress" is three predictions about one subject. Each will get its own statistical test, its own chance of a false positive, and its own line in your results, and packing them into one sentence doesn't change that. Decide in advance which ones are the confirmatory tests you are willing to be judged on, write that down in your <a href="../../methods/preregistration-and-open-science/">preregistration</a>, and correct across that set the way <a href="../../stats-2/post-hoc-tests/">multiple-comparison corrections</a> describe. A compound prediction is perfectly good science, as long as you say in advance which parts must hold for it to count as supported.</p></div>
           </details>
           <details class="faq-item">
             <summary>What makes a hypothesis falsifiable?</summary>
@@ -121,7 +121,7 @@
           </details>
           <details class="faq-item">
             <summary>Should I use a one-tailed or a two-tailed hypothesis?</summary>
-            <div class="faq-a"><p>Default to two-tailed (non-directional) unless strong theory or prior evidence really justifies predicting the direction. A one-tailed test is <a href="../../stats-3/effect-size-and-power/">more powerful</a> <em>if</em> you guessed the direction correctly, but it's blind to a real effect in the opposite direction, and switching to one-tailed after peeking at the data is a form of p-hacking. Whichever you choose, choose it before you collect data.</p></div>
+            <div class="faq-a"><p>Default to two-tailed (non-directional) unless strong theory or prior evidence justifies predicting the direction. A one-tailed test is <a href="../../stats-3/effect-size-and-power/">more powerful</a> <em>if</em> you guessed the direction correctly, but it cannot detect a real effect in the opposite direction. Switching to one-tailed after peeking at the data is a form of p-hacking. Whichever you choose, choose it before you collect data.</p></div>
           </details>
         </section>
         <!-- faq:end -->
@@ -274,7 +274,7 @@
 
       var v = document.getElementById("hm-verdict");
       if (pts <= 3) { v.textContent = "Too vague to test: every result would fit, so nothing could prove it wrong."; v.style.color = "#ef4444"; }
-      else if (pts <= 6) { v.textContent = "Getting there. Pin down the fuzzy parts so reality can push back."; v.style.color = "#f59e0b"; }
+      else if (pts <= 6) { v.textContent = "Getting there. Pin down the fuzzy parts until some result could prove the claim wrong."; v.style.color = "#f59e0b"; }
       else { v.textContent = "Testable prediction ✓ — specific, falsifiable, and ready for data."; v.style.color = "#22c55e"; }
 
       // assembled sentence, fuzzy pieces grayed, sharp pieces bold
