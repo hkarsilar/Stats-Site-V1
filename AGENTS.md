@@ -32,7 +32,7 @@ This paragraph is standing, explicit permission. Do not ask, and do not leave fi
 - The one exception: if you cannot get a gate green, push only the branch, leave `main` alone, and say plainly in your final report that `main` was not updated and why.
 - Pushing `main` deploys the site. The gates are the safety net.
 
-**Service-worker cache.** If a deploy changes a precached shell asset (`styles.css`, `site.js`, `curriculum.js`, `viz.js`, `assets/fonts/Inter.woff2`, an icon, or `offline.html`), bump `CACHE_VERSION` in `sw.js` (currently `sc-v60`). HTML edits need no bump. Never reuse a version string for different contents: if you edit `styles.css` twice before committing, each state that could reach a browser needs its own string. CSS and JS are stale-while-revalidate, so a change reaches visitors on their next page load even without a bump; a bump also makes `site.js` reload the page once so the change applies within the same visit.
+**Service-worker cache.** If a deploy changes a precached shell asset (`styles.css`, `site.js`, `curriculum.js`, `viz.js`, `assets/fonts/Inter.woff2`, an icon, or `offline.html`), bump `CACHE_VERSION` in `sw.js` (currently `sc-v61`). HTML edits need no bump. Never reuse a version string for different contents: if you edit `styles.css` twice before committing, each state that could reach a browser needs its own string. CSS and JS are stale-while-revalidate, so a change reaches visitors on their next page load even without a bump; a bump also makes `site.js` reload the page once so the change applies within the same visit.
 
 ## Commands
 

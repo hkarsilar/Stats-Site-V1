@@ -17,9 +17,9 @@
    as a one-liner under the heading. */
 window.TRACKS = [
   { id: "core",    title: "The Statistics Core",
-    desc: "The analysis itself — from describing your first dataset to Bayesian and multilevel models, and on into machine learning." },
+    desc: "The analysis itself, from describing your first dataset to Bayesian and multilevel models and on to machine learning." },
   { id: "toolkit", title: "The Research Toolkit",
-    desc: "Everything around the analysis — designing studies, wrangling data, writing it all up, and doing it ethically." }
+    desc: "Everything around the analysis: designing studies, preparing data, writing it up, and doing it all ethically." }
 ];
 
 window.CURRICULUM = [

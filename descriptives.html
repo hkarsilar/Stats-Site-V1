@@ -50,7 +50,7 @@
       <article class="lesson" style="margin:0 auto">
         <span class="lesson-eyebrow">Tools</span>
         <h1>Descriptives Calculator</h1>
-        <p class="lede">Paste numbers and get the full descriptive rundown: mean, SD, median, quartiles, confidence interval, skewness, outlier flags, and a picture. Nothing leaves your browser, and the APA-style summary sentence writes itself.</p>
+        <p class="lede">Paste numbers and get the full descriptive rundown: mean, SD, median, quartiles, confidence interval, skewness, outlier flags, and a picture. Nothing leaves your browser, and the page writes the APA-style summary sentence for you.</p>
 
         <div class="viz" id="dcviz">
           <div class="controls" style="align-items:stretch">
@@ -74,7 +74,7 @@
               </div>
             </div>
           </div>
-          <p class="viz-sub" style="margin:0 0 1rem">Three conventions, three answers to one exam question. <strong>Textbook</strong> splits the sorted values at the median and takes the median of each half, leaving the middle value out of both halves when <em>n</em> is odd; that is the hand method Moore, McCabe and Craig teach and the one a paper exam marks. <strong>SPSS</strong> uses the weighted average that its Frequencies menu produces by default. <strong>R/Python</strong> interpolates the way R, NumPy, pandas and Excel's <code>QUARTILE.INC</code> all do, and it stays the default here. The switch moves Q1, Q3, the IQR, the fences, the outlier flags and the boxplot with it; the median never moves, because all three agree on that one.</p>
+          <p class="viz-sub" style="margin:0 0 1rem">The three conventions give three answers to the same exam question. <strong>Textbook</strong> splits the sorted values at the median and takes the median of each half, leaving the middle value out of both halves when <em>n</em> is odd. That is the hand method Moore, McCabe and Craig teach, and the one a paper exam expects. <strong>SPSS</strong> uses the weighted average that its Frequencies menu produces by default. <strong>R/Python</strong> interpolates the way R, NumPy, pandas and Excel's <code>QUARTILE.INC</code> all do, and it stays the default here. The switch moves Q1, Q3, the IQR, the fences, the outlier flags and the boxplot with it; the median never moves, because all three agree on that one.</p>
 
           <canvas id="dc-canvas"></canvas>
 
@@ -103,9 +103,9 @@
         <h2>What to check before you trust the mean</h2>
         <ul>
           <li><strong>Skewness far from 0?</strong> The mean is being dragged toward the tail, so report the median too. (<a href="stats-1/describing-data/">Describing Data</a>)</li>
-          <li><strong>Outliers flagged?</strong> Don't delete them by reflex; find out what they are first. One typo can move a mean more than ten honest values. (<a href="stats-2/assumptions-and-when-they-break/">ANOVA &amp; t-Test Assumptions</a>)</li>
-          <li><strong>Small n?</strong> The 95% CI here uses the t-distribution, so it's honest about small samples. No formula fixes n = 5, though. (<a href="stats-1/confidence-intervals/">Confidence Intervals</a>)</li>
-          <li><strong>Histogram looks different from your software's?</strong> Bin counts are a choice, not a fact. This page uses the square-root rule (⌈1.5√<em>n</em>⌉, capped at 30); SPSS, R and Excel each pick differently, and <a href="stats-1/visualizing-data/">Visualizing Data</a> runs Sturges' rule, Scott's rule and Freedman–Diaconis over the same data to show how far apart they land.</li>
+          <li><strong>Outliers flagged?</strong> Don't delete them by reflex; find out what they are first. One typo can move a mean more than ten correctly entered values. (<a href="stats-2/assumptions-and-when-they-break/">ANOVA &amp; t-Test Assumptions</a>)</li>
+          <li><strong>Small n?</strong> The 95% CI here uses the t-distribution, so it widens correctly for small samples. No formula makes n = 5 precise, though. (<a href="stats-1/confidence-intervals/">Confidence Intervals</a>)</li>
+          <li><strong>Histogram looks different from your software's?</strong> Bin counts are a choice, not a fact. This page uses the square-root rule (⌈1.5√<em>n</em>⌉, capped at 30), and SPSS, R and Excel each choose differently. <a href="stats-1/visualizing-data/">Visualizing Data</a> applies Sturges' rule, Scott's rule and Freedman–Diaconis to the same data to show how different the results are.</li>
         </ul>
 
         <div class="callout key">

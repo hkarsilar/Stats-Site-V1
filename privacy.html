@@ -49,17 +49,17 @@
       <article class="lesson" style="margin:0 auto">
         <span class="lesson-eyebrow">Privacy</span>
         <h1>What this site knows about you</h1>
-        <p class="lede">Almost nothing, and this page says exactly what. No accounts, no sign-up, no email capture, no ads. Your study progress lives on your own device and is never uploaded. What leaves your browser is an anonymous count of which pages get opened, and an anonymous note when one of ten features is used.</p>
+        <p class="lede">Almost nothing, and this page lists all of it. There are no accounts, no sign-up, no email capture and no ads. Your study progress is stored on your own device and is never uploaded. What leaves your browser is an anonymous count of which pages get opened, and an anonymous note when one of ten features is used.</p>
 
         <div class="callout key">
-          <p><strong>The short version.</strong> StatsCapybara counts page views anonymously with Google Analytics, notes anonymously when a feature such as search or the quiz is used, sets no analytics cookie, and stores everything about <em>you</em> (progress, quiz scores, flashcards, theme) in your own browser. There is nothing to log into and nothing to delete from a server, because there is no account.</p>
+          <p><strong>The short version.</strong> StatsCapybara counts page views anonymously with Google Analytics, notes anonymously when a feature such as search or the quiz is used, and sets no analytics cookie. Everything about <em>you</em> (progress, quiz scores, flashcards, theme) is stored in your own browser. There is no account, so there is nothing to log into and nothing to delete from a server.</p>
         </div>
 
         <h2>What is collected</h2>
-        <p>Two things: an anonymous page view when you open a page, and an anonymous note when one of ten features is used. That is the whole list.</p>
-        <p>It arrives through Google Analytics 4. Advertising storage, ad personalization and ad user data are all denied outright through <a href="https://developers.google.com/tag-platform/security/concepts/consent-mode">Consent Mode</a>. Analytics storage is allowed, so that the counts are genuinely recorded, but the tag also sets <code>client_storage</code> to <code>none</code>, which stops it writing the <code>_ga</code> cookie. Nothing persists in your browser to recognize you on a later visit: each view is counted, and you are not followed from one to the next. The cost of that falls on me rather than on you, because a returning reader and a first-time one look identical in the numbers I get back.</p>
-        <p>What the counts are for is unglamorous. They tell me which lessons people actually read, which tools get opened, and which pages are broken enough that everyone leaves. That decides what gets rewritten next. Nobody is profiled and nothing is sold, because there is no advertising business here to sell it to.</p>
-        <p>The ten feature notes exist for the same reason. A page view cannot tell me whether anyone has ever finished a mock exam, printed a lesson, or embedded one in a slide, so features I spent weeks on could serve nobody at all while I kept maintaining them. Each note carries the event name and, at most, a coarse label:</p>
+        <p>Two things are collected: an anonymous page view when you open a page, and an anonymous note when one of ten features is used. That is the whole list.</p>
+        <p>Both are sent through Google Analytics 4. Advertising storage, ad personalization and ad user data are all denied outright through <a href="https://developers.google.com/tag-platform/security/concepts/consent-mode">Consent Mode</a>. Analytics storage is allowed, so that the counts are recorded, but the tag also sets <code>client_storage</code> to <code>none</code>, which stops it from writing the <code>_ga</code> cookie. Nothing stays in your browser that could recognize you on a later visit, so each view is counted but you are not followed from one visit to the next. The only drawback is mine: in the numbers I get back, a returning reader and a first-time one look the same.</p>
+        <p>The counts tell me which lessons people read, which tools get opened, and which pages are so broken that everyone leaves. I use them to decide what to rewrite next. The site builds no profiles and sells nothing, because there is no advertising business here to sell to.</p>
+        <p>The ten feature notes exist for the same reason. A page view cannot show whether anyone has ever finished a mock exam, printed a lesson, or embedded one in a slide, so without them I could keep maintaining a feature without knowing whether anyone uses it. Each note carries the event name and, at most, a coarse label:</p>
         <ul>
           <li>The search box was opened. <strong>Never what you typed into it.</strong></li>
           <li>A practice quiz or a mock exam was finished, with its course scope, its length, and a band of 0 to 49, 50 to 79, or 80 to 100 percent. <strong>Never your actual score.</strong></li>
@@ -67,11 +67,11 @@
           <li>A visualization was downloaded as a PNG, or a page was printed, or a lesson was loaded in embed mode. Each says only which kind of page it happened on.</li>
           <li>The "Spotted a mistake" footer link was clicked, the site was installed as an app, or a course certificate was downloaded. The certificate note carries the course. <strong>Never the name you typed on it.</strong></li>
         </ul>
-        <p>There is no identifier attached to any of this beyond what the page view already has, which is nothing that persists. Two notes from the same person in the same minute cannot be told apart from two notes by two people.</p>
+        <p>No identifier is attached to any of this beyond what the page view already has, and the page view has nothing that persists. Two notes from the same person in the same minute cannot be told apart from two notes by two people.</p>
         <p>Analytics does see what any web server sees: the page address, the referring page, a rough country-level location derived from your IP address (Google does not report the address itself to me), and the kind of browser and device you use. I see those only as totals in a dashboard, never row by row for a person.</p>
 
         <h2>What never leaves your browser</h2>
-        <p>The features that feel personal are all client-side. They use <code>localStorage</code>, a small store that belongs to your browser on this one device, and nothing in it is transmitted anywhere:</p>
+        <p>The features that feel personal all run in your browser. They use <code>localStorage</code>, a small store that belongs to your browser on this one device, and nothing in it is transmitted anywhere:</p>
         <table class="ref-table">
           <thead><tr><th>Key</th><th>What it holds</th></tr></thead>
           <tbody>
@@ -79,36 +79,36 @@
             <tr><td><code>sc-last</code></td><td>The last lesson you opened, so the homepage can offer to resume it.</td></tr>
             <tr><td><code>sc-checks</code></td><td>Your best score on each lesson's three check questions.</td></tr>
             <tr><td><code>sc-exam</code></td><td>Your best mock-exam result for each quiz scope.</td></tr>
-            <tr><td><code>sc-cards</code></td><td>Which flashcard box each glossary term sits in, and when it is next due.</td></tr>
+            <tr><td><code>sc-cards</code></td><td>Which flashcard box each glossary term is in, and when it is next due.</td></tr>
             <tr><td><code>sc-name</code></td><td>The name you typed on a course certificate, so you need not retype it.</td></tr>
             <tr><td><code>theme</code></td><td>Light or dark.</td></tr>
           </tbody>
         </table>
-        <p>Because this lives on the device, it is genuinely device-local: finish six lessons on a laptop and your phone will show none of it. That is a real limitation, and it is the price of not asking you to make an account. It also means your progress is yours to destroy. Clearing site data for statscapybara.com in your browser settings wipes every key above, immediately and permanently, and the tools offer their own reset buttons for a lighter version of the same thing.</p>
-        <p>The pages that let you paste your own numbers, like the <a href="descriptives.html">descriptives</a> and <a href="correlation.html">correlation</a> calculators, compute in your browser. Your data is never uploaded, not even briefly. You can watch this yourself by pasting a column with the network disconnected; the answers still appear.</p>
+        <p>Because this is stored on the device, it stays on that device: finish six lessons on a laptop and your phone will show none of it. That is a real limitation, and it follows from not asking you to make an account. It also means you can delete your progress whenever you like. Clearing site data for statscapybara.com in your browser settings deletes every key above, immediately and permanently, and the tools have their own reset buttons that clear only their own part.</p>
+        <p>The pages that let you paste your own numbers, like the <a href="descriptives.html">descriptives</a> and <a href="correlation.html">correlation</a> calculators, compute in your browser. Your data is never uploaded, not even briefly. You can check this yourself: disconnect from the network, paste a column, and the answers still appear.</p>
 
         <h2>What the site contacts</h2>
-        <p>Two outside services, both narrow:</p>
+        <p>The site contacts two outside services, each for one narrow purpose:</p>
         <ul>
           <li><strong>Google Analytics</strong> (<code>googletagmanager.com</code>). Receives the anonymous page views and feature notes described above. It can see your IP address in transit, as any server you connect to can, and uses it to work out an approximate country before discarding it.</li>
-          <li><strong>Ko-fi</strong> (<code>storage.ko-fi.com</code>). The support button in the footer is an image loaded from Ko-fi's server, so Ko-fi sees the request for that image and the IP address it came from. Clicking through to donate takes you to Ko-fi, where their privacy policy applies and mine stops.</li>
+          <li><strong>Ko-fi</strong> (<code>storage.ko-fi.com</code>). The support button in the footer is an image loaded from Ko-fi's server, so Ko-fi sees the request for that image and the IP address it came from. Clicking through to donate takes you to Ko-fi, where Ko-fi's privacy policy applies, not this one.</li>
         </ul>
-        <p>That is the complete list. No fonts, scripts, stylesheets, or trackers load from anywhere else: everything else on this site is served from statscapybara.com, which is why the site keeps working after you go offline.</p>
+        <p>That is the complete list. No fonts, scripts, stylesheets or trackers load from anywhere else. Everything else on this site is served from statscapybara.com, so the site can keep working after you go offline.</p>
 
         <h2>Things that will not happen</h2>
         <ul>
-          <li><strong>No ads, ever.</strong> Not a banner, not a sponsored lesson, not an affiliate link dressed as a recommendation.</li>
-          <li><strong>No accounts.</strong> Nothing to sign up for, so there is no password of yours to lose and no mailing list to escape.</li>
+          <li><strong>No ads, ever.</strong> No banners, no sponsored lessons, and no affiliate links presented as recommendations.</li>
+          <li><strong>No accounts.</strong> There is nothing to sign up for, so you have no password to lose and no mailing list to escape.</li>
           <li><strong>No selling or sharing.</strong> There is no data of yours to sell, and there will not be.</li>
-          <li><strong>No dark patterns.</strong> No popups begging for an email before you can read a lesson.</li>
+          <li><strong>No dark patterns.</strong> No popups asking for an email before you can read a lesson.</li>
         </ul>
-        <p>The site is free and stays free. If you want to support it, the Ko-fi button in the footer is the only ask, and ignoring it costs you nothing.</p>
+        <p>The site is free and will stay free. If you want to support it, the Ko-fi button in the footer is the only request, and you lose nothing by ignoring it.</p>
 
         <h2>Children and classrooms</h2>
         <p>The site collects no personal information from anyone, which includes students under 13. It is used in university courses and can be assigned without a data-processing agreement, because there is no student data to process. Instructors may find the <a href="teachers.html">instructor page</a> useful on that point.</p>
 
         <h2>Questions or corrections</h2>
-        <p>Write to me. The <strong>Spotted a mistake? Tell me</strong> link at the bottom of every page opens an email with that page's address already filled in, and it is the right route for a privacy question too. If something on this page is wrong or has gone stale, I would rather hear it than have it sit here.</p>
+        <p>Write to me. The <strong>Spotted a mistake? Tell me</strong> link at the bottom of every page opens an email with that page's address already filled in, and it is the right route for a privacy question too. If something on this page is wrong or out of date, please tell me.</p>
         <p class="muted" style="margin-top:2rem;font-size:.9rem">Last updated 21 July 2026. StatsCapybara is made by Hakan Karsilar and hosted on GitHub Pages, which serves the files and keeps its own server logs.</p>
       </article>
     </div>

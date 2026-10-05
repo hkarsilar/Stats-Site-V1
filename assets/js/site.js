@@ -371,42 +371,42 @@
      read it. */
   var TOOLBOX = [
     { url: "which-test.html",    key: "which-test",    group: "guide",    emoji: "🧭", title: "Which test should I use?", desc: "Answer a few questions, get the right test" },
-    { url: "which-chart.html",   key: "which-chart",   group: "guide",    emoji: "📊", title: "Which chart should I use?", desc: "Pick the right chart for your data, mistakes and all" },
-    { url: "plan.html",          key: "plan",          group: "guide",    emoji: "🗺️", title: "Plan my analysis",         desc: "Question → test, sample size & APA — a printable plan" },
-    { url: "tables.html",        key: "tables",        group: "calc",     emoji: "🎛️", title: "Tables & calculators",     desc: "Exact z, t, χ² and F — no appendix flipping" },
+    { url: "which-chart.html",   key: "which-chart",   group: "guide",    emoji: "📊", title: "Which chart should I use?", desc: "Pick the right chart for your data, and the mistakes to avoid" },
+    { url: "plan.html",          key: "plan",          group: "guide",    emoji: "🗺️", title: "Plan my analysis",         desc: "Question → test, sample size & APA, as a printable plan" },
+    { url: "tables.html",        key: "tables",        group: "calc",     emoji: "🎛️", title: "Tables & calculators",     desc: "Exact z, t, χ² and F, without an appendix" },
     { url: "distributions.html", key: "distributions", group: "practice", emoji: "🎢", title: "Distribution playground",  desc: "Poke 9 distributions, then build a bell out of dice" },
-    { url: "effect-sizes.html",  key: "effect-sizes",  group: "calc",     emoji: "📏", title: "Effect-size converter",    desc: "d ↔ r ↔ η² — plus what they actually mean" },
+    { url: "effect-sizes.html",  key: "effect-sizes",  group: "calc",     emoji: "📏", title: "Effect-size converter",    desc: "d ↔ r ↔ η², and what each one means" },
     { url: "power.html",         key: "power",         group: "calc",     emoji: "⚡", title: "Power & sample size",       desc: "How many participants? Solve n, power, or effect" },
     { url: "descriptives.html",  key: "descriptives",  group: "calc",     emoji: "🧮", title: "Descriptives calculator",  desc: "Paste data, get stats, a histogram & APA text" },
     { url: "correlation.html",   key: "correlation",   group: "calc",     emoji: "📈", title: "Correlation & regression",  desc: "Paste X and Y: scatter, r, ρ, the best-fit line & APA" },
     { url: "apa.html",           key: "apa",           group: "calc",     emoji: "📝", title: "APA results formatter",    desc: "Type your numbers, copy a correct APA 7 sentence" },
     { url: "problems.html",      key: "problems",      group: "practice", emoji: "✏️", title: "Practice problems",        desc: "Work an answer out by hand, then check every step" },
-    { url: "datasets.html",      key: "datasets",      group: "practice", emoji: "🗂️", title: "Practice datasets",        desc: "Download real CSVs with stories, exercises & solutions" },
+    { url: "datasets.html",      key: "datasets",      group: "practice", emoji: "🗂️", title: "Practice datasets",        desc: "Download CSV files with stories, exercises & solutions" },
     { url: "formulas.html",      key: "formulas",      group: "guide",    emoji: "🖨️", title: "Formula sheet",            desc: "Every formula from the course, printable" },
-    { url: "cheat-test-chooser.html", key: "cheat-test-chooser", group: "guide", emoji: "🧾", title: "Cheat sheet: which test",  desc: "Printable poster — outcome × design → the test" },
-    { url: "cheat-apa.html",     key: "cheat-apa",     group: "guide",    emoji: "🖋️", title: "Cheat sheet: APA reporting", desc: "Printable poster — report t, F, χ², r & regression" },
-    { url: "cheat-assumptions.html", key: "cheat-assumptions", group: "guide", emoji: "🔎", title: "Cheat sheet: assumptions",  desc: "Printable poster — what to check & the fix when it breaks" },
+    { url: "cheat-test-chooser.html", key: "cheat-test-chooser", group: "guide", emoji: "🧾", title: "Cheat sheet: which test",  desc: "Printable poster: outcome × design → the test" },
+    { url: "cheat-apa.html",     key: "cheat-apa",     group: "guide",    emoji: "🖋️", title: "Cheat sheet: APA reporting", desc: "Printable poster: how to report t, F, χ², r & regression" },
+    { url: "cheat-assumptions.html", key: "cheat-assumptions", group: "guide", emoji: "🔎", title: "Cheat sheet: assumptions",  desc: "Printable poster: what to check & the fix when it fails" },
     { url: "glossary.html",      key: "glossary",      group: "guide",    emoji: "📖", title: "Glossary",                 desc: "Every stats term, defined without the jargon" },
     { url: "flashcards.html",    key: "flashcards",    group: "practice", emoji: "🃏", title: "Glossary flashcards",      desc: "Spaced-repetition drilling of every glossary term" },
     { url: "quiz.html",          key: "quiz",          group: "practice", emoji: "✅", title: "Quiz",                     desc: "Instant-feedback practice, or a marked mock exam" },
     { url: "progress.html",      key: "progress",      group: "practice", emoji: "🌱", title: "My progress",              desc: "Your rings, what's left, and course certificates" },
     /* long-form guides — guides/<slug>/index.html, group "read" (P34) */
     { url: "guides/analyze-thesis-data-jasp/",       key: "analyze-thesis-data-jasp",       group: "read", emoji: "🧪", title: "Analyze your thesis data in JASP", desc: "Import → check → test → APA, the whole path in free software" },
-    { url: "guides/spss-output-to-apa/",             key: "spss-output-to-apa",             group: "read", emoji: "📄", title: "From SPSS output to APA results",  desc: "Annotated output for the five classic tests — and the exact sentence" },
-    { url: "guides/choose-statistics-dissertation/", key: "choose-statistics-dissertation", group: "read", emoji: "🎓", title: "Choosing statistics for your dissertation", desc: "Three questions that pick your test — plus honest words on messy designs" },
-    { url: "guides/clean-survey-data/",              key: "clean-survey-data",              group: "read", emoji: "🧹", title: "Clean your survey data, step by step", desc: "From raw export to analysis-ready, with a real dataset to follow along" },
+    { url: "guides/spss-output-to-apa/",             key: "spss-output-to-apa",             group: "read", emoji: "📄", title: "From SPSS output to APA results",  desc: "Annotated output for five classic tests, with the APA sentence for each" },
+    { url: "guides/choose-statistics-dissertation/", key: "choose-statistics-dissertation", group: "read", emoji: "🎓", title: "Choosing statistics for your dissertation", desc: "Three questions that pick your test, plus advice on messy designs" },
+    { url: "guides/clean-survey-data/",              key: "clean-survey-data",              group: "read", emoji: "🧹", title: "Clean your survey data, step by step", desc: "From raw export to analysis-ready, with a practice dataset to follow along" },
     { url: "guides/complete-worked-project/",        key: "complete-worked-project",        group: "read", emoji: "🧭", title: "One study, start to finish",           desc: "A whole project on one file: question, power, analysis, APA, limitations" },
     { url: "guides/anova-and-regression-project/",   key: "anova-and-regression-project",   group: "read", emoji: "🔀", title: "An ANOVA and a regression",           desc: "The group project: three conditions analyzed twice, with control variables" },
     { url: "guides/reading-a-causal-paper/",         key: "reading-a-causal-paper",         group: "read", emoji: "🧐", title: "Reading a causal-inference paper",    desc: "Journal club: referee an IV, RD or DiD design in seven questions" },
-    { url: "teachers.html",                        key: "teachers",                       group: "read", emoji: "🧑‍🏫", title: "For instructors",                     desc: "Use the site in your course: link, embed, print & assign — free" }
+    { url: "teachers.html",                        key: "teachers",                       group: "read", emoji: "🧑‍🏫", title: "For instructors",                     desc: "Use the site in your course: link, embed, print & assign, for free" }
   ];
   /* the four toolbox groups — the homepage grid and toolbox.html render the
      same grouped layout, so the titles/blurbs live here beside TOOLBOX */
   var TOOLBOX_GROUPS = [
-    { id: "guide",    title: "🧭 Decide & look up",   sub: "For when you know what you need but not what it's called — or the other way round." },
-    { id: "calc",     title: "🎛️ Calculate",          sub: "Exact numbers for your homework and write-ups — no appendix tables, no approximations." },
-    { id: "practice", title: "🎮 Explore & practice", sub: "Build intuition by playing, then prove to yourself it stuck." },
-    { id: "read",     title: "📚 Read the guides",    sub: "Long-form walkthroughs for the big moments — a whole thesis analysis, cryptic SPSS output, a messy survey export." }
+    { id: "guide",    title: "🧭 Decide & look up",   sub: "For when you know what you need but not what it's called, or the other way round." },
+    { id: "calc",     title: "🎛️ Calculate",          sub: "Exact numbers for your homework and write-ups, without appendix tables or approximations." },
+    { id: "practice", title: "🎮 Explore & practice", sub: "Build intuition by playing, then test whether it stuck." },
+    { id: "read",     title: "📚 Read the guides",    sub: "Long-form walkthroughs for bigger tasks: a whole thesis analysis, confusing SPSS output, a messy survey export." }
   ];
   window.TOOLBOX = TOOLBOX;                 // toolbox.html renders its grouped grid
   window.TOOLBOX_GROUPS = TOOLBOX_GROUPS;   // from these two
@@ -919,7 +919,7 @@
     bar.className = "resume-bar" + (slot ? " resume-hero" : "");
     bar.innerHTML =
       capy(34) +
-      '<span class="rb-text">Pick up where you left off — <strong>' + last.n + ' ' + last.title + '</strong></span>' +
+      '<span class="rb-text">Pick up where you left off: <strong>' + last.n + ' ' + last.title + '</strong></span>' +
       '<a class="btn btn-primary btn-sm" href="' + BASE + last.course + '/' + last.slug + '/">Resume →</a>' +
       '<a class="rb-progress" href="' + BASE + 'progress.html" style="font-size:.85rem;font-weight:650;color:var(--primary);text-decoration:none;white-space:nowrap">My progress →</a>';
     if (slot) slot.appendChild(bar);

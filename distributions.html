@@ -51,7 +51,7 @@
       <article class="lesson" style="margin:0 auto">
         <span class="lesson-eyebrow">Tools</span>
         <h1>Distribution Playground</h1>
-        <p class="lede">Every distribution in one sandbox. Pick one, drag its parameters, and watch the shape respond. The dashed line is the mean, and the dotted lines sit one standard deviation to each side. Formulas can't show you this; sliders can.</p>
+        <p class="lede">Every distribution in one sandbox. Pick one, drag its parameters, and watch the shape respond. The dashed line is the mean, and the dotted lines are one standard deviation to each side.</p>
 
         <div class="viz" id="playground">
           <div class="controls">
@@ -67,19 +67,19 @@
 
         <h2>What to try</h2>
         <ul>
-          <li><strong>t vs. normal:</strong> pick Student's t, turn on the normal overlay, and drag df from 1 upward. The fat tails melt away. That's why t-tables stop mattering around df ≈ 100. (<a href="stats-1/one-sample-and-paired-t-tests/">lesson</a>)</li>
-          <li><strong>The normal approximation:</strong> pick Binomial with the overlay on. At n = 5 the bell is a bad costume; by n = 50 it fits beautifully — the Central Limit Theorem in action. (<a href="stats-1/central-limit-theorem/">lesson</a>)</li>
-          <li><strong>Skew that won't quit:</strong> chi-square with small df is heavily right-skewed; drag df up and watch it slowly normalize. (<a href="stats-1/chi-square-tests/">lesson</a>)</li>
-          <li><strong>Beta as belief:</strong> Beta(2, 5) says "probably a low proportion"; Beta(20, 50) says the same thing with confidence. This is exactly how Bayesian updating sharpens a prior. (<a href="stats-3/bayesian-thinking/">lesson</a>)</li>
+          <li><strong>t vs. normal:</strong> pick Student's t, turn on the normal overlay, and drag df from 1 upward. The heavy tails shrink as df grows, and by df ≈ 100 the t is so close to the normal that a t-table adds little. (<a href="stats-1/one-sample-and-paired-t-tests/">lesson</a>)</li>
+          <li><strong>The normal approximation:</strong> pick Binomial with the overlay on. At n = 5 the bell fits badly, and by n = 50 it fits well. That is the Central Limit Theorem at work. (<a href="stats-1/central-limit-theorem/">lesson</a>)</li>
+          <li><strong>Chi-square skew:</strong> chi-square with small df is heavily right-skewed; drag df up and watch it slowly normalize. (<a href="stats-1/chi-square-tests/">lesson</a>)</li>
+          <li><strong>Beta as belief:</strong> Beta(2, 5) says "probably a low proportion", and Beta(20, 50) says the same thing with more confidence. Bayesian updating sharpens a prior in the same way. (<a href="stats-3/bayesian-thinking/">lesson</a>)</li>
           <li>Poisson's variance equals its mean, so the spread grows with λ. When real count data spread more than that, you've met <strong>overdispersion</strong>. (<a href="stats-3/generalized-linear-models/">lesson</a>)</li>
         </ul>
 
         <h2 id="dice">Add two dice and you get a triangle</h2>
-        <p>One die is the uniform distribution in its purest form: six faces, six probabilities of 1/6, a plot as flat as a table. Roll two and add them, and the flatness is gone. There is one way to total 2 and there are six ways to total 7, so the 36 equally likely rolls pile up in the middle. That shape has a name. It is the <strong>triangular distribution</strong>, which is what you always get from the sum of two independent uniforms, and it is the reason a 7 turns up six times as often as a 12 in every board game you have ever lost. Keep adding dice and the straight sides begin to curve.</p>
+        <p>One die is a uniform distribution: six faces, each with probability 1/6, and a flat plot. Roll two and add them, and the plot is no longer flat. There is one way to total 2 and there are six ways to total 7, so the 36 equally likely rolls pile up in the middle. This shape is the <strong>triangular distribution</strong>. The sum of two independent uniforms always has it, and it is why a 7 turns up six times as often as a 12 in any board game played with two dice. Keep adding dice and the straight sides begin to curve.</p>
 
         <div class="viz" id="dice-lab">
           <p class="viz-title">🎲 Sums, differences and best-of rolls</p>
-          <p class="viz-sub">Every bar is an exact probability, counted from all the equally likely rolls rather than simulated. The dashed orange line marks the mean. Turn on the overlay to compare the bars with a normal curve of the same mean and spread.</p>
+          <p class="viz-sub">Every bar is an exact probability, counted from all the equally likely rolls. The dashed orange line marks the mean. Turn on the overlay to compare the bars with a normal curve of the same mean and spread.</p>
 
           <div class="controls">
             <div class="control"><label>What you record</label>
@@ -96,16 +96,16 @@
             </div>
           </div>
 
-          <p class="viz-sub" id="dice-caption" style="margin-bottom:.75rem">Add the dice together. One die is flat, two make a triangle, and by four or five the outline is a bell that nobody assumed.</p>
+          <p class="viz-sub" id="dice-caption" style="margin-bottom:.75rem">Add the dice together. One die is flat, two make a triangle, and four or five already look like a bell.</p>
           <canvas id="dice-canvas"></canvas>
           <div class="stat-row" id="dice-stats"></div>
         </div>
 
-        <p>The other settings are the same counting exercise with a different question. The <em>difference</em> between two dice is triangular as well, centered on zero, which is the shape a null distribution takes when the two things you subtracted really are alike. Recording only the <em>highest</em> of two dice breaks the symmetry: the counts climb 1, 3, 5, 7, 9, 11 out of 36, and the average rises from 3.5 to 4.47, which is why a tabletop game hands you a second die as a reward. Lowest-of-two is its mirror image, at 2.53.</p>
+        <p>The other settings count the same rolls to answer a different question. The <em>difference</em> between two dice is also triangular, centered on zero. A null distribution for a difference has this shape when the two things you subtract do not differ. Recording only the <em>highest</em> of two dice breaks the symmetry: the counts climb 1, 3, 5, 7, 9, 11 out of 36, and the average rises from 3.5 to 4.47. That is why rolling two dice and keeping the higher one counts as a reward in some tabletop games. Lowest-of-two is its mirror image, at 2.53.</p>
 
-        <p>Two dice have room for a surprise, too. Label one of them 1, 2, 2, 3, 3, 4 and the other 1, 3, 4, 5, 6, 8, and the totals follow exactly the same triangle as an ordinary pair. Those are the Sicherman dice, and they are the only other way to do it with positive whole numbers. Flattening the triangle, on the other hand, cannot be done at all: no weighting of two six-sided dice makes the eleven totals equally likely, because the chance of a 7 is always at least twice the square root of P(2) × P(12), and equal totals would need it to be twice its own size.</p>
+        <p>Two dice can also surprise you. Label one of them 1, 2, 2, 3, 3, 4 and the other 1, 3, 4, 5, 6, 8, and the totals follow exactly the same triangle as an ordinary pair. These are the Sicherman dice, the only other way to do this with positive whole numbers. Flattening the triangle, on the other hand, is impossible. No weighting of two six-sided dice makes the eleven totals equally likely, because the chance of a 7 is always at least twice the square root of P(2) × P(12). If all eleven totals were equally likely, that would make a 7 at least twice as likely as itself.</p>
 
-        <p>None of this is really about dice. Adding independent random quantities blends their distributions, and a few rounds of blending pull the result toward the normal curve whatever the ingredients looked like. That is the <a href="stats-1/central-limit-theorem/">Central Limit Theorem</a> demonstrated on the smallest dataset there is, and it explains why so many named distributions are sums underneath: the <a href="stats-1/binomial-distribution/">binomial</a> counts coin flips, chi-square adds up squared z-scores, and the <a href="stats-1/sampling-distributions/">sampling distribution</a> of a mean is a sum with a division at the end. Switch the playground above to Binomial with the overlay on and you are watching the same machinery run on different parts.</p>
+        <p>The same idea applies well beyond dice. Adding independent random quantities combines their distributions, and after a few additions the result is close to a normal curve, whatever the starting distributions looked like. That is the <a href="stats-1/central-limit-theorem/">Central Limit Theorem</a> on the smallest possible example. It also explains why so many named distributions are sums: the <a href="stats-1/binomial-distribution/">binomial</a> counts coin flips, chi-square adds up squared z-scores, and the <a href="stats-1/sampling-distributions/">sampling distribution</a> of a mean is a sum divided by n. Switch the playground above to Binomial with the overlay on and you see the same process with coin flips in place of dice.</p>
 
         <div class="callout key">
           <p><strong>Need probabilities, not shapes?</strong> The <a href="tables.html">tables &amp; calculators page</a> turns any z, t, χ², or F statistic into an exact p-value or critical value.</p>
@@ -162,7 +162,7 @@
         pdf: function (x, P) { return V.chiSqPdf(x, P.df); },
         mean: function (P) { return P.df; }, sd: function (P) { return Math.sqrt(2 * P.df); },
         range: function (P) { return [0, V.chiSqInv(0.002, P.df) * 1.05]; },
-        caption: "Sums of squared z-scores — the engine of count-table tests. Mean = df; heavily right-skewed at small df." },
+        caption: "Sums of squared z-scores, and the basis of count-table tests. Mean = df; heavily right-skewed at small df." },
       f: { name: "F", discrete: false,
         params: [{ id: "d1", label: "df₁ (numerator)", min: 1, max: 30, step: 1, val: 3 }, { id: "d2", label: "df₂ (denominator)", min: 1, max: 60, step: 1, val: 20 }],
         pdf: function (x, P) { return V.fPdf(x, P.d1, P.d2); },
@@ -172,7 +172,7 @@
           return Math.sqrt(2 * P.d2 * P.d2 * (P.d1 + P.d2 - 2) / (P.d1 * Math.pow(P.d2 - 2, 2) * (P.d2 - 4)));
         },
         range: function (P) { return [0, Math.min(V.fInv(0.01, P.d1, P.d2) * 1.25, 50)]; },
-        caption: "The ratio of two variances, what ANOVA and regression F-tests live on. Hovers near 1 when nothing is going on." },
+        caption: "The ratio of two variances, used by ANOVA and regression F-tests. Its values cluster near 1 when there is no effect." },
       binom: { name: "Binomial", discrete: true, overlay: true,
         params: [{ id: "n", label: "trials n", min: 1, max: 60, step: 1, val: 20 }, { id: "p", label: "success prob. p", min: 0.02, max: 0.98, step: 0.01, val: 0.5 }],
         pdf: function (k, P) { return binomPmf(k, P.n, P.p); },
@@ -384,11 +384,11 @@
 
     var MODES = {
       sum: { name: "Sum", dice: true, sides: true, unit: "total",
-        caption: "Add the dice together. One die is flat, two make a triangle, and by four or five the outline is a bell that nobody assumed." },
+        caption: "Add the dice together. One die is flat, two make a triangle, and four or five already look like a bell." },
       diff: { name: "Difference", dice: false, sides: true, unit: "difference",
         caption: "Second die subtracted from the first, always two dice. Triangular again, this time centered on zero." },
       max: { name: "Highest", dice: true, sides: true, unit: "highest die",
-        caption: "Roll them all and keep the highest face. The bars climb, and the average beats what one die can offer." },
+        caption: "Roll them all and keep the highest face. The bars climb, and the average is higher than one die's." },
       min: { name: "Lowest", dice: true, sides: true, unit: "lowest die",
         caption: "Keep the lowest face instead. The mirror image of the highest." },
       sich: { name: "Sicherman", dice: false, sides: false, unit: "total",

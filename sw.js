@@ -37,13 +37,11 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v60";  /* site.js and styles.css both changed and
-                                    both are precached: protectSymbols() and
-                                    the .sym rule keep α, σ, x̄ and n in their
-                                    own case inside capitalized labels. A
-                                    visitor holding only one of the pair would
-                                    get spans with no rule, or a rule with no
-                                    spans, and still read "THRESHOLD A". */
+const CACHE_VERSION = "sc-v61";  /* P117 reworded reader-facing strings in
+                                    three precached files: the TOOLBOX and
+                                    TOOLBOX_GROUPS blurbs and the resume
+                                    banner in site.js, the TRACKS lines in
+                                    curriculum.js, and offline.html's copy. */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location

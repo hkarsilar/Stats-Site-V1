@@ -59,7 +59,7 @@
       <article class="lesson" style="margin:0 auto">
         <span class="lesson-eyebrow">Tools</span>
         <h1>Which Chart Should I Use?</h1>
-        <p class="lede">Every dataset has one chart that tells its story clearly — and a dozen that muddle it. Answer a few plain-English questions about what you're showing and the kind of data you have, and get the right chart: a live thumbnail, when to use it, and the classic mistake to sidestep.</p>
+        <p class="lede">Most datasets have one chart that shows them clearly and many that muddle them. Answer a few plain-English questions about what you're showing and the kind of data you have, and get the right chart: a live thumbnail, when to use it, and the classic mistake to avoid.</p>
 
         <div class="viz" id="chooser">
           <div id="wt-crumbs" class="wt-crumbs"></div>
@@ -67,7 +67,7 @@
         </div>
 
         <div class="callout key">
-          <p><strong>A starting point, not a rule.</strong> The best chart depends on your data <em>and</em> your audience. When in doubt, show the data: a scatter or box plot reveals more than a bar of means. Always label your axes and start bar counts at zero. For the theory, see <a href="stats-1/visualizing-data/">Visualizing Data</a>; for putting them in a report honestly, <a href="writing/tables-and-figures/">Tables &amp; Figures That Don't Lie</a>.</p>
+          <p><strong>A starting point, not a rule.</strong> The best chart depends on your data <em>and</em> your audience. When in doubt, show the data: a scatter or box plot reveals more than a bar of means. Always label your axes and start bar counts at zero. For the theory, see <a href="stats-1/visualizing-data/">Visualizing Data</a>, and for using charts in a report without misleading anyone, see <a href="writing/tables-and-figures/">Tables &amp; Figures That Don't Lie</a>.</p>
         </div>
 
         <h2>The whole map, laid out flat</h2>
@@ -168,14 +168,14 @@
       bar: {
         name: "Bar chart",
         why: "Comparing a single value (a mean, total or count) across a handful of clearly-labeled categories. Length is the easiest visual quantity to compare accurately.",
-        mistake: "Truncating the y-axis so it doesn't start at zero exaggerates the differences; bars encode length, so the baseline must be zero. Add error bars (and say what they show) when the bar is a mean, but don't read their overlap as a verdict: two ±1 SE bars that just fail to touch sit at about p = .16, while two 95% CIs that just fail to touch are already at p = .006.",
+        mistake: "Truncating the y-axis so it doesn't start at zero exaggerates the differences; bars encode length, so the baseline must be zero. Add error bars (and say what they show) when the bar is a mean, but don't read their overlap as a verdict: two ±1 SE bars that just fail to touch correspond to about p = .16, while two 95% CIs that just fail to touch are already at p = .006.",
         alt: "A dot or lollipop plot for many categories; box plots when you have each group's full distribution, not just one number."
       },
       paired: {
         name: "Slopegraph (paired lines)",
-        why: "The same people measured twice or more: one line per participant, joining their own scores across conditions. It shows what a paired test actually uses, which is each person's change, and it shows at a glance who moved against the tide.",
-        mistake: "Reaching for two bars with error bars instead. Those bars carry the differences between people, which a paired test never looks at, so they can overlap almost entirely while the test returns p = .0003. If bars are unavoidable, plot the differences, or say in the caption that the bars are between-subject.",
-        alt: "A histogram or box plot of the differences when there are many participants; a line chart when the repeated axis is really time."
+        why: "The same people measured twice or more: one line per participant, joining their own scores across conditions. It shows what a paired test actually uses, which is each person's change, and it shows at a glance who changed in the opposite direction.",
+        mistake: "Reaching for two bars with error bars instead. Those error bars reflect the variation between people, which a paired test never looks at, so they can overlap almost entirely while the test returns p = .0003. If bars are unavoidable, plot the differences, or say in the caption that the bars are between-subject.",
+        alt: "A histogram or box plot of the differences when there are many participants; a line chart when the repeated axis is time."
       },
       bar_h: {
         name: "Horizontal bar chart",
@@ -198,13 +198,13 @@
       scatter_trend: {
         name: "Scatter plot with a trend line",
         why: "The relationship of two numeric variables when you also want to summarize it or predict one from the other, with the fitted line and its slope, drawn on top of the raw cloud.",
-        mistake: "Drawing the line far beyond the data (extrapolation), or fitting a straight line to an obviously curved cloud. Let the points, not the line, have the final say.",
+        mistake: "Drawing the line far beyond the data (extrapolation), or fitting a straight line to an obviously curved cloud. Look at the points before you trust the line.",
         alt: "A plain scatter when the trend isn't the point; a line chart when the x-axis is time rather than a second measurement."
       },
       line: {
         name: "Line chart",
         why: "Showing how a measurement changes along an ordered axis, usually time. The connecting line implies the points are steps on a continuum, guiding the eye through the trend.",
-        mistake: "Connecting categories that have no order (a line chart implies continuity), or plotting so many series they tangle into spaghetti. A truncated y-axis can still mislead, so label it honestly.",
+        mistake: "Connecting categories that have no order (a line chart implies continuity), or plotting so many series they tangle into spaghetti. A truncated y-axis can still mislead, so make the axis range clear.",
         alt: "A bar chart for a few discrete periods; small multiples when you have many series to compare."
       },
       heatmap: {
@@ -215,15 +215,15 @@
       },
       pie_resist: {
         name: "Parts of a whole → resist the pie",
-        why: "Showing how one whole splits into parts. The honest answer is usually a bar chart of the parts (or a single stacked bar): people compare lengths far more accurately than angles or wedge areas.",
+        why: "Showing how one whole splits into parts. The better choice is usually a bar chart of the parts (or a single stacked bar): people compare lengths far more accurately than angles or wedge areas.",
         mistake: "The pie chart itself. Beyond two or three slices, similar wedges are impossible to rank and the labels crowd the rim. If you must use one, keep it to a two-way split; otherwise reach for a bar.",
         alt: "A bar chart with the parts sorted by size; a stacked bar to compare compositions across several groups."
       },
       table: {
         name: "Table",
         why: "When the reader needs the exact numbers, to look a specific value up, compare precise figures, or reference them later. A well-built table beats a chart whenever precision matters more than pattern.",
-        mistake: "Turning a table into a wall of numbers. Round to the precision that matters, right-align the numbers, drop the vertical rules (APA style), and don't table data whose story is really a trend. That wants a chart.",
-        alt: "A chart when the shape or trend is the message; both — a chart in the text, the full table in an appendix — for a thorough report."
+        mistake: "Turning a table into a wall of numbers. Round to the precision that matters, right-align the numbers, drop the vertical rules (APA style), and don't put a trend in a table, because a chart shows it better.",
+        alt: "A chart when the shape or trend is the message; both, with a chart in the text and the full table in an appendix, for a thorough report."
       }
     };
 
@@ -502,7 +502,7 @@
           '<p class="wt-alts-label">Learn more:</p>' +
           '<ul class="wt-alts">' +
             '<li><a href="stats-1/visualizing-data/">Visualizing Data</a>, the interactive lesson on reading and building charts.</li>' +
-            '<li><a href="writing/tables-and-figures/">Tables &amp; Figures That Don\'t Lie</a>, on putting charts in a report honestly.</li>' +
+            '<li><a href="writing/tables-and-figures/">Tables &amp; Figures That Don\'t Lie</a>, on using charts in a report without misleading anyone.</li>' +
           '</ul>' +
         '</div>';
       wireStageNav();

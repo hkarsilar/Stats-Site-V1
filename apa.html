@@ -117,7 +117,7 @@
           <li><strong>Never <em>p</em> = .000.</strong> A <em>p</em>-value is never exactly zero. The smallest value APA reports is <em>p</em> &lt; .001, and this tool floors it for you and leaves a note.</li>
           <li><strong>Degrees of freedom in parentheses</strong>, right after the italic statistic: <em>t</em>(48), <em>F</em>(2, 87), <em>r</em>(58), χ²(2, <em>N</em> = 120).</li>
           <li><strong>Report an effect size</strong> alongside the test (<em>d</em>, η², <em>r</em>, or <em>V</em>). Significance answers "is there an effect?"; the effect size answers "how big?"</li>
-          <li><strong>And an interval around it.</strong> APA 7 asks for the range your estimate is consistent with, written <code>95% CI [lower, upper]</code>. This tool builds one for every analysis here, including the three that need a noncentral distribution instead of a ± formula and are therefore usually reported bare. <a href="writing/reporting-statistics-apa/#where-the-confidence-interval-goes">Where it goes in the sentence</a> is its own small craft.</li>
+          <li><strong>And an interval around it.</strong> APA 7 asks for the range your estimate is consistent with, written <code>95% CI [lower, upper]</code>. This tool builds one for every analysis here, including the three that need a noncentral distribution and not a ± formula. Those three are usually reported without an interval. <a href="writing/reporting-statistics-apa/#where-the-confidence-interval-goes">Where it goes in the sentence</a> takes some care.</li>
         </ul>
 
         <h2>The master patterns</h2>
@@ -134,7 +134,7 @@
         </table>
 
         <div class="callout key">
-          <p><strong>The consistency check is the honest bit.</strong> This tool recomputes your <em>p</em>-value from the test statistic and its <em>df</em> — the same idea as the <em>statcheck</em> tool that scans published papers. If your reported <em>p</em> doesn't match, it's usually a typo, a rounding slip, or a one- vs two-tailed mix-up. It does the same for η² and <em>R</em>², which are locked to <em>F</em> and its <em>df</em> by an exact formula, so a mismatch there usually means η² and partial η² have been mixed up. Fix either before your grader (or a reviewer) does. Learn the full write-up craft in <a href="writing/reporting-statistics-apa/">Reporting Statistics in APA Style</a>, and if you still need the numbers, the <a href="descriptives.html">Descriptives Calculator</a> hands you <em>M</em> and <em>SD</em> ready to paste.</p>
+          <p><strong>The consistency check catches errors.</strong> This tool recomputes your <em>p</em>-value from the test statistic and its <em>df</em>, the same idea as the <em>statcheck</em> tool that scans published papers. If your reported <em>p</em> doesn't match, it's usually a typo, a rounding slip, or a one- vs two-tailed mix-up. It does the same for η² and <em>R</em>², which are locked to <em>F</em> and its <em>df</em> by an exact formula, so a mismatch there usually means η² and partial η² have been mixed up. Fix either before your grader (or a reviewer) does. The full write-up is taught in <a href="writing/reporting-statistics-apa/">Reporting Statistics in APA Style</a>. If you still need the numbers, the <a href="descriptives.html">Descriptives Calculator</a> gives you <em>M</em> and <em>SD</em> ready to paste.</p>
         </div>
       </article>
     </div>
@@ -222,7 +222,7 @@
     }
 
     /* Why the three variance-explained measures get 90% and not 95%. */
-    var CI90 = '<div class="apa-note info">η², <em>R</em>² and Cramér’s <em>V</em> take a <strong>90%</strong> interval by convention, and JASP prints one by default. Their test is one-tailed: only a large <em>F</em> or χ² counts against the null. At 90% the interval clears zero exactly when <em>p</em> reaches .05, while a 95% interval on the same result can still include zero, which reads as a contradiction and is not one.</div>';
+    var CI90 = '<div class="apa-note info">η², <em>R</em>² and Cramér’s <em>V</em> take a <strong>90%</strong> interval by convention, and JASP prints one by default. Their test is one-tailed: only a large <em>F</em> or χ² counts against the null. At 90% the interval clears zero exactly when <em>p</em> reaches .05, while a 95% interval on the same result can still include zero. That looks like a contradiction, but it is not one.</div>';
 
     /* ---------- analysis definitions ---------- */
     var A = {
@@ -267,7 +267,7 @@
           return noun + em("t") + " test showed " + sigWord(val("p")) + " difference between " +
             txt("lbl1", "group 1") + ds("m1", "sd1") + " and " + txt("lbl2", "group 2") + ds("m2", "sd2") + tail;
         },
-        ciNote: '<div class="apa-note info">The interval on <em>d</em> is not <em>d</em> ± something: it comes from inverting the <em>t</em> test, so it sits off-center around the estimate. Fill in the means to get the interval on the raw difference as well, then name which one you are reporting. <a href="writing/reporting-statistics-apa/#where-the-confidence-interval-goes">APA asks for the quantity in words</a>.</div>',
+        ciNote: '<div class="apa-note info">The interval on <em>d</em> is not <em>d</em> ± something: it comes from inverting the <em>t</em> test, so it is not centered on the estimate. Fill in the means to get the interval on the raw difference as well, then name which one you are reporting. <a href="writing/reporting-statistics-apa/#where-the-confidence-interval-goes">APA asks for the quantity in words</a>.</div>',
         recomp: function () { var t = val("t"), df = val("df"); return (isFinite(t) && isFinite(df) && df > 0) ? 2 * VIZ.tUpper(Math.abs(t), df) : null; },
         links: function (v) {
           return v === "ind"
@@ -402,7 +402,7 @@
         },
         ciNote: function (v) {
           return v === "model" ? CI90
-            : '<div class="apa-note info">A slope is the one ordinary case: <em>b</em> ± <em>t</em>*·<em>SE</em>, symmetric, in the outcome’s own units. That is what makes it worth reporting: <a href="stats-1/simple-linear-regression/">β tells you nothing about how much the outcome moves</a>, while the interval on <em>b</em> gives you the size and the precision together.</div>';
+            : '<div class="apa-note info">A slope is the one ordinary case: <em>b</em> ± <em>t</em>*·<em>SE</em>, symmetric, in the outcome’s own units. Report this interval, because <a href="stats-1/simple-linear-regression/">β tells you nothing about how much the outcome moves</a>, while the interval on <em>b</em> gives you the size and the precision together.</div>';
         },
         recomp: function (v) {
           if (v === "model") { var f = val("F"), d1 = val("df1"), d2 = val("df2"); return (isFinite(f) && isFinite(d1) && isFinite(d2) && d1 > 0 && d2 > 0) ? VIZ.fUpper(f, d1, d2) : null; }
@@ -474,11 +474,11 @@
       if (isFinite(pv) && rec != null && isFinite(rec)) {
         var ok = rec < 0.001 ? (pv < 0.0015) : (Math.abs(pv - rec) <= 0.01);
         if (ok) {
-          html += '<div class="apa-note ok">✓ Your <em>p</em> is consistent with the statistic and <em>df</em> — recomputed <em>p</em> ' + pShow(rec) + '.</div>';
+          html += '<div class="apa-note ok">✓ Your <em>p</em> is consistent with the statistic and <em>df</em> (recomputed <em>p</em> ' + pShow(rec) + ').</div>';
         } else {
           html += '<div class="apa-note warn">⚠️ From the statistic and <em>df</em>, <em>p</em> should be about <strong>' + pBare(rec) +
             '</strong>, but you entered <em>p</em> ' + (pv <= 0 ? "= .000" : "= " + pv.toFixed(3).replace(/^0\./, ".")) +
-            '. Double-check for a typo or a one- vs two-tailed mix-up. This is exactly the slip a <a href="ethics/fraud-and-self-correction/">statcheck</a> scan catches.</div>';
+            '. Double-check for a typo or a one- vs two-tailed mix-up. A <a href="ethics/fraud-and-self-correction/">statcheck</a> scan catches this kind of slip.</div>';
         }
       }
       var cn = A[cur].ciNote;

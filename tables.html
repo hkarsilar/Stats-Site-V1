@@ -100,7 +100,7 @@
       <article class="lesson" style="margin:0 auto">
         <span class="lesson-eyebrow">Tools</span>
         <h1>Statistical Tables &amp; Calculators</h1>
-        <p class="lede">The tables at the back of your textbook, reimagined. Pick a distribution, type your statistic (or your α), and get the <strong>exact</strong> p-value or critical value, with the tail area drawn so you can see what the number means.</p>
+        <p class="lede">This page replaces the tables at the back of your textbook. Pick a distribution, type your statistic (or your α), and get the <strong>exact</strong> p-value or critical value, with the tail area drawn so you can see what the number means.</p>
 
         <div class="viz" id="calc">
           <p class="viz-title">🎛️ Distribution calculator</p>
@@ -140,7 +140,7 @@
         <h2>How to use it</h2>
         <ul>
           <li><strong>Got a test statistic?</strong> Whether it came from software, a homework problem, or a formula, choose its distribution, enter it, and read the exact p-value. For t and z, pick the tail your hypothesis calls for; χ² and F tests are naturally right-tailed.</li>
-          <li><strong>Need a critical value?</strong> Switch to the α mode. The shaded region is the rejection region: a statistic landing inside it means p &lt; α.</li>
+          <li><strong>Need a critical value?</strong> Switch to the α mode. The shaded region is the rejection region: a statistic inside it has p &lt; α.</li>
           <li><strong>Checking a printed table?</strong> The "critical values at common α" row below the chart is the entire relevant column of a z, t, χ², or F table for your degrees of freedom.</li>
         </ul>
 
@@ -149,12 +149,12 @@
         </div>
 
         <h2 id="printed-tables">Reading a printed table</h2>
-        <p>Most statistics exams are still taken on paper, with a calculator that does arithmetic and nothing else. The probabilities come from tables at the back of the book, and reading one is a skill in its own right: find the row, find the column, read the cell. Here are the three tables an introductory course hands you, generated from the same exact functions the calculator above uses.</p>
-        <p><strong>Table A</strong> gives the area under the standard normal curve to the <em>left</em> of a z. Rows carry z to one decimal place and columns carry the second, so z = −2.41 lives where the −2.4 row meets the .01 column, and the cell reads .0080. <strong>Table D</strong> holds critical values of t: rows are degrees of freedom, columns are the area left in the upper tail, and the confidence levels printed along the foot belong to the two-tailed interval each column builds. Its last row, df = ∞, is the normal distribution, and that row is where z* comes from. <strong>Table F</strong> does the same job for χ².</p>
+        <p>Many statistics exams are still taken on paper, with a calculator that does arithmetic and nothing else. The probabilities come from tables at the back of the book, and reading one is a skill in its own right: find the row, find the column, read the cell. Below are the three tables an introductory course gives you, computed with the same exact functions as the calculator above.</p>
+        <p><strong>Table A</strong> gives the area under the standard normal curve to the <em>left</em> of a z. Rows carry z to one decimal place and columns carry the second, so z = −2.41 is where the −2.4 row meets the .01 column, and the cell reads .0080. <strong>Table D</strong> holds critical values of t. Rows are degrees of freedom, columns are the area left in the upper tail, and the confidence levels along the bottom are for the matching two-tailed interval. Its last row, df = ∞, is the normal distribution, and that row is where z* comes from. <strong>Table F</strong> does the same job for χ².</p>
 
         <div class="callout key">
           <p>Almost every Table A question is one of three moves. An area <strong>to the left</strong> is what the table prints, so find the cell and stop. An area <strong>to the right</strong> is 1 minus the printed value, and because the curve is symmetric you can instead look up −z and read that cell as it stands. An area <strong>between two values</strong> is a subtraction: take the smaller of the two left-areas away from the larger.</p>
-          <p>Expect the table and this calculator to disagree in the fourth decimal now and then. A two-tailed p read off Table A as 2 × .0228 = .0456 is .0455 exactly. Both are right answers to slightly different questions, because the table rounds before you double, and your marker knows it.</p>
+          <p>Expect the table and this calculator to disagree in the fourth decimal now and then. A two-tailed p read off Table A as 2 × .0228 = .0456 is .0455 exactly. Both are right. The difference comes from the table rounding before you double, and markers know this.</p>
         </div>
 
         <div class="viz" id="tables">
@@ -194,12 +194,12 @@
         </div>
 
         <h2 id="rank-tables">Tables for the rank tests</h2>
-        <p>The rank-based tests read their tables the other way round. A <em>t</em> or a χ² is significant when it is <em>large</em>, so Table D and Table F print a floor to clear. <a href="stats-2/non-parametric-alternatives/">Mann–Whitney's <em>U</em> and Wilcoxon's <em>W</em></a> both count something that gets <em>smaller</em> as the groups separate, so their tables print a ceiling: compute the statistic, and you reject when it lands at or below the cell. Spearman's ρ<sub>s</sub> behaves like a correlation again, so its table is a floor.</p>
-        <p>Every cell below is counted rather than copied. The number of rank orders that produce each possible value of <em>U</em>, of <em>W</em> and of Spearman's Σ<em>d</em>² is a finite thing a computer can enumerate, so the page adds up the ones in the tail and keeps the most generous cutoff whose probability is still at or under α. That is the convention printed tables use, and it is why a cell is often a little stricter than α: with twelve pairs there is no value of <em>W</em> whose tail is exactly .025, so the table takes the last one under it.</p>
+        <p>The rank-based tests read their tables the other way round. A <em>t</em> or a χ² is significant when it is <em>large</em>, so Table D and Table F print a floor to clear. <a href="stats-2/non-parametric-alternatives/">Mann–Whitney's <em>U</em> and Wilcoxon's <em>W</em></a> both count something that gets <em>smaller</em> as the groups separate, so their tables print a ceiling: you reject when the statistic is at or below the cell. Spearman's ρ<sub>s</sub> behaves like a correlation again, so its table is a floor.</p>
+        <p>Each cell below is the most generous cutoff whose exact tail probability is still at or under α. That is the convention printed tables use, and it means a cell is often a little stricter than α. With twelve pairs, for example, no value of <em>W</em> has a tail of exactly .025, so the table takes the last one below it.</p>
 
         <div class="viz" id="nptables">
           <p class="viz-title">📄 Printed tables · rank tests</p>
-          <p class="viz-sub">Mann–Whitney <em>U</em> at three significance levels, Wilcoxon's <em>W</em>, and Spearman's ρ<sub>s</sub>. Point at a cell or arrow into it to light up its row and column; click one and the line above spells out what it licenses you to say.</p>
+          <p class="viz-sub">Mann–Whitney <em>U</em> at three significance levels, Wilcoxon's <em>W</em>, and Spearman's ρ<sub>s</sub>. Point at a cell or arrow into it to light up its row and column; click one and the line above says what you can conclude from it.</p>
 
           <div class="controls">
             <div class="control" style="min-width:min(300px,100%)"><label>Table</label>
@@ -222,7 +222,7 @@
 
           <section class="stab-panel np-panel" id="ntb-u1" hidden>
             <p class="stab-name">Table U · Mann–Whitney critical values, two-tailed α = .01</p>
-            <p class="stab-note">The same table at the stricter level, where a great deal of it simply goes blank: small samples cannot produce evidence this strong however the ranks fall.</p>
+            <p class="stab-note">The same table at the stricter level. Much of it is blank, because small samples cannot reach this level however the ranks fall.</p>
             <div class="hscroll"><table class="stab" id="nstab-u1"><thead id="ntb-u1-head"></thead><tbody id="ntb-u1-body"><tr><td class="stab-busy">Counted in your browser from the exact null distribution.</td></tr></tbody></table></div>
           </section>
 
@@ -240,13 +240,13 @@
 
           <section class="stab-panel np-panel" id="ntb-s" hidden>
             <p class="stab-name">Table ρ · Spearman critical values</p>
-            <p class="stab-note">A floor, not a ceiling: reject when |ρ<sub>s</sub>| reaches the cell. Counted over all <em>n</em>! rankings up to <em>n</em> = 13; past that the count outgrows a browser, so those rows use the Edgeworth series R itself uses, which reproduces the exact value to the three decimals printed here at every <em>n</em> that can be checked, apart from <em>n</em> = 15 in the .01 column, which lands one step high at .657 against an exact .654.</p>
+            <p class="stab-note">A floor, not a ceiling: reject when |ρ<sub>s</sub>| reaches the cell. Rows up to <em>n</em> = 13 are exact. Larger <em>n</em> use the Edgeworth series that R uses, which matches the exact value to three decimals at every <em>n</em> that can be checked, except <em>n</em> = 15 in the .01 column, where it gives .657 against an exact .654.</p>
             <div class="hscroll"><table class="stab" id="nstab-s"><thead id="ntb-s-head"></thead><tbody id="ntb-s-body"><tr><td class="stab-busy">Counted in your browser from the exact null distribution.</td></tr></tbody></table></div>
           </section>
         </div>
 
         <h2>Practice the lookup</h2>
-        <p>Knowing the moves is not the same as performing them under time pressure with a paper table in front of you. Ten questions, drawn from all eight tables above. Type what the table gives you; the check accepts the table's rounding as readily as the exact value, because on paper the table's rounding <em>is</em> the answer.</p>
+        <p>Knowing the moves is not the same as using them under time pressure with a paper table in front of you. This drill has ten questions drawn from all eight tables above. Type what the table gives you. The check accepts the table's rounded value as well as the exact one, because on paper the rounded value <em>is</em> the answer.</p>
 
         <div class="viz" id="drill">
           <p class="viz-title">🎯 Look it up</p>
@@ -275,7 +275,7 @@
           </div>
         </div>
 
-        <h2>Common critical values worth memorizing</h2>
+        <h2>Common critical values to memorize</h2>
         <table class="ref-table">
           <thead><tr><th>Confidence / α (two-tailed)</th><th>z critical</th><th>Where you'll meet it</th></tr></thead>
           <tbody>
@@ -285,14 +285,14 @@
             <tr><td>99.9% &nbsp;·&nbsp; α = .001</td><td>3.291</td><td>Very strong evidence claims</td></tr>
           </tbody>
         </table>
-        <p>t critical values are always a little larger than these (fatter tails), and they shrink toward the z values as degrees of freedom grow. By df ≈ 120 the difference barely matters. Try it above.</p>
+        <p>t critical values are always a little larger than these, because t has heavier tails, and they shrink toward the z values as degrees of freedom grow. By df ≈ 120 the difference barely matters. Try it above.</p>
 
         <h2>Where these distributions come from</h2>
         <ul>
           <li><strong>Normal (z).</strong> The bell curve behind z-scores and the Central Limit Theorem. <a href="stats-1/z-scores-and-the-normal-distribution/">See the lesson →</a></li>
           <li><strong>Student's t.</strong> Its fat-tailed cousin, used when the SD is estimated from the sample. <a href="stats-1/one-sample-and-paired-t-tests/">See the lesson →</a></li>
           <li><strong>Chi-square (χ²)</strong> is the distribution of squared deviations, used for tests on counts. <a href="stats-1/chi-square-tests/">See the lesson →</a></li>
-          <li><strong>F</strong> is the ratio of two variances, the engine of ANOVA and regression tests. <a href="stats-2/one-way-anova/">See the lesson →</a></li>
+          <li><strong>F</strong> is the ratio of two variances, used in ANOVA and regression tests. <a href="stats-2/one-way-anova/">See the lesson →</a></li>
         </ul>
         <p>Want to drag their parameters around and watch the shapes respond? Try the <a href="distributions.html">Distribution Playground</a>. The <a href="formulas.html">formula sheet</a> has every formula these tests are built from.</p>
       </article>
@@ -1101,7 +1101,7 @@
         z = gridZ(-2.99, 2.99); v = V.normCdf(z); cA = cellOf(z);
         return { q: "Table A: what is P(Z < " + fz(z) + ")?", a: v, tol: 6e-4, show: a4(v),
                  hint: "an area, 4 decimals", tbl: "Table A",
-                 why: "It sits where row " + cA.row + " meets column " + cA.col + ". A left area is what Table A prints, so that is the whole answer." };
+                 why: "It is where row " + cA.row + " meets column " + cA.col + ". Table A prints left areas, so the cell is the answer." };
       }
       if (shape === "right") {
         z = gridZ(-2.99, 2.99); v = 1 - V.normCdf(z); cA = cellOf(-z);
@@ -1119,7 +1119,7 @@
         z = gridZ(-2.5, 2.5); v = V.normCdf(z); cA = cellOf(z);
         return { q: "Table A backwards: which z has an area of " + a4(v) + " to its left?", a: z, tol: 6e-3, show: fz(z),
                  hint: "a z, 2 decimals", tbl: "Table A",
-                 why: "Hunt for " + a4(v) + " in the body of the table. It sits in row " + cA.row + ", column " + cA.col + "." };
+                 why: "Look for " + a4(v) + " in the body of the table. It is in row " + cA.row + ", column " + cA.col + "." };
       }
       if (shape === "tstar") {
         cf = pick(CONF); inf = Math.random() < 0.25; df = inf ? Infinity : pick(DFT);
@@ -1128,7 +1128,7 @@
           q: inf ? "Table D, bottom row: what is z* for a " + cf[1] + " confidence interval?"
                  : "Table D: what is t* for a " + cf[1] + " confidence interval with df = " + df + "?",
           a: v, tol: critTol(v), show: c4(v), hint: "a critical value, as Table D prints it", tbl: "Table D",
-          why: "Find " + cf[1] + " along the foot of Table D, which sits under the " + cf[2] + " column, then run up to the " +
+          why: "Find " + cf[1] + " along the bottom of Table D, under the " + cf[2] + " column, then go up to the " +
                (inf ? "∞ row." : "df = " + df + " row.")
         };
       }
@@ -1156,7 +1156,7 @@
         }
         return { q: "Table U: two independent samples of n₁ = " + n1 + " and n₂ = " + n2 + ". What is the critical U at " + lv[3] + " α = " + lv[2] + "?",
                  a: v, tol: 1e-9, show: String(v), hint: "a whole number", tbl: "Table U",
-                 why: "Row n₂ = " + n2 + ", column n₁ = " + n1 + ". Compute both U values, take the smaller, and reject when it is " + v + " or less. Small U means the groups barely overlap, which is why this table is a ceiling and not a floor." };
+                 why: "Row n₂ = " + n2 + ", column n₁ = " + n1 + ". Compute both U values, take the smaller, and reject when it is " + v + " or less. A small U means the groups barely overlap, so this table gives a ceiling, not a floor." };
       }
       if (shape === "npw") {
         for (tries = 0; tries < 40; tries++) {
