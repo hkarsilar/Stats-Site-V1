@@ -191,7 +191,9 @@
     var DAY = 86400000;
     function today() { return Math.floor(Date.now() / DAY); }
 
-    /* ---- deck: de-duplicated by term (one term text appears twice in the glossary) ---- */
+    /* ---- deck: de-duplicated by term. sc-cards is keyed by term, so two
+       entries with one term would share a card; audit CHECK 12 keeps the
+       glossary free of them, and this guard stays as a backstop ---- */
     var DECK = [];
     (function () {
       var seen = {};

@@ -1064,6 +1064,46 @@ descSeen.forEach((pages, d) => {
 }
 
 /* ============================================================
+   CHECK 12 — glossary keys are unique and back-links land on a lesson
+
+   A glossary term string is a key three times over: glossary.html turns
+   it into the element id (slugify), site.js's search card links to that
+   id (glossSlug, the same function), and flashcards.html stores progress
+   in sc-cards under the term itself. Two entries whose terms slug the
+   same render a duplicate id and share one flashcard. "Reverse coding"
+   was in the file twice, under Stats 3 and under Data, until 6 Oct 2026;
+   flashcards.html had worked around it by dropping the second.
+
+   Back-links ({ s: "course/slug" }) are written into the page by script,
+   so CHECK 4's link scan never sees them. Each must name a ready lesson
+   in curriculum.js, not merely a folder on disk: the stats-1..4 redirect
+   stubs exist on disk too.
+   ============================================================ */
+{
+  const G = loadWindow([JS('glossary-data.js')]).GLOSSARY || [];
+  if (!G.length) err('CHECK 12: found no entries in assets/js/glossary-data.js');
+  const glossSlug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const seen = new Map();
+  let linked = 0, dups = 0;
+  for (const g of G) {
+    const k = glossSlug(String(g.t || ''));
+    if (!k) { err(`glossary-data.js → an entry has no usable term: ${JSON.stringify(g).slice(0, 80)}`); continue; }
+    if (seen.has(k)) {
+      dups++;
+      const what = seen.get(k) === g.t ? 'a duplicate glossary id and one shared flashcard' : 'a duplicate glossary id';
+      err(`glossary-data.js → "${g.t}" and "${seen.get(k)}" share the key "${k}" (${what}). Merge them into one entry.`);
+    }
+    else seen.set(k, g.t);
+    if (!g.s) continue;
+    linked++;
+    const [course, slug] = String(g.s).split('/');
+    if (!readySlugs.has(slug) || slugCourse[slug] !== course) err(`glossary-data.js → "${g.t}" links to ${g.s}, which is not a ready lesson in curriculum.js`);
+    if (!g.l) warn(`glossary-data.js → "${g.t}" has a back-link but no label (l)`);
+  }
+  info(`glossary: ${G.length} terms${dups ? '' : ', keys unique'}, ${linked} back-links checked against curriculum.js`);
+}
+
+/* ============================================================
    Report
    ============================================================ */
 const line = '─'.repeat(60);
