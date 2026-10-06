@@ -48,7 +48,7 @@
         <span class="lesson-eyebrow">Section 5.5</span>
         <h1>ROC Curves &amp; AUC</h1>
 
-        <p class="lede">The <a href="../../ml/classification-metrics/">last lesson</a> showed that every setting of the decision threshold gives a different precision and recall. So which setting do you report? You don't have to pick one: you can show them <em>all</em>. Plotting every threshold at once gives the ROC curve, the most widely used one-picture summary of a classifier, and the number calculated from it, AUC.</p>
+        <p class="lede">The <a href="../../ml/classification-metrics/">last lesson</a> showed that every setting of the decision threshold gives a different precision and recall. Which setting do you report? You don't have to pick one: you can show them <em>all</em>. Plotting every threshold at once gives the ROC curve, the most widely used one-picture summary of a classifier, and the number calculated from it, AUC.</p>
 
         <h2>Sweep the threshold, trace a curve</h2>
         <p>As you move the threshold from "flag almost nobody" to "flag almost everybody," two rates from the confusion matrix change together:</p>
@@ -107,7 +107,7 @@
         <p>The <strong>Area Under the Curve</strong> reduces the ROC to a single number between 0 and 1. It has a concrete interpretation: <strong>AUC is the probability that the model gives a randomly chosen positive case a higher score than a randomly chosen negative one.</strong> An AUC of 0.5 means the model orders a random positive above a random negative only half the time, the rate you would get by guessing. An AUC of 0.90 means it ranks them correctly 90% of the time.</p>
         <p>With two normal groups there is a formula. If the groups are separated by <em>d</em> standard deviations, AUC = Φ(<em>d</em>/√2). The same identity appears in <a href="../../stats-3/signal-detection-theory/">signal detection theory</a>, where the separation is called <em>d′</em>. So <em>d</em> = 1 gives AUC ≈ 0.76, <em>d</em> = 2 gives ≈ 0.92, and <em>d</em> = 0 gives exactly 0.50. Check them against the widget's readout. Roughly, 0.7 counts as modest, 0.8 as good and 0.9+ as excellent, but always judge an AUC against how hard the problem is.</p>
 
-        <h2>When ROC flatters — reach for precision–recall</h2>
+        <h2 id="when-roc-flatters-reach-for-precision-recall">Rare positives: use a precision–recall curve</h2>
         <p>ROC has a weakness when negatives are plentiful. Its x-axis, the false-positive rate, divides the false positives by the number of negatives. On a heavily <a href="../../ml/classification-metrics/">imbalanced</a> problem (say 1 positive per 1,000) you can have thousands of false positives and still a tiny FPR. The ROC curve then looks excellent while most of your positive flags are wrong. A <strong>precision–recall curve</strong> (precision against recall, summarized by average precision) responds strongly to those false positives, because precision counts only the cases you flagged. As a rule of thumb, ROC is fine when the classes are roughly balanced. Add the PR curve when the positive class is rare and is the one you care about.</p>
 
         <h2>Ranking well is not the same as being right</h2>

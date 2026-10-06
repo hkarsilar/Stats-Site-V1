@@ -48,9 +48,9 @@
         <span class="lesson-eyebrow">Section 5.4</span>
         <h1>Classification Metrics &amp; the Accuracy Trap</h1>
 
-        <p class="lede">When your outcome is a category (sick vs healthy, spam vs not, will-churn vs won't), "how good is the model?" has more than one answer. Using plain accuracy is the most common beginner mistake, because accuracy can be high while the model fails at the one task you cared about.</p>
+        <p class="lede">When your outcome is a category (sick vs healthy, spam vs not, will-churn vs won't), "how good is the model?" has more than one answer. Plain accuracy is not enough, because it can be high while the model fails at the one task you cared about.</p>
 
-        <h2>Every prediction lands in one of four boxes</h2>
+        <h2 id="every-prediction-lands-in-one-of-four-boxes">Four outcomes: the confusion matrix</h2>
         <p>A classifier takes a case and outputs a label: <em>positive</em> (has the condition, is spam, will churn) or <em>negative</em>. Compare that guess to the truth and there are exactly four outcomes, laid out in a <strong>confusion matrix</strong>:</p>
         <ul>
           <li><strong>True positive (TP):</strong> flagged, and really positive. A hit.</li>
@@ -70,7 +70,7 @@
         </ul>
         <p>Clinical papers use other names for two of these. Precision is the <strong>positive predictive value</strong> (PPV), and its counterpart TN / (TN + FN) is the <strong>negative predictive value</strong> (NPV), the chance that a case you cleared really was negative. Sensitivity and specificity describe the test. PPV and NPV describe what a result means for the person who receives it, and unlike sensitivity and specificity they change with the base rate, as <a href="../../stats-1/probability-basics/">Bayes' rule problems</a> show.</p>
 
-        <h2>Where accuracy lies: base rates</h2>
+        <h2 id="where-accuracy-lies-base-rates">Base rates and the accuracy trap</h2>
         <p>If 5% of patients have a disease, a model that labels every person "healthy" is <strong>95% accurate</strong> and catches no sick patients at all. Its recall is 0%. Accuracy gave it a high score for always predicting the majority class, and recall, the metric you needed, shows that it is useless. This is the <strong>accuracy trap</strong>, and it follows directly from <a href="../../stats-1/probability-basics/">base rates</a>.</p>
 
         <!-- ============ INTERACTIVE ============ -->

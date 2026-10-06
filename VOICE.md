@@ -35,9 +35,11 @@ Background: the site's first draft was written by one AI in one style in two wee
 
 13. **Em-dashes on the injected surfaces (P73).** Rule 1 is per page and these are not pages, so each gets an absolute budget, gated in `--strict` from now on: **`checks.js` ≤ 50** (203 on 15 Aug 2026), **`software.js` ≤ 15** (66), **`glossary-data.js` ≤ 30** (127), **the inline-`<script>` string literals ≤ 130** (521), **`snippets.js` comments ≤ 5** (5, already there). These are the strings a student actually reads: a check's "why", an SPSS tip, a glossary definition, a lesson interactive's verdict line. Leaving them unbudgeted hid more em-dashes than the entire page corpus carried. **P77 paid all five down on 17 Aug 2026 and they now sit at 37 / 12 / 22 / 80 / 5**, under every ceiling rather than parked on one — which is the reading rule for this table: the numbers in brackets are where the corpus started, not where it should return to. **`QUIPS` are exempt**, permanently: the anti-rule below makes the capybara one-liners brand voice, so their count is reported and never gated. Rule numbers 1–12 are cited by number in `CLAUDE.md` and in `prose-lint.js`, which is why this is 13 rather than an insertion.
 
+14. **Round three's three hard budgets (P121).** Phase 20 cut the round-three catalog from 1,794 hits to 41, and three of its shapes reached zero after measuring as the habit in every sampled hit. They are gated from now on. **(a) "load-bearing": zero.** **(b) "earns its place / keep / space": zero** (the possessive frame only, so "motivated people earn more" passes). Both zeros apply on every surface, including glossary definitions, snippet comments and inline-script strings; only the quips are exempt. **(c) The "X is what makes Y" reveal: at most 1 per page**, counted over the page's prose, its FAQ answers and its meta description. State the cause directly ("Stratifying improves precision because it removes…"). Everything else in the catalog stays report-only in `--manner`, for the reason given under "Measured, not gated".
+
 ## MEASURED, NOT GATED (report-only metrics: read them, don't optimize them)
 
-`prose-lint.js` reports three things it deliberately does not enforce. Each is a judgment call where a threshold would just teach the next session to write around the number, which is `faq-audit.js`'s standing precedent.
+`prose-lint.js` reports three things it deliberately does not enforce, plus the whole `--manner` report except the three shapes rule 14 gates. Each is a judgment call where a threshold would just teach the next session to write around the number, which is `faq-audit.js`'s standing precedent.
 
 - **Bold-lead bullets** (`<li><strong>Term:</strong> explanation`). **447 across lessons and guides on 15 Aug 2026**, on 81 of 102 pages. It is the shape a generated corpus reaches for whenever it has three related things to say, and no budget can see it: a page built entirely out of them passes every hard rule. Not gated, because the shape is genuinely right sometimes — a rundown of named things reads better bolded. The soft rule is the real instruction: **where every list on a page is a bold-lead list, recast some as plain sentences, fold some into prose, and keep the ones a reader would actually scan.** `node tools/prose-lint.js --bold` is the worklist. (The Phase 16 addendum's hand count of 403 came from an ad-hoc scan whose definition was not recorded; the linter's definition — an `<li>` whose first element is a `<strong>` — is stated in the script and returns 447. Future comparisons use that one.)
 - **Cross-page duplicate passages**, an 8-word run of prose appearing on two different pages. **49 on 15 Aug 2026**, and most are honest: a cheat poster mirrors `which-test.html`'s decision tree on purpose, and a page naming another page's title matches its title. A handful are real repeats worth varying (`power.html` and `stats-3/power-analysis-for-complex-designs` share "halving the effect you're chasing roughly quadruples the sample you need"). `node tools/prose-lint.js --duplicates`.
@@ -87,7 +89,7 @@ On this site the problem is rarely a famous word. "Load-bearing" appears once an
 
 `node tools/prose-lint.js --manner` counts entries 1, 2, 3, 6 and 7, and the word "nobody" from entry 4, using the `MANNER` table in the script. That table mirrors this catalog. If you change an entry here, change the table in the same commit, and the other way round. Entry 10 is measured as sentence length. The other entries have no shape a regular expression can find, so they are judgment.
 
-Every pattern was measured before it was listed. For each one, a seeded random sample of its hits was read in context, and the pattern stayed only if at least two thirds of the sample was the habit and not ordinary statistical English. The comment beside each pattern in the script records its sample. Three candidates failed and are judgment only: ", not Y." and "rather than" (about half their hits carry a contrast the sentence needs, such as "two coins have four outcomes, not three"), and "a reader" (18 of 20 hits mean the reader of the student's paper, the one use this file keeps). On 1 Oct 2026 the linter counted 1,794 catalog hits in 342,810 words, 5.2 per 1,000.
+Every pattern was measured before it was listed. For each one, a seeded random sample of its hits was read in context, and the pattern stayed only if at least two thirds of the sample was the habit and not ordinary statistical English. The comment beside each pattern in the script records its sample. Three candidates failed and are judgment only: ", not Y." and "rather than" (about half their hits carry a contrast the sentence needs, such as "two coins have four outcomes, not three"), and "a reader" (18 of 20 hits mean the reader of the student's paper, the one use this file keeps). On 1 Oct 2026 the linter counted 1,794 catalog hits in 342,810 words, 5.2 per 1,000. After P107–P120 it counted 41 in 337,519 words, and P121 made three of the shapes hard budgets (rule 14). The rest of the table stays report-only.
 
 | # | Habit | Example from the site | Plain version |
 |---|---|---|---|
@@ -156,6 +158,17 @@ The site talks to the student, as "you". Write "so you can see how far apart the
 ### The planning docs
 
 ROADMAP.md and PROMPTS.md are internal notes, much of them written in the voice this round removes. They are never a style model for site prose.
+
+### After round three (P121): the habits that replaced the old ones
+
+P121 compared the site's word 3- and 4-grams at the P106 baseline with the text after P107–P120. Fourteen passes by one model settled on a few new shared moves. None is wrong on its own, but each rose fast enough to become a pattern, so watch for them in new prose:
+
+- Sentences that open with "So". 63 at the baseline, 189 after the passes, 166 after P121. Most came from splitting a long sentence in two. Keep "So" where it introduces a real inference; otherwise join the sentences or drop the word.
+- "The most common" superlatives ("the most common mistake", "the most common way to…"): 16, then 36, now 29. Say what the mistake does. Keep "most" only when a source supports it.
+- "Can be trusted" as a general seal of approval: 4, then 12, now 10. Say what the number can be relied on for.
+- The split negation "X is not Y. It is Z.": 11, then 18, now 12. Rule 3 bans the one-sentence form with a dash, and the two-sentence form is the same move. State Z.
+
+The phrases a reader might expect from a model ("This means", "In practice", "The key", "In other words", "Note that", "In short") did not rise. Two structures are kept on purpose: every lesson ends with a bold "Why it matters:" callout, and 46 lessons point to their worked problem with "Problem N of the practice problems…". Both are fixed study aids, like the FAQ block. Write what goes inside them as plain advice, and do not end a "Why it matters" callout on a quotable line.
 
 ### Commands
 

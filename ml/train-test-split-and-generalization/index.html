@@ -55,7 +55,7 @@
         <span class="lesson-eyebrow">Section 5.2</span>
         <h1>Train/Test Splits &amp; Generalization</h1>
 
-        <p class="lede">A predictive model is useful only if it works on data it has never seen. So machine learning has one golden rule: <strong>never judge a model on data it was trained on.</strong> Breaking it is the most common way careful researchers fool themselves. A score on the training data tells you little about how the model will do on new cases.</p>
+        <p class="lede">A predictive model is useful only if it works on data it has never seen. Machine learning has one golden rule: <strong>never judge a model on data it was trained on.</strong> A score on the training data tells you little about how the model will do on new cases.</p>
 
         <h2>The golden rule and the split</h2>
         <p>A flexible model can memorize its training data almost perfectly and still be useless on the next case. That is <a href="../../stats-3/cross-validation-and-overfitting/">overfitting</a>. To estimate how well a model <em>generalizes</em> to new data, you hold some data back:</p>
@@ -65,7 +65,7 @@
         </ul>
         <p>A typical split is 70–80% train, the rest test. For classification, <strong>stratify</strong> the split so each side keeps the same class proportions, otherwise a rare class can vanish from one side by chance. And when you need to compare or tune models, split a <em>validation</em> set off the training data (or use <a href="../../stats-3/cross-validation-and-overfitting/">cross-validation</a> on it), so the test set stays untouched.</p>
 
-        <h2>Data leakage: the #1 silent killer</h2>
+        <h2 id="data-leakage-the-1-silent-killer">Data leakage</h2>
         <p><strong>Data leakage</strong> is when information from the test set gets into training. Nothing crashes and no warning appears. The reported score looks excellent, and the model then performs much worse on new data. Three leaks cause most of the problems:</p>
         <ol>
           <li><strong>Preprocessing before the split.</strong> Scaling, or choosing "the most predictive features", using the <em>whole</em> dataset lets the test rows influence those choices. The test set helped build the model, so its score is biased upward.</li>
@@ -94,7 +94,7 @@
 
         <p>Each leak you add raises the <em>reported</em> bar while the <em>true</em> bar barely moves, and with all three on, the reported accuracy is far above the true one. Leaks like these let a model score 0.95 during development and 0.60 once it is used on new cases.</p>
 
-        <h2>How to split honestly</h2>
+        <h2 id="how-to-split-honestly">How to prevent leakage</h2>
         <p>One rule prevents all three leaks: <strong>every step that learns anything from the data must happen inside the training split, never before it.</strong> In practice:</p>
         <ul>
           <li><strong>Split first, then preprocess.</strong> Fit your scaler and your feature selection on the training data only, then <em>apply</em> them to the test data. In scikit-learn, wrap the whole thing in a <code>Pipeline</code> so cross-validation re-fits every step inside each fold.</li>

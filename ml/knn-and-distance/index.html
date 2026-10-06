@@ -53,7 +53,7 @@
         <h2>Prediction by neighborhood</h2>
         <p><strong>k-nearest-neighbors</strong> (k-NN) stores the training data and does all its work at prediction time. For a new point, it measures the distance to every training point, keeps the <em>k</em> closest, and predicts the majority class among them (or, for regression, their average). There is no separate model to fit: the stored data <em>is</em> the model. That makes k-NN a <strong>nonparametric</strong> method. It assumes nothing about the shape of the data (no normality, no straight-line boundary), and it can follow a curved boundary that a linear model cannot.</p>
 
-        <h2>k is the smoothness dial</h2>
+        <h2 id="k-is-the-smoothness-dial">Choosing k</h2>
         <p>The main choice is <em>k</em>, and it sets the bias–variance balance directly. At <strong>k = 1</strong> each training point decides the prediction in a small region around itself, so the boundary wraps around individual points, including noisy, mislabeled ones. That is low bias but high variance: the model has <em>memorized</em> the training set. Increase <em>k</em> and each prediction averages over a wider neighborhood, so the boundary becomes smoother. At <em>k</em> = <em>n</em> every point gets the same prediction, the overall majority class. The best <em>k</em> lies somewhere in between, and you find it with <a href="../../stats-3/cross-validation-and-overfitting/">cross-validation</a>, not a formula.</p>
 
         <h2>Scaling is not optional</h2>

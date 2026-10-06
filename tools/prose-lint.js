@@ -110,6 +110,14 @@
    relocation watch for the synonyms a lazy pass would swap in. It
    gates nothing. It runs before the rule-12 scan, so it takes about a
    second; the rest of this script takes several minutes.
+
+   ROUND THREE CLOSED (P121, 6 Oct 2026). After P107–P120 the catalog
+   hits fell from 1,794 to 41 and three shapes stood at zero after
+   measuring as the habit in every sampled hit: "load-bearing", "earns its
+   place/keep/space" and the "X is what makes Y" reveal. Those three
+   became hard budgets in PATTERNS (VOICE.md rule 14): the first two are 0
+   on every surface except QUIPS, the reveal is at most 1 per page. The
+   rest of --manner stays report-only.
    ============================================================ */
 
 'use strict';
@@ -132,6 +140,7 @@ const EMDASH_FAQ_MAX = 1;         // rule 2 — across a lesson's three FAQ answ
 const THINK_SITE_MAX = 3;         // rule 8 — "Think of it as" sitewide
 const NOTICE_PAGE_MAX = 1;        // rule 10 — "Notice how/that" per page
 const ANDWATCH_SHARE_MAX = 0.15;  // rule 11 — "…and watch…" meta descriptions
+const REVEAL_PAGE_MAX = 1;        // rule 14c — "X is what makes Y" reveals per page (P121)
 
 /* Rule 1b: the dash allowance a page's own length earns it. floor(), never
    rounding up, with a floor of EMDASH_RATE_FLOOR so a short page keeps one.
@@ -306,6 +315,8 @@ const BRIT_SPELLINGS = [
   'grey', 'greyed', 'sceptic', 'sceptics', 'sceptical', 'sceptically', 'scepticism',
   'judgement', 'judgements', 'ageing', 'programme', 'programmes',
   'manoeuvre', 'manoeuvres', 'moustache', 'plough', 'storey', 'storeys', 'tyre', 'tyres',
+  // P111 found "catalogue" in a lesson, which nothing here matched. ("analogue" stays allowed: see VOICE.md rule 12.)
+  'catalogue', 'catalogues', 'catalogued',
 ];
 const BRIT_LONG = BRIT_SPELLINGS.filter((w) => w.length >= 6);
 const BRIT_SHORT = BRIT_SPELLINGS.filter((w) => w.length < 6);
@@ -353,6 +364,35 @@ const PATTERNS = [
     id: 'notice', col: 'notice', budget: 'page', // ≤ NOTICE_PAGE_MAX per page
     label: `"Notice how/that" (≤ ${NOTICE_PAGE_MAX} per page)`,
     res: [/\bnotice\s+(?:how|that)\b/gi],
+  },
+  /* ROUND THREE'S HARD BUDGETS (P121, VOICE.md rule 14). Three shapes from
+     the --manner catalog were promoted after P107–P120 had paid them down to
+     zero, because each one measured as the habit in every sampled hit. The
+     two zeros apply on EVERY surface (everywhere: true), glossary, snippet
+     comments and inline-script strings included, QUIPS excepted. The rest of
+     the catalog stays report-only on faq-audit's precedent: honest, genuine,
+     sits/lands, "rather than" and sentence length are judgment, and gating
+     them would teach the next session to write around the count. */
+  {
+    id: 'load-bearing', col: 'loadb', budget: 0, everywhere: true,
+    label: `"load-bearing" (rule 14a)`,
+    // P121: 1 hit at the P106 baseline ("The typography is load-bearing", a guide), 0 after P107–P120
+    res: [/\bload[-\s]bearing\b/gi],
+  },
+  {
+    id: 'earns-keep', col: 'earn', budget: 0, everywhere: true,
+    label: `"earns its place / keep / space" (rule 14b)`,
+    // P121: 41 hits at the P106 baseline, 25 of 25 sampled the habit ("ANOVA earns its keep from
+    // three groups upward", "A good display earns its space"); 0 after P107–P120. The literal
+    // verb ("motivated people earn more") does not match: the frame needs a possessive + place word.
+    res: [/\bearn(?:s|ed|ing)?\s+(?:its|their|his|her|a|the|your|my|our)\s+(?:own\s+)?(?:place|keep|spot|seat|stripes|space|room|slot)\b/gi],
+  },
+  {
+    id: 'reveal', col: 'reveal', budget: 'reveal-page', // ≤ REVEAL_PAGE_MAX per page
+    label: `"X is what makes Y" reveals (≤ ${REVEAL_PAGE_MAX} per page, rule 14c)`,
+    // P121: 98 hits at the P106 baseline (50 page prose, 11 problems.html, 37 on the injected
+    // surfaces), 25 of 25 sampled the habit; 0 after P107–P120. Same shape as MANNER's 'reveal'.
+    res: [/\b(?:is|was|are|were|that['’]s|it['’]s)\s+(?:exactly\s+|precisely\s+|really\s+|also\s+|just\s+)?what\s+(?!is\b|this\b|its\b|was\b|has\b|as\b|does\b|SPSS\b|JASP\b)[a-z]+s\b/gi],
   },
   {
     id: 'britspell', col: 'brit', budget: 0,
@@ -417,6 +457,7 @@ const MANNER = [
   {
     id: 'reveal', cat: 2, label: 'pseudo-cleft reveal ("X is what makes Y", "is the one thing that")',
     // "is what <verb>s": 17 of 20 sampled hits a reveal (the misses: "is what SPSS reads", "what arrives is what shows")
+    // P121: this first shape is also a hard budget now, ≤ 1 per page (PATTERNS 'reveal', VOICE.md rule 14c)
     // "is the one/only thing that": 8 of 9 (the miss: "which mean is the only thing that changes")
     res: [
       /\b(?:is|was|are|were|that['’]s|it['’]s)\s+(?:exactly\s+|precisely\s+|really\s+|also\s+|just\s+)?what\s+(?!is\b|this\b|its\b|was\b|has\b|as\b|does\b|SPSS\b|JASP\b)[a-z]+s\b/gi,
@@ -451,6 +492,7 @@ const MANNER = [
   {
     id: 'earn', cat: 1, label: 'earns (its place / keep / a claim)',
     // 19 of 20 ("earns its keep", "claims you haven't earned"); the miss: "guessing already earns 50%"
+    // P121: the narrow frame "earns its place/keep/space" is a hard zero now (PATTERNS 'earns-keep', rule 14b)
     res: [/\bearn(?:s|ed|ing)?\b/gi],
   },
   {
@@ -1368,10 +1410,12 @@ const JS_SURFACES = jsSurfaces();
 
 /* A surface's strict failures: every banned pattern (or spelling only), plus
    its P73 dash budget where it has one. */
+const gatedOn = (s, p) => p.budget === 0
+  && (s.strict === 'all' || p.id === 'britspell' || (p.everywhere && !s.file.includes('QUIPS')));
 function jsStrictFails() {
   const fails = [];
   for (const s of JS_SURFACES) {
-    const rules = PATTERNS.filter((p) => p.budget === 0 && (s.strict === 'all' || p.id === 'britspell'));
+    const rules = PATTERNS.filter((p) => gatedOn(s, p));
     for (const p of rules) {
       for (const h of s.hits.filter((x) => x.pattern === p.id)) {
         fails.push(`${s.file} — ${h.source}: banned ${p.id} ${h.snippet}`);
@@ -1470,6 +1514,7 @@ function strictCheck() {
     if (pg.dashes > pg.rateCap) fails.push(`${pg.label} — ${pg.dashes} em-dashes in ${pg.words} words = ${pg.rate.toFixed(1)}/1k (budget ${EMDASH_PER_1K}/1k → ${pg.rateCap} here)`);
     if (pg.faqDashes > EMDASH_FAQ_MAX) fails.push(`${pg.label} — ${pg.faqDashes} em-dashes across its FAQ answers (budget ${EMDASH_FAQ_MAX})`);
     if (pg.counts.notice > NOTICE_PAGE_MAX) fails.push(`${pg.label} — ${pg.counts.notice}× "Notice how/that" (budget ${NOTICE_PAGE_MAX}/page)`);
+    if (pg.counts.reveal > REVEAL_PAGE_MAX) fails.push(`${pg.label} — ${pg.counts.reveal}× "X is what makes Y" (budget ${REVEAL_PAGE_MAX}/page)`);
     for (const v of pg.verdicts) fails.push(`${pg.label} — ${v.source} opens with a verdict word: ${v.snippet}`);
     for (const p of PATTERNS.filter((x) => x.budget === 0)) {
       if (pg.counts[p.id] > 0) fails.push(`${pg.label} — ${pg.counts[p.id]}× banned: ${p.label}`);
@@ -1521,7 +1566,8 @@ function printSitewide() {
     + ` — ellipses ${pages.reduce((n, p) => n + p.ellipses, 0)} total · lesson median ${median(lessons.map((p) => p.ellipses))} · max ${Math.max(...pages.map((p) => p.ellipses))}`);
   console.log(`  FAQ verdict openers ("No — "/"Yes — "): ${verdictTotal} (budget 0)`);
   for (const p of PATTERNS) {
-    const budget = p.budget === 0 ? 'budget 0' : p.budget === 'site' ? `budget ${THINK_SITE_MAX} sitewide` : `budget ${NOTICE_PAGE_MAX}/page`;
+    const budget = p.budget === 0 ? 'budget 0' : p.budget === 'site' ? `budget ${THINK_SITE_MAX} sitewide`
+      : p.budget === 'reveal-page' ? `budget ${REVEAL_PAGE_MAX}/page` : `budget ${NOTICE_PAGE_MAX}/page`;
     console.log(`  ${p.label}: ${totalByPattern[p.id]} (${budget})`);
   }
   console.log(`  "…and watch…" meta descriptions: ${andWatchPages.length}/${descPages.length} = ${(andWatchShare * 100).toFixed(1)}% (budget ≤ ${ANDWATCH_SHARE_MAX * 100}%)`);
@@ -1530,12 +1576,12 @@ function printSitewide() {
   console.log(line(W));
   console.log(pad('surface', 40) + rpad('strings', 9) + rpad('em—', 6) + rpad('budget', 8) + rpad('over', 7) + rpad('banned', 8) + rpad('enforced', 11));
   for (const s of JS_SURFACES) {
-    const rules = PATTERNS.filter((p) => p.budget === 0 && (s.strict === 'all' || p.id === 'britspell'));
+    const rules = PATTERNS.filter((p) => gatedOn(s, p));
     const banned = rules.reduce((n, p) => n + s.counts[p.id], 0);
     const over = s.dashMax === null ? '·' : s.dashes > s.dashMax ? `+${s.dashes - s.dashMax}` : s.dashes === s.dashMax ? 'AT' : 'ok';
     console.log(pad(s.file, 40) + rpad(s.items.length, 9) + rpad(s.dashes, 6)
       + rpad(s.dashMax === null ? 'exempt' : s.dashMax, 8) + rpad(over, 7) + rpad(banned, 8)
-      + rpad(s.strict === 'all' ? 'all rules' : 'spelling', 11));
+      + rpad(s.strict === 'all' ? 'all rules' : s.file.includes('QUIPS') ? 'spelling' : 'spell+14ab', 11));
   }
 
   /* Phase 16's one-number exit criterion (P77): every em-dash a reader can
