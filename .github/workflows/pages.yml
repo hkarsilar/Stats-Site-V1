@@ -14,6 +14,13 @@
 # Source must be set to "GitHub Actions" under Settings → Pages for this
 # to take effect. Rolling back is flipping that setting back to the
 # branch; nothing in the repository has to change.
+#
+# On 7 Oct 2026 (P122) it was still set to the branch: every push also
+# started GitHub's legacy "pages build and deployment" run, which uploads
+# the whole repository, and the domain serves whichever deploy finishes
+# last. The verify job below checks the live domain after every deploy
+# and fails when a planning doc is served, among other checks; its
+# summary says which check failed. tools/check-live.sh has the details.
 
 # ---------------------------------------------------------------------
 # Recovering a failed deploy — read this before pressing "Re-run".
@@ -55,7 +62,9 @@ permissions:
   id-token: write
 
 # Let a running deploy finish rather than cancelling it — a half-applied
-# deploy is worse than a slightly stale one.
+# deploy is worse than a slightly stale one. The group is held until
+# verify ends too (one to four minutes), so the next push cannot change
+# sw.js while this run is still checking it.
 concurrency:
   group: pages
   cancel-in-progress: false
@@ -85,3 +94,22 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  # Check the live domain from the runner, which can reach it (cloud
+  # sessions cannot). Waits 60 s so a legacy deploy that finishes a
+  # moment later is caught, then retries for up to 3 minutes. Fails
+  # unless / is 200, the planning docs and tools/audit.js are 404, and
+  # the served sw.js has this commit's CACHE_VERSION. A pass does not
+  # prove the Pages setting is fixed; see tools/check-live.sh.
+  verify:
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Check out the repository (for the script and sw.js)
+        uses: actions/checkout@v4
+
+      - name: Check that statscapybara.com serves this commit's filtered artifact
+        run: bash tools/check-live.sh --wait 60 --for 180 https://statscapybara.com

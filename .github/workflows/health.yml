@@ -1,0 +1,68 @@
+# Weekly health check of the live site, run from a GitHub runner.
+#
+# Cloud sessions cannot reach statscapybara.com or most of the web (the
+# sandbox proxy refuses them), so the checks that need the network run
+# here (P122):
+#
+#   live   the same check pages.yml's verify job runs after every deploy
+#          (tools/check-live.sh): the homepage is 200, the planning docs
+#          and tools/audit.js are 404, and sw.js carries main's
+#          CACHE_VERSION. This job going red is the alert: GitHub emails
+#          the repository owner about a failed run.
+#   links  node tools/extlinks.js, with its report written to the run's
+#          summary page. This is P38's external-link leg from now on:
+#          run the workflow by hand ("Run workflow" on the Actions tab)
+#          and read the summary. It never fails on a broken link. Runner
+#          IPs belong to a data center, more hosts block those than block
+#          a home connection, and a weekly false alarm would bury the live
+#          job's email. A broken link shows as a warning on the run page
+#          instead. The ALLOW table in extlinks.js is unchanged.
+#
+# Scheduled runs use the default branch. No marketplace actions: checkout
+# only, then shell, curl and the Node that ships on the runner.
+
+name: Weekly health check
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"   # Mondays 06:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the repository (for the script and sw.js)
+        uses: actions/checkout@v4
+
+      - name: Check that statscapybara.com serves main's filtered artifact
+        run: bash tools/check-live.sh --for 120 https://statscapybara.com
+
+  links:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Check every external link (report only)
+        run: |
+          node tools/extlinks.js | tee extlinks.txt
+          totals="$(grep -E ' broken$' extlinks.txt | tail -n 1 || true)"
+          {
+            echo "### External links"
+            echo
+            echo "${totals:-no totals line}. Bot-blocked hosts are listed in ALLOW in tools/extlinks.js. Open a broken URL in a browser before editing the site."
+            echo
+            echo '```'
+            cat extlinks.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          broken="$(echo "$totals" | sed -n 's/.* \([0-9][0-9]*\) broken$/\1/p')"
+          if [ "${broken:-0}" -gt 0 ]; then
+            echo "::warning title=Broken external links::$totals. See the run summary."
+          fi

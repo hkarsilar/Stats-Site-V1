@@ -16,7 +16,7 @@ Each lesson is a written explanation plus a canvas interactive. The site is plai
 ## Repo, deploy and planning docs
 
 - The repo root is the site root (cloned as `Stats-Site-V1`, remote `https://github.com/hkarsilar/Stats-Site-V1`). Run git from here. Old notes that mention a `site/` prefix predate a flattening; drop the prefix.
-- A push to `main` runs `.github/workflows/pages.yml`, which runs `node tools/make-pages-artifact.js _site` and publishes that folder. The artifact is the committed tree minus the `EXCLUDE` list in `make-pages-artifact.js` (the root `.md` files, `tools/`, `.claude/`, `.github/`, `.gitignore`, `.gitattributes`). Files are copied byte for byte. This is deploy plumbing and must never turn into a build step. Changing `EXCLUDE` changes what the live site serves, so run the local proof (below) after touching it. Pages Source must read "GitHub Actions". On 7 Oct 2026 it did not: GitHub's legacy "pages build and deployment" run still fired on every push, uploaded the whole repository and raced the filtered deploy (ROADMAP.md, Phase 21 addendum). Until P122 confirms the setting changed, treat the planning docs as possibly public. To roll back, set Source to the `main` branch.
+- A push to `main` runs `.github/workflows/pages.yml`, which runs `node tools/make-pages-artifact.js _site` and publishes that folder. The artifact is the committed tree minus the `EXCLUDE` list in `make-pages-artifact.js` (the root `.md` files, `tools/`, `.claude/`, `.github/`, `.gitignore`, `.gitattributes`). Files are copied byte for byte. This is deploy plumbing and must never turn into a build step. Changing `EXCLUDE` changes what the live site serves, so run the local proof (below) after touching it. Pages Source must read "GitHub Actions". When P122 checked on 7 Oct 2026, it still did not: commit 9ce20cc started a legacy "pages build and deployment" run (event `dynamic`) beside `pages.yml`, as every push since P78 has. That run uploads the whole repository, and the domain serves whichever deploy finishes last (ROADMAP.md, Phase 21 addendum). The setting is fixed once a new commit on `main` gets no such run. Until then, treat the planning docs as possibly public. After every deploy, `pages.yml`'s `verify` job runs `tools/check-live.sh` against the live domain and fails (GitHub emails the owner) unless the homepage is 200, the planning docs and `tools/audit.js` are 404, and the served `sw.js` carries the commit's `CACHE_VERSION`. `.github/workflows/health.yml` runs the same check weekly or by hand, then `tools/extlinks.js` with its report on the run's summary page, so external links are checked from GitHub rather than from a session. To roll back, set Source to the `main` branch; the verify job will then fail on every push, because that deploy serves the planning docs.
 - `CNAME` sets the custom domain.
 - The repository is private. The planning docs are committed but not served, so their URLs return 404 on the domain. `robots.txt` does not list them on purpose.
 - **ROADMAP.md** is the plan and the status tracker. **PROMPTS.md** holds the numbered session prompts. **VOICE.md** is the editorial standard. When the user pastes "roadmap prompt PN", read that prompt and the sections it names; when you finish it, tick its box in ROADMAP.md's status tracker.
@@ -52,6 +52,7 @@ node tools/prose-lint.js --strict        # voice budgets; must be green
 node tools/make-pages-artifact.js --list # what ships and what doesn't
 node tools/make-pages-artifact.js _site  # assemble it; exits 1 on a leak
 node tools/serve.js 8097 _site           # browse the artifact
+bash tools/check-live.sh --for 10 http://localhost:8097  # the verify job's check, against that server
 
 # Generators (Python 3)
 ./tools/inject-faqs.py                   # after editing tools/faq_data.py
@@ -85,7 +86,7 @@ node --check _c.js && rm _c.js
 | `prescription-terms.js` | A method that a poster, a problem, which-test or plan tells you to run and no lesson teaches. |
 | `destination-promises.js` | A prescription whose own linked lesson does not teach the method. |
 | `symbol-names.js` | A Greek letter used in prose whose name no page using it spells out. |
-| `extlinks.js` | Broken external links. Needs the network; run quarterly; never a gate. Its `ALLOW` table of known bot-blocked hosts (Ko-fi 403, LinkedIn 999) matches exact status codes; re-verify it each quarter. |
+| `extlinks.js` | Broken external links. Needs the network, so it runs in `health.yml` (weekly, or "Run workflow" on the Actions tab); never a gate. Its `ALLOW` table of known bot-blocked hosts (Ko-fi 403, LinkedIn 999) matches exact status codes; re-verify it each quarter. |
 
 When a checker fires, fix the site (teach the term, fix the link, correct the example), not the checker. Add an `ACKED` entry only when the flag is not a defect, and write the reason beside it. Each script's header explains what it matches, why, and its blind spots.
 

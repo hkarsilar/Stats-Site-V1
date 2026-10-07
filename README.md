@@ -76,7 +76,9 @@ committed tree minus the development docs (the root `.md` guides plus
 `CONTRIBUTING.md`), `tools/`, `.claude/`, `.github/` and the two git dotfiles.
 The license files and `CITATION.cff` *do* ship, so the terms are fetchable
 from the domain itself — and publishes it; the live site updates
-in a minute or two. `CNAME` sets the custom domain. Nothing is compiled,
+in a minute or two. A `verify` job then checks the live domain with
+`tools/check-live.sh`, and `.github/workflows/health.yml` repeats that check
+weekly along with an external-link report. `CNAME` sets the custom domain. Nothing is compiled,
 minified or rewritten: every published file is copied byte-for-byte, and the
 no-build rule above still holds.
 

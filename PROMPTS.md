@@ -703,7 +703,7 @@ StatsCapybara roadmap prompt P38 (see ROADMAP.md) — RECURRING; run me quarterl
 Full site health pass:
 1. node tools/audit.js — fix everything it raises.
 2. Syntax-check all inline scripts across all pages (the CLAUDE.md extraction pattern) and node --check all shared JS.
-3. External-link rot: collect all external hrefs sitewide, check reachability (HEAD/GET), replace or remove dead ones (Wayback link as last resort).
+3. External-link rot: cloud sessions cannot reach the web, so run .github/workflows/health.yml rather than checking links from the session (Actions tab → Weekly health check → Run workflow, or actions_run_trigger with the GitHub MCP tools). Its links job runs node tools/extlinks.js and puts the report on the run's summary page and in the job log; its live job is the deploy check. Open each broken URL in a real browser, then replace or remove the dead ones (Wayback link as last resort).
 4. Dependency purity check: grep all pages for external URLs — the allowlist is googletagmanager.com/gtag and ko-fi assets only; anything else is a regression to remove.
 5. localStorage schema sanity: sc-progress/sc-checks/sc-last (+ sc-cards) read/write paths still consistent; no key drift.
 6. Statistical spot-audit: pick 5 lessons at random (different courses), re-verify every numeric claim in prose/FAQ/checks against authoritative values; pick 2 tools and re-run their verification gates (e.g. power.html's G*Power table, tables.html critical values).
