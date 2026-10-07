@@ -2347,4 +2347,151 @@ Verification: node tools/audit.js 0 errors; prose-lint --strict green; node tool
 
 ---
 
-*End of prompt library. Phases 17, 18 and 19 (P79–P105, Sep 2026) are the phases written from the outside in — and Phase 19 is the first of them to find a whole third of a real course missing from the site rather than merely spoken in the wrong dialect: a real course's slides and syllabus read against the site, and the site brought to speak the textbook dialect its students are examined in. After P72 the site is built: 9 courses with landing pages, 97 interactive lessons, an exam mode, a 43-problem worked-problems library, 20+ tools, 5 guides, 3 posters, print/offline/a11y polish, instructor embeds that carry their configuration, math under regression test, honest analytics honestly disclosed, and forgiving search. From there the roadmap IS the loops — P37 (waiting on a Search Console export), P38 quarterly (its next run should sweep the P61–P68 surfaces), P39 refresh — plus the human-only checklist, which is now the growth engine: distribution, not construction. Phases 12–15 (P49–P72) were review-driven punch-lists; anything proposed beyond them should have to argue its way past "the site doesn't need it". Phase 16 (P73–P78) argued its way past it with a measurement: the de-AI job was budget-met, not finished — a paydown and a provenance fix, not a feature. Phase 20 (P106–P121) is a third de-AI round. It targets the habits of the model that wrote most of the site, Claude Opus 5, which the first two rounds did not measure.*
+## Phase 21 — Footing, round two (P122–P126)
+
+P121 closed the last numbered prompt, so on 7 Oct 2026 the site got a full check instead of a new phase of content. Every gate and checker is green and the browser crawl is clean (ROADMAP.md's Phase 21 addendum lists what was run). The gates cannot see five things, and each one became a prompt: a deploy race that can publish the planning docs, an accessibility statement the site does not meet, search results ranked in curriculum order, a handful of small untrue sentences and over-long printouts, and a quiz bank that is thin in the weeks the next teaching block covers.
+
+**Rules for the whole phase:**
+
+- **Read only what you need.** Beyond CLAUDE.md, read the Phase 21 addendum in ROADMAP.md and this section. Do not copy the style of ROADMAP.md or PROMPTS.md; VOICE.md governs anything a visitor reads.
+- **Evidence first.** Each prompt starts by reproducing the finding it was written for. If the finding no longer holds, say so in the report and do only what still applies.
+- **One at a time.** P123 and P124 both change `site.js` and bump `CACHE_VERSION`, and P124 and P126 both rebuild the search index.
+- **Hakan's step comes first.** The deploy fix is a repository setting that no session can change (see P122). Ask for it at the top of any report until it is done.
+
+**Order:** Hakan changes the Pages setting, then P122. P126 before the Stats 2 block starts in mid-November. P123, P124 and P125 in any order. After the phase, run P38 (last run 23 Jul, before Phases 17–20 rewrote most of the site), which can use P122's `health.yml` for its external-link leg, and then P39 on the thread the addendum names.
+
+### P122 — One deploy path, checked from outside the sandbox
+
+**→ Powerful · Extra effort**
+
+```
+StatsCapybara roadmap prompt P122 (see ROADMAP.md, Phase 21 addendum). To save tokens, read only the Phase 21 addendum and the Phase 21 section of PROMPTS.md beyond CLAUDE.md. Do not copy the style of ROADMAP.md or PROMPTS.md.
+
+Background. Every push to main starts two Pages deploys: .github/workflows/pages.yml, which publishes the filtered artifact, and GitHub's own "pages build and deployment" (event "dynamic"), the legacy branch build, which uploads the whole repository because .nojekyll is present. The domain serves whichever deploy finishes last. On 6 Oct 2026 the legacy deploy finished a second after the filtered one (runs 37447404159 and 37447403484, commit 2f2461f), so from about 10:05 to 14:59 UTC statscapybara.com most likely served CLAUDE.md, PROMPTS.md, ROADMAP.md, VOICE.md and tools/. P78 assumed that deploying from Actions had switched the Pages source; it had not. The fix is a setting only Hakan can change: Settings → Pages → Build and deployment → Source → "GitHub Actions".
+
+1. Check the setting. With the GitHub MCP tools, list the workflow runs for the latest commit on main. If a "pages build and deployment" run still appears for it, the setting is unchanged. Put that first in your report, with the click path for Hakan, and carry on: step 2 makes the problem visible on every push until it is fixed.
+
+2. Add a verify job to pages.yml, after deploy, that checks the live domain from the runner (this sandbox's proxy blocks statscapybara.com; a GitHub runner does not). Wait about 60 seconds first, so a legacy deploy that finishes a moment later is caught, then poll with a short back-off for up to three minutes. The job fails unless: the homepage returns 200; /CLAUDE.md, /AGENTS.md, /PROMPTS.md, /ROADMAP.md, /VOICE.md, /README.md and /tools/audit.js return 404; and the served sw.js contains the CACHE_VERSION string of the commit being deployed. Use curl and shell only, no marketplace action, and give the job permissions: contents: read. A failed run emails the repository owner, and that email is the alert. A pass does not prove the setting is fixed: a legacy run can stay open for most of an hour (run 37442209222 on 6 Oct stayed open 45 minutes, until the next push cancelled it), so only step 1's check settles it.
+
+3. Add .github/workflows/health.yml, weekly plus workflow_dispatch: the same live checks as step 2, then node tools/extlinks.js with its report written to $GITHUB_STEP_SUMMARY. Cloud sessions cannot reach the web, so this is where P38's external-link leg runs from now on. Keep extlinks.js's ALLOW table as it is.
+
+4. Prove both workflows before pushing. Parse each file with python3 -c "import yaml, sys; yaml.safe_load(open(sys.argv[1]))". Run the check logic as a local shell script against node tools/serve.js 8097 _site (the assembled artifact), where the doc URLs must 404 and the homepage must return 200; then point it at the repository root served directly, where /CLAUDE.md returns 200, and confirm it fails. Put both runs in the report.
+
+5. Docs. CLAUDE.md's deploy bullet says that on 7 Oct the setting did not read "GitHub Actions". Replace that with what is true after step 1, describe the verify job and health.yml in two sentences, and keep the rollback note. Copy CLAUDE.md over AGENTS.md as CLAUDE.md describes. Add a dated line under P78 in ROADMAP.md's tracker that corrects its "the cutover needed no manual flip" paragraph, and update P38's prompt text so its step 3 says to run health.yml rather than check links from the session.
+
+Verification: node tools/audit.js 0 errors; prose-lint and math-check are no-change proofs here (no site file changes), so say so. After pushing, read this push's runs with the GitHub MCP tools and report the verify job's result. If it fails because the legacy deploy won the race, that is the expected signal until the setting changes: report it plainly and do not loosen the check. Tick P122 in ROADMAP.md, then commit and push to main.
+```
+
+### P123 — Accessibility, round two: make the homepage statement true
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P123 (see ROADMAP.md, Phase 21 addendum). To save tokens, read only the Phase 21 addendum, the Phase 21 section of PROMPTS.md and VOICE.md beyond CLAUDE.md. Do not copy the style of ROADMAP.md or PROMPTS.md.
+
+Background. The homepage's About section says the site "aims to meet WCAG 2.1 AA" and that "Text meets 4.5:1 contrast in both light and dark themes." An axe-core 4 scan of all 148 non-stub pages in both themes on 7 Oct 2026 (WCAG 2.0/2.1 A and AA rules, every <details> opened) found otherwise: in light mode 1,561 text elements on 146 pages under the contrast minimum (814 on 145 pages in dark mode), and 1,441 prose links on 140 pages that differ from the text around them only by color. The failures fall into four groups.
+
+(a) Prose links. Lesson paragraphs are colored --text-muted (#475569; dark #a7b3c9), not --text, which the palette note in styles.css assumes. So --link sits 1.36:1 from the surrounding text in light mode and 1.71:1 in dark, and with no underline at rest, color is the only cue (WCAG 1.4.1, axe rule link-in-text-block). This is on every page with prose links. No color can clear both 3:1 against --text-muted and 4.5:1 against the surface in either theme; work the luminance arithmetic yourself to confirm. So the choices are an underline at rest (thin, offset, possibly a softer decoration color), or darker paragraph text. Pick one, say why, and keep P54's goal that a paragraph still reads calmly.
+
+(b) Accent-colored chrome text under 4.5:1. Examples from the scan: the "Section N.n" eyebrow on every Stats 2, Stats 3, Methods, Data and Writing lesson (3.0 to 3.7:1 on white), the course titles and section numbers on the homepage cards (down to 2.9:1), the active sidebar lesson (2.9 to 3.5:1), the sidebar's course group headings (4.0 to 4.5:1), the Toolbox pill and active nav tab (#6366f1 on #efeffd, 3.92:1; dark 3.85:1), --primary text on white and slider readouts in dark mode (4.46:1 and 3.88:1), white on --primary buttons (4.46:1), the active SPSS/JASP tab (white on #0d9488, 3.74:1, on all 48 pages with a software block), the green "✓ yes" and orange "NA" marks (2.27:1 and 2.8:1) and .bad cells in dark mode (3.78:1). Fix these with per-theme ink tokens for each accent, the way --link and --ok-ink already work. Do not change the accent colors themselves: they are the brand, and the canvas colors are semantic.
+
+(c) Other AA rules. quiz.html's practice/exam switch puts aria-selected on plain buttons (use a tablist with role="tab", or aria-pressed). flashcards.html's #fc-card is a focusable control that contains focusable descendants, and its accessible name leaves out its own text. Seven <select> elements on two pages have no accessible name (data/codebooks-and-documentation's card selects, data/reproducible-workflows' #rp-group). Six scrolling regions on five pages cannot be reached by keyboard, among them teachers.html's #data-snippet and #present-snippet, #dv-grid in data/data-entry-and-validation and .hs-r in guides/spss-output-to-apa (tabindex="0" and a label). ethics/why-research-ethics' #tl-line breaks the list rule.
+
+(d) Decide and report. The inline head script turns on dark mode only from a saved choice, but site.js's theme-color metas follow the OS. So a phone in dark mode shows a light page under a dark browser bar. Following prefers-color-scheme until the visitor picks a theme would change the head script on every page (a byte-identical sitewide replace, like the GA block). Do it or recommend against it, with the reason.
+
+1. Reproduce. npm install axe-core in the scratchpad (never in the repo: the site has no dependencies) and run it with Playwright (Chromium is at /opt/pw-browsers) over every non-stub page in both themes. Set dark mode through localStorage theme=dark, because the head script ignores the OS setting. Record violations by rule and by color pair.
+
+2. Add tools/contrast.js, zero-dependency: it reads the color tokens for both themes from styles.css, takes a table of the (foreground, background, text size) pairs the site uses, prints each ratio, and with --strict exits 1 on any normal-size pair under 4.5:1 or large-text/UI pair under 3:1. Seed the table from step 1. It is not a commit gate; add it to CLAUDE.md's checker table.
+
+3. Fix (a) to (c), and (d) if you decide to. Look at the pages before and after: the homepage cards, a sidebar in every course, a lesson with a slider in dark mode, quiz.html, flashcards.html.
+
+4. Rerun axe on every page. color-contrast and link-in-text-block must be 0 in both themes, and so must every other AA rule, or list each remaining node with the reason it is a false positive (text over a canvas gradient, for example).
+
+5. If any sentence in the homepage statement is still untrue, change it (VOICE.md applies). Update CLAUDE.md's accessibility and link bullets to say what is now true.
+
+styles.css and site.js are precached shell assets, so bump CACHE_VERSION. Verification: audit 0 errors; prose-lint --strict green; math-check passes (canvas colors come from CSS tokens; nothing should move); node --check assets/js/site.js; every page at 360 px with no sideways scroll; print one lesson and check the light print palette still applies. Tick P123 in ROADMAP.md, then commit and push to main.
+```
+
+### P124 — Search v3: rank the body hits, and know what students type
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P124 (see ROADMAP.md, Phase 21 addendum). To save tokens, read only the Phase 21 addendum and the Phase 21 section of PROMPTS.md beyond CLAUDE.md. Do not copy the style of ROADMAP.md or PROMPTS.md.
+
+Background. Search finds almost every term (search-reach.js is clean), but it ranks common queries badly. The top five results on 7 Oct 2026:
+  "p value"            tables.html, cheat-apa.html, apa.html, what-is-statistics, z-scores. The lesson that teaches p-values (stats-1/hypothesis-testing-logic) is not in the top five.
+  "anova"              assumptions-and-when-they-break first; one-way-anova fourth.
+  "regression"         regression-diagnostics, regression-discontinuity, correlation.html. simple-linear-regression is not in the top five.
+  "p hacking"          stats-2/post-hoc-tests first. ethics/questionable-research-practices is not in the top five.
+  "standard deviation" problems.html first; describing-data fourth.
+  "pearson"            correlation.html, then central-limit-theorem and three more Stats 1 lessons; stats-1/correlation is not in the top five.
+  "mann whitney"       tables.html first; non-parametric-alternatives fourth.
+  "type 1 error", "type 2 error", "r2"   glossary.html is the only result.
+
+Why, from runSearch() in site.js. The title pass scores page titles and SEARCH_PAGES keywords, and a title that starts with the query (100) beats one that contains it (80), so "Regression Discontinuity" outranks "Simple Linear Regression". Lessons have no keyword field, so no lesson can claim "p-value" the way tables.html does. The full-text pass appends every page whose body mentions the query in curriculum order with no ranking, so Stats 1 always comes first and Ethics last. And "1"/"I", "2"/"II", "r2"/"R²" and "sd" are never treated as the same thing.
+
+1. Build tools/search-relevance.js first. It holds a table of 60 to 100 queries that students type (draw on the failures above, lesson titles, glossary terms and the quiz bank's wording), each with the page that should rank first and an acceptable top-3 set. It lifts the scoring code from site.js by brace-matching, as search-reach.js does with norm, squash and flexRe, loads search-index.js and glossary-data.js, and reports top-1 and top-3 hit rates and every miss. --strict exits 1 below thresholds you set after step 4. Record the "before" numbers.
+
+2. Lesson aliases. Give lessons a short optional list of the names students use, for example "p value, p-value, type I error" for hypothesis-testing-logic and "F test" for one-way-anova. Put it in curriculum.js (the single source of truth) or in a small map in site.js, and say why you chose that place. An alias must be a term the lesson teaches.
+
+3. Rank the full-text pass by where and how often the term appears: a heading hit beats a paragraph hit, and density per 1,000 words beats raw count. If build-search-index.py has to store headings separately, change it, rerun it, and keep the index near its current 1.6 MB.
+
+4. Treat these as the same: digits and Roman numerals in "type 1/2 error", R² with r2 and "r squared", and sd/SD with standard deviation. Leave English words alone: "did" must not mean difference-in-differences.
+
+5. Keep what P71 built: typo tolerance, glossary instant answers, the zero-result states and the 1 to 7 ms per keystroke budget (measure it on the full index). search-reach.js --strict stays clean. Do not rename norm, squash, flexChar or flexRe.
+
+site.js is a precached shell asset, so bump CACHE_VERSION. Verification: audit 0 errors; prose-lint --strict green; search-relevance --strict and search-reach --strict pass; node --check assets/js/site.js; in a browser, type ten of the table's queries and compare the order with the tool's output. Report before/after hit rates and the misses that remain, with reasons. Add search-relevance.js to CLAUDE.md's checker table and update its search paragraph. Tick P124 in ROADMAP.md, then commit and push to main.
+```
+
+### P125 — Small truths, print lengths and sitemap dates
+
+**→ Powerful · Extra effort**
+
+```
+StatsCapybara roadmap prompt P125 (see ROADMAP.md, Phase 21 addendum). To save tokens, read only the Phase 21 addendum, the Phase 21 section of PROMPTS.md and VOICE.md beyond CLAUDE.md. Do not copy the style of ROADMAP.md or PROMPTS.md.
+
+Six independent fixes. Reproduce each before changing anything.
+
+1. CITATION.cff is served on the domain (statscapybara.com/CITATION.cff), and its abstract is out of date: 102 lessons (now 105), five guides (7), 71 problems (100), nine datasets (10) and 1,087 assertions (2,823). Update it, and extend audit check 6 to compare its lesson, course, guide and problem counts with curriculum.js, the guides folder and problems.html. Leave the assertion count out of the check, or the abstract will need an edit every time math-check grows; drop that figure from the abstract instead. Its repository-code URL points at a private repository and returns 404 to everyone else; remove it unless Hakan has made the repository public.
+
+2. license.html says that the repository "carries a CITATION.cff file, so a formatted citation is available from the code host", and that the repository "takes issues and pull requests". The repository is private, so a visitor can do neither. Link the served file instead (href="CITATION.cff"), and rewrite the issues sentence so it names only what a visitor can use, the feedback email link. VOICE.md applies.
+
+3. ethics/deception-and-debriefing, scenario 2 ("Rigged failure feedback"). The reviewer's leaf is L_harm, but the reasoning ends "Validated mood inductions that participants consent to are the better route". That is the gate-2 answer (an honest alternative exists, so L_alt), and a student who answers gate 2 that way is told the reviewer "took a different path". Make the scenario and its scoring agree: accept more than one leaf for a scenario, or rewrite the scenario, or move the sentence. Then walk the other four scenarios the same way.
+
+4. Section references to toolkit lessons. Methods, Data, Writing and Ethics number their lessons 1.x to 4.x, the same numbers Stats 1 to 3 use. cheat-apa.html links to writing/reporting-statistics-apa with the bare text "§3.2", which a statistics student reads as Stats 3 §3.2. On 7 Oct, 20 links with a § number pointed at a Methods, Data, Writing or Ethics lesson. The 19 in problems.html also name the lesson; the one in cheat-apa.html names nothing else. Fix that one (the poster is a one-page print, so check it still fits), and add a warning to audit.js for any § link to a toolkit lesson whose text names neither the course nor the lesson.
+
+5. Print lengths. Measured with Playwright's page.pdf() (count the /Type /Page objects): formulas.html prints 6 pages on A4 and on US Letter, while CLAUDE.md says five; it grew in Phases 17–19. In teachers.html the Stats 1 block map prints on one page, the Stats 2 map on 2 pages on Letter, and the Stats 3 map on 2 pages on both sizes. Tighten the print CSS (row padding, font size, column widths) rather than cutting content, get each block map onto one page and formulas.html back to five (or say why five no longer fits), and check that the three posters still print on one page. Put the measured counts in CLAUDE.md.
+
+6. sitemap.xml gives all 145 URLs a lastmod, and every one is older than the last commit to its page (the homepage says 2026-07-02; its last commit was 5 Oct). Search engines ignore lastmod values that are not reliably accurate. Add tools/sitemap-dates.js: it sets each lastmod to the date of the last commit that touched the page (git log -1 --format=%cs), uses today's date for a page with uncommitted changes, and with --check exits 1 on any mismatch. Run it. Add it to CLAUDE.md's Commands and to the "Finishing a session" list for content changes. Keep it out of audit.js, which must run without git history.
+
+Verification: audit 0 errors; prose-lint --strict green; math-check is a no-change proof unless a script it drives changed; print counts before and after in the report; in a browser, walk deception scenario 2 along both paths. No precached shell asset should change; if one does, bump CACHE_VERSION. Tick P125 in ROADMAP.md, then commit and push to main.
+```
+
+### P126 — Quiz bank v3: the regression weeks of Stats 2, before the block
+
+**→ Extra Powerful · Max effort**
+
+```
+StatsCapybara roadmap prompt P126 (see ROADMAP.md, Phase 21 addendum). Run it before the Stats 2 block starts in mid-November. To save tokens, read only the Phase 21 addendum, the Phase 21 section of PROMPTS.md, the Phase 18 addendum and VOICE.md beyond CLAUDE.md. Do not copy the style of ROADMAP.md or PROMPTS.md.
+
+Background, counted from quiz.html's c and s tags on 7 Oct 2026. Stats 2 has 57 questions over 17 lessons. The ANOVA weeks are covered (§2.1 to §2.5: 6, 6, 5, 4, 5). The rest of the course is not (§2.6 to §2.17, the assumptions lesson and the regression weeks: 2, 4, 1, 6, 0, 3, 3, 1, 2, 3, 4, 2). §2.10, dummy coding, has no question at all. A 40-question Stats 2 exam draws from 57, so a second attempt repeats most of the first. Stats 1 §1.1 has one question. Every Stats 3 lesson has 2 to 8 (54 in all), and that block starts in February.
+
+1. Bring every Stats 2 lesson to at least 4 tagged questions, about 80 for the course. Favor what a paper exam asks: read a value off printed output; compute one quantity by hand (F from SS and df, b₁ from r and the two SDs, a group mean from dummy-coded coefficients, adjusted R² from R², n and p, a VIF from R²ⱼ); choose the right follow-up test. Use the lecture's methods and notation from the Phase 18 work (the ANOVA table, n − p − 1, the omitted-variable sign rule). Check every number with node -e and VIZ, and keep the one-liners in an HTML comment next to the new questions, as problems.html does.
+
+2. Bring Stats 1 §1.1 to at least 2. If context allows, bring every Stats 3 lesson to at least 3; otherwise list what is left in the report.
+
+3. Follow CLAUDE.md's format: { c, q, o: [4], a, why, s }. No option may depend on its position. APA typography. VOICE.md governs q and why; run node tools/prose-lint.js --page inline-scripts. Do not change any existing question's a, c or s.
+
+4. Spread the answer positions. A comment in quiz.html notes that 217 of the 280 stored answers are at index 1; options are shuffled on render, so readers never see this, but keep new questions from adding to it.
+
+5. Update every place that states the bank's size. The quiz picker counts at run time; the fixed mentions on 7 Oct were the shuffle comment in quiz.html's begin() and CLAUDE.md's "280 questions" (mirrored in AGENTS.md). grep for 280 to be sure.
+
+6. In a browser, run quiz.html?exam=stats-2&n=40 and the range exam quiz.html?exam=stats-2&from=2.7&to=2.17&n=20 through to the report, and check that new questions appear and the scope note counts them.
+
+Verification: audit 0 errors; prose-lint --strict green; math-check passes; rebuild the search index (quiz.html is indexed). Tick P126 in ROADMAP.md, then commit and push to main.
+```
+
+---
+
+*End of prompt library. Phases 17, 18 and 19 (P79–P105, Sep 2026) are the phases written from the outside in — and Phase 19 is the first of them to find a whole third of a real course missing from the site rather than merely spoken in the wrong dialect: a real course's slides and syllabus read against the site, and the site brought to speak the textbook dialect its students are examined in. After P72 the site is built: 9 courses with landing pages, 97 interactive lessons, an exam mode, a 43-problem worked-problems library, 20+ tools, 5 guides, 3 posters, print/offline/a11y polish, instructor embeds that carry their configuration, math under regression test, honest analytics honestly disclosed, and forgiving search. From there the roadmap IS the loops — P37 (waiting on a Search Console export), P38 quarterly (its next run should sweep the P61–P68 surfaces), P39 refresh — plus the human-only checklist, which is now the growth engine: distribution, not construction. Phases 12–15 (P49–P72) were review-driven punch-lists; anything proposed beyond them should have to argue its way past "the site doesn't need it". Phase 16 (P73–P78) argued its way past it with a measurement: the de-AI job was budget-met, not finished — a paydown and a provenance fix, not a feature. Phase 20 (P106–P121) is a third de-AI round. It targets the habits of the model that wrote most of the site, Claude Opus 5, which the first two rounds did not measure. Phase 21 (P122–P126) came out of a full check after P121, not a new idea: a deploy race, an accessibility statement the site did not meet, search ranking, a few untrue sentences and over-long printouts, and quiz depth before the Stats 2 block.*
