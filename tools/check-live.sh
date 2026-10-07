@@ -8,13 +8,13 @@
 #     bash tools/check-live.sh --wait 60 --for 180              # what pages.yml's verify job runs
 #     bash tools/check-live.sh --for 10 http://localhost:8097   # the local proof (P122)
 #
-# WHY (P122). Until Settings → Pages → Source reads "GitHub Actions",
-# every push to main starts two deploys: pages.yml, which publishes the
+# WHY (P122). Whenever Settings → Pages → Source reads anything but
+# "GitHub Actions", every push to main starts two deploys: pages.yml, which publishes the
 # filtered artifact (tools/make-pages-artifact.js), and GitHub's legacy
 # "pages build and deployment", which uploads the whole repository. The
-# domain serves whichever finishes last. On 6 Oct 2026 the legacy one
-# won by a second and the planning docs were most likely public for five
-# hours. This sandbox's proxy refuses statscapybara.com, so the check
+# domain serves whichever finishes last. That was the case from P78 (17
+# Aug 2026) to 7 Oct 2026. On 6 Oct the legacy one won by a second and
+# the planning docs were most likely public for five hours. This sandbox's proxy refuses statscapybara.com, so the check
 # has to run on a GitHub runner: pages.yml's verify job after every
 # deploy, and health.yml once a week.
 #

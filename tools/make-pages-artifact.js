@@ -17,9 +17,11 @@
    anyone who truncated a URL. "Unlinked and un-indexed" was a fine SEO
    judgment and no defense at all. This script is the filter: the
    workflow in .github/workflows/pages.yml runs it and uploads its
-   output, so the six planning docs and tools/ 404 on the domain (once
-   Settings → Pages → Source reads "GitHub Actions"; until then a legacy
-   branch deploy races it, see pages.yml and tools/check-live.sh).
+   output, so the six planning docs and tools/ 404 on the domain. That
+   holds only while Settings → Pages → Source reads "GitHub Actions".
+   With the branch as source, GitHub's legacy deploy also runs and races
+   this one, as it did until 7 Oct 2026 (see pages.yml and
+   tools/check-live.sh).
 
    IT IS NOT A BUILD STEP AND MUST NEVER BECOME ONE. Nothing here is
    processed, minified, templated or rewritten — every file that ships

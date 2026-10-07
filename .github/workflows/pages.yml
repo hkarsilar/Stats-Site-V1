@@ -15,12 +15,13 @@
 # to take effect. Rolling back is flipping that setting back to the
 # branch; nothing in the repository has to change.
 #
-# On 7 Oct 2026 (P122) it was still set to the branch: every push also
-# started GitHub's legacy "pages build and deployment" run, which uploads
-# the whole repository, and the domain serves whichever deploy finishes
-# last. The verify job below checks the live domain after every deploy
-# and fails when a planning doc is served, among other checks; its
-# summary says which check failed. tools/check-live.sh has the details.
+# Until 7 Oct 2026 it was still set to the branch (P122): every push
+# also started GitHub's legacy "pages build and deployment" run, which
+# uploads the whole repository, and the domain served whichever deploy
+# finished last. bc38891 was the first push without a legacy run. The
+# verify job below checks the live domain after every deploy and fails
+# when a planning doc is served, among other checks; its summary says
+# which check failed. tools/check-live.sh has the details.
 
 # ---------------------------------------------------------------------
 # Recovering a failed deploy — read this before pressing "Re-run".
