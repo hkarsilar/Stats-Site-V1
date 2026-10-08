@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-data.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Reproducible Workflows", "description": "Why the analysis IS the script — scripts over clicks, seeds, project structure, and the stranger test — with a reproduce-this-result pipeline puzzle.", "url": "https://statscapybara.com/data/reproducible-workflows/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Data: From Raw to Ready", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Reproducible Workflows", "item": "https://statscapybara.com/data/reproducible-workflows/"}]}]
   </script>
@@ -151,8 +151,8 @@ before R 3.6.0    :  10  9  3  6  4  8  5  1  2  7</code></pre>
     #rp table.rp-tbl { border-collapse:collapse; font-size:.82rem; }
     #rp .rp-tbl th, #rp .rp-tbl td { border:1px solid var(--border); padding:.2rem .55rem; text-align:center; }
     #rp .rp-tbl th { background:var(--surface-2); color:var(--text-muted); font-weight:600; }
-    #rp .rp-tbl td.miss { color:#f97316; font-style:italic; }
-    #rp .rp-tbl td.bad { color:#ef4444; font-weight:600; }
+    #rp .rp-tbl td.miss { color:var(--hl-ink); font-style:italic; }
+    #rp .rp-tbl td.bad { color:var(--bad-ink); font-weight:600; }
     #rp .rp-step { display:flex; align-items:center; gap:.5rem; border:1px solid var(--border); border-radius:8px; background:var(--surface-2); padding:.45rem .6rem; margin-bottom:.45rem; }
     #rp .rp-step .rp-move { display:flex; flex-direction:column; gap:2px; }
     #rp .rp-step .rp-move button { border:1px solid var(--border); background:var(--surface); color:var(--text-muted); border-radius:4px; width:22px; height:16px; line-height:1; font-size:.7rem; cursor:pointer; padding:0; }
@@ -249,7 +249,7 @@ before R 3.6.0    :  10  9  3  6  4  8  5  1  2  7</code></pre>
         var div = document.createElement("div");
         div.className = "rp-step";
         var sel = k === "subset"
-          ? " &nbsp;<select id='rp-group'><option value='A'>A</option><option value='B'>B</option></select>"
+          ? " &nbsp;<select id='rp-group' aria-label='Keep only group'><option value='A'>A</option><option value='B'>B</option></select>"
           : "";
         div.innerHTML =
           "<span class='rp-num'>" + (i + 1) + "</span>" +

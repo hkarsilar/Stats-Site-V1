@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-2.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Multiple Regression", "description": "Multiple regression isolates the effect of one predictor while holding others constant — sometimes reversing the naive conclusion entirely. See it happen.", "url": "https://statscapybara.com/stats-2/multiple-regression/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: ANOVA & Regression", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Multiple Regression", "item": "https://statscapybara.com/stats-2/multiple-regression/"}]}]
   </script>
@@ -137,8 +137,8 @@
           <canvas id="mr2-canvas"></canvas>
 
           <div class="stat-row">
-            <div class="stat"><span class="k" style="color:var(--primary)">R²</span><span class="v" id="stat-r2">—</span></div>
-            <div class="stat"><span class="k" style="color:#f97316">Adjusted R²</span><span class="v" id="stat-adj">—</span></div>
+            <div class="stat"><span class="k" style="color:var(--primary-ink)">R²</span><span class="v" id="stat-r2">—</span></div>
+            <div class="stat"><span class="k" style="color:var(--hl-ink)">Adjusted R²</span><span class="v" id="stat-adj">—</span></div>
             <div class="stat"><span class="k">Last predictor added</span><span class="v" id="stat-worth" style="font-size:1rem">—</span></div>
           </div>
         </div>
@@ -359,7 +359,7 @@
       document.getElementById("stat-bias").textContent = signed(a.bias, 2);
       var flip = document.getElementById("stat-flip");
       flip.textContent = verdict(a);
-      flip.style.color = ((a.naive > 0) !== (a.b1 > 0)) ? "#f97316" : VIZ.css("--text");
+      flip.style.color = ((a.naive > 0) !== (a.b1 > 0)) ? "var(--hl-ink)" : VIZ.css("--text");
     }
 
     document.getElementById("b2-range").addEventListener("input", function () { B2 = +this.value; gen(); });
@@ -475,8 +475,8 @@
       document.getElementById("stat-adj").textContent = adjs[np].toFixed(3);
       var worth = document.getElementById("stat-worth");
       if (np === 1) { worth.textContent = "baseline (1 predictor)"; worth.style.color = VIZ.css("--text"); }
-      else if (adjs[np] - adjs[np - 1] > 0.003) { worth.textContent = "raised adjusted R² ✓"; worth.style.color = "#22c55e"; }
-      else { worth.textContent = "no real gain · just noise"; worth.style.color = "#f97316"; }
+      else if (adjs[np] - adjs[np - 1] > 0.003) { worth.textContent = "raised adjusted R² ✓"; worth.style.color = "var(--ok-ink)"; }
+      else { worth.textContent = "no real gain · just noise"; worth.style.color = "var(--hl-ink)"; }
     }
 
     document.getElementById("np-range").addEventListener("input", function () { np = +this.value; update(); });

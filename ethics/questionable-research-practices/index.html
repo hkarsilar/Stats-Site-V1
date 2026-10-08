@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-ethics.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Questionable Research Practices", "description": "Run 1,000 studies with no real effect: peek at the data and stop when p < .05, and watch the false-positive rate climb from 5% past 20%.", "url": "https://statscapybara.com/ethics/questionable-research-practices/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Ethics: Responsible Research", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Questionable Research Practices", "item": "https://statscapybara.com/ethics/questionable-research-practices/"}]}]
   </script>
@@ -164,7 +164,7 @@
     /* optional-stopping simulator (scoped) */
     #os .os-controls { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; align-items: center; margin-bottom: 1rem; }
     #os .os-slab { font-size: .86rem; font-weight: 600; color: var(--text); display: flex; flex-direction: column; gap: .35rem; min-width: 220px; flex: 1; }
-    #os .os-slab output { font-weight: 800; color: var(--course-accent, #64748b); }
+    #os .os-slab output { font-weight: 800; color: var(--course-ink); }
     #os input[type="range"] { width: 100%; accent-color: var(--course-accent, #64748b); }
     #os .os-peek { font-size: .86rem; font-weight: 600; color: var(--text); }
     #os .os-peekbtns { display: inline-flex; gap: .3rem; margin: 0 .35rem; }
@@ -179,15 +179,15 @@
     #os .viz-canvas-wrap { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); padding: .3rem; }
     #os canvas { width: 100%; display: block; }
     #os .os-note { font-size: .84rem; line-height: 1.55; color: var(--text); margin: .7rem 0 0; min-height: 1.2rem; }
-    #os .os-note b.hit { color: #ef4444; }
-    #os .os-note b.null { color: #22c55e; }
+    #os .os-note b.hit { color: var(--bad-ink); }
+    #os .os-note b.null { color: var(--ok-ink); }
     #os .os-actions { margin-top: .8rem; }
     #os .os-btn {
       cursor: pointer; border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
       border-radius: 8px; padding: .45rem 1rem; font-size: .85rem; font-weight: 700; font-family: inherit; transition: .15s;
     }
     #os .os-btn:hover { border-color: var(--course-accent, #64748b); }
-    #os .os-btn-primary { border-color: var(--course-accent, #64748b); color: color-mix(in srgb, var(--course-accent, #64748b) 80%, var(--text)); }
+    #os .os-btn-primary { border-color: var(--course-accent, #64748b); color: var(--course-ink); }
     #os .os-bar { display: flex; align-items: center; gap: .7rem; margin: .55rem 0; }
     #os .os-lab { flex: 0 0 220px; font-size: .84rem; font-weight: 600; color: var(--text); }
     #os .os-track { flex: 1; height: 22px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }

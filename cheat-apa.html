@@ -29,10 +29,10 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <style>
     /* ---- poster / cheat-sheet layout (shared across the three cheat sheets) ---- */
-    :root { --pa: var(--secondary); --pa-soft: rgba(20,184,166,.13); }
+    :root { --pa: var(--secondary); --pa-ink: var(--secondary-ink); --pa-soft: rgba(20,184,166,.13); }
     .cheat-wrap { max-width: 1040px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
     .cheat-actions { display:flex; gap:.6rem; flex-wrap:wrap; align-items:center; margin-bottom:1.1rem; }
     .cheat-actions .hint { color: var(--text-faint); font-size:.85rem; }
@@ -43,21 +43,21 @@
     }
     .poster-head { display:flex; align-items:center; gap:.9rem; border-bottom:3px solid var(--pa); padding-bottom:.7rem; margin-bottom:1.1rem; }
     .ph-capy { flex-shrink:0; }
-    .poster-eyebrow { font-size:.7rem; text-transform:uppercase; letter-spacing:.12em; color:var(--pa); font-weight:700; }
+    .poster-eyebrow { font-size:.7rem; text-transform:uppercase; letter-spacing:.12em; color:var(--pa-ink); font-weight:700; }
     .poster-head h1 { font-size:1.5rem; margin:.12rem 0 0; line-height:1.12; }
     .poster-head p { margin:.2rem 0 0; color:var(--text-muted); font-size:.9rem; }
     .poster-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(330px,100%),1fr)); gap:1.15rem 1.6rem; }
     .pcard { break-inside:avoid; }
-    .pcard h2 { font-size:.82rem; text-transform:uppercase; letter-spacing:.05em; color:var(--pa); margin:0 0 .4rem; border-bottom:1px solid var(--border); padding-bottom:.25rem; }
+    .pcard h2 { font-size:.82rem; text-transform:uppercase; letter-spacing:.05em; color:var(--pa-ink); margin:0 0 .4rem; border-bottom:1px solid var(--border); padding-bottom:.25rem; }
     .ptable { width:100%; border-collapse:collapse; font-size:.83rem; }
     .ptable th { text-align:left; font-size:.63rem; text-transform:uppercase; letter-spacing:.04em; color:var(--text-faint); font-weight:600; padding:.15rem .45rem; }
     .ptable td { padding:.24rem .45rem; border-top:1px solid var(--border); color:var(--text-muted); vertical-align:top; }
     .ptable td.t { color:var(--text); font-weight:600; white-space:nowrap; }
     .rep { color:var(--text); }
     .rep em { font-style:italic; }
-    .yes { color:var(--success); font-weight:700; }
-    .no { color:#ef4444; font-weight:700; }
-    .sec { display:inline-block; font-size:.66rem; font-weight:700; color:var(--pa); background:var(--pa-soft); border-radius:5px; padding:.03rem .32rem; white-space:nowrap; text-decoration:none; }
+    .yes { color:var(--ok-ink); font-weight:700; }
+    .no { color:var(--bad-ink); font-weight:700; }
+    .sec { display:inline-block; font-size:.66rem; font-weight:700; color:var(--pa-ink); background:var(--pa-soft); border-radius:5px; padding:.03rem .32rem; white-space:nowrap; text-decoration:none; }
     a.sec:hover { text-decoration:underline; }
     .pnote { font-size:.8rem; color:var(--text-muted); line-height:1.5; }
     .pnote strong { color:var(--text); }

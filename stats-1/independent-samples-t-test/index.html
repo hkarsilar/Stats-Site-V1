@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-1.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Independent Samples t-Test", "description": "Comparing two groups is a tug-of-war between the gap in their means and the noise within them. Adjust both to see how t and the p-value respond.", "url": "https://statscapybara.com/stats-1/independent-samples-t-test/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Introduction to Statistics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Independent Samples t-Test", "item": "https://statscapybara.com/stats-1/independent-samples-t-test/"}]}]
   </script>
@@ -313,7 +313,7 @@
       document.getElementById("stat-p").textContent = p < 0.001 ? "< 0.001" : p.toFixed(3);
       var dec = document.getElementById("stat-dec");
       dec.textContent = reject ? "Significant difference" : "Not significant";
-      dec.style.color = reject ? "#22c55e" : VIZ.css("--text");
+      dec.style.color = reject ? "var(--ok-ink)" : VIZ.css("--text");
       // "p < .001", not the "p = < .001" that "p = " + "< .001" used to print
       var pPhrase = function (v) { return v < 0.001 ? "p < .001" : "p = " + v.toFixed(3).replace(/^0/, ""); };
       var others = ["cons", "welch", "pool"].filter(function (m) { return m !== dfMode; });

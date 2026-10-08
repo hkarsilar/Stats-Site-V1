@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-ml.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Classification Metrics & the Accuracy Trap", "description": "The confusion matrix and the metrics built from it — precision, recall/sensitivity, specificity, F1 — and why accuracy is misleading when one class is rare.", "url": "https://statscapybara.com/ml/classification-metrics/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — ML & AI: Machine Learning for Researchers", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Classification Metrics & the Accuracy Trap", "item": "https://statscapybara.com/ml/classification-metrics/"}]}]
   </script>
@@ -76,7 +76,7 @@
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="cmviz">
           <p class="viz-title">🎯 Threshold, base rate, and the four boxes</p>
-          <p class="viz-sub">Two score distributions: <span style="color:var(--secondary);font-weight:700">healthy</span> people and people who <span style="color:#f97316;font-weight:700">have the condition</span>. The model calls everything to the <strong>right of the threshold</strong> "positive." Drag the threshold (or use the slider) and change how far apart the two groups are. To see the accuracy trap, lower the <em>prevalence</em> to that of a rare disease and move the threshold right: accuracy stays high while recall falls.</p>
+          <p class="viz-sub">Two score distributions: <span style="color:var(--secondary-ink);font-weight:700">healthy</span> people and people who <span style="color:var(--hl-ink);font-weight:700">have the condition</span>. The model calls everything to the <strong>right of the threshold</strong> "positive." Drag the threshold (or use the slider) and change how far apart the two groups are. To see the accuracy trap, lower the <em>prevalence</em> to that of a rare disease and move the threshold right: accuracy stays high while recall falls.</p>
 
           <div class="controls">
             <div class="control" style="flex:1;min-width:210px">
@@ -100,14 +100,14 @@
           <!-- confusion matrix -->
           <div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:.3rem;margin-top:.9rem;font-size:.82rem">
             <div></div>
-            <div style="text-align:center;font-weight:700;color:#f97316">Actually positive</div>
-            <div style="text-align:center;font-weight:700;color:var(--secondary)">Actually negative</div>
+            <div style="text-align:center;font-weight:700;color:var(--hl-ink)">Actually positive</div>
+            <div style="text-align:center;font-weight:700;color:var(--secondary-ink)">Actually negative</div>
             <div style="writing-mode:vertical-lr;transform:rotate(180deg);text-align:center;font-weight:700;color:var(--text-muted);padding:.2rem">Predicted +</div>
-            <div style="background:rgba(34,197,94,.14);border:1px solid #22c55e;border-radius:8px;padding:.55rem;text-align:center"><div style="font-weight:700;color:#16a34a">True positive</div><div id="cm-tp" style="font-size:1.25rem;font-weight:800">—</div></div>
-            <div style="background:rgba(239,68,68,.12);border:1px solid #ef4444;border-radius:8px;padding:.55rem;text-align:center"><div style="font-weight:700;color:#ef4444">False positive</div><div id="cm-fp" style="font-size:1.25rem;font-weight:800">—</div></div>
+            <div style="background:rgba(34,197,94,.14);border:1px solid #22c55e;border-radius:8px;padding:.55rem;text-align:center"><div style="font-weight:700;color:var(--ok-ink)">True positive</div><div id="cm-tp" style="font-size:1.25rem;font-weight:800">—</div></div>
+            <div style="background:rgba(239,68,68,.12);border:1px solid #ef4444;border-radius:8px;padding:.55rem;text-align:center"><div style="font-weight:700;color:var(--bad-ink)">False positive</div><div id="cm-fp" style="font-size:1.25rem;font-weight:800">—</div></div>
             <div style="writing-mode:vertical-lr;transform:rotate(180deg);text-align:center;font-weight:700;color:var(--text-muted);padding:.2rem">Predicted −</div>
-            <div style="background:rgba(239,68,68,.12);border:1px solid #ef4444;border-radius:8px;padding:.55rem;text-align:center"><div style="font-weight:700;color:#ef4444">False negative</div><div id="cm-fn" style="font-size:1.25rem;font-weight:800">—</div></div>
-            <div style="background:rgba(34,197,94,.14);border:1px solid #22c55e;border-radius:8px;padding:.55rem;text-align:center"><div style="font-weight:700;color:#16a34a">True negative</div><div id="cm-tn" style="font-size:1.25rem;font-weight:800">—</div></div>
+            <div style="background:rgba(239,68,68,.12);border:1px solid #ef4444;border-radius:8px;padding:.55rem;text-align:center"><div style="font-weight:700;color:var(--bad-ink)">False negative</div><div id="cm-fn" style="font-size:1.25rem;font-weight:800">—</div></div>
+            <div style="background:rgba(34,197,94,.14);border:1px solid #22c55e;border-radius:8px;padding:.55rem;text-align:center"><div style="font-weight:700;color:var(--ok-ink)">True negative</div><div id="cm-tn" style="font-size:1.25rem;font-weight:800">—</div></div>
           </div>
 
           <!-- metrics -->

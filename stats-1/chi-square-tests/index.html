@@ -45,12 +45,12 @@
       background: transparent; color: var(--text); }
     .ct-lab:hover { border-color: var(--border); }
     .ct-e, .ct-k { display: block; font-family: var(--mono); font-size: .68rem; line-height: 1.4; }
-    .ct-e { color: var(--text-faint); }
-    .ct-k { color: #f97316; font-weight: 700; }
+    .ct-e { color: var(--text-muted); }
+    .ct-k { color: var(--hl-ink); font-weight: 700; }
     .ct-tot { background: var(--surface-2); font-weight: 700; color: var(--text-muted); }
     .ct-legend { font-size: .78rem; color: var(--text-muted); margin: .1rem 0 .75rem; }
   </style>
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Chi-Square Tests", "description": "Chi-square tests work on counts, not means. Pull a contingency table away from independence and see chi-square climb as p falls.", "url": "https://statscapybara.com/stats-1/chi-square-tests/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Introduction to Statistics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Chi-Square Tests", "item": "https://statscapybara.com/stats-1/chi-square-tests/"}]}]
   </script>
@@ -334,7 +334,8 @@
           el = $("ct-td-" + i + "-" + j);
           if (el) {
             var share = (s.ok && s.chi > 0) ? (s.K[i][j] / s.chi) / even : 0;
-            var a = Math.max(0, Math.min(1, (share - 1) / 2)) * 0.42;
+            // capped at .24 so the E and contribution text in the cell stays ≥4.5:1
+            var a = Math.max(0, Math.min(1, (share - 1) / 2)) * 0.24;
             el.style.backgroundColor = a > 0.01 ? "rgba(249,115,22," + a.toFixed(3) + ")" : "";
           }
         }
@@ -350,7 +351,7 @@
       var cond = conditions(s);
       el = $("stat-cond");
       el.textContent = cond.text;
-      el.style.color = cond.ok ? "" : "#f97316";
+      el.style.color = cond.ok ? "" : "var(--hl-ink)";
       draw(s);
     }
 

@@ -32,16 +32,16 @@
   <style>
     /* ---- plan card ---- */
     .plan-card { border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem 1.2rem 1.3rem; background: var(--surface); }
-    .plan-eyebrow { font-family: var(--mono); font-size: .72rem; text-transform: uppercase; letter-spacing: .07em; color: var(--secondary); }
+    .plan-eyebrow { font-family: var(--mono); font-size: .72rem; text-transform: uppercase; letter-spacing: .07em; color: var(--secondary-ink); }
     .plan-name { font-size: 1.55rem; margin: .15rem 0 .45rem; line-height: 1.15; }
     .plan-why { color: var(--text-muted); margin: 0 0 .3rem; }
     .plan-sec { margin-top: 1.35rem; }
     .plan-sec > h4 { font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; color: var(--text-faint); margin: 0 0 .55rem; font-weight: 800; }
     .plan-sec ul { margin: 0; padding-left: 1.15rem; }
     .plan-sec li { margin: .3rem 0; color: var(--text-muted); }
-    .plan-sec li a, .plan-why a { color: var(--primary); font-weight: 600; }
+    .plan-sec li a, .plan-why a { color: var(--primary-ink); font-weight: 600; }
     .plan-n { display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap; }
-    .plan-n .big { font-family: var(--mono); font-size: 2.1rem; font-weight: 800; color: var(--primary); line-height: 1.05; }
+    .plan-n .big { font-family: var(--mono); font-size: 2.1rem; font-weight: 800; color: var(--primary-ink); line-height: 1.05; }
     .plan-n .sub { color: var(--text-faint); font-size: .9rem; }
     .es-ctl { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .8rem 1rem; margin-bottom: .8rem; }
     .es-ctl .control { display: flex; flex-direction: column; gap: .3rem; }
@@ -77,7 +77,7 @@
       .apa-skel { border-left: 3px solid #222; background: #f4f4f4; }
     }
   </style>
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",

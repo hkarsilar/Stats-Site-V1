@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-3.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Effect Size & Power", "description": "Significance says whether an effect exists; effect size says how big; power says whether you could detect it. See how effect size and sample size drive power.", "url": "https://statscapybara.com/stats-3/effect-size-and-power/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced & Elective Topics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Effect Size & Power", "item": "https://statscapybara.com/stats-3/effect-size-and-power/"}]}]
   </script>
@@ -364,7 +364,7 @@
       document.getElementById("n-val").textContent = "n = " + n;
       var pe = document.getElementById("stat-power");
       pe.textContent = (pw * 100).toFixed(pw < 0.995 ? 0 : 1) + "%";
-      pe.style.color = pw >= 0.8 ? GREEN : pw >= 0.5 ? ORANGE : RED;
+      pe.style.color = pw >= 0.8 ? "var(--ok-ink)" : pw >= 0.5 ? "var(--hl-ink)" : "var(--bad-ink)";
       document.getElementById("stat-beta").textContent = ((1 - pw) * 100).toFixed(0) + "%";
       document.getElementById("stat-crit").textContent = (tails === 2 ? "±" : "") + c.toFixed(2);
       document.getElementById("stat-n80").textContent = nn === null ? "∞" : "≈ " + nn;

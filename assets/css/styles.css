@@ -34,13 +34,45 @@
   --secondary: #14b8a6;
   --secondary-light: #2dd4bf;
   --success: #22c55e;
-  /* in-prose link color. Prose links are Wikipedia-style — colored, no
-     underline at rest (underline on hover) — so color alone carries the
-     "this is a link" signal, and it must clear TWO WCAG AA gates at once:
-     ≥4.5:1 vs every light surface (readability of the link text) AND ≥3:1
-     vs body text #0f172a (so the link is perceivable without the underline;
-     raw --primary #6366f1 is only ~2.9:1 vs body text). Indigo, brand-close. */
+  /* in-prose link color: ≥4.5:1 on every light surface. Prose links carry
+     a thin underline at rest (P123), so color is no longer the only cue.
+     It could not be: lesson paragraphs are --text-muted, and no color sits
+     both ≥3:1 from #475569 and ≥4.5:1 from white (tools/contrast.js). */
   --link: #5850ec;
+  /* the underline that marks a prose link: softer than the text, still
+     ≥3:1 on every surface, since it is the cue that identifies the link */
+  --link-line: color-mix(in srgb, var(--link) 75%, transparent);
+
+  /* INK TOKENS (P123). The accents above are the brand and the canvas
+     palette; most of them are too light to be text on white (teal 2.5:1,
+     green 2.3:1, orange 2.8:1, even indigo 4.47:1). Every accent-colored
+     piece of TEXT reads an -ink token instead: the same hue, deep enough
+     for ≥4.5:1 on white, --bg-soft, --surface-2 and a 14% tint of itself
+     (the sidebar's active row, the card headers). Dark mode lifts each one
+     the other way. tools/contrast.js checks every pair. */
+  --primary-ink: #4f46e5;
+  --secondary-ink: #0d7068;
+  --hl-ink: #b23c0b;        /* orange highlights and second series */
+  --bad-ink: #b91c1c;       /* red: wrong, harm, flagged */
+  --warn-ink: #a34b08;      /* amber: partial, getting there */
+  --violet-ink: #6d28d9;    /* the checks block */
+  /* course accents as text: eyebrow, sidebar, cards, prev/next. site.js
+     points --accent-ink / --sb-ink at these by course slug. */
+  --ink-stats-1: var(--primary-ink);
+  --ink-stats-2: var(--secondary-ink);
+  --ink-stats-3: #167536;
+  --ink-methods: #a34b08;
+  --ink-data: #0c6b85;
+  --ink-ethics: #475569;
+  --ink-ml: #7e22ce;
+  --ink-writing: #477310;
+  /* backgrounds that carry white text (buttons, the active tab of a
+     switch): white on raw --primary is 4.47:1, on teal 3.74:1 */
+  --primary-strong: #585bef;
+  --secondary-strong: #0f766e;
+  --ok-strong: #15803d;
+  --bad-strong: #dc2626;
+  --hl-strong: #c2410c;
   /* accent for the Toolbox dropdown group headers. Indigo, not green: the
      green was the one place in the chrome that stepped outside the site's
      blue/indigo/violet family, so the four group labels read as a foreign
@@ -49,11 +81,9 @@
      the dark theme lifts to #818cf8 for the same reason --text-faint does.
      Tuned per-theme exactly like --link. */
   --group-head: #5850ec;
-  /* success ink — the AA-safe green that --group-head used to carry, kept
-     for the "copied" confirmation check, where green means "that worked"
-     and must NOT follow the header accent. --success #22c55e is only
-     ~2.3:1 on white, hence the deeper light value. */
-  --ok-ink: #15803d;
+  /* success ink: green text for "that worked", "correct", "significant".
+     --success #22c55e is only ~2.3:1 on white, hence the deeper value. */
+  --ok-ink: #167536;
 
   /* surfaces (light) */
   --bg: #ffffff;
@@ -78,6 +108,10 @@
   --mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
 }
 
+/* screen only: a page printed from dark mode takes the light tokens, so
+   the inks below never print pale on white paper (the print block at the
+   end then sets its own light surfaces) */
+@media not print {
 html[data-theme="dark"] {
   --bg: #0b1120;
   --bg-soft: #0f172a;
@@ -89,18 +123,28 @@ html[data-theme="dark"] {
   /* dark faint lightened to #94a3b8 (≥5.9:1 on every dark surface); the old
      #64748b was only ~3.2–3.9:1. See the light-mode note above. */
   --text-faint: #94a3b8;
-  /* dark prose link — same dual gate: ≥4.5:1 vs the dark bg/surface links sit
-     on AND ≥3:1 vs body text #e7ecf5 (--primary-light #818cf8 is only ~2.5:1
-     vs that near-white text). A touch deeper than --primary-light to win it. */
-  --link: #6f7bf2;
-  /* lifted indigo reads clearly on the dark dropdown surface (~5.8:1);
-     --link's #6f7bf2 also passes but only at ~4.8:1, and these are small
-     uppercase labels, so the brighter of the two brand indigos wins here */
+  /* dark prose link: ≥4.5:1 on every dark surface, --surface-2 included
+     (the old #6f7bf2 was 4.18:1 there). The underline is the link cue. */
+  --link: #8f9af6;
+  --primary-ink: #a5b4fc;
+  --secondary-ink: #2dd4bf;
+  --hl-ink: #fb923c;
+  --bad-ink: #f87171;
+  --warn-ink: #fbbf24;
+  --violet-ink: #c4b5fd;
+  --ink-stats-3: #4ade80;
+  --ink-methods: #fbbf24;
+  --ink-data: #22d3ee;
+  --ink-ethics: #94a3b8;
+  --ink-ml: #c084fc;
+  --ink-writing: #a3e635;
+  /* lifted indigo reads clearly on the dark dropdown surface (~5.8:1) */
   --group-head: #818cf8;
   /* bright green reads clearly on the dark surfaces (~6.5:1) */
   --ok-ink: #22c55e;
   --shadow: 0 1px 3px rgba(0, 0, 0, .4);
   --shadow-lg: 0 10px 30px -10px rgba(0, 0, 0, .6);
+}
 }
 
 * { box-sizing: border-box; }
@@ -121,28 +165,30 @@ body {
 
 a { color: inherit; text-decoration: none; }
 
-/* In-prose links follow the Wikipedia model: colored but NOT bold and NOT
-   underlined at rest, so they don't interrupt a paragraph read at a calm
-   pace. The underline appears on hover (and the global focus ring on focus)
-   to confirm they're clickable. Bold in prose stays reserved for real
-   <strong> emphasis — the link rule never adds weight. Scope: prose
-   containers inside a .lesson article (every lesson, guide, and tool page
-   wraps its copy in one). Excluded: .btn (links dressed as buttons) and the
-   two in-article link lists that are navigation, not prose — the "On this
-   page" .lesson-toc and datasets' .ds-index jump chips (and the course
-   landing pages' .chome-list lesson list, chrome in li-shaped clothing).
-   --link is tuned
-   per-theme to clear AA both vs the surface and vs the body text, since at
-   rest color is the only cue (see the palette notes). Chrome elsewhere
-   (nav, cards, sidebar, prev/next, interactive-box CTAs) keeps its own,
-   heavier styling — this rule deliberately doesn't touch it. */
+/* In-prose links: colored, never bold, and underlined at rest by a thin
+   line a shade softer than the link text (--link-line), set below the
+   baseline so it clears the descenders. P54 left them bare until hover so
+   a paragraph read calmly, which made color the only cue, and WCAG 1.4.1
+   asks for a cue besides color: --link sat 1.36:1 (light) and 1.71:1 (dark) from the
+   --text-muted paragraphs around it. No link color can fix that (see the
+   palette note), so the cue is the underline. Hover darkens the line to
+   the full link color. Bold in prose stays reserved for real <strong>.
+   Scope: prose containers inside a .lesson article (every lesson, guide,
+   and tool page wraps its copy in one). Excluded: .btn (links dressed as
+   buttons) and the in-article link lists that are navigation, not prose:
+   the "On this page" .lesson-toc, datasets' .ds-index jump chips and the
+   course landing pages' .chome-list. Chrome elsewhere (nav, cards, sidebar,
+   prev/next, interactive-box CTAs) keeps its own styling. */
 .lesson :is(p, li, td, th, .callout, .faq-a) a:not(.btn, .lesson-toc a, .ds-index a, .chome-list a) {
   color: var(--link);
-  text-underline-offset: 2px;
-  transition: color .15s;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--link-line);
+  text-underline-offset: .22em;
+  transition: color .15s, text-decoration-color .15s;
 }
 .lesson :is(p, li, td, th, .callout, .faq-a) a:not(.btn, .lesson-toc a, .ds-index a, .chome-list a):hover {
-  text-decoration: underline;
+  text-decoration-color: currentColor;
 }
 
 h1, h2, h3, h4 { line-height: 1.2; letter-spacing: -0.02em; }
@@ -172,7 +218,7 @@ h1, h2, h3, h4 { line-height: 1.2; letter-spacing: -0.02em; }
 .nav-link:hover { color: var(--text); background: var(--surface-2); }
 /* the tab you're currently on */
 .nav-link.active {
-  color: var(--primary);
+  color: var(--primary-ink);
   background: color-mix(in srgb, var(--primary) 10%, transparent);
 }
 
@@ -333,10 +379,10 @@ main { padding-top: var(--nav-h); }
   border: 1px solid transparent; transition: .18s; text-align: center;
 }
 .btn-primary {
-  background: var(--primary); color: #fff;
+  background: var(--primary-strong); color: #fff;
   box-shadow: 0 8px 20px -8px color-mix(in srgb, var(--primary) 60%, transparent);
 }
-.btn-primary:hover { background: color-mix(in srgb, var(--primary) 90%, #000); transform: translateY(-1px); }
+.btn-primary:hover { background: color-mix(in srgb, var(--primary-strong) 90%, #000); transform: translateY(-1px); }
 .btn-ghost { background: var(--surface); color: var(--text); border-color: var(--border); box-shadow: var(--shadow); }
 .btn-ghost:hover { transform: translateY(-1px); box-shadow: var(--shadow-lg); }
 .btn svg { width: 1rem; height: 1rem; }
@@ -370,7 +416,9 @@ main { padding-top: var(--nav-h); }
 .hero-inner { position: relative; z-index: 1; max-width: 52rem; padding: 5rem 1.5rem; }
 .hero h1 { font-size: clamp(2.25rem, 6vw, 4rem); font-weight: 800; margin: 0; }
 .hero h1 .see { color: var(--primary); }
-.hero h1 .touch { color: var(--secondary); }
+/* large text needs 3:1: raw teal is 2.48:1 on white, this mix ≥3.4:1
+   even over the hero's tinted gradient (and lighter in dark mode) */
+.hero h1 .touch { color: color-mix(in srgb, var(--secondary) 70%, var(--text)); }
 .hero p.lead { font-size: clamp(1.05rem, 2.2vw, 1.3rem); color: var(--text-muted); margin: 1.5rem auto 0; max-width: 38rem; }
 .hero-cta { margin-top: 2.25rem; display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; }
 .hero-eyebrow { display: inline-flex; align-items: center; gap: .45rem; font-weight: 600; color: var(--text-muted); font-size: .98rem; margin: 0 0 .75rem; }
@@ -379,7 +427,7 @@ main { padding-top: var(--nav-h); }
 /* the hero slider is the same sitewide family (see "range inputs" below),
    just bigger and orange */
 .hero-slider input[type="range"] { --range-accent: #f97316; --range-thumb: 26px; width: min(34rem, 92%); }
-.hero-slider label { display: block; margin-top: .7rem; color: #f97316; font-weight: 700; font-size: 1.02rem; }
+.hero-slider label { display: block; margin-top: .7rem; color: var(--hl-ink); font-weight: 700; font-size: 1.02rem; }
 
 /* ---------- range inputs: one sitewide family ----------
    Every slider on the site (lessons, tools, the hero) shares this look: a
@@ -471,7 +519,7 @@ input[type="range"]:active::-moz-range-thumb { cursor: grabbing; }
   padding: 1.1rem 1.4rem; border-bottom: 1px solid var(--border);
   background: color-mix(in srgb, var(--accent, var(--primary)) 6%, transparent);
 }
-.course-card .ch h3 { margin: 0; font-size: 1.15rem; color: color-mix(in srgb, var(--accent, var(--primary)) 70%, var(--text)); }
+.course-card .ch h3 { margin: 0; font-size: 1.15rem; color: var(--accent-ink, var(--primary-ink)); }
 /* the card title links to the course landing page (P61) — same color as
    the plain heading it replaced, underline only on hover */
 .course-card .ch h3 a { color: inherit; text-decoration: none; }
@@ -483,7 +531,7 @@ input[type="range"]:active::-moz-range-thumb { cursor: grabbing; }
   font-size: .92rem; color: var(--text-muted); transition: .12s;
 }
 .course-card li a:hover { background: var(--surface-2); color: var(--text); }
-.sec-num { font-family: var(--mono); font-size: .72rem; color: color-mix(in srgb, var(--accent, var(--primary)) 80%, var(--text)); display: inline-block; min-width: 2.2rem; margin-right: .45rem; }
+.sec-num { font-family: var(--mono); font-size: .72rem; color: var(--accent-ink, var(--primary-ink)); display: inline-block; min-width: 2.2rem; margin-right: .45rem; }
 .sec-dot { width: .55rem; height: .55rem; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; }
 li a:hover .sec-dot { border-color: var(--accent, var(--primary)); }
 
@@ -523,14 +571,17 @@ li a:hover .sec-dot { border-color: var(--accent, var(--primary)); }
 }
 .about .bio { flex: 1; min-width: 16rem; }
 .about .bio p { color: var(--text-muted); }
-/* bio links use the same calm in-prose treatment: colored, no bold,
-   underline on hover only (--link keeps AA contrast in both themes) */
-.about .bio p a {
+/* bio links use the in-prose treatment: colored, no bold, a thin
+   underline at rest that darkens on hover */
+.about .bio p a, .a11y-statement a {
   color: var(--link);
-  text-underline-offset: 2px;
-  transition: color .15s;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--link-line);
+  text-underline-offset: .22em;
+  transition: color .15s, text-decoration-color .15s;
 }
-.about .bio p a:hover { text-decoration: underline; }
+.about .bio p a:hover, .a11y-statement a:hover { text-decoration-color: currentColor; }
 .about-links { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.1rem; }
 .about-link {
   display: inline-flex; align-items: center; gap: .45rem;
@@ -581,7 +632,7 @@ li a:hover .sec-dot { border-color: var(--accent, var(--primary)); }
 .sidebar summary {
   display: flex; align-items: center; gap: .45rem; cursor: pointer; list-style: none;
   font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800;
-  color: color-mix(in srgb, var(--sb-accent, var(--text-faint)) 65%, var(--text));
+  color: var(--sb-ink, var(--text-muted));
   padding: .5rem .6rem; border-radius: 8px; margin: .2rem 0; user-select: none; transition: .12s;
 }
 .sidebar summary::-webkit-details-marker { display: none; }
@@ -597,10 +648,12 @@ li a:hover .sec-dot { border-color: var(--accent, var(--primary)); }
 .sidebar a:hover { background: var(--surface-2); color: var(--text); }
 .sidebar a.active {
   background: color-mix(in srgb, var(--sb-accent, var(--primary)) 13%, transparent);
-  color: color-mix(in srgb, var(--sb-accent, var(--primary)) 75%, var(--text));
+  color: var(--sb-ink, var(--primary-ink));
   font-weight: 650;
 }
 .sidebar a .n { font-family: var(--mono); font-size: .72rem; color: var(--text-faint); margin-right: .4rem; }
+/* on the tinted active row --text-faint drops to 4.4:1, so the number takes the row's ink */
+.sidebar a.active .n { color: inherit; }
 /* the resident capybara, with this page's words of wisdom — sits directly
    under the highlighted lesson in the sidebar so it's always in view.
    Every page tells a different one; deliberately visible. */
@@ -618,18 +671,19 @@ li a:hover .sec-dot { border-color: var(--accent, var(--primary)); }
 /* each course gets its own chrome accent (eyebrow, prev/next, sidebar);
    canvas visuals keep reading --primary etc. directly, so this is
    presentation-only and never changes the math drawings */
-body[data-course="stats-1"] { --course-accent: var(--primary); }
-body[data-course="stats-2"] { --course-accent: var(--secondary); }
-body[data-course="stats-3"] { --course-accent: var(--success); }
-body[data-course="methods"] { --course-accent: #f59e0b; }
-body[data-course="data"] { --course-accent: #06b6d4; }
-body[data-course="ethics"] { --course-accent: #64748b; }
-body[data-course="ml"] { --course-accent: #a855f7; }
-body[data-course="writing"] { --course-accent: #84cc16; }
+/* --course-ink is the same hue as text (see the INK TOKENS note) */
+body[data-course="stats-1"] { --course-accent: var(--primary); --course-ink: var(--ink-stats-1); }
+body[data-course="stats-2"] { --course-accent: var(--secondary); --course-ink: var(--ink-stats-2); }
+body[data-course="stats-3"] { --course-accent: var(--success); --course-ink: var(--ink-stats-3); }
+body[data-course="methods"] { --course-accent: #f59e0b; --course-ink: var(--ink-methods); }
+body[data-course="data"] { --course-accent: #06b6d4; --course-ink: var(--ink-data); }
+body[data-course="ethics"] { --course-accent: #64748b; --course-ink: var(--ink-ethics); }
+body[data-course="ml"] { --course-accent: #a855f7; --course-ink: var(--ink-ml); }
+body[data-course="writing"] { --course-accent: #84cc16; --course-ink: var(--ink-writing); }
 
 .lesson-eyebrow {
   font-family: var(--mono); font-size: .8rem; font-weight: 700;
-  color: color-mix(in srgb, var(--course-accent, var(--primary)) 78%, var(--text));
+  color: var(--course-ink, var(--primary-ink));
 }
 .lesson h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); margin: .25rem 0 1.5rem; }
 .lesson h2 { font-size: 1.5rem; margin: 2.5rem 0 .75rem; }
@@ -699,7 +753,7 @@ body[data-course="writing"] { --course-accent: #84cc16; }
 
 /* prev / next nav */
 .lesson-nav { display: flex; justify-content: space-between; gap: 1rem; margin-top: 3.5rem; padding-top: 1.75rem; border-top: 1px solid var(--border); }
-.lesson-nav a { display: flex; align-items: center; gap: .7rem; color: color-mix(in srgb, var(--course-accent, var(--primary)) 78%, var(--text)); font-weight: 600; max-width: 48%; transition: transform .15s; }
+.lesson-nav a { display: flex; align-items: center; gap: .7rem; color: var(--course-ink, var(--primary-ink)); font-weight: 600; max-width: 48%; transition: transform .15s; }
 .lesson-nav a.prev:hover { transform: translateX(-2px); }
 .lesson-nav a.next:hover { transform: translateX(2px); }
 .lesson-nav a:active { transform: none; }
@@ -733,7 +787,7 @@ body[data-course="writing"] { --course-accent: #84cc16; }
 }
 .chome-list a { color: var(--text-muted); font-weight: 550; }
 .chome-list a:hover { background: var(--surface-2); color: var(--text); }
-.chome-list .sec-num { color: color-mix(in srgb, var(--course-accent, var(--primary)) 80%, var(--text)); }
+.chome-list .sec-num { color: var(--course-ink, var(--primary-ink)); }
 .chome-list a.done { color: var(--text-faint); }
 .chome-list a.done .sec-check { opacity: 1; }
 .chome-list .chome-soon { color: var(--text-faint); opacity: .65; }
@@ -782,7 +836,7 @@ body[data-course="writing"] { --course-accent: #84cc16; }
    the .viz pushes a narrow phone sideways. The .seg then scrolls inside it. */
 .control:has(.seg) { min-width: 0; }
 .control label { font-size: .78rem; color: var(--text-muted); font-weight: 600; }
-.control .val { font-family: var(--mono); color: var(--primary); }
+.control .val { font-family: var(--mono); color: var(--primary-ink); }
 .control input[type="range"] { width: 11rem; accent-color: var(--primary); }
 /* Narrow-screen behavior, generalizing apa.html's #ana-seg pattern: a seg
    with several tabs can be wider than a 360px phone, and it clips, so the
@@ -793,7 +847,7 @@ body[data-course="writing"] { --course-accent: #84cc16; }
 .seg { display: inline-flex; min-width: 0; max-width: 100%; border: 1px solid var(--border); border-radius: 10px; overflow-x: auto; overflow-y: hidden; }
 .seg button { padding: .4rem .8rem; font-size: .82rem; font-weight: 600; white-space: nowrap; background: var(--surface); color: var(--text-muted); border: none; cursor: pointer; transition: .12s; }
 .seg button + button { border-left: 1px solid var(--border); }
-.seg button.active { background: var(--primary); color: #fff; }
+.seg button.active { background: var(--primary-strong); color: #fff; }
 
 .stat-row { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-top: 1rem; }
 .stat { display: flex; flex-direction: column; }
@@ -876,7 +930,7 @@ body[data-course="writing"] { --course-accent: #84cc16; }
 .skip-link {
   position: fixed; top: .5rem; left: .5rem; z-index: 100;
   transform: translateY(-160%); transition: transform .15s;
-  background: var(--primary); color: #fff; font-weight: 650;
+  background: var(--primary-strong); color: #fff; font-weight: 650;
   padding: .6rem 1rem; border-radius: 10px; box-shadow: var(--shadow-lg);
 }
 .skip-link:focus { transform: none; }
@@ -893,8 +947,6 @@ body[data-course="writing"] { --course-accent: #84cc16; }
 .a11y-statement h3 { margin: 0 0 .4rem; font-size: 1.05rem; }
 .a11y-statement p { margin: 0 0 .5rem; color: var(--text-muted); font-size: .92rem; }
 .a11y-statement p:last-child { margin-bottom: 0; }
-.a11y-statement a { color: var(--link); text-underline-offset: 2px; }
-.a11y-statement a:hover { text-decoration: underline; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -981,12 +1033,12 @@ body[data-course="writing"] { --course-accent: #84cc16; }
 
 /* sidebar + curriculum completion marks — finished lessons fade back
    so the lessons still ahead of you are the ones that stand out */
-.sec-check { margin-left: auto; font-size: .8rem; line-height: 1; color: var(--success); opacity: 0; }
+.sec-check { margin-left: auto; font-size: .8rem; line-height: 1; color: var(--ok-ink); opacity: 0; }
 .course-card li a.done .sec-check { opacity: 1; }
 .course-card li a.done .sec-dot { border-color: var(--success); background: var(--success); }
 .course-card li a.done { color: var(--text-faint); }
 .course-card li a.visited .sec-dot { border-color: var(--accent, var(--primary)); }
-.sidebar a .tick { float: right; color: var(--success); font-size: .8rem; }
+.sidebar a .tick { float: right; color: var(--ok-ink); font-size: .8rem; }
 .sidebar a.done { color: var(--text-faint); }
 
 /* resume banner (homepage) */
@@ -1019,7 +1071,7 @@ body[data-course="writing"] { --course-accent: #84cc16; }
   width: 1.05rem; height: 1.05rem; border-radius: 5px; border: 2px solid var(--border);
   display: inline-flex; align-items: center; justify-content: center; font-size: .7rem; color: #fff;
 }
-.lesson-done.done { border-color: var(--success); color: var(--success); }
+.lesson-done.done { border-color: var(--success); color: var(--ok-ink); }
 .lesson-done.done .box { background: var(--success); border-color: var(--success); }
 .lesson-progress-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 1.75rem 0 .5rem; }
 .lph-actions { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
@@ -1065,7 +1117,7 @@ body[data-course="writing"] { --course-accent: #84cc16; }
 .gloss-item > summary:hover { background: color-mix(in srgb, var(--primary) 7%, transparent); }
 .gloss-item[open] > summary { border-bottom: 1px solid var(--border); }
 .gloss-def { padding: .75rem 1.15rem .85rem; margin: 0; color: var(--text-muted); font-size: .93rem; line-height: 1.6; }
-.gloss-item .gloss-link { font-size: .78rem; font-weight: 600; color: var(--primary); }
+.gloss-item .gloss-link { font-size: .78rem; font-weight: 600; color: var(--primary-ink); }
 .gloss-letter {
   font-family: var(--mono); font-size: .8rem; color: var(--text-faint);
   text-transform: uppercase; letter-spacing: .08em; margin: 1.5rem 0 .35rem;
@@ -1089,7 +1141,7 @@ body[data-course="writing"] { --course-accent: #84cc16; }
   display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
   min-width: 1.4rem; padding: .22rem .2rem; border-radius: 7px;
   font-family: var(--mono); font-size: .78rem; font-weight: 600;
-  color: var(--primary); text-decoration: none; transition: .12s;
+  color: var(--primary-ink); text-decoration: none; transition: .12s;
 }
 .gloss-alpha a:hover { background: color-mix(in srgb, var(--primary) 14%, transparent); }
 .gloss-alpha .gloss-alpha-off { color: var(--text-faint); opacity: .45; pointer-events: none; }
@@ -1212,7 +1264,7 @@ body.embed-mode .lesson { max-width: none; margin: 0 auto; }
   text-align: center; font-size: .82rem; color: var(--text-muted);
   border-top: 1px solid var(--border);
 }
-.embed-foot a { color: var(--primary); font-weight: 650; text-decoration: none; }
+.embed-foot a { color: var(--primary-ink); font-weight: 650; text-decoration: none; }
 .embed-foot a:hover { text-decoration: underline; }
 
 /* ============================================================
@@ -1289,7 +1341,7 @@ body.embed-mode .lesson { max-width: none; margin: 0 auto; }
   display: inline-flex; align-items: center; justify-content: center;
   width: 1.25rem; height: 1.25rem; border-radius: 50%; flex-shrink: 0;
   font-family: var(--mono); font-size: .68rem; font-weight: 700;
-  color: color-mix(in srgb, var(--course-accent, var(--primary)) 80%, var(--text));
+  color: var(--course-ink, var(--primary-ink));
   background: color-mix(in srgb, var(--course-accent, var(--primary)) 12%, transparent);
 }
 .lesson-toc a:hover {
@@ -1328,24 +1380,24 @@ body.embed-mode .lesson { max-width: none; margin: 0 auto; }
 }
 .wt-opt::after {
   content: "→"; position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);
-  color: var(--primary); font-weight: 700; opacity: 0; transition: .13s;
+  color: var(--primary-ink); font-weight: 700; opacity: 0; transition: .13s;
 }
 .wt-opt:hover::after { opacity: 1; }
 /* No hover on a finger — show the "this is tappable" arrow permanently there. */
 @media (pointer: coarse) { .wt-opt::after { opacity: 1; } }
 .wt-opt:hover { border-color: var(--primary); transform: translateY(-1px); box-shadow: var(--shadow); }
 /* the cheat-sheet map: test names are real links to their lessons */
-.wt-map td a { color: var(--primary); font-weight: 600; }
+.wt-map td a { color: var(--primary-ink); font-weight: 600; }
 .wt-map td a:hover { text-decoration: underline; }
 .wt-opt-label { font-weight: 650; font-size: .97rem; }
 .wt-opt-desc { font-size: .82rem; color: var(--text-muted); }
 .wt-result { padding: .35rem 0 .5rem; }
-.wt-result-eyebrow { font-family: var(--mono); font-size: .75rem; color: var(--secondary); text-transform: uppercase; letter-spacing: .06em; }
+.wt-result-eyebrow { font-family: var(--mono); font-size: .75rem; color: var(--secondary-ink); text-transform: uppercase; letter-spacing: .06em; }
 .wt-result-name { font-size: 1.5rem; margin: .2rem 0 .5rem; }
 .wt-result-why { color: var(--text-muted); margin: 0 0 1.1rem; }
 .wt-alts-label { margin: 1.2rem 0 .3rem; font-size: .85rem; font-weight: 700; color: var(--text); }
 .wt-alts { margin: 0; padding-left: 1.2rem; font-size: .9rem; color: var(--text-muted); }
-.wt-alts a { color: var(--primary); font-weight: 600; }
+.wt-alts a { color: var(--primary-ink); font-weight: 600; }
 
 /* ============================================================
    "CHECK YOUR UNDERSTANDING" (auto-injected on lessons)
@@ -1365,7 +1417,7 @@ details.checks[open] .ck-cta .chev { transform: rotate(180deg); }
 details.checks[open] summary.ck-head { border-bottom: 1px solid var(--border); }
 details.checks[open] .ck-open-label { display: none; }
 .ck-title { font-weight: 700; font-size: .9rem; }
-.ck-score { font-family: var(--mono); font-size: .8rem; font-weight: 700; color: var(--success); }
+.ck-score { font-family: var(--mono); font-size: .8rem; font-weight: 700; color: var(--ok-ink); }
 .ck-q { padding: .9rem 1.1rem .35rem; }
 .ck-q + .ck-q { border-top: 1px solid var(--border); }
 .ck-text { margin: 0 0 .6rem; font-weight: 650; color: var(--text); font-size: .95rem; }
@@ -1380,8 +1432,8 @@ details.checks[open] .ck-open-label { display: none; }
 .ck-opt.right { border-color: #22c55e; background: color-mix(in srgb, #22c55e 14%, transparent); color: var(--text); }
 .ck-opt.wrong { border-color: #ef4444; background: color-mix(in srgb, #ef4444 12%, transparent); }
 .ck-fb { min-height: 1rem; margin: .6rem 0; font-size: .88rem; color: var(--text-muted); }
-.ck-fb .ok { color: #22c55e; }
-.ck-fb .no { color: #ef4444; }
+.ck-fb .ok { color: var(--ok-ink); }
+.ck-fb .no { color: var(--bad-ink); }
 /* checks block is hidden in print — see the main PRINT block above */
 
 /* ============================================================
@@ -1477,7 +1529,7 @@ details[open]::details-content { block-size: auto; }
 .tc-copy:hover { color: var(--text); background: var(--surface-2); }
 /* shared "Copied!" flash — window.SC.copied(btn) in site.js applies this
    class + swaps the label for 1.4s on every copy button sitewide */
-.tc-copy.copied, button.copied { color: var(--success); border-color: var(--success); }
+.tc-copy.copied, button.copied { color: var(--ok-ink); border-color: var(--success); }
 .try-code pre {
   margin: 0; padding: 1rem 1.1rem; overflow-x: auto; background: var(--bg-soft);
   font-family: var(--mono); font-size: .8rem; line-height: 1.6; color: var(--text);
@@ -1505,7 +1557,7 @@ details[open]::details-content { block-size: auto; }
 .sw-title { font-weight: 700; font-size: .9rem; }
 .sw-steps { margin: 0; padding: .9rem 1.1rem .9rem 2.3rem; font-size: .9rem; color: var(--text-muted); }
 .sw-steps li { margin: .35rem 0; line-height: 1.55; }
-.sw-steps li::marker { color: var(--block-accent, var(--primary)); font-weight: 700; }
+.sw-steps li::marker { color: var(--block-ink, var(--primary-ink)); font-weight: 700; }
 .sw-steps strong, .apa-tips strong { color: var(--text); }
 .apa-label { margin: .8rem 1.1rem 0; font-size: .78rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--text-faint); }
 .apa-quote {
@@ -1526,9 +1578,11 @@ details[open]::details-content { block-size: auto; }
    checks = violet, SPSS/JASP = teal, R/Python = green, APA = orange.
    Scoped so the .seg switches inside .viz controls stay indigo.
    ============================================================ */
-.checks     { --block-accent: #8b5cf6; }
-.software   { --block-accent: #0d9488; }
-.try-code   { --block-accent: #16a34a; }
-.apa-report { --block-accent: #f97316; }
+.checks     { --block-accent: #8b5cf6; --block-ink: var(--violet-ink); }
+.software   { --block-accent: #0d9488; --block-ink: var(--secondary-ink); --block-strong: var(--secondary-strong); }
+.try-code   { --block-accent: #16a34a; --block-ink: var(--ok-ink); --block-strong: var(--ok-strong); }
+.apa-report { --block-accent: #f97316; --block-ink: var(--hl-ink); }
 .ck-head, .sw-head, .tc-head { background: color-mix(in srgb, var(--block-accent, var(--primary)) 7%, transparent); }
-.software .seg button.active, .try-code .seg button.active { background: var(--block-accent); }
+/* the active tab carries white text, so it takes the deeper -strong shade
+   (white on #0d9488 was 3.74:1) */
+.software .seg button.active, .try-code .seg button.active { background: var(--block-strong); }

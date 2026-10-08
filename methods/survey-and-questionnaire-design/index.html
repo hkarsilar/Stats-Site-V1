@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-methods.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Designing Surveys & Questionnaires", "description": "Write survey questions that don't bias the answer: fix leading, double-barreled, and loaded items, pick good Likert scales, and beat social desirability.", "url": "https://statscapybara.com/methods/survey-and-questionnaire-design/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Methods: Research Design", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Designing Surveys & Questionnaires", "item": "https://statscapybara.com/methods/survey-and-questionnaire-design/"}]}]
   </script>
@@ -145,14 +145,14 @@
     }
     #sv .sv-opt:hover:not(:disabled) { border-color: var(--primary); }
     #sv .sv-opt:disabled { cursor: default; }
-    #sv .sv-opt.correct { background: #22c55e; border-color: #22c55e; color: #fff; }
-    #sv .sv-opt.wrong { background: #ef4444; border-color: #ef4444; color: #fff; opacity: .7; }
+    #sv .sv-opt.correct { background: var(--ok-strong); border-color: var(--ok-strong); color: #fff; }
+    #sv .sv-opt.wrong { background: var(--bad-strong); border-color: var(--bad-strong); color: #fff; }
     #sv .sv-fix { margin: .8rem 0 0; padding: .7rem .9rem; border-radius: 10px; background: var(--surface-2);
       border-left: 3px solid #22c55e; font-size: .88rem; }
     #sv .sv-fix .sv-fix-good { display: block; margin-top: .4rem; color: var(--text); }
-    #sv .sv-fix .sv-fix-good b { color: #16a34a; }
+    #sv .sv-fix .sv-fix-good b { color: var(--ok-ink); }
     #sv .sv-repaired { margin-top: 1.2rem; padding: 1rem; border: 1px solid #22c55e; border-radius: 12px; background: var(--surface); }
-    #sv .sv-repaired h3 { margin: 0 0 .6rem; font-size: 1rem; color: #16a34a; }
+    #sv .sv-repaired h3 { margin: 0 0 .6rem; font-size: 1rem; color: var(--ok-ink); }
     #sv .sv-repaired ol { margin: 0; padding-left: 1.2rem; }
     #sv .sv-repaired li { margin: .35rem 0; font-size: .9rem; }
   </style>

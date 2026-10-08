@@ -87,14 +87,38 @@
       '</svg>';
   }
 
-  /* ---------- theme ---------- */
+  /* ---------- theme ----------
+     A saved choice wins. With none, the page follows the OS setting: the
+     inline head script applies it before paint, and the listener below keeps
+     it in step if the OS switches mid-visit. Embed and present mode stay
+     light unless a choice is saved, because they show the page inside
+     someone else's page or on a projector (P123). */
   var root = document.documentElement;
-  function setTheme(t) {
+  function applyTheme(t) {
     if (t === "dark") root.setAttribute("data-theme", "dark");
     else root.removeAttribute("data-theme");
-    try { localStorage.setItem("theme", t); } catch (e) {}
     var btn = document.getElementById("theme-toggle");
     if (btn) btn.innerHTML = t === "dark" ? sun() : moon();
+    syncThemeColor();
+  }
+  function setTheme(t) {
+    try { localStorage.setItem("theme", t); } catch (e) {}
+    applyTheme(t);
+  }
+  function followsOS() {
+    var saved = null;
+    try { saved = localStorage.getItem("theme"); } catch (e) {}
+    return !saved && !/[?&](embed|present)=1/.test(location.search);
+  }
+  try {
+    var themeMQ = window.matchMedia("(prefers-color-scheme: dark)");
+    themeMQ.addEventListener("change", function (e) { if (followsOS()) applyTheme(e.matches ? "dark" : "light"); });
+  } catch (e) {}
+  // the browser bar takes the page's own theme, not the OS one, so a saved
+  // choice that differs from the OS no longer leaves a dark bar on a light page
+  function syncThemeColor() {
+    var m = document.querySelector('meta[name="theme-color"]');
+    if (m) m.content = currentTheme() === "dark" ? "#0b1120" : "#6366f1";
   }
   function currentTheme() {
     return root.getAttribute("data-theme") === "dark" ? "dark" : "light";
@@ -815,7 +839,8 @@
             '<span style="margin-left:auto;font-size:.68rem;color:var(--text-faint)">soon</span></a></li>';
     }).join("");
     return (
-      '<div class="course-card" style="--accent:' + c.accent + '">' +
+      // --accent-ink: the course accent as text (styles.css INK TOKENS)
+      '<div class="course-card" style="--accent:' + c.accent + ';--accent-ink:var(--ink-' + c.slug + ')">' +
         '<div class="ch">' + ring(frac, c.accent) +
           // the card title links to the course's landing page (P61)
           '<span class="ch-text"><h3><a href="' + BASE + c.slug + '/">' + c.title + '</a></h3><span>' + c.subtitle +
@@ -921,7 +946,7 @@
       capy(34) +
       '<span class="rb-text">Pick up where you left off: <strong>' + last.n + ' ' + last.title + '</strong></span>' +
       '<a class="btn btn-primary btn-sm" href="' + BASE + last.course + '/' + last.slug + '/">Resume →</a>' +
-      '<a class="rb-progress" href="' + BASE + 'progress.html" style="font-size:.85rem;font-weight:650;color:var(--primary);text-decoration:none;white-space:nowrap">My progress →</a>';
+      '<a class="rb-progress" href="' + BASE + 'progress.html" style="font-size:.85rem;font-weight:650;color:var(--primary-ink);text-decoration:none;white-space:nowrap">My progress →</a>';
     if (slot) slot.appendChild(bar);
     else grid.parentNode.insertBefore(bar, grid);
   }
@@ -1003,7 +1028,7 @@
         }
         return '<a style="cursor:default;opacity:.55" title="Coming soon">' + label + '</a>';
       }).join("");
-      return '<details class="sb-group"' + (isCurrent ? " open" : "") + ' style="--sb-accent:' + c.accent + '">' +
+      return '<details class="sb-group"' + (isCurrent ? " open" : "") + ' style="--sb-accent:' + c.accent + ';--sb-ink:var(--ink-' + c.slug + ')">' +
         '<summary>' + c.title +
           '<span class="sb-count">' + (doneN ? doneN + "/" + c.sections.length : c.sections.length) + '</span>' + chev +
         '</summary>' +
@@ -2193,11 +2218,32 @@
      only where content actually overflows. Known scrollable containers
      get tagged here; .ref-table additionally gets WRAPPED in a scroll
      div, so a wide table scrolls in place instead of the whole page. */
-  var HS_SELECTOR = ".hscroll, .try-code pre, .lesson pre, .mock, #ana-seg, .tbl-demo, .cb-book-wrap, .td-grid-wrap, .apa-ref, .rb-output";
+  var HS_SELECTOR = ".hscroll, .try-code pre, .lesson pre, .mock, #ana-seg, .tbl-demo, .cb-book-wrap, .td-grid-wrap, .apa-ref, .rb-output, .dv-grid-wrap, .ri-tbl-wrap";
   function hsUpdate(el) {
     var can = el.scrollWidth > el.clientWidth + 1;
     el.classList.toggle("hs-l", can && el.scrollLeft > 2);
     el.classList.toggle("hs-r", can && el.scrollLeft < el.scrollWidth - el.clientWidth - 2);
+    // two of these (.dv-grid-wrap, .ri-tbl-wrap) scroll down, not across
+    hsFocus(el, can || el.scrollHeight > el.clientHeight + 1);
+  }
+  // A region that scrolls has to be reachable from the keyboard (WCAG 2.1.1),
+  // or its hidden part is mouse-only. While it overflows and holds nothing
+  // focusable, it takes focus itself, as a named region so a screen reader
+  // says what it is; when a wider window removes the overflow, it gives that back.
+  var HS_FOCUSABLE = "a[href], button, input, select, textarea, summary, [tabindex]";
+  function hsFocus(el, can) {
+    if (can && !el.hasAttribute("tabindex") && !el.querySelector(HS_FOCUSABLE)) {
+      el.tabIndex = 0; el.__hsTab = 1;
+      if (!el.getAttribute("role")) { el.setAttribute("role", "region"); el.__hsRole = 1; }
+      if (!el.hasAttribute("aria-label") && !el.hasAttribute("aria-labelledby")) {
+        el.setAttribute("aria-label", el.tagName === "PRE" ? "Scrollable code" : el.querySelector("table") ? "Scrollable table" : "Scrollable content");
+        el.__hsLabel = 1;
+      }
+    } else if (!can && el.__hsTab) {
+      el.removeAttribute("tabindex"); el.__hsTab = 0;
+      if (el.__hsRole) { el.removeAttribute("role"); el.__hsRole = 0; }
+      if (el.__hsLabel) { el.removeAttribute("aria-label"); el.__hsLabel = 0; }
+    }
   }
   function scanHScroll() {
     Array.prototype.forEach.call(document.querySelectorAll(HS_SELECTOR), function (el) {
@@ -2205,6 +2251,10 @@
       if (!el.__hs) {
         el.__hs = 1;
         el.addEventListener("scroll", function () { hsUpdate(el); }, { passive: true });
+        // an interactive that rewrites a block (a generated table, a code
+        // sample) can start or stop overflowing without any resize
+        if (window.MutationObserver) new MutationObserver(function () { hsUpdate(el); })
+          .observe(el, { childList: true, characterData: true, subtree: true });
       }
       hsUpdate(el);
     });
@@ -2378,14 +2428,12 @@
     if (!head.querySelector('link[rel="manifest"]'))
       link({ rel: "manifest", href: BASE + "site.webmanifest" });
     if (!head.querySelector('meta[name="theme-color"]')) {
-      // theme-color for BOTH schemes: brand indigo in light, the dark page
-      // background in dark, so the browser chrome blends either way.
-      var mcLight = document.createElement("meta");
-      mcLight.name = "theme-color"; mcLight.setAttribute("media", "(prefers-color-scheme: light)"); mcLight.content = "#6366f1";
-      head.appendChild(mcLight);
-      var mcDark = document.createElement("meta");
-      mcDark.name = "theme-color"; mcDark.setAttribute("media", "(prefers-color-scheme: dark)"); mcDark.content = "#0b1120";
-      head.appendChild(mcDark);
+      // one theme-color that follows the page's theme (syncThemeColor): brand
+      // indigo in light, the dark page background in dark
+      var mc = document.createElement("meta");
+      mc.name = "theme-color";
+      head.appendChild(mc);
+      syncThemeColor();
     }
   }
 

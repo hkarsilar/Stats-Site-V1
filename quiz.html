@@ -59,7 +59,8 @@
       font-size: .76rem; font-family: inherit; color: var(--text); background: var(--surface);
       border: 1px solid var(--border); border-radius: 6px; }
     .exam-range select:disabled { opacity: .5; cursor: not-allowed; }
-    .exam-range.er-off { opacity: .55; }
+    /* the selects carry the disabled look; the words stay readable */
+    .exam-range.er-off { color: var(--text-faint); }
     .exam-range .er-all { font-style: italic; }
     .exam-note { font-size: .78rem; color: var(--text-muted); margin: .55rem 0 0; }
     #exam-start { align-self: flex-start; }
@@ -79,7 +80,7 @@
     .exam-nav { display: flex; justify-content: space-between; margin-top: 1.1rem; }
 
     #exam-results { padding: .5rem 0; }
-    .exam-score { font-size: 3rem; font-weight: 800; color: var(--primary); text-align: center; }
+    .exam-score { font-size: 3rem; font-weight: 800; color: var(--primary-ink); text-align: center; }
     .exam-msg { font-size: 1.05rem; text-align: center; margin: .4rem 0 .3rem; }
     .exam-meta { font-size: .82rem; color: var(--text-muted); text-align: center; margin: 0 0 1.4rem; }
     .exam-sub { font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-faint); margin: 0 0 .5rem; }
@@ -118,7 +119,7 @@
       .exam-score { font-size: 24pt; }
     }
   </style>
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -166,9 +167,9 @@
         <div class="viz" id="quiz">
           <!-- start screen: pick a mode, then a set -->
           <div id="start">
-            <div class="seg exam-mode-seg" id="mode-seg" aria-label="Quiz mode">
-              <button type="button" data-mode="practice" class="active" aria-selected="true">Practice</button>
-              <button type="button" data-mode="exam" aria-selected="false">Exam</button>
+            <div class="seg exam-mode-seg" id="mode-seg" role="group" aria-label="Quiz mode">
+              <button type="button" data-mode="practice" class="active" aria-pressed="true">Practice</button>
+              <button type="button" data-mode="exam" aria-pressed="false">Exam</button>
             </div>
 
             <!-- classic practice: instant feedback, unchanged -->
@@ -197,11 +198,11 @@
                 </div>
 
                 <div class="exam-field">
-                  <span class="exam-lab">Length</span>
-                  <div class="seg" id="exam-len">
-                    <button type="button" data-len="10" class="active" aria-selected="true">10</button>
-                    <button type="button" data-len="20" aria-selected="false">20</button>
-                    <button type="button" data-len="40" aria-selected="false">40</button>
+                  <span class="exam-lab" id="exam-len-lab">Length</span>
+                  <div class="seg" id="exam-len" role="group" aria-labelledby="exam-len-lab">
+                    <button type="button" data-len="10" class="active" aria-pressed="true">10</button>
+                    <button type="button" data-len="20" aria-pressed="false">20</button>
+                    <button type="button" data-len="40" aria-pressed="false">40</button>
                   </div>
                   <p class="exam-avail" id="exam-avail" aria-live="polite"></p>
                 </div>
@@ -234,7 +235,7 @@
 
           <!-- results screen -->
           <div id="results" style="display:none;text-align:center;padding:1rem 0">
-            <div style="font-size:3rem;font-weight:800;color:var(--primary)" id="final-score">—</div>
+            <div style="font-size:3rem;font-weight:800;color:var(--primary-ink)" id="final-score">—</div>
             <p id="final-msg" style="font-size:1.1rem;margin:.5rem 0 1.5rem"></p>
             <button class="btn btn-primary" id="restart">Try again</button>
             <button class="btn btn-ghost" id="pick-again">Pick another quiz</button>
@@ -660,7 +661,7 @@
       Array.prototype.forEach.call(el("mode-seg").querySelectorAll("button"), function (b) {
         var on = b.getAttribute("data-mode") === m;
         b.classList.toggle("active", on);
-        b.setAttribute("aria-selected", on ? "true" : "false");
+        b.setAttribute("aria-pressed", on ? "true" : "false");
       });
       el("practice-pane").style.display = m === "practice" ? "" : "none";
       el("exam-pane").style.display = m === "exam" ? "" : "none";
@@ -733,8 +734,8 @@
         b.disabled = true;
         if (j === correct) { b.style.borderColor = "#22c55e"; b.style.background = "color-mix(in srgb, #22c55e 16%, transparent)"; }
       });
-      if (i === correct) { score++; el("feedback").innerHTML = '<strong style="color:#22c55e">Correct.</strong> ' + item.why; }
-      else { btn.style.borderColor = "#ef4444"; btn.style.background = "color-mix(in srgb, #ef4444 14%, transparent)"; el("feedback").innerHTML = '<strong style="color:#ef4444">Not quite.</strong> ' + item.why; }
+      if (i === correct) { score++; el("feedback").innerHTML = '<strong style="color:var(--ok-ink)">Correct.</strong> ' + item.why; }
+      else { btn.style.borderColor = "#ef4444"; btn.style.background = "color-mix(in srgb, #ef4444 14%, transparent)"; el("feedback").innerHTML = '<strong style="color:var(--bad-ink)">Not quite.</strong> ' + item.why; }
       el("score").textContent = score + " correct";
       el("next").style.visibility = "visible";
     }
@@ -1111,7 +1112,7 @@
       examLen = +b.getAttribute("data-len");
       Array.prototype.forEach.call(el("exam-len").querySelectorAll("button"), function (o) {
         o.classList.toggle("active", o === b);
-        o.setAttribute("aria-selected", o === b ? "true" : "false");
+        o.setAttribute("aria-pressed", o === b ? "true" : "false");
       });
       updateAvail();
     }

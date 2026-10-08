@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-ml.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Neural Networks: The Intuition", "description": "An artificial neuron is a weighted sum passed through an activation function — logistic regression — and stacking neurons into hidden layers composes straight boundaries into curved ones; training nudges the weights downhill on the error surface by gradient descent, with the learning rate controlling step size.", "url": "https://statscapybara.com/ml/neural-networks-intuition/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — ML & AI: Machine Learning for Researchers", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Neural Networks: The Intuition", "item": "https://statscapybara.com/ml/neural-networks-intuition/"}]}]
   </script>
@@ -60,7 +60,7 @@
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="nnviz">
           <p class="viz-title">🧠 Train a 2-3-1 network on XOR</p>
-          <p class="viz-sub">Two inputs → three hidden neurons → one output. <strong>Edges</strong> are weights: <span style="color:var(--primary)">blue</span> positive, <span style="color:#f97316">orange</span> negative, thicker = stronger. Press <strong>Train</strong> and the boundary bends from a useless line into the XOR pockets. Set the <strong>learning rate</strong> too high and training overshoots. <strong>New network</strong> reseeds the weights (some starting points get stuck in a poor local minimum, and reseeding gives a fresh start).</p>
+          <p class="viz-sub">Two inputs → three hidden neurons → one output. <strong>Edges</strong> are weights: <span style="color:var(--primary-ink)">blue</span> positive, <span style="color:var(--hl-ink)">orange</span> negative, thicker = stronger. Press <strong>Train</strong> and the boundary bends from a useless line into the XOR pockets. Set the <strong>learning rate</strong> too high and training overshoots. <strong>New network</strong> reseeds the weights (some starting points get stuck in a poor local minimum, and reseeding gives a fresh start).</p>
 
           <div class="controls">
             <div class="control"><button class="btn btn-primary btn-sm" id="run-btn">▶▶ Train</button></div>

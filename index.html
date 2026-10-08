@@ -31,7 +31,7 @@
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="assets/css/styles.css" />
   <!-- set theme before paint to avoid a flash -->
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -153,7 +153,7 @@
     <section class="section alt" id="about">
       <div class="container narrow">
         <div class="about">
-          <div class="avatar">HK</div>
+          <div class="avatar" aria-hidden="true">HK</div>
           <div class="bio">
             <h2>About the instructor</h2>
             <p>Hi, I'm <strong>Dr. Hakan Karsilar</strong>, a scientist and lecturer at <a href="https://research.rug.nl/en/persons/hakan-karsilar/" target="_blank" rel="noopener">University College Groningen, University of Groningen</a>. I built this site because I believe statistics doesn't have to be intimidating. With the right visualizations and a bit of hands-on practice, anyone can build real intuition for how data works.</p>
@@ -169,8 +169,8 @@
 
         <div class="a11y-statement">
           <h3>Accessibility</h3>
-          <p>StatsCapybara aims to meet <strong>WCAG 2.1 AA</strong>. Every page works with a keyboard: there's a skip link, visible focus rings, and a focus-trapped search. Text meets 4.5:1 contrast in both light and dark themes. Form controls and charts are labeled for screen readers, live readouts are announced as you move a slider, and the site follows your system's <em>reduce motion</em> setting.</p>
-          <p>The interactive visualizations are canvas graphics, so they depend on sight, but each one has text readouts beside the picture, and its controls (sliders, buttons, and arrow keys on the ones you drag) work without a mouse. If something is hard to use with a keyboard or screen reader, please <a href="https://www.linkedin.com/in/hakan-karsilar-040565123/" target="_blank" rel="noopener">tell me</a>. Work on accessibility is ongoing.</p>
+          <p>StatsCapybara aims to meet <strong>WCAG 2.1 AA</strong>. Every page works with a keyboard: there's a skip link, visible focus rings, and a focus-trapped search. Page text meets 4.5:1 contrast in both light and dark themes, and links in the text are underlined, so you can tell them apart without seeing color. Form controls and charts are labeled for screen readers, and live readouts are announced as you move a slider. The site follows your system's <em>reduce motion</em> setting, and its dark mode until you pick a theme yourself.</p>
+          <p>The interactive visualizations are canvas graphics, so they depend on sight, but each one has text readouts beside the picture, and its controls (sliders, buttons, and arrow keys on the ones you drag) work without a mouse. Labels drawn inside a chart use the chart's own colors, and some of those are lighter than the page text. If something is hard to use with a keyboard or screen reader, please <a href="https://www.linkedin.com/in/hakan-karsilar-040565123/" target="_blank" rel="noopener">tell me</a>. Work on accessibility is ongoing.</p>
         </div>
 
         <p class="offline-note" style="margin-top:1.75rem;text-align:center;color:var(--text-muted);font-size:.92rem">📴 <strong>Works offline once visited.</strong> Open a lesson on wifi and you can still read it on the train without a signal. You can also add StatsCapybara to your home screen.</p>

@@ -37,11 +37,12 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v61";  /* P117 reworded reader-facing strings in
-                                    three precached files: the TOOLBOX and
-                                    TOOLBOX_GROUPS blurbs and the resume
-                                    banner in site.js, the TRACKS lines in
-                                    curriculum.js, and offline.html's copy. */
+const CACHE_VERSION = "sc-v62";  /* P123: styles.css gained the per-theme
+                                    ink tokens and underlined prose links;
+                                    site.js follows the OS theme until one is
+                                    picked, and makes overflowing scroll
+                                    regions focusable; offline.html's button
+                                    went to --primary-strong. */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location

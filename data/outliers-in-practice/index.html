@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-data.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Outliers: Detect, Investigate, Decide", "description": "Outliers in practice: detect with z and 1.5×IQR, investigate the cause, then decide — correct, exclude and report, or keep and use robust methods.", "url": "https://statscapybara.com/data/outliers-in-practice/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Data: From Raw to Ready", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Outliers: Detect, Investigate, Decide", "item": "https://statscapybara.com/data/outliers-in-practice/"}]}]
   </script>
@@ -164,14 +164,14 @@
     #oc .oc-cards { display:flex; flex-direction:column; gap:.7rem; margin-top:.7rem; }
     #oc .oc-card { border:1px solid var(--border); border-radius:10px; padding:.7rem .8rem; background:var(--surface-2); }
     #oc .oc-ctx { font-size:.9rem; color:var(--text); margin:0 0 .1rem; }
-    #oc .oc-val { font-family:var(--mono); font-size:.8rem; color:#f97316; font-weight:700; margin:0 0 .55rem; }
+    #oc .oc-val { font-family:var(--mono); font-size:.8rem; color:var(--hl-ink); font-weight:700; margin:0 0 .55rem; }
     #oc .oc-acts { display:flex; flex-wrap:wrap; gap:.4rem; }
     #oc .oc-act { font-size:.8rem; padding:.32rem .6rem; border:1px solid var(--border); border-radius:6px; background:var(--surface); color:var(--text-muted); cursor:pointer; }
     #oc .oc-act:hover:not(:disabled){ border-color:var(--primary); color:var(--text); }
     #oc .oc-act:disabled { cursor:default; opacity:.9; }
-    #oc .oc-act.picked-right { background:color-mix(in srgb,#22c55e 22%,transparent); border-color:#22c55e; color:#16a34a; font-weight:700; }
+    #oc .oc-act.picked-right { background:color-mix(in srgb,#22c55e 22%,transparent); border-color:#22c55e; color:var(--ok-ink); font-weight:700; }
     #oc .oc-act.picked-wrong { background:color-mix(in srgb,#ef4444 20%,transparent); border-color:#ef4444; color:#dc2626; }
-    #oc .oc-act.is-answer { border-color:#22c55e; color:#16a34a; font-weight:700; }
+    #oc .oc-act.is-answer { border-color:#22c55e; color:var(--ok-ink); font-weight:700; }
     #oc .oc-verdict { font-size:.85rem; color:var(--text-muted); margin:.55rem 0 0; line-height:1.5; border-top:1px dashed var(--border); padding-top:.5rem; }
     #oc .oc-verdict:empty { display:none; }
     #oc .oc-verdict b { color:var(--text); }
@@ -179,7 +179,7 @@
     #ol .seg { display:inline-flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
     #ol .seg-btn { border:none; border-radius:0; background:var(--surface-2); color:var(--text-muted); border-right:1px solid var(--border); }
     #ol .seg-btn:last-child { border-right:none; }
-    #ol .seg-btn.is-on { background:var(--primary); color:#fff; }
+    #ol .seg-btn.is-on { background:var(--primary-strong); color:#fff; }
     #ol canvas { width:100%; display:block; margin:.7rem 0 .2rem; }
     #ol .ol-grid { display:flex; flex-wrap:wrap; gap:.6rem 1.4rem; margin-top:.3rem; }
     #ol .ol-note { font-size:.85rem; color:var(--text-muted); margin:.6rem 0 0; line-height:1.5; min-height:2.2em; }
@@ -350,7 +350,7 @@
       var sig = r.p < .05;
       var pEl = document.getElementById("ol-p");
       pEl.innerHTML = "<em>p</em> " + fmtP(r.p) + " — " + (sig ? "significant" : "n.s.");
-      pEl.style.color = sig ? "#22c55e" : "#ef4444";
+      pEl.style.color = sig ? "var(--ok-ink)" : "var(--bad-ink)";
       var note = {
         keep: "With the 24,000 ms value kept, the treatment mean is dragged to " + r.mb.toFixed(0) + " ms and the SD explodes. The real effect is buried, and the test says <em>nothing happened</em>.",
         wins: "Winsorizing caps the extreme at the next-highest value (580 ms). Less aggressive than deletion, it keeps the row while removing its leverage, so the effect returns.",

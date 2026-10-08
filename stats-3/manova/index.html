@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-3.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "MANOVA & Multivariate Tests", "description": "Several outcome variables, one test. See how MANOVA finds differences separate ANOVAs miss, and decode Wilks' Λ, Pillai's trace, and Hotelling's T².", "url": "https://statscapybara.com/stats-3/manova/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced & Elective Topics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "MANOVA & Multivariate Tests", "item": "https://statscapybara.com/stats-3/manova/"}]}]
   </script>
@@ -297,7 +297,7 @@
     }
 
     function fmtP(p) { return p < 0.001 ? "< .001" : p.toFixed(3); }
-    function paintP(el, p) { el.textContent = fmtP(p); el.style.color = p < 0.05 ? "#22c55e" : VIZ.css("--text"); }
+    function paintP(el, p) { el.textContent = fmtP(p); el.style.color = p < 0.05 ? "var(--ok-ink)" : VIZ.css("--text"); }
     function update() {
       var s = stats();
       document.getElementById("d1-val").textContent = (d1 >= 0 ? "+" : "") + d1.toFixed(2);
@@ -308,9 +308,9 @@
       paintP(document.getElementById("stat-pm"), s.pM);
       var v = document.getElementById("stat-verdict");
       var uni = s.p1 < 0.05 || s.p2 < 0.05, multi = s.pM < 0.05;
-      if (multi && !uni) { v.textContent = "only MANOVA sees it ✨"; v.style.color = "#22c55e"; }
-      else if (multi) { v.textContent = "groups differ"; v.style.color = "#22c55e"; }
-      else if (uni) { v.textContent = "univariate only · check α inflation"; v.style.color = "#f97316"; }
+      if (multi && !uni) { v.textContent = "only MANOVA sees it ✨"; v.style.color = "var(--ok-ink)"; }
+      else if (multi) { v.textContent = "groups differ"; v.style.color = "var(--ok-ink)"; }
+      else if (uni) { v.textContent = "univariate only · check α inflation"; v.style.color = "var(--hl-ink)"; }
       else { v.textContent = "no difference detected"; v.style.color = VIZ.css("--text"); }
       draw(s);
     }

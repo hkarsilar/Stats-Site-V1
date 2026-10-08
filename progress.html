@@ -33,7 +33,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <style>
     /* ---------- progress dashboard (scoped, pr-) ---------- */
     .pr-hero {
@@ -70,7 +70,7 @@
     }
     .pr-course .ring { flex-shrink:0; }
     .pr-course-info { flex:1; min-width:0; }
-    .pr-course-info h3 { margin:0; font-size:1.02rem; color:color-mix(in srgb, var(--accent, var(--primary)) 72%, var(--text)); }
+    .pr-course-info h3 { margin:0; font-size:1.02rem; color:var(--accent-ink, var(--primary-ink)); }
     .pr-course-sub { font-weight:500; font-size:.8rem; color:var(--text-faint); margin-left:.4rem; }
     .pr-course-meta { font-size:.82rem; color:var(--text-muted); margin-top:.2rem; }
     .pr-course-meta .sep { color:var(--text-faint); margin:0 .45rem; }
@@ -78,7 +78,7 @@
     .pr-left { font-size:.8rem; color:var(--text-faint); white-space:nowrap; }
     .pr-cert-btn {
       background: color-mix(in srgb, var(--accent, var(--primary)) 14%, var(--surface));
-      color: color-mix(in srgb, var(--accent, var(--primary)) 72%, var(--text));
+      color: var(--accent-ink, var(--primary-ink));
       border-color: color-mix(in srgb, var(--accent, var(--primary)) 40%, var(--border));
       white-space:nowrap;
     }
@@ -305,7 +305,7 @@
       var cta = complete
         ? '<button class="btn btn-sm pr-cert-btn" type="button" data-cert="' + c.slug + '">🏅 Get your certificate</button>'
         : '<span class="pr-left">' + (t.ready - t.done) + ' left</span>';
-      return '<div class="pr-course" style="--accent:' + c.accent + '">' +
+      return '<div class="pr-course" style="--accent:' + c.accent + ';--accent-ink:var(--ink-' + c.slug + ')">' +
         ring(frac, c.accent) +
         '<div class="pr-course-info">' +
           '<h3>' + c.title + '<span class="pr-course-sub">' + c.subtitle + '</span></h3>' +

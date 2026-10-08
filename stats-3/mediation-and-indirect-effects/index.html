@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-3.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Mediation & Indirect Effects", "description": "Mediation explains HOW one thing affects another, through a mechanism in between. Adjust the three paths and the indirect effect updates live.", "url": "https://statscapybara.com/stats-3/mediation-and-indirect-effects/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced & Elective Topics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Mediation & Indirect Effects", "item": "https://statscapybara.com/stats-3/mediation-and-indirect-effects/"}]}]
   </script>
@@ -196,8 +196,8 @@
       document.getElementById("stat-tot").textContent = (tot >= 0 ? "+" : "") + tot.toFixed(2);
       var ty = document.getElementById("stat-type");
       if (Math.abs(ind) < 0.04) { ty.textContent = "none · no indirect path"; ty.style.color = VIZ.css("--text"); }
-      else if (Math.abs(c) < 0.08) { ty.textContent = "full (" + (prop * 100).toFixed(0) + "% via M)"; ty.style.color = "#22c55e"; }
-      else { ty.textContent = "partial (" + (prop * 100).toFixed(0) + "% via M)"; ty.style.color = "#f97316"; }
+      else if (Math.abs(c) < 0.08) { ty.textContent = "full (" + (prop * 100).toFixed(0) + "% via M)"; ty.style.color = "var(--ok-ink)"; }
+      else { ty.textContent = "partial (" + (prop * 100).toFixed(0) + "% via M)"; ty.style.color = "var(--hl-ink)"; }
     }
 
     ["a", "b", "c"].forEach(function (id) { document.getElementById(id).addEventListener("input", draw); });

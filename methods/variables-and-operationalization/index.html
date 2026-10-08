@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-methods.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Variables & Operationalization", "description": "Constructs live in your head; data lives in the world. Operationalize stress and ability into measurable variables — and learn to spot confounds.", "url": "https://statscapybara.com/methods/variables-and-operationalization/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Methods: Research Design", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Variables & Operationalization", "item": "https://statscapybara.com/methods/variables-and-operationalization/"}]}]
   </script>
@@ -130,7 +130,7 @@
     #op .op-chips { display: flex; flex-wrap: wrap; gap: .5rem; min-height: 2.2rem; margin-bottom: 1.1rem; }
     #op .op-chip { padding: .45rem .7rem; font-size: .84rem; font-weight: 600; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--text); cursor: pointer; transition: .12s; }
     #op .op-chip:hover { border-color: var(--primary); }
-    #op .op-chip.sel { background: var(--primary); color: #fff; border-color: var(--primary); }
+    #op .op-chip.sel { background: var(--primary-strong); color: #fff; border-color: var(--primary-strong); }
     #op .op-chip.placed { cursor: default; opacity: 1; }
     #op .op-chip.ok { background: color-mix(in srgb, #22c55e 16%, transparent); border-color: #22c55e; }
     #op .op-chip.bad { background: color-mix(in srgb, #ef4444 14%, transparent); border-color: #ef4444; }
@@ -140,8 +140,8 @@
     #op .op-bucket h4 { margin: 0 0 .5rem; font-size: .9rem; text-align: center; }
     #op .op-bucket .drop { display: flex; flex-direction: column; gap: .35rem; }
     #op .op-fb, #lab .op-fb { font-size: .88rem; margin: 1rem 0 0; min-height: 1.2rem; }
-    #op .op-fb .ok, #lab .op-fb .ok { color: #22c55e; font-weight: 700; }
-    #op .op-fb .no, #lab .op-fb .no { color: #ef4444; font-weight: 700; }
+    #op .op-fb .ok, #lab .op-fb .ok { color: var(--ok-ink); font-weight: 700; }
+    #op .op-fb .no, #lab .op-fb .no { color: var(--bad-ink); font-weight: 700; }
     @media (max-width: 560px) { #op .op-buckets { grid-template-columns: 1fr; } }
     #lab .lab-row { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .75rem; padding: .6rem 0; border-top: 1px solid var(--border); }
     #lab .lab-var { flex: 1; min-width: 12rem; font-weight: 600; font-size: .92rem; }
@@ -248,7 +248,7 @@
       });
       if (!right) b.style.borderColor = "#ef4444";
       var note = document.getElementById("lab-note-" + i);
-      note.innerHTML = (right ? '<span class="ok" style="color:#22c55e;font-weight:700">Correct.</span> ' : '<span class="no" style="color:#ef4444;font-weight:700">Not quite.</span> ') + v.note;
+      note.innerHTML = (right ? '<span class="ok" style="color:var(--ok-ink);font-weight:700">Correct.</span> ' : '<span class="no" style="color:var(--bad-ink);font-weight:700">Not quite.</span> ') + v.note;
       answered++; if (right) labCorrect++;
       if (answered === VARS.length) labDone.innerHTML = '<strong>' + labCorrect + ' / 3.</strong> A clean causal claim needs the IV and DV clearly identified, and every plausible confound accounted for.';
     });

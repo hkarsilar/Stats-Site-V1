@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-data.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Data Privacy Basics", "description": "Anonymous vs de-identified vs pseudonymized, quasi-identifiers and re-identification, and k-anonymity — with a live re-identification demo on 30 people.", "url": "https://statscapybara.com/data/data-privacy-basics/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Data: From Raw to Ready", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Data Privacy Basics", "item": "https://statscapybara.com/data/data-privacy-basics/"}]}]
   </script>
@@ -161,9 +161,9 @@
     #ri .ri-tbl td.off { color:var(--text-faint); opacity:.45; }
     #ri .ri-tbl td.sens { text-align:left; color:var(--text-muted); }
     #ri .ri-tbl td.sz { font-weight:700; }
-    #ri .ri-tbl tr.k1 td.sz { color:#ef4444; }
-    #ri .ri-tbl tr.k2 td.sz { color:#f97316; }
-    #ri .ri-tbl tr.k5 td.sz { color:#22c55e; }
+    #ri .ri-tbl tr.k1 td.sz { color:var(--bad-ink); }
+    #ri .ri-tbl tr.k2 td.sz { color:var(--hl-ink); }
+    #ri .ri-tbl tr.k5 td.sz { color:var(--ok-ink); }
     #ri .ri-tbl tr.k1 { background:color-mix(in srgb, #ef4444 10%, transparent); }
     #ri .ri-tbl tr.k2 { background:color-mix(in srgb, #f97316 9%, transparent); }
     #ri .ri-tbl tr.k5 { background:color-mix(in srgb, #22c55e 9%, transparent); }

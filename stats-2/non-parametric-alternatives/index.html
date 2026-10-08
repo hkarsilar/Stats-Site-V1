@@ -40,10 +40,10 @@
     .rv-hand th { font-weight:600; color:var(--text-muted); width:46%; }
     .rv-hand td { font-family:var(--mono); font-size:.82rem; color:var(--text); }
     .rv-hand tr.rv-read th, .rv-hand tr.rv-read td { border-bottom:none; font-weight:700; }
-    .rv-hand td.rv-yes { color:#22c55e; }
+    .rv-hand td.rv-yes { color:var(--ok-ink); }
     .rv-hand td.rv-no { color:var(--text-muted); }
   </style>
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Non-Parametric Alternatives", "description": "Mann–Whitney, Wilcoxon, Kruskal–Wallis, Friedman: how each rank-based test actually works, and why one wild outlier can't sway the ranks or the p-value.", "url": "https://statscapybara.com/stats-2/non-parametric-alternatives/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: ANOVA & Regression", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Non-Parametric Alternatives", "item": "https://statscapybara.com/stats-2/non-parametric-alternatives/"}]}]
   </script>
@@ -82,8 +82,8 @@
           <canvas id="np-canvas"></canvas>
 
           <div class="stat-row">
-            <div class="stat"><span class="k" style="color:#f97316">t-test p-value</span><span class="v" id="stat-tp">—</span></div>
-            <div class="stat"><span class="k" style="color:var(--primary)">Mann-Whitney p-value</span><span class="v" id="stat-up">—</span></div>
+            <div class="stat"><span class="k" style="color:var(--hl-ink)">t-test p-value</span><span class="v" id="stat-tp">—</span></div>
+            <div class="stat"><span class="k" style="color:var(--primary-ink)">Mann-Whitney p-value</span><span class="v" id="stat-up">—</span></div>
             <div class="stat"><span class="k">t-test verdict</span><span class="v" id="stat-td" style="font-size:.95rem">—</span></div>
             <div class="stat"><span class="k">Mann-Whitney verdict</span><span class="v" id="stat-ud" style="font-size:.95rem">—</span></div>
           </div>
@@ -331,8 +331,8 @@
       document.getElementById("stat-tp").textContent = tt.p < 0.001 ? "< 0.001" : tt.p.toFixed(3);
       document.getElementById("stat-up").textContent = mw.p < 0.001 ? "< 0.001" : mw.p.toFixed(3);
       var td = document.getElementById("stat-td"), ud = document.getElementById("stat-ud");
-      td.textContent = tt.p < 0.05 ? "significant" : "not significant"; td.style.color = tt.p < 0.05 ? "#22c55e" : VIZ.css("--text-muted");
-      ud.textContent = mw.p < 0.05 ? "significant" : "not significant"; ud.style.color = mw.p < 0.05 ? "#22c55e" : VIZ.css("--text-muted");
+      td.textContent = tt.p < 0.05 ? "significant" : "not significant"; td.style.color = tt.p < 0.05 ? "var(--ok-ink)" : VIZ.css("--text-muted");
+      ud.textContent = mw.p < 0.05 ? "significant" : "not significant"; ud.style.color = mw.p < 0.05 ? "var(--ok-ink)" : VIZ.css("--text-muted");
       draw();
     }
 
@@ -847,7 +847,7 @@
     // ---------- state / animation ----------
     function renderStats() {
       elStats.innerHTML = _d.stats.map(function (s) {
-        var col = s.sig === true ? "#22c55e" : (s.sig === false ? cc("--text-muted") : "");
+        var col = s.sig === true ? "var(--ok-ink)" : (s.sig === false ? cc("--text-muted") : "");
         /* .stat .k is uppercased sitewide, and a Greek lower case letter does not
            survive that: ρ becomes Ρ and χ becomes Χ, which read as a Latin P and
            X. A key whose label IS the symbol opts out. */

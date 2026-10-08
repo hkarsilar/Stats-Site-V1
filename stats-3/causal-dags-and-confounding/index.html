@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-3.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Causal DAGs & Confounding", "description": "Draw your causal assumptions as a graph, then watch adjustment fix a confounder — and backfire on a collider. Statistical control is powerful and dangerous.", "url": "https://statscapybara.com/stats-3/causal-dags-and-confounding/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced & Elective Topics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Causal DAGs & Confounding", "item": "https://statscapybara.com/stats-3/causal-dags-and-confounding/"}]}]
   </script>
@@ -84,8 +84,8 @@
 
           <div class="stat-row">
             <div class="stat"><span class="k">True effect β</span><span class="v" id="stat-true">—</span></div>
-            <div class="stat"><span class="k" style="color:#f97316">Naive slope (Y ~ X)</span><span class="v" id="stat-naive">—</span></div>
-            <div class="stat"><span class="k" style="color:var(--primary)">Adjusted slope</span><span class="v" id="stat-adj">—</span></div>
+            <div class="stat"><span class="k" style="color:var(--hl-ink)">Naive slope (Y ~ X)</span><span class="v" id="stat-naive">—</span></div>
+            <div class="stat"><span class="k" style="color:var(--primary-ink)">Adjusted slope</span><span class="v" id="stat-adj">—</span></div>
           </div>
           <p id="dag-hint" style="margin:.75rem 0 0;font-size:.88rem;color:var(--text-muted)"></p>
         </div>

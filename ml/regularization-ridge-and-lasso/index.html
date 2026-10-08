@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-ml.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Regularization: Ridge & Lasso", "description": "Why shrinking regression coefficients improves prediction: ridge pulls coefficients toward zero, lasso sets them exactly to zero, and cross-validation picks the penalty strength.", "url": "https://statscapybara.com/ml/regularization-ridge-and-lasso/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — ML & AI: Machine Learning for Researchers", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Regularization: Ridge & Lasso", "item": "https://statscapybara.com/ml/regularization-ridge-and-lasso/"}]}]
   </script>
@@ -66,7 +66,7 @@
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="regviz">
           <p class="viz-title">📉 The coefficient-path explorer</p>
-          <p class="viz-sub">Of eight standardized predictors, <strong style="color:var(--primary)">3 are real</strong> and <span style="color:var(--text-faint)">5 are pure noise</span>. The top panel traces each coefficient as the penalty <em>λ</em> grows (left = none, right = heavy). Below, cross-validated error picks the best λ. Switch between ridge and lasso: in both, the noise coefficients shrink toward zero <em>before</em> the real ones.</p>
+          <p class="viz-sub">Of eight standardized predictors, <strong style="color:var(--primary-ink)">3 are real</strong> and <span style="color:var(--text-faint)">5 are pure noise</span>. The top panel traces each coefficient as the penalty <em>λ</em> grows (left = none, right = heavy). Below, cross-validated error picks the best λ. Switch between ridge and lasso: in both, the noise coefficients shrink toward zero <em>before</em> the real ones.</p>
 
           <div class="controls" style="flex-wrap:wrap">
             <div class="control">

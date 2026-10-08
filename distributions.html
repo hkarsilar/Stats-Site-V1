@@ -30,7 +30,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og.png" />
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -231,7 +231,7 @@
       var d = DISTS[cur];
       var html = d.params.map(function (p) {
         return '<div class="control"><label>' + p.label + ' <span class="val" id="v-' + p.id + '">' + p.val + '</span></label>' +
-          '<input type="range" id="p-' + p.id + '" min="' + p.min + '" max="' + p.max + '" step="' + p.step + '" value="' + p.val + '" /></div>';
+          '<input type="range" id="p-' + p.id + '" aria-label="' + p.label.replace(/<[^>]+>/g, "") + '" min="' + p.min + '" max="' + p.max + '" step="' + p.step + '" value="' + p.val + '" /></div>';
       }).join("");
       if (d.overlay) {
         html += '<div class="control"><label>&nbsp;</label><label style="display:inline-flex;align-items:center;gap:.4rem;font-size:.82rem;cursor:pointer">' +
@@ -253,7 +253,7 @@
       var d = DISTS[cur], P = params();
       var m = d.mean(P), s = d.sd(P);
       el("stat-row").innerHTML =
-        '<div class="stat"><span class="k">Mean</span><span class="v" style="color:#f97316">' + fmt(m) + '</span></div>' +
+        '<div class="stat"><span class="k">Mean</span><span class="v" style="color:var(--hl-ink)">' + fmt(m) + '</span></div>' +
         '<div class="stat"><span class="k">Standard deviation</span><span class="v">' + fmt(s) + '</span></div>' +
         '<div class="stat"><span class="k">Variance</span><span class="v" style="font-size:1rem">' + fmt(s * s) + '</span></div>' +
         (isFinite(m) ? "" : '<div class="stat"><span class="k">Note</span><span class="v" style="font-size:.85rem">undefined at these df</span></div>');
@@ -477,7 +477,7 @@
       el("dice-stats").innerHTML =
         '<div class="stat"><span class="k">Most likely ' + MODES[mode].unit + '</span><span class="v">' + top + '</span></div>' +
         '<div class="stat"><span class="k">Its probability</span><span class="v" style="font-size:1rem">' + chance + '</span></div>' +
-        '<div class="stat"><span class="k">Mean</span><span class="v" style="color:#f97316">' + fmt(mo.mean) + '</span></div>' +
+        '<div class="stat"><span class="k">Mean</span><span class="v" style="color:var(--hl-ink)">' + fmt(mo.mean) + '</span></div>' +
         '<div class="stat"><span class="k">Standard deviation</span><span class="v">' + fmt(mo.sd) + '</span></div>' +
         '<div class="stat"><span class="k">Equally likely rolls</span><span class="v" style="font-size:1rem">' + commas(d.total) + '</span></div>';
     }

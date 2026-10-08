@@ -47,7 +47,7 @@
     .stab th[data-rh] { text-align: left; font-weight: 700; color: var(--text); border-right: 1px solid var(--border);
                         position: sticky; left: 0; background: var(--surface); z-index: 1; }
     .stab td { color: var(--text-muted); cursor: pointer; }
-    .stab th.hl { color: var(--primary); }
+    .stab th.hl { color: var(--primary-ink); }
     .stab td.on { background: color-mix(in srgb, var(--primary) 16%, transparent); color: var(--text); }
     .stab td.mark { background: rgba(249, 115, 22, .32); color: var(--text); font-weight: 700; }
     .stab td:focus { outline: 2px solid var(--primary); outline-offset: -2px; }
@@ -58,8 +58,8 @@
                 border-left: 3px solid var(--primary); padding-left: .6rem; }
     .dr-q { font-size: 1.15rem; font-weight: 600; margin: .2rem 0 .8rem; }
     .dr-fb { min-height: 3.2em; margin: .4rem 0 0; font-size: .95rem; color: var(--text-muted); }
-    .dr-fb .ok { color: var(--success); font-weight: 700; }
-    .dr-fb .no { color: #ef4444; font-weight: 700; }
+    .dr-fb .ok { color: var(--ok-ink); font-weight: 700; }
+    .dr-fb .no { color: var(--bad-ink); font-weight: 700; }
 
     @media print {
       /* the drill is interactive and prints as nothing useful; the tables
@@ -79,7 +79,7 @@
       .stab thead { display: table-header-group; }
     }
   </style>
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -380,20 +380,20 @@
         var ps = pValues(stat);
         if (symmetric()) {
           res.innerHTML =
-            '<div class="stat"><span class="k">' + (tail === "two" ? "Two-tailed" : tail + "-tail") + ' p-value' + dfNote + '</span><span class="v" style="color:var(--primary)">' + fmtP(ps[tail]) + '</span></div>' +
+            '<div class="stat"><span class="k">' + (tail === "two" ? "Two-tailed" : tail + "-tail") + ' p-value' + dfNote + '</span><span class="v" style="color:var(--primary-ink)">' + fmtP(ps[tail]) + '</span></div>' +
             '<div class="stat"><span class="k">Two-tailed</span><span class="v" style="font-size:1rem">' + fmtP(ps.two) + '</span></div>' +
             '<div class="stat"><span class="k">Right tail</span><span class="v" style="font-size:1rem">' + fmtP(ps.right) + '</span></div>' +
             '<div class="stat"><span class="k">Left tail</span><span class="v" style="font-size:1rem">' + fmtP(ps.left) + '</span></div>';
         } else {
           res.innerHTML =
-            '<div class="stat"><span class="k">Upper-tail p-value' + dfNote + '</span><span class="v" style="color:var(--primary)">' + fmtP(ps.right) + '</span></div>' +
+            '<div class="stat"><span class="k">Upper-tail p-value' + dfNote + '</span><span class="v" style="color:var(--primary-ink)">' + fmtP(ps.right) + '</span></div>' +
             '<div class="stat"><span class="k">Decision at α = .05</span><span class="v" style="font-size:1rem">' + (ps.right < 0.05 ? "reject H₀" : "fail to reject") + '</span></div>';
         }
       } else {
         var a = currentAlpha(), c = critFor(a);
         var label = symmetric() && tail === "two" ? "±" + fmtV(c) : fmtV(symmetric() && tail === "left" ? -c : c);
         res.innerHTML =
-          '<div class="stat"><span class="k" style="text-transform:none">Critical value at α = ' + a + dfNote + '</span><span class="v" style="color:var(--primary)">' + label + '</span></div>' +
+          '<div class="stat"><span class="k" style="text-transform:none">Critical value at α = ' + a + dfNote + '</span><span class="v" style="color:var(--primary-ink)">' + label + '</span></div>' +
           '<div class="stat"><span class="k">Rejection region</span><span class="v" style="font-size:1rem">' +
             (symmetric() ? (tail === "two" ? "|stat| > " + fmtV(c) : tail === "right" ? "stat > " + fmtV(c) : "stat < " + fmtV(-c)) : "stat > " + fmtV(c)) + '</span></div>';
       }

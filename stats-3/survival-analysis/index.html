@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-3.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Survival Analysis & Kaplan–Meier", "description": "Time-to-event data with a twist: some clocks are still running. Build Kaplan–Meier curves with censoring and compare two groups with the log-rank test.", "url": "https://statscapybara.com/stats-3/survival-analysis/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced & Elective Topics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Survival Analysis & Kaplan–Meier", "item": "https://statscapybara.com/stats-3/survival-analysis/"}]}]
   </script>
@@ -80,8 +80,8 @@
           <canvas id="km-canvas"></canvas>
 
           <div class="stat-row">
-            <div class="stat"><span class="k" style="color:var(--primary)">Median survival A</span><span class="v" id="stat-medA">—</span></div>
-            <div class="stat"><span class="k" style="color:#f97316">Median survival B</span><span class="v" id="stat-medB">—</span></div>
+            <div class="stat"><span class="k" style="color:var(--primary-ink)">Median survival A</span><span class="v" id="stat-medA">—</span></div>
+            <div class="stat"><span class="k" style="color:var(--hl-ink)">Median survival B</span><span class="v" id="stat-medB">—</span></div>
             <div class="stat"><span class="k">Log-rank χ² (1 df)</span><span class="v" id="stat-chi">—</span></div>
             <div class="stat"><span class="k">p-value</span><span class="v" id="stat-p">—</span></div>
             <div class="stat"><span class="k">Censored</span><span class="v" id="stat-cens">—</span></div>

@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-ethics.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Using AI Tools Ethically", "description": "When is AI fine in research, when must you verify its output, and when is it off-limits? Sort eight everyday student tasks into those three groups.", "url": "https://statscapybara.com/ethics/ai-in-research-ethics/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Ethics: Responsible Research", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Using AI Tools Ethically", "item": "https://statscapybara.com/ethics/ai-in-research-ethics/"}]}]
   </script>
@@ -127,7 +127,7 @@
     /* AI decision walkthrough (scoped) */
     #ai .ai-scorebar { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin-bottom: .8rem; font-size: .84rem; font-weight: 600; }
     #ai .ai-progress { color: var(--text-muted); }
-    #ai .ai-score { color: var(--course-accent, #64748b); font-weight: 800; font-variant-numeric: tabular-nums; }
+    #ai .ai-score { color: var(--course-ink); font-weight: 800; font-variant-numeric: tabular-nums; }
     #ai .ai-tabs { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1rem; }
     #ai .ai-tab {
       cursor: pointer; border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
@@ -136,9 +136,9 @@
     }
     #ai .ai-tab:hover { border-color: var(--course-accent, #64748b); }
     #ai .ai-tab.active { background: color-mix(in srgb, var(--course-accent, #64748b) 15%, transparent); border-color: var(--course-accent, #64748b); }
-    #ai .ai-tab.go::after   { content: " ●"; color: #22c55e; }
-    #ai .ai-tab.verify::after { content: " ●"; color: #f97316; }
-    #ai .ai-tab.dont::after { content: " ●"; color: #ef4444; }
+    #ai .ai-tab.go::after   { content: " ●"; color: var(--ok-ink); }
+    #ai .ai-tab.verify::after { content: " ●"; color: var(--hl-ink); }
+    #ai .ai-tab.dont::after { content: " ●"; color: var(--bad-ink); }
     #ai .ai-case { border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.1rem; background: var(--surface); font-size: .95rem; line-height: 1.6; color: var(--text); }
     #ai .ai-case .ai-ctitle { font-weight: 700; display: block; margin-bottom: .4rem; }
     #ai .ai-opts { margin-top: 1rem; display: flex; flex-direction: column; gap: .55rem; }

@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-1.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Z-Scores & the Normal Distribution", "description": "What a z-score means: drag a value along the bell curve to see its distance from the mean in SD units, plus the matching percentile.", "url": "https://statscapybara.com/stats-1/z-scores-and-the-normal-distribution/", "learningResourceType": "Interactive lesson", "educationalLevel": "Beginner", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 1: Introduction to Statistics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Z-Scores & the Normal Distribution", "item": "https://statscapybara.com/stats-1/z-scores-and-the-normal-distribution/"}]}]
   </script>
@@ -154,7 +154,7 @@
           <canvas id="er-canvas"></canvas>
 
           <div class="stat-row">
-            <div class="stat"><span class="k" style="color:var(--primary)">Within the band</span><span class="v" id="stat-within">68.3%</span></div>
+            <div class="stat"><span class="k" style="color:var(--primary-ink)">Within the band</span><span class="v" id="stat-within">68.3%</span></div>
             <div class="stat"><span class="k">In each tail</span><span class="v" id="stat-ertail">15.87%</span></div>
             <div class="stat"><span class="k">Landmark</span><span class="v" id="stat-note" style="font-size:1rem">the 68% rule</span></div>
           </div>
@@ -397,9 +397,9 @@
       document.getElementById("stat-within").textContent = (area * 100).toFixed(1) + "%";
       document.getElementById("stat-ertail").textContent = ((1 - area) / 2 * 100).toFixed(2) + "%";
       var note = document.getElementById("stat-note");
-      if (Math.abs(k - 1) < 0.06) { note.textContent = "the 68% rule"; note.style.color = "#22c55e"; }
-      else if (Math.abs(k - 2) < 0.06) { note.textContent = "the 95% rule"; note.style.color = "#22c55e"; }
-      else if (Math.abs(k - 3) < 0.06) { note.textContent = "the 99.7% rule"; note.style.color = "#22c55e"; }
+      if (Math.abs(k - 1) < 0.06) { note.textContent = "the 68% rule"; note.style.color = "var(--ok-ink)"; }
+      else if (Math.abs(k - 2) < 0.06) { note.textContent = "the 95% rule"; note.style.color = "var(--ok-ink)"; }
+      else if (Math.abs(k - 3) < 0.06) { note.textContent = "the 99.7% rule"; note.style.color = "var(--ok-ink)"; }
       else { note.textContent = "—"; note.style.color = css("--text"); }
     }
 

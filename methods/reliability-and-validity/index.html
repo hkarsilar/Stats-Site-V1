@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-methods.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Reliability & Validity", "description": "Reliability is consistency; validity is hitting the target. See both on an interactive dartboard, then watch Cronbach's alpha rise as you add items.", "url": "https://statscapybara.com/methods/reliability-and-validity/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Methods: Research Design", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Reliability & Validity", "item": "https://statscapybara.com/methods/reliability-and-validity/"}]}]
   </script>
@@ -240,10 +240,10 @@
       document.getElementById("val-val").textContent = val;
       var d = document.getElementById("db-diag");
       var hiR = rel >= 50, hiV = val >= 50, txt, col;
-      if (hiR && hiV) { txt = "Reliable AND valid: consistent and on target"; col = "#22c55e"; }
-      else if (hiR && !hiV) { txt = "Reliable but NOT valid: consistently wrong"; col = "#ef4444"; }
-      else if (!hiR && hiV) { txt = "Valid on average but NOT reliable: centered yet scattered"; col = "#f59e0b"; }
-      else { txt = "Neither: scattered and off target"; col = "#ef4444"; }
+      if (hiR && hiV) { txt = "Reliable AND valid: consistent and on target"; col = "var(--ok-ink)"; }
+      else if (hiR && !hiV) { txt = "Reliable but NOT valid: consistently wrong"; col = "var(--bad-ink)"; }
+      else if (!hiR && hiV) { txt = "Valid on average but NOT reliable: centered yet scattered"; col = "var(--warn-ink)"; }
+      else { txt = "Neither: scattered and off target"; col = "var(--bad-ink)"; }
       d.textContent = txt; d.style.color = col;
       draw();
     }
@@ -274,8 +274,9 @@
       var col = a >= 0.80 ? "#22c55e" : a >= 0.70 ? "#f59e0b" : "#ef4444";
       fill.style.background = col;
       var v = document.getElementById("ca-verdict");
-      var txt, tc = col;
-      if (a >= 0.90) { txt = "Excellent, but very high α can also mean the items are near-duplicates."; tc = "#22c55e"; }
+      // the bar keeps the canvas palette; the verdict text takes the ink shades
+      var txt, tc = a >= 0.80 ? "var(--ok-ink)" : a >= 0.70 ? "var(--warn-ink)" : "var(--bad-ink)";
+      if (a >= 0.90) { txt = "Excellent, but very high α can also mean the items are near-duplicates."; }
       else if (a >= 0.80) { txt = "Good internal consistency."; }
       else if (a >= 0.70) { txt = "Acceptable — the common .70 minimum for research scales."; }
       else if (a >= 0.60) { txt = "Questionable: below the usual .70 threshold."; }

@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-methods.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Observational Designs", "description": "Cross-sectional, cohort, and case-control studies: what each can claim, why case-control speaks in odds ratios, and how survivorship bias fools you.", "url": "https://statscapybara.com/methods/observational-designs/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Methods: Research Design", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Observational Designs", "item": "https://statscapybara.com/methods/observational-designs/"}]}]
   </script>
@@ -366,10 +366,10 @@
       var vd = document.getElementById("od-verdict"), txt, col;
       if (P0 <= 8) {
         txt = "The outcome is rare (≈" + P0.toFixed(0) + "% baseline risk), so the odds ratio ≈ the risk ratio, and the case-control estimate barely distorts it.";
-        col = "#22c55e";
+        col = "var(--ok-ink)";
       } else {
         txt = "The outcome is common (≈" + P0.toFixed(0) + "% baseline risk), so the odds ratio (" + est.trueOR.toFixed(2) + ") overstates the risk ratio (" + est.trueRR.toFixed(2) + "). Only the cohort recovers risk directly.";
-        col = "#f59e0b";
+        col = "var(--warn-ink)";
       }
       vd.textContent = txt; vd.style.color = col;
 

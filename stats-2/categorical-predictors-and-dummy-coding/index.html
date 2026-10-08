@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-2.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Categorical Predictors & Dummy Coding", "description": "Regression needs numbers, but groups aren't numeric. Dummy coding turns categories into 0/1 variables whose coefficients are differences from a reference group.", "url": "https://statscapybara.com/stats-2/categorical-predictors-and-dummy-coding/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 2: ANOVA & Regression", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Categorical Predictors & Dummy Coding", "item": "https://statscapybara.com/stats-2/categorical-predictors-and-dummy-coding/"}]}]
   </script>
@@ -207,7 +207,7 @@
       html += "<table style='margin-top:.7rem;border-collapse:collapse;font-size:.85rem'>";
       html += "<tr style='color:var(--text-faint)'><td style='padding:2px 14px 2px 0'>group</td><td style='padding:2px 14px'>D·" + names[others[0]] + "</td><td style='padding:2px 14px'>D·" + names[others[1]] + "</td></tr>";
       for (var r2 = 0; r2 < 3; r2++) {
-        html += "<tr><td style='padding:2px 14px 2px 0'>" + names[r2] + (r2 === ref ? " <span style=\"color:#f97316\">(ref)</span>" : "") + "</td><td style='padding:2px 14px'>" + (r2 === others[0] ? 1 : 0) + "</td><td style='padding:2px 14px'>" + (r2 === others[1] ? 1 : 0) + "</td></tr>";
+        html += "<tr><td style='padding:2px 14px 2px 0'>" + names[r2] + (r2 === ref ? " <span style=\"color:var(--hl-ink)\">(ref)</span>" : "") + "</td><td style='padding:2px 14px'>" + (r2 === others[0] ? 1 : 0) + "</td><td style='padding:2px 14px'>" + (r2 === others[1] ? 1 : 0) + "</td></tr>";
       }
       html += "</table>";
       document.getElementById("dc-readout").innerHTML = html;

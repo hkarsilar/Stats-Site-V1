@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-methods.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "From Question to Hypothesis", "description": "Turn a vague hunch into a testable, falsifiable prediction. Build a hypothesis step by step — population, variables, direction — and watch it sharpen.", "url": "https://statscapybara.com/methods/from-question-to-hypothesis/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Methods: Research Design", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "From Question to Hypothesis", "item": "https://statscapybara.com/methods/from-question-to-hypothesis/"}]}]
   </script>
@@ -154,7 +154,7 @@
     #hm .hm-pred .sharp { color: var(--text); font-weight: 600; }
     #hm .hm-hyps p { margin: .2rem 0; font-size: .92rem; }
     #hm .hm-tag { display: inline-block; min-width: 1.9rem; font-family: var(--mono); font-weight: 700; color: var(--text-muted); }
-    #hm .hm-tag-1 { color: var(--primary); }
+    #hm .hm-tag-1 { color: var(--primary-ink); }
   </style>
 
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
@@ -273,9 +273,9 @@
       document.getElementById("hm-pct").textContent = pct + "%";
 
       var v = document.getElementById("hm-verdict");
-      if (pts <= 3) { v.textContent = "Too vague to test: every result would fit, so nothing could prove it wrong."; v.style.color = "#ef4444"; }
-      else if (pts <= 6) { v.textContent = "Getting there. Pin down the fuzzy parts until some result could prove the claim wrong."; v.style.color = "#f59e0b"; }
-      else { v.textContent = "Testable prediction ✓ — specific, falsifiable, and ready for data."; v.style.color = "#22c55e"; }
+      if (pts <= 3) { v.textContent = "Too vague to test: every result would fit, so nothing could prove it wrong."; v.style.color = "var(--bad-ink)"; }
+      else if (pts <= 6) { v.textContent = "Getting there. Pin down the fuzzy parts until some result could prove the claim wrong."; v.style.color = "var(--warn-ink)"; }
+      else { v.textContent = "Testable prediction ✓ — specific, falsifiable, and ready for data."; v.style.color = "var(--ok-ink)"; }
 
       // assembled sentence, fuzzy pieces grayed, sharp pieces bold
       function piece(di) {

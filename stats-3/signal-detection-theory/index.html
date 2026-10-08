@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-3.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Signal Detection Theory", "description": "Drag the criterion between two overlapping distributions to pull sensitivity (d′) apart from response bias (c), then sweep it to trace the ROC curve.", "url": "https://statscapybara.com/stats-3/signal-detection-theory/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced & Elective Topics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Signal Detection Theory", "item": "https://statscapybara.com/stats-3/signal-detection-theory/"}]}]
   </script>
@@ -64,7 +64,7 @@
         <!-- ============ INTERACTIVE ============ -->
         <div class="viz" id="sdtviz">
           <p class="viz-title">🎛️ The signal detection playground</p>
-          <p class="viz-sub">Top: the <span style="color:var(--secondary);font-weight:700">noise</span> and <span style="color:#f97316;font-weight:700">signal + noise</span> evidence distributions. Drag the criterion line sideways (or focus the chart and use ← →); everything to its right gets a &ldquo;yes.&rdquo; The four shaded regions, the 2×2 grid, and the ROC point all follow. <strong>Sweep</strong> moves the criterion across the whole axis to trace the ROC curve.</p>
+          <p class="viz-sub">Top: the <span style="color:var(--secondary-ink);font-weight:700">noise</span> and <span style="color:var(--hl-ink);font-weight:700">signal + noise</span> evidence distributions. Drag the criterion line sideways (or focus the chart and use ← →); everything to its right gets a &ldquo;yes.&rdquo; The four shaded regions, the 2×2 grid, and the ROC point all follow. <strong>Sweep</strong> moves the criterion across the whole axis to trace the ROC curve.</p>
 
           <div class="controls">
             <div class="control" style="flex:1;min-width:200px"><label>Sensitivity d′ <span class="val" id="sdt-d-val">1.50</span></label><input type="range" id="sdt-d" min="0" max="3" step="0.05" value="1.5" /></div>
@@ -468,7 +468,7 @@
       else if (t.sig && !saidYes) { name = "Miss"; good = false; }
       else if (!t.sig && saidYes) { name = "False alarm"; fas++; good = false; }
       else { name = "Correct rejection"; good = true; }
-      fb.innerHTML = '<strong style="color:' + (good ? "#22c55e" : "#ef4444") + '">' + name + ".</strong> It was " + (t.sig ? "signal + noise." : "noise.");
+      fb.innerHTML = '<strong style="color:' + (good ? "var(--ok-ink)" : "var(--bad-ink)") + '">' + name + ".</strong> It was " + (t.sig ? "signal + noise." : "noise.");
       histDot(t);
       idx++;
       if (idx < DG_N) { show(); } else { finish(); }
@@ -485,7 +485,7 @@
       summary.style.display = "block";
       summary.innerHTML = "<strong>Your scorecard:</strong> " + hits + "/" + nS + " hits, " + fas + "/" + nN +
         " false alarms → <strong>d′ ≈ " + dp.toFixed(2) + "</strong>, c ≈ " + fmtC(cc) + " (" + dir +
-        ").<br>The generator ran at d′ = 1.5; with only 20 trials (and the log-linear correction) your estimate is noisy, and if your criterion drifted between trials it pulls the estimate down. The colored dots show every reading you judged: <span style='color:var(--secondary);font-weight:700'>noise</span> and <span style='color:" + ORANGE + ";font-weight:700'>signal</span> overlap.";
+        ").<br>The generator ran at d′ = 1.5; with only 20 trials (and the log-linear correction) your estimate is noisy, and if your criterion drifted between trials it pulls the estimate down. The colored dots show every reading you judged: <span style='color:var(--secondary-ink);font-weight:700'>noise</span> and <span style='color:" + ORANGE + ";font-weight:700'>signal</span> overlap.";
       startBtn.textContent = "↻ Play again";
       startBtn.disabled = false;
     }

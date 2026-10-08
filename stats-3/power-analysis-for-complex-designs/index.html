@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-3.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Power Analysis for Complex Designs", "description": "Before collecting data, work out how many participants you need. Set an effect size and target power, and read the required sample size off the power curve.", "url": "https://statscapybara.com/stats-3/power-analysis-for-complex-designs/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced & Elective Topics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Power Analysis for Complex Designs", "item": "https://statscapybara.com/stats-3/power-analysis-for-complex-designs/"}]}]
   </script>
@@ -178,7 +178,7 @@
       document.getElementById("stat-total").textContent = reqN > NMAX ? "> " + (2 * NMAX) : 2 * reqN;
       var lab = document.getElementById("stat-label");
       lab.textContent = d < 0.35 ? "small (expensive!)" : d < 0.65 ? "medium" : "large";
-      lab.style.color = d < 0.35 ? "#f97316" : VIZ.css("--text");
+      lab.style.color = d < 0.35 ? "var(--hl-ink)" : VIZ.css("--text");
     }
 
     document.getElementById("d-range").addEventListener("input", function () { d = this.value / 100; update(); });

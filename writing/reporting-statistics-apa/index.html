@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-writing.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Reporting Statistics in APA Style", "description": "The APA 7 rules for reporting t, F, χ², r, and regression: italics, leading zeros, p-values, and confidence intervals. Hunt eleven planted errors.", "url": "https://statscapybara.com/writing/reporting-statistics-apa/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Writing: Reporting Your Research", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Reporting Statistics in APA Style", "item": "https://statscapybara.com/writing/reporting-statistics-apa/"}]}]
   </script>
@@ -168,12 +168,12 @@
     .apa-ref { overflow-x: auto; margin: 1rem 0 1.5rem; }
     .apa-ref table { border-collapse: collapse; width: 100%; font-size: .9rem; }
     .apa-ref th, .apa-ref td { text-align: left; padding: .55rem .8rem; border-bottom: 1px solid var(--border); }
-    .apa-ref th { color: color-mix(in srgb, var(--course-accent, #84cc16) 75%, var(--text)); font-size: .8rem; text-transform: uppercase; letter-spacing: .03em; }
+    .apa-ref th { color: var(--course-ink); font-size: .8rem; text-transform: uppercase; letter-spacing: .03em; }
     .apa-ref td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
     .apa-ref td:last-child { color: var(--text-muted); font-family: var(--mono); }
 
     #apa .apa-score { font-size: .9rem; font-weight: 600; color: var(--text-muted); margin-bottom: .9rem; }
-    #apa .apa-score b { color: color-mix(in srgb, var(--course-accent, #84cc16) 75%, var(--text)); }
+    #apa .apa-score b { color: var(--course-ink); }
     #apa .apa-para {
       font-size: 1.02rem; line-height: 1.9; color: var(--text);
       border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.2rem; background: var(--surface);

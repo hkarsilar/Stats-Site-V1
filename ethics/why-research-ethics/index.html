@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-ethics.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Why Research Ethics Exists", "description": "The history that made the rules necessary — Tuskegee, Milgram, the Stanford Prison Experiment — and the safeguards they produced, Nuremberg to Belmont.", "url": "https://statscapybara.com/ethics/why-research-ethics/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Ethics: Responsible Research", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Why Research Ethics Exists", "item": "https://statscapybara.com/ethics/why-research-ethics/"}]}]
   </script>
@@ -90,7 +90,7 @@
 
           <div class="tl-grid">
             <ol class="tl-line" id="tl-line"></ol>
-            <div class="tl-detail" id="tl-detail">
+            <div class="tl-detail" id="tl-detail" aria-live="polite">
               <p class="tl-empty">Select a moment on the timeline to begin.</p>
             </div>
           </div>
@@ -155,13 +155,14 @@
     }
     #tl .tl-item.harm::before { border-color: #ef4444; }
     #tl .tl-item.safeguard::before { border-color: #22c55e; }
+    #tl .tl-btn { display: block; width: 100%; padding: 0; margin: 0; font: inherit; color: inherit; text-align: left; background: none; border: 0; cursor: pointer; }
     #tl .tl-item:hover { background: var(--surface-2); }
     #tl .tl-item.active { background: color-mix(in srgb, var(--course-accent, #64748b) 12%, transparent); border-color: color-mix(in srgb, var(--course-accent, #64748b) 45%, var(--border)); }
     #tl .tl-year { display: block; font-family: var(--mono); font-size: .72rem; color: var(--text-muted); }
     #tl .tl-name { display: block; font-weight: 600; font-size: .9rem; color: var(--text); }
     #tl .tl-tag { display: inline-block; margin-top: .2rem; font-size: .68rem; text-transform: uppercase; letter-spacing: .04em; font-weight: 700; }
-    #tl .tl-item.harm .tl-tag { color: #ef4444; }
-    #tl .tl-item.safeguard .tl-tag { color: #16a34a; }
+    #tl .tl-item.harm .tl-tag { color: var(--bad-ink); }
+    #tl .tl-item.safeguard .tl-tag { color: var(--ok-ink); }
     #tl .tl-detail { border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.2rem; background: var(--surface); min-height: 9rem; }
     #tl .tl-detail h3 { margin: 0 0 .2rem; font-size: 1.08rem; color: var(--text); }
     #tl .tl-detail .tl-dyear { font-family: var(--mono); font-size: .78rem; color: var(--text-muted); }
@@ -171,10 +172,11 @@
     #tl .tl-principles { margin-top: 1.3rem; }
     #tl .tl-plabel { font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); font-weight: 700; margin: 0 0 .5rem; }
     #tl .tl-pcards { display: grid; grid-template-columns: repeat(3, 1fr); gap: .7rem; }
-    #tl .tl-pcard { border: 1px solid var(--border); border-radius: 10px; padding: .7rem .8rem; background: var(--surface); transition: .2s; opacity: .55; }
+    #tl .tl-pcard { border: 1px solid var(--border); border-radius: 10px; padding: .7rem .8rem; background: var(--surface); transition: .2s; border-style: dashed; }
     #tl .tl-pcard b { display: block; font-size: .9rem; color: var(--text); }
     #tl .tl-pcard span { display: block; font-size: .76rem; color: var(--text-muted); margin-top: .15rem; }
-    #tl .tl-pcard.lit { opacity: 1; }
+    #tl .tl-pcard:not(.lit) :is(b, span) { color: var(--text-faint); }
+    #tl .tl-pcard.lit { border-style: solid; }
     #tl .tl-pcard.lit.violated { border-color: #ef4444; background: color-mix(in srgb, #ef4444 8%, transparent); }
     #tl .tl-pcard.lit.codified { border-color: #22c55e; background: color-mix(in srgb, #22c55e 8%, transparent); }
     @media (max-width: 640px) {
@@ -247,23 +249,22 @@
     EVENTS.forEach(function (ev, i) {
       var li = document.createElement("li");
       li.className = "tl-item " + ev.kind;
-      li.tabIndex = 0;
-      li.setAttribute("role", "button");
+      // a real button inside the list item, so the <ol> keeps only <li> children
       li.innerHTML =
+        '<button type="button" class="tl-btn" aria-pressed="false">' +
         '<span class="tl-year">' + ev.year + '</span>' +
         '<span class="tl-name">' + escapeHtml(ev.name) + '</span>' +
-        '<span class="tl-tag">' + (ev.kind === "harm" ? "Harm" : "Safeguard") + '</span>';
-      li.addEventListener("click", function () { select(i, li); });
-      li.addEventListener("keydown", function (e) {
-        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(i, li); }
-      });
+        '<span class="tl-tag">' + (ev.kind === "harm" ? "Harm" : "Safeguard") + '</span></button>';
+      li.firstChild.addEventListener("click", function () { select(i, li); });
       lineEl.appendChild(li);
     });
 
     function select(i, li) {
       var ev = EVENTS[i];
-      Array.prototype.forEach.call(lineEl.children, function (c) { c.classList.remove("active"); });
-      li.classList.add("active");
+      Array.prototype.forEach.call(lineEl.children, function (c) {
+        c.classList.toggle("active", c === li);
+        c.firstChild.setAttribute("aria-pressed", c === li ? "true" : "false");
+      });
 
       var lead = ev.kind === "harm"
         ? "Principles it failed to honor:"

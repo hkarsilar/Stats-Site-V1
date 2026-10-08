@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-stats-3.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Missing Data & Imputation", "description": "Data rarely go missing at random. Toggle MCAR, MAR, and MNAR mechanisms, then check what complete-case analysis and mean imputation do to your estimates.", "url": "https://statscapybara.com/stats-3/missing-data/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced & Elective Topics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Missing Data & Imputation", "item": "https://statscapybara.com/stats-3/missing-data/"}]}]
   </script>
@@ -88,8 +88,8 @@
           <canvas id="miss-canvas"></canvas>
 
           <div class="stat-row">
-            <div class="stat"><span class="k" style="color:var(--secondary)">True mean (all 200)</span><span class="v" id="stat-true">—</span></div>
-            <div class="stat"><span class="k" style="color:#f97316">Estimated mean</span><span class="v" id="stat-est">—</span></div>
+            <div class="stat"><span class="k" style="color:var(--secondary-ink)">True mean (all 200)</span><span class="v" id="stat-true">—</span></div>
+            <div class="stat"><span class="k" style="color:var(--hl-ink)">Estimated mean</span><span class="v" id="stat-est">—</span></div>
             <div class="stat"><span class="k">Bias</span><span class="v" id="stat-bias">—</span></div>
             <div class="stat"><span class="k">SD (est / true)</span><span class="v" id="stat-sd">—</span></div>
             <div class="stat"><span class="k">r (est / true)</span><span class="v" id="stat-r">—</span></div>

@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-data.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Tidy Data", "description": "Tidy data means rows are observations, columns are variables, one value per cell. Spot the spreadsheet sins and reshape a messy grade sheet into tidy form.", "url": "https://statscapybara.com/data/tidy-data/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Data: From Raw to Ready", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Tidy Data", "item": "https://statscapybara.com/data/tidy-data/"}]}]
   </script>
@@ -139,16 +139,16 @@
     #td table.td-grid th, #td table.td-grid td { border: 1px solid var(--border); padding: .3rem .55rem; text-align: left; white-space: nowrap; }
     #td table.td-grid th { background: var(--surface-2); font-weight: 700; color: var(--text); }
     #td table.td-grid td { color: var(--text-muted); }
-    #td table.td-grid td.bad { background: color-mix(in srgb, #ef4444 20%, transparent); color: #ef4444; font-weight: 700; }
+    #td table.td-grid td.bad { background: color-mix(in srgb, #ef4444 20%, transparent); color: var(--bad-ink); font-weight: 700; }
     #td .td-banner { font-weight: 700; color: var(--text); background: color-mix(in srgb, #f97316 18%, transparent); border: 1px dashed #f97316; border-radius: 6px 6px 0 0; padding: .4rem .6rem; font-size: .85rem; }
     #td .td-banner:empty { display: none; }
     #td .td-legend { font-size: .78rem; color: var(--text-muted); margin: .4rem 0 0; }
     #td .td-legend:empty { display: none; }
     #td .td-sins { display: flex; flex-wrap: wrap; gap: .45rem; }
     #td .td-sin { border: 1px solid var(--border); border-radius: 999px; padding: .3rem .7rem; font-size: .82rem; font-weight: 600; background: var(--surface); color: var(--text-muted); }
-    #td .td-sin.done { border-color: #22c55e; color: #22c55e; background: color-mix(in srgb, #22c55e 10%, transparent); }
+    #td .td-sin.done { border-color: #22c55e; color: var(--ok-ink); background: color-mix(in srgb, #22c55e 10%, transparent); }
     #td .td-sin.active { border-color: var(--course-accent); color: var(--text); cursor: pointer; box-shadow: 0 0 0 3px color-mix(in srgb, var(--course-accent) 22%, transparent); }
-    #td .td-sin.locked { opacity: .45; }
+    #td .td-sin.locked { color: var(--text-faint); border-style: dashed; }
     #td .td-verdict { font-size: .9rem; font-weight: 600; margin: .8rem 0 0; min-height: 1.2em; }
   </style>
 
@@ -242,10 +242,11 @@
         b.type = "button";
         b.className = "td-sin " + (step > i ? "done" : (step === i ? "active" : "locked"));
         b.textContent = (step > i ? "✓ " : "") + sin.chip;
+        b.disabled = step !== i;   // only the current step does anything
         if (step === i) b.addEventListener("click", function () {
           step++;
           verdictEl.textContent = sin.note;
-          verdictEl.style.color = "#22c55e";
+          verdictEl.style.color = "var(--ok-ink)";
           render();
         });
         sinsEl.appendChild(b);
@@ -253,7 +254,7 @@
 
       if (step >= SINS.length) {
         verdictEl.textContent = "🎉 Tidy! Point at any column: it's one variable. Point at any row: it's one observation. Now every downstream tool just works.";
-        verdictEl.style.color = "#22c55e";
+        verdictEl.style.color = "var(--ok-ink)";
       }
     }
 

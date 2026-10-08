@@ -44,7 +44,7 @@
     .lctab th, .lctab td { border: 1px solid var(--border); padding: .24rem .34rem; text-align: center; min-width: 46px; }
     .lctab th { background: var(--surface-2); font-weight: 600; color: var(--text-muted); font-family: var(--font); }
     .lctab td.lc-diag { color: var(--text-faint); }
-    .lctab td.lc-hot { color: #f97316; font-weight: 700; }
+    .lctab td.lc-hot { color: var(--hl-ink); font-weight: 700; }
     .lc-legend { font-size: .78rem; color: var(--text-muted); margin: .1rem 0 .75rem; }
 
     /* The Rotation Dial: a loading plot beside the table it produces. The
@@ -54,7 +54,7 @@
     .rotplot { flex: 1 1 min(320px, 100%); min-width: min(260px, 100%); max-width: 420px; }
     .rotbox { flex: 0 0 auto; max-width: 100%; min-width: 0; }
   </style>
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Factor Analysis / PCA", "description": "Factor analysis is one line: an answer is a loading times a hidden factor plus the item&#39;s own error. Set four loadings and see which correlations follow.", "url": "https://statscapybara.com/stats-3/factor-analysis-pca/", "learningResourceType": "Interactive lesson", "educationalLevel": "Advanced", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Stats 3: Advanced & Elective Topics", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Factor Analysis / PCA", "item": "https://statscapybara.com/stats-3/factor-analysis-pca/"}]}]
   </script>
@@ -411,8 +411,8 @@
       document.getElementById("stat-pc1").textContent = (p1 * 100).toFixed(0) + "%";
       document.getElementById("stat-pc2").textContent = (p2 * 100).toFixed(0) + "%";
       var dim = document.getElementById("stat-dim");
-      if (p1 > 0.9) { dim.textContent = "~1 (nearly a line)"; dim.style.color = "#22c55e"; }
-      else if (p1 > 0.7) { dim.textContent = "mostly 1"; dim.style.color = "#f97316"; }
+      if (p1 > 0.9) { dim.textContent = "~1 (nearly a line)"; dim.style.color = "var(--ok-ink)"; }
+      else if (p1 > 0.7) { dim.textContent = "mostly 1"; dim.style.color = "var(--hl-ink)"; }
       else { dim.textContent = "2"; dim.style.color = VIZ.css("--text"); }
     }
 

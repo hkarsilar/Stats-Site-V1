@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-ml.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <style>
     .llm-corpus { font: .82rem/1.5 var(--font); background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: .7rem .85rem; color: var(--text-muted); margin: .2rem 0 .8rem; }
     .llm-corpus b { color: var(--text); font-weight: 600; }
@@ -53,13 +53,13 @@
     .llm-ref cite em { font-style: italic; }
     .llm-ref .llm-tag { display: none; font-size: .78rem; font-weight: 600; margin-top: .4rem; }
     .llm-ref.reveal-fake .llm-tag.fake, .llm-ref.reveal-real .llm-tag.real { display: block; }
-    .llm-ref.reveal-fake .llm-tag.fake { color: #ef4444; }
-    .llm-ref.reveal-real .llm-tag.real { color: #16a34a; }
+    .llm-ref.reveal-fake .llm-tag.fake { color: var(--bad-ink); }
+    .llm-ref.reveal-real .llm-tag.real { color: var(--ok-ink); }
     .llm-panels { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; margin: .6rem 0; }
     .llm-panel { border: 1px solid var(--border); border-radius: 10px; padding: .7rem .9rem; }
     .llm-panel h4 { margin: 0 0 .4rem; font-size: .92rem; }
-    .llm-panel.good h4 { color: #16a34a; }
-    .llm-panel.bad h4 { color: #ef4444; }
+    .llm-panel.good h4 { color: var(--ok-ink); }
+    .llm-panel.bad h4 { color: var(--bad-ink); }
     .llm-panel ul { margin: 0; padding-left: 1.1rem; font-size: .88rem; line-height: 1.5; }
     @media (max-width: 640px) { .llm-panels { grid-template-columns: 1fr; } .llm-bar-row { grid-template-columns: 4.5rem 1fr 2.4rem; } }
   </style>
@@ -95,7 +95,7 @@
 
           <div class="llm-out" id="llm-out"></div>
 
-          <p class="llm-note">Next-word candidates for "<span id="llm-ctx">The</span>". The <span style="color:#f97316">orange</span> bar is the one it just picked:</p>
+          <p class="llm-note">Next-word candidates for "<span id="llm-ctx">The</span>". The <span style="color:var(--hl-ink)">orange</span> bar is the one it just picked:</p>
           <div class="llm-bars" id="llm-bars"></div>
 
           <div class="controls" style="margin-top:.6rem">
@@ -292,8 +292,8 @@
         if (i === pick) c.classList.add("chosen");
       });
       refResult.innerHTML = REFS[pick].fake
-        ? '<strong style="color:#16a34a">You caught it.</strong> But could you have been sure without checking? The signs only appear when you try to <em>find</em> the paper, so make a habit of verifying every reference at the source.'
-        : '<strong style="color:#ef4444">Not this one: it is real.</strong> The fabricated reference was the third, and nothing in its wording set it apart from the other two. You cannot tell a real citation from an invented one by reading it. You have to look it up, every time.';
+        ? '<strong style="color:var(--ok-ink)">You caught it.</strong> But could you have been sure without checking? The signs only appear when you try to <em>find</em> the paper, so make a habit of verifying every reference at the source.'
+        : '<strong style="color:var(--bad-ink)">Not this one: it is real.</strong> The fabricated reference was the third, and nothing in its wording set it apart from the other two. You cannot tell a real citation from an invented one by reading it. You have to look it up, every time.';
     });
   })();
   </script>

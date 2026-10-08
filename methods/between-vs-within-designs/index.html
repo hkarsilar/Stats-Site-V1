@@ -29,7 +29,7 @@
   <meta name="twitter:image" content="https://statscapybara.com/assets/og-methods.png" />
   <link rel="icon" href="../../assets/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
-  <script>(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+  <script>(function(){var t=null;try{t=localStorage.getItem('theme');}catch(e){}try{if(t==='dark'||(!t&&!/[?&](embed|present)=1/.test(location.search)&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
   <script type="application/ld+json">
   [{"@context": "https://schema.org", "@type": "LearningResource", "name": "Between vs Within Designs", "description": "Within-subjects designs can cut the sample you need, but carryover can cancel the gain. Compare the same study run both ways and see when each design wins.", "url": "https://statscapybara.com/methods/between-vs-within-designs/", "learningResourceType": "Interactive lesson", "educationalLevel": "Intermediate", "inLanguage": "en", "isAccessibleForFree": true, "isPartOf": {"@type": "Course", "name": "StatsCapybara — Methods: Research Design", "url": "https://statscapybara.com/"}, "publisher": {"@type": "Organization", "name": "StatsCapybara", "url": "https://statscapybara.com/"}}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "StatsCapybara", "item": "https://statscapybara.com/"}, {"@type": "ListItem", "position": 2, "name": "Between vs Within Designs", "item": "https://statscapybara.com/methods/between-vs-within-designs/"}]}]
   </script>
@@ -261,11 +261,11 @@
       var vd = document.getElementById("bw-verdict"), txt, col;
       if (!isFinite(peopleW) || peopleW > peopleB) {
         txt = "Between-subjects wins here: carryover noise outweighs what the repeated measures save, and the weaker the individual differences, the less carryover that takes.";
-        col = "#3b82f6";
+        col = "var(--primary-ink)";
       } else {
         var saved = Math.round(100 * (1 - peopleW / peopleB));
         txt = "Within-subjects needs " + saved + "% fewer people (" + fmt(peopleW) + " vs " + fmt(peopleB) + "), and each person acts as their own control.";
-        col = "#22c55e";
+        col = "var(--ok-ink)";
       }
       vd.textContent = txt; vd.style.color = col;
 
