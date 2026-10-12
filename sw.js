@@ -37,12 +37,10 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v62";  /* P123: styles.css gained the per-theme
-                                    ink tokens and underlined prose links;
-                                    site.js follows the OS theme until one is
-                                    picked, and makes overflowing scroll
-                                    regions focusable; offline.html's button
-                                    went to --primary-strong. */
+const CACHE_VERSION = "sc-v63";  /* P124: site.js ranks search results
+                                    (lesson aliases, ranked body hits,
+                                    equivalent spellings) and curriculum.js
+                                    gained each lesson's `aka` list. */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location

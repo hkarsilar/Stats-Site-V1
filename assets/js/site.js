@@ -1707,14 +1707,14 @@
     { title: "Statistical Tables & Calculators", url: "tables.html", tag: "Tool", kw: "z t chi-square f mann-whitney u wilcoxon w spearman rho rank critical value p-value calculator table" },
     { title: "Statistics Formula Sheet", url: "formulas.html", tag: "Reference", kw: "formula cheat sheet equations print reference" },
     { title: "Which Test? One-Page Cheat Sheet", url: "cheat-test-chooser.html", tag: "Reference", kw: "which test cheat sheet printable poster one page decision grid outcome design t-test anova correlation regression chi-square nonparametric print pin classroom teacher" },
-    { title: "APA Statistics Reporting Cheat Sheet", url: "cheat-apa.html", tag: "Reference", kw: "apa cheat sheet printable poster reporting statistics 7 italics leading zero p value decimals p = .000 ban report t f chi-square r regression how to write results one page" },
+    { title: "APA Statistics Reporting Cheat Sheet", url: "cheat-apa.html", tag: "Reference", kw: "apa style cheat sheet printable poster reporting statistics 7 italics leading zero p value decimals p = .000 ban report t f chi-square r regression how to write results one page" },
     { title: "Assumption Checks Cheat Sheet", url: "cheat-assumptions.html", tag: "Reference", kw: "assumptions cheat sheet printable poster check normality homogeneity variance levene q-q plot sphericity mauchly greenhouse geisser welch homoscedasticity vif multicollinearity residual plot violated fix transform nonparametric one page" },
     { title: "Distribution Playground", url: "distributions.html", tag: "Tool", kw: "normal binomial poisson beta exponential uniform pdf explore distribution dice triangular sum of two dice" },
     { title: "Effect-Size Converter", url: "effect-sizes.html", tag: "Tool", kw: "cohen d r eta squared odds ratio convert effect size overlap benchmark" },
     { title: "Power & Sample-Size Calculator", url: "power.html", tag: "Tool", kw: "power sample size calculator n gpower a priori effect noncentral t anova correlation chi-square proportions minimum detectable how many participants" },
     { title: "Descriptives Calculator", url: "descriptives.html", tag: "Tool", kw: "mean sd median iqr descriptive statistics calculator paste data histogram boxplot outliers apa" },
     { title: "Correlation & Regression Calculator", url: "correlation.html", tag: "Tool", kw: "correlation regression pearson r spearman rho scatterplot scatter plot least squares line best fit slope intercept r squared residuals fisher z confidence interval anscombe quartet outlier leverage influence apa paste two columns x y" },
-    { title: "APA Results Formatter", url: "apa.html", tag: "Tool", kw: "apa 7 format results sentence write up report t f chi-square correlation regression italics leading zero p value statcheck consistency copy" },
+    { title: "APA Results Formatter", url: "apa.html", tag: "Tool", kw: "apa 7 style format results sentence write up report t f chi-square correlation regression italics leading zero p value statcheck consistency copy" },
     { title: "Practice Problems", url: "problems.html", tag: "Practice", kw: "practice problems worked examples exam questions solutions by hand pencil paper calculation z-score standard deviation confidence interval t-test anova post-hoc chi-square correlation regression mann-whitney handout multiple regression ancova logistic odds ratio interaction vif power analysis missing data bayes rule base rate beta posterior d-prime signal detection pse jnd glm poisson kaplan-meier survival aic model comparison spot the problem confound sampling bias qrp data cleaning misleading figure apa errors" },
     { title: "Practice Datasets", url: "datasets.html", tag: "Practice", kw: "practice datasets csv download data sample example real t-test anova regression factorial likert reliability cronbach cleaning messy logistic exercises worked solutions" },
     { title: "Course Quiz", url: "quiz.html", tag: "Practice", kw: "test yourself questions practice mock exam revision" },
@@ -1762,10 +1762,19 @@
      Typo tolerance is deliberately TITLE/TERM-only. Fuzzing the full text
      would cost more and return worse results, and a title match is the
      payoff a misspelling actually needs. */
-  var RE_DIA = /[\u0300-\u036f]/g, RE_SEP = /[-\u2010-\u2015_\/]+/g;
+  /* P124 added two folds. An exponent is a digit: "R²", "R^2" and "r2" all
+     normalize to "r2", so the three spellings meet before any matching
+     starts (squash("R²") used to be the single letter "r", which matched 127
+     pages on spacing alone). And an apostrophe is dropped, so "Bayes' rule"
+     and "bayes rule" are the same string and can match exactly, where before
+     they met only at the weaker spacing tier. flexRe() reads both forms the
+     same way, so body matching does not change. */
+  var RE_DIA = /[\u0300-\u036f]/g, RE_SEP = /[-\u2010-\u2015_\/]+/g, RE_SUP = /\^\s*(\d)|([\u00b9\u00b2\u00b3])/g;
   function norm(s) {
     s = String(s == null ? "" : s).toLowerCase();
     if (s.normalize) s = s.normalize("NFD").replace(RE_DIA, "");
+    s = s.replace(RE_SUP, function (m, d, sup) { return d || String("\u00b9\u00b2\u00b3".indexOf(sup) + 1); })
+      .replace(/[\u0027\u2019\u02bc]/g, "");
     return s.replace(RE_SEP, " ").replace(/\s+/g, " ").trim();
   }
   function squash(s) { return norm(s).replace(/[^a-z0-9]+/g, ""); }
@@ -1855,19 +1864,53 @@
      over the whole index this took Cramér's V from 0 to 7 hits and left all
      24 control queries (ab / xy / zz / qq / test / data / mean / sd / Cohen's
      d / regression / …) at identical counts, with 20 full-corpus passes still
-     at 11 ms. */
+     at 11 ms.
+
+     P124 moved the fold from the pattern to the text. Once body hits were
+     counted rather than found once, the accent classes were most of the cost
+     of a keystroke: "anova" took 8.3 ms over the full index with them and
+     2.6 ms without. So foldText() now maps each accented letter (and each
+     superscript digit, so the corpus's 137 "R²"s meet a typed "r2") to its
+     base character and lowercases the result, once per index load, and
+     flexRe() builds a plain lowercase pattern to run against that. Every
+     replacement is one character for one, so a match's offsets in the
+     folded text are its offsets in the original, which is where snippets
+     come from. Same 325 "anova" matches either way.
+
+     And every pattern now starts at the start of a word (P124). Without the
+     anchor, "p value" matched the end of "group value", "t test" the end of
+     "that test", and "anova" counted every MANOVA, which did not matter while
+     body hits were only listed but does now that they are counted. */
   var ACCENT_FOLD = {
     a: "àáâãäåā", c: "çćč",
     e: "èéêëē", i: "ìíîïī",
     n: "ñń", o: "òóôõöøō",
     s: "śš", u: "ùúûüū", y: "ýÿ",
-    z: "źž"
+    z: "źž", 1: "¹", 2: "²", 3: "³"
   };
-  function flexChar(ch) {
-    var acc = ACCENT_FOLD[ch];
-    return acc ? "[" + ch + acc + "]" : ch.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  var UNFOLD = null;
+  function foldText(s) {
+    if (!UNFOLD) {
+      UNFOLD = { map: Object.create(null) };
+      for (var b in ACCENT_FOLD) {
+        for (var i = 0; i < ACCENT_FOLD[b].length; i++) {
+          var ch = ACCENT_FOLD[b].charAt(i), up = ch.toUpperCase();
+          UNFOLD.map[ch] = b;
+          if (up.length === 1) UNFOLD.map[up] = b;
+        }
+      }
+      UNFOLD.re = new RegExp("[" + Object.keys(UNFOLD.map).join("") + "]", "g");
+    }
+    var f = String(s).replace(UNFOLD.re, function (c) { return UNFOLD.map[c]; }), low = f.toLowerCase();
+    /* toLowerCase() can lengthen a few letters (İ becomes two characters);
+       the pattern only ever holds a-z and 0-9, so ASCII is all that must fold */
+    return low.length === f.length ? low : f.replace(/[A-Z]/g, function (c) { return c.toLowerCase(); });
   }
-  /* takes a NORMALIZED query (norm(), so word boundaries survive) */
+  function flexChar(ch) {
+    return ch.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+  /* takes a NORMALIZED query (norm(), so word boundaries survive), and the
+     pattern it returns is meant for text that has been through foldText() */
   function flexRe(qn) {
     var clean = String(qn == null ? "" : qn).replace(/[^a-z0-9 ]+/g, " ").replace(/\s+/g, " ").trim();
     if (!clean) return null;
@@ -1877,7 +1920,7 @@
       for (var j = 0; j < w.length; j++) inner.push(flexChar(w.charAt(j)));
       parts.push(inner.join("[^a-zA-Z0-9]?"));
     }
-    return new RegExp(parts.join("[^a-zA-Z0-9]{0,3}"), "i");
+    return new RegExp("\\b" + parts.join("[^a-zA-Z0-9]{0,3}"));
   }
   /* normalized haystacks, memoised — every title/keyword string on the site
      is normalized once per session, not once per keystroke */
@@ -1889,21 +1932,49 @@
   }
   /* 0 = no match; higher = better. Typo tolerance needs 4+ characters on BOTH
      sides, so short tokens like "z", "sd" or "f" can't fuzzily match half the
-     site (without that guard "t" matches every one-letter token there is). */
+     site (without that guard "t" matches every one-letter token there is).
+
+     P124 split the old 100 ("the title starts with the query") in two. The
+     whole title is 120. A match at the start of ANY word in it is 100, so
+     "Simple Linear Regression" and "Regression Discontinuity Design" now tie
+     for "regression" and the body decides, where the old rule handed it to
+     the title that happened to start with the word. A match inside a word
+     ("anova" in "MANOVA") stays at 80. A typo one edit from the whole title
+     (50) beats a typo in one of its words (40), so "corelation" finds the
+     Correlation lesson before the calculator whose title only contains it. */
+  /* true for a character code that is not a-z or 0-9, so a match right
+     after it starts a word (haystacks are already lowercase) */
+  function isSep(c) { return !((c >= 48 && c <= 57) || (c >= 97 && c <= 122)); }
   function scoreOne(Q, str) {
     if (!Q.n) return 1;
-    var h = hayFor(str);
-    if (h.n.indexOf(Q.n) === 0) return 100;
-    if (h.n.indexOf(Q.n) >= 0) return 80;
-    if (Q.s && h.s.indexOf(Q.s) >= 0) return 60;
+    var h = hayFor(str), at = h.n.indexOf(Q.n);
+    if (at === 0) return h.n.length === Q.n.length ? 120 : 100;
+    for (var k = at; k > 0; k = h.n.indexOf(Q.n, k + 1)) if (isSep(h.n.charCodeAt(k - 1))) return 100;
+    /* three characters at least for a match inside a word or across spacing:
+       two letters turn up everywhere, and "sd" was matching "Tukey's H(SD)"
+       and "thesi(s d)ata" */
+    if (Q.s.length >= 3) {
+      if (at > 0) return 80;
+      if (h.s.indexOf(Q.s) >= 0) return 60;
+    }
+    /* a typo of the whole name keeps its first letter: "corelation" and
+       "anvoa" are typos, "f test" is not a typo of "t test" */
+    if (!Q.alt && Q.s.length >= 4 && h.s.length >= 4 && Q.s.charAt(0) === h.s.charAt(0) && within1(Q.s, h.s)) return 50;
+    return everyWord(Q, h);
+  }
+  /* every typed word starts a word of the name (55), or is one typo away
+     from one (40) */
+  function everyWord(Q, h) {
     if (!Q.t.length) return 0;
     var fuzzy = false;
     for (var i = 0; i < Q.t.length; i++) {
       var qt = Q.t[i], hit = false;
       for (var j = 0; j < h.t.length; j++) {
         var ht = h.t[j];
-        if (ht.indexOf(qt) === 0) { hit = true; break; }
-        if (qt.length >= 4 && ht.length >= 4 && within1(qt, ht)) { hit = true; fuzzy = true; break; }
+        /* a one-letter word ("t", "f", "z") must be a one-letter word there
+           too, or "f test" matches every keyword starting with f */
+        if (qt.length > 1 ? ht.indexOf(qt) === 0 : ht === qt) { hit = true; break; }
+        if (!Q.alt && qt.length >= 4 && ht.length >= 4 && within1(qt, ht)) { hit = true; fuzzy = true; break; }
       }
       if (!hit) return 0;
     }
@@ -1911,18 +1982,151 @@
   }
   /* A course-title or keyword hit is weaker evidence than the page's own
      title, so it is SCALED rather than hard-capped. Scaling is what keeps
-     the ordering sane at both ends: an exact keyword (80 → 44) still beats a
-     guessed spelling in a title (40), but a fuzzy keyword (40 → 22) no
-     longer outranks the lesson actually named after the word — which is why
-     "corelation" put three cheat sheets above the Correlation lesson. */
-  function aside(sc) { return sc ? Math.round(sc * 0.55) : 0; }
-  function scoreLesson(Q, s) {
-    var best = scoreOne(Q, s.title);
-    if (Q.n && s.n.indexOf(Q.n) >= 0) best = Math.max(best, 90);
-    return Math.max(best, aside(scoreOne(Q, s.courseTitle)));
+     the ordering sane at both ends: a fuzzy keyword (40 → 16) never
+     outranks the lesson actually named after the word — which is why
+     "corelation" once put three cheat sheets above the Correlation lesson.
+     The factor was 0.55 until P124. Once a keyword at the start of a word
+     scored 100 rather than 80, that made a keyword hit worth 55, more than a
+     heading (40), and every course page's syllabus list outranked the lesson
+     with a whole section on the term. At 0.4 a keyword is worth what a
+     heading is (40): both say the page covers the topic, and density
+     decides between them. */
+  function aside(sc) { return sc ? Math.round(sc * 0.4) : 0; }
+  /* best score over every spelling of the query (see variants() below) */
+  function scoreAny(V, str) {
+    for (var i = 0, best = 0; i < V.length; i++) best = Math.max(best, scoreOne(V[i], str));
+    return best;
   }
-  function scorePage(Q, p) {
-    return Math.max(scoreOne(Q, p.title), aside(scoreOne(Q, p.kw)));
+
+  /* ---------- lesson aliases (P124) ----------
+     A lesson's `aka` in curriculum.js lists the names students use for it:
+     "p-value" for Hypothesis Testing Logic, "F test" for One-Way ANOVA. An
+     alias scores like a second title, except that matching it whole is 110,
+     under the real title's 120, so a lesson NAMED for the query still wins.
+     Each alias must be something the lesson teaches, which
+     tools/search-relevance.js checks against the lesson's own text. */
+  var AKA = Object.create(null);
+  function akaOf(s) {
+    var a = AKA[s.slug];
+    if (!a) a = AKA[s.slug] = s.aka ? String(s.aka).split(/\s*,\s*/) : [];
+    return a;
+  }
+  /* own = how well the lesson's NAME matches: its title, an alias, or its
+     section number ("1.12"). kw = the weaker evidence of a course title.
+     A query made of one-word names ("mean median mode") also matches, at
+     the every-word tier, though no single name holds all three words. */
+  function scoreLesson(Q, V, s) {
+    var t = scoreAny(V, s.title), own = t, a = akaOf(s), sec = !!Q.n && s.n.indexOf(Q.n) >= 0;
+    for (var i = 0; i < a.length; i++) own = Math.max(own, scoreAka(V, a[i]));
+    if (a.length) own = Math.max(own, everyName(V[0], s.title, a));
+    if (sec) own = Math.max(own, 90);
+    return { own: own, named: !!t || sec, sec: sec && own === 90, kw: aside(scoreAny(V, s.courseTitle)) };
+  }
+  /* An alias names the lesson only when it matches whole (110), from its
+     first word (100, so "p val" already finds "p-value" while it is being
+     typed) or as a one-edit typo of the whole alias (50). A match further in
+     counts no more than a heading (40), and a typo further in counts for
+     nothing: an alias "researcher degrees of freedom" would otherwise claim
+     "degrees of freedom" from the t-test lesson that teaches it, and
+     "corelation" would find "intraclass correlation". */
+  function scoreAka(V, a) {
+    var h = hayFor(a), best = 0;
+    for (var i = 0; i < V.length; i++) {
+      var sc = scoreOne(V[i], a);
+      if (sc === 120) sc = 110;
+      else if (sc === 40) sc = 0;
+      else if (sc && !(sc === 50 || (sc === 100 && h.n.indexOf(V[i].n) === 0))) sc = 40;
+      if (sc > best) best = sc;
+    }
+    return best;
+  }
+  /* every typed word is one of the lesson's one-word names (55) */
+  function everyName(Q, title, a) {
+    if (Q.t.length < 2) return 0;
+    var names = [hayFor(title).n];
+    for (var i = 0; i < a.length; i++) names.push(hayFor(a[i]).n);
+    for (var j = 0; j < Q.t.length; j++) if (names.indexOf(Q.t[j]) < 0) return 0;
+    return 55;
+  }
+  function scorePage(V, p) {
+    var own = scoreAny(V, p.title);
+    return { own: own, named: !!own, kw: aside(scoreAny(V, p.kw)), nav: p.tag === "Course" || !!NAV[p.url] };
+  }
+  /* Pages that exist to point at other pages: the course front doors, the
+     guides hub, the toolbox, the glossary (whose definition already sits at
+     the top of the results as a card) and the progress page. Named in a
+     query, they rank like anything else; on a topic, their body and keyword
+     evidence counts half, because the lesson they list is one click closer
+     to the answer. And when the query names a lesson or tool outright, they
+     go after every content page: the reader asked for a topic, and the
+     front door's syllabus keywords say only that the topic exists. Before
+     this, the Stats 1 front door came second for "normal distribution".
+     When a query names nothing ("beginner", "syllabus"), they compete at
+     half weight and can still come first. */
+  var NAV = { "guides/": 1, "toolbox.html": 1, "glossary.html": 1, "progress.html": 1 };
+
+  /* ---------- equivalent spellings (P124) ----------
+     A student types "type 1 error"; every page writes "Type I error". They
+     type "sd"; the lessons say "SD" in tables and "standard deviation" in
+     prose. Each group below lists spellings that mean the same thing, and a
+     query containing one of them (as whole words) is searched as every one
+     of them. R² needs only "r squared" here, because norm() already makes
+     "R²" and "R^2" into "r2". The last three pairs are names the lessons
+     write one way and students type the other.
+     Ordinary English words stay out. "did" is never difference-in-differences
+     and "type" or "two" alone mean nothing new; search-relevance.js keeps a
+     list of such words and fails if any of them expands.
+     A plural last word is also searched without its "s", so "residuals"
+     reaches the heading "The residual plot". The singular is a prefix of the
+     plural, so it finds both. */
+  var SYN = [
+    ["type 1", "type i", "type one"],
+    ["type 2", "type ii", "type two"],
+    ["r2", "r squared"],
+    ["sd", "standard deviation"],
+    ["chi square", "chi squared"],
+    ["bayes rule", "bayes theorem"],
+    ["log transform", "log transformation"]
+  ];
+  /* alt marks a variant spelling. Variants get no typo tiers: the typed
+     query already has them, and a variant's typo is two steps from what was
+     typed ("k means" → "k mean" is one edit from the alias "mean"). */
+  function mkQ(n, alt) { return { n: n, s: squash(n), t: toks(n), alt: !!alt }; }
+  function variants(n) {
+    var c = " " + n.replace(/[^a-z0-9 ]+/g, " ").replace(/\s+/g, " ").trim() + " ", out = [n];
+    for (var g = 0; g < SYN.length; g++) {
+      for (var i = 0; i < SYN[g].length; i++) {
+        var f = " " + SYN[g][i] + " ";
+        if (c.indexOf(f) < 0) continue;
+        for (var j = 0; j < SYN[g].length; j++) {
+          var v = c.split(f).join(" " + SYN[g][j] + " ").trim();
+          if (out.indexOf(v) < 0) out.push(v);
+        }
+        break;
+      }
+    }
+    /* not "-ss", "-is" or "-us": "analysis" and "corpus" are not plurals */
+    var m = /[a-z]{3}[^siu ]s$/.exec(c.trim());
+    if (m && out.indexOf(c.trim().slice(0, -1)) < 0) out.push(c.trim().slice(0, -1));
+    return out;
+  }
+  function synForm(v) {
+    for (var g = 0; g < SYN.length; g++) if (SYN[g].indexOf(v) >= 0) return true;
+    return false;
+  }
+  /* one global pattern for every spelling. Spellings under three characters
+     are left out, as they always were, unless they are one of the SYN forms:
+     "sd" and "r2" are then anchored at both ends, so "sd" finds "SD = 4.2"
+     and not "sdk", and "r2" finds "R²" and not "for 2". */
+  function bodyRe(list) {
+    var src = [];
+    for (var i = 0; i < list.length; i++) {
+      var short = squash(list[i]).length < 3, re;
+      if (short && !synForm(list[i])) continue;
+      re = flexRe(list[i]);
+      if (re) src.push("(?:" + re.source + (short ? "(?![a-zA-Z0-9])" : "") + ")");
+    }
+    return src.length ? new RegExp(src.join("|"), "g") : null;
   }
 
   /* ---------- glossary instant answers (P71) ---------- */
@@ -1941,7 +2145,9 @@
     var G = window.GLOSSARY;
     if (!G || !Q.n) return null;
     var q = askTerm(Q.n), qs = q.replace(/[^a-z0-9]+/g, "");
-    if (qs.length < 3) return null;
+    /* two characters are enough for an exact headword ("r2" is R²); every
+       fuzzy branch below asks for four */
+    if (qs.length < 2) return null;
     var one = q.indexOf(" ") < 0, best = null, bestSc = 0;
     for (var i = 0; i < G.length; i++) {
       var g = G[i], full = hayFor(g.t), sc = 0;
@@ -1956,6 +2162,7 @@
       else if (one && qs.length >= 4 && head.t.length > 1 && within1(qs, head.t[0])) sc = 65;
       if (sc > bestSc) { bestSc = sc; best = g; }
     }
+    Q.glossSc = bestSc;
     return bestSc ? best : null;
   }
   function showDef(g) {
@@ -1973,9 +2180,10 @@
 
   /* a short excerpt around the first match, with the matched run <mark>ed —
      the regex (not the raw query) decides the range, so a "chisquare" query
-     highlights the "chi-square" it actually found */
-  function snippetFor(txt, re) {
-    var m = re.exec(txt);
+     highlights the "chi-square" it actually found. The match is made in the
+     folded copy and cut from the original, at the same offsets. */
+  function snippetFor(txt, re, folded) {
+    var m = re.exec(folded == null ? foldText(txt) : folded);
     if (!m) return null;
     var at = m.index, len = m[0].length;
     var from = Math.max(0, at - 36), to = Math.min(txt.length, at + len + 72);
@@ -2009,65 +2217,137 @@
       (s.snip ? '<small class="snip">' + s.snip + '</small>' : '') + '</span>' +
       '<span class="course-tag">' + (s.page ? s.tag : s.courseTitle) + '</span></a></li>';
   }
-  function titlePass(Q, flat) {
-    if (!Q.n) {
-      return SEARCH_PAGES.map(function (p) { return { page: true, title: p.title, url: p.url, tag: p.tag }; })
-        .concat(flat);
+  /* ---------- ranking body hits (P124) ----------
+     The index body of each page, its headings (h2 to h4 and FAQ questions,
+     stored apart by build-search-index.py) and its word count, set up once
+     per index, with folded copies of both for matching (see foldText()).
+     Four blank lines join the headings, one more separator than flexRe()
+     will cross between two words, so a match can never straddle two
+     headings. */
+  var IDX = null;
+  function idxFor() {
+    var I = window.SEARCH_INDEX;
+    if (!I) return null;
+    if (IDX && IDX.src === I) return IDX;
+    var heads = I.heads || {}, docs = Object.create(null);
+    function add(key, txt) {
+      txt = txt || "";
+      for (var n = 1, i = 0; i < txt.length; i++) if (txt.charCodeAt(i) === 32) n++;
+      docs[key] = { txt: txt, f: foldText(txt), heads: heads[key] ? foldText(heads[key].join("\n\n\n\n")) : "", words: n };
     }
-    var scored = [];
+    for (var k in I.lessons) add(k, I.lessons[k]);
+    (I.pages || []).forEach(function (p) { add(p.u, p.txt); });
+    IDX = { src: I, docs: docs };
+    return IDX;
+  }
+  /* Where a page mentions the query, and how densely. A heading hit is 40
+     (up to 48 for three), because a query that names an h2 or a FAQ question
+     is what that section is about. Density is hits per 1,000 words, scaled to
+     at most 30 and saturating, so Regression Diagnostics, which says
+     "residual" 25 times in 954 words, outranks the problems page, which says
+     it 53 times in 61,000. The 400-word floor stops a 60-word page from
+     winning on one mention. So any heading hit beats any page without one. Counting stops
+     at 50 per 1,000 words, where the curve is flat (27.8 of the 30), so a
+     common word like "the" costs a few matches per page, not thousands. */
+  function bodyScore(re, d) {
+    var c = 0, h = 0, cap = Math.ceil(d.words / 20) + 1;
+    re.lastIndex = 0;
+    while (c < cap && re.exec(d.f)) c++;
+    if (!c) return null;
+    if (d.heads) { re.lastIndex = 0; while (re.exec(d.heads)) h++; }
+    var dens = 1000 * c / Math.max(d.words, 400);
+    return { head: h ? 40 + 4 * Math.min(h - 1, 2) : 0, dens: 30 * dens / (dens + 4) };
+  }
+  /* Every page and lesson, scored on its name. Nothing is dropped here: a
+     page with no name match can still win on its body. */
+  function namePass(Q, V, flat) {
+    var out = [];
     SEARCH_PAGES.forEach(function (p, i) {
-      var sc = scorePage(Q, p);
-      if (sc) scored.push({ sc: sc, ord: i, it: { page: true, title: p.title, url: p.url, tag: p.tag } });
+      var r = scorePage(V, p);
+      r.ord = i; r.key = p.url; r.it = { page: true, title: p.title, url: p.url, tag: p.tag };
+      out.push(r);
     });
     flat.forEach(function (s, i) {
-      var sc = scoreLesson(Q, s);
-      if (sc) scored.push({ sc: sc, ord: 1000 + i, it: s });
+      var r = scoreLesson(Q, V, s);
+      r.ord = 1000 + i; r.key = s.slug; r.it = s;
+      out.push(r);
     });
-    scored.sort(function (a, b) { return b.sc - a.sc || a.ord - b.ord; });
-    return scored.map(function (r) { return r.it; });
+    return out;
+  }
+  /* The order, in two bands.
+     A. The page's own name matches: its title, an alias or its section
+        number, scoring 55 or more. These come first, by how well the name
+        matches, and ties go to the stronger body, then to curriculum order.
+     B. Everything else: a course-title or keyword hit, a typo of a name, or
+        the body alone. These are ranked together on the strongest single
+        piece of evidence (name, keyword or heading) plus density, halved for
+        the navigation pages in NAV, which drop to the end of the band when
+        band A is not empty. Keyword and heading do not add up,
+        because a keyword list and a heading make the same claim, that the
+        page covers the topic.
+     Results whose title does not explain the match carry a snippet of the
+     body, so the reader can see why "Hypothesis Testing Logic" came back for
+     "type 1 error". */
+  function searchRank(raw, flat) {
+    var Q = mkQ(norm(raw));
+    if (!Q.n) {
+      return { Q: Q, list: SEARCH_PAGES.map(function (p) { return { page: true, title: p.title, url: p.url, tag: p.tag }; }).concat(flat) };
+    }
+    var V = variants(Q.n).map(function (v, i) { return mkQ(v, i > 0); }), cand = namePass(Q, V, flat);
+    /* "what is power" asks about one word, but the asking words match no
+       name, so run it again on the term alone */
+    var stripped = askTerm(Q.n);
+    if (stripped && stripped !== Q.n && !cand.some(function (c) { return c.own || c.kw; })) {
+      Q = mkQ(stripped);
+      V = variants(Q.n).map(function (v, i) { return mkQ(v, i > 0); });
+      cand = namePass(Q, V, flat);
+    }
+
+    var re = null, idx = idxFor(), forms = V.map(function (v) { return v.n; });
+    if (idx) re = bodyRe(forms);
+    cand.forEach(function (c) {
+      c.head = c.dens = 0;
+      var d = re && idx.docs[c.key];
+      var b = d ? bodyScore(re, d) : null;
+      if (b) { c.head = b.head; c.dens = b.dens; c.doc = d; }
+      c.band = c.own >= 55 ? 1 : 0;
+      c.sc = c.band ? c.own : (Math.max(c.own, c.kw, c.head) + c.dens) * (c.nav ? 0.5 : 1);
+      /* a section number ("1.12" is in Stats 1 and in Methods) says nothing
+         the body can sharpen, so those ties keep curriculum order */
+      c.tie = c.band && !c.sec ? c.head + c.dens + c.kw / 10 : 0;
+    });
+    cand = cand.filter(function (c) { return c.own || c.kw || c.doc; });
+    var named = cand.some(function (c) { return c.band; });
+    cand.forEach(function (c) { c.late = named && c.nav && !c.band ? 1 : 0; });
+    cand.sort(function (a, b) { return b.band - a.band || a.late - b.late || b.sc - a.sc || b.tie - a.tie || a.ord - b.ord; });
+
+    var one = re && new RegExp(re.source);
+    var list = cand.map(function (c, i) {
+      if (c.named || !c.doc || i >= 40) return c.it;
+      var it = {}, k;
+      for (k in c.it) it[k] = c.it[k];
+      it.snip = snippetFor(c.doc.txt, one, c.doc.f);
+      return it;
+    });
+    return { Q: Q, list: list, why: cand };
   }
   function runSearch() {
     var raw = searchInput.value.trim();
-    var Q = { n: norm(raw), s: squash(raw), t: toks(raw) };
     var flat = window.CURRICULUM_FLAT.filter(function (s) { return s.ready; });
 
-    showDef(glossFind(Q));
-
-    /* title pass, ranked: an exact prefix beats a substring beats a spacing
-       variant beats a typo. Ties keep the old order (pages, then lessons). */
-    var top = titlePass(Q, flat);
-    /* "what is power" asks about one word, but the asking words match no
-       title, so the literal query returns nothing. When a question form came
-       back empty, run it again on the term alone. */
-    var stripped = askTerm(Q.n);
-    if (!top.length && stripped && stripped !== Q.n) {
-      Q = { n: stripped, s: squash(stripped), t: toks(stripped) };
-      top = titlePass(Q, flat);
+    /* the card honours the same equivalences as the list, and the best match
+       over every spelling wins: "sd" shows the standard deviation, and
+       "type 2 error" the Type II error rather than the Type I error that its
+       own spelling is one typo from */
+    var gv = variants(norm(raw)), g = null, gs = 0;
+    for (var i = 0; i < gv.length; i++) {
+      var gq = mkQ(gv[i]), gi = glossFind(gq);
+      if (gi && gq.glossSc > gs) { g = gi; gs = gq.glossSc; }
     }
+    showDef(g);
 
-    /* full-text pass: lessons/pages whose BODY mentions the query but whose
-       title didn't already match — shown below title matches, with a snippet */
-    var deep = [], re = Q.s.length >= 3 ? flexRe(Q.n) : null;
-    if (re && window.SEARCH_INDEX) {
-      var seen = Object.create(null);
-      top.forEach(function (s) { seen[s.page ? s.url : s.slug] = 1; });
-      flat.forEach(function (s) {
-        if (seen[s.slug]) return;
-        var txt = window.SEARCH_INDEX.lessons[s.slug];
-        if (!txt) return;
-        var sn = snippetFor(txt, re);
-        if (sn) deep.push({ course: s.course, slug: s.slug, n: s.n, title: s.title, courseTitle: s.courseTitle, snip: sn });
-      });
-      (window.SEARCH_INDEX.pages || []).forEach(function (p) {
-        if (seen[p.u]) return;
-        var meta = null;
-        for (var i = 0; i < SEARCH_PAGES.length; i++) if (SEARCH_PAGES[i].url === p.u) meta = SEARCH_PAGES[i];
-        var sn = meta ? snippetFor(p.txt, re) : null;
-        if (sn) deep.push({ page: true, title: meta.title, url: meta.url, tag: meta.tag, snip: sn });
-      });
-    }
-
-    searchMatches = top.concat(deep).slice(0, 40);
+    var ranked = searchRank(raw, flat), Q = ranked.Q;
+    searchMatches = ranked.list.slice(0, 40);
     searchIdx = 0;
 
     if (!searchMatches.length) {

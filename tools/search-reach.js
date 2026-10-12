@@ -32,8 +32,11 @@
 
    The matcher is LIFTED VERBATIM from site.js by brace-matching, not
    reimplemented. A copy would drift, and the whole question here is what the
-   shipped search does. If site.js renames norm/squash/flexChar/flexRe, this
-   script fails loudly rather than testing a stale copy.
+   shipped search does. If site.js renames norm/squash/foldText/flexChar/
+   flexRe, this script fails loudly rather than testing a stale copy. Since
+   P124 the shipped search folds the corpus (accents to base letters,
+   superscripts to digits, lowercase) and matches it with a plain pattern,
+   so every body is put through the lifted foldText() before matching.
 
    BODY TEXT, NOT THE GLOSSARY CARD. glossFind() renders a definition card for
    any glossary term, so scoring against the glossary would pass by construction.
@@ -95,12 +98,12 @@ function braceBlock(src, startIdx) {
 }
 function liftMatcher() {
   const src = fs.readFileSync(path.join(ROOT, "assets/js/site.js"), "utf8");
-  const decls = [/var RE_DIA = [^;]+;/, /var ACCENT_FOLD = \{[\s\S]*?\};/].map(re => {
+  const decls = [/var RE_DIA = [^;]+;/, /var ACCENT_FOLD = \{[\s\S]*?\};/, /var UNFOLD = [^;]+;/].map(re => {
     const m = src.match(re);
     if (!m) throw new Error("site.js no longer declares " + re + " — update this script");
     return m[0];
   });
-  const fns = ["norm", "squash", "flexChar", "flexRe"].map(n => {
+  const fns = ["norm", "squash", "foldText", "flexChar", "flexRe"].map(n => {
     const i = src.indexOf("function " + n + "(");
     if (i < 0) throw new Error("site.js no longer defines " + n + "() — update this script");
     return braceBlock(src, i);
@@ -137,8 +140,8 @@ function main() {
   const { glossary, index } = loadData();
 
   const bodies = [];
-  for (const slug of Object.keys(index.lessons || {})) bodies.push({ id: slug, txt: index.lessons[slug] });
-  for (const p of index.pages || []) bodies.push({ id: p.u || p.url || "(page)", txt: p.txt || "" });
+  for (const slug of Object.keys(index.lessons || {})) bodies.push({ id: slug, txt: M.foldText(index.lessons[slug]) });
+  for (const p of index.pages || []) bodies.push({ id: p.u || p.url || "(page)", txt: M.foldText(p.txt || "") });
 
   if (!glossary.length || !bodies.length) {
     console.error("nothing to check — glossary or index came back empty");

@@ -138,16 +138,39 @@ def textify(fragment: str) -> str:
     return re.sub(r"\s+", " ", fragment).strip()
 
 
-def lesson_text(path: Path) -> str:
+# Headings, stored apart from the body text (P124). site.js ranks a body hit
+# by WHERE it falls as well as how often: a query that names an h2, an h3 or
+# a FAQ question is what that section is about, while the same words in a
+# paragraph may be a passing mention. The h1 is left out because it is the
+# page title, which the title pass already scores, and "Common questions" is
+# the FAQ block's own label on every lesson, so it says nothing about any of
+# them. The text is duplicated from the body, which costs about 3% of the
+# index (50 KB); character offsets into the body would be smaller but would tie the
+# ranking to how textify() collapses whitespace at every tag boundary.
+HEAD_RE = re.compile(r"<(h[2-4]|summary)\b[^>]*>(.*?)</\1>", re.S | re.I)
+SKIP_HEADS = {"common questions"}
+
+
+def heads_of(fragment: str) -> list:
+    fragment = re.sub(r"<script\b.*?</script>", " ", fragment, flags=re.S | re.I)
+    out = []
+    for m in HEAD_RE.finditer(fragment):
+        t = textify(m.group(2))
+        if t and t.lower() not in SKIP_HEADS and t not in out:
+            out.append(t)
+    return out
+
+
+def lesson_text(path: Path) -> tuple:
     src = path.read_text(encoding="utf-8")
     m = re.search(r"<article class=\"lesson\">(.*?)</article>", src, re.S)
-    return textify(m.group(1))[:LESSON_MAX_CHARS] if m else ""
+    return (textify(m.group(1))[:LESSON_MAX_CHARS], heads_of(m.group(1))) if m else ("", [])
 
 
-def page_text(path: Path, limit: int = MAX_CHARS) -> str:
+def page_text(path: Path, limit: int = MAX_CHARS) -> tuple:
     src = path.read_text(encoding="utf-8")
     m = re.search(r"<main\b.*?>(.*?)</main>", src, re.S)
-    return textify(m.group(1))[:limit] if m else ""
+    return (textify(m.group(1))[:limit], heads_of(m.group(1))) if m else ("", [])
 
 
 def glossary_text(path: Path, limit: int = MAX_CHARS) -> str:
@@ -200,12 +223,21 @@ def ready_sections() -> dict:
 
 
 lessons = {}
+heads = {}   # lesson slug or page URL -> its headings; the two key sets never collide
 READY = ready_sections()
 for slug in course_slugs():
     for sec in READY.get(slug, []):
         f = ROOT / slug / sec / "index.html"
         if f.exists():
-            lessons[sec] = lesson_text(f)
+            lessons[sec], heads[sec] = lesson_text(f)
+
+
+def add_page(url: str, path: Path, limit: int = MAX_CHARS) -> None:
+    txt, hs = page_text(path, limit)
+    pages.append({"u": url, "txt": txt})
+    if hs:
+        heads[url] = hs
+
 
 pages = []
 for fname, title in [
@@ -235,19 +267,19 @@ for fname, title in [
 ]:
     p = ROOT / fname
     if p.exists():
-        pages.append({"u": fname, "txt": page_text(p, PAGE_MAX_CHARS.get(fname, MAX_CHARS))})
+        add_page(fname, p, PAGE_MAX_CHARS.get(fname, MAX_CHARS))
 # course landing pages (<course>/index.html, P61) — indexed under their clean URL
 # so a search for "Stats 2" or "Writing course" finds the front door
 for slug in course_slugs():
     p = ROOT / slug / "index.html"
     if p.exists():
-        pages.append({"u": f"{slug}/", "txt": page_text(p)})
+        add_page(f"{slug}/", p)
 # the guides hub (guides/index.html) — the front door of the guides folder.
 # A publishing folder with no index.html is a 404 every crawler finds by
 # walking the path up, which is how /guides/ landed in Search Console.
 hub = ROOT / "guides" / "index.html"
 if hub.exists():
-    pages.append({"u": "guides/", "txt": page_text(hub)})
+    add_page("guides/", hub)
 # long-form guides (guides/<slug>/index.html) — indexed under their clean URL
 for slug in [
     "analyze-thesis-data-jasp",
@@ -260,7 +292,7 @@ for slug in [
 ]:
     p = ROOT / "guides" / slug / "index.html"
     if p.exists():
-        pages.append({"u": f"guides/{slug}/", "txt": page_text(p, GUIDE_MAX_CHARS)})
+        add_page(f"guides/{slug}/", p, GUIDE_MAX_CHARS)
 # glossary terms now live in assets/js/glossary-data.js; index them under glossary.html
 gl = ROOT / "assets/js/glossary-data.js"
 if gl.exists():
@@ -273,7 +305,7 @@ out = (
     "   Loaded lazily by site.js when the search overlay first opens.\n"
     "   ============================================================ */\n"
     "window.SEARCH_INDEX = "
-    + json.dumps({"lessons": lessons, "pages": pages}, ensure_ascii=False)
+    + json.dumps({"lessons": lessons, "pages": pages, "heads": heads}, ensure_ascii=False)
     + ";\n"
 )
 dest = ROOT / "assets" / "js" / "search-index.js"
