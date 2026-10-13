@@ -34,8 +34,11 @@
         Course + BreadcrumbList JSON-LD, the body[data-course-home]
         marker, links, and sitemap + search-index entries — no QUIPS.
      4. All internal href/src links resolve on disk; no leading-slash paths.
+        A warning for a section-numbered link to a Methods, Data, Writing
+        or Ethics lesson that names neither the course nor the lesson (P125).
      5. Search index — freshness (mtime) + every ready slug indexed.
-     6. Homepage counts — the course/lesson totals in index.html match reality.
+     6. Homepage counts — the course/lesson totals in index.html match reality,
+        and so do CITATION.cff's lesson, course, guide and problem counts (P125).
      7. Structured data (P36) — every JSON-LD object passes a per-type
         required-fields check (name/url; itemListElement for BreadcrumbList;
         mainEntity for FAQPage; …); every tool page carries a BreadcrumbList
@@ -283,6 +286,40 @@ function checkLinks(file) {
     if (frag && !JS_IDS.has(frag) && target.endsWith('.html') && !staticIds(target).has(frag)) {
       err(`${rel(file)} → link to a missing anchor: ${href}`);
     }
+  }
+  checkToolkitSectionLinks(file);
+}
+
+/* A section number on a link to a Methods, Data, Writing or Ethics lesson is
+   ambiguous on its own. Those courses number their lessons 1.x to 4.x, the
+   numbers Stats 1 to 3 already use, so cheat-apa.html's bare "§3.2" (Writing
+   §3.2) read as Stats 3 §3.2 until P125. Warn when such a link's text, or the
+   word just before it ("Writing <a>§3.2</a>"), names neither the course nor
+   the lesson. A bare "1.5" chip, the posters' style, counts as a section
+   number too. Static links only, like the rest of CHECK 4. */
+const TITLE_STOP = new Set(['from', 'with', 'that', 'your', 'what', 'when', 'into', 'than', 'this', 'about', "don't"]);
+function checkToolkitSectionLinks(file) {
+  const src = read(file).replace(/<script\b(?![^>]*\ssrc=)[^>]*>[\s\S]*?<\/script>/gi, ' ');
+  const plain = (x) => x.replace(/<[^>]*>/g, '').replace(/&sect;/g, '§').replace(/&amp;/g, '&')
+    .replace(/&nbsp;|&#160;/g, ' ').replace(/&rsquo;|&#39;/g, "'").replace(/\s+/g, ' ').trim();
+  const dir = path.dirname(file);
+  for (const m of src.matchAll(/<a\b[^>]*\bhref\s*=\s*"([^"#?]*)[^"]*"[^>]*>([\s\S]*?)<\/a>/gi)) {
+    const text = plain(m[2]);
+    const num = text.match(/§\s*\d+\.\d+/) || text.match(/^\d+\.\d+$/);
+    if (!num || /^(https?:)?\/\//i.test(m[1])) continue;
+    const parts = path.relative(ROOT, path.resolve(dir, m[1])).split(path.sep).filter(Boolean);
+    if (parts.length !== 2) continue;
+    const course = courseBySlug[parts[0]];
+    if (!course || course.track !== 'toolkit') continue;
+    const lesson = course.sections.find((s) => s.slug === parts[1]);
+    if (!lesson) continue;
+    const words = text.replace(num[0], ' ').toLowerCase().split(/[^a-z']+/);
+    const titleWords = lesson.title.toLowerCase().split(/[^a-z']+/).filter((w) => w.length >= 4 && !TITLE_STOP.has(w));
+    const courseWord = course.title.toLowerCase();
+    const before = plain(src.slice(Math.max(0, m.index - 120), m.index)).toLowerCase();
+    if (words.includes(courseWord) || titleWords.some((w) => words.includes(w)) ||
+        new RegExp('\\b' + courseWord + '\\s*$').test(before)) continue;
+    warn(`${rel(file)} → "${text}" links to ${course.title} §${lesson.n} but names neither the course nor the lesson; toolkit sections reuse the Stats 1–3 numbers, so write "${course.title} §${lesson.n}"`);
   }
 }
 
@@ -822,6 +859,44 @@ for (const m of idx.matchAll(/<span data-count="([\w-]+)"\s*>([^<]*)<\/span>/g))
 }
 if (!countSpans) err('index.html → no data-count spans found; the homepage counters lost their markup');
 else info(`homepage data-count fallbacks checked: ${countSpans}`);
+
+/* CITATION.cff is served on the domain, and its abstract repeats the site's
+   counts. Nothing checked them, and on 7 Oct 2026 it still said 102 lessons,
+   five guides and 71 problems (P125). Compare the lesson, course, guide and
+   problem counts with their sources. The tool-page and dataset counts are
+   not checked, and the abstract names no test-assertion count on purpose:
+   that number grows with every math-check addition. */
+{
+  const cffPath = path.join(ROOT, 'CITATION.cff');
+  if (!fs.existsSync(cffPath)) info('CITATION.cff not found; its counts were not checked');
+  else {
+    const cff = read(cffPath);
+    const am = cff.match(/^abstract:\s*>-?\s*\n((?:[ \t]+.*\n?)+)/m);
+    const abstract = am ? am[1].replace(/\s+/g, ' ') : '';
+    const guideCount = fs.readdirSync(path.join(ROOT, 'guides'), { withFileTypes: true })
+      .filter((d) => d.isDirectory() && fs.existsSync(path.join(ROOT, 'guides', d.name, 'index.html'))).length;
+    const problemCount = (read(path.join(ROOT, 'problems.html')).match(/class="pb-num"/g) || []).length;
+    const toNum = (w) => {
+      const i = NUM_WORDS.indexOf(w.toLowerCase());
+      return i >= 0 ? i : (/^\d+$/.test(w) ? +w : NaN);
+    };
+    const WANT = [
+      ['lessons', /(\w+)\s+interactive lessons/i, lessonCount, 'ready lessons in curriculum.js'],
+      ['courses', /(\w+)\s+courses/i, courseCount, 'courses in curriculum.js'],
+      ['guides', /(\w+)\s+(?:long-form\s+)?guides/i, guideCount, 'guides/<slug>/index.html folders'],
+      ['problems', /(\w+)\s+worked (?:practice )?problems/i, problemCount, 'problem badges in problems.html'],
+    ];
+    let found = 0;
+    for (const [what, re, want, source] of WANT) {
+      const m = abstract.match(re);
+      if (!m) { info(`CITATION.cff abstract states no ${what} count`); continue; }
+      found++;
+      if (toNum(m[1]) !== want) err(`CITATION.cff abstract says "${m[0]}" but there are ${want} ${source}`);
+    }
+    if (!found) warn('CITATION.cff → no counts found in the abstract, so none were checked (the check reads phrases like "105 interactive lessons")');
+    else info(`CITATION.cff abstract counts checked: ${found}`);
+  }
+}
 
 /* ============================================================
    CHECK 9 — APA statistic/p consistency (P39 run 12)

@@ -197,16 +197,17 @@
       {
         tab: "Memory cover story",
         title: "A cover story in a memory study",
-        text: "To stop participants from deliberately rehearsing, you tell them a word list is just a \"warm-up,\" when recall of that list is actually the main measure. Nothing else is misrepresented, there's no distress, and everyone is told the real design and offered data withdrawal at the end.",
+        text: "To stop participants from deliberately rehearsing, you tell them a word list is just a \"warm-up,\" when recall of that list is actually the main measure. Saying nothing would not help, because people shown a word list in a memory study assume they will be tested on it. Nothing else is misrepresented, there's no distress, and everyone is told the real design and offered data withdrawal at the end.",
         expert: "L_ok",
-        why: "Mild concealment with no honest alternative (revealing the true aim would ruin the measure), no meaningful harm, and a full debrief with withdrawal. This is the textbook case of defensible deception."
+        why: "Mild concealment with no honest alternative (revealing the true aim would ruin the measure, and saying nothing would not stop the rehearsal), no meaningful harm, and a full debrief with withdrawal. This is the textbook case of defensible deception."
       },
       {
         tab: "Rigged failure feedback",
         title: "False failure feedback to induce sadness",
         text: "You want to study how a low mood affects decisions, so you give participants rigged \"you scored in the bottom 5% for intelligence\" feedback. Some become visibly upset. The plan lists no debriefing because \"telling them it was fake might make it worse.\"",
         expert: "L_harm",
-        why: "This fails two gates. The harm is more than minimal (real distress that people would resent), and the plan omits debriefing entirely. Distressing deception with no debriefing is not permitted. Validated mood inductions that participants consent to are the better route."
+        accept: ["L_alt", "L_harm"],
+        why: "Reviewers can stop this one at gate 2 or at gate 3. Validated mood inductions, such as a sad film clip that participants agree to watch, lower mood without deceiving anyone. A reviewer who accepts one as a substitute stops at gate 2. A reviewer who decides the question needs a threat to self-esteem, which a film clip does not give, stops at gate 3. People are visibly upset and would resent the lie, so the harm is more than minimal. The plan would fail gate 4 as well, because it has no debriefing at all."
       },
       {
         tab: "Anonymous attitudes survey",
@@ -303,8 +304,10 @@
 
     function showExpert(studentLeaf) {
       var s = SCEN[current];
-      var expert = LEAVES[s.expert];
-      var matched = studentLeaf === s.expert;
+      // A scenario can list more than one defensible verdict in `accept`;
+      // a match shows the student's own leaf as the reviewer's.
+      var matched = (s.accept || [s.expert]).indexOf(studentLeaf) >= 0;
+      var expert = LEAVES[matched ? studentLeaf : s.expert];
       verdictEl.hidden = false;
       verdictEl.innerHTML =
         '<span class="dc-match">' + (matched ? "✓ Your path matched the reviewer." : "↔ The reviewer took a different path here.") + '</span>' +
