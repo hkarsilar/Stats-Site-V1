@@ -49,8 +49,9 @@
         <h1>Bootstrap &amp; Resampling</h1>
 
         <p class="lede">In Stats 1, the <a href="../../stats-1/sampling-distributions/">sampling distribution</a> required imagining thousands of repeated studies you never ran. The <strong>bootstrap</strong> is a shortcut: treat the one sample you <em>do</em> have as a stand-in for the population, and resample <em>from it</em> many times to see how much your statistic varies. It needs no formula and no normality assumption.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#the-trick-resample-with-replacement">The trick: resample with replacement</a><a href="#what-you-get-for-free">What you get for free</a><a href="#the-one-assumption-that-remains">The one assumption that remains</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>The trick: resample with replacement</h2>
+        <h2 id="the-trick-resample-with-replacement">The trick: resample with replacement</h2>
         <p>Take your sample of <em>n</em> values. Draw a new sample of <em>n</em> values from it <strong>with replacement</strong>, so some original points get picked two or three times, others not at all. Compute your statistic (say, the mean) on that resample. Repeat thousands of times. The spread of those resampled statistics estimates the real sampling variability, directly from your data.</p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -78,7 +79,7 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>What you get for free</h2>
+        <h2 id="what-you-get-for-free">What you get for free</h2>
         <ul>
           <li>The <strong>bootstrap standard error</strong> is just the standard deviation of all those resampled means, an estimate of how much your statistic varies from sample to sample.</li>
           <li>The <strong>percentile confidence interval</strong> is even simpler: sort the bootstrap statistics and read off the 2.5th and 97.5th percentiles. That range is a 95% <a href="../../stats-1/confidence-intervals/">confidence interval</a> — no t-tables required.</li>
@@ -88,7 +89,7 @@
           <p><strong>Why it's powerful:</strong> the bootstrap works for statistics that have no tidy formula: medians, correlations, ratios, the difference between two trimmed means, almost anything. When the classic formula doesn't exist or its assumptions don't hold, you can almost always bootstrap instead.</p>
         </div>
 
-        <h2>The one assumption that remains</h2>
+        <h2 id="the-one-assumption-that-remains">The one assumption that remains</h2>
         <p>The bootstrap relies on one assumption: that your sample is <em>representative</em> of the population. If the sample is biased, resampling it reproduces the bias, and if it is tiny, resampling cannot add information that isn't there. The ordinary bootstrap also fails for dependent data and for very small, very skewed samples. With a reasonably sized, representative sample, it is very reliable.</p>
 
         <div class="callout">
@@ -97,7 +98,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>How many bootstrap resamples do I need?</summary>
             <div class="faq-a"><p>For standard errors, ~1,000 is plenty; for confidence intervals (which depend on the distribution's tails), 5,000–10,000 is the modern norm, and since computation is cheap there's no reason to skimp. Note what B does and doesn't fix: more resamples reduce simulation noise, but the information ceiling is set by your original n. B = 100,000 can't rescue a sample of 12.</p></div>

@@ -49,8 +49,9 @@
         <h1>Dimensionality Reduction</h1>
 
         <p class="lede">A real dataset often has twenty variables, or two hundred, not two. You can't plot that many, models struggle with them (the <a href="../../ml/knn-and-distance/">curse of dimensionality</a>), and many of them are redundant. Dimensionality reduction compresses many columns into two or three you can plot, while keeping as much of the structure as it can. There are two main families, and you can trust them in different ways: <strong>PCA</strong>, a linear method whose output you can measure, and <strong>t-SNE / UMAP</strong>, nonlinear maps that you should only look at.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#pca-the-linear-workhorse">PCA: the linear workhorse</a><a href="#t-sne-and-umap-seeing-versus-measuring">t-SNE and UMAP: seeing versus measuring</a><a href="#putting-the-components-to-work">Putting the components to work</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>PCA: the linear workhorse</h2>
+        <h2 id="pca-the-linear-workhorse">PCA: the linear workhorse</h2>
         <p>You met principal component analysis in <a href="../../stats-3/factor-analysis-pca/">Factor Analysis &amp; PCA</a>. Here it is used to reduce the number of variables. PCA finds new axes (<strong>principal components</strong>) that are straight-line combinations of your original variables. The <em>first</em> is chosen to capture the most variance in the data, the <em>second</em> the most of what is left (at right angles to the first), and so on. Keep the top two or three and you have a low-dimensional projection, or "shadow", of the data that keeps as much of the variance as possible.</p>
         <p>Because every component is a weighted sum of the originals, PCA is <strong>linear and reversible, and it never exaggerates distances</strong>. Points far apart in the plot were far apart in the full space, and the axes have an interpretation (the loadings). The cost is that PCA can only <em>rotate and flatten</em> the cloud. It cannot <em>unfold</em> curved structure. Give it two rings looped through each other and no flat shadow can separate them, because only a bend separates them, and a linear map cannot undo a bend.</p>
 
@@ -71,7 +72,7 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>t-SNE and UMAP: seeing versus measuring</h2>
+        <h2 id="t-sne-and-umap-seeing-versus-measuring">t-SNE and UMAP: seeing versus measuring</h2>
         <p>When the interesting structure <em>is</em> a bend, you need a nonlinear method. <strong>t-SNE</strong> and <strong>UMAP</strong> don't rotate the data. They build a new 2-D layout that tries to keep each point near the neighbors it had in the full space, and they are very good at making clusters visible. Use them for <strong>seeing structure</strong> you would never spot in a table.</p>
         <p>But the freedom that lets them reveal clusters also lets them distort geometry. In a t-SNE or UMAP plot:</p>
         <ul>
@@ -81,7 +82,7 @@
         </ul>
         <p>So <strong>never run a statistic on embedding coordinates</strong>, never report a gap or a cluster size as a finding, and treat any cluster the map suggests as a <a href="../../ml/clustering-kmeans/">hypothesis</a> to confirm in the original feature space. Use PCA when you need to <em>measure</em>, and t-SNE/UMAP when you need to <em>look</em>.</p>
 
-        <h2>Putting the components to work</h2>
+        <h2 id="putting-the-components-to-work">Putting the components to work</h2>
         <p>PCA is useful beyond plotting. Every case gets a <strong>score</strong> on every component, and those scores are ordinary variables you can use in a later model. The components are at right angles to each other, so their scores are uncorrelated by construction. That makes them a standard remedy for <a href="../../stats-2/multicollinearity-and-variable-selection/">multicollinearity</a>.</p>
         <p>Take four predictors, three of them near-copies of one shared influence. In the raw model those three have variance inflation factors close to 7 and standard errors around 0.16, the usual signs of unstable estimates. Replace the four predictors with their four principal components and every VIF is exactly 1.000. The largest correlation between any two component scores is about 0.0000000000000014, which is zero to the limits of floating-point arithmetic.</p>
         <p>PCA has one weakness here: it never looks at your outcome. Components are ranked by how much <em>predictor</em> variance each captures, not by how much of <em>y</em> each explains, and the two orderings need not agree. In the same example the first component holds 70.7% of the predictor variance and correlates .54 with the outcome. The second holds only 24.4% of the variance but correlates .47, nearly as much. Keeping all four components reproduces the original model's <em>R</em>² exactly (.5238 both ways), so you gain nothing until you drop some. And when you drop the components with the least variance, you may drop one that mattered for <em>y</em>.</p>
@@ -92,7 +93,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>Is PCA the same as factor analysis?</summary>
             <div class="faq-a"><p>They are closely related and often give similar-looking results, but they answer different questions. <a href="../../stats-3/factor-analysis-pca/">PCA</a> is a purely mathematical rotation. It turns your variables into uncorrelated components ordered by how much total variance each captures, with no model of <em>why</em> the variables move together, so it is best thought of as data compression. Exploratory factor analysis assumes that unobserved latent factors <em>cause</em> the observed correlations, and it tries to estimate those factors while setting aside each variable's unique noise. As a rule of thumb, use PCA when you want to reduce dimensions or remove the correlation between predictors, and factor analysis when you are hypothesizing underlying constructs (like 'verbal ability') behind a battery of measures.</p></div>

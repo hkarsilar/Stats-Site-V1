@@ -49,11 +49,12 @@
         <h1>Cross-Validation &amp; Overfitting</h1>
 
         <p class="lede">A model's job is to predict data you <em>don't</em> have yet, not merely to fit the data you have. Give a model enough flexibility and it will "explain" every random wiggle in your sample. It then scores very well on the training data and badly on the next dataset. That failure is <strong>overfitting</strong>, and <strong>cross-validation</strong> is the standard way to detect it.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#the-trap-fitting-the-noise">The trap: fitting the noise</a><a href="#held-out-data-tells-the-truth">Held-out data tells the truth</a><a href="#the-mistake-that-puts-the-optimism-back">The mistake that puts the optimism back</a><a href="#the-bias-variance-trade-off-in-one-sentence">The bias–variance trade-off, in one sentence</a><a href="#where-you-ll-meet-this-idea-again">Where you'll meet this idea again</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>The trap: fitting the noise</h2>
+        <h2 id="the-trap-fitting-the-noise">The trap: fitting the noise</h2>
         <p>Every dataset is signal plus noise. A too-simple model misses part of the signal (<strong>underfitting</strong>); a too-flexible one chases the noise (<strong>overfitting</strong>). Fit statistics computed on the training data, such as R² or mean squared error, <em>always</em> improve as the model gets more flexible, so on its own training data the wiggliest model always looks best. The training data alone cannot show you that a model is overfitting.</p>
 
-        <h2>Held-out data tells the truth</h2>
+        <h2 id="held-out-data-tells-the-truth">Held-out data tells the truth</h2>
         <p>The fix is to evaluate the model on data that was not used to fit it. <strong>k-fold cross-validation</strong> does this without permanently setting any data aside. Split the data into k chunks ("folds"), fit the model on k−1 of them, and measure prediction error on the fold left out. Repeat until every fold has been the test set once, then average the k error estimates. That average estimates how well the model will predict new data. With k = 5 this is the <em>5-fold CV</em> used below.</p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -81,13 +82,13 @@
 
         <p>As you raise the degree, training error keeps falling. CV error traces a U: it falls while the extra flexibility captures real signal, then rises once the model starts fitting noise. The degree at the bottom of the U is the complexity the <em>data can actually support</em>. Press "New sample" a few times and the best degree changes a little from sample to sample, because the choice of model is subject to sampling error too.</p>
 
-        <h2>The mistake that puts the optimism back</h2>
+        <h2 id="the-mistake-that-puts-the-optimism-back">The mistake that puts the optimism back</h2>
         <p>A cross-validation error is an unbiased estimate only if you did not use it to choose anything. Suppose you use the CV error to pick the polynomial degree above. The winner was picked partly because it was lucky on those particular folds, so its CV error is the best of several and overstates how well the chosen model will perform. The same applies to anything else tuned by looking at the folds: a regularization penalty, a variable-selection step, even the decision of which outcome to model. There are two standard fixes. One is to hold out a final test set and use it exactly once, at the very end, after every choice is fixed. The other is <strong>nested cross-validation</strong>, where an inner loop does the tuning and an outer loop measures a model whose tuning it never saw. The naive estimate is usually only slightly too optimistic when one parameter was tuned, and far too optimistic when several were.</p>
 
-        <h2>The bias–variance trade-off, in one sentence</h2>
+        <h2 id="the-bias-variance-trade-off-in-one-sentence">The bias–variance trade-off, in one sentence</h2>
         <p>Simple models are wrong in a stable way (high <strong>bias</strong>, low <strong>variance</strong>). Flexible models are right on average but change a lot from sample to sample (low bias, high <strong>variance</strong>). Prediction error is the sum of both. As flexibility grows, bias falls and variance rises, so the CV curve falls and then rises, and "more flexible" does not mean "better."</p>
 
-        <h2>Where you'll meet this idea again</h2>
+        <h2 id="where-you-ll-meet-this-idea-again">Where you'll meet this idea again</h2>
         <p>Cross-validation is used to choose predictors in <a href="../../stats-2/multicollinearity-and-variable-selection/">variable selection</a>, to compare models alongside AIC/BIC from <a href="../../stats-2/model-comparison/">model comparison</a>, and to tune almost every machine-learning method. The ML course builds on it in <a href="../../ml/train-test-split-and-generalization/">train/test splits and generalization</a>. The <a href="../../stats-3/bootstrap-and-resampling/">bootstrap</a> uses a related idea to measure uncertainty: it judges a procedure by how it behaves across repeated resamples of the data.</p>
 
         <div class="callout">
@@ -98,7 +99,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>What value of k should I use for k-fold cross-validation?</summary>
             <div class="faq-a"><p>k = 5 or k = 10 is the standard, well-studied choice. Each fold's training set is nearly the full data, which keeps bias low, and you avoid the variance and computing cost of leave-one-out (k = n). With a small dataset, use k = 10 or repeated CV (several random fold splits, averaged) to make the estimate more stable. There's rarely a reason to deviate.</p></div>

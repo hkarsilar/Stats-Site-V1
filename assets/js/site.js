@@ -1298,11 +1298,14 @@
     return hs;
   }
 
-  /* ---------- "On this page" mini-TOC (longer lessons only) ---------- */
+  /* ---------- "On this page" mini-TOC (longer lessons only) ----------
+     tools/make-lesson-tocs.js bakes this box into each lesson's HTML, so it
+     is there at first paint and shifts nothing (P38, Oct 2026). This builds
+     it only for a lesson the script has not reached yet. */
   function renderTOC() {
     if (!HERE) return;
     var art = document.querySelector(".lesson");
-    if (!art) return;
+    if (!art || art.querySelector(".lesson-toc")) return;
     var hs = art.querySelectorAll("h2");
     if (hs.length < 4) return;
     var items = Array.prototype.map.call(ensureH2Ids(art), function (h) {

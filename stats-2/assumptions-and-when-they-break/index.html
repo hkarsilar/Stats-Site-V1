@@ -49,8 +49,9 @@
         <h1>ANOVA &amp; t-Test Assumptions</h1>
 
         <p class="lede">Every test you've met rests on assumptions: conditions that must roughly hold for its p-values to be correct. If they fail, the test still gives you a p-value, but it is the wrong one. There are only a few main assumptions, and most of them are easy to check by eye.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#the-big-three">The big three</a><a href="#checking-normality-with-a-q-q-plot">Checking normality with a Q-Q plot</a><a href="#how-crooked-does-normal-data-look">How crooked does normal data look?</a><a href="#how-much-do-violations-matter">How much do violations matter?</a><a href="#when-an-assumption-really-is-broken">When an assumption really is broken</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>The big three</h2>
+        <h2 id="the-big-three">The big three</h2>
         <ul>
           <li><strong>Normality.</strong> The data (or, more precisely, the sampling distribution of the mean) is roughly bell-shaped. Thanks to the <a href="../../stats-1/central-limit-theorem/">CLT</a>, this matters less as samples grow.</li>
           <li><strong>Homogeneity of variance.</strong> The groups you're comparing have similar spread. t-tests and <a href="../../stats-2/one-way-anova/">ANOVA</a> assume it (Welch's versions relax it).</li>
@@ -58,7 +59,7 @@
         </ul>
         <p>Those three cover tests that compare group means. The moment you fit a line, a fourth joins them: <strong>linearity</strong>, the assumption that the relationship you are modeling is straight. No diagnostic on this page can catch it. Curved data can be perfectly normal and perfectly equal-variance, and a straight line through it will still give you a slope, but the slope misdescribes the relationship. A residual plot shows the curve, and <a href="../../stats-2/regression-diagnostics/">regression diagnostics</a> covers those.</p>
 
-        <h2>Checking normality with a Q-Q plot</h2>
+        <h2 id="checking-normality-with-a-q-q-plot">Checking normality with a Q-Q plot</h2>
         <p>A histogram gives a rough idea of shape, but the <strong>Q-Q plot</strong> shows departures from normality more clearly. It plots your sorted data against the values you'd expect if the data were perfectly normal. <strong>If the points fall along a straight line, the data is behaving like a normal sample.</strong> A systematic curve away from the line shows how the data departs from normal. Switch the underlying distribution below and learn to read the signatures.</p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -95,16 +96,16 @@
           <p><strong>The Q-Q signatures:</strong> a <em>straight line</em> = normal. An <em>upward-curving arc</em> = right-skewed (a long high tail). An <em>S-shape</em> = heavy tails / outliers (extremes more extreme than normal). A <em>flat step in the middle</em> = bimodal. Once you've seen each a few times, you can diagnose a distribution in a glance.</p>
         </div>
 
-        <h2>How crooked does normal data look?</h2>
+        <h2 id="how-crooked-does-normal-data-look">How crooked does normal data look?</h2>
         <p>The playground shows four clean signatures, but real samples are messier. Before you call a Q-Q plot bent, you need to know how far the plot of a sample from a normal distribution can bend. Near the ends it can bend a lot.</p>
         <p>Draw 20 values from a perfect normal distribution and plot them. The highest point is <em>plotted</em> at 1.87 standard deviations, the twentieth of twenty expected quantiles. Its actual value varies a lot: across 200,000 simulated normal samples it fell between <strong>1.29 and 2.71</strong> in 95% of them. The point in the middle of the same plot stayed inside [−0.38, 0.26]. So the ends of a normal Q-Q plot vary about <strong>2.2 times</strong> as much as the middle, and a faint S-curve is usually just that extra variation at the ends.</p>
         <p>Now draw a band around the line that holds 95% of normal samples at each position, one position at a time. Then count the normal samples with at least one point outside the band: <strong>49% at <em>n</em> = 20, and 66% at <em>n</em> = 50</strong>. About half of all perfectly normal samples of 20 have a point outside the band, simply because there are twenty points that could fall outside it.</p>
         <p>Give the middle of the plot more weight than the ends, and look for a systematic bend, not for single stray points. When the decision matters, stop judging by eye and draw the band: R's <code>car::qqPlot(x)</code> shades it for you, and by hand it's a short loop. Simulate a few hundred normal samples of your own <em>n</em> and keep the 2.5th and 97.5th percentile at each position. Then check whether your data leaves that envelope in a run of neighboring points or only at one end.</p>
 
-        <h2>How much do violations matter?</h2>
+        <h2 id="how-much-do-violations-matter">How much do violations matter?</h2>
         <p>t-tests and ANOVA are surprisingly <strong>robust to mild non-normality</strong>, especially with larger samples, thanks to the CLT. They're more sensitive to <strong>very unequal variances</strong> (use Welch's correction) and badly thrown off by <strong>outliers</strong> in small samples. The <a href="../../descriptives.html">descriptives calculator</a> will flag those outliers and print the skewness for any data you paste into it. A violation of <strong>independence</strong> cannot be fixed in the analysis at all. You have to prevent it in the study design.</p>
 
-        <h2>When an assumption really is broken</h2>
+        <h2 id="when-an-assumption-really-is-broken">When an assumption really is broken</h2>
         <ul>
           <li><strong>Transform</strong> the data (a log transform often reduces right skew).</li>
           <li>Use a <strong>robust</strong> variant (Welch's t, trimmed means).</li>
@@ -121,7 +122,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>How do I check if my data is normally distributed?</summary>
             <div class="faq-a"><p>Look at a plot before you run a test. A Q-Q plot (points close to the diagonal mean normal) and a histogram tell you more than any p-value. Formal tests such as Shapiro–Wilk have a problem. In large samples they flag small deviations that do no harm, and in small samples they miss serious ones. Learn the Q-Q signatures in the playground above, then compare them with the section on how crooked normal data looks. Roughly half of normal samples put at least one point outside a 95% band, and that point is almost always at one end. Judge the middle of the plot, and expect the ends to stray.</p></div>

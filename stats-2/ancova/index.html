@@ -49,8 +49,9 @@
         <h1>ANCOVA: Controlling for Covariates</h1>
 
         <p class="lede">A training program can look very effective until you notice that its students were already stronger on the pretest. <strong>ANCOVA</strong> (Analysis of <em>Covariance</em>) compares group means <em>after</em> statistically holding a covariate constant, so you compare like with like. It is the method behind many of the "controlling for age / baseline / IQ" statements you read in papers.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#why-compare-like-with-like">Why compare like with like</a><a href="#what-ancova-actually-does">What ANCOVA actually does</a><a href="#the-assumptions-that-make-it-honest">The assumptions behind ANCOVA</a><a href="#how-big-is-the-adjusted-difference">How big is the adjusted difference?</a><a href="#one-family-ancova-anova-regression">One family: ANCOVA, ANOVA, regression</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Why compare like with like</h2>
+        <h2 id="why-compare-like-with-like">Why compare like with like</h2>
         <p>An ordinary <a href="../../stats-2/one-way-anova/">ANOVA</a> asks: do the group means differ? But raw means mix two things together: the effect of the treatment and any differences the groups <em>already had at the start</em>. If the treatment group started ahead on a variable that predicts the outcome (a <strong>covariate</strong>), the raw comparison makes the treatment look better than it is. If they started behind, it can hide a real effect.</p>
         <p>ANCOVA fixes this by fitting a regression line from the covariate to the outcome <em>within</em> each group, then comparing the groups <strong>at the same covariate value</strong> (conventionally the overall mean). Those are the <strong>adjusted means</strong>, and the vertical gap between the parallel lines is the adjusted effect.</p>
 
@@ -86,7 +87,7 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>What ANCOVA actually does</h2>
+        <h2 id="what-ancova-actually-does">What ANCOVA actually does</h2>
         <p>It does two things:</p>
         <ul>
           <li><strong>It corrects for baseline imbalance.</strong> The adjusted difference is the raw difference minus the part explained by the covariate gap: <em>adjusted = raw − slope × (covariate gap between groups)</em>. Set the head start to +10 with a real effect of 0, and the naive test finds a significant effect while ANCOVA correctly reports an effect near 0.</li>
@@ -109,13 +110,13 @@
           <p><strong>"Controlling for" has limits.</strong> In a randomized experiment, ANCOVA improves precision. In observational data it removes only the confounding due to the covariates you measured, never the ones you didn't. And adjusting for a <em>post-treatment</em> variable or a collider can create bias. When the question is causal, draw the <a href="../../stats-3/causal-dags-and-confounding/">DAG</a> first, then decide what belongs in the model.</p>
         </div>
 
-        <h2>How big is the adjusted difference?</h2>
+        <h2 id="how-big-is-the-adjusted-difference">How big is the adjusted difference?</h2>
         <p>An <em>F</em> and a <em>p</em> say the adjusted difference is unlikely to be zero. Neither says how large it is. The usual effect size is <strong>partial eta squared</strong>, written ηp²: the share of outcome variation the grouping factor explains, after the covariate's share is removed from the denominator.</p>
         <p style="text-align:center;font-size:1.05rem;margin:1.1rem 0"><strong>ηp² = SS<sub>group</sub> ÷ (SS<sub>group</sub> + SS<sub>error</sub>)</strong></p>
         <p>You can also read it off the <em>F</em> table without any sums of squares, since ηp² = <em>F</em>·df₁ ÷ (<em>F</em>·df₁ + df₂). An ANCOVA reported as <em>F</em>(1, 57) = 6.84 therefore has ηp² = .11. Both SPSS and JASP print it under "Estimates of effect size", and APA writes it upright with no leading zero.</p>
         <p>The word <em>partial</em> matters. The covariate's variance has already been removed from the denominator. So when randomization has balanced the covariate, ηp² comes out larger than the plain <a href="../../effect-sizes.html">η²</a> an unadjusted ANOVA would give on the same outcome. When the groups differed on the covariate at the start, the adjustment shrinks the numerator too, and ηp² can come out smaller. Either way the two numbers answer different questions, so don't pool them or compare them as if they were the same. State which one you are reporting and which covariates were in the model. Also give the adjusted difference in the outcome's own units, because that is the number a reader will remember.</p>
 
-        <h2>One family: ANCOVA, ANOVA, regression</h2>
+        <h2 id="one-family-ancova-anova-regression">One family: ANCOVA, ANOVA, regression</h2>
         <p>ANCOVA is <a href="../../stats-2/multiple-regression/">multiple regression</a> with a <a href="../../stats-2/categorical-predictors-and-dummy-coding/">dummy-coded group</a> and a continuous covariate: <em>outcome = b₀ + b₁·group + b₂·covariate</em>. The b₁ coefficient <em>is</em> the adjusted difference. ANOVA, ANCOVA, and regression are one linear model written three ways. When you have several outcome variables to adjust at once, the same idea extends to <a href="../../stats-3/manova/">MANCOVA</a>.</p>
 
         <div class="callout">
@@ -126,7 +127,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>What is the difference between ANOVA and ANCOVA?</summary>
             <div class="faq-a"><p>ANOVA compares raw group means. ANCOVA first removes the part of the outcome explained by a continuous covariate (pretest score, age, baseline severity), then compares the <em>adjusted</em> means. This has two benefits: it corrects for baseline imbalance between groups, and it reduces noise, which often shrinks p-values even in perfectly randomized experiments.</p></div>

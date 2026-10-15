@@ -49,8 +49,9 @@
         <h1>Prediction vs Explanation</h1>
 
         <p class="lede">You already know how to fit a regression. Machine learning uses the same math, but often for a different <em>purpose</em>, and the purpose changes what counts as a "good" model. If you are coming to ML from statistics, this is the most useful idea to learn first, because it tells you which tools to use and which mistakes to watch for.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#two-questions-two-cultures">Two questions, two cultures</a><a href="#the-same-model-two-different-jobs">The same model, two different jobs</a><a href="#when-each-mindset-wins">When each mindset wins</a><a href="#why-the-two-cultures-report-different-things">Why the two cultures report different things</a><a href="#reading-every-coefficient-as-an-effect">Reading every coefficient as an effect</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Two questions, two cultures</h2>
+        <h2 id="two-questions-two-cultures">Two questions, two cultures</h2>
         <p>In 2001 the statistician Leo Breiman described "two cultures" of modeling. They differ in the question they ask:</p>
         <ul>
           <li><strong>Explanation (inference).</strong> <em>Which variables matter, how much, and how sure are we?</em> You want interpretable coefficients, standard errors, p-values, confidence intervals: a model you can put in a sentence and defend. This is the world of your stats courses: <a href="../../stats-1/simple-linear-regression/">regression</a>, <a href="../../stats-1/hypothesis-testing-logic/">hypothesis tests</a>, effect sizes.</li>
@@ -58,7 +59,7 @@
         </ul>
         <p>Neither culture is superior; they answer different questions. A drug trial needs <em>explanation</em>: the size and certainty of the effect, so a regulator can decide. A spam filter needs <em>prediction</em>. It doesn't matter <em>why</em> an email is spam, only that the label is right on tomorrow's inbox.</p>
 
-        <h2>The same model, two different jobs</h2>
+        <h2 id="the-same-model-two-different-jobs">The same model, two different jobs</h2>
         <p>The same linear model can serve either goal. Fit a straight line and you can report its slope with a confidence interval (explanation), or use it to predict new points and measure the error (prediction). The model is identical. Only <strong>the way you judge it</strong> changes, and when you are free to choose the complexity, the two ways of judging lead to different models.</p>
         <p>Explanation values <strong>parsimony</strong>: every extra term is another coefficient you must interpret and defend. Prediction values <strong>generalization</strong>: an extra term is welcome if it lowers error on new data, even when its meaning is unclear. The widget below shows the two goals choosing different models on one dataset.</p>
 
@@ -97,17 +98,17 @@
 
         <p>Explanation almost always settles on the straight line, with one slope you can report and interpret, because the curved terms do not lower the error by enough to cover their penalty. Prediction adds curvature because the curvature lowers held-out error. Both are <em>correct answers to different questions</em>. Don't expect the explanation model to also predict best, or the prediction model to give you one clean coefficient to interpret. Each model answers only its own question.</p>
 
-        <h2>When each mindset wins</h2>
+        <h2 id="when-each-mindset-wins">When each mindset wins</h2>
         <ul>
           <li><strong>Reach for explanation</strong> when the deliverable is understanding: does this therapy work, which predictors drive burnout, is the effect big enough to matter. You'll report coefficients, CIs, and effect sizes, and you'll keep the model small enough to interpret.</li>
           <li><strong>Reach for prediction</strong> when the deliverable is a decision on new cases: flag at-risk students, triage scans, forecast demand. You'll split off a <a href="../../ml/train-test-split-and-generalization/">test set</a>, tune with <a href="../../stats-3/cross-validation-and-overfitting/">cross-validation</a>, and judge the model purely by out-of-sample error.</li>
         </ul>
         <p>Many real projects want both, a model that predicts well <em>and</em> offers some insight. That is fine as long as you know which goal you are pursuing at each step. The danger is doing one while believing you are doing the other.</p>
 
-        <h2>Why the two cultures report different things</h2>
+        <h2 id="why-the-two-cultures-report-different-things">Why the two cultures report different things</h2>
         <p>ML papers rarely show p-values and statistics papers rarely show test-set error, because they optimize different quantities. A p-value answers "could this coefficient be zero?"; it says nothing about how well the model predicts tomorrow. A cross-validated error answers "how wrong will I be on new cases?"; it says nothing about whether any single coefficient is real. A model can predict well although nothing in it can be read as an effect (a random forest), or explain clearly while predicting no better than a coin flip on a hard problem. Ask for the number that matches your question.</p>
 
-        <h2>Reading every coefficient as an effect</h2>
+        <h2 id="reading-every-coefficient-as-an-effect">Reading every coefficient as an effect</h2>
         <p>A common way to blur the two goals is to fit one multiple regression and then read its whole coefficient table as a list of effects. Epidemiologists named this the <strong>Table 2 fallacy</strong>, after the table where it usually turns up. The model was built to estimate one thing well, and only that one row means what the column heading claims.</p>
         <p>Take a study of training (X) and performance (Y) in which motivation (Z) raises both. Motivation confounds the training effect, so you adjust for it. The adjustment works: with data generated so that the true training effect is 0.50, the unadjusted slope is 0.68 and the adjusted slope is 0.50. Now look one row down. Motivation's own coefficient in the same model is 0.40, but motivation's total effect on performance is 0.70. Part of that effect runs through training, and the model holds training fixed. If you read the table as "the effect of each variable", you understate motivation's effect by more than 40%.</p>
         <p>The model is not wrong. Adjusting for a confounder gives you an interpretable coefficient for the one predictor you chose the adjustment for. Every other coefficient becomes a direct effect, with the path through your predictor blocked. Your <a href="../../stats-3/causal-dags-and-confounding/">causal diagram</a> tells you which coefficients you may interpret. The output itself cannot tell you. If you also want the effect of motivation, you need a second model with a second adjustment set.</p>
@@ -118,7 +119,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>Is machine learning just statistics with a fancier name?</summary>
             <div class="faq-a"><p>The mathematics is the same, but the emphasis is different. Much of ML is built directly on statistical models (<a href="../../stats-1/simple-linear-regression/">regression</a>, logistic regression, and their relatives), but the two fields optimize different things. Classical statistics is usually doing <em>inference</em>: which variables matter, how large the effect is, and how certain we are (coefficients, confidence intervals, p-values). ML is usually doing <em>prediction</em>: how accurately it can guess the outcome for cases it has never seen, measured by held-out error. The two fields overlap and borrow from each other all the time, but calling ML rebranded statistics ignores this difference in goals. ML will use an uninterpretable model if it predicts well, and it rarely reports p-values. Inferential statistics keeps models interpretable and rarely reports test-set error.</p></div>

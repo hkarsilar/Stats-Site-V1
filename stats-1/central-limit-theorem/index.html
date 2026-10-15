@@ -49,8 +49,9 @@
         <h1>The Central Limit Theorem</h1>
 
         <p class="lede">Take samples from <em>almost any</em> distribution, however lopsided or lumpy, average each sample, and those averages form a smooth, predictable bell curve. It is one of the most surprising facts in statistics, and the playground below lets you see it happen.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#the-setup">The setup</a><a href="#what-you-should-notice">What you should notice</a><a href="#the-standard-error-formula">The standard error formula</a><a href="#the-fine-print-on-almost-any">The fine print on "almost any"</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>The setup</h2>
+        <h2 id="the-setup">The setup</h2>
         <p>Imagine a population: say, the reaction times of every student in a huge psychology study. The shape of that population can be anything. Most real data is <strong>not</strong> a tidy bell curve; reaction times are usually skewed, with a long tail of slow responses.</p>
         <p>Now we do something simple and repeat it over and over:</p>
         <ol>
@@ -113,7 +114,7 @@
         </div>
         <!-- ============ /PLAYGROUND ============ -->
 
-        <h2>What you should notice</h2>
+        <h2 id="what-you-should-notice">What you should notice</h2>
         <p>Try it for a minute and you will see three things. Together they make up the Central Limit Theorem:</p>
         <div class="callout key">
           <p><strong>1. The averages form a bell curve</strong>, even when the population is skewed or lumpy. Switch to the "Skewed" or "Bimodal" population and you'll still get a symmetric bell in panel ③.</p>
@@ -125,14 +126,14 @@
           <p><strong>3. The bell is centered on the population mean.</strong> That center is μ, not the middle of the panel: switch to "Skewed" and the whole bell moves left, because that population's mean is about 16, not 50. The dashed μ line moves with it.</p>
         </div>
 
-        <h2>The standard error formula</h2>
+        <h2 id="the-standard-error-formula">The standard error formula</h2>
         <p>The spread of the sampling distribution has a name, the <strong>standard error</strong>, and a simple formula (every <a href="../confidence-intervals/">confidence interval</a> you build uses it):</p>
         <p style="text-align:center;font-size:1.25rem;margin:1.25rem 0">
           <strong>SE&nbsp;=&nbsp;σ&nbsp;/&nbsp;√<span style="text-decoration:overline">n</span></strong>
         </p>
         <p>where <code>σ</code> is the population's standard deviation and <code>n</code> is your sample size. Notice the <code>√n</code> on the bottom: to <em>halve</em> the standard error, you need <em>four times</em> the data. That diminishing return is why the playground's bell tightens quickly at first, then more slowly. Compare the "SE" you measured with the "σ/√n" the theorem predicts. They should match closely once you've drawn enough samples.</p>
 
-        <h2>The fine print on "almost any"</h2>
+        <h2 id="the-fine-print-on-almost-any">The fine print on "almost any"</h2>
         <p>The theorem needs the population to have a <strong>finite variance</strong>. Every population you will meet in a psychology study has one. The classic counterexample is the Cauchy distribution, whose tails are so heavy that its variance is infinite. There the theorem fails completely: the average of 1,000 Cauchy values is spread exactly as widely as a single value. In a simulation of 400,000 repeats, the middle half of the averages spanned 2.00 units at <em>n</em> = 1 and 2.02 units at <em>n</em> = 1,000. More data gives no extra precision, because an occasional enormous value is always large enough to pull the average with it.</p>
         <p>The condition you actually have to think about is the second one, and it is about <em>n</em>. The theorem describes what happens as <em>n</em> grows without limit, so in practice you need to know whether your <em>n</em> is large enough. The folk answer is <em>n</em> ≥ 30. The table below shows what <em>n</em> = 30 gives on the Skewed population in the playground, an exponential shape with a population mean near 16 and a skewness of 1.84. Each row is 300,000 simulated studies, each computing an ordinary 95% confidence interval for the mean:</p>
         <table class="ref-table">
@@ -157,7 +158,7 @@
         <p class="pb-xref"><a href="../../problems.html#p1-7">Problem 7 of the practice problems</a> takes a clearly right-skewed population of pizza delivery times and asks why a sample of 36 lets you use the normal curve anyway.</p>
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>What sample size is large enough for the Central Limit Theorem?</summary>
             <div class="faq-a"><p>The folk rule is n ≥ 30, and for mildly skewed data that's usually plenty — sample means settle into a near-normal shape quickly. But it's a rule of thumb, not a law: heavily skewed or outlier-prone populations can need substantially more, while symmetric populations are fine much earlier. When in doubt, look at your data's shape rather than trusting the magic 30.</p></div>

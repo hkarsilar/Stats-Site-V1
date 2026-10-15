@@ -49,8 +49,9 @@
         <h1>Multiple Regression</h1>
 
         <p class="lede">Income depends on education <em>and</em> experience <em>and</em> region. Health depends on diet <em>and</em> exercise <em>and</em> age. <strong>Multiple regression</strong> extends the <a href="../../stats-1/simple-linear-regression/">simple line</a> to several predictors at once. Its most important idea is <em>holding everything else constant</em>.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#what-a-coefficient-means-now">What a coefficient means now</a><a href="#omitted-variable-bias-and-the-sign-you-can-work-out-in-advance">Omitted-variable bias, and the sign you can work out in advance</a><a href="#reading-the-whole-model">Reading the whole model</a><a href="#one-continuous-predictor-and-one-dummy">One continuous predictor and one dummy</a><a href="#putting-the-predictors-on-one-scale">Putting the predictors on one scale</a><a href="#a-caution">A caution</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>What a coefficient means now</h2>
+        <h2 id="what-a-coefficient-means-now">What a coefficient means now</h2>
         <p>The model is just a line with more terms:</p>
         <p style="text-align:center;font-size:1.1rem;margin:1.2rem 0"><strong>ŷ = b₀ + b₁x₁ + b₂x₂ + … + bₖxₖ</strong></p>
         <p>Each coefficient is now read differently. <strong>b₁ is the effect of x₁ on y while holding every other predictor fixed.</strong> It's the "all else equal" effect: the part of x₁'s influence that the other variables don't already explain. Because of this, regression can <em>control for confounders</em>, and controlling for one can completely change the result.</p>
@@ -92,7 +93,7 @@
           <p><strong>The headline idea:</strong> a multiple-regression coefficient answers "what's the effect of <em>this</em> variable, among people who are otherwise alike?" Leaving out an important predictor (an <em>omitted variable</em>) can bias the others, sometimes enough to reverse their sign.</p>
         </div>
 
-        <h2>Omitted-variable bias, and the sign you can work out in advance</h2>
+        <h2 id="omitted-variable-bias-and-the-sign-you-can-work-out-in-advance">Omitted-variable bias, and the sign you can work out in advance</h2>
         <p>"Can bias the others" can be made precise, because the bias has a formula. Suppose the true model is</p>
         <p style="text-align:center"><em>y</em> = β₀ + β₁<em>x</em>₁ + β₂<em>x</em>₂ + ε</p>
         <p>and you fit <em>y</em> on <em>x</em>₁ alone, because <em>x</em>₂ was never measured. Write δ (delta) for the slope you would get by regressing the missing <em>x</em>₂ on the included <em>x</em>₁. Then the coefficient you do get is not estimating β₁:</p>
@@ -113,7 +114,7 @@
         <p>Suppose a later study measures motivation on a 1-to-10 scale and can estimate both parts. Holding motivation constant, education is worth €120 a year. Motivation itself is worth β₂ = €90 a point. Regressing motivation on education gives δ = 0.4 points per year of schooling. The numbers add up: 120 + 90 × 0.4 = 156. The first study computed its own number correctly but misread what it meant, and it had enough information to say in which direction it was wrong.</p>
         <p>The widget above shows this identity. Its two sliders set the two parts separately, and the readouts print the estimated β₂, the δ between the two predictors, their product, and the gap between the naive and controlled slopes. The last two always agree to the last decimal, because in a sample the relation is an algebraic identity, not a statement about long-run averages. Drag either slider and watch the controlled slope: it does not move at all. Omitting a variable does not add noise to the estimate. It shifts the estimate by β₂δ, and collecting more data does not shrink that shift.</p>
 
-        <h2>Reading the whole model</h2>
+        <h2 id="reading-the-whole-model">Reading the whole model</h2>
         <p>With <em>p</em> predictors and an intercept the model estimates <em>p</em> + 1 parameters. Everything that used <em>n</em> − 2 degrees of freedom in a one-predictor fit now uses <strong><em>n</em> − <em>p</em> − 1</strong>. The residual standard error divides by it, every coefficient's <em>t</em> = <em>b</em>/SE(<em>b</em>) is tested on it, and every confidence interval takes its <em>t</em>* from it. <a href="../../stats-2/inference-for-regression/">Section 2.7</a>'s <em>n</em> − 2 is the case <em>p</em> = 1. Write the df out on any table you read: a model fitted on 200 people with six predictors is tested on 193, not on 199.</p>
         <p>Each coefficient is a partial effect, holding the other predictors constant, and its <em>p</em>-value asks whether that predictor adds anything beyond what the others already explain. R² now reports how much of the outcome's variation all the predictors explain together.</p>
         <p>Above the coefficients, software prints one test of the model as a whole. Its null hypothesis is that every slope is zero at once:</p>
@@ -148,19 +149,19 @@
         <p style="text-align:center">adjusted R² = 1 − (1 − R²) · (<em>n</em> − 1)/(<em>n</em> − <em>p</em> − 1)</p>
         <p>The penalty is in that fraction. It is always greater than 1 and it grows as <em>p</em> grows, so it enlarges the unexplained share before the subtraction. A predictor that explains nothing leaves R² where it was while the penalty grows. So adjusted R² can fall, and can even go negative, which plain R² never does. That makes adjusted R² the better measure for comparing models of different sizes, and it is why adding predictors just to raise R² is a mistake. When the comparison matters, <a href="../../stats-2/model-comparison/">model comparison</a> has better tools than either number.</p>
 
-        <h2>One continuous predictor and one dummy</h2>
+        <h2 id="one-continuous-predictor-and-one-dummy">One continuous predictor and one dummy</h2>
         <p>The most common model in a real report mixes a measured predictor with a categorical one. Predict grip strength from height in centimeters and from sex, coded 0 for one group and 1 for the other, and the fit is</p>
         <p style="text-align:center"><em>ŷ</em> = <em>b</em>₀ + <em>b</em>₁·height + <em>b</em>₂·sex</p>
         <p>Both coefficients are read the same "all else equal" way. The two sentences sound different only because the predictors are different kinds of variable. The height coefficient <em>b</em>₁ says that, holding sex constant, one more centimeter of height goes with <em>b</em>₁ more units of grip strength. That is a comparison between two people of the same sex. The sex coefficient <em>b</em>₂ says that, holding height constant, the group coded 1 averages <em>b</em>₂ units above the group coded 0. That is a comparison between two people of the same height. Neither sentence is about any particular person. Both describe the shape of one fitted surface.</p>
         <p>If you draw it, the surface is two parallel lines, one per group, <em>b</em>₂ apart. The lines are parallel because the model assumes it, not because the data show it: this model cannot let height matter more in one group than in the other, even if it does. To let the slopes differ, add <a href="../../stats-2/interactions-in-regression/">an interaction</a>, which adds one more coefficient. The coding itself, including what to do with three groups or twenty, is covered in <a href="../../stats-2/categorical-predictors-and-dummy-coding/">Section 2.10</a>.</p>
 
-        <h2>Putting the predictors on one scale</h2>
+        <h2 id="putting-the-predictors-on-one-scale">Putting the predictors on one scale</h2>
         <p>Each <em>b</em> is measured in the units of its own predictor, so their sizes say nothing about which predictor matters more. Weekly study hours and nightly sleep hours are both "hours" and still aren't comparable: study time varies enormously between students, sleep barely at all. The usual solution is the <strong>standardized coefficient</strong>, written β:</p>
         <p style="text-align:center;font-size:1.1rem;margin:1.2rem 0"><strong>β = <em>b</em> × (SD of the predictor) ÷ (SD of the outcome)</strong></p>
         <p>You get the same numbers by z-scoring every variable before fitting. β then reads as "a one-standard-deviation rise in this predictor moves the outcome by β standard deviations". With a single predictor it is exactly the correlation <em>r</em>. Software usually prints it next to <em>b</em> (SPSS labels the column Beta), and APA style writes it with no leading zero: β = .42.</p>
         <p>β depends on how much your particular sample happened to vary, so the same variable gets a larger β in a diverse sample than in a narrow one. That is why βs from different studies aren't interchangeable. β also means little for a dummy-coded group, whose "standard deviation" depends only on how many people happened to be in each group. Use β to rank predictors within one model, and quote the raw <em>b</em> when you want a sentence a reader can picture. If two predictors are strongly correlated with each other, neither coefficient is stable enough to rank at all. That problem is <a href="../../stats-2/multicollinearity-and-variable-selection/">multicollinearity</a>.</p>
 
-        <h2>A caution</h2>
+        <h2 id="a-caution">A caution</h2>
         <p>"Holding constant" is a <em>statistical</em> operation, not a real experiment. Regression can only adjust for variables you measured and put in the model. It can't control for confounders you forgot. And it never proves causation by itself: which variables belong in the model is a question about <a href="../../stats-3/causal-dags-and-confounding/">causal structure</a>, and you settle it before you fit anything.</p>
         <p>Sometimes you know the confounder but cannot measure it. The omitted-variable formula above still describes the bias, and <a href="../../stats-3/instrumental-variables/">instrumental variables</a> are one remedy. You find a source of variation in the predictor whose causes are unconnected to the outcome, and you estimate the effect from that variation alone.</p>
 
@@ -176,7 +177,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>What does 'controlling for' a variable actually mean?</summary>
             <div class="faq-a"><p>It means comparing like with like, statistically: the coefficient for x₁ describes how y differs between cases that differ in x₁ but are <em>identical on every other predictor in the model</em>. It's an adjustment computed from the data, not a real experiment, and it only works for confounders you actually measured and included.</p></div>

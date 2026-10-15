@@ -49,8 +49,9 @@
         <h1>Independent Samples t-Test</h1>
 
         <p class="lede">This is the test you will use most often: do two <em>separate</em> groups (treatment vs. control, men vs. women, version A vs. version B) differ on average? Unlike the paired test, the groups are made of different individuals, so we compare their two means directly.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#signal-over-noise">Signal over noise</a><a href="#three-levers-one-conclusion">Three things that change t</a><a href="#three-dfs">Three degrees of freedom for one test</a><a href="#two-sample-ci">The interval for the difference</a><a href="#overlap">Two intervals that overlap, one difference that does not</a><a href="#what-you-re-assuming">What you're assuming</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Signal over noise</h2>
+        <h2 id="signal-over-noise">Signal over noise</h2>
         <p>The logic is a ratio. On top, the <strong>signal</strong>: how far apart the two sample means are. On the bottom, the <strong>noise</strong>: how much the scores bounce around <em>within</em> each group, adjusted for sample size. That ratio is the t-statistic:</p>
         <p style="text-align:center;font-size:1.15rem;margin:1.25rem 0"><strong>t = (x̄₁ − x̄₂) / (standard error of the difference)</strong></p>
         <p>A big t means the gap stands out clearly from the noise, so the groups probably differ. A small t means the gap could easily be chance. The same mean difference can be convincing or meaningless, depending on the noise and the sample size. The playground below shows this.</p>
@@ -176,7 +177,7 @@
           <p><strong>Report the effect size too.</strong> A significant t with a huge sample might reflect a difference too small to care about. Always pair the p-value with <a href="../../stats-3/effect-size-and-power/">Cohen's d</a> (the gap measured in standard deviations) to judge whether the difference actually matters.</p>
         </div>
 
-        <h2>What you're assuming</h2>
+        <h2 id="what-you-re-assuming">What you're assuming</h2>
         <ul>
           <li>The two groups are <strong>independent</strong> (different people, no pairing).</li>
           <li>Each group is roughly normal, or both samples are large enough for the <a href="../../stats-1/central-limit-theorem/">CLT</a>. When neither is true, the <a href="../../stats-2/non-parametric-alternatives/">Mann-Whitney test</a> asks a closely related question without needing normality at all.</li>
@@ -196,7 +197,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>What is the difference between Student's t-test and Welch's t-test?</summary>
             <div class="faq-a"><p>Student's version assumes both groups have equal population variances and pools them; Welch's version drops that assumption and adjusts the degrees of freedom instead. Welch's version loses almost nothing when the variances are equal and protects you when they are not. For that reason many statisticians (and R's default <code>t.test</code>) recommend Welch as the routine choice.</p></div>

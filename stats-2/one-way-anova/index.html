@@ -79,14 +79,15 @@
         <h1>One-Way ANOVA</h1>
 
         <p class="lede">The <a href="../../stats-1/independent-samples-t-test/">t-test</a> compares two groups. But what if you have three diets, four teaching methods, or five doses? <strong>Analysis of Variance (ANOVA)</strong> compares all the group means at once, and it does so by comparing two <em>variances</em>.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#why-not-just-run-lots-of-t-tests">Why not just run lots of t-tests?</a><a href="#the-f-ratio-signal-vs-noise-again">The F-ratio: signal vs. noise, again</a><a href="#reading-the-result">Reading the result</a><a href="#explained-unexplained">Explained and unexplained variation</a><a href="#sums-of-squares">The three sums of squares</a><a href="#df-ms-f">Degrees of freedom, mean squares, and F</a><a href="#fit-plus-residual">Every score is its group mean plus a residual</a><a href="#f-equals-t-squared">Two groups, and F = t²</a><a href="#what-you-re-assuming">What you're assuming</a><a href="#unequal-spreads">When the spreads are not equal</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Why not just run lots of t-tests?</h2>
+        <h2 id="why-not-just-run-lots-of-t-tests">Why not just run lots of t-tests?</h2>
         <p>With four groups there are six possible pairwise t-tests. Each carries a 5% false-positive risk, and those risks pile up: run enough and you're almost guaranteed a "significant" result by chance alone. ANOVA sidesteps this with a single <strong>omnibus test</strong>: one verdict on whether <em>any</em> of the groups differ.</p>
         <p>With <em>I</em> groups there are <em>I</em>(<em>I</em> &minus; 1)/2 pairs, so three groups give three tests and four groups give six. If the tests were independent and every null were true, the chance of at least one false alarm across <em>k</em> of them is 1 &minus; (1 &minus; &alpha;)<sup>k</sup>:</p>
         <p style="text-align:center;font-family:var(--mono);font-size:1rem;margin:1rem 0">1 &minus; (1 &minus; .05)<sup>3</sup> = .1426 &nbsp;&nbsp; 1 &minus; (1 &minus; .05)<sup>6</sup> = .2649</p>
         <p>Six comparisons, each run at 5%, give a false-alarm rate closer to 26%. Pairwise tests on the same data are not fully independent, so the true rate is a little below those figures, but the size of the problem is right and it grows fast. The omnibus test gives one verdict at one <a href="../../stats-1/hypothesis-testing-logic/">&alpha;</a>, and <a href="../../stats-2/post-hoc-tests/">post-hoc tests</a> then make the comparisons you actually want with the error rate under control.</p>
 
-        <h2>The F-ratio: signal vs. noise, again</h2>
+        <h2 id="the-f-ratio-signal-vs-noise-again">The F-ratio: signal vs. noise, again</h2>
         <p>ANOVA splits the total variation in the data into two pieces and takes their ratio:</p>
         <p style="text-align:center;font-size:1.15rem;margin:1.25rem 0"><strong>F = (variance <em>between</em> groups) / (variance <em>within</em> groups)</strong></p>
         <p>If the population means differ, the group means are spread out (big between-group variance) relative to the scatter inside each group, so F is large. If the population means are all equal, the between-group variance is just noise of the same size as the within-group variance, and F is near 1. The bookkeeping underneath (each MS as SS &divide; df, the two df, and &eta;&sup2; from the same table) is laid out on the <a href="../../formulas.html">formula sheet</a>.</p>
@@ -124,7 +125,7 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>Reading the result</h2>
+        <h2 id="reading-the-result">Reading the result</h2>
         <p>The F-ratio comes with two degrees of freedom, one for each half of the ratio, and together they give the p-value. As usual, p &lt; 0.05 means "this much separation would be surprising if all the groups were identical." If you are designing a study, the <a href="../../power.html?sc=anova">power calculator</a> runs the same numbers backwards. Tell it how many groups you have and how big an effect you care about, and it returns the n per group you need.</p>
         <div class="callout key">
           <p><strong>ANOVA is an omnibus test.</strong> A significant F says the group means are not all the same. It does not say which pair is responsible: group A might be far above the rest while B, C, and D are identical. To find out where the differences are, follow up with <a href="../../stats-2/post-hoc-tests/">post-hoc tests</a>.</p>
@@ -235,7 +236,7 @@
         <p>You can run an ANOVA on two groups, and it is useful to do it once. Load the builder with the untreated and high-dose seedlings alone (<a href="./?g=15,14,12,11;25,24,22,21">eight numbers and two groups</a>), and the table gives <em>F</em>(1, 6) = 60.00 with <em>p</em> = .0002. The pooled <a href="../../stats-1/independent-samples-t-test/">two-sample t-test</a> on the same eight numbers gives <em>t</em>(6) = 7.746, and its two-tailed <em>p</em> is identical to every digit a calculator shows. And 7.746&sup2; = 60.00.</p>
         <p>The identity <em>F</em> = <em>t</em>&sup2; holds whenever df<sub>G</sub> = 1. Squaring a <em>t</em> on v degrees of freedom gives an <em>F</em> on (1, v), so with two groups the two tests are the same test. The <em>t</em> version also gives a signed difference and a confidence interval for it, so it is the one to report when there are two groups. ANOVA is needed from three groups upward.</p>
 
-        <h2>What you're assuming</h2>
+        <h2 id="what-you-re-assuming">What you're assuming</h2>
         <ul>
           <li>The groups are independent, and observations within each are independent.</li>
           <li>The outcome is roughly normal within each group (or samples are large).</li>
@@ -268,7 +269,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>Why use ANOVA instead of running several t-tests?</summary>
             <div class="faq-a"><p>With k groups, pairwise t-tests multiply: four groups means six tests, each carrying its own 5% false-positive risk — together far more than 5%. ANOVA asks one omnibus question ("are all the means equal?") at a single controlled α. If it's significant, you then localize the differences with <a href="../../stats-2/post-hoc-tests/">corrected post-hoc comparisons</a>.</p></div>

@@ -65,7 +65,7 @@ for slug, qas in FAQS.items():
     section = (
         "        <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->\n"
         "        <section class=\"faq\">\n"
-        "          <h2>Common questions</h2>\n"
+        "          <h2 id=\"common-questions\">Common questions</h2>\n"   # the id make-lesson-tocs.js gives it
         + "\n".join(items) + "\n"
         "        </section>\n"
         "        <!-- faq:end -->\n"

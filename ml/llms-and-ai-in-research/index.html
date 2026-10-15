@@ -82,8 +82,9 @@
         <h1>LLMs &amp; AI in Your Research Workflow</h1>
 
         <p class="lede">You may have found this site by asking one. Large language models (ChatGPT, Claude, Gemini) can explain a concept, debug your R code and draft a paragraph in seconds, and they will be an ordinary part of your research. But the mechanism that makes them fluent also makes them prone to making things up, and that tendency is built into how they work. Once you understand the mechanism, you will know when to rely on them and when not to.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#what-an-llm-actually-does">What an LLM actually does</a><a href="#why-fluency-isn-t-truth">Why fluency isn't truth</a><a href="#two-things-that-complicate-this-the-cutoff-and-retrieval">Two things that complicate this: the cutoff and retrieval</a><a href="#where-ai-helps-and-where-it-must-not">Where AI helps, and where it must not</a><a href="#a-verification-workflow">A verification workflow</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>What an LLM actually does</h2>
+        <h2 id="what-an-llm-actually-does">What an LLM actually does</h2>
         <p>An LLM does one simple thing on a very large scale: <strong>it predicts the next word.</strong> Given the text so far, it produces a probability distribution over the next token (a word or part of a word), samples one, appends it, and repeats. Trained on a large share of the text on the internet, it becomes very good at continuing text in a way that <em>sounds</em> right. Nothing else is in the loop. There is no database of facts, no lookup step, and no step that checks whether the text is true. It is trained for <strong>plausibility, not accuracy.</strong> The toy below runs the same idea on a tiny corpus you can read, so you can see it happen.</p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -114,14 +115,14 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>Why fluency isn't truth</h2>
+        <h2 id="why-fluency-isn-t-truth">Why fluency isn't truth</h2>
         <p>Because the model is built to produce <em>plausible</em> continuations, a wrong answer that reads smoothly can be as easy for it to generate as a right one, and sometimes easier. This is called <strong>hallucination</strong>. It follows directly from how the model works, so no patch can remove it completely. The clearest example is the <strong>fabricated citation</strong>. Asked for references, an LLM will readily invent authors, titles, journals, years and a plausible-looking DOI. A citation is a very regular string of tokens, and the model has learned the pattern without the papers. As the game above shows, the invented reference can be the most <em>impressive</em>-looking one, and you cannot tell it is fake by reading it. You have to check.</p>
 
-        <h2>Two things that complicate this: the cutoff and retrieval</h2>
+        <h2 id="two-things-that-complicate-this-the-cutoff-and-retrieval">Two things that complicate this: the cutoff and retrieval</h2>
         <p>The first is the <strong>knowledge cutoff</strong>. A model working from its own weights alone has learned only from text gathered up to some date. Ask it about a paper published after that date, or about a package whose functions changed last month, and it answers anyway, in the same confident tone. Nothing in the mechanism separates "I have seen this" from "this is what such an answer usually looks like".</p>
         <p>The second is <strong>retrieval</strong>. Most AI tools aimed at researchers now search the web or a document collection first, and add what they find to the model's input before it writes anything. This helps: the reply is based on text that actually exists, and you get links you can open. But the model still writes the summary, so it can misread a retrieved paper, mix up two of them, or attach a real citation to a claim that paper never made. A working link beside a sentence is evidence that the <em>source</em> exists. It is not evidence that the <em>sentence</em> is true.</p>
 
-        <h2>Where AI helps, and where it must not</h2>
+        <h2 id="where-ai-helps-and-where-it-must-not">Where AI helps, and where it must not</h2>
         <p>The mechanism tells you where to draw the line. An LLM is very useful wherever <em>you</em> do the checking and the output is something you would check anyway. It is dangerous wherever you would be tempted to trust it without checking.</p>
         <div class="llm-panels">
           <div class="llm-panel good">
@@ -147,7 +148,7 @@
         </div>
         <p>Pasting participant data is a data-protection problem as well: data pasted into a third-party service have left your control. See <a href="../../ethics/ai-in-research-ethics/">Using AI Tools Ethically</a> and <a href="../../ethics/privacy-and-confidentiality/">Privacy &amp; Confidentiality</a>.</p>
 
-        <h2>A verification workflow</h2>
+        <h2 id="a-verification-workflow">A verification workflow</h2>
         <p>Treat every AI output as <strong>a first draft</strong> that you check before you use it. Run any code and check that it does what you meant. Recompute any number yourself. Click through <em>every</em> citation and drop the ones you can't find. And remember that <strong>you are responsible for every word and number in your work.</strong> "The AI said so" is never a defense, and an AI can't be an author because it can't be held accountable (<a href="../../ethics/ai-in-research-ethics/">ethics of AI in research</a>). Finally, disclose how you used AI. Journal and university policies differ, so check yours.</p>
 
         <div class="callout">
@@ -156,7 +157,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>The AI gave me a real citation with a working link. Is the claim safe now?</summary>
             <div class="faq-a"><p>A working link tells you the <em>source</em> exists. That rules out an invented reference, but not a misrepresented one. The sentence beside the link is still generated text, so it can misstate the finding, attach a real paper to a claim the paper never made, or quote a number the paper reports for a different subgroup or outcome. Checking takes about a minute: open the link, find the sentence that supports the claim, and confirm that the figure in the paper matches the figure in the answer. Watch for one trap in particular: a claim that comes from the source's own citation of an earlier study, not from its results. Then you have found a reference to a reference, and you still haven't seen the evidence. The old rule still applies when a tool retrieves sources for you: if you cite it, you read it.</p></div>

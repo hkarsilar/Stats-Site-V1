@@ -49,8 +49,9 @@
         <h1>Outliers: Detect, Investigate, Decide</h1>
 
         <p class="lede">An outlier is a value far from the rest. What it is <em>not</em> is automatically a mistake to delete. The single most damaging habit in data analysis is covertly dropping the points that spoil the pattern. The standard approach is a three-step loop: <strong>detect</strong> the extreme value, <strong>investigate</strong> why it's there, and only then <strong>decide</strong>, with the reason on record.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#detect-look-before-you-calculate">Detect: look before you calculate</a><a href="#when-the-z-score-rule-cannot-see-the-outlier">When the z-score rule cannot see the outlier</a><a href="#investigate-the-three-explanations">Investigate: the three explanations</a><a href="#decide-and-notice-the-leverage">Decide, and notice the leverage</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Detect: look before you calculate</h2>
+        <h2 id="detect-look-before-you-calculate">Detect: look before you calculate</h2>
         <p>Your eyes are the best first detector. A histogram, a boxplot, or a scatterplot shows an extreme point instantly, in context (the <a href="../../which-chart.html">chart chooser</a> will tell you which of the three suits the variable you're looking at). Two rules of thumb then put numbers on it:</p>
         <ul>
           <li><strong>z-score:</strong> how many SDs from the mean. <code>|z| &gt; 3</code> is a common flag — but the mean and SD are themselves dragged by the outlier, so a lone giant can hide by inflating the SD.</li>
@@ -58,7 +59,7 @@
         </ul>
         <p>Both only <em>flag</em> points for investigation. Neither tells you what to do with them. (The <a href="../../descriptives.html">descriptives calculator</a> reports both for pasted data.)</p>
 
-        <h2>When the z-score rule cannot see the outlier</h2>
+        <h2 id="when-the-z-score-rule-cannot-see-the-outlier">When the z-score rule cannot see the outlier</h2>
         <p>The problem with the mean and SD is worse than it sounds. They are computed <em>from</em> the contaminated sample, so a large value pulls the mean toward itself and inflates the SD. This is called <strong>masking</strong>. In small samples it makes the rule mathematically unable to flag anything: in a sample of size <em>n</em>, the largest standardized score any observation can possibly reach is (<em>n</em> − 1)/√<em>n</em>. At <em>n</em> = 10 that ceiling is <strong>2.85</strong>, so <em>no</em> value, however absurd, can ever score |<em>z</em>| &gt; 3.</p>
 
         <p>With more data the ceiling lifts, but a second outlier can pull the SD up far enough to hide the first. Take twenty ages from a class, two of which were typed with a stuck key:</p>
@@ -74,7 +75,7 @@
 
         <p>On those twenty ages the robust score of 511 is <strong>110</strong> and of 498 is <strong>107</strong>, while 34, the oldest correctly typed age, scores 2.47, well inside Iglewicz and Hoaglin's usual cutoff of 3.5. The typos are now obvious and no other value is flagged, because the median and the MAD hardly change when the typos are added. (The 1.5 × IQR fence catches them too, at 37, because quartiles are robust for the same reason.)</p>
 
-        <h2>Investigate: the three explanations</h2>
+        <h2 id="investigate-the-three-explanations">Investigate: the three explanations</h2>
         <p>Every flagged point has one of three explanations, and each calls for a different action:</p>
         <ol>
           <li><strong>An error.</strong> A typo, a unit mix-up, an equipment glitch. If the source is recoverable, <strong>correct it</strong> (age 511 → 51). If not, mark it <em>missing</em>.</li>
@@ -97,7 +98,7 @@
         </div>
         <!-- ============ /INTERACTIVE 1 ============ -->
 
-        <h2>Decide, and notice the leverage</h2>
+        <h2 id="decide-and-notice-the-leverage">Decide, and notice the leverage</h2>
         <p>The decision matters because a single extreme point can change a whole result. Below is a small invented two-group reaction-time study. The treatment works, but one participant's timer kept running after they left the room and logged <strong>24,000 ms</strong>. Watch what that one value does to the <em>t</em>-test, and what three defensible responses do to it.</p>
 
         <!-- ============ INTERACTIVE 2 ============ -->
@@ -134,7 +135,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>Should I remove outliers before or after checking assumptions?</summary>
             <div class="faq-a"><p>Neither in isolation. Investigate the <em>cause</em> first, because the two questions are connected. Never delete points simply to make an assumption check pass, because that leads straight to <a href="../../methods/the-replication-crisis/">p-hacking</a>. Often one fix resolves both: correcting a data-entry error also removes the assumption violation it caused, and a <a href="../../data/transformations-and-recoding/">log transform</a> can reduce skew without discarding any data. If an extreme point is real and you're unsure, run the analysis with and without it (a sensitivity analysis) and report both.</p></div>

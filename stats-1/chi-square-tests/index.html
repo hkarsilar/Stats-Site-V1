@@ -70,14 +70,15 @@
         <h1>Chi-Square Tests</h1>
 
         <p class="lede">Everything so far has compared <em>means</em> of numeric data. But what about <strong>counts</strong>: how many people picked option A vs. B, recovered vs. didn't, voted left vs. right? The <strong>chi-square (χ²) test</strong> works with frequencies in categories, and its most common use is to ask: are two categorical variables <strong>associated</strong>, or independent?</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#observed-vs-expected">Observed vs. expected</a><a href="#work-one-cell-then-the-next-then-add">Work one cell, then the next, then add</a><a href="#reading-the-result">Reading the result</a><a href="#where-the-curve-comes-from">Where the curve comes from</a><a href="#two-flavors-of-chi-square">Two flavors of chi-square</a><a href="#what-you-re-assuming">What you're assuming</a><a href="#the-2-2-table-you-have-already-met">The 2×2 table you have already met</a><a href="#same-person-twice">When the same person appears twice</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Observed vs. expected</h2>
+        <h2 id="observed-vs-expected">Observed vs. expected</h2>
         <p>The whole test rests on one comparison. You have the <strong>observed</strong> counts (what actually happened). Then you compute the <strong>expected</strong> counts: what you'd see if the two variables were completely unrelated (each cell's expected count is just its row total × column total ÷ grand total). The bigger the gap between observed and expected, the more evidence of a real association:</p>
         <p style="text-align:center;font-size:1.15rem;margin:1.25rem 0"><strong>χ² = Σ (observed − expected)² / expected</strong></p>
         <p>The Σ (sigma) is an instruction to add: work the fraction out for one cell, then do it for every cell and total them.</p>
         <p>That formula, the expected-count rule, the df and Cramér's V are four consecutive rows on the printable <a href="../../formulas.html">formula sheet</a>. Keep it beside you the first few times.</p>
 
-        <h2>Work one cell, then the next, then add</h2>
+        <h2 id="work-one-cell-then-the-next-then-add">Work one cell, then the next, then add</h2>
         <p>To get the sum right on paper, leave the adding until last. Take the cells in any order. For each one, write down its expected count, then subtract, square and divide. That gives you a short list of numbers called the <strong>components</strong>, and χ² is their total.</p>
         <p>Start with the trial in the builder below. Its first cell holds 45 recoveries where independence expects 65 × 70 ÷ 130 = 35.0, so that cell contributes (45 − 35.0)² ÷ 35.0 = 2.86. The other three come to 3.33, 2.86 and 3.33, and χ² = 12.38.</p>
         <p>Writing out the components has two benefits. An arithmetic slip stays visible in one cell and does not disappear into the total. And the components are a result in themselves: the largest ones mark the cells furthest from independence, and those are the cells your results paragraph should name.</p>
@@ -121,7 +122,7 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>Reading the result</h2>
+        <h2 id="reading-the-result">Reading the result</h2>
         <p>Degrees of freedom for a table are (rows − 1) × (columns − 1), which is 1 for the 2×2 trial and 6 for a three-by-four. A χ² far from zero, with p &lt; 0.05, means counts like these would be surprising if the two variables were independent, so you conclude they are <strong>associated</strong>. In the trial, treatment and recovery are related.</p>
         <p>The bars under the table show the same thing without arithmetic. Each row's split across the columns is that row's <strong>conditional distribution</strong>, and the faint bar at the foot is the split of everyone together. Independence means that every row's conditional distribution matches that bottom bar, so χ² measures how far the rows are from it. Rows with identical splits give a χ² of zero, however many cases the table holds.</p>
         <p>On paper the p-value comes as a bracket, not a single number. Take χ² and its df to <a href="../../tables.html#printed-tables">Table F</a>, find the df row, and move along it until your statistic falls between two entries. The p-value is between those two column headings. The builder prints that reading beside the exact one, so you can check a hand answer.</p>
@@ -130,16 +131,16 @@
           <p><strong>Association, not amount.</strong> Like <a href="../../stats-1/correlation/">correlation</a>, a significant χ² tells you a relationship exists, not how strong it is. For strength, report an effect size such as <em>Cramér's V</em> or the odds ratio alongside the test. To compare an odds ratio with the rest of your results, the <a href="../../effect-sizes.html">effect-size converter</a> will turn it into the more familiar <em>d</em> or <em>r</em>.</p>
         </div>
 
-        <h2>Where the curve comes from</h2>
+        <h2 id="where-the-curve-comes-from">Where the curve comes from</h2>
         <p>The χ² distribution was not invented for tables. Square a standard normal variable and you have a χ² distribution on one degree of freedom; add k independent squares and you have χ² on k. A contingency table's statistic is a sum of squared, standardized differences, so the same family describes it. That origin explains the rest of its behavior. χ² can never be negative, a table that matches its expected counts exactly gives zero, and every p-value here is a right-tail area, because only large values are evidence against independence. The <a href="../../distributions.html">distribution playground</a> includes the family among its nine curves. Move its df slider and the shape shifts right and becomes more symmetric as df grows.</p>
 
-        <h2>Two flavors of chi-square</h2>
+        <h2 id="two-flavors-of-chi-square">Two flavors of chi-square</h2>
         <ul>
           <li><strong>Test of independence</strong> is the one above: are two categorical variables related? (Treatment × outcome, gender × preference.)</li>
           <li><strong>Goodness-of-fit:</strong> does one categorical variable match an expected distribution? (Is this die fair? Do customers pick the four flavors equally?)</li>
         </ul>
 
-        <h2>What you're assuming</h2>
+        <h2 id="what-you-re-assuming">What you're assuming</h2>
         <p>Counts have to be <strong>independent</strong>: each observation falls in exactly one cell, and one person's category does not affect another's. Sixty people should produce sixty entries in the table.</p>
         <p>The expected counts also have to be big enough for the χ² curve to describe the statistic well. Textbooks state that in three parts, and the builder checks all three live as you type:</p>
         <ul>
@@ -149,7 +150,7 @@
         </ul>
         <p>The rule is about expected counts, not observed ones, and that catches many students out. An observed zero is not a problem by itself. A cell where independence expects only two people is. When a table fails, you can merge categories that belong together or collect more data. On a 2×2 you can also switch to <strong>Fisher's exact test</strong>, which computes the probability of the table directly and needs no approximation. If the study is still ahead of you, the <a href="../../power.html?sc=chisq">power calculator</a> will tell you how many observations a given association needs.</p>
 
-        <h2>The 2×2 table you have already met</h2>
+        <h2 id="the-2-2-table-you-have-already-met">The 2×2 table you have already met</h2>
         <p>Cross a two-group variable with a yes/no outcome and you have exactly the data a two-proportion test uses. The two procedures are algebraically the same test, with χ² = z² on one degree of freedom and the same p-value to every decimal. <a href="../../stats-1/inference-for-proportions/">Inference for proportions</a> works through that identity on 270 people. It also explains why the z version is usually the one to report: it gives a signed difference and a confidence interval for it, while χ² gives only a positive number. For tables larger than 2×2 the z test no longer applies, and you use χ².</p>
 
         <h2 id="same-person-twice">When the same person appears twice</h2>
@@ -175,7 +176,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>My chi-square is significant. Which cell is responsible?</summary>
             <div class="faq-a"><p>The test itself will not tell you, because it adds every cell into one number. Look at the <strong>adjusted standardized residuals</strong>, which SPSS offers under Crosstabs → Cells and R returns as <code>chisq.test(tab)$stdres</code>. Each one is roughly a z-score for its cell under independence. A value beyond about ±2 marks a cell with noticeably more or fewer cases than independence predicts, and the sign tells you which. Read the pattern before you write the sentence: a significant χ² on a 3 × 4 table usually comes from one or two cells, not from the whole table at once. With many cells, treat the residuals as exploratory, not as a set of formal tests.</p></div>

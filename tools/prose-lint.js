@@ -657,6 +657,12 @@ function decodeEntities(s) {
    ------------------------------------------------------------------ */
 const READOUT_PLACEHOLDER = /(<(?!\/)[a-zA-Z][^>]*>)\s*—\s*(?=<\/)/g;
 
+/* A lesson's baked "On this page" box (tools/make-lesson-tocs.js) repeats its
+   h2s as links. It is chrome, not prose: without this every heading would be
+   counted twice. Guides' hand-written "In this guide" boxes are left as they
+   always were. */
+const LESSON_TOC = /<nav class="lesson-toc" aria-label="On this page">[\s\S]*?<\/nav>/g;
+
 /* Rendered prose of a page: <body> text minus scripts/styles/<pre>/comments/
    readout placeholders/tags, entities decoded, whitespace collapsed. stripFaq
    removes a lesson's baked-in FAQ block (linted separately from faq_data.py).
@@ -667,6 +673,7 @@ function extractProse(html, stripFaq, stripChrome) {
   let s = html;
   const bodyAt = s.search(/<body\b/i);
   if (bodyAt >= 0) s = s.slice(bodyAt);
+  s = s.replace(LESSON_TOC, ' ');
   if (stripFaq) s = s.replace(/<!--\s*faq:start[\s\S]*?<!--\s*faq:end\s*-->/g, ' ');
   if (stripChrome) s = s.replace(/<footer\b[\s\S]*?<\/footer>/gi, ' ');
   s = s
@@ -685,6 +692,7 @@ function countPlaceholders(html, stripFaq) {
   let s = html;
   const bodyAt = s.search(/<body\b/i);
   if (bodyAt >= 0) s = s.slice(bodyAt);
+  s = s.replace(LESSON_TOC, ' ');
   if (stripFaq) s = s.replace(/<!--\s*faq:start[\s\S]*?<!--\s*faq:end\s*-->/g, ' ');
   s = s
     .replace(/<script\b[\s\S]*?<\/script>/gi, ' ')
@@ -795,6 +803,7 @@ function countBoldLead(html, stripFaq) {
   let s = html;
   const bodyAt = s.search(/<body\b/i);
   if (bodyAt >= 0) s = s.slice(bodyAt);
+  s = s.replace(LESSON_TOC, ' ');
   if (stripFaq) s = s.replace(/<!--\s*faq:start[\s\S]*?<!--\s*faq:end\s*-->/g, ' ');
   return (s.match(BOLD_LEAD_RE) || []).length;
 }
@@ -1091,6 +1100,7 @@ function proseBlocks(html, stripFaq) {
   let s = html;
   const bodyAt = s.search(/<body\b/i);
   if (bodyAt >= 0) s = s.slice(bodyAt);
+  s = s.replace(LESSON_TOC, ' ');
   if (stripFaq) s = s.replace(/<!--\s*faq:start[\s\S]*?<!--\s*faq:end\s*-->/g, ' ');
   s = s
     .replace(/<footer\b[\s\S]*?<\/footer>/gi, ' ')

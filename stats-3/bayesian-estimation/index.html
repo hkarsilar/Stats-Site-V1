@@ -49,8 +49,9 @@
         <h1>Bayesian Estimation &amp; Credible Intervals</h1>
 
         <p class="lede"><a href="../../stats-3/bayesian-thinking/">Bayesian updating</a> gives you a whole posterior distribution. Eventually, though, someone asks "so what's your estimate, and how sure are you?" Summarizing the posterior as a number and a range is <strong>Bayesian estimation</strong>. The range, called the <strong>credible interval</strong>, has the interpretation people often <em>wrongly</em> give to a confidence interval.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#two-summaries-of-a-posterior">Two summaries of a posterior</a><a href="#the-interpretation-everyone-wants">What a credible interval means</a><a href="#central-vs-highest-density-intervals">Central vs. highest-density intervals</a><a href="#reading-the-region-off-a-grid">Reading the region off a grid</a><a href="#watch-it-tighten">Watch it tighten</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Two summaries of a posterior</h2>
+        <h2 id="two-summaries-of-a-posterior">Two summaries of a posterior</h2>
         <ul>
           <li>A <strong>point estimate</strong>: usually the <em>posterior mean</em> (the balance point), but sometimes the <em>median</em> or the <em>mode</em> (the peak, called the MAP, maximum a posteriori).</li>
           <li>A <strong>credible interval</strong>: a range that contains a stated share of the posterior probability, say 95%. The most common version is the <em>central</em> interval, chopping 2.5% off each tail.</li>
@@ -89,10 +90,10 @@
           <p>A 95% <strong>credible</strong> interval means what it sounds like: <em>given your data and prior, there is a 95% probability the parameter lies in this range.</em> Compare that to a <a href="../../stats-1/confidence-intervals/">frequentist confidence interval</a>, where the 95% refers to the long-run behavior of the <em>procedure</em>, not this particular interval. The Bayesian statement is the direct probability claim people instinctively (but wrongly) read into confidence intervals.</p>
         </div>
 
-        <h2>Central vs. highest-density intervals</h2>
+        <h2 id="central-vs-highest-density-intervals">Central vs. highest-density intervals</h2>
         <p>The shaded band above is a <strong>central</strong> interval: equal probability trimmed from each tail. An alternative is the <strong>highest posterior density (HPD)</strong> interval: the <em>shortest</em> range containing the target probability. For a symmetric posterior they are identical. For a skewed one the HPD interval stays closer to the peak and is a little narrower. Both are legitimate: central intervals are simpler, and HPD intervals are the shortest possible.</p>
 
-        <h2>Reading the region off a grid</h2>
+        <h2 id="reading-the-region-off-a-grid">Reading the region off a grid</h2>
         <p>The posterior above is a curve, so its interval comes from a quantile function. A grid posterior, the table of candidate values built in <a href="../../stats-3/bayesian-thinking/">&sect;3.7</a>, has no quantile function and does not need one. The highest-density idea works directly on the rows.</p>
         <p>Sort the hypotheses by posterior mass, biggest first, and take them one at a time until the running total clears your target. Whatever you took is the region. Because a Beta prior times a binomial likelihood is always single-peaked, the hypotheses that come out are always neighbors, so the region reads as a range rather than a scatter of separate values.</p>
         <p>On the nine-row table from the previous lesson, where a spun bottle cap landed lip-up nine times in twelve:</p>
@@ -107,7 +108,7 @@
         <p>That overshoot is not an error, but reporting the region as exactly 95% would be. A discrete posterior can hold only certain totals, so it usually cannot hold exactly 95% of itself. Name the region and the mass it actually holds: "the smallest 95% region runs from .5 to .9 and holds 98.2% of the posterior." A finer grid reduces the overshoot. At nineteen candidates .05 apart, the smallest region clearing 95% runs from .50 to .90 and holds 95.8%. The continuous Beta(10, 4) posterior that both grids approximate has a 95% highest-density interval of [.486, .926]. You can see the nineteen-row version on <a href="../../stats-3/bayesian-thinking/?hyp=19&amp;n=12&amp;k=9">the grid widget with nineteen hypotheses loaded</a>.</p>
         <p>When you report the region, give the level you achieved rather than the one you asked for, and say which rule produced it. Central and highest-density intervals are different, and a skewed posterior separates them. Beta(10, 4) is skewed: its central interval is [.462, .909] and its highest-density interval is [.486, .926], shifted right and about .008 narrower.</p>
 
-        <h2>Watch it tighten</h2>
+        <h2 id="watch-it-tighten">Watch it tighten</h2>
         <p>Increase the trials and the posterior narrows, so the credible interval shrinks. Raise the credibility from 90% to 99% and the band widens, because a higher probability needs a wider range. It is the same trade-off between precision and confidence that you saw with confidence intervals.</p>
 
         <div class="callout">
@@ -119,7 +120,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>What is the difference between a credible interval and a confidence interval?</summary>
             <div class="faq-a"><p>A 95% credible interval means "given the data (and prior), the parameter is 95% likely to be in here." A 95% <a href="../../stats-1/confidence-intervals/">confidence interval</a> promises only that the <em>procedure</em> captures the true value 95% of the time across repeated studies. With flat priors and decent data the two are often numerically similar, but only the credible interval supports the direct probability statement.</p></div>

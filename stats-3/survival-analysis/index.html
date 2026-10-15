@@ -49,11 +49,12 @@
         <h1>Survival Analysis &amp; Kaplan–Meier</h1>
 
         <p class="lede">Sometimes the outcome is a <em>when</em>, not a number: the time until a patient relapses, a customer churns, a part fails, or a participant drops out of a habit study. This is <strong>time-to-event ("survival") data</strong>, and ordinary methods fail on it for one reason. When the study ends, some events haven't happened yet. Those unfinished cases are called <strong>censored</strong> observations, and survival analysis exists to use them without bias.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#why-you-can-t-just-average-the-times">Why you can't just average the times</a><a href="#the-kaplan-meier-idea-survive-one-step-at-a-time">The Kaplan–Meier idea: survive one step at a time</a><a href="#comparing-groups-the-log-rank-test">Comparing groups: the log-rank test</a><a href="#beyond-the-curve">Beyond the curve</a><a href="#when-the-hazards-aren-t-proportional">When the hazards aren't proportional</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Why you can't just average the times</h2>
+        <h2 id="why-you-can-t-just-average-the-times">Why you can't just average the times</h2>
         <p>Suppose half your patients were still relapse-free when the study closed at 36 months. What's their "time to relapse"? You only know it's <em>more than</em> what you observed. Averaging the observed times treats them as if they relapsed when observation stopped, and that pulls the estimate down. Throwing censored cases away is even worse: you'd be deleting the people who lasted longest. Both shortcuts bias the result, so censoring has to be built into the method.</p>
 
-        <h2>The Kaplan–Meier idea: survive one step at a time</h2>
+        <h2 id="the-kaplan-meier-idea-survive-one-step-at-a-time">The Kaplan–Meier idea: survive one step at a time</h2>
         <p>The <strong>Kaplan–Meier estimator</strong> builds the survival curve S(t), the probability of lasting beyond time t, one step at a time. At each observed event time it asks: of the people <em>still at risk</em> at that moment, what fraction got through it? Multiply those step-by-step survival fractions together and you get the familiar staircase curve. Censored people count while they're observed and leave the "at risk" pool afterward, so nothing has to be guessed about their futures.</p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -91,13 +92,13 @@
 
         <p>Push the censoring slider up and a median may show "&gt; 36 mo" in place of a number. That is correct. If the curve never falls to 0.5 inside the follow-up window, the median survival time has not been reached yet, and papers write it as <strong>not reached</strong>. Do not invent a number there, or extend the curve past your last observation to find one: that turns a short study into a claim about long survival times. When the median is out of reach, report survival at a fixed landmark, such as the 24-month rate with its confidence interval.</p>
 
-        <h2>Comparing groups: the log-rank test</h2>
+        <h2 id="comparing-groups-the-log-rank-test">Comparing groups: the log-rank test</h2>
         <p>The <strong>log-rank test</strong> checks whether two survival curves differ. At every event time it asks how many of that time's events group A "should" have had, given how many people each group had at risk. Summing observed-minus-expected events across all times gives a χ² statistic with 1 degree of freedom, a survival version of the <a href="../../stats-1/chi-square-tests/">chi-square test</a>. It weights every event equally and is most powerful when one group's hazard is a constant multiple of the other's (proportional hazards).</p>
 
-        <h2>Beyond the curve</h2>
+        <h2 id="beyond-the-curve">Beyond the curve</h2>
         <p>Kaplan–Meier describes and the log-rank test compares, but neither adjusts for covariates. For that you need <strong>Cox proportional-hazards regression</strong>, which models the hazard ratio as a function of predictors and is a close relative of the <a href="../../stats-3/generalized-linear-models/">GLMs</a> you've already met. The hazard-ratio slider in the playground is the quantity a Cox model estimates.</p>
 
-        <h2>When the hazards aren't proportional</h2>
+        <h2 id="when-the-hazards-aren-t-proportional">When the hazards aren't proportional</h2>
         <p>The log-rank test and the Cox model rely on the same assumption: whatever the hazard ratio is, it stays constant across follow-up. A treatment that helps early and wears off later violates it, and so does anything whose curves cross. The log-rank test suffers most, because an early advantage and a late disadvantage cancel in its running sum.</p>
         <p>There are three ways to check, in rising order of formality. The first is to look: crossing or converging curves are the visible symptom. The second is to plot log(−log <em>S</em>(t)) against log t for each group, where proportional hazards show up as parallel curves separated by a constant vertical gap of exactly log HR. The third is to test the <strong>Schoenfeld residuals</strong>, which record at every event time how far the covariate value of the person who had the event was from the average of everyone still at risk. Under proportional hazards those residuals have no trend against time. R's <code>cox.zph()</code> turns that into a χ² per covariate plus a global test, and a small p-value is evidence against the assumption, not for it.</p>
         <p>The fix depends on which variable violates it. Stratify the Cox model on that variable, and each of its levels gets its own baseline hazard while the other covariates keep a single ratio. Let its coefficient change with time. Split the follow-up into periods and report a hazard ratio for each. Or drop hazard ratios and compare <strong>restricted mean survival time</strong>, the average event-free time up to a fixed horizon, which means the same thing whether or not the curves stay proportional.</p>
@@ -110,7 +111,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>What is censoring in survival analysis?</summary>
             <div class="faq-a"><p>A censored observation is one whose event hadn't happened when you stopped observing (the study ended, the participant moved away). You know their survival time exceeded some value, but not by how much. That is still information: censored subjects count in the at-risk pool while they are observed. Standard methods assume censoring is uninformative, meaning that dropping out is not related to how soon the event would have happened.</p></div>

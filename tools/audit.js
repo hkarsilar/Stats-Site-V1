@@ -1179,6 +1179,21 @@ descSeen.forEach((pages, d) => {
 }
 
 /* ============================================================
+   CHECK 13 — each lesson's baked "On this page" box matches its headings
+
+   tools/make-lesson-tocs.js writes the box into the HTML so it is there at
+   first paint (P38, Oct 2026: building it at runtime shifted mobile
+   lessons by up to 0.19 CLS). A box written before an h2 was added,
+   removed or renamed would list the wrong sections, and site.js no longer
+   rebuilds a box that exists, so the drift is an error here.
+   ============================================================ */
+{
+  const stale = require('./make-lesson-tocs.js').check();
+  for (const f of stale) err(`${f} → its "On this page" box no longer matches its h2s; run node tools/make-lesson-tocs.js`);
+  if (!stale.length) info(`lesson "On this page" boxes match their headings on all ${READY.length} lessons`);
+}
+
+/* ============================================================
    Report
    ============================================================ */
 const line = '─'.repeat(60);

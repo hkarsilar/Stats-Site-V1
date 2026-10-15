@@ -49,8 +49,9 @@
         <h1>Transformations &amp; Recoding</h1>
 
         <p class="lede">Before analysis, raw numbers often need reshaping: not the table's layout, but the values themselves. A right-skewed variable can be pulled toward symmetry; scores on different scales can be put on common footing; reverse-worded survey items must be flipped before they're combined. Done well, these steps help the analysis meet its assumptions and compare like with like. Done carelessly, like slicing a continuous variable in half, they throw information away.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#taming-skew-log-and-square-root">Taming skew: log and square root</a><a href="#which-rung-of-the-ladder">Which rung of the ladder?</a><a href="#standardizing-reverse-coding-composites">Standardizing, reverse-coding, composites</a><a href="#the-tempting-mistake-median-splits">The tempting mistake: median splits</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Taming skew: log and square root</h2>
+        <h2 id="taming-skew-log-and-square-root">Taming skew: log and square root</h2>
         <p>Many measurements (income, reaction times, counts, concentrations) pile up near a floor of zero and trail off into a long right tail. That skew can violate the normality that <a href="../../stats-2/assumptions-and-when-they-break/">t-tests and regression lean on</a> and let a few large values dominate. A <strong>monotonic transform</strong> compresses the big values more than the small ones:</p>
         <ul>
           <li><strong>log(x)</strong>: the strongest common squeeze; turns multiplicative structure into additive. Needs strictly positive values (use <code>log(x + 1)</code> if zeros appear).</li>
@@ -58,7 +59,7 @@
         </ul>
         <p>The cost is interpretation: results are now on the log or root scale. The mean of the logs back-transforms to the <em>geometric</em> mean, which is below the arithmetic mean, so report both and say which you used.</p>
 
-        <h2>Which rung of the ladder?</h2>
+        <h2 id="which-rung-of-the-ladder">Which rung of the ladder?</h2>
         <p>Log and root are two rungs of one <strong>ladder of powers</strong>, indexed by an exponent λ that runs from strong squeezing at the bottom to none in the middle:</p>
         <table class="ref-table">
           <thead><tr><th>λ</th><th>Transform</th><th>Effect on a right-skewed variable</th></tr></thead>
@@ -99,14 +100,14 @@
         </div>
         <!-- ============ /INTERACTIVE 1 ============ -->
 
-        <h2>Standardizing, reverse-coding, composites</h2>
+        <h2 id="standardizing-reverse-coding-composites">Standardizing, reverse-coding, composites</h2>
         <ul>
           <li><strong>z-standardizing</strong>: <code>(x − mean) / SD</code> puts a variable in SD units (<a href="../../stats-1/z-scores-and-the-normal-distribution/">z-scores</a>), so variables on different scales become comparable and regression coefficients read as "per SD". It's a <em>linear</em> shift-and-stretch: it changes the units, never the shape or the skew.</li>
           <li><strong>reverse-coding</strong>: on a 1–5 scale, a negatively worded item is flipped with <code>6 − x</code> so that "high" means the same thing for every item. Skip it and the reversed items silently cancel the others, deflating a scale's reliability (see <a href="../../methods/reliability-and-validity/">Cronbach's α</a>).</li>
           <li><strong>composite scores</strong>: once every item points the same way, average (or sum) them into one score per person. A mean handles missing items more gracefully than a sum.</li>
         </ul>
 
-        <h2>The tempting mistake: median splits</h2>
+        <h2 id="the-tempting-mistake-median-splits">The tempting mistake: median splits</h2>
         <p>It's common to take a continuous predictor and chop it at the median into "high" vs "low" — it feels tidy and lets you run a t-test. But collapsing a continuous variable to two values <strong>discards the differences within each half</strong>: everyone above the median is treated as identical. The result is a weaker correlation and a real loss of power. Theory says that for a normally distributed predictor, splitting at the median shrinks a correlation to about <strong>0.80</strong> of its value, which removes roughly a third of the variance it explains. Watch it happen:</p>
 
         <!-- ============ INTERACTIVE 2 ============ -->
@@ -138,7 +139,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>When should I log-transform my data?</summary>
             <div class="faq-a"><p>Reach for a log when a variable is strongly right-skewed and strictly positive (income, reaction times, counts, concentrations), especially when its structure is multiplicative (a 10% change matters more than a fixed amount). A log often restores the normality and constant variance that <a href="../../stats-2/assumptions-and-when-they-break/">tests assume</a>, and pulls in a long tail so a few large values stop dominating. If the variable contains zeros, use <code>log(x + 1)</code>. The trade-off is interpretation: results are now on the log scale, so report that and back-transform your summary to the geometric mean.</p></div>

@@ -49,8 +49,9 @@
         <h1>Missing Data &amp; Imputation</h1>
 
         <p class="lede">Real datasets have holes: participants skip questions, sensors fail, people drop out. The quick fixes (analyze whoever's left, or fill gaps with the average) seem harmless. Whether they <em>are</em> harmless depends on <strong>why</strong> the data are missing. Statisticians sort that "why" into three mechanisms, and which one applies decides whether your results are fine, slightly noisy, or systematically wrong.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#three-ways-data-go-missing">Three ways data go missing</a><a href="#why-mean-imputation-is-a-trap">Why mean imputation is a trap</a><a href="#what-your-software-calls-all-this">What your software calls all this</a><a href="#what-to-do-instead">What to do instead</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Three ways data go missing</h2>
+        <h2 id="three-ways-data-go-missing">Three ways data go missing</h2>
         <ul>
           <li><strong>MCAR:</strong> <em>Missing Completely At Random.</em> The holes are pure chance, unrelated to anything (a dropped test tube). Analyses of the remaining data are unbiased; you just lose precision.</li>
           <li><strong>MAR:</strong> <em>Missing At Random</em> (a confusing name). Missingness depends on <em>other observed variables</em>, not on the missing value itself: for example, students with heavy course loads (observed) skip your exam more often. Complete-case analysis can be biased, but the observed data contain enough information to correct it.</li>
@@ -98,14 +99,14 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>Why mean imputation is a trap</h2>
+        <h2 id="why-mean-imputation-is-a-trap">Why mean imputation is a trap</h2>
         <p>Replacing every hole with the observed average looks tidy, but you've invented values with <em>zero variability</em>, all exactly at the mean. The imputed sample's standard deviation shrinks, and every correlation weakens, because all those identical values pull r toward 0. Worst of all, your software now believes it has a full n, so standard errors and p-values come out overconfident. Switch the widget to mean imputation and the SD and r readouts fall while the mean stays the same.</p>
 
-        <h2>What your software calls all this</h2>
+        <h2 id="what-your-software-calls-all-this">What your software calls all this</h2>
         <p>In software menus, complete-case analysis is called <strong>listwise deletion</strong>, or "exclude cases listwise". The other option in the same dialog, <strong>pairwise deletion</strong>, uses a case in every calculation it has the values for, so each cell of a correlation matrix can come from a different subset of people. It keeps more data than listwise deletion, but it has two problems. You no longer have a single <em>n</em> to report. And the matrix is no longer guaranteed to be internally consistent. With 35% of values missing at random, a pairwise correlation matrix comes out mathematically impossible in roughly one simulated dataset in forty: it has a negative eigenvalue, which no real correlation matrix can have. Factor analysis or regression then either refuses to run or gives meaningless results.</p>
         <p>Neither is a modern default, but you need to recognize both, because they are what the software offers first.</p>
 
-        <h2>What to do instead</h2>
+        <h2 id="what-to-do-instead">What to do instead</h2>
         <p>The modern default is <strong>multiple imputation</strong>. Fill each hole several times with plausible values drawn from a model of the data, including its random spread. Analyze each completed dataset, then pool the results, so your standard errors include the extra uncertainty that comes from the missing values. Maximum-likelihood approaches (like FIML, standard in <a href="../../stats-3/mixed-and-multilevel-models/">mixed models</a> software) do the same job. Both are valid under MCAR and MAR. Under MNAR no method fixes the problem automatically, and you need a sensitivity analysis.</p>
 
         <div class="callout">
@@ -118,7 +119,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>How much missing data is too much?</summary>
             <div class="faq-a"><p>The <em>mechanism</em> matters more than the amount. 5% missing not-at-random (MNAR) can bias conclusions more than 30% missing at random handled with multiple imputation. Still, past ~10% you should report sensitivity analyses, and past ~40% the results depend heavily on the imputation model. Always report how much was missing, why you believe it went missing, and how you handled it.</p></div>

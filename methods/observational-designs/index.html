@@ -49,8 +49,9 @@
         <h1>Observational Designs</h1>
 
         <p class="lede">Some of the most important questions in health and social science are about exposures no researcher can ethically assign: smoking, poverty, an infection. Then you can only <strong>watch</strong>, and a study that watches without intervening is an <strong>observational study</strong>. You give up the clean causal claim of an experiment, but you can study the questions that matter most. The skill is knowing which people each design lets you observe, and what it lets you conclude.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#three-ways-to-watch">Three ways to watch</a><a href="#see-which-slice-each-design-gets">See which slice each design gets</a><a href="#why-case-control-speaks-in-odds-ratios">Why case-control speaks in odds ratios</a><a href="#ecological-designs">A fourth way to watch, where the unit is a group</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Three ways to watch</h2>
+        <h2 id="three-ways-to-watch">Three ways to watch</h2>
         <p>All three follow an <strong>exposure</strong> (a risk factor, a treatment, a habit) and an <strong>outcome</strong> (a disease, a pass/fail, an event). They differ in <em>when</em> you look and <em>who</em> you start from.</p>
         <ul>
           <li><strong>Cross-sectional:</strong> one snapshot in time. You measure exposure and outcome together in a sample, right now. Fast and cheap, great for estimating <em>prevalence</em>, but because both are measured at once, you usually can't tell which came first.</li>
@@ -58,7 +59,7 @@
           <li><strong>Case-control:</strong> flip it around. Start from the <em>outcome</em>: round up people who already have the disease (cases) plus a comparison group who don't (controls), then look <em>backward</em> at who was exposed. Efficient for rare outcomes and quick to run, but because you chose how many cases and controls to enroll, you can only estimate <strong>odds ratios</strong>, never risk.</li>
         </ul>
 
-        <h2>See which slice each design gets</h2>
+        <h2 id="see-which-slice-each-design-gets">See which slice each design gets</h2>
         <p>Below, a population of 240 people is followed for 20 years; some develop the outcome, and exposed people are at higher risk. Pick a design and watch <em>which</em> people you actually get to observe, and the estimate each design produces versus the truth.</p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -107,7 +108,7 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>Why case-control speaks in odds ratios</h2>
+        <h2 id="why-case-control-speaks-in-odds-ratios">Why case-control speaks in odds ratios</h2>
         <p>In a cohort you know the denominators (how many exposed and unexposed people you started with), so you can compute a <strong>risk</strong> (cases ÷ people at risk) and divide them into a risk ratio. In a case-control study you <em>chose</em> the number of cases and controls (often 1:1 or 1:4), so "cases ÷ everyone" is a number you set yourself, not a real risk. The <strong>odds ratio</strong> does not depend on that choice, and the odds ratio from a case-control study estimates the same odds ratio you'd get from the whole population. It is the standard measure in case-control work and in <a href="../../stats-2/logistic-regression/">logistic regression</a>.</p>
         <p>The odds ratio only <em>approximates</em> the risk ratio when the outcome is <strong>rare</strong> (the rare-disease assumption). Push the baseline-risk slider up and watch the odds ratio pull away from the risk ratio. When a fifth or a third of people have the outcome, an odds ratio of 2 can mean a risk ratio well under 2. Reporting "twice the odds" as "twice the risk" is one of the most common ways headlines mislead. If you need to put an odds ratio alongside effects reported on other scales, the <a href="../../effect-sizes.html">effect-size converter</a> does the translation.</p>
 
@@ -132,7 +133,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>What is the difference between a cohort study and a case-control study?</summary>
             <div class="faq-a"><p>They run in opposite directions. A <strong>cohort</strong> study starts from the <em>exposure</em>. It enrolls exposed and unexposed people who don't yet have the outcome and follows them forward to see who develops it, which measures incidence and gives a risk ratio directly. A <strong>case-control</strong> study starts from the <em>outcome</em>. It rounds up people who already have the disease (cases) plus a comparison group (controls) and looks backward at who was exposed. Cohorts are stronger for establishing time-order but slow and poor for rare outcomes. Case-control studies are fast and efficient for rare outcomes but can only estimate an <a href="../../stats-2/logistic-regression/">odds ratio</a>.</p></div>

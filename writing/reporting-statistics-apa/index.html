@@ -49,8 +49,9 @@
         <h1>Reporting Statistics in APA Style</h1>
 
         <p class="lede">APA 7 sets exactly how a <em>t</em>-test, an ANOVA, a correlation, or a regression coefficient is written: which letters are italic, whether a number gets a leading zero, how a <em>p</em>-value is rounded. Once you know a handful of patterns, reporting statistics becomes a matter of filling in your own numbers, and you stop losing marks on format. This lesson gives those patterns, plus four rules that prevent most of the common mistakes.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#the-master-patterns">The master patterns</a><a href="#italics-latin-yes-greek-no">Italics: Latin yes, Greek no</a><a href="#leading-zeros-and-decimals">Leading zeros and decimals</a><a href="#the-p-value-rules">The p-value rules</a><a href="#where-the-confidence-interval-goes">Where the confidence interval goes</a><a href="#hunt-the-errors">Hunt the errors</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>The master patterns</h2>
+        <h2 id="the-master-patterns">The master patterns</h2>
         <p>Every result follows a template: the <em>statistic</em>, its <em>degrees of freedom</em> in parentheses, the value, then the <em>p</em>-value and an effect size. Learn these five and you can report almost any analysis you'll run in a thesis:</p>
 
         <div class="apa-ref">
@@ -66,7 +67,7 @@
           </table>
         </div>
 
-        <h2>Italics: Latin yes, Greek no</h2>
+        <h2 id="italics-latin-yes-greek-no">Italics: Latin yes, Greek no</h2>
         <p>This is the rule students break most often. A letter that stands for a statistic gets italicized when it's <em>Latin</em>, and stays upright when it's <em>Greek</em>:</p>
         <ul>
           <li><strong>Italic (Latin):</strong> <em>t</em>, <em>F</em>, <em>r</em>, <em>p</em>, <em>M</em>, <em>SD</em>, <em>d</em>, <em>N</em>, <em>n</em>, <em>R</em>², <em>b</em>, <em>SE</em>, <em>t</em>, <em>z</em>, <em>U</em>, <em>V</em>.</li>
@@ -74,7 +75,7 @@
         </ul>
         <p>Subscripts and the operators don't get italicized either. The "df" label, the parentheses, the "=" sign, and units all stay in normal type.</p>
 
-        <h2>Leading zeros and decimals</h2>
+        <h2 id="leading-zeros-and-decimals">Leading zeros and decimals</h2>
         <p>Drop the zero before the decimal point <em>only</em> for numbers that can't exceed 1 in absolute value (<em>p</em>-values, correlations, and proportions). Everything that can be bigger than 1 keeps its leading zero:</p>
         <ul>
           <li><em>p</em> = .03, <em>r</em> = .34, β = .29: no leading zero (bounded by 1).</li>
@@ -82,7 +83,7 @@
         </ul>
         <p>Report most statistics to two decimals and <em>p</em>-values to two or three. Extra decimals add nothing: <em>t</em> = 3.7241 tells the reader no more than <em>t</em> = 3.72.</p>
 
-        <h2>The p-value rules</h2>
+        <h2 id="the-p-value-rules">The p-value rules</h2>
         <p>Three habits keep <em>p</em>-values accurate and in APA form:</p>
         <ul>
           <li><strong>Report the exact value</strong> when you can: <em>p</em> = .023, not "<em>p</em> &lt; .05". The exact number is more informative and lets a reader judge for themselves.</li>
@@ -107,7 +108,7 @@
         <p>In student work, not every effect size gets an interval. η², <em>R</em>² and Cramér's <em>V</em> have intervals, but computing them needs a noncentral distribution, not the ordinary formula. So ANOVA and chi-square results are often reported without one. That is a habit, not a rule. JASP gives you a confidence interval on η² and ω² from the ANOVA's effect-size options. The <a href="../../correlation.html">Correlation &amp; Regression Calculator</a> prints one beside every <em>r</em> it computes, and the <a href="../../apa.html">APA Results Formatter</a> builds one for all six patterns in the table above. Means, mean differences, correlations, and regression coefficients should always have one.</p>
         <p>The three variance-explained measures have one surprising feature. They take a <strong>90%</strong> interval, not a 95% one, and JASP prints 90% by default. Their test is one-tailed, because only a large <em>F</em> or χ² counts as evidence against the null. A 90% two-sided interval is the one that matches the 5% one-sided test you ran: its lower limit moves above zero exactly when <em>p</em> drops below .05. A 95% interval stays at zero until <em>p</em> drops below .025. So a result with <em>p</em> between .025 and .05 is significant but gets a 95% interval starting at exactly zero, which looks like a contradiction but is not one. For the ANOVA in the table, the two come out as 90% CI [.02, .21] and 95% CI [.01, .23]. Report the 90% interval, and it agrees with the significance test.</p>
 
-        <h2>Hunt the errors</h2>
+        <h2 id="hunt-the-errors">Hunt the errors</h2>
         <p>Below is a results paragraph a student handed in. It contains <strong>eleven</strong> APA violations: wrong italics, stray leading zeros, a "<em>p</em> = .000", a missing <em>N</em>, and more. Click any part you think breaks a rule. Correct clicks fix the text and reveal the rule. A few correctly formatted statistics are mixed in too, so check before you click.</p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -137,7 +138,7 @@
         <p class="pb-xref"><a href="../../problems.html#p5-6">Problem 100 of the practice problems</a> gives you a results sentence whose arithmetic is correct but which breaks three APA 7 rules.</p>
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>My output has no confidence interval on the effect size. Do I leave it out?</summary>
             <div class="faq-a"><p>Check again first, because SPSS is inconsistent about it. Since version 27, its one-way ANOVA has printed an <em>ANOVA Effect Sizes</em> table with a 95% interval on η², and the independent-samples t-test prints one on Cohen's d. But GLM Univariate, the route you take for a factorial design, gives partial η² with no interval at all. JASP prints one on η² and ω² from the ANOVA's effect-size options, at 90% rather than 95%, so the two packages can give different-looking intervals for the same result. If neither gives you one, the interval can be computed from the statistic and its degrees of freedom alone, and the <a href="../../apa.html">APA Results Formatter</a> does this. Do not invent one. An effect size bounded at zero has no symmetric ± interval, so ±2 standard errors around η² is not a valid interval.</p></div>

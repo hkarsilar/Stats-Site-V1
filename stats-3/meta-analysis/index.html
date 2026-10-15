@@ -49,11 +49,12 @@
         <h1>Meta-Analysis &amp; Forest Plots</h1>
 
         <p class="lede">No single study settles a question. Samples are small, contexts differ, and chance plays a large part. <strong>Meta-analysis</strong> treats the studies themselves as data points. It pools every estimate of an effect, weighting each by its precision, to get the field's best combined answer. It also measures how much the studies <em>disagree</em> beyond what chance alone would produce.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#the-one-rule-weight-by-precision">The one rule: weight by precision</a><a href="#reading-a-forest-plot">Reading a forest plot</a><a href="#fixed-vs-random-effects-and-i">Fixed vs random effects (and I²)</a><a href="#the-diamond-is-not-a-forecast">The diamond is not a forecast</a><a href="#the-elephant-publication-bias">The elephant: publication bias</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>The one rule: weight by precision</h2>
+        <h2 id="the-one-rule-weight-by-precision">The one rule: weight by precision</h2>
         <p>A 400-person trial should count for more than a 30-person pilot. Meta-analysis formalizes this with <strong>inverse-variance weighting</strong>: each study's weight is 1/SE². Studies with small standard errors, which are usually the large ones because <a href="../../stats-1/sampling-distributions/">the standard error shrinks as n grows</a>, dominate, and noisy studies contribute what little they know. Before any weighting, the studies have to be on one scale. That usually means converting each result to a common effect size. If a literature reports a mix of <em>d</em>, <em>r</em> and odds ratios, the <a href="../../effect-sizes.html">effect-size converter</a> does the arithmetic. The pooled effect is the weighted average, and its standard error shrinks as studies accumulate, as if the whole literature were one large study.</p>
 
-        <h2>Reading a forest plot</h2>
+        <h2 id="reading-a-forest-plot">Reading a forest plot</h2>
         <p>The standard picture is the <strong>forest plot</strong>: one row per study, a square at its effect estimate (sized by weight), whiskers for its 95% CI, and a diamond at the bottom for the pooled effect. The diamond's width <em>is</em> its confidence interval. At a glance you can see the effect sizes, which studies were precise, and whether the studies agree.</p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -89,17 +90,17 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>Fixed vs random effects (and I²)</h2>
+        <h2 id="fixed-vs-random-effects-and-i">Fixed vs random effects (and I²)</h2>
         <p>A <strong>fixed-effect</strong> model assumes every study estimates the <em>same</em> true effect, differing only by sampling noise. A <strong>random-effects</strong> model allows the true effect to vary across studies (different populations, doses, protocols) with between-study standard deviation τ. The <strong>Q statistic</strong> tests whether studies scatter more than chance allows, and <strong>I²</strong> converts it to a percentage: roughly, how much of the visible spread reflects real differences between studies and not sampling noise. When I² is large, the random-effects model, with its wider diamond, is the defensible summary. The interesting question then becomes <em>why</em> the effect varies. Moderator analysis, the meta-analysis version of <a href="../../stats-2/interactions-in-regression/">interactions</a>, addresses that.</p>
 
-        <h2>The diamond is not a forecast</h2>
+        <h2 id="the-diamond-is-not-a-forecast">The diamond is not a forecast</h2>
         <p>The diamond answers one question: where is the <em>average</em> true effect? It says nothing about the true effect in the <em>next</em> study, though readers often take it to mean both. When the true effects vary across studies, those two answers are far apart.</p>
         <p>The second question has its own interval. A <strong>prediction interval</strong> covers the plausible true effect of a new study drawn from the same population of studies, so it includes the between-study spread:</p>
         <p><code>PI = d̂ ± t(k − 2) × √(τ̂² + SE(d̂)²)</code></p>
         <p>Take a literature shaped like the playground's defaults: <em>k</em> = 8 studies, a pooled <em>d</em> of 0.40 with a standard error of 0.10, and τ̂ = 0.20, which is an I² of about 50%. The diamond runs from <strong>0.20 to 0.60</strong>, a clearly positive average effect. The 95% prediction interval runs from <strong>−0.15 to 0.95</strong>. A new trial finding nothing whatsoever would be entirely consistent with this literature, and the forest plot as usually drawn gives no hint of that.</p>
         <p>The interval is wider than the distribution of true effects it describes (which spans 0.01 to 0.79 here) because μ and τ are both estimated. With 6 degrees of freedom the multiplier is 2.45 rather than 1.96. A small number of studies also makes τ̂ itself imprecise, so a prediction interval built on five studies can be wide enough to look almost useless. That width is still informative: it shows how little a literature that small can tell you about the next study. In R, <code>metafor</code>'s <code>predict()</code> prints the interval beside the pooled estimate.</p>
 
-        <h2>The elephant: publication bias</h2>
+        <h2 id="the-elephant-publication-bias">The elephant: publication bias</h2>
         <p>Meta-analysis can only pool what got published, and significant results are more likely to be published. If null results stay in file drawers, your pooled estimate comes from a sample of the evidence that is biased toward larger effects. Funnel plots, Egger's test, and trim-and-fill are the standard diagnostics. The deeper fixes are changes in research practice that <a href="../../methods/the-replication-crisis/">the replication crisis</a> pushed the field toward: <a href="../../methods/preregistration-and-open-science/">preregistration</a> and registered reports, which put a study on record before its result is known. A meta-analysis is only as unbiased as the literature it draws on. That is the same "how did this sample come to be?" question you've asked since <a href="../../stats-1/what-is-statistics/">lesson 1.1</a>.</p>
 
         <div class="callout">
@@ -108,7 +109,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>What does I² tell you in a meta-analysis?</summary>
             <div class="faq-a"><p>It is the share of the visible between-study variation that reflects real differences in effects and not sampling noise. Rough bands: 25% low, 50% moderate, 75% high heterogeneity. High I² is a finding in its own right. It means the effect varies across populations or protocols, the fixed-effect summary is too confident, and the interesting question becomes <em>what moderates the effect</em>.</p></div>

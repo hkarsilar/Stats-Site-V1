@@ -63,8 +63,9 @@
         <h1>Non-Parametric Alternatives</h1>
 
         <p class="lede">When the <a href="../../stats-2/assumptions-and-when-they-break/">assumptions</a> behind a t-test or ANOVA don't hold (heavy skew, nasty outliers, tiny samples), you don't have to give up. <strong>Non-parametric tests</strong> throw away the raw numbers and work with their <em>ranks</em> instead.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#the-trick-rank-don-t-measure">The trick: rank, don't measure</a><a href="#parametric-or-not">Parametric, non-parametric, distribution-free</a><a href="#the-logic-behind-each-test">The logic behind each test</a><a href="#reading-the-table">Reading a rank table</a><a href="#which-replaces">Which test replaces which</a><a href="#after-h">After a significant H</a><a href="#the-effect-size-your-software-prints">The effect size your software prints</a><a href="#the-trade-off">The trade-off</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>The trick: rank, don't measure</h2>
+        <h2 id="the-trick-rank-don-t-measure">The trick: rank, don't measure</h2>
         <p>Rank-based tests resist outliers and skew because they use only the <em>order</em> of the values. Most parametric tests also use <em>how far apart</em> the values are. Replace the numbers <code>[2, 5, 9, 400]</code> with their ranks <code>[1, 2, 3, 4]</code> and the 400 becomes simply the largest value, so it can no longer distort the result.</p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -97,7 +98,7 @@
         <p>Ranking makes this possible. Whatever the population looked like, the ranks of <em>N</em> observations are always the whole numbers 1 to <em>N</em>. So the behavior of a rank statistic under the null hypothesis can be worked out once, by counting arrangements, and reused for every dataset of that size. That is why these tests come with printed critical-value tables, and why the three tables this lesson reads are indexed by sample size alone, with no degrees of freedom. Kruskal–Wallis and Friedman are the exception: both compare their statistic to a χ² distribution, so they have <em>df</em> of their own.</p>
         <p>Each test starts the same way, so you can learn the steps once. <strong>Pool</strong> the values you are comparing, or reduce each matched pair to a single difference. <strong>Rank</strong> them from smallest to largest. Tied values get the average of the ranks they share, so two values tied for ranks 4 and 5 both get 4.5, and the next value still gets 6. <strong>Sum</strong> the ranks belonging to each group. Then <strong>look up</strong> whatever statistic those sums produce. The <a href="#which-replaces">table further down</a> pairs each parametric test with the rank-based test that replaces it when its assumptions fail.</p>
 
-        <h2>The logic behind each test</h2>
+        <h2 id="the-logic-behind-each-test">The logic behind each test</h2>
         <p>The tests differ in <em>which</em> values get ranked together and in what is added up afterwards.</p>
 
         <h3 id="mann-whitney">Mann–Whitney U: counting wins</h3>
@@ -208,7 +209,7 @@
         <p>Kruskal–Wallis gives <em>H</em> = 10.5 on 2 <em>df</em>, <em>p</em> = .005. Dunn's test then gives <em>z</em> = 3.18 for A against B, 1.06 for A against C and 2.12 for B against C. After a Holm correction only A versus B is below .05 (.004, against .068 for B versus C). Run the three Mann–Whitney tests instead, correct them the same way, and B versus C comes out significant at .024.</p>
         <p>Both answers are arithmetically correct, because they rank different things. Every B score beats every C score, so a test that uses only those ten values finds the largest separation possible with five against five. Dunn's test uses all fifteen, and in the full ranking B and C are neighbors with six mean-rank points between them. Dunn's test uses the same ranks as the <em>H</em> you just reported. A pairwise Mann–Whitney test drops the third group and ranks again, so its ranks are not the ones the omnibus test used. That is the argument for Dunn. Friedman needs the same care for the same reason, and its follow-up ranks within each participant rather than pooling.</p>
 
-        <h2>The effect size your software prints</h2>
+        <h2 id="the-effect-size-your-software-prints">The effect size your software prints</h2>
         <p>A rank test should be reported with an effect size too. Parametric tests have Cohen's <em>d</em> and η². Rank tests have the <strong>rank-biserial correlation</strong>, and the ledger above already shows it under another name.</p>
         <p>Recall the probability of superiority: the chance that a randomly picked value from one group beats a randomly picked value from the other. The rank-biserial correlation is that same quantity rescaled to run from −1 to +1, like a correlation:</p>
         <p style="text-align:center;font-size:1.15rem;margin:1rem 0"><strong><em>r</em><sub>rb</sub> = 2 × P(superiority) − 1</strong></p>
@@ -216,7 +217,7 @@
         <p>Wilcoxon has a matched-pairs version of the same idea, (W₊ − W₋) / (W₊ + W₋), built from the signed-rank sums the ledger already displays.</p>
         <p>JASP prints the rank-biserial correlation when you tick <em>Effect size</em> in the analysis panel, and SPSS does not. As a result, many write-ups fall back on <em>r</em> = <em>z</em>/√<em>N</em>. These are different statistics, and on this data they disagree: <em>z</em> = 2.48 divided by √12 gives <em>r</em> = .72, against a rank-biserial .89. Both are defensible, but you must report which one you computed. If JASP is new to you, the <a href="../../guides/analyze-thesis-data-jasp/">thesis-data walkthrough</a> takes a raw file through to a finished APA sentence.</p>
 
-        <h2>The trade-off</h2>
+        <h2 id="the-trade-off">The trade-off</h2>
         <div class="callout key">
           <p><strong>Robustness isn't free.</strong> When the data <em>are</em> well-behaved and normal, the parametric test has slightly more <a href="../../stats-3/effect-size-and-power/">power</a>, because rank tests discard the magnitudes. The rule of thumb: use parametric tests when assumptions hold, and reach for non-parametric ones when they clearly don't (small samples, heavy skew, ordinal data, or outliers you can't explain away).</p>
         </div>
@@ -229,7 +230,7 @@
         <p class="pb-xref"><a href="../../problems.html#p2-6">Problem 39 of the practice problems</a> runs a Mann–Whitney by hand on five dogs per shelter, from ranking the ten values through to the decision at α = .05. <a href="../../problems.html#p2-15">Problem 48</a> takes the same test to a table and misses the cell by one. <a href="../../problems.html#p2-16">Problem 49</a> works a Wilcoxon with a zero difference in it, and in <a href="../../problems.html#p2-17">Problem 50</a> a Spearman ρ<sub>s</sub> equals its critical value exactly.</p>
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>My output gives both an exact p and an asymptotic p. Which one do I report?</summary>
             <div class="faq-a"><p>The exact one, whenever the software offers it. The asymptotic p comes from a normal approximation to a distribution that is far from smooth at small <em>n</em>. On six-versus-six data with <em>U</em> = 2, the approximation gives .013 and the exact count gives .009. Packages stop offering the exact test somewhere past 20 or 30 per group, and by then the approximation is accurate enough that the choice no longer matters. Printed critical-value tables come from the exact distribution, so when you check hand work against output, the exact p is the one that should agree with your table.</p></div>

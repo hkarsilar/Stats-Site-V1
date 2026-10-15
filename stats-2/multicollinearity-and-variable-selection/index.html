@@ -49,8 +49,9 @@
         <h1>Multicollinearity &amp; Variable Selection</h1>
 
         <p class="lede"><a href="../../stats-2/multiple-regression/">Multiple regression</a> gives each predictor its own "holding the others constant" coefficient. But that works only if the predictors can be told apart. When two predictors are highly correlated <em>with each other</em> (<strong>multicollinearity</strong>), the data cannot separate their effects, and the coefficients become very unreliable.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#the-problem-overlapping-predictors">The problem: overlapping predictors</a><a href="#perfect-and-merely-bad">Perfect, and merely bad</a><a href="#the-tell-tale-signs">The tell-tale signs</a><a href="#working-out-a-vif">Working out a VIF</a><a href="#what-to-do-about-it">What to do about it</a><a href="#two-ways-to-choose-the-predictors">Two ways to choose the predictors</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>The problem: overlapping predictors</h2>
+        <h2 id="the-problem-overlapping-predictors">The problem: overlapping predictors</h2>
         <p>Imagine predicting salary from "years of experience" and "age." They rise together almost perfectly. If you ask the model "what's the effect of experience holding age fixed?" you're asking about a situation that barely exists in your data: people with lots of experience but low age are rare. With so little independent variation in the data, the estimate is very imprecise.</p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -77,19 +78,19 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>Perfect, and merely bad</h2>
+        <h2 id="perfect-and-merely-bad">Perfect, and merely bad</h2>
         <p>Multicollinearity ranges from perfect to merely high, and only the second needs judgment.</p>
         <p><strong>Perfect collinearity</strong> is when a predictor is an exact linear function of the others: weight in kilograms entered alongside weight in pounds, three subscale scores entered alongside their own total, or a full set of <em>k</em> <a href="../../stats-2/categorical-predictors-and-dummy-coding/">dummies</a> entered alongside the intercept. Then the coefficients have no unique solution, because infinitely many sets of coefficients fit the data equally well. Software does not warn you clearly. It drops one predictor and prints the model without it, sometimes with only a footnote. If a variable is missing from your Coefficients table, check for perfect collinearity.</p>
         <p>For high but imperfect collinearity, start with the correlation matrix and look for any pair beyond roughly ±.8. Beyond ±.9, almost everyone agrees it is a problem. Then ask a question the matrix cannot answer, because it only looks at pairs: is any one predictor well predicted by <em>all</em> the others together? The VIF answers that question.</p>
 
-        <h2>The tell-tale signs</h2>
+        <h2 id="the-tell-tale-signs">The tell-tale signs</h2>
         <ul>
           <li><strong>Huge standard errors:</strong> coefficients with enormous uncertainty, so individual predictors look "not significant" even though the model as a whole fits well.</li>
           <li><strong>Unstable, surprising coefficients:</strong> estimates that flip sign or become very large, and change a lot when you add or drop a variable.</li>
           <li><strong>A high VIF.</strong> The <strong>Variance Inflation Factor</strong> measures how well the other predictors explain this one. The recipe and the thresholds are in the next section.</li>
           <li><strong>A low tolerance.</strong> Software usually prints a second column beside the VIF called <strong>tolerance</strong>. It is the reciprocal of the VIF: tolerance = 1 − R², the share of a predictor's variance that is <em>its own</em>, not explained by the other predictors. So VIF &gt; 5 is tolerance &lt; .20, and VIF &gt; 10 is tolerance &lt; .10. A predictor with tolerance .08 has only 8% of its variance left once the other predictors are accounted for.</li>
         </ul>
-        <h2>Working out a VIF</h2>
+        <h2 id="working-out-a-vif">Working out a VIF</h2>
         <p>Computing a VIF once by hand shows where the number comes from. Take predictor <em>j</em>. Make it the outcome. Regress it on every other predictor in the model, ignoring <em>y</em> entirely. Keep the R² from that side regression and call it R²<sub><em>j</em></sub>. Then</p>
         <p style="text-align:center">VIF<sub><em>j</em></sub> = 1 / (1 − R²<sub><em>j</em></sub>)</p>
         <p>Repeat for each predictor, so a four-predictor model means four side regressions and four VIFs. R²<sub><em>j</em></sub> = 0 gives VIF 1, the minimum, and means this predictor shares nothing with the rest. R²<sub><em>j</em></sub> = .50 gives 2, .80 gives 5, .90 gives 10 and .99 gives 100. The curve is steep at the top. Raising R²<sub><em>j</em></sub> from .90 to .99 takes the VIF from 10 to 100, while raising it from 0 to .50 takes it only from 1 to 2.</p>
@@ -100,14 +101,14 @@
           <p><strong>Key reassurance:</strong> multicollinearity inflates the uncertainty of individual coefficients, but it does <em>not</em> hurt the model's overall predictions or its R². If you only care about predicting <code>y</code>, you can often ignore it. It matters only when you need to <em>interpret</em> individual coefficients.</p>
         </div>
 
-        <h2>What to do about it</h2>
+        <h2 id="what-to-do-about-it">What to do about it</h2>
         <ul>
           <li><strong>Drop or combine</strong> redundant predictors (keep one of experience/age, or average several items into a single index).</li>
           <li><strong>Use domain knowledge</strong> to choose which variable to keep, not a blind algorithm.</li>
           <li><strong>Regularize:</strong> <a href="../../ml/regularization-ridge-and-lasso/">ridge regression</a> shrinks coefficients toward zero to reduce the instability, and the related lasso can drop a redundant predictor automatically.</li>
         </ul>
 
-        <h2>Two ways to choose the predictors</h2>
+        <h2 id="two-ways-to-choose-the-predictors">Two ways to choose the predictors</h2>
         <p>Courses teach two approaches to choosing predictors, and it helps to know which one your course uses.</p>
         <p><strong>Theory-first specification</strong> means writing the model down before anyone looks at the data. A predictor is included because there is a reason it belongs: the treatment itself, the confounders the causal story names, the controls a reviewer is certain to ask about. Nothing is added or dropped because of a <em>p</em>-value. As a result, every test in the output has its stated error rate, and you can make the omitted-variable argument of <a href="../../stats-2/multiple-regression/">Section 2.9</a> in advance, not improvise it afterwards.</p>
         <p><strong>General-to-specific</strong> works the other way, and many courses teach it as the standard procedure. Start from a general model with every candidate predictor, remove the weakest one, refit, and repeat. Judge each step by the coefficient's <em>t</em>, by adjusted R² and by <a href="../../stats-2/model-comparison/">AIC or BIC</a>. You stop when removing any remaining predictor would make the model worse by those criteria. There are real arguments for it. A general starting model has less omitted-variable bias than any of the smaller models nested inside it, and the sequence of decisions is written down where a reader can see it.</p>
@@ -122,7 +123,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>What VIF value indicates a problem?</summary>
             <div class="faq-a"><p>Common alarm thresholds are VIF > 5 (cautious) or VIF > 10 (lenient). A VIF of 5 means that predictor's coefficient variance is inflated 5-fold because other predictors largely explain it. Treat these as warnings, not verdicts. A high VIF between a predictor and its own squared term is normal, while a VIF of 4 between two conceptually distinct predictors may still deserve thought.</p></div>

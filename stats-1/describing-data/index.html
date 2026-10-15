@@ -49,8 +49,9 @@
         <h1>Describing Data</h1>
 
         <p class="lede">You've collected a pile of numbers. Before you analyze them, you need to summarize them: where is the middle of the data, and how spread out is it? Descriptive statistics is mostly about those two ideas, <strong>center</strong> and <strong>spread</strong>.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#measures-of-center">Measures of center</a><a href="#why-the-median-resists-outliers">Why the median resists outliers</a><a href="#measures-of-spread">Measures of spread</a><a href="#quartiles-the-five-number-summary-and-the-1-5-iqr-rule">Quartiles, the five-number summary and the 1.5 × IQR rule</a><a href="#where-the-standard-deviation-comes-from">Where the standard deviation comes from</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Measures of center</h2>
+        <h2 id="measures-of-center">Measures of center</h2>
         <p>"Center" means a single typical value that stands in for the whole batch. There are three common ones:</p>
         <ul>
           <li>The <strong>mean</strong> is the everyday average: add everything up, divide by how many there are. It's the <em>balance point</em> of the data.</li>
@@ -82,13 +83,13 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>Why the median resists outliers</h2>
+        <h2 id="why-the-median-resists-outliers">Why the median resists outliers</h2>
         <p>The mean uses the <em>actual value</em> of every point, so one extreme number can pull it a long way. Drag a single dot out to 100 and the orange mean marker follows it across the line. The median depends only on <em>position</em> (which value is in the middle), so a lone extreme value barely moves it, and the teal median marker stays over the bulk of the data. (When you meet an outlier in real data, deciding what to <em>do</em> with it is a separate skill. See <a href="../../data/outliers-in-practice/">Outliers: Detect, Investigate, Decide</a>.)</p>
         <div class="callout key">
           <p><strong>Rule of thumb:</strong> when data is roughly symmetric, mean and median agree; report the mean. When it's skewed or has outliers (incomes, reaction times, house prices), the median is closer to what most people would call "typical."</p>
         </div>
 
-        <h2>Measures of spread</h2>
+        <h2 id="measures-of-spread">Measures of spread</h2>
         <p>Center alone is not enough: two datasets can share a mean but look completely different. <strong>Spread</strong> measures how tightly the values cluster:</p>
         <ul>
           <li>The <strong>range</strong> is biggest minus smallest. Simple, but driven entirely by the two extremes.</li>
@@ -96,7 +97,7 @@
           <li>The <strong>standard deviation</strong> is, roughly, the <em>typical distance of a value from the mean</em>. Small SD means the data huddles near the center; large SD means it's spread wide.</li>
         </ul>
 
-        <h2>Quartiles, the five-number summary and the 1.5 × IQR rule</h2>
+        <h2 id="quartiles-the-five-number-summary-and-the-1-5-iqr-rule">Quartiles, the five-number summary and the 1.5 × IQR rule</h2>
         <p>The median cuts a sorted batch in half. Cut each half in half again and you have the <strong>quartiles</strong>. Q1 is a quarter of the way up the sorted values, Q3 three quarters of the way up, and the gap between them is the <strong>interquartile range</strong>. Like the median, the quartiles depend only on the order of the values, so one extreme value cannot drag them either.</p>
         <p>The smallest value, Q1, the median, Q3 and the largest value are the <strong>five-number summary</strong>, and a boxplot draws those five values. The step-through below builds one on eleven students' task times, in the order you would work it on paper.</p>
 
@@ -148,7 +149,7 @@
 
         <p>The order of the three centers tells you which way a batch leans. Eighteen finishing totals from a <a href="../../datasets.html#hotdog">competitive eating contest</a> have a mean of 34.39, a median of 28.75 and a mode of 26. Mean above median above mode is the pattern of a <strong>right-skewed</strong> batch: most finishers are bunched at the low end, and a long thin tail runs out to the winner's 71. Reverse that order and the skew is to the left. When all three are about the same, the shape is roughly symmetric. The mean moves furthest because it is the only one of the three that uses each value's actual size. So the gap between the mean and the median is a rough measure of how strong the skew is. You can also see the shape directly: <a href="../../stats-1/visualizing-data/">§1.4</a> draws the histogram and shows how to read a boxplot.</p>
 
-        <h2>Where the standard deviation comes from</h2>
+        <h2 id="where-the-standard-deviation-comes-from">Where the standard deviation comes from</h2>
         <p>A value's <strong>deviation</strong> is its distance from the mean, with a sign attached: above the mean is positive, below is negative. That is where the name comes from. Add all the deviations up, though, and the total is always zero, because the mean is the balance point of the data, so their average is always zero as well. The standard fix is to square them, and the four steps below build the standard deviation from there.</p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -200,7 +201,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>When should I use the median instead of the mean?</summary>
             <div class="faq-a"><p>Use the median when the data is skewed or contains outliers — incomes, house prices, reaction times. The mean gets pulled toward extreme values because it uses every value's actual magnitude. The median depends only on which value is in the middle, so it stays closer to a "typical value." For roughly symmetric data the two agree, and the mean is standard.</p></div>

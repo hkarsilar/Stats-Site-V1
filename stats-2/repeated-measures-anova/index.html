@@ -72,8 +72,9 @@
         <h1>Repeated Measures ANOVA</h1>
 
         <p class="lede">When you measure the <em>same</em> people under several conditions (the same patients before, during, and after treatment), you have a repeated-measures design. Like the <a href="../../stats-1/one-sample-and-paired-t-tests/">paired t-test</a>, repeated-measures ANOVA can remove the stable differences between people from the comparison. That often makes it far more sensitive than a between-subjects design.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#the-problem-with-big-individual-differences">The problem with big individual differences</a><a href="#the-repeated-measures-trick">The repeated-measures trick</a><a href="#difference-scores">Two conditions first: the difference score</a><a href="#rm-table">The repeated-measures table</a><a href="#mixed-designs">Mixed designs: one factor between, one within</a><a href="#design-costs">What the design costs</a><a href="#the-catch-sphericity">The catch: sphericity</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>The problem with big individual differences</h2>
+        <h2 id="the-problem-with-big-individual-differences">The problem with big individual differences</h2>
         <p>Suppose you test three conditions and people differ a lot to begin with: some always score high, some always low. In a <a href="../../methods/between-vs-within-designs/">between-subjects design</a>, that person-to-person variability becomes <em>noise</em> that can hide the condition effect. You might have a real effect and still fail to find it.</p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -125,7 +126,7 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>The repeated-measures trick</h2>
+        <h2 id="the-repeated-measures-trick">The repeated-measures trick</h2>
         <p>Because every person is measured in every condition, each person serves as their <strong>own control</strong>. The analysis can separate out a "subjects" part of the variation and set it aside, leaving a much cleaner comparison of the conditions. In the <strong>subject-centered</strong> view above, each person's own average is subtracted out, and the tangle of lines becomes a clear shared pattern. Repeated-measures ANOVA does the same thing in its arithmetic. For the same reason, a within-subjects result is best drawn as one line per person, not as a row of bars. The <a href="../../which-chart.html">chart chooser</a> calls that a slopegraph, and <a href="../../writing/tables-and-figures/">Tables &amp; Figures That Don't Lie</a> shows what goes wrong when you draw the bars instead.</p>
         <div class="callout key">
           <p><strong>The payoff is power.</strong> By removing stable individual differences from the error term, a repeated-measures design can detect a real effect with far fewer participants than a between-subjects design would need.</p>
@@ -240,7 +241,7 @@
           <p><strong>The trade-off:</strong> a within-subjects design gains power by removing stable individual differences from the error term. The costs are order effects, the need for complete data from every participant, and an extra assumption. Use it when the conditions are reversible and people are consistent, and counterbalance whenever you do. Otherwise, use a between-subjects design.</p>
         </div>
 
-        <h2>The catch: sphericity</h2>
+        <h2 id="the-catch-sphericity">The catch: sphericity</h2>
         <p>Repeated measures come with their own assumption, <strong>sphericity</strong>: roughly, that the differences between every pair of conditions have similar variance. When it's violated (common with time-based data, where adjacent timepoints correlate more than distant ones), the test becomes too liberal. Standard corrections (Greenhouse-Geisser, Huynh-Feldt) adjust the degrees of freedom to compensate.</p>
 
         <h3 id="epsilon">What ε is, and what it costs</h3>
@@ -269,7 +270,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>Why does partial eta-squared come out so large in a within-subjects study?</summary>
             <div class="faq-a"><p>Because its denominator leaves out the variation the design removed. Partial η² is SS<sub>effect</sub> / (SS<sub>effect</sub> + SS<sub>error</sub>), and in a repeated-measures table the error excludes the subjects row entirely. The number therefore answers 'how much of what is left once people are accounted for' rather than 'how much of the variation in the data'. For the eight people worked through above, partial η² is 1296/1352 = .96, while the same effect against the raw total is 1296/11516 = .11. Neither is wrong, because they answer different questions. But they are not comparable across designs, so a within-subjects study routinely reports an effect size several times larger than a between-subjects study of the same effect. Say which you computed and report the design beside it. If you need a number that can be compared with a between-subjects study, use generalized η². It puts the subjects variance back into the denominator for any factor a participant did not choose.</p></div>

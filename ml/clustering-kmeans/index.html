@@ -49,11 +49,12 @@
         <h1>Clustering &amp; k-Means</h1>
 
         <p class="lede">Every model so far has learned from labeled examples: this is spam, that is not; this patient relapsed, that one didn't. Clustering works without labels and asks a more exploratory question: <em>are there natural groups in these data at all?</em> It can find customer segments, species, or symptom profiles you did not know to look for. k-means, the most widely used method, is simple and useful but easy to fool.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#unsupervised-structure-without-answers">Unsupervised: structure without answers</a><a href="#the-k-means-loop">The k-means loop</a><a href="#choosing-k">Choosing k</a><a href="#where-k-means-goes-wrong">Where k-means goes wrong</a><a href="#clustering-without-naming-k-first">Clustering without naming k first</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Unsupervised: structure without answers</h2>
+        <h2 id="unsupervised-structure-without-answers">Unsupervised: structure without answers</h2>
         <p>In <strong>unsupervised learning</strong> there is no outcome to predict and nothing to be "right" about. You give the algorithm feature vectors and ask it to organize them. Clustering, the most common kind, divides the data into groups so that points in the same group are similar and points in different groups are not. The result is a <em>hypothesis</em> about hidden structure, which you then have to interpret and validate, because the algorithm will produce groups whether or not any exist.</p>
 
-        <h2>The k-means loop</h2>
+        <h2 id="the-k-means-loop">The k-means loop</h2>
         <p>k-means needs one thing from you up front: <em>k</em>, the number of clusters. Then it repeats two steps until nothing changes:</p>
         <ol>
           <li><strong>Assign.</strong> Attach every point to the nearest cluster center (centroid), by <a href="../knn-and-distance/">straight-line distance</a>.</li>
@@ -86,14 +87,14 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>Choosing k</h2>
+        <h2 id="choosing-k">Choosing k</h2>
         <p>You supply <em>k</em>, so choosing it well matters more than anything else. Two diagnostics help. The <strong>elbow method</strong> plots the within-cluster sum of squares as <em>k</em> grows. It always falls, but it falls <em>fast</em> until you have captured the real groups, and then flattens. The bend, or "elbow", marks a good <em>k</em> (three, for the blobs above). The <strong>silhouette score</strong> asks, for each point, how much closer it is to its own cluster than to the next-nearest one; pick the <em>k</em> that maximizes the average. Neither diagnostic settles the question, and theory is the strongest input. If you expected three segments before you looked, that is good evidence for <em>k</em> = 3.</p>
 
-        <h2>Where k-means goes wrong</h2>
+        <h2 id="where-k-means-goes-wrong">Where k-means goes wrong</h2>
         <p>Because it assigns by straight-line distance to a center, k-means can only draw <strong>straight boundaries</strong> and only find <strong>convex, roughly spherical, similarly-sized</strong> clusters. Give it two interlocking crescents and it cuts them down the middle, a split that makes geometric sense but ignores the real structure, because no pair of centers can follow a curve. It is also sensitive to <strong>initialization</strong>: a bad set of starting centroids can converge to a poor local solution. So <strong>k-means++</strong> (spreading the initial centers apart) and several random restarts are standard. Reseed the centroids on the moons and you will get different wrong answers, each with no warning.</p>
         <p>k-means <em>always</em> returns exactly <em>k</em> clusters, even from pure noise, so a clustering is never proof that groups exist. Validate the clusters by their <a href="../../stats-3/cross-validation-and-overfitting/">stability</a> and silhouette, and by whether they mean something and replicate.</p>
 
-        <h2>Clustering without naming k first</h2>
+        <h2 id="clustering-without-naming-k-first">Clustering without naming k first</h2>
         <p><strong>Hierarchical clustering</strong> does not ask for <em>k</em>. It begins with every point as its own cluster, repeatedly merges the two closest clusters, and records the entire history as a tree called a <strong>dendrogram</strong>. Cut that tree low and you get many small groups; cut it high and you get a few large ones. You pick the number of clusters after seeing the structure, where k-means makes you pick it before.</p>
         <p>Hierarchical clustering needs a different choice, the <strong>linkage</strong>: the definition of "closest" between two <em>clusters</em> rather than two points. <strong>Complete</strong> linkage measures by the farthest pair, <strong>average</strong> by the mean over all pairs, and <strong>Ward</strong> merges whichever pair increases the within-cluster spread least. <strong>Single</strong> linkage measures by the closest pair, which lets a cluster grow along a chain of near neighbors.</p>
         <p>Single linkage works well on the data where k-means fails. Run all four on two interlocking moons of 100 points each: single linkage recovers both moons perfectly, putting 100% of points in the right group, where k-means gets 73%. Complete, average and Ward all score near 82%, barely better. So hierarchical clustering is not better in general. A chaining linkage can follow a curve, and methods built around centers cannot. The cost of that flexibility is that single linkage is easy to fool: one stray point between two real groups can chain them into one.</p>
@@ -104,7 +105,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>How do I choose k in k-means?</summary>
             <div class="faq-a"><p>There is no single correct k. It is a modeling choice you make with several tools plus judgment. The elbow method plots the within-cluster sum of squares against k and looks for the 'elbow' where another cluster stops reducing it by much, but the bend is often unclear. The silhouette score measures how much better each point fits its own cluster than the next-nearest one, and you can pick the k that maximizes the average silhouette. Gap statistics compare your clustering with clusterings of random noise. The most important input, though, is knowledge of the field: if theory says there should be three customer segments, that is strong evidence for k = 3. Try a range, look at the diagnostics and the actual clusters, and treat the answer as a hypothesis to validate, not a fact to report.</p></div>

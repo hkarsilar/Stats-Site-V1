@@ -49,6 +49,7 @@
         <h1>Random Forests &amp; Ensembles</h1>
 
         <p class="lede">A single <a href="../../ml/decision-trees/">decision tree</a> is unstable: change the data slightly and the tree can be rebuilt into something quite different. The fix is simple. Grow a few hundred trees, each on a slightly different sample of the data, and let them vote. The individual trees' errors largely cancel, and the vote is far more stable than any one tree. That is a random forest.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#why-a-crowd-beats-an-expert">Why averaging many trees reduces error</a><a href="#two-dashes-of-randomness">Two sources of randomness</a><a href="#out-of-bag-error-validation-for-free">Out-of-bag error: validation for free</a><a href="#variable-importance-and-its-asterisks">Variable importance — and its asterisks</a><a href="#the-other-way-to-build-a-crowd-boosting">Boosting: trees grown in sequence</a><a href="#common-questions">Common questions</a></nav>
 
         <h2 id="why-a-crowd-beats-an-expert">Why averaging many trees reduces error</h2>
         <p>A single deep tree is a <strong>high-variance</strong> learner: it fits its training sample almost perfectly, including the noise, so a different sample would give a visibly different tree. Averaging reduces that variance. If you have many models whose errors are partly independent, the error of their <em>average</em> is far smaller than a typical single model's, because the overshoots and undershoots cancel. But this needs independence: trees trained on the same data all make the <em>same</em> mistakes, so averaging identical trees gains nothing. A random forest is designed to make its trees differ, so that their errors are less correlated.</p>
@@ -90,10 +91,10 @@
 
         <p>The forest's accuracy is <em>above</em> the average single tree's from very early on. That gap comes entirely from variance reduction: the vote cancels errors that each tree makes on its own. Adding more trees also does not make the forest worse: the curve rises and flattens. The number of trees is a matter of <strong>budget</strong> (more trees are steadier but slower), not of overfitting. The settings that <em>can</em> cause overfitting are inside each tree: its depth and minimum leaf size.</p>
 
-        <h2>Out-of-bag error: validation for free</h2>
+        <h2 id="out-of-bag-error-validation-for-free">Out-of-bag error: validation for free</h2>
         <p>Bagging has a useful side effect. Each bootstrap sample leaves out about 37% of the rows by chance, so every row is "out-of-bag" for roughly a third of the trees, the ones that never saw it. Predict each row using only <em>those</em> trees, compare with the truth, and you have a held-out error estimate without a separate validation set. <strong>Out-of-bag (OOB) error</strong> is a convenient default and usually tracks <a href="../../stats-3/cross-validation-and-overfitting/">cross-validated</a> error closely, but for a final reported number a separate <a href="../../ml/train-test-split-and-generalization/">held-out test set</a> is still the standard.</p>
 
-        <h2>Variable importance — and its asterisks</h2>
+        <h2 id="variable-importance-and-its-asterisks">Variable importance — and its asterisks</h2>
         <p>A forest can also rank the predictors, either by adding up how much each one reduced impurity across all splits or, better, by <strong>permutation importance</strong>: shuffle one column and see how much accuracy falls. Read these rankings with care. Impurity-based importance is biased toward continuous and many-valued predictors. And when two predictors are correlated, the forest splits the credit between them, so an important variable can look modest because a correlated predictor took some of its share. Importance tells you what <em>helped the model predict</em>, not what <em>causes</em> the outcome. For causal questions you need a study <a href="../../methods/experimental-design-and-randomization/">design</a> that can answer them.</p>
         <p>Importance also tells you nothing about the shape of a relationship, only its size. For shape, a <strong>partial-dependence plot</strong> moves one predictor across its range and, at each value, averages the forest's prediction over the other predictors as they occur in the data. The resulting curve shows the direction and the bends the forest learned. The same caution applies: the curve describes the model, not the world.</p>
 
@@ -108,7 +109,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>Why doesn't a random forest overfit as you add more trees?</summary>
             <div class="faq-a"><p>Because adding trees reduces variance without adding the kind of flexibility that fits noise. Each tree is a full, high-variance model that overfits its own bootstrap sample in its own way. Averaging their votes cancels those individual errors, so the ensemble's prediction becomes stable. More trees only make that average more stable. They do not let the forest draw ever-finer boundaries around single points, so test accuracy rises and then levels off rather than peaking and falling. The number of trees affects computing time (more trees are steadier but slower), not overfitting. Overfitting is controlled by each tree's depth or minimum leaf size.</p></div>

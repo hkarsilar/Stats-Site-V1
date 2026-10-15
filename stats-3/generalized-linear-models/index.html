@@ -49,8 +49,9 @@
         <h1>Generalized Linear Models</h1>
 
         <p class="lede">Ordinary <a href="../../stats-1/simple-linear-regression/">regression</a> assumes a continuous outcome with normal, constant-variance errors. Counts, yes/no outcomes, and rates break those rules. <strong>Generalized linear models (GLMs)</strong> extend one framework to cover all of them, and you have already met two members of the family.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#two-ingredients">Two ingredients</a><a href="#the-family-you-already-know">The family you already know</a><a href="#fitting-and-assumptions">Fitting and assumptions</a><a href="#counts-are-not-rates">Counts are not rates</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Two ingredients</h2>
+        <h2 id="two-ingredients">Two ingredients</h2>
         <p>Every GLM is built from the same two pieces:</p>
         <ul>
           <li>A <strong>linear predictor</strong>: the familiar straight line, <code>η = b₀ + b₁x</code>.</li>
@@ -88,7 +89,7 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>The family you already know</h2>
+        <h2 id="the-family-you-already-know">The family you already know</h2>
         <ul>
           <li><strong>Continuous outcome → identity link → ordinary regression.</strong> The link does nothing; the line stays a line.</li>
           <li><strong>Yes/no outcome → logit link → <a href="../../stats-2/logistic-regression/">logistic regression</a>.</strong> The line becomes an S-curve that stays between 0 and 1, and the slope is a log-odds (so e<sup>b₁</sup> is an odds ratio).</li>
@@ -99,10 +100,10 @@
           <p><strong>The unifying idea:</strong> coefficients always act linearly, but on the link scale, not the response scale. So interpreting them means undoing the link: exponentiate for logistic and Poisson, read directly for ordinary regression. Every GLM follows the same pattern.</p>
         </div>
 
-        <h2>Fitting and assumptions</h2>
+        <h2 id="fitting-and-assumptions">Fitting and assumptions</h2>
         <p>GLMs are fit by <strong>maximum likelihood</strong> rather than least squares, and each family has its own mean–variance relationship. For Poisson, the variance equals the mean, so watch for <em>overdispersion</em>, when real counts vary more than that. The modeling workflow (pick predictors, fit, check, interpret) is the same one you have been practicing all along.</p>
 
-        <h2>Counts are not rates</h2>
+        <h2 id="counts-are-not-rates">Counts are not rates</h2>
         <p>Poisson regression models a count, and a count means something only once you know how long you watched. Two clinics report falls: clinic A logs 40 over 500 patient-days, clinic B logs 60 over 1,500. Fit the raw counts and the model reports that B has 1.5 times A's rate, because 60/40 = 1.5. Per patient-day, A's rate is 0.08 and B's is 0.04, so B has half A's rate. The same data give the opposite finding.</p>
         <p>The fix is an <strong>offset</strong>: a predictor entered into the model with its coefficient fixed at 1. Use log(patient-days) as the offset and the log link does the rest, since log(count) − log(days) is log(rate). The model still predicts counts, but the coefficients now describe rates. Fitted on the two clinics above, the offset version gives b₁ = log(0.5) = −0.693 and a rate ratio of exactly 0.50, while the same model without it gives 0.405 and 1.50. In R it is one argument, <code>offset = log(days)</code>; in SPSS it is the <em>Offset variable</em> box in Generalized Linear Models. Without the offset, a count model compares counts when the question is about rates. Both offset and deviance are defined in <a href="../../glossary.html">the glossary</a>.</p>
         <p>Unequal exposure is also a common hidden cause of the overdispersion mentioned above, because counts collected over very different time windows vary more than a single Poisson rate allows.</p>
@@ -116,7 +117,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>What is a link function in simple terms?</summary>
             <div class="faq-a"><p>It connects a straight line to an outcome that can't follow one. The linear predictor b₀ + b₁x can take any value, but a probability must stay in (0, 1) and a count rate must stay positive. The link transforms the outcome's mean onto an unlimited scale where a straight line fits (logit for probabilities, log for counts). The linear part is the same in every GLM, and only the link changes.</p></div>

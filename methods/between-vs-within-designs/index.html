@@ -49,8 +49,9 @@
         <h1>Between vs Within Designs</h1>
 
         <p class="lede">Once you've decided <em>what</em> to compare, you still have to decide <em>who</em> experiences each condition. In a <strong>between-subjects</strong> design, different people get different conditions. In a <strong>within-subjects</strong> (repeated-measures) design, the same people get all of them. That one choice can multiply or divide the number of participants you need, and it comes with a catch.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#why-within-subjects-can-be-so-efficient">Why within-subjects can be so efficient</a><a href="#the-catch-order-and-carryover-effects">The catch: order and carryover effects</a><a href="#counterbalancing-and-its-limits">Counterbalancing (and its limits)</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Why within-subjects can be so efficient</h2>
+        <h2 id="why-within-subjects-can-be-so-efficient">Why within-subjects can be so efficient</h2>
         <p>The main problem for a between-subjects comparison is <strong>individual differences</strong>. If two groups differ, is it the treatment, or just that these people were always faster, smarter, calmer? All that person-to-person variation goes into the denominator of your test statistic, where it makes the effect harder to detect. A within-subjects design lets each person serve as their <strong>own control</strong>: you look at how <em>each</em> individual changed, so their stable quirks subtract out. When people are consistent (their scores in the two conditions correlate strongly), most of that variation cancels. The <a href="../../stats-1/one-sample-and-paired-t-tests/">paired t-test</a> and, for three conditions or more, <a href="../../stats-2/repeated-measures-anova/">repeated-measures ANOVA</a> are powerful for this reason.</p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -86,7 +87,7 @@
 
         <p>Watch the <em>d<sub>z</sub></em> readout. It is larger than <em>d</em> only when people's two scores correlate above about <strong>0.5</strong>. Below that, the within design still needs fewer people, but only because it measures each person twice, and a little carryover is enough to make a plain between-subjects design the better choice.</p>
 
-        <h2>The catch: order and carryover effects</h2>
+        <h2 id="the-catch-order-and-carryover-effects">The catch: order and carryover effects</h2>
         <p>Measuring the same person twice creates problems a between design never has:</p>
         <ul>
           <li><strong>Practice / fatigue:</strong> people get better (or more tired) simply from doing the task again, regardless of condition.</li>
@@ -94,7 +95,7 @@
           <li><strong>Demand characteristics:</strong> seeing both conditions, participants may guess the hypothesis and play along.</li>
         </ul>
 
-        <h2>Counterbalancing (and its limits)</h2>
+        <h2 id="counterbalancing-and-its-limits">Counterbalancing (and its limits)</h2>
         <p>The standard defense is <strong>counterbalancing</strong>: give half the participants condition A first and half condition B first, so any pure order effect cancels out on average. With more than two conditions you can't run every possible order. Researchers then use a <strong>Latin square</strong>, a schedule in which each condition appears once in every position, to spread order effects evenly without needing all <em>k</em>! sequences.</p>
         <p>But counterbalancing only removes <em>symmetric</em> order effects. If A changes B more than B changes A (asymmetric transfer), balancing the orders leaves residual noise in the difference scores. The carryover slider above adds that noise to the within design. Sometimes within-subjects is simply <strong>impossible</strong>: you can't un-teach a lesson, un-reveal a deception, or randomly reassign someone's gender. Then between-subjects is your only option.</p>
 
@@ -110,7 +111,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>What is a mixed design?</summary>
             <div class="faq-a"><p>A design with at least one between-subjects factor and at least one within-subjects factor in the same study. It is very common. Any experiment with a treatment group and a control group (between) measured before and after (within) is a mixed design, as is a training study where two teaching methods are compared across three timepoints. You get the within factor's efficiency where you can have it and accept the between factor's cost where the manipulation cannot be reversed. The analysis is a <a href="../../stats-2/repeated-measures-anova/">repeated-measures ANOVA</a> with the between factor added. The effect people usually care about is the <a href="../../stats-2/factorial-anova-two-way/">interaction</a>: whether the two groups changed <em>differently</em> over time. That is a sharper question than whether either changed at all.</p></div>

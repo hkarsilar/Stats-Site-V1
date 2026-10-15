@@ -49,12 +49,13 @@
         <h1>Neural Networks: The Intuition</h1>
 
         <p class="lede">"Neural network" sounds like something quite different from the regression you already know, but its building block is a model you met in Stats 2, <a href="../../stats-2/logistic-regression/">logistic regression</a>. A network stacks a handful of them so that straight decision boundaries can combine into any shape you need. This lesson covers the intuition only, without the calculus of backpropagation.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#a-neuron-is-just-logistic-regression">A neuron is just logistic regression</a><a href="#layers-compose-simple-boundaries-into-complex-ones">Layers compose simple boundaries into complex ones</a><a href="#training-rolling-downhill">Training: rolling downhill</a><a href="#the-words-you-meet-in-real-code">The words you meet in real code</a><a href="#what-this-course-does-not-cover">What this course does not cover</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>A neuron is just logistic regression</h2>
+        <h2 id="a-neuron-is-just-logistic-regression">A neuron is just logistic regression</h2>
         <p>An artificial <strong>neuron</strong> takes some inputs, multiplies each by a <strong>weight</strong>, adds them up with a <strong>bias</strong>, and passes the total through an <strong>activation function</strong>. With a sigmoid activation, which squashes any total into the range 0 to 1, that is <em>exactly</em> logistic regression: <code>output = σ(w₁x₁ + w₂x₂ + b)</code>. The weights are the slopes, the bias is the intercept, and the neuron draws a single <strong>straight boundary</strong> through the feature space.</p>
         <p>One neuron draws one line. Networks draw curves by combining several lines.</p>
 
-        <h2>Layers compose simple boundaries into complex ones</h2>
+        <h2 id="layers-compose-simple-boundaries-into-complex-ones">Layers compose simple boundaries into complex ones</h2>
         <p>Put a <strong>hidden layer</strong> of a few neurons between the inputs and the output. Each hidden neuron draws its own straight boundary, and the output neuron takes a weighted combination of those hidden signals. Combining several lines can mark out regions that no single line can, such as a corner, a stripe or an island. The classic example is <strong>XOR</strong>: label a point 1 when exactly one of its two inputs is on. No straight line separates the two classes, so plain logistic regression cannot solve it. Give the network three hidden neurons and it combines two lines into the diagonal "pockets" XOR needs. <strong>Depth</strong> (more layers) repeats the idea, so later neurons can reuse the features that earlier ones found.</p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -80,16 +81,16 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>Training: rolling downhill</h2>
+        <h2 id="training-rolling-downhill">Training: rolling downhill</h2>
         <p>The weights start random and are <em>learned</em>. Define a <strong>loss</strong> that measures how wrong the network's outputs are, and picture it as a landscape over all the weights: high where the network is bad, low where it is good. <strong>Gradient descent</strong> computes the local slope and takes a small step downhill, again and again, until the loss stops falling. The <strong>learning rate</strong> is the step size. Too small and training is very slow. Too large and each step jumps past the bottom of the valley and <em>overshoots</em>, so the loss bounces around or grows (set the slider above to 8 or more to see this). The algorithm that computes the slopes efficiently through every layer is <strong>backpropagation</strong>, which this lesson names but does not derive. The landscape has several dips, so a run can settle in a <strong>local minimum</strong> and get XOR only half right. Reseeding the weights starts the descent from a different point.</p>
 
-        <h2>The words you meet in real code</h2>
+        <h2 id="the-words-you-meet-in-real-code">The words you meet in real code</h2>
         <p>You will meet three more terms in any tutorial you open next, and the widget above already uses two of them.</p>
         <p>An <strong>activation</strong> is the function applied to the weighted sum, and the sigmoid is only the historical default. Most networks today use <strong>ReLU</strong> (rectified linear unit), a very simple function: positive values pass through unchanged, and negative values become zero. It has no upper bound, so "squashing" describes the sigmoid rather than activations in general. The hidden layer in the widget above uses a third option, <strong>tanh</strong>, which is a rescaled sigmoid running from −1 to 1.</p>
         <p>ReLU replaced the sigmoid because of a numerical problem. The sigmoid's slope is steepest at its center, where it is exactly 0.25, and flattens toward zero at both ends. Backpropagation multiplies these slopes together layer by layer. So a chain of ten sigmoid layers shrinks the gradient by a factor of at most 0.25<sup>10</sup>, roughly one in a million, and the early layers learn very slowly or not at all. That is the <strong>vanishing gradient</strong> problem. ReLU's slope on the positive side is exactly 1, and multiplying by 1 leaves the gradient unchanged.</p>
         <p>An <strong>epoch</strong> is one full pass through the training set, and the widget's counter counts exactly that. The widget has 56 training points and makes one weight update per pass, which is <strong>full-batch</strong> gradient descent. Real training rarely works this way, because a full pass over a million images is far too slow to repeat thousands of times. In practice the data are split into <strong>mini-batches</strong> of perhaps 32 or 256 examples, and each batch gives its own update. So one epoch makes thousands of small, noisy steps rather than one exact one. That is <strong>stochastic gradient descent</strong>. The noise turns out to be useful, because it can move the search out of shallow local minima like the ones that sometimes trap the network above.</p>
 
-        <h2>What this course does <em>not</em> cover</h2>
+        <h2 id="what-this-course-does-not-cover">What this course does <em>not</em> cover</h2>
         <p>Everything above works at a much larger scale, with more complicated machinery. This course skips the backpropagation derivation and the specialized architectures (convolutional nets for images, the transformers behind today's language models) that stack these ideas many layers deep. The basic ideas stay the same: weighted sums, activation functions, and gradient descent moving downhill. For a thesis on tabular research data you rarely need any of it: <a href="../../stats-2/multiple-regression/">regression</a>, <a href="../../ml/random-forests-and-ensembles/">random forests</a> and careful <a href="../../ml/train-test-split-and-generalization/">validation</a> usually predict as well as a neural network and stay interpretable. Use deep learning when the data are images, audio or text and you have tens of thousands of examples.</p>
 
         <div class="callout">
@@ -98,7 +99,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>Is a neural network really just stacked logistic regressions?</summary>
             <div class="faq-a"><p>For the basic building block, essentially yes: a single neuron computes a weighted sum of its inputs plus a bias and passes it through an activation function. With a sigmoid activation, that is exactly <a href="../../stats-2/logistic-regression/">logistic regression</a>. What is new is <em>composition</em>. Stacking neurons into a hidden layer lets the network combine several straight boundaries into curved ones, and adding depth lets later layers reuse the features that earlier ones found. So a network can learn patterns (like XOR, or the shapes in an image) that no single logistic regression can. The building block is familiar, and the network's flexibility comes from connecting many of them and fitting them together by gradient descent.</p></div>

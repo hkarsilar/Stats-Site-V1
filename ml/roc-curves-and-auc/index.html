@@ -49,8 +49,9 @@
         <h1>ROC Curves &amp; AUC</h1>
 
         <p class="lede">The <a href="../../ml/classification-metrics/">last lesson</a> showed that every setting of the decision threshold gives a different precision and recall. Which setting do you report? You don't have to pick one: you can show them <em>all</em>. Plotting every threshold at once gives the ROC curve, the most widely used one-picture summary of a classifier, and the number calculated from it, AUC.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#sweep-the-threshold-trace-a-curve">Sweep the threshold, trace a curve</a><a href="#reading-the-curve">Reading the curve</a><a href="#auc-one-number-one-clean-meaning">AUC: one number, one clean meaning</a><a href="#when-roc-flatters-reach-for-precision-recall">Rare positives: use a precision–recall curve</a><a href="#ranking-well-is-not-the-same-as-being-right">Ranking well is not the same as being right</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Sweep the threshold, trace a curve</h2>
+        <h2 id="sweep-the-threshold-trace-a-curve">Sweep the threshold, trace a curve</h2>
         <p>As you move the threshold from "flag almost nobody" to "flag almost everybody," two rates from the confusion matrix change together:</p>
         <ul>
           <li><strong>True-positive rate</strong> (TPR = recall = sensitivity): the fraction of real positives you catch.</li>
@@ -93,7 +94,7 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>Reading the curve</h2>
+        <h2 id="reading-the-curve">Reading the curve</h2>
         <p>The shape of the curve shows how good the classifier is:</p>
         <ul>
           <li><strong>Top-left corner</strong> is perfection: catch every positive (TPR = 1) with no false alarms (FPR = 0). The closer the curve comes to that corner, the better.</li>
@@ -103,14 +104,14 @@
         <p>Because the curve covers every threshold, you can compare two models before you know which threshold you will use.</p>
         <p>The curve also gives a default answer to the question the last lesson left open, which threshold to use. <strong>Youden's <em>J</em></strong> picks the point furthest above the diagonal, the threshold that maximizes TPR − FPR, and it is what most software means by "the optimal cutpoint". For two normal groups with equal spread, that threshold is always the midpoint between the two means. At <em>d</em> = 1 the midpoint is a threshold of 0.50, giving TPR .69, FPR .31 and <em>J</em> = .38. Those are the widget's starting values, so you can read them off the plot. Treat <em>J</em> as a starting point, not a final answer: it counts a miss and a false alarm as equally costly, and the previous lesson showed that weighing those costs is your decision.</p>
 
-        <h2>AUC: one number, one clean meaning</h2>
+        <h2 id="auc-one-number-one-clean-meaning">AUC: one number, one clean meaning</h2>
         <p>The <strong>Area Under the Curve</strong> reduces the ROC to a single number between 0 and 1. It has a concrete interpretation: <strong>AUC is the probability that the model gives a randomly chosen positive case a higher score than a randomly chosen negative one.</strong> An AUC of 0.5 means the model orders a random positive above a random negative only half the time, the rate you would get by guessing. An AUC of 0.90 means it ranks them correctly 90% of the time.</p>
         <p>With two normal groups there is a formula. If the groups are separated by <em>d</em> standard deviations, AUC = Φ(<em>d</em>/√2). The same identity appears in <a href="../../stats-3/signal-detection-theory/">signal detection theory</a>, where the separation is called <em>d′</em>. So <em>d</em> = 1 gives AUC ≈ 0.76, <em>d</em> = 2 gives ≈ 0.92, and <em>d</em> = 0 gives exactly 0.50. Check them against the widget's readout. Roughly, 0.7 counts as modest, 0.8 as good and 0.9+ as excellent, but always judge an AUC against how hard the problem is.</p>
 
         <h2 id="when-roc-flatters-reach-for-precision-recall">Rare positives: use a precision–recall curve</h2>
         <p>ROC has a weakness when negatives are plentiful. Its x-axis, the false-positive rate, divides the false positives by the number of negatives. On a heavily <a href="../../ml/classification-metrics/">imbalanced</a> problem (say 1 positive per 1,000) you can have thousands of false positives and still a tiny FPR. The ROC curve then looks excellent while most of your positive flags are wrong. A <strong>precision–recall curve</strong> (precision against recall, summarized by average precision) responds strongly to those false positives, because precision counts only the cases you flagged. As a rule of thumb, ROC is fine when the classes are roughly balanced. Add the PR curve when the positive class is rare and is the one you care about.</p>
 
-        <h2>Ranking well is not the same as being right</h2>
+        <h2 id="ranking-well-is-not-the-same-as-being-right">Ranking well is not the same as being right</h2>
         <p>AUC uses only the order of the scores. Compress them, stretch them or halve them all, and as long as the order stays the same, AUC does not change. So a model can sort every case correctly and still report probabilities that are badly wrong. Take 100 patients, 20 of whom develop the outcome. Model A gives each of those 20 a score of 0.55 and everyone else 0.45, which sorts them perfectly: AUC 1.00. Model B says "20%" to all 100 and sorts nothing: AUC 0.50. Now score both with the <strong>Brier score</strong> (the mean squared distance between the predicted probability and what actually happened, where 0 is perfect). Model A gets .2025 and Model B gets .160, so on the Brier score the model that sorts nothing is better.</p>
         <p>Model A lacks <strong>calibration</strong>: the property that among the cases you called 20%, close to one in five do develop the outcome. Calibration matters most when a number is given to a person, because "your risk is 8%" is a claim about frequency, not about rank. Recalibrate Model A to say 0.95 and 0.05 instead, and its Brier score falls to .0025 while its AUC stays exactly 1.00. The ordering did not change, only the probabilities.</p>
         <p>For a write-up, check calibration with a <strong>calibration plot</strong>: predicted risk, grouped into bins, against the observed rate in each bin, with a 45° line for reference. And compare the Brier score with a benchmark. Predicting the base rate <em>p̄</em> for every case scores <em>p̄</em>(1 − <em>p̄</em>), .160 in this example, and a model that cannot beat that number has added nothing to what you knew before you fitted it.</p>
@@ -123,7 +124,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>What is a good AUC value?</summary>
             <div class="faq-a"><p>As a rough guide, 0.5 is a coin flip (useless), around 0.7 is modest, 0.8 is good and 0.9+ is excellent, but what counts as good depends on the problem. AUC is the probability that the model ranks a random positive case above a random negative one, so 0.5 means the model can't tell the classes apart at all. For an easy, well-separated problem 0.85 might be disappointing. For predicting something noisy like human behavior, 0.70 can be a good result. A high AUC on a rare-outcome problem can also hide poor precision, so never read AUC on its own. Pair it with the <a href="../../ml/classification-metrics/">confusion-matrix metrics</a> at the threshold you plan to use.</p></div>

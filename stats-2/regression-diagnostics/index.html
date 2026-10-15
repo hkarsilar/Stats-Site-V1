@@ -49,8 +49,9 @@
         <h1>Regression Diagnostics</h1>
 
         <p class="lede">You can fit a <a href="../../stats-1/simple-linear-regression/">regression line</a> to any cloud of points and get a slope, an intercept, and an R². None of that tells you whether a straight line was the <em>right</em> model. To find out, you look at what the line leaves unexplained: the <strong>residuals</strong>.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#the-residual-plot">The residual plot</a><a href="#the-five-things-to-check">The five things to check</a><a href="#independence-the-check-the-plot-can-t-make">Independence: the check the plot can't make</a><a href="#what-to-do-about-it">What to do about it</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>The residual plot</h2>
+        <h2 id="the-residual-plot">The residual plot</h2>
         <p>A residual is the gap between an actual point and the line's prediction. Plot the residuals against the fitted values to check the model. You want to see <strong>no pattern at all</strong>: a formless, random cloud centered on zero. Any <em>pattern</em> in the residuals means the model missed something.</p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -87,7 +88,7 @@
           <p><strong>The residual signatures:</strong> a <em>shapeless cloud</em> = healthy. A <em>curve / U-shape</em> = the true relationship is nonlinear (a straight line is wrong, so add a curve term). A <em>fan or funnel</em> = non-constant variance (heteroscedasticity), which makes the standard errors wrong. A <em>lone point far from the rest</em> = an influential outlier that may be tilting the line on its own.</p>
         </div>
 
-        <h2>The five things to check</h2>
+        <h2 id="the-five-things-to-check">The five things to check</h2>
         <ul>
           <li><strong>Linearity.</strong> The residual cloud has no curve. If it bends, the relationship isn't a straight line.</li>
           <li><strong>Constant variance.</strong> The vertical spread of residuals is the same all the way across. A funnel means it isn't.</li>
@@ -96,11 +97,11 @@
           <li><strong>Influential points.</strong> No single observation should dominate the fit. Leverage and influence are not the same thing, and <a href="../../stats-2/assumptions-of-regression/">the regression assumptions lesson</a> separates them. An unusual predictor value gives a point leverage, but only leverage together with a large residual moves the line much. Cook's distance measures that combination.</li>
         </ul>
 
-        <h2>Independence: the check the plot can't make</h2>
+        <h2 id="independence-the-check-the-plot-can-t-make">Independence: the check the plot can't make</h2>
         <p>A plot of residuals against fitted values can look perfectly healthy on data that breaks independence, because the problem is in the order or the grouping of the rows, not in their spread. Two kinds of dependence are common. Measurements taken in sequence (daily sales, weekly symptom scores) tend to be followed by similar values. This is called <strong>autocorrelation</strong>, and you see it by plotting the residuals against time or row number. The <strong>Durbin-Watson</strong> statistic your software prints is the formal test: values near 2 mean no autocorrelation, and values near 0 mean each residual is positively correlated with the one before it.</p>
         <p>The second kind is clustering: several rows from the same participant, class, clinic, or family. Ordinary regression treats every row as independent evidence, so ten measurements from one person count as ten people. Standard errors and p-values come out too small. Unlike the other four problems on this list, nothing you do to the residuals afterwards repairs it. You need a model that accounts for the grouping, such as <a href="../../stats-3/mixed-and-multilevel-models/">mixed and multilevel models</a>.</p>
 
-        <h2>What to do about it</h2>
+        <h2 id="what-to-do-about-it">What to do about it</h2>
         <p>A curved pattern? Transform a variable or add a polynomial/nonlinear term. A funnel? Transform the outcome (logs often help) or use robust/weighted standard errors. An influential outlier? Investigate it (is it a data-entry error, or a real-but-rare case?) and report the fit with and without it.</p>
 
         <div class="callout">
@@ -111,7 +112,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>How do I know whether a pattern in my residual plot is real or just noise?</summary>
             <div class="faq-a"><p>Random residuals look patterned far more often than people expect. With thirty points, clumps and gentle curves show up constantly in data generated from a perfectly linear model, and if you look for structure you will find some. A quick check is a lineup. Simulate several residual plots from a model where the assumptions hold by construction, mix your real plot in among them, and see whether you can pick yours out. If you can't, whatever worried you is within the range of ordinary noise. This is the lineup protocol of Buja and colleagues (2009). Running it informally two or three times trains your eye better than any threshold.</p></div>

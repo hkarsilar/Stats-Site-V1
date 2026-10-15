@@ -49,8 +49,9 @@
         <h1>Tidy Data</h1>
 
         <p class="lede">Before any statistics happen, your data has a <em>shape</em>, and the wrong shape is where most analysis pain actually comes from. <strong>Tidy data</strong> is one simple, boring convention that makes every tool downstream just <em>work</em>: rows are observations, columns are variables, one value per cell. Learn to see the shape, and half of "cleaning" disappears before it begins.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#the-one-rule-that-is-really-three">The one rule (that is really three)</a><a href="#the-classic-spreadsheet-sins">The classic spreadsheet sins</a><a href="#why-tidy-unlocks-everything-downstream">Why tidy unlocks everything downstream</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>The one rule (that is really three)</h2>
+        <h2 id="the-one-rule-that-is-really-three">The one rule (that is really three)</h2>
         <p>Coined by Hadley Wickham, a <strong>tidy</strong> dataset satisfies three conditions at once:</p>
         <ul>
           <li><strong>Each variable is a column.</strong> Height, group, score — one variable, one column, nothing else in it.</li>
@@ -59,7 +60,7 @@
         </ul>
         <p>That's it. Tidy data is <em>long</em> and a little dull to look at, but because every tidy table has the same layout, you can filter, group, plot, and model it without rearranging it first. Messy data is messy in a thousand different ways, but tidy data is all tidy in the same way.</p>
 
-        <h2>The classic spreadsheet sins</h2>
+        <h2 id="the-classic-spreadsheet-sins">The classic spreadsheet sins</h2>
         <p>Human-friendly spreadsheets are usually machine-hostile. The same handful of sins show up everywhere:</p>
         <ul>
           <li><strong>Metadata living in the data.</strong> A title banner, a blank spacer row, a "totals" row mixed in with real observations.</li>
@@ -94,7 +95,7 @@
 
         <p>The end state is <em>taller</em> and less pretty, but every column now answers "what variable is this?" with a single word. You could compute the mean score, the resit rate, or a per-year average with one line of code.</p>
 
-        <h2>Why tidy unlocks everything downstream</h2>
+        <h2 id="why-tidy-unlocks-everything-downstream">Why tidy unlocks everything downstream</h2>
         <p>Most analysis tools expect tidy data. A tidy frame drops straight into a <a href="../../stats-1/describing-data/">descriptives</a> routine, a <code>group_by</code>, a boxplot, or a regression with no reshaping. Once your data is tidy, you stop asking how to get the software to accept it, and the remaining questions are statistical. Reshaping <em>between</em> tidy-long and human-wide is itself a routine operation (<code>pivot_longer</code> and <code>pivot_wider</code> get a <a href="../wide-vs-long-data/">lesson of their own</a> later in this course), and it is easy because tidy is a well-defined target.</p>
 
         <div class="callout key">
@@ -107,7 +108,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>What does tidy data mean?</summary>
             <div class="faq-a"><p>Tidy data is a simple, standard shape for a table: <strong>each variable is a column, each observation is a row, and each cell holds a single value</strong>. The term comes from Hadley Wickham. A tidy table is usually long and a little dull to read, but because the layout is always the same, you can filter, group, plot, and model it without reshaping first. Messy data is messy in endless ways, whereas tidy data is all tidy in the same way.</p></div>

@@ -49,8 +49,9 @@
         <h1>The Cleaning Workflow</h1>
 
         <p class="lede">Real data arrives dirty: duplicated submissions, a group column spelled six different ways, invisible trailing spaces, impossible values hiding in plain sight. Clean it with a <strong>principled pipeline</strong> that you run the same way every time, where every fix is written as a step you could undo, explain, and rerun.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#the-five-move-loop">The five-move loop</a><a href="#the-usual-suspects">The usual suspects</a><a href="#exact-duplicates-are-the-easy-half">Exact duplicates are the easy half</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>The five-move loop</h2>
+        <h2 id="the-five-move-loop">The five-move loop</h2>
         <p>Good cleaning follows the same cycle regardless of the dataset:</p>
         <ol>
           <li><strong>Inspect.</strong> Look before you touch. Counts, ranges, distinct categories, a scan for duplicates. You can't fix what you haven't seen.</li>
@@ -60,7 +61,7 @@
           <li><strong>Log the decision.</strong> Record what you changed and why, so a stranger (or future-you) can audit every step.</li>
         </ol>
 
-        <h2>The usual suspects</h2>
+        <h2 id="the-usual-suspects">The usual suspects</h2>
         <ul>
           <li><strong>Duplicates:</strong> the same row entered twice (a double-clicked submit), or <em>fuzzy</em> duplicates (the same person under "Ann Lee" and "Ann&nbsp;Lee "). Exact duplicates are easy to drop; fuzzy ones need judgment.</li>
           <li><strong>Inconsistent categories:</strong> <code>Control</code>, <code>control</code>, <code>CONTROL</code>, <code>ctrl</code> are one group masquerading as four. Standardize them to a canonical set.</li>
@@ -111,7 +112,7 @@
 
         <p>Two things to notice. First, the mean satisfaction barely moves until you range-check, then it drops sharply, because a handful of 999s were inflating it. Second, the order matters: standardizing can't merge <code>"Control&nbsp;"</code> with <code>"Control"</code> until you've trimmed the space. A pipeline makes that order explicit and repeatable.</p>
 
-        <h2>Exact duplicates are the easy half</h2>
+        <h2 id="exact-duplicates-are-the-easy-half">Exact duplicates are the easy half</h2>
         <p>Step 3 above drops rows that are identical in every column. That is what <code>distinct()</code> in R and <code>drop_duplicates()</code> in pandas do when you call them with no arguments. That handles a double-clicked submit on a form that records nothing else. It does not handle the version you will actually meet, where the platform stamped each submission with the time it arrived:</p>
 
         <div class="callout">
@@ -133,7 +134,7 @@
         <p class="pb-xref"><a href="../../problems.html#p5-4">Problem 98 of the practice problems</a> gives you an assistant’s verbatim cleaning log and asks which of its entries destroyed the dataset without anyone noticing.</p>
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>Two rows share an ID but give different answers. Which one do I keep?</summary>
             <div class="faq-a"><p>Decide the rule before you look at the answers, and write it in the log. Three choices are defensible: the first submission, the last one, or whichever row is most complete. Any of them is fine as long as you can say why you chose it and you apply it to every clashing ID in the file. What ruins the analysis is choosing per row, keeping whichever value happens to suit the result, because that is p-hacking with extra steps. Survey exports almost always carry a submission timestamp, which makes "first" or "last" a single line of code. If the two rows disagree about something central and no rule settles it, flag the participant, run the analysis both ways, and say in the write-up whether the conclusion moved.</p></div>

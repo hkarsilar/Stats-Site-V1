@@ -49,8 +49,9 @@
         <h1>Data Privacy Basics</h1>
 
         <p class="lede">You promised your participants their data would be kept private, and you meant it. But "I deleted the names" is a much weaker guarantee than it feels like. The people in your rows can often be identified from the ordinary details left behind: their age, their town, their sex. Once one row is tied to one person, everything sensitive in that row is exposed.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#three-words-that-aren-t-synonyms">Three words that aren't synonyms</a><a href="#quasi-identifiers-and-re-identification">Quasi-identifiers and re-identification</a><a href="#k-anonymity-and-sharing-safely">k-anonymity and sharing safely</a><a href="#what-k-anonymity-does-not-protect">What k-anonymity does not protect</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Three words that aren't synonyms</h2>
+        <h2 id="three-words-that-aren-t-synonyms">Three words that aren't synonyms</h2>
         <p>These get used loosely and it matters, because they promise different things:</p>
         <ul>
           <li><strong>Anonymous:</strong> the data <em>never</em> contained identifying information and <em>cannot</em> be traced to a person, by you or anyone, even in principle. Anonymous data in this strict sense is rare and hard to achieve.</li>
@@ -58,7 +59,7 @@
           <li><strong>Pseudonymized:</strong> direct identifiers are replaced with a code (participant&nbsp;P037), and a separate, secured <em>key</em> links codes back to people. It's reversible by design, useful for follow-ups, but the data are <em>not</em> anonymous as long as that key exists.</li>
         </ul>
 
-        <h2>Quasi-identifiers and re-identification</h2>
+        <h2 id="quasi-identifiers-and-re-identification">Quasi-identifiers and re-identification</h2>
         <p>Identifiers come in two kinds. <strong>Direct identifiers</strong> (name, ID number) point at one person on their own. <strong>Quasi-identifiers</strong> (age, sex, ZIP code, job, dates) don't single anyone out alone, but in <em>combination</em> they narrow the field fast, and often to one. In the best-known result, Latanya Sweeney showed that <strong>87% of Americans were uniquely identified by just their 5-digit ZIP code, date of birth, and sex</strong>, three facts on almost every "de-identified" record. Cross-reference them with a public voter roll and the "anonymous" medical data has names again.</p>
         <p>Quote that 87% carefully, because it came from the 1990 census. When Philippe Golle repeated the calculation on 2000 census data the figure fell to <strong>63%</strong>. Use the lower number. The conclusion still holds, since nearly two thirds of people are still one lookup away from their own name. The risk also climbs with every column you keep. Each one multiplies the combinations, so the same <a href="../../ml/knn-and-distance/">high-dimensional geometry</a> that makes nearest neighbors meaningless also makes each person unique.</p>
         <p>Below is a "de-identified" table of 30 people: no names, but with the usual quasi-identifiers and a sensitive diagnosis. Choose which columns a snoop is allowed to match on, and coarsen them, to see how many people become uniquely identifiable.</p>
@@ -96,7 +97,7 @@
         </div>
         <!-- ============ /INTERACTIVE 1 ============ -->
 
-        <h2>k-anonymity and sharing safely</h2>
+        <h2 id="k-anonymity-and-sharing-safely">k-anonymity and sharing safely</h2>
         <p>The readout above labeled <strong>k</strong> is <em>k-anonymity</em>. A dataset is <em>k</em>-anonymous if every person shares their quasi-identifier combination with at least <em>k − 1</em> others, so no one can be narrowed down to a group smaller than <em>k</em>. Higher <em>k</em> is safer. You raise it by making values less precise:</p>
         <ul>
           <li><strong>Generalize.</strong> Replace exact age with a band, a full ZIP with its region, a birth date with a birth year. Each step merges people into larger, safer groups (you watched <em>k</em> climb above).</li>
@@ -105,7 +106,7 @@
         </ul>
         <p>Two habits come before all of this. <strong>Data minimization</strong>: don't collect what you don't need; the birth date you never use is only a liability. And <strong>consent scope</strong>: you may only use and share data in the ways your participants agreed to, which is as much a research-ethics duty as a technical one. When in doubt, share less, generalize more, and keep any re-identification key locked away from the data it unlocks.</p>
 
-        <h2>What k-anonymity does not protect</h2>
+        <h2 id="what-k-anonymity-does-not-protect">What k-anonymity does not protect</h2>
         <p>k-anonymity guarantees one thing: no one can be narrowed down to a group smaller than <em>k</em>. It promises nothing about what the group itself reveals. If all five people in a group share a diagnosis, finding the group reveals the diagnosis, and <em>k</em> = 5 has not protected the sensitive information. That is the <strong>homogeneity attack</strong>. The usual patch is <strong>l-diversity</strong>, which requires each group to hold at least <em>l</em> different values of the sensitive column, not merely <em>k</em> members.</p>
         <p>The demo above shows a milder version of the same problem. Generalize both age and ZIP and all 15 groups hold exactly two people, so <em>k</em> = 2 and no row is unique any more. Each pair still has two different diagnoses, though. A snoop who knows their neighbor is a woman in her twenties in ZIP region 0 has a 50% chance of naming her diagnosis. Guessing the table's most common diagnosis would succeed only 1 time in 6. Stop matching on age altogether and <em>k</em> climbs to 4, yet the odds only fall to 37%.</p>
         <p>A newer approach stops editing rows altogether. <strong>Differential privacy</strong> adds calibrated random noise to whatever gets released, in an amount tuned so the result would be nearly as likely whether or not any one person were in the dataset at all. The guarantee covers every conceivable attacker, including one holding outside information you never thought of, and k-anonymity cannot offer that. The US Census Bureau used it to protect the 2020 census. The cost is accuracy: the noise is real, small counts suffer most, and someone has to decide how much accuracy to give up for how much privacy.</p>
@@ -120,7 +121,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>Should I be using differential privacy?</summary>
             <div class="faq-a"><p>For a typical thesis dataset, almost certainly not, but you should know what it is, because it is becoming the standard elsewhere. Every technique in this lesson edits the rows and hopes no attacker can undo the edit. <strong>Differential privacy</strong> instead adds calibrated random noise to whatever gets published. The amount is chosen so that the published result would be nearly as likely whether or not any one person had taken part. That is a mathematical promise covering every possible attacker, including one holding information you never anticipated. The amount of noise is set by a parameter (usually written ε) that measures how much privacy each release spends. The US Census Bureau protected the 2020 census this way. It is most useful when many statistics are released from one dataset, or when queries keep arriving. For a single deposited file, minimizing what you collect, generalizing quasi-identifiers, and controlling who gets access will protect people more.</p></div>

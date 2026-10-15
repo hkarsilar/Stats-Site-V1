@@ -49,15 +49,16 @@
         <h1>One-Sample &amp; Paired t-Tests</h1>
 
         <p class="lede">The <strong>one-sample t-test</strong> asks a simple question: is my sample's mean far enough from some claimed value to be more than chance? It's the <a href="../../stats-1/hypothesis-testing-logic/">hypothesis-testing logic</a> applied to a single mean. One complication, estimating σ from the sample, is why the test uses the t-distribution.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#the-test-statistic">The test statistic</a><a href="#the-t-distribution">The t-distribution</a><a href="#reading-table-d">Reading a t off a printed table</a><a href="#one-sample-ci">The interval that goes with the test</a><a href="#the-paired-t-test-a-clever-reframe">The paired t-test: a clever reframe</a><a href="#what-you-re-assuming">What you're assuming</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>The test statistic</h2>
+        <h2 id="the-test-statistic">The test statistic</h2>
         <p>You compare your sample mean x̄ to a hypothesized value μ₀, scaled by the standard error:</p>
         <p style="text-align:center;font-size:1.2rem;margin:1.25rem 0"><strong>t = (x̄ − μ₀) / (s / √n)</strong></p>
         <p>The quantity under the line comes back in every chapter from here on. <strong>s/√n is the standard error of the mean</strong>, written SE. It estimates how far a sample mean of this size typically is from the population mean. Two things go into it: how spread out the data are, and how many observations were averaged. More data makes it smaller, so a larger study estimates the mean more precisely. Because n enters through a square root, quadrupling the sample only halves the SE. Written with SE, the statistic is t = (x̄ − μ₀)/SE: the number of standard errors between your mean and the claimed value.</p>
         <p>The <a href="../../formulas.html">formula sheet</a> puts all three t-tests (one-sample, paired, independent) side by side, so you can see how little changes between them.</p>
         <p>This looks just like a <a href="../../stats-1/z-scores-and-the-normal-distribution/">z-score</a>, except for one thing. We almost never know the population standard deviation, so we estimate it with the sample's <code>s</code>. That estimate is itself uncertain, especially with small samples, so the statistic no longer follows the normal curve. It follows the <strong>t-distribution</strong>.</p>
 
-        <h2>The t-distribution</h2>
+        <h2 id="the-t-distribution">The t-distribution</h2>
         <p>The t-distribution was published under a pen name. William Sealy Gosset joined the Guinness brewery in Dublin in 1899, where he met a problem the statistics of the day did not solve. Barley yields and malt extracts came in batches of four or five, and the normal curve is safe only with hundreds. He worked out how (x̄ − μ)/(s/√n) behaves at small n and published it in <em>Biometrika</em> in 1908 under the pen name <strong>Student</strong>. Guinness had barred staff from publishing under their own names after an earlier paper gave away production detail. R. A. Fisher later recast the result in the form used today and gave the statistic its letter. That is why courses still call it Student's t.</p>
         <p>The t-distribution has the same bell shape as the normal and is centered at zero, but it has <strong>heavier tails</strong>: with a small sample, extreme values are more common than the normal would predict. Its shape depends on the <strong>degrees of freedom</strong> (df = n − 1). The smaller the sample, the heavier the tails, and the further out you must go to call a result significant.</p>
 
@@ -106,7 +107,7 @@
         </div>
         <p>The test and the interval come from one calculation, so they cannot disagree. A 95% interval that excludes μ₀ means a two-sided test rejects μ₀ at α = .05, and an interval that contains μ₀ means the test fails to reject. The interval also tells you how precisely you have measured the mean. If you report only the p-value, you leave that information out.</p>
 
-        <h2>The paired t-test: a clever reframe</h2>
+        <h2 id="the-paired-t-test-a-clever-reframe">The paired t-test: a clever reframe</h2>
         <p>What about before-and-after measurements on the <em>same</em> people: a weight-loss program, a training intervention, a drug trial? Those two columns aren't independent; each person is measured twice. The trick is to collapse them: compute each person's <strong>difference</strong> (after − before), and run a one-sample t-test on those differences against μ₀ = 0.</p>
         <p>Written out, the hypotheses are about a single mean, the mean of the differences in the population:</p>
         <p style="text-align:center;font-size:1.1rem;margin:1.1rem 0"><strong>H₀: μ<sub>difference</sub> = 0&nbsp;&nbsp;&nbsp;&nbsp;H₁: μ<sub>difference</sub> ≠ 0</strong></p>
@@ -115,7 +116,7 @@
           <p><strong>Why pairing is powerful:</strong> by looking at within-person change, you cancel out the huge person-to-person variability ("Ana is just heavier than Ben") and isolate the effect of the treatment. A paired design often detects an effect that an independent-groups design would miss. <a href="../../methods/between-vs-within-designs/">Choosing between the two</a> is a decision you make when you design the study, before any data are analyzed.</p>
         </div>
 
-        <h2>What you're assuming</h2>
+        <h2 id="what-you-re-assuming">What you're assuming</h2>
         <ul>
           <li>The data (or the differences, for a paired test) are roughly normal, or the sample is large enough for the <a href="../../stats-1/central-limit-theorem/">CLT</a> to apply.</li>
           <li>Observations are independent (for the paired test, the <em>pairs</em> are independent).</li>
@@ -132,7 +133,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>When should I use a paired t-test instead of an independent t-test?</summary>
             <div class="faq-a"><p>Use paired when the two sets of scores belong to the same (or matched) units — before/after measurements, twins, left/right comparisons. The pairing lets you analyze within-unit <em>differences</em>, canceling stable individual differences and usually gaining a lot of power. Use the <a href="../../stats-1/independent-samples-t-test/">independent-samples test</a> when the groups contain different, unrelated people.</p></div>

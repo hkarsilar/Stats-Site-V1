@@ -49,8 +49,9 @@
         <h1>Confidence Intervals</h1>
 
         <p class="lede">A single estimate ("the average is 102") says nothing about how far off it might be. A <strong>confidence interval</strong> adds that: it reports a <em>range</em> of plausible values, like "somewhere between 99 and 105." The phrase "95% confident" trips almost everyone up, so let's pin down what it means.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#from-estimate-to-interval">From estimate to interval</a><a href="#what-95-confident-really-means">What "95% confident" really means</a><a href="#what-changes-the-width">What changes the width</a><a href="#z-interval">When σ is known: the z-interval</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>From estimate to interval</h2>
+        <h2 id="from-estimate-to-interval">From estimate to interval</h2>
         <p>Recall that a sample mean has a <a href="../../stats-1/sampling-distributions/">sampling distribution</a> with a known spread (the standard error). A confidence interval just wraps a margin around the estimate:</p>
         <p style="text-align:center;font-size:1.2rem;margin:1.25rem 0"><strong>estimate&nbsp;±&nbsp;(critical value)&nbsp;×&nbsp;(standard error)</strong></p>
         <p>Pick a higher confidence level and the critical value grows, so the interval gets wider. You trade precision for a better chance of being right. The playground below shows that trade-off, and what "95%" means. (To build an interval from your own numbers, paste a column into the <a href="../../descriptives.html">descriptives calculator</a>, which returns the interval and every quantity that goes into it. The <a href="../../tables.html">tables calculator</a> gives the critical value on its own.)</p>
@@ -89,14 +90,14 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>What "95% confident" really means</h2>
+        <h2 id="what-95-confident-really-means">What "95% confident" really means</h2>
         <p>Keep drawing studies and watch the capture rate settle near your chosen level. The confidence level is that long-run capture rate:</p>
         <div class="callout key">
           <p>"95% confidence" is a statement about the <em>procedure</em>, not about any single interval. If you repeated the study endlessly, about 95% of the intervals you'd build would contain the true value. Any one interval either contains it or doesn't, so you cannot say a single interval has a 95% probability of containing it.</p>
         </div>
         <p>The red bars are expected. At 95% confidence, roughly 1 interval in 20 <em>misses</em> entirely, and that 5% miss rate is built into the method. Switch to 99% and misses become rare, but every interval gets wider (less precise). Switch to 90% and intervals tighten, but you miss more often.</p>
 
-        <h2>What changes the width</h2>
+        <h2 id="what-changes-the-width">What changes the width</h2>
         <ul>
           <li><strong>Confidence level ↑ → wider.</strong> A higher level needs a larger critical value.</li>
           <li><strong>Sample size ↑ → narrower.</strong> More data shrinks the standard error, so the margin shrinks. Slide <em>n</em> up and watch the bars tighten around the truth.</li>
@@ -161,7 +162,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>Does a 95% confidence interval mean there's a 95% chance the true value is inside?</summary>
             <div class="faq-a"><p>Not quite: the 95% describes the <em>procedure</em>, not any single interval. If you repeated the study endlessly, 95% of the intervals built this way would capture the truth; the one interval in front of you either contains it or doesn't. If you want a statement like "95% probability the parameter is in this range," that's what Bayesian <a href="../../stats-3/bayesian-estimation/">credible intervals</a> provide.</p></div>

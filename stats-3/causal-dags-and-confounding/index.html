@@ -49,6 +49,7 @@
         <h1>Causal DAGs &amp; Confounding</h1>
 
         <p class="lede">"Correlation isn't causation" is where most stats courses stop. Causal inference asks the next question: <em>under what assumptions would this association reflect a cause?</em> It starts with a picture, a <strong>DAG</strong> (directed acyclic graph) of what you believe causes what, and the picture tells you which variables to adjust for. Adjusting for the wrong variable can do worse than fail to help. It can create bias where there was none.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#confounders-the-classic-villain">Confounders: a common cause</a><a href="#colliders-the-trap-nobody-warns-you-about">Colliders: a common effect</a><a href="#the-backdoor-rule-of-thumb">The backdoor rule of thumb</a><a href="#the-alternative-to-adjusting-at-all">The alternative to adjusting at all</a><a href="#what-a-dag-buys-you">What a DAG is for</a><a href="#common-questions">Common questions</a></nav>
 
         <h2 id="confounders-the-classic-villain">Confounders: a common cause</h2>
         <p>A <strong>confounder</strong> Z is a common cause of both your predictor X and outcome Y (Z → X and Z → Y). It opens a "backdoor path" X ← Z → Y that mixes a spurious association into the X–Y relationship. The naive regression of Y on X then reports the causal effect <em>plus</em> that spurious association. The fix is the one you know from <a href="../../stats-2/multiple-regression/">multiple regression</a>: include Z in the model. That closes the backdoor, and the X coefficient recovers the true effect.</p>
@@ -91,10 +92,10 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>The backdoor rule of thumb</h2>
+        <h2 id="the-backdoor-rule-of-thumb">The backdoor rule of thumb</h2>
         <p>The general rule (Pearl's "backdoor criterion") comes down to this: <strong>adjust for common causes, never for common effects</strong>, and leave mediators alone unless you specifically want the direct effect (see <a href="../../stats-3/mediation-and-indirect-effects/">mediation</a>). Colliders also explain several well-known paradoxes: selection bias, "why are attractive people jerks in my dating pool," and Berkson's hospital paradox. Each of them comes from conditioning on a collider.</p>
 
-        <h2>The alternative to adjusting at all</h2>
+        <h2 id="the-alternative-to-adjusting-at-all">The alternative to adjusting at all</h2>
         <p>Everything above applies when the exposure was not under your control. <a href="../../methods/experimental-design-and-randomization/">Random assignment</a> solves the same problem at the design stage, and solves it better. If a coin decides who gets X, nothing that came earlier can be a cause of X, so every backdoor path into X is closed before you collect any data. That includes paths through variables you never thought to measure. Adjustment cannot do that, because the backdoor criterion only closes paths through variables you have. When randomization is impossible, <a href="../../methods/quasi-experiments/">quasi-experimental designs</a> use a naturally occurring assignment rule to get some of the same protection, and you use a DAG to argue that the rule did its job.</p>
         <p>The hardest case is a backdoor through something no study could measure: motivation, ability, health before anyone was recruited. Adjustment cannot close that path, and the next three lessons each offer a way around it. <a href="../../stats-3/instrumental-variables/">Instrumental variables</a> stops trying to block the confounded comparison. It uses only the part of the variation in X that comes from a source unrelated to the confounders. <a href="../../stats-3/regression-discontinuity/">Regression discontinuity</a> uses a rule. When a treatment goes to everyone above a strict cutoff on some score, the people just either side of the cutoff are alike in everything that changes smoothly with the score, measured or not. <a href="../../stats-3/difference-in-differences/">Difference-in-differences</a> uses time. It follows a group that got the treatment and a group that did not, before and after, so anything about either group that stayed constant drops out of the comparison.</p>
 
@@ -110,7 +111,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>What is a collider in simple terms?</summary>
             <div class="faq-a"><p>A variable caused by two others: X → C ← Y. Left alone, it transmits nothing. But select or adjust on it and you <em>create</em> a spurious X–Y association. The classic example: among hospitalized patients (being hospitalized is the collider), two diseases look negatively correlated even if they are independent in the population, because having either one is enough to get you admitted.</p></div>

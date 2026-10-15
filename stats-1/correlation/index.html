@@ -49,13 +49,14 @@
         <h1>Correlation</h1>
 
         <p class="lede">Two things vary together: taller people tend to weigh more, more study hours tend to mean higher grades. <strong>Correlation</strong> puts a single number on that co-movement: the <strong>correlation coefficient <em>r</em></strong>, which runs from −1 to +1 and captures both the <em>direction</em> and the <em>strength</em> of a straight-line relationship.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#reading-the-number">Reading the number</a><a href="#what-to-look-at-in-the-picture">What to look at in the picture</a><a href="#computing-r-by-hand">Computing r by hand</a><a href="#facts-about-r">Facts about r</a><a href="#three-things-people-get-wrong">Three things people get wrong</a><a href="#two-reasons-r-comes-out-too-small">Two reasons r comes out too small</a><a href="#undoing-attenuation-and-why-it-bites">Undoing attenuation, and why it bites</a><a href="#the-interval-around-r">The interval around r</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Reading the number</h2>
+        <h2 id="reading-the-number">Reading the number</h2>
         <ul>
           <li><strong>Sign = direction.</strong> Positive <em>r</em>: as one goes up, so does the other. Negative <em>r</em>: as one goes up, the other goes down.</li>
           <li><strong>Size = strength.</strong> Near ±1 the points hug a straight line; near 0 they're a shapeless blob with no linear trend.</li>
         </ul>
-        <h2>What to look at in the picture</h2>
+        <h2 id="what-to-look-at-in-the-picture">What to look at in the picture</h2>
         <p>Look at the scatterplot before the number, and describe four things about every one you meet, in this order. The <strong>form</strong>: straight, curved, or broken into clumps. The <strong>direction</strong>: up to the right or down to the right. The <strong>strength</strong>: a tight band around that form, or a loose haze. Last, the <strong>deviations from the pattern</strong>, meaning the points that do not follow it. The first three describe most of the points. The fourth is where many interesting questions come from, and naming it separately keeps you from ignoring it.</p>
         <p>Draw the plot with care too. Stretch it tall and a weak relationship starts to look convincing; flatten it and a real one turns into a smear. Keep the plotting area roughly square, let each axis cover about the range of its variable, and leave no wide empty bands at the edges. Then your impression comes from the relationship, not from the shape of the plot.</p>
 
@@ -133,11 +134,11 @@
 
         <p>The arithmetic runs: x̄ = 3.0 hours and ȳ = 66.0 marks, s<sub>x</sub> = 1.58 and s<sub>y</sub> = 9.62, and the five products come out as 1.447, −0.263, 0.000, −0.066 and 1.841. Their total is 2.959, and 2.959 divided by 4 gives <strong><em>r</em> = 0.740</strong>. Look at where that total comes from. The two students at the ends of the practice range contribute 3.288 between them, more than the whole total, because the two in the middle go against the trend and subtract some of it. One of those two practiced an hour above average and scored a mark just below it. The student who practiced exactly the average three hours contributes zero however well or badly they did, because their standardized x is zero, and zero times anything is zero. So the further a point is from the means, the more it affects <em>r</em>. That is the arithmetic behind the outlier warning below.</p>
 
-        <h2>Facts about r</h2>
+        <h2 id="facts-about-r">Facts about r</h2>
         <p>Several useful properties follow from that formula. Because it is built from standardized values, <em>r</em> has <strong>no units</strong> and does not change when you change the units. Switch practice from hours to minutes, or marks from out of 100 to out of 20, and the coefficient is identical. Because x and y enter the product symmetrically, <strong>correlating y with x gives exactly the same number</strong> as correlating x with y. This is a first sign that <em>r</em> is a description, not a prediction. The mean of standardized products always stays within <strong>−1 to +1</strong>, and it reaches an endpoint only when all the points are on one straight line. Both columns have to be <strong>quantitative</strong>: there is no correlation between eye color and blood type, even if software will compute one from numbered categories.</p>
         <p>Two more facts get their own section below. The formula measures only straight-line relationships, and a single unusual point can change the answer a lot.</p>
 
-        <h2>Three things people get wrong</h2>
+        <h2 id="three-things-people-get-wrong">Three things people get wrong</h2>
         <div class="callout key">
           <p><strong>1. Correlation measures only straight-line relationships.</strong> A perfect U-shape (y = x²) can have <em>r</em> ≈ 0 even though the variables are perfectly related. Low <em>r</em> means "no <em>linear</em> trend," not "no relationship." Always look at the scatter.</p>
         </div>
@@ -210,7 +211,7 @@
         <p>The running score is a <strong>mean absolute error</strong>: for each plot you have checked, the distance between your guess and the true value, ignoring the sign, averaged over the plots so far. It answers "how far off am I, typically?", not "am I too high or too low?". Because the misses never cancel, a run of overestimates cannot hide in it. A score under about .10 after all ten plots means a good eye. Most people score nearer .15 on their first pass and improve quickly.</p>
         <p>The exercise teaches two things. A cloud that looks like a clear relationship is often around .5, not the .8 it feels like. And the visual difference between .0 and .3 is much smaller than the difference between .6 and .9. Both are reasons to report the number, not just describe the picture in words.</p>
 
-        <h2>Two reasons r comes out too small</h2>
+        <h2 id="two-reasons-r-comes-out-too-small">Two reasons r comes out too small</h2>
         <p>A weak correlation sometimes means the relationship is weak. Check two other explanations first. Both make a real relationship look smaller than it is.</p>
         <p><strong>Restriction of range.</strong> Correlation depends on spread, so looking at only part of the range makes it smaller. Suppose an admissions test correlates .60 with later grades across all applicants. Compute that correlation among the students you admitted, the top quarter of the test distribution, and .60 shows up as roughly .35; in the top 10% it falls to about .30. The underlying relationship did not change. You removed the variation that made it visible. So selective samples (admitted students, hired employees, patients sick enough to be referred) give correlations that look disappointing. A validity study run inside the selected group underestimates the validity of the test used for the selection.</p>
         <p><strong>Unreliable measures.</strong> Every measurement contains noise, and noise is uncorrelated with everything. The shrinkage this causes is called <strong>attenuation</strong>. If your two variables have <a href="../../methods/reliability-and-validity/">reliabilities</a> r<sub>xx</sub> and r<sub>yy</sub>, the correlation you observe is the true one shrunk by a factor of √(r<sub>xx</sub> · r<sub>yy</sub>). Two questionnaires with an acceptable α = .70 each turn a true correlation of .60 into an observed .42. The same arithmetic sets a ceiling: with those instruments, even a perfect underlying relationship would give an observed <em>r</em> of at most .70.</p>
@@ -218,7 +219,7 @@
           <p>Before writing "the variables were only weakly related," check both. Did you compute <em>r</em> inside a selected slice of the range, and how reliable were the measures? A .30 from a restricted sample with noisy instruments is compatible with a substantial relationship in the population.</p>
         </div>
 
-        <h2>Undoing attenuation, and why it bites</h2>
+        <h2 id="undoing-attenuation-and-why-it-bites">Undoing attenuation, and why it bites</h2>
         <p>Attenuation has an obvious-looking inverse. If unreliability shrinks <em>r</em> by a factor of √(r<sub>xx</sub> · r<sub>yy</sub>), dividing by that factor should recover the correlation between the true scores:</p>
         <p style="text-align:center;font-family:var(--mono);font-size:1rem">r<sub>corrected</sub> = r<sub>observed</sub> ⁄ √(r<sub>xx</sub> · r<sub>yy</sub>)</p>
         <p>That is the <strong>correction for attenuation</strong>, and on the example above it works exactly: .42 divided by .70 gives back the .60. The formula does not show that the divisor is itself estimated from the same modest sample. Dividing by an uncertain number below 1 magnifies everything, including sampling error.</p>
@@ -244,7 +245,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>What counts as a strong correlation?</summary>
             <div class="faq-a"><p>Common benchmarks: |r| ≈ .10 small, .30 medium, .50+ large. Psychology rarely sees field correlations above .5, while physics laughs at anything below .95. Context is everything: r = .3 between a cheap screening question and job performance is valuable; r = .8 between two versions of the same questionnaire is unremarkable. Always interpret r against what's typical for your domain.</p></div>

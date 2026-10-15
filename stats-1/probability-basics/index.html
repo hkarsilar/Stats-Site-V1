@@ -49,8 +49,9 @@
         <h1>Probability Basics</h1>
 
         <p class="lede">Probability puts a number on uncertainty. A probability is a value between 0 (impossible) and 1 (certain) that says how likely something is. The most useful way to think of it is as a <strong>long-run frequency</strong>: how often the event would happen if you could repeat the situation over and over.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#probability-as-long-run-frequency">Probability as long-run frequency</a><a href="#sample-space-and-events">Sample space and events</a><a href="#four-rules-to-start-from">Four rules to start from</a><a href="#when-events-overlap-the-general-addition-rule">When events overlap: the general addition rule</a><a href="#independence-and-the-multiplication-rule">Independence and the multiplication rule</a><a href="#conditional-probability">Conditional probability</a><a href="#turning-it-around-bayes-rule">Turning it around: Bayes' rule</a><a href="#three-classic-problems">Three classic problems</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Probability as long-run frequency</h2>
+        <h2 id="probability-as-long-run-frequency">Probability as long-run frequency</h2>
         <p>Say a coin has a 0.5 chance of heads. That doesn't promise heads on any particular flip, or even 5 heads in 10. It's a statement about the long run: flip it enough times and the <em>proportion</em> of heads will close in on 0.5. This is the <strong>Law of Large Numbers</strong>, and it connects abstract probability to actual data. A related result comes later: the law says where the proportion settles, and the <a href="../../stats-1/central-limit-theorem/">Central Limit Theorem</a> describes the shape of its fluctuations along the way.</p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -81,11 +82,11 @@
 
         <p>Early on, the proportion swings wildly, because a handful of flips tells you almost nothing. As the flips add up, the line settles close to the true value. (Even with P(heads) set to 0.5, the running proportion is usually slightly off 0.5. It converges toward 0.5 but never has to equal it exactly.)</p>
 
-        <h2>Sample space and events</h2>
+        <h2 id="sample-space-and-events">Sample space and events</h2>
         <p>Before you apply any rule, list the possible outcomes. The <strong>sample space</strong> is every outcome the random phenomenon can produce, written <em>S</em>. Roll one die and <em>S</em> = {1, 2, 3, 4, 5, 6}. Flip two coins and <em>S</em> = {HH, HT, TH, TT}. That is four outcomes, not three, because HT and TH are different results that happen to give the same count of heads. An <strong>event</strong> is any collection of outcomes you care about. "Even" is the event {2, 4, 6}; "at least one head" is {HH, HT, TH}.</p>
         <p>When every outcome in <em>S</em> is equally likely, probability becomes counting. Count the outcomes in the event, divide by the count in <em>S</em>, and that is the answer: P(even) = 3/6 = .5. Most of the work in an exam question is building <em>S</em> correctly, and most of the mistakes happen there too. Two coins have four outcomes, not three. Two dice have 36, not 21.</p>
 
-        <h2>Four rules to start from</h2>
+        <h2 id="four-rules-to-start-from">Four rules to start from</h2>
         <ul>
           <li><strong>Range.</strong> Every probability is between 0 and 1.</li>
           <li><strong>Total.</strong> The probabilities of all the outcomes in <em>S</em> add to exactly 1.</li>
@@ -94,7 +95,7 @@
         </ul>
         <p>Events that cannot both happen are called <strong>disjoint</strong>, or mutually exclusive; the two words mean the same thing and both turn up in exam papers. The complement rule looks too simple to matter, but it is one of the most useful rules on this page, because a question about "at least one" is nearly always easier to answer from the other end. Work out the probability that it never happens, then subtract from 1. That step solves the first of the three classic problems below.</p>
 
-        <h2>When events overlap: the general addition rule</h2>
+        <h2 id="when-events-overlap-the-general-addition-rule">When events overlap: the general addition rule</h2>
         <p>The addition rule above has a condition: it fails as soon as two events can happen together. Adding P(<em>A</em>) and P(<em>B</em>) counts everything in the overlap twice, once inside each total, so you subtract the overlap once:</p>
         <p style="text-align:center">P(<em>A</em> or <em>B</em>) = P(<em>A</em>) + P(<em>B</em>) − P(<em>A</em> and <em>B</em>)</p>
 
@@ -122,7 +123,7 @@
 
         <p>Pick one employee at random. P(under 30 or cycles) is not .50 + .35 = .85, because the 48 people who are both have been counted in each of those totals. Subtracting them once leaves .50 + .35 − .24 = .61, and counting the same people directly agrees: 100 + 70 − 48 = 122 of 200, which is .61. For disjoint events the overlap is empty, so the shorter rule works for them and only for them.</p>
 
-        <h2>Independence and the multiplication rule</h2>
+        <h2 id="independence-and-the-multiplication-rule">Independence and the multiplication rule</h2>
         <p>Two events are <strong>independent</strong> when knowing that one happened does not change the probability of the other. Separate coin flips qualify. So do two draws from a deck, provided you put the first card back. For independent events, probabilities multiply:</p>
         <p style="text-align:center">P(<em>A</em> and <em>B</em>) = P(<em>A</em>) × P(<em>B</em>)</p>
         <p>Two fair coins both landing heads is ½ × ½ = ¼. Three sixes in a row is (1/6)³ = 1/216. The rule extends to as many independent events as you like. Each extra event multiplies in another factor below 1, so a long streak is far rarer than a short one.</p>
@@ -133,7 +134,7 @@
 
         <p>The addition and multiplication rules together explain why 7 is the most common total with two dice. Two dice have 36 equally likely outcomes, and the eleven possible totals do not share them evenly: one combination makes 2, and six make 7. Counting them all out gives a <strong>triangular distribution</strong>, which you can build a die at a time in the <a href="../../distributions.html#dice">distribution playground</a> and watch turn into a bell.</p>
 
-        <h2>Conditional probability</h2>
+        <h2 id="conditional-probability">Conditional probability</h2>
         <p>Events that <em>do</em> affect each other need a new symbol. P(<em>A</em> | <em>B</em>), read "the probability of <em>A</em> given <em>B</em>", asks a narrower question than P(<em>A</em>). P(<em>A</em>) asks how common <em>A</em> is among everyone; P(<em>A</em> | <em>B</em>) asks how common it is among only the people who are also <em>B</em>. The definition divides one probability by another:</p>
         <p style="text-align:center">P(<em>A</em> | <em>B</em>) = P(<em>A</em> and <em>B</em>) / P(<em>B</em>)</p>
         <p>Conditioning discards every row of the table that fails the condition, so the denominator shrinks to that row's own total rather than staying at 200. In the survey, P(cycles) = 70/200 = .35 across the whole company, while P(cycles | under 30) = 48/100 = .48. The gap between those two numbers is an association, and much of the rest of Stats 1 and Stats 2 is about testing associations like it. Independence is the special case where the gap is zero, so that P(<em>A</em> | <em>B</em>) = P(<em>A</em>) and learning <em>B</em> tells you nothing about <em>A</em>.</p>
@@ -141,7 +142,7 @@
         <p style="text-align:center">P(<em>A</em> and <em>B</em>) = P(<em>A</em>) × P(<em>B</em> | <em>A</em>)</p>
         <p>On the table, P(under 30 and cycles) = .50 × .48 = .24, matching the 48 of 200 you can read off directly. When the events are independent, P(<em>B</em> | <em>A</em>) equals P(<em>B</em>) and the general rule reduces to the short one. Cards dealt without replacement are the standard case where it does not: P(two aces) = (4/52) × (3/51) = 1/221, because the second probability depends on what the first draw removed.</p>
 
-        <h2>Turning it around: Bayes' rule</h2>
+        <h2 id="turning-it-around-bayes-rule">Turning it around: Bayes' rule</h2>
         <p>P(<em>A</em> | <em>B</em>) and P(<em>B</em> | <em>A</em>) are different numbers, and confusing them is one of the most costly mistakes in applied probability. A screening test that catches 99% of real cases has told you P(positive | ill). The person holding the positive result wants P(ill | positive). <strong>Bayes' rule</strong> converts one into the other:</p>
         <p style="text-align:center">P(<em>A</em> | <em>B</em>) = P(<em>B</em> | <em>A</em>) × P(<em>A</em>) / P(<em>B</em>)</p>
         <p>The numerator is the general multiplication rule read backwards. The denominator is the part that usually needs work, since P(<em>B</em>) is rarely given directly. It comes from the <strong>law of total probability</strong>: an event can be reached along several disjoint routes, and its overall probability is the sum of the probabilities of those routes.</p>
@@ -194,7 +195,7 @@
         <p>At the defaults the tree shows a good test, right 99% of the time in both directions, applied to a condition that affects 1 person in 1,000. Of 100,000 people it correctly flags 99 of the 100 who are ill. It also flags 999 of the 99,900 who are not, so barely 9% of the flagged group is ill. The test is working as designed. False positives outnumber true ones because there are a thousand times more healthy people than ill ones. So screening programs report positive predictive value (the share of positives who are ill) rather than accuracy.</p>
         <p>Raise the prevalence and the same test's positive results become reliable: at 1 in 10, P(ill | positive) reaches 91.7%, and at 1 in 5 it reaches 96.1%. The test has not changed, only the population it is applied to. That is the argument for screening the people at risk rather than everybody. Bayesian reasoning goes much further than one 2 × 2 table, and <a href="../../stats-3/bayesian-thinking/">Bayesian thinking</a> in Stats 3 picks it up as a way of doing inference.</p>
 
-        <h2>Three classic problems</h2>
+        <h2 id="three-classic-problems">Three classic problems</h2>
 
         <div class="callout">
           <p><strong>The Chevalier's two bets.</strong> Antoine Gombaud, a seventeenth-century writer with a taste for gambling, bet on at least one six in four throws of a die and did well. He then bet on at least one double six in twenty-four throws of two dice and did badly. He expected the bets to behave alike, since 24 is to 36 as 4 is to 6. The complement rule explains the difference. P(at least one six in 4 throws) = 1 − (5/6)⁴ = .5177, a favorable bet; P(at least one double six in 24 throws) = 1 − (35/36)²⁴ = .4914, an unfavorable one. The difference is about 3 percentage points, quite enough to notice over a long season. The correspondence between Pascal and Fermat that his question set off in 1654 is where a good deal of probability theory begins.</p>
@@ -216,7 +217,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>What is the difference between independent and mutually exclusive events?</summary>
             <div class="faq-a"><p>Independent events don't influence each other: knowing one happened tells you nothing about the other (two separate coin flips), and P(A and B) = P(A) × P(B). Mutually exclusive events <em>can't</em> both happen (one die roll can't be both a 1 and a 2), so P(A or B) = P(A) + P(B). They're near-opposites: mutually exclusive events are maximally dependent, since one happening rules the other out.</p></div>

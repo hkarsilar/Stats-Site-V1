@@ -49,8 +49,9 @@
         <h1>Merging Datasets</h1>
 
         <p class="lede">Almost no project lives in a single file. Demographics are in one table, survey responses in another, lab results in a third, and at some point you need them side by side, one row per person. Combining them is a <strong>join</strong> (a "merge"). It looks trivial and usually is, until a mismatched key silently drops half your sample or a repeated key doubles it.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#keys-line-the-rows-up">Keys line the rows up</a><a href="#four-joins-in-plain-language">Four joins in plain language</a><a href="#two-habits-that-save-you">Two habits that save you</a><a href="#make-the-software-do-the-checking">Make the software do the checking</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Keys line the rows up</h2>
+        <h2 id="keys-line-the-rows-up">Keys line the rows up</h2>
         <p>A join matches rows across two tables using a shared <strong>key</strong>: a column both tables carry that says which row belongs with which, most often a participant ID. Get the key right and everything follows; get it wrong and the merge is nonsense.</p>
         <p>The property that decides how a join behaves is <strong>uniqueness</strong>. If the key is unique in a table (each ID appears once), that table contributes at most one row per match. If it repeats, every copy matches, which is sometimes what you want (long-format repeated measures) and sometimes an accident that inflates your data. Below, the <code>sessions</code> table has ID&nbsp;3 twice; watch what that does.</p>
 
@@ -84,7 +85,7 @@
         </div>
         <!-- ============ /INTERACTIVE 1 ============ -->
 
-        <h2>Four joins in plain language</h2>
+        <h2 id="four-joins-in-plain-language">Four joins in plain language</h2>
         <p>Every join answers one question: <em>when a key exists in only one table, do we keep that row?</em></p>
         <ul>
           <li><strong>inner:</strong> keep only rows whose key appears in <em>both</em> tables. The strictest join: anyone missing from either side is dropped. Use it when you want complete cases only.</li>
@@ -93,14 +94,14 @@
           <li><strong>full:</strong> keep <em>everyone</em> from both sides, matching where possible and padding with <span class="na-inline">NA</span> elsewhere. Nothing is lost; use it when you need to see exactly who is missing from where.</li>
         </ul>
 
-        <h2>Two habits that save you</h2>
+        <h2 id="two-habits-that-save-you">Two habits that save you</h2>
         <p>Two cheap checks catch almost every merge error:</p>
         <ul>
           <li><strong>Check your keys are unique first.</strong> If the same ID appears more than once in a table you meant to be one-row-per-person, the output multiplies, because every copy of a key matches. If the key repeats on both sides, the join is <strong>many-to-many</strong>, and two matching rows on each side of one key produce four rows. A clean 200-person dataset can become 380 rows this way.</li>
           <li><strong>Count rows before and after.</strong> Know your expected row count going in (usually the size of your "spine" table) and compare it to what you got. A left join should return exactly as many rows as the left table <em>unless</em> the right key repeats. A drop means a key mismatch: trailing spaces, <code>"01"</code> vs <code>1</code>, upper vs lower case. Clean the key like any other field first, the way <a href="../data-cleaning-workflow/">the cleaning workflow</a> does. A jump up means a duplicate key.</li>
         </ul>
 
-        <h2>Make the software do the checking</h2>
+        <h2 id="make-the-software-do-the-checking">Make the software do the checking</h2>
         <p>Counting rows by hand works until the day you forget, so modern join functions can do the check for you if you tell them what to expect. In R, <code>dplyr</code> takes a <code>relationship</code> argument that states the shape you expect the merge to have, and stops with an error when the data don't match it:</p>
         <pre><code>left_join(participants, sessions, by = "id", relationship = "one-to-one")
 #&gt; Error: Each row in `x` must match at most 1 row in `y`.</code></pre>
@@ -120,7 +121,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>Why did my merge create duplicate rows?</summary>
             <div class="faq-a"><p>Because the key isn't unique in one of the tables. A join matches every copy of a key on one side to every copy on the other. If an ID appears twice in the table you're joining <em>to</em>, each matching row on the other side comes out twice. If it repeats in both tables, the copies multiply, a <strong>many-to-many</strong> join. It's the classic silent bug: nothing errors, you just end up with more rows (and inflated statistics) than you have participants. Before joining, check each key is unique where you expect it to be (<code>duplicated()</code> in R, <code>.is_unique</code> in pandas), and compare the row count before and after.</p></div>

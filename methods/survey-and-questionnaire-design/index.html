@@ -49,8 +49,9 @@
         <h1>Designing Surveys &amp; Questionnaires</h1>
 
         <p class="lede">A survey question is a measuring instrument, and like any instrument it can be miscalibrated. The wording, the answer options, even the order of items can nudge respondents toward an answer they wouldn't otherwise give. The result looks like clean data (numbers, means, percentages), but it's measuring your phrasing, not their views. Good questionnaire design removes those influences so that the answers reflect what respondents actually think.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#wording-that-tilts-the-answer">Wording that tilts the answer</a><a href="#response-options-matter-as-much-as-wording">Response options matter as much as wording</a><a href="#when-everyone-picks-the-top-box">When everyone picks the top box</a><a href="#fix-this-survey">Fix this survey</a><a href="#the-subtler-biases">The subtler biases</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Wording that tilts the answer</h2>
+        <h2 id="wording-that-tilts-the-answer">Wording that tilts the answer</h2>
         <p>Each item should ask exactly one clear thing, in neutral language, that any respondent can answer honestly. The classic wording problems:</p>
         <ul>
           <li><strong>Leading questions</strong> signal the "right" answer: <em>"Don't you agree that…?"</em> nudges people to agree.</li>
@@ -59,15 +60,15 @@
           <li><strong>Double negatives</strong> and jargon make people guess what you meant, adding noise: <em>"don't you think it shouldn't…"</em>.</li>
         </ul>
 
-        <h2>Response options matter as much as wording</h2>
+        <h2 id="response-options-matter-as-much-as-wording">Response options matter as much as wording</h2>
         <p>How you let people answer shapes the answer. For rating scales (<strong>Likert</strong> items, whose <a href="../../stats-1/types-of-data/">measurement level</a> decides what you may later do with them), the evidence favors <strong>5 to 7 points</strong>. Fewer points throw away real distinctions, and more offer precision people can't actually use. The scale should be <strong>balanced</strong> (as many positive as negative options around a neutral middle), because an all-positive scale (Good / Very good / Excellent) forces even a critic to compliment you. Whether to include a <strong>midpoint</strong> is a design decision with costs either way. An <em>odd</em> number of points offers a neutral option, which fits people with no opinion but also gives unmotivated respondents an easy answer. An <em>even</em> number forces a lean. And label the points with words, not just numbers: people interpret "4" very differently, but everyone reads "Agree" the same way.</p>
 
-        <h2>When everyone picks the top box</h2>
+        <h2 id="when-everyone-picks-the-top-box">When everyone picks the top box</h2>
         <p>A response scale can also fail by running out of room. When most respondents choose the highest option, the item has a <strong>ceiling effect</strong>; when they pile onto the lowest, a <strong>floor effect</strong>. Either way the item stops separating people who differ, and nothing in the file shows it. The file looks complete and the means look reasonable, but the information was never recorded.</p>
         <p>You can measure the cost. Suppose two constructs correlate .50 in the population. Measure each with a balanced 5-point item, one where about 12% of people pick the top box, and the observed correlation comes out at .46. Cutting a continuum into five categories loses .04. Now reword so that two-thirds pick the top box. The same underlying .50 now comes out as .39. Group differences shrink the same way. A true gap of half a standard deviation shows as <em>d</em> = 0.48 on the balanced item and <em>d</em> = 0.38 once the control group is pressed against the ceiling. At 60 people per group that drops power from .74 to .54, so an otherwise sound study misses a real effect close to half the time, and nothing in the output explains why.</p>
         <p>Check the frequency table before you compute anything else. Print the distribution of every item and look at the end boxes. A top category holding a quarter of your sample, or a mean within about one SD of the maximum, is the warning sign. Fix it at the design stage, because no transformation restores a distinction the answer options never captured. Add items that discriminate at the crowded end, widen the range, or move the anchors so the middle of your actual population is near the middle of the scale. This is the same damage <a href="../../stats-1/correlation/">restriction of range</a> does to a correlation, caused here by the response options rather than by the sample.</p>
 
-        <h2>Fix this survey</h2>
+        <h2 id="fix-this-survey">Fix this survey</h2>
         <p>Below is a very bad six-item questionnaire. Each item has <em>one</em> main flaw. Pick the flaw for each item to see the repaired version.</p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -85,7 +86,7 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>The subtler biases</h2>
+        <h2 id="the-subtler-biases">The subtler biases</h2>
         <p>Even clean items can be undermined by the survey as a whole:</p>
         <ul>
           <li><strong>Order effects:</strong> an earlier question can prime a later one. Ask about a specific worry, then overall happiness, and happiness drops. The worry is now top of mind. Put general questions before specific ones, and randomize order where you can.</li>
@@ -105,7 +106,7 @@
         <p class="pb-xref"><a href="../../problems.html#p5-2">Problem 96 of the practice problems</a> is a council survey that collected 4,300 responses and still could not answer its own question, because its problems were all in the design.</p>
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>Should I make every question required?</summary>
             <div class="faq-a"><p>Forcing an answer does not create information. It moves the problem somewhere else. A respondent who cannot answer honestly will either pick something arbitrary or abandon the survey. An arbitrary answer is noise you cannot distinguish from data. Abandoning turns an item-level gap into a whole missing person and biases the sample toward people who did not mind the question. Both are worse than a blank. Make an item required only where the answer is necessary and everyone you are asking can answer it. Give the others an explicit way out, a 'prefer not to say' or 'not applicable' option rather than a silent skip, so you can tell refusal from oversight. Record which is which in your <a href="../../data/codebooks-and-documentation/">codebook</a>. You are deciding the <a href="../../stats-3/missing-data/">missingness mechanism</a> you will have to defend later, and a forced-choice survey with heavy dropout has chosen the worst one without meaning to.</p></div>

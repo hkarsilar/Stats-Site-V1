@@ -56,8 +56,9 @@
         <h1>Train/Test Splits &amp; Generalization</h1>
 
         <p class="lede">A predictive model is useful only if it works on data it has never seen. Machine learning has one golden rule: <strong>never judge a model on data it was trained on.</strong> A score on the training data tells you little about how the model will do on new cases.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#the-golden-rule-and-the-split">The golden rule and the split</a><a href="#data-leakage-the-1-silent-killer">Data leakage</a><a href="#how-to-split-honestly">How to prevent leakage</a><a href="#your-test-score-is-an-estimate-too">Your test score is an estimate too</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>The golden rule and the split</h2>
+        <h2 id="the-golden-rule-and-the-split">The golden rule and the split</h2>
         <p>A flexible model can memorize its training data almost perfectly and still be useless on the next case. That is <a href="../../stats-3/cross-validation-and-overfitting/">overfitting</a>. To estimate how well a model <em>generalizes</em> to new data, you hold some data back:</p>
         <ul>
           <li><strong>Training set:</strong> the model learns here (fits coefficients, grows trees, picks neighbors).</li>
@@ -103,7 +104,7 @@
         </ul>
         <p>Follow these rules and the test score is an unbiased estimate of how the model will do on new cases.</p>
 
-        <h2>Your test score is an estimate too</h2>
+        <h2 id="your-test-score-is-an-estimate-too">Your test score is an estimate too</h2>
         <p>Even a leak-free test score has sampling error. Test accuracy is a proportion measured on a sample, so it has a standard error like any other proportion, √(<em>p</em>(1 − <em>p</em>) ÷ <em>n</em>), and you should give it a <a href="../../stats-1/confidence-intervals/">confidence interval</a>. Score 86% on 200 test cases and the 95% interval around it runs from about .81 to .90 (a Wilson interval, as R's <code>prop.test</code> computes it). Score the same 86% on 50 test cases and the interval runs from .74 to .93, wide enough to cover "clearly useful" and "barely worth deploying" at once. Getting that interval down to ±5 points takes roughly 200 test cases; ±3 points takes about 500.</p>
         <p>So report the interval alongside the number, because a single accuracy hides how much of it is chance. And on a modest test set, treat small gaps between models as noise until shown otherwise: two models a point apart on 200 cases are indistinguishable. To compare two models, score them on the same cases and analyze the pairing. McNemar's test does this using only the cases where the two models disagree. Comparing two separate accuracies ignores that the models get many of the same cases wrong.</p>
 
@@ -113,7 +114,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>What is data leakage?</summary>
             <div class="faq-a"><p>Data leakage is any way that information from your test set (or from the future) leaks into training, so the model is graded partly on information it already had. The symptom is a high reported score and disappointing real-world performance. The three usual causes are: scaling or selecting 'the most predictive' features using the <em>whole</em> dataset before splitting; the same subject's rows appearing in both the training and test sets; and comparing many models or settings on the test set, then reporting whichever did best. The fix is a single rule: every step that learns anything from the data must happen inside the training split, never before it.</p></div>

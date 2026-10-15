@@ -78,13 +78,14 @@
         <h1>Factorial ANOVA (Two-Way)</h1>
 
         <p class="lede">Real situations rarely involve just one factor. Does a drug's effect depend on dose <em>and</em> on age? Does a teaching method work differently for beginners than experts? A <strong>factorial ANOVA</strong> tests two (or more) factors at once. It can also test something no single-factor study can: the <strong>interaction</strong>, whether the effect of one factor depends on the other.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#factors-levels-cells">Factors, levels, and cells</a><a href="#three-questions-for-the-price-of-one">Three questions for the price of one</a><a href="#the-interaction-plot">The interaction plot</a><a href="#margins-and-simple-effects">Margins, and the difference of differences</a><a href="#reading-the-patterns">Reading the patterns</a><a href="#moderation">Interaction is moderation</a><a href="#two-way-table">The two-way ANOVA table</a><a href="#two-for-one">Two factors are cheaper than two studies</a><a href="#interaction-first">Interpret the interaction first</a><a href="#common-questions">Common questions</a></nav>
 
         <h2 id="factors-levels-cells">Factors, levels, and cells</h2>
         <p>Three words cover most of the notation. A <strong>factor</strong> is a categorical variable the study manipulates or classifies people by. Its <strong>levels</strong> are the categories it takes, so a factor called Dose might have the levels None, Low and High. Cross two factors, pairing every level of one with every level of the other, and each pairing is a <strong>cell</strong>.</p>
         <p>The design is then named by its levels, multiplied. Two levels of each factor is a <strong>2 &times; 2</strong> with four cells. Three levels of each is a 3 &times; 3 with nine. Four doses crossed with two age bands is a 4 &times; 2 with eight. The notation tells you three things: how many numbers there are is the number of factors, each number is that factor's number of levels, and their product is the number of cells. A third factor adds a third number, so 2 &times; 2 &times; 4 is sixteen cells.</p>
         <p>Two properties of a design matter for everything below. It is <strong>fully crossed</strong> when every cell has observations in it, and that allows one analysis to answer three questions. It is <strong>balanced</strong> when every cell holds the same number of observations, and that keeps the arithmetic simple.</p>
 
-        <h2>Three questions for the price of one</h2>
+        <h2 id="three-questions-for-the-price-of-one">Three questions for the price of one</h2>
         <p>A two-way design with factors A and B answers three separate questions:</p>
         <ul>
           <li><strong>Main effect of A:</strong> does A matter, averaging over B?</li>
@@ -92,7 +93,7 @@
           <li><strong>A &times; B interaction:</strong> does the effect of A <em>depend on the level of</em> B? You can only test this by studying the two factors together.</li>
         </ul>
 
-        <h2>The interaction plot</h2>
+        <h2 id="the-interaction-plot">The interaction plot</h2>
         <p>The fastest way to read a two-way result is a picture. Put factor A on the x-axis and draw one line for each level of B. <strong>Parallel lines mean no interaction</strong> (A's effect is the same at every level of B), and <strong>non-parallel lines mean there is an interaction</strong>. Drag the cell-mean sliders below to see this. The table beside the plot shows the same four numbers in the square layout a printed report uses, with every margin and every simple effect worked out from them.</p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -151,7 +152,7 @@
           <p><strong>Signs, as the widget reports them.</strong> The main effect of A is A₂ minus A₁ and the main effect of B is B₁ minus B₂, so both are positive on the starting numbers. Each simple main effect is computed in the same direction as its own main effect, so the two always average to it.</p>
         </div>
 
-        <h2>Reading the patterns</h2>
+        <h2 id="reading-the-patterns">Reading the patterns</h2>
         <p>With A on the x-axis and one line per level of B, five arrangements cover almost every 2 &times; 2 result. The table lists the effects each one shows:</p>
         <table class="ref-table">
           <thead><tr><th>What the plot shows</th><th>A</th><th>B</th><th>A &times; B</th></tr></thead>
@@ -250,7 +251,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>How many participants do I need to detect an interaction?</summary>
             <div class="faq-a"><p>More than the main effect needed, usually by a lot. An interaction is a difference between differences, so its standard error is larger than that of a plain two-group comparison. Take a study with enough people to detect an effect in one condition. If you now expect that effect to be present at one level of B and absent at the other, detecting the interaction takes roughly <strong>four times the total sample</strong>. A full crossover, where the effect reverses sign, needs far fewer: about the same total as the original two-group study. This is the most common reason a factorial study reports two clean main effects and an underpowered interaction, so settle the sample size at design time. <a href="../../stats-3/power-analysis-for-complex-designs/">Power analysis for complex designs</a> works it through.</p></div>

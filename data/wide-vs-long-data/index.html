@@ -49,8 +49,9 @@
         <h1>Wide vs Long Data</h1>
 
         <p class="lede">The <em>same</em> numbers can be laid out two ways. In <strong>wide</strong> format each person gets one row and their repeated measurements fan out across several columns. In <strong>long</strong> format each measurement gets its own row, tagged by who it belongs to and when it was taken. Neither is more correct, but most procedures accept only one of them, and converting between the two is a single command.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#the-same-data-two-shapes">The same data, two shapes</a><a href="#which-shape-does-my-software-want">Which shape does my software need?</a><a href="#pivoting-is-one-operation-not-a-rebuild">Pivoting is one operation, not a rebuild</a><a href="#the-shape-decides-who-gets-dropped">The shape decides who gets dropped</a><a href="#collapsing-is-not-pivoting">Collapsing is not pivoting</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>The same data, two shapes</h2>
+        <h2 id="the-same-data-two-shapes">The same data, two shapes</h2>
         <p>Picture four students measured three times. In <strong>wide</strong> form the table is short and fat, with one row per student and a column for each timepoint:</p>
         <div class="tbl-demo" aria-hidden="true">
           <table class="mini-tbl">
@@ -105,7 +106,7 @@
         </ul>
         <p>So "which is right?" has no answer in the abstract. It depends on the next tool in your pipeline. What matters is that you can <em>get from one to the other on demand</em>.</p>
 
-        <h2>Pivoting is one operation, not a rebuild</h2>
+        <h2 id="pivoting-is-one-operation-not-a-rebuild">Pivoting is one operation, not a rebuild</h2>
         <p>You never reshape a table by hand. Every data package has a matched pair of verbs:</p>
         <ul>
           <li><strong>wide → long</strong>: <code>pivot_longer()</code> (tidyr) or <code>melt()</code> (pandas), which collapse a set of columns into a key column (which header?) and a value column (what number?).</li>
@@ -114,7 +115,7 @@
         </ul>
         <p>Both are lossless and reversible: pivot longer then wider and you're back where you started, provided each row is uniquely identified by its keys (here, <code>name</code> + <code>time</code>). If a pivot silently drops or duplicates rows, your keys usually aren't unique. The same warning sign comes up again when <a href="../merging-datasets/">merging datasets</a>.</p>
 
-        <h2>The shape decides who gets dropped</h2>
+        <h2 id="the-shape-decides-who-gets-dropped">The shape decides who gets dropped</h2>
         <p>Wide format has to be a rectangle. Each person owns one row, so each occasion needs a cell, and a participant who missed T2 leaves a hole in theirs. Classic repeated-measures ANOVA then removes that person completely, T1 and T3 along with the gap, because it can only work with rows that are full. Long format has no rectangle to fill: a measurement that never happened is a row that isn't there, and a mixed model uses whichever occasions each person did provide.</p>
         <p>With a handful of dropouts, this choice decides how much of your data reaches the analysis, and nothing in the output says so. If your sample size shrinks between the data file and the output, the shape is the first place to look and <a href="../../stats-3/missing-data/">why those values are missing</a> is the second.</p>
 
@@ -137,7 +138,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>My long file has 12 rows for one participant and 9 for another. Do I have to balance it?</summary>
             <div class="faq-a"><p>Not for a <a href="../../stats-3/mixed-and-multilevel-models/">mixed model</a>, which uses whatever occasions each person actually provided. Classic <a href="../../stats-2/repeated-measures-anova/">repeated-measures ANOVA</a> is the one that cannot cope, because it needs a full rectangle and will drop anyone with a gap. The subtler consequence is that once people contribute different numbers of rows, "the average" stops being one number. Three participants with 4, 2 and 2 trials, averaging 10, 20 and 30, give a grand mean of 17.5 across the eight rows and a mean of the person means of 20. Neither is wrong; they answer different questions, one about trials and one about people. Say which you computed, and prefer the person means whenever the person is the unit you sampled.</p></div>

@@ -67,8 +67,9 @@
         <h1>Bayesian Thinking</h1>
 
         <p class="lede">The methods in this course so far have been <em>frequentist</em>: probability means long-run frequency, and parameters are fixed but unknown numbers we estimate. In <strong>Bayesian statistics</strong>, probability is a <strong>degree of belief</strong>, parameters get full probability distributions, and learning from data means applying one rule, again and again, to update that belief.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#bayes-rule-in-words">Bayes' rule, in words</a><a href="#what-the-playground-shows">What the playground shows</a><a href="#the-same-rule-as-a-table">The same rule as a table</a><a href="#yesterday-s-posterior-is-today-s-prior">Yesterday's posterior is today's prior</a><a href="#the-conjugate-shortcut">The conjugate shortcut</a><a href="#modern-computing">What "modern computing" actually does</a><a href="#why-people-love-and-argue-about-bayes">Why people love (and argue about) Bayes</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Bayes' rule, in words</h2>
+        <h2 id="bayes-rule-in-words">Bayes' rule, in words</h2>
         <p>Textbooks use the names Bayes' rule and Bayes' theorem for the same statement, and this lesson uses the shorter one. You start with a <strong>prior</strong>, what you believed before seeing the data. You collect data, whose <strong>likelihood</strong> says how well each possible parameter value explains what you saw. Multiply them and renormalize, and you get the <strong>posterior</strong>, your updated belief:</p>
         <p style="text-align:center;font-size:1.15rem;margin:1.2rem 0"><strong>posterior ∝ likelihood × prior</strong></p>
         <p>That is the whole method. Today's posterior becomes tomorrow's prior, so beliefs change as evidence accumulates.</p>
@@ -97,7 +98,7 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>What the playground shows</h2>
+        <h2 id="what-the-playground-shows">What the playground shows</h2>
         <div class="callout key">
           <p><strong>Data overwhelms the prior.</strong> With little data the posterior stays close to your prior. Increase the trials and the posterior moves toward the observed rate and gets narrower. With enough evidence, your starting belief barely matters. A strong prior takes more data to move, and a flat (weak) prior lets the data dominate from the start.</p>
         </div>
@@ -106,7 +107,7 @@
           <li>A <strong>strong prior</strong> encodes real prior knowledge, useful when data is scarce, but it should be defensible, because it can shift your conclusions.</li>
         </ul>
 
-        <h2>The same rule as a table</h2>
+        <h2 id="the-same-rule-as-a-table">The same rule as a table</h2>
         <p>The playground draws Bayes' rule as three curves. An assignment almost always asks for it as a table, and the table is the version you can check by hand. Write down a short list of candidate values for the parameter and give each one a prior. For each candidate, work out how probable your data would be if it were the true value. Multiply the two columns together, and divide each product by the column's total.</p>
         <p>Here is a concrete example. A bottle cap spun on its edge lands lip-up or lip-down at an unknown rate. Take nine candidate rates, <em>p</em> = .1 through .9, and give each the same prior weight of 1/9. A prior like that is called a <strong>non-informative prior</strong>, or a flat one. It makes the posterior depend only on the data, so it is the usual default in an assignment and the easiest choice to defend. It also has costs. It assumes that .1 and .7 were equally plausible for a spun cap, which they are not, and a list of nine rates has already ruled out every value in between. So even a non-informative prior is an assumption about the parameter.</p>
         <p>Now spin the cap twelve times and count nine lip-up. The likelihood column is the <a href="../../stats-1/binomial-distribution/">binomial</a> probability mass function read at each candidate:</p>
@@ -202,13 +203,13 @@
 
         <p>Try two things. Drag the hypothesis count from nine up to twenty-one and watch the posterior mean settle: a coarse grid is an approximation, and you can see its error. Then switch the prior to Informed with the peak at .30, and the posterior mean falls from .715 to .542 on the same twelve spins. That prior counts as ten imaginary trials and moves the answer this far, so the reader of your report needs to see it stated.</p>
 
-        <h2>Yesterday's posterior is today's prior</h2>
+        <h2 id="yesterday-s-posterior-is-today-s-prior">Yesterday's posterior is today's prior</h2>
         <p>Data rarely arrive all at once, and the rule does not require them to. Spin the cap eight more times and get five lip-up. You can continue in two ways. Use the posterior from the first twelve as the prior for the next eight and run the table again. Or pool both samples, 14 of 20, and run the table once from the original flat prior.</p>
         <p>Both routes give the same posterior, identical to the last digit the computer keeps. Press <em>Combine a second sample</em> and the two right-hand columns show the same nine numbers, .4026 at <em>p</em> = .7 by either route.</p>
         <p>One line of algebra explains it. Updating twice multiplies the flat prior by <em>p</em>&#8313;(1 &minus; <em>p</em>)&sup3; and then by <em>p</em>&#8309;(1 &minus; <em>p</em>)&sup3;; pooling multiplies it by <em>p</em>&sup1;&#8308;(1 &minus; <em>p</em>)&#8310; in one go. Those are the same product. The binomial coefficients do differ between the routes, 220 &times; 56 against 38,760, but a coefficient is the same constant in every row, so it cancels in the division that normalizes the column.</p>
         <p>So the order of the data does not matter, and neither does how they are divided into batches. A class exercise in which pairs pool into fours and fours into eights gives the same answer from either end. It also means a posterior summarizes everything the data have shown so far: once you have it, you can discard the counts and keep updating.</p>
 
-        <h2>The conjugate shortcut</h2>
+        <h2 id="the-conjugate-shortcut">The conjugate shortcut</h2>
         <p>The grid does the arithmetic the long way. For this pairing of prior and likelihood there is a shortcut, and it is why the playground at the top of the page can draw an exact curve rather than a histogram.</p>
         <p>A <strong>Beta</strong> prior with a binomial likelihood gives a Beta posterior, and the update is simple counting:</p>
         <p style="text-align:center">Beta(&alpha;, &beta;) prior + <em>k</em> successes in <em>n</em> trials &rarr; Beta(&alpha; + <em>k</em>, &beta; + <em>n</em> &minus; <em>k</em>)</p>
@@ -221,7 +222,7 @@
         <p>The playground above draws an exact posterior because a proportion with a <a href="../../distributions.html">Beta</a> prior is one of a small number of textbook cases where the multiplication has a closed-form answer. Realistic models almost never have one, and for most of the twentieth century that was the practical objection to Bayesian methods: the rule was simple, but the integral could not be computed.</p>
         <p><strong>MCMC</strong> (Markov chain Monte Carlo) changed that. It does not solve for the posterior. The computer takes a long random walk through parameter space, designed so that the time it spends in each region is proportional to that region's posterior probability. The points it visits <em>are</em> a sample from the posterior, which you can average, plot, or read quantiles off. MCMC replaces a formula with simulation, much as <a href="../../stats-3/bootstrap-and-resampling/">bootstrapping</a> replaces one with resampling. Stan, JAGS, PyMC and the Bayesian modules inside JASP all run some version of MCMC, so a Bayesian analysis reports how many samples it drew and whether its chains agreed with each other.</p>
 
-        <h2>Why people love (and argue about) Bayes</h2>
+        <h2 id="why-people-love-and-argue-about-bayes">Why people love (and argue about) Bayes</h2>
         <p>The Bayesian framework gives you what you usually want: a full distribution for the parameter. You can say "there's a 95% probability the rate is between X and Y", a statement that frequentist <a href="../../stats-1/confidence-intervals/">confidence intervals</a> cannot make. The cost is the prior: it must be chosen, and different priors can give different answers when data are thin. Chosen openly and reported, though, a prior is also a way to use real prior knowledge.</p>
 
         <div class="callout">
@@ -233,7 +234,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>What is the main difference between Bayesian and frequentist statistics?</summary>
             <div class="faq-a"><p>The meaning of "probability". Frequentists treat parameters as fixed unknowns and put probability on <em>data procedures</em> ("5% of such intervals miss"). Bayesians put probability on <em>parameter values themselves</em>, as degrees of belief updated by evidence ("the rate is 95% likely between .55 and .72"). The Bayesian version answers the question people usually ask, but it requires you to specify a prior.</p></div>

@@ -49,13 +49,14 @@
         <h1>Inference for Proportions</h1>
 
         <p class="lede">A proportion is a kind of mean. Score every success as 1 and every failure as 0, average them, and you have <em>p̂</em>. Every tool from the last few lessons applies to it, with one adjustment: the spread of a proportion depends only on the proportion itself, so you never have to estimate it separately.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#the-sampling-distribution-of-p">The sampling distribution of p̂</a><a href="#conditions-for-inference">Conditions for inference</a><a href="#a-confidence-interval-for-one-proportion">A confidence interval for one proportion</a><a href="#a-test-for-one-proportion">A test for one proportion</a><a href="#comparing-two-proportions">Comparing two proportions</a><a href="#why-on-a-2-2-table-is-this-same-test">Why χ² on a 2×2 table is this same test</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>The sampling distribution of p̂</h2>
+        <h2 id="the-sampling-distribution-of-p">The sampling distribution of p̂</h2>
         <p>Take a random sample of size <em>n</em> from a population in which a fraction <em>p</em> would say yes. The count of yes answers is <a href="../../stats-1/binomial-distribution/">binomial</a>, and the sample proportion is that count divided by <em>n</em>. Dividing by a constant rescales the mean and the standard deviation, which gives:</p>
         <p style="text-align:center">mean of <em>p̂</em> = <em>p</em>          SD of <em>p̂</em> = √(<em>p</em>(1 − <em>p</em>) / <em>n</em>)</p>
         <p>So <em>p̂</em> is unbiased, and its spread shrinks with √<em>n</em>, just as the sample mean's does. The shape needs more care. A binomial count becomes close to normal as <em>n</em> grows. But a proportion near 0 or 1 is pressed against a boundary, so it needs a much larger <em>n</em> than one near the middle before its shape is close to normal.</p>
 
-        <h2>Conditions for inference</h2>
+        <h2 id="conditions-for-inference">Conditions for inference</h2>
         <p>Three conditions must hold before you can trust the methods below, and the first is not a formula. The data must come from a <a href="../../stats-1/producing-data-and-sampling-design/">random sample</a> of the population you want to describe. Nothing on this page can correct a sample that was not random.</p>
         <p>The sample must also be small next to the population, so that drawing people without replacing them barely changes the spread. The usual rule is a population at least ten times the sample, and Moore, McCabe and Craig set it at twenty. Survey 400 people in a town of 900 and you have broken it. The real standard error is then smaller than the formula reports, so the interval you print is wider than it needs to be.</p>
         <p>Third, the counts of successes and of failures both have to be large enough for the normal approximation to work. Here the interval and the test use different rules, and so do the textbooks.</p>
@@ -127,17 +128,17 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>A confidence interval for one proportion</h2>
+        <h2 id="a-confidence-interval-for-one-proportion">A confidence interval for one proportion</h2>
         <p>The interval has the shape every interval in this course has, an estimate plus or minus a margin:</p>
         <p style="text-align:center"><em>p̂</em> ± <em>z</em>* √(<em>p̂</em>(1 − <em>p̂</em>) / <em>n</em>)</p>
         <p>Suppose 232 of 400 sampled students say they would use a late-night bus. Then <em>p̂</em> = 0.58, the standard error is √(0.58 × 0.42 / 400) = 0.0247, and with <em>z</em>* = 1.96 the margin of error is 0.0484. The interval runs from 0.532 to 0.628, so somewhere between 53% and 63% of the student body would use the bus.</p>
 
-        <h2>A test for one proportion</h2>
+        <h2 id="a-test-for-one-proportion">A test for one proportion</h2>
         <p>Testing works the same way, with one change that students lose marks on every year. A hypothesis test assumes H₀ is true, and for a proportion H₀ names an exact value <em>p</em>₀, which fixes the standard deviation as well as the center. So the test uses <em>p</em>₀ in the standard error where the interval used <em>p̂</em>:</p>
         <p style="text-align:center"><em>z</em> = (<em>p̂</em> − <em>p</em>₀) / √(<em>p</em>₀(1 − <em>p</em>₀) / <em>n</em>)</p>
         <p>For the bus survey against H₀: <em>p</em> = 0.5, the denominator is √(0.25/400) = 0.025, giving <em>z</em> = (0.58 − 0.50)/0.025 = 3.20 and a two-sided <em>p</em>-value of 0.0014. The majority is unlikely to be a sampling accident. The two standard errors differ here only in the third decimal. When <em>p̂</em> is far from <em>p</em>₀ they can differ enough to matter, and using the wrong one is marked wrong even when the conclusion stays the same.</p>
 
-        <h2>Comparing two proportions</h2>
+        <h2 id="comparing-two-proportions">Comparing two proportions</h2>
         <p>Two independent samples, two proportions, and the quantity of interest is their difference <em>p̂</em>₁ − <em>p̂</em>₂. Variances of independent quantities add, so the standard error of the difference is the square root of the sum:</p>
         <p style="text-align:center">SE = √(<em>p̂</em>₁(1 − <em>p̂</em>₁)/<em>n</em>₁ + <em>p̂</em>₂(1 − <em>p̂</em>₂)/<em>n</em>₂)</p>
         <p>Take 45 successes out of 120 in one group and 72 out of 150 in the other, so <em>p̂</em>₁ = 0.375 and <em>p̂</em>₂ = 0.480. The difference is −0.105 with a standard error of 0.0601, and the 95% interval runs from −0.223 to 0.013. It contains zero, so the data are consistent with no difference at all.</p>
@@ -145,7 +146,7 @@
         <p style="text-align:center"><em>z</em> = (<em>p̂</em>₁ − <em>p̂</em>₂) / √(<em>p̂</em>(1 − <em>p̂</em>)(1/<em>n</em>₁ + 1/<em>n</em>₂))</p>
         <p>which gives 0.0607 for the denominator and <em>z</em> = −1.73, two-sided <em>p</em> = 0.084. The interval and the test agree here: the interval covers zero and the test fails to reject.</p>
 
-        <h2>Why χ² on a 2×2 table is this same test</h2>
+        <h2 id="why-on-a-2-2-table-is-this-same-test">Why χ² on a 2×2 table is this same test</h2>
         <p>The same 270 people can be written as a two-by-two table of successes and failures by group. A <a href="../../stats-1/chi-square-tests/">chi-square test of independence</a> on that table asks the same question as the pooled <em>z</em> test. In fact the two are algebraically the same test, and</p>
         <p style="text-align:center">χ² = <em>z</em>²    with 1 degree of freedom</p>
         <p>Here <em>z</em> = −1.7301 and χ² = 2.9932, which is 1.7301² to every decimal either statistic prints, and both report <em>p</em> = 0.084. The identity holds for any 2×2 table, and it is the same one that links the two distributions in <a href="../../tables.html">the statistical tables</a>. The one practical difference is that the <em>z</em> version gives you a signed difference and a confidence interval, and χ² gives you neither. For a 2×2 table, prefer the two-proportion <em>z</em>.</p>
@@ -158,7 +159,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>Why does the confidence interval use p-hat but the test uses p-nought?</summary>
             <div class="faq-a"><p>Because a proportion's spread depends on the proportion itself. The standard deviation of p̂ is the square root of p(1−p)/n, so naming a value for p also names the standard error. A hypothesis test assumes H₀ is true, and H₀ supplies p₀, so the test has a value to use and should use it. A confidence interval assumes no value for p, so it can only use the data's own p̂. When p̂ is close to p₀ the two standard errors barely differ, and when it is far away they can differ enough to change the conclusion.</p></div>

@@ -49,8 +49,9 @@
         <h1>Sampling Methods</h1>
 
         <p class="lede">You almost never measure the whole <strong>population</strong>. You measure a <strong>sample</strong> and hope it represents the rest, and whether it can depends entirely on <em>how</em> you picked it. A good sampling method makes the sample representative <em>on average</em>. A bad one builds in a bias that no amount of extra data will remove.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#probability-samples-everyone-has-a-known-chance">Probability samples: everyone has a known chance</a><a href="#non-probability-samples-convenient-and-treacherous">Non-probability samples: convenient, and treacherous</a><a href="#sample-it-five-ways-and-watch">Sample it five ways and watch</a><a href="#putting-a-number-on-the-cluster-penalty">Putting a number on the cluster penalty</a><a href="#frame-population-and-the-people-who-don-t-answer">Frame, population, and the people who don't answer</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Probability samples: everyone has a known chance</h2>
+        <h2 id="probability-samples-everyone-has-a-known-chance">Probability samples: everyone has a known chance</h2>
         <p>These use chance to choose who's in, so the sample is representative in expectation and you can quantify its uncertainty (this is what <a href="../../stats-1/sampling-distributions/">sampling distributions</a> describe).</p>
         <ul>
           <li><strong>Simple random sampling (SRS):</strong> every person has an equal chance; draw names from a hat. Unbiased, and the benchmark, though it needs a complete list and can, by luck, miss small subgroups.</li>
@@ -59,10 +60,10 @@
           <li><strong>Systematic sampling:</strong> order the list and take every <em>k</em>th person from a random start. As good as SRS <em>if</em> the ordering is unrelated to what you're measuring, but dangerous if the list has a hidden periodicity that lines up with your step.</li>
         </ul>
 
-        <h2>Non-probability samples: convenient, and treacherous</h2>
+        <h2 id="non-probability-samples-convenient-and-treacherous">Non-probability samples: convenient, and treacherous</h2>
         <p><strong>Convenience sampling</strong> (whoever's easy to reach: your class, passers-by, an online panel) and <strong>snowball sampling</strong> (participants recruit their friends) don't give everyone a chance of selection. Nothing guarantees that the sample is representative, and it usually isn't. They're sometimes unavoidable for hard-to-reach groups, but the people who are <em>easy</em> to reach differ systematically from those who aren't. <strong>Quota sampling</strong> is easy to mistake for a probability method. It sets targets that mirror the population (50 men, 50 women, 30 of them over 60) and then lets the recruiter fill each target with whoever turns up. The final table of counts looks exactly like a stratified sample. But the selection inside each quota was never random, so the guarantee that comes with stratification is not there.</p>
 
-        <h2>Sample it five ways and watch</h2>
+        <h2 id="sample-it-five-ways-and-watch">Sample it five ways and watch</h2>
         <p>This is a stylized city whose opinion on some issue varies by neighborhood: the campus district (top-left) is overwhelmingly in favor, the south is against. The <strong>true</strong> city-wide support is marked. Sample the city each way, draw many times, and compare each method's estimates with the truth.</p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -113,7 +114,7 @@
 
         <p><strong>Bias</strong> is where the cloud is <em>centered</em>, and <strong>variance</strong> is how <em>wide</em> it is. Convenience sampling is <em>biased</em>: its cloud is centered far from the truth and only gets narrower (a more precise wrong answer) as <em>n</em> grows. The probability methods are all roughly <em>unbiased</em>, centered on the truth, but they differ in variance. Stratified is tightest (and, on this neighborhood-ordered list, systematic behaves like it), simple random is wider, and cluster is widest of all. More data reduces variance. Only a better <em>method</em> reduces bias.</p>
 
-        <h2>Putting a number on the cluster penalty</h2>
+        <h2 id="putting-a-number-on-the-cluster-penalty">Putting a number on the cluster penalty</h2>
         <p>Survey statisticians measure how much noisier cluster sampling is. The <strong>design effect</strong> is the ratio of your design's variance to the variance a simple random sample of the same size would have produced. A design effect of 1 means clustering added no variance. A design effect of 3 means your estimate's variance is three times what SRS would have given, so two thirds of your fieldwork added no precision. Dividing your sample size by it gives the number that matters for planning, the <strong>effective sample size</strong>: <code>n_eff = n / deff</code>. It is the number of independent people your clustered sample is worth.</p>
         <p>For clusters of roughly equal size, Kish's approximation uses two quantities you can estimate before you start: <code>deff ≈ 1 + (m − 1)ρ</code>. Here <em>m</em> is the number of people you measure per cluster, and <em>ρ</em> is the <a href="../../stats-3/mixed-and-multilevel-models/">intraclass correlation</a>, the share of the total variation that is between clusters rather than within them. With one person per cluster there is no penalty, since <em>m</em> = 1 makes the design effect exactly 1. But even a correlation small enough to look negligible matters once it is multiplied by a large cluster.</p>
         <p>The <a href="../../stats-3/power-analysis-for-complex-designs/">power lesson</a> asks the question without working it out: 30 classes of 20 pupils is 600 children, but how many independent ones?</p>
@@ -129,7 +130,7 @@
         <p>At ρ = .10, which is typical for children who share a teacher, roughly two thirds of the sample's information is lost before you analyze anything. Run this calculation while you are still choosing schools.</p>
         <p>The city above is an extreme case. Its four neighborhoods disagree sharply, 85% support by the campus against 20% in the south-east, so ρ is about .24, and the cluster method draws the whole sample from one neighborhood. Take 80 people that way and the estimates have a standard deviation near .25, against .05 for a simple random sample of the same 80. That is a design effect of about 24, so those 80 answers hold roughly the information of 3 independent ones. You can compute the width of that cloud in advance.</p>
 
-        <h2>Frame, population, and the people who don't answer</h2>
+        <h2 id="frame-population-and-the-people-who-don-t-answer">Frame, population, and the people who don't answer</h2>
         <p>Even a perfect random method samples from your <strong>sampling frame</strong> (the actual list you draw from), not the true population. If your frame is "students with a campus email," everyone without one is excluded before you begin (<strong>coverage error</strong>). Then there is <strong>nonresponse bias</strong>: if the people who ignore your survey differ from those who answer, as they usually do, your realized sample differs from your intended one. A well-known example is the <strong>WEIRD</strong> problem: a very large share of published psychology is based on Western, Educated, Industrialized, Rich, Democratic undergraduates, who are an unusual sample of humanity to generalize from.</p>
 
         <div class="callout key">
@@ -146,7 +147,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>What is a representative sample?</summary>
             <div class="faq-a"><p>A representative sample mirrors the population on the characteristics that matter for your question, so estimates from it generalize back to that population. You don't get one by hand-picking a 'balanced-looking' group. You get it, in expectation, by using a <strong>probability sampling</strong> method, where everyone has a known, non-zero chance of selection. Representativeness is a property of the <em>method</em>, not of any single sample: any one random sample may be a bit off, but the procedure is unbiased and its error shrinks with size.</p></div>

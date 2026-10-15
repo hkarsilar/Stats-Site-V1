@@ -49,8 +49,9 @@
         <h1>Effect Size &amp; Power</h1>
 
         <p class="lede">A <a href="../../stats-1/hypothesis-testing-logic/">p-value</a> answers one narrow question: is there an effect at all? It says nothing about <em>how big</em> the effect is, or whether your study was even capable of finding it. <strong>Effect size</strong> answers the first of those questions and <strong>power</strong> the second.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#effect-size-how-big-not-just-whether">Effect size: how big, not just whether</a><a href="#power-could-you-even-detect-it">Power: could you even detect it?</a><a href="#how-precisely-do-you-know-d">How precisely do you know d?</a><a href="#why-underpowered-studies-are-dangerous">Why underpowered studies are dangerous</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Effect size: how big, not just whether</h2>
+        <h2 id="effect-size-how-big-not-just-whether">Effect size: how big, not just whether</h2>
         <p>With a huge sample, a trivially small difference can be "statistically significant." With a tiny sample, a huge difference can miss significance. Because significance depends on sample size, you also need a measure of the effect that does not: an <strong>effect size</strong>. For a difference between two means, the standard one is <strong>Cohen's d</strong>: the gap between the means measured in standard deviations.</p>
         <p style="text-align:center;font-size:1.2rem;margin:1.25rem 0"><strong>d = (mean₁ − mean₂) / standard deviation</strong></p>
         <p>Rough conventions: d ≈ 0.2 is small, 0.5 medium, 0.8 large. Like a <a href="../../stats-1/z-scores-and-the-normal-distribution/">z-score</a>, d is a standardized distance, so it can be compared across studies and scales.</p>
@@ -96,7 +97,7 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>Power: could you even detect it?</h2>
+        <h2 id="power-could-you-even-detect-it">Power: could you even detect it?</h2>
         <p><strong>Power</strong> is the probability that your study correctly rejects the null when a real effect exists — your chance of <em>not</em> missing it. The convention is to aim for at least 80%. Four things set a study's power, and the playground has a control for each:</p>
         <ul>
           <li><strong>Effect size (d).</strong> Slide it up and the two populations pull apart <em>and</em> the H₁ curve below slides away from the cutoff: the green area swells. Tiny effects are hard to detect.</li>
@@ -117,7 +118,7 @@
         <p>Try it with the playground's settings. At the defaults, <em>d</em> = 0.50 with 30 per group, the test gives <em>t</em>(58) = 1.94 and <em>p</em> = .058, so the study misses. The interval on <em>d</em> runs <strong>[−0.02, 1.01]</strong>, so an effect in the other direction is still possible. Now take the 64 per group that the readout above gives for 80% power and observe the same <em>d</em> = 0.50. The test gives <em>t</em>(126) = 2.83, <em>p</em> = .005, and the interval is <strong>[0.15, 0.85]</strong>. The study detected the effect, but it still cannot tell a small effect from a large one.</p>
         <p>A result exactly on the significance boundary has a 95% interval whose lower limit is exactly zero. So "significant at .05" and "the interval excludes zero" say the same thing. Significance tells you that zero is outside the interval, and nothing about size. Estimating <em>d</em> to within ±0.20 of 0.50 takes <strong>199 per group</strong>, about three times the 64 that 80% power needs.</p>
 
-        <h2>Why underpowered studies are dangerous</h2>
+        <h2 id="why-underpowered-studies-are-dangerous">Why underpowered studies are dangerous</h2>
         <p>If power is only 40%, you'll miss a real effect more often than you find it, and a "non-significant" result tells you almost nothing. Worse, the few significant results that <em>do</em> squeak through tend to overestimate the effect. This is why researchers run a <strong>power analysis before collecting data</strong>: pick the effect size you care about, the power you want (say 80%), and solve for the sample size you need. Want the exact number for your own study? The <a href="../../power.html">power &amp; sample-size calculator</a> does it for t-tests, ANOVA, correlation, and more. The <a href="../../guides/complete-worked-project/">complete worked project</a> shows the calculation for a full study design, made before any participant is recruited.</p>
         <p>The calculation has to come <em>before</em> the data. Run it afterwards on the effect size you happened to observe, and the power it reports tells you nothing the p-value did not. <a href="../../stats-3/power-analysis-for-complex-designs/">Power analysis for complex designs</a> explains why, and which questions you can usefully ask after the study.</p>
 
@@ -129,7 +130,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>What is a good effect size?</summary>
             <div class="faq-a"><p>Cohen's benchmarks (d ≈ 0.2 small, 0.5 medium, 0.8 large) are rough field-wide defaults, not laws. What counts as meaningful depends on context: d = 0.2 on mortality is enormous; d = 0.5 on a novel lab task may be routine. Compare against typical effects in your literature, and translate d into overlap or percentile terms with the <a href="../../effect-sizes.html">effect-size converter</a> to build intuition.</p></div>

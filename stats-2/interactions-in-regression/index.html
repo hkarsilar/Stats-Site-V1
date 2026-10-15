@@ -49,8 +49,9 @@
         <h1>Interactions in Regression</h1>
 
         <p class="lede">Sometimes the effect of one predictor <em>depends on</em> another. A training program might help beginners a lot and experts barely at all. A drug's benefit might grow with the dose only for younger patients. The <a href="../../stats-2/factorial-anova-two-way/">factorial-ANOVA interaction</a> has a regression version: the <strong>interaction term</strong>.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#adding-a-product-term">Adding a product term</a><a href="#why-the-main-effects-get-tricky">Why the main effects get tricky</a><a href="#continuous-continuous-interactions">Continuous × continuous interactions</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Adding a product term</h2>
+        <h2 id="adding-a-product-term">Adding a product term</h2>
         <p>A model with two predictors and their interaction looks like this:</p>
         <p style="text-align:center;font-size:1.1rem;margin:1.2rem 0"><strong>ŷ = b₀ + b₁·x + b₂·group + b₃·(x × group)</strong></p>
         <p>The last term is the <em>product</em> of the two predictors. Its coefficient <strong>b₃ measures how much the slope of x changes between groups</strong>. If b₃ = 0, both groups share one slope (the lines are parallel, just a level difference). If b₃ ≠ 0, the groups have <em>different slopes</em>: x matters more for one than the other.</p>
@@ -79,13 +80,13 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>Why the main effects get tricky</h2>
+        <h2 id="why-the-main-effects-get-tricky">Why the main effects get tricky</h2>
         <p>When an interaction is present, the "main effect" of x is no longer a single number: it's different in each group, so quoting one average slope can be misleading. With a product term in the model, <strong>b₁ becomes the slope of x specifically when group = 0</strong> (the reference), not an overall effect.</p>
         <div class="callout key">
           <p><strong>Center your predictors.</strong> Interpreting interactions is far easier when continuous predictors are mean-centered first. Then b₁ and b₂ are effects "at the average" of the other variable. Without centering they are effects at zero, which is often a meaningless value. It also reduces <a href="../../stats-2/multicollinearity-and-variable-selection/">multicollinearity</a> between the predictors and their product.</p>
         </div>
 
-        <h2>Continuous × continuous interactions</h2>
+        <h2 id="continuous-continuous-interactions">Continuous × continuous interactions</h2>
         <p>Interactions aren't just for groups. Two continuous predictors can interact too: the effect of advertising spend on sales might depend on the product's price. These interactions are harder to picture, because the "lines" become a twisted surface. So you usually probe them with <strong>simple slopes</strong>: plot the effect of x at a few representative values of the moderator (say, low, medium and high), as the widget does with two groups.</p>
 
         <div class="callout">
@@ -98,7 +99,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>Why should I center variables before creating an interaction term?</summary>
             <div class="faq-a"><p>Centering helps in two ways. With a product term in the model, b₁ is the effect of x₁ <em>when the other variable equals zero</em>, and zero is often a meaningless value (age 0, income 0). Centering moves "zero" to the mean, so b₁ becomes the effect at a typical value. It also reduces the artificial correlation between x and x×z, so the estimates suffer less from multicollinearity.</p></div>

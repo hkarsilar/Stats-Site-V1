@@ -49,6 +49,7 @@
         <h1>Classification Metrics &amp; the Accuracy Trap</h1>
 
         <p class="lede">When your outcome is a category (sick vs healthy, spam vs not, will-churn vs won't), "how good is the model?" has more than one answer. Plain accuracy is not enough, because it can be high while the model fails at the one task you cared about.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#every-prediction-lands-in-one-of-four-boxes">Four outcomes: the confusion matrix</a><a href="#the-metrics-and-the-question-each-one-answers">The metrics, and the question each one answers</a><a href="#where-accuracy-lies-base-rates">Base rates and the accuracy trap</a><a href="#choosing-the-metric-by-which-error-hurts-more">Choosing the metric by which error hurts more</a><a href="#two-single-numbers-that-survive-a-rare-class">Two single numbers that survive a rare class</a><a href="#common-questions">Common questions</a></nav>
 
         <h2 id="every-prediction-lands-in-one-of-four-boxes">Four outcomes: the confusion matrix</h2>
         <p>A classifier takes a case and outputs a label: <em>positive</em> (has the condition, is spam, will churn) or <em>negative</em>. Compare that guess to the truth and there are exactly four outcomes, laid out in a <strong>confusion matrix</strong>:</p>
@@ -60,7 +61,7 @@
         </ul>
         <p>Each metric in the next section is a ratio of these four counts.</p>
 
-        <h2>The metrics, and the question each one answers</h2>
+        <h2 id="the-metrics-and-the-question-each-one-answers">The metrics, and the question each one answers</h2>
         <ul>
           <li><strong>Accuracy</strong> = (TP + TN) / everything. "What fraction did I get right?" Easy to understand, and often misleading.</li>
           <li><strong>Recall</strong> (a.k.a. sensitivity, true-positive rate) = TP / (TP + FN). "Of the real positives, how many did I catch?" The metric that matters most for a cancer screen.</li>
@@ -124,12 +125,12 @@
 
         <p>The widget shows two things. First, <strong>the threshold is your choice</strong>. Moving it right raises precision and lowers recall (fewer flags, but more of them correct), and moving it left does the reverse. No threshold is correct for every problem. The right one depends on which error is worse. Second, <strong>no single number tells you enough</strong>. Accuracy, precision and recall can each look good on their own, so read them together, against the base rate, to know what the model does.</p>
 
-        <h2>Choosing the metric by which error hurts more</h2>
+        <h2 id="choosing-the-metric-by-which-error-hurts-more">Choosing the metric by which error hurts more</h2>
         <p>To choose a metric, ask which mistake is worse in your problem. The answer depends on what each error costs in your setting.</p>
         <p>Where a miss is very costly, aim for high <strong>recall</strong>. In cancer screening, fraud detection and structural safety checks, a few false alarms are better than one missed case, so you accept lower precision to push recall up. Where a false alarm is expensive, aim for high <strong>precision</strong> instead. In spam filtering, in flagging accounts for suspension and in recommending a costly intervention, a wrongly deleted email or a wrongly punished user is the error you most want to avoid. When both errors matter and the class is rare, <strong>F1</strong> (or a cost-weighted score) gives a single figure that a model cannot raise by ignoring the minority class.</p>
         <p>Accuracy also does not tell you <em>which kind</em> of mistake the model makes. Two models with the same 90% accuracy can have very different precision and recall: one may flag few cases, and the other many. The confusion matrix shows the difference. (Psychology has used the same table since the 1950s: in <a href="../../stats-3/signal-detection-theory/">signal detection theory</a> the four cells are hits, misses, false alarms and correct rejections, and the classifier is a person.)</p>
 
-        <h2>Two single numbers that survive a rare class</h2>
+        <h2 id="two-single-numbers-that-survive-a-rare-class">Two single numbers that survive a rare class</h2>
         <p>If a reviewer wants a single number, two measures work where accuracy fails. <strong>Balanced accuracy</strong> is the plain average of recall and specificity, so each class contributes half the score however rare it is. <strong>Matthews correlation coefficient</strong> (MCC) is the Pearson correlation between the predicted labels and the true ones, coded 0 and 1. It runs from −1 to +1, is 0 for chance-level prediction, and approaches 1 only when both false positives and false negatives are rare.</p>
         <p>Apply both to the example from earlier. Of 1,000 patients, 50 have the condition. The model that calls everyone healthy scores <strong>95% accuracy, 50% balanced accuracy, MCC 0</strong>. A model that catches 30 of the 50 and raises 50 false alarms scores <strong>93% accuracy, 77.4% balanced accuracy, MCC .44</strong>. Accuracy ranks the useless model above the useful one, and the other two measures rank them correctly.</p>
         <p>One detail you will meet in software: MCC's denominator is zero whenever a model predicts a single class, as the all-healthy model does. The formula is then undefined, so R and Python report 0 by convention. Zero is a sensible score for a model that has learned nothing.</p>
@@ -142,7 +143,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>Why is accuracy misleading for rare outcomes?</summary>
             <div class="faq-a"><p>Because a model can score high just by ignoring the rare class. If 1 in 100 patients has a disease, a model that labels everyone 'healthy' is 99% accurate while catching zero cases. It is useless, yet on accuracy alone it beats most models that try to find the cases. Accuracy weights every case equally, so when 99% of cases are one class, that class dominates the score and the rare class barely counts. For imbalanced problems, report recall (did we catch the positives?) and precision (were our positive calls right?) instead of, or alongside, accuracy.</p></div>

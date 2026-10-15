@@ -49,8 +49,9 @@
         <h1>Assumptions of Regression</h1>
 
         <p class="lede">A regression coefficient and its p-value can be trusted only if the model's assumptions hold. Ordinary least squares has four, and their initials spell <strong>LINE</strong>. There is also a separate problem: a single data point with enough leverage to move the whole line.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#the-line-assumptions">The LINE assumptions</a><a href="#leverage-vs-influence-vs-outlier">Leverage vs. influence vs. outlier</a><a href="#how-high-is-high">How high is "high"?</a><a href="#when-assumptions-fail">When assumptions fail</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>The LINE assumptions</h2>
+        <h2 id="the-line-assumptions">The LINE assumptions</h2>
         <ul>
           <li><strong>L · Linearity:</strong> the relationship between predictors and the mean of <code>y</code> is actually a straight line (or plane). Check with <a href="../../stats-2/regression-diagnostics/">residual plots</a>.</li>
           <li><strong>I · Independence:</strong> the errors are independent of each other. Violated by time series and clustered/repeated data.</li>
@@ -58,7 +59,7 @@
           <li><strong>E · Equal variance (homoscedasticity):</strong> the residuals have constant spread across all fitted values. A funnel shape means this assumption is violated.</li>
         </ul>
 
-        <h2>Leverage vs. influence vs. outlier</h2>
+        <h2 id="leverage-vs-influence-vs-outlier">Leverage vs. influence vs. outlier</h2>
         <p>These three are often confused, but they are different. An <strong>outlier</strong> has an unusual <code>y</code> (far from the line). A <strong>high-leverage</strong> point has an unusual <code>x</code> (far from the other predictors). A point is <strong>influential</strong> only when it's <em>both</em>: extreme in x <em>and</em> off the trend, so that removing it noticeably moves the line. Drag the point below to see the difference.</p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -83,14 +84,14 @@
           <p><strong>Cook's distance</strong> bundles leverage and residual size into a single number measuring how much the whole fit shifts when a point is removed. Points with a large Cook's distance deserve a hard look. But never delete data just because it's influential. Investigate first: is it an error, or a real and important case?</p>
         </div>
 
-        <h2>How high is "high"?</h2>
+        <h2 id="how-high-is-high">How high is "high"?</h2>
         <p>The readout above gives the dragged point's leverage as a number and as a multiple of the average leverage. The second figure matters because the total leverage is fixed. Across all <em>n</em> points the leverages always sum to <em>p</em>, the number of parameters the model estimates (an intercept plus one slope here, so <em>p</em> = 2). So the average leverage is <em>p</em>/<em>n</em>, whatever the data look like. This chart has 13 fixed points plus the one you drag, so its average is 2/14 = 0.14. A point can rise above that only by taking leverage from the other points.</p>
         <p>The conventional cutoffs are <strong>2<em>p</em>/<em>n</em></strong>, and sometimes a stricter <strong>3<em>p</em>/<em>n</em></strong>, which come to 0.29 and 0.43 for this chart. Put the point at the center and its leverage falls to 0.07, half the average. Drag it to either edge and it reaches about 0.27, 1.9 times the average and still under the cutoff. With thirteen well-spread points, one point cannot gain much leverage. Leverage is relative: the same <em>x</em> value is unremarkable in a wide sample and extreme in a narrow one.</p>
         <p>Residuals need adjusting too, because of leverage. A high-leverage point pulls the line toward itself, so its raw residual is <em>too small</em> to compare with the others. The fix is a <strong>studentized residual</strong>, which divides each residual by its own standard error, <em>s</em>√(1 − <em>h</em>). SPSS's <em>Casewise diagnostics</em> box flags points using the plain standardized residual. The studentized version is a separate tick in the same dialog's <em>Save…</em> panel, and it is the better one to use. Because of its leverage, a point can look unremarkable by the first measure and extreme by the second.</p>
         <p>Put the two together and you get Cook's distance in closed form: <em>D</em> = (<em>r</em>²/<em>p</em>) × <em>h</em>/(1 − <em>h</em>), where <em>r</em> is the studentized residual. The first factor comes from the residual and the second from the leverage. Because <em>D</em> is a product, it is near zero whenever either factor is, so influence requires both. The usual cutoffs are <em>D</em> &gt; 1 and the stricter 4/<em>n</em>, which for these 14 points is also 0.29.</p>
         <p>These numbers tell you which rows to look at, not what to do with them. Whether a row is an error or a real, interesting case is a question about the study, not about the arithmetic.</p>
 
-        <h2>When assumptions fail</h2>
+        <h2 id="when-assumptions-fail">When assumptions fail</h2>
         <ul>
           <li><strong>Nonlinearity</strong> → add polynomial or <a href="../../data/transformations-and-recoding/">transformed terms</a>.</li>
           <li><strong>Non-independence</strong> → use models built for it (time-series, <a href="../../stats-3/mixed-and-multilevel-models/">mixed/multilevel models</a>).</li>
@@ -107,7 +108,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>Do my predictors need to be normally distributed?</summary>
             <div class="faq-a"><p>The normality assumption concerns the <em>residuals</em>, not the predictors or even the raw outcome. Believing otherwise is one of the most persistent regression myths. Skewed predictors, binary dummies and lumpy x-distributions are all fine. Fit the model, then check a Q-Q plot of the residuals. That is the only normality that matters, and it matters mostly in small samples.</p></div>

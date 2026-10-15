@@ -49,8 +49,9 @@
         <h1>MANOVA &amp; Multivariate Tests</h1>
 
         <p class="lede">A therapy trial tracks anxiety, depression and sleep. A memory experiment logs accuracy alongside reaction time. <strong>MANOVA</strong> (Multivariate ANOVA) tests whether groups differ on a whole <em>set</em> of outcomes at once, and it can detect differences that separate tests on each outcome miss.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#why-not-just-run-several-anovas">Why not just run several ANOVAs?</a><a href="#how-it-works-the-smartest-composite">How it works: the smartest composite</a><a href="#the-statistics-you-ll-meet-in-the-output">The statistics you'll meet in the output</a><a href="#how-big-is-the-effect">How big is the effect?</a><a href="#the-wider-multivariate-family">The wider multivariate family</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Why not just run several ANOVAs?</h2>
+        <h2 id="why-not-just-run-several-anovas">Why not just run several ANOVAs?</h2>
         <p>Separate ANOVAs run into the familiar <a href="../../stats-2/post-hoc-tests/">multiple-testing problem</a>: five outcomes at α = .05 give you roughly a 23% chance of at least one false alarm. They also <strong>ignore the correlation structure</strong>. Outcomes usually move together, and a pattern that is unremarkable on each variable separately can be very improbable as a <em>combination</em>. MANOVA analyzes the outcomes jointly, so it takes those correlations into account.</p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -86,7 +87,7 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>How it works: the smartest composite</h2>
+        <h2 id="how-it-works-the-smartest-composite">How it works: the smartest composite</h2>
         <p>MANOVA effectively asks: <em>is there any weighted combination of the outcomes on which the groups clearly differ?</em> It finds the combination that maximizes the between-group difference relative to the within-group spread (the <strong>discriminant direction</strong> in the plot) and tests the groups on that. Distance is measured the multivariate way (<strong>Mahalanobis distance</strong>): not "how far apart are the means?" but "how far apart are they <em>given the shape of the cloud</em>?"</p>
         <p>Mahalanobis distance explains what the ✨ button does. When two outcomes are strongly correlated, they normally move together, so a treatment that pushes them in <em>opposite</em> directions is extremely surprising, even if each individual shift is small. Each univariate ANOVA finds only a small, non-significant difference. MANOVA tests the combination, and given the correlation, that combination should almost never happen by chance.</p>
 
@@ -94,7 +95,7 @@
           <p><strong>Try the ✨ demo.</strong> It sets small opposite differences (+0.35 and −0.35) and a strong correlation (r ≈ 0.8). Both univariate p-values are well above .05, so neither outcome shows a difference on its own, but the MANOVA p-value is below .001. Now drag the correlation to 0 and the advantage disappears: with independent outcomes, MANOVA is roughly the two tests combined.</p>
         </div>
 
-        <h2>The statistics you'll meet in the output</h2>
+        <h2 id="the-statistics-you-ll-meet-in-the-output">The statistics you'll meet in the output</h2>
         <p>Software reports four multivariate test statistics, all summarizing how much of the outcome-space variation the group factor explains:</p>
         <ul>
           <li><strong>Wilks' Λ (lambda).</strong> The share of variance <em>not</em> explained by groups; smaller = stronger effect. The most commonly reported.</li>
@@ -103,12 +104,12 @@
         </ul>
         <p>With exactly two groups they all reduce to one test, <strong>Hotelling's T²</strong>, the multivariate version of the t-test. The playground above computes it. With three or more groups and several outcomes they can disagree slightly, and then Pillai's trace is the safer choice because it is the most robust.</p>
 
-        <h2>How big is the effect?</h2>
+        <h2 id="how-big-is-the-effect">How big is the effect?</h2>
         <p>Those four statistics test whether the groups differ, not by how much, so a multivariate result needs an effect size as much as any other result does. The standard multivariate effect size comes straight from Wilks' Λ:</p>
         <p style="text-align:center;font-size:1.15rem;margin:1.25rem 0"><strong>η² = 1 − Λ<sup>1/s</sup></strong> &nbsp; (s = the smaller of: number of outcomes, number of groups − 1)</p>
         <p>With two groups s = 1 and the formula reduces to η² = 1 − Λ. So a Wilks' Λ of 0.62 means the grouping accounts for 38% of the variance in the outcome set taken as a whole. Statistical software will print a partial η² beside each multivariate test if you ask it to. Report one for the multivariate result, then an effect size for each outcome in the follow-ups, because those tell a reader which measures changed. The <a href="../../effect-sizes.html">effect-size converter</a> will turn the per-outcome numbers into d or r if your field reports those.</p>
 
-        <h2>The wider multivariate family</h2>
+        <h2 id="the-wider-multivariate-family">The wider multivariate family</h2>
         <ul>
           <li><strong>MANCOVA</strong> = MANOVA + covariates: compare groups on several outcomes at once <em>while</em> adjusting for baselines, exactly like <a href="../../stats-2/ancova/">ANCOVA</a> but multivariate.</li>
           <li><strong>Multivariate multiple regression</strong> is the regression counterpart: several outcome variables predicted by several predictors simultaneously; MANOVA is the special case where the predictors are group dummies.</li>
@@ -128,7 +129,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>Does a significant MANOVA protect my follow-up ANOVAs from multiple testing?</summary>
             <div class="faq-a"><p>It doesn't, although many researchers believe it does. The belief comes from the omnibus F in ANOVA, where passing the overall test is treated as permission to look closer. Here the multivariate test and the univariate ones test different hypotheses, so passing the first does nothing to control the false-positive rate of the tests that follow. Correct those separately, with <a href="../../stats-2/post-hoc-tests/">Bonferroni or an FDR procedure</a> across the outcomes. The logic fails in the other direction too: MANOVA can be significant when no single outcome is, as the ✨ demo above shows.</p></div>

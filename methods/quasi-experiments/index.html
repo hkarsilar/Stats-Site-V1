@@ -49,8 +49,9 @@
         <h1>Quasi-Experiments &amp; Natural Experiments</h1>
 
         <p class="lede">Often you simply can't randomize. You can't randomly assign people to smoke, to live through a policy change, or to attend one school over another. A <strong>quasi-experiment</strong> keeps the structure of an experiment (a treatment, a comparison, an outcome) but drops <strong>random assignment</strong>, the piece that made the causal claim secure. The work is then to build a credible causal claim from groups that were never equivalent to begin with.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#the-quasi-experimental-toolkit">The quasi-experimental toolkit</a><a href="#difference-in-differences-the-workhorse">Difference-in-differences: the workhorse</a><a href="#regression-discontinuity-in-one-picture">Regression discontinuity, in one picture</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>The quasi-experimental toolkit</h2>
+        <h2 id="the-quasi-experimental-toolkit">The quasi-experimental toolkit</h2>
         <ul>
           <li><strong>Nonequivalent groups:</strong> a treated group and a comparison group that formed by choice or circumstance, not a coin flip, so they may differ in hidden ways.</li>
           <li><strong>Pre/post (one group):</strong> measure before and after a treatment. Cheap, but anything else changing over time (maturation, the season, the economy) is confounded with the effect. The analysis is the ordinary <a href="../between-vs-within-designs/">within-subjects comparison</a>. What is missing is a group that did not get the treatment.</li>
@@ -58,7 +59,7 @@
           <li><strong>Matching:</strong> pair each treated unit with a comparison unit that looks similar on measured variables. This helps, but it can only balance what you measured, never the unknown confounds randomization would have balanced. Which variables belong in the match depends on the <a href="../../stats-3/causal-dags-and-confounding/">causal structure</a>, not on which ones you happen to have. Matching on a variable and <a href="../../stats-2/ancova/">adjusting for it statistically</a> are two ways to remove the same imbalance, and neither can account for a variable you never recorded.</li>
         </ul>
 
-        <h2>Difference-in-differences: the workhorse</h2>
+        <h2 id="difference-in-differences-the-workhorse">Difference-in-differences: the workhorse</h2>
         <p>A common and effective design combines a nonequivalent comparison group <em>and</em> a before/after measurement. Two simple estimates each fail on their own, and subtracting one from the other fixes both. Try it:</p>
 
         <!-- ============ INTERACTIVE ============ -->
@@ -100,7 +101,7 @@
         <p>Comparing the groups <em>after only</em> is biased by the <strong>baseline gap</strong> (the groups differed to begin with). Comparing the treated group's <em>change only</em> is biased by the <strong>shared trend</strong> (things were moving anyway). Difference-in-differences subtracts the comparison group's change from the treated group's change, which removes both biases, <em>provided</em> the two groups would have moved in parallel without the treatment. That condition is the <strong>parallel-trends assumption</strong>. The differential-trend slider shows that a violation adds its full size to your estimate. In a regression the whole estimate is one coefficient, the treated × post <a href="../../stats-2/interactions-in-regression/">interaction term</a>.</p>
         <p>That coefficient has a lesson of its own. <a href="../../stats-3/difference-in-differences/">Difference-in-differences</a> in the Statistics Core covers what each of the four coefficients means, which three not to interpret, and the two-way fixed-effects form papers write it in. It also explains why the standard errors have to be clustered, and how an event study tests parallel trends one period at a time.</p>
 
-        <h2>Regression discontinuity, in one picture</h2>
+        <h2 id="regression-discontinuity-in-one-picture">Regression discontinuity, in one picture</h2>
         <p>When a treatment is handed out by a strict cutoff (a scholarship for scores ≥ 90, a program for incomes below a line), you can compare people <em>just above</em> and <em>just below</em> the threshold. They're nearly identical, and which side of the cutoff each one ended up on is close to chance. So a sudden <strong>jump</strong> in the outcome right at the cutoff is hard to explain as anything but the treatment. It's the closest a quasi-experiment gets to a local randomized trial.</p>
         <p>To estimate the jump, see <a href="../../stats-3/regression-discontinuity/">Regression discontinuity design</a> in the Statistics Core. It shows how to center the running variable so that one coefficient is the jump. It explains why the two sides need their own slopes and how wide a window to fit. It also covers three checks for judging a published study: balanced covariates, a smooth density and placebo cutoffs.</p>
 
@@ -119,7 +120,7 @@
         <p class="pb-xref"><a href="../../problems.html#p5-1">Problem 95 of the practice problems</a> is a self-selected comparison presented as a result. It asks which quasi-experimental design would have made the claim defensible.</p>
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>When does regression discontinuity fail?</summary>
             <div class="faq-a"><p>It fails when the cutoff is not as sharp as it looks. The design assumes that people just above and just below the threshold are alike apart from the treatment, and anything that lets them choose their side breaks that assumption. The usual sign is <strong>bunching</strong>: plot the distribution of the running variable and look for a pile-up on the favorable side of the line. A pile-up means somebody was retaking the test, rounding the score, or granting exceptions. The design has two more limits. The estimate is <em>local</em>, valid near the cutoff and not for people far from it, so a scholarship effect measured at a score of 90 says little about students at 60. And the answer can depend on how wide a window you look at, so report the estimate across several bandwidths, not only the one that worked.</p></div>

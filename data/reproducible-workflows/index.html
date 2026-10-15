@@ -49,8 +49,9 @@
         <h1>Reproducible Workflows</h1>
 
         <p class="lede">A result you can't reproduce is a result you can't defend. Six months on, a reviewer asks how you got that mean, and "I clicked some menus in SPSS" is not an answer. The fix is a mindset shift: <strong>the analysis <em>is</em> the script</strong> — a plain-text recipe that turns your raw data into every number in your report, the same way, every time, on anyone's computer.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#the-analysis-is-the-script">The analysis is the script</a><a href="#order-is-part-of-the-recipe">Order is part of the recipe</a><a href="#seeds-structure-and-versions">Seeds, structure, and versions</a><a href="#a-seed-is-not-enough-on-its-own">A seed is not enough on its own</a><a href="#the-stranger-test">The stranger test</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>The analysis is the script</h2>
+        <h2 id="the-analysis-is-the-script">The analysis is the script</h2>
         <p>Point-and-click is fine for <em>looking</em> at data; it is a disaster for <em>doing</em> the analysis, because it leaves no record. A click is invisible the moment you make it. A line of code is a permanent instruction you can read, re-run, share, and correct. When your whole pipeline lives in a script:</p>
         <ul>
           <li>it's <strong>reproducible</strong>: run it again, get the identical result;</li>
@@ -59,7 +60,7 @@
         </ul>
         <p>None of that survives a session of clicking. You don't need to become a programmer. You need an analysis you can rerun, not one you have to remember.</p>
 
-        <h2>Order is part of the recipe</h2>
+        <h2 id="order-is-part-of-the-recipe">Order is part of the recipe</h2>
         <p>A script exposes a subtle danger that clicking hides: the <em>same</em> steps in a different order can give a different answer. Filtering commutes: remove impossible rows then keep group A, or keep group A then remove impossible rows, either way you get the same rows. But <a href="../../stats-3/missing-data/">filling in missing values</a> does <strong>not</strong> commute with filtering, because <em>what</em> you fill with depends on which rows are present when you fill. Try to reproduce the target below by fixing the pipeline:</p>
 
         <!-- ============ INTERACTIVE 1 ============ -->
@@ -84,7 +85,7 @@
         </div>
         <!-- ============ /INTERACTIVE 1 ============ -->
 
-        <h2>Seeds, structure, and versions</h2>
+        <h2 id="seeds-structure-and-versions">Seeds, structure, and versions</h2>
         <p>Three cheap habits do most of the work:</p>
         <ul>
           <li><strong>Seed anything random.</strong> Bootstrapping, simulation, random train/test splits, and shuffling all use a random-number generator. Set its seed (<code>set.seed(1)</code>, <code>np.random.default_rng(1)</code>) at the top of the script and the "random" results become identical on every run. Unseeded randomness is the most common reason a result can't be reproduced, and nothing warns you about it.</li>
@@ -92,7 +93,7 @@
           <li><strong>Version lightly.</strong> You don't need to be a Git wizard, but you do need to stop naming files <code>final_v2_REALfinal.csv</code>. At minimum, keep dated snapshots and never overwrite raw data; better, put the <code>scripts/</code> folder under version control so every change has a timestamp and a message.</li>
         </ul>
 
-        <h2>A seed is not enough on its own</h2>
+        <h2 id="a-seed-is-not-enough-on-its-own">A seed is not enough on its own</h2>
         <p>Seeding nearly solves the reproducibility problem, but the seed only fixes the sequence <em>given</em> the generator that reads it. Change the generator and the same seed produces different data. This happens in practice: R altered how <code>sample()</code> draws from a seeded stream in version 3.6.0, so <code>set.seed(42); sample(1:10)</code> returns</p>
         <pre><code>R 3.6.0 and later :   1  5 10  8  2  4  6  9  7  3
 before R 3.6.0    :  10  9  3  6  4  8  5  1  2  7</code></pre>
@@ -102,7 +103,7 @@ before R 3.6.0    :  10  9  3  6  4  8  5  1  2  7</code></pre>
 
         <p>The last piece is a <strong>README</strong> in the project root: a short plain-text file saying what the project is, which script to run first, and what each folder holds. It is the one file that is allowed to be written by hand, and it tells a stranger where to start.</p>
 
-        <h2>The stranger test</h2>
+        <h2 id="the-stranger-test">The stranger test</h2>
         <p>One question sums this up: <strong>could a stranger, or you two years from now, take your files and reproduce every number, with no email to you and nothing in your head?</strong> If the answer is "only if I explain a few things first," those few things aren't documented yet. Everything a result depends on (the raw data, the code, the seed, the package versions, the order) has to live in the project, not in your memory.</p>
 
         <div class="callout key">
@@ -117,7 +118,7 @@ before R 3.6.0    :  10  9  3  6  4  8  5  1  2  7</code></pre>
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>Do I have to use code — can't I just use SPSS menus?</summary>
             <div class="faq-a"><p>Menus are fine for <em>exploring</em> data, but the analysis itself should be scripted, and SPSS supports this: every dialog can paste its <strong>syntax</strong>, and running that syntax file reproduces the result exactly. The problem with clicking is not SPSS. It's that a click leaves no record, so six months later you can't say what you did or repeat it. A saved syntax (or R/Python) script is a re-runnable, shareable, correctable recipe. You don't have to abandon your software; you have to keep the record of what it did.</p></div>

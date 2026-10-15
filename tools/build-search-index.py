@@ -164,7 +164,12 @@ def heads_of(fragment: str) -> list:
 def lesson_text(path: Path) -> tuple:
     src = path.read_text(encoding="utf-8")
     m = re.search(r"<article class=\"lesson\">(.*?)</article>", src, re.S)
-    return (textify(m.group(1))[:LESSON_MAX_CHARS], heads_of(m.group(1))) if m else ("", [])
+    if not m:
+        return ("", [])
+    # the baked "On this page" box repeats the h2s, which heads_of() already
+    # stores; leaving it in would count every heading word twice as body text
+    body = re.sub(r"<nav class=\"lesson-toc\".*?</nav>", " ", m.group(1), flags=re.S)
+    return (textify(body)[:LESSON_MAX_CHARS], heads_of(body))
 
 
 def page_text(path: Path, limit: int = MAX_CHARS) -> tuple:

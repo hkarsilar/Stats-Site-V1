@@ -49,8 +49,9 @@
         <h1>Logistic Regression</h1>
 
         <p class="lede">So far the outcome <code>y</code> has always been a number. But often it's a <strong>yes/no</strong>: passed or failed, clicked or didn't, recovered or didn't. Fit a straight <a href="../../stats-1/simple-linear-regression/">regression line</a> to a 0/1 outcome and it predicts probabilities like −0.3 or 1.4, which are impossible. <strong>Logistic regression</strong> fixes this.</p>
+        <nav class="lesson-toc" aria-label="On this page"><span class="toc-label">On this page</span><a href="#bend-the-line-into-an-s">Bend the line into an S</a><a href="#log-odds-and-odds-ratios">Log-odds and odds ratios</a><a href="#is-the-model-any-good">Is the model any good?</a><a href="#from-probability-to-decision">From probability to decision</a><a href="#common-questions">Common questions</a></nav>
 
-        <h2>Bend the line into an S</h2>
+        <h2 id="bend-the-line-into-an-s">Bend the line into an S</h2>
         <p>Logistic regression does not predict <code>y</code> directly. It predicts the <strong>probability</strong> that <code>y = 1</code>, by passing the linear part through the <strong>logistic (sigmoid) function</strong>, which maps any number into the range 0–1:</p>
         <p style="text-align:center;font-size:1.1rem;margin:1.2rem 0"><strong>P(y=1) = 1 / (1 + e<sup>−(b₀ + b₁x)</sup>)</strong></p>
         <p>The result is a smooth S-curve: near-0 for low x, near-1 for high x, with a steep transition in between. It never goes below 0 or above 1, so the predictions are always valid probabilities.</p>
@@ -82,7 +83,7 @@
         </div>
         <!-- ============ /INTERACTIVE ============ -->
 
-        <h2>Log-odds and odds ratios</h2>
+        <h2 id="log-odds-and-odds-ratios">Log-odds and odds ratios</h2>
         <p>Logistic regression is a true regression model: it <em>is</em> linear, on the <strong>log-odds</strong> scale. The model says the log-odds of the outcome is a straight line, <code>b₀ + b₁x</code>. That means the coefficient <code>b₁</code> is a change in log-odds per unit of x, and exponentiating it gives the <strong>odds ratio</strong>:</p>
         <ul>
           <li><strong>Odds ratio = e<sup>b₁</sup></strong>: how the odds of the outcome multiply for each one-unit increase in x.</li>
@@ -94,11 +95,11 @@
           <p><strong>Probabilities aren't linear, but log-odds are.</strong> A one-unit change in x multiplies the <em>odds</em> by a constant factor. Its effect on the <em>probability</em> depends on where you are on the curve: it is largest in the steep middle and tiny in the flat tails. So a logistic model has no single "effect on probability" number.</p>
         </div>
 
-        <h2>Is the model any good?</h2>
+        <h2 id="is-the-model-any-good">Is the model any good?</h2>
         <p>Ordinary regression gives you R² and an F-test. Logistic regression has neither, and software prints two substitutes under unfamiliar names. An <strong>omnibus test</strong> compares your model with an intercept-only model on the likelihood scale and reports a χ². It answers the question "does the model predict better than no predictors at all?". A <strong>pseudo-R²</strong> (Nagelkerke, Cox &amp; Snell, McFadden) rescales the same likelihood improvement onto a 0-to-1 range so it looks like R². Treat it as a rough number for comparing models, not as variance explained, because the three versions give different values for the same model.</p>
         <p>For individual predictors most output shows a Wald test, which is fine for modest coefficients and unreliable for large ones. When a predictor is important to your conclusions, refit the model without it and compare the two models by <a href="../../stats-2/model-comparison/">likelihood ratio</a>.</p>
 
-        <h2>From probability to decision</h2>
+        <h2 id="from-probability-to-decision">From probability to decision</h2>
         <p>To classify cases, you pick a <strong>threshold</strong> (often 0.5): predict "yes" when the curve is above it and "no" below. Moving the threshold trades false positives against false negatives, and the right choice depends on which mistake is more costly (missing a disease vs. a false alarm). Logistic regression is widely used in credit scoring, medical risk models, and machine-learning classification. Choosing the threshold, and measuring the errors it produces, is the subject of <a href="../../ml/classification-metrics/">classification metrics</a>.</p>
 
         <div class="callout">
@@ -111,7 +112,7 @@
 
         <!-- faq:start — static Common Questions (mirrored as FAQPage JSON-LD in <head>) -->
         <section class="faq">
-          <h2>Common questions</h2>
+          <h2 id="common-questions">Common questions</h2>
           <details class="faq-item">
             <summary>How do I interpret an odds ratio?</summary>
             <div class="faq-a"><p>An odds ratio is the multiplier on the odds for each one-unit increase in the predictor. OR = 1.5 means each extra unit multiplies the odds of the outcome by 1.5 (+50%). OR = 0.8 shrinks them by 20%, and OR = 1 means no effect. Keep two things in mind: "odds" are p/(1−p), not probability, and a large OR can mean a tiny absolute change when the baseline risk is low.</p></div>
