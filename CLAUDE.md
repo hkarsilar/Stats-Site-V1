@@ -33,7 +33,7 @@ This paragraph is standing, explicit permission. Do not ask, and do not leave fi
 - The one exception: if you cannot get a gate green, push only the branch, leave `main` alone, and say plainly in your final report that `main` was not updated and why.
 - Pushing `main` deploys the site. The gates are the safety net.
 
-**Service-worker cache.** If a deploy changes a precached shell asset (`styles.css`, `site.js`, `curriculum.js`, `viz.js`, `assets/fonts/Inter.woff2`, an icon, or `offline.html`), bump `CACHE_VERSION` in `sw.js` (currently `sc-v64`). HTML edits need no bump. Never reuse a version string for different contents: if you edit `styles.css` twice before committing, each state that could reach a browser needs its own string. CSS and JS are stale-while-revalidate, so a change reaches visitors on their next page load even without a bump; a bump also makes `site.js` reload the page once so the change applies within the same visit.
+**Service-worker cache.** If a deploy changes a precached shell asset (`styles.css`, `site.js`, `curriculum.js`, `viz.js`, `assets/fonts/Inter.woff2`, an icon, or `offline.html`), bump `CACHE_VERSION` in `sw.js` (currently `sc-v65`). HTML edits need no bump. Never reuse a version string for different contents: if you edit `styles.css` twice before committing, each state that could reach a browser needs its own string. CSS and JS are stale-while-revalidate, so a change reaches visitors on their next page load even without a bump; a bump also makes `site.js` reload the page once so the change applies within the same visit.
 
 ## Commands
 
@@ -115,6 +115,7 @@ When a checker fires, fix the site (teach the term, fix the link, correct the ex
 11. `problems.html`: badges run 1..n in page order, and every "Problem N" reference (in any page or in `faq_data.py`) matches the badge its link points to.
 12. Glossary: no two terms in `glossary-data.js` share a slug (the anchor id; identical terms would also share an `sc-cards` card), and every back-link `s` names a ready lesson in `curriculum.js`. Back-links are written by script, so check 4 never sees them.
 13. Every lesson's "On this page" box matches its h2s. `tools/make-lesson-tocs.js` bakes the box and the h2 ids into the HTML so the box is there at first paint (built at runtime, it shifted mobile lessons by up to 0.19 CLS); `site.js` builds one only for a lesson that has none. Rerun the script after changing a lesson's headings. The prose checkers and the search index skip the box.
+14. A link whose text names a section number ("Section 2.9", "§3.2", a bare "1.5" chip) points at the lesson with that number in `curriculum.js`; when the text holds several, one must match. On a lesson, a link whose text says "the previous lesson", "the next lesson" or "the one after it" points at that neighbor among the course's ready lessons. P39 run 26 found §3.13's "Section 2.8" linking to Assumptions of Regression (§2.13), left behind by a renumber that check 2's eyebrow comparison never sees.
 
 **`tools/math-check.js`** (required whenever math changes). About 2,800 assertions, each against a published value, with a tolerance set to that source's rounding. It runs in about six seconds and is kept out of `audit.js` on purpose.
 
@@ -281,7 +282,7 @@ Registering a new tool page takes six places: `TOOLBOX` (with a group) and `SEAR
 
 ## Adding a lesson
 
-1. Copy a lesson from the same course to `<course>/<slug>/index.html`. Set `data-course`, `data-section` and the `Section N.n` eyebrow. The eyebrow is hardcoded, so inserting a lesson (rather than appending one) means renumbering the later eyebrows and any § references elsewhere; audit check 2 finds the misses.
+1. Copy a lesson from the same course to `<course>/<slug>/index.html`. Set `data-course`, `data-section` and the `Section N.n` eyebrow. The eyebrow is hardcoded, so inserting a lesson (rather than appending one) means renumbering the later eyebrows and any § references elsewhere; audit check 2 finds the eyebrows and check 14 the linked § references.
 2. Retarget the title, meta description, canonical, og/twitter tags and the LearningResource and BreadcrumbList JSON-LD. Leave the GA block alone. If you copied from another course, run `python3 tools/make-og-images.py --retag-only`.
 3. Write the inline interactive with VIZ helpers and frozen noise.
 4. Set `ready: true` in `curriculum.js`.

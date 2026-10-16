@@ -37,9 +37,8 @@
    (Also documented next to the deploy step in CLAUDE.md.)
    ============================================================ */
 
-const CACHE_VERSION = "sc-v64";  /* P38 (Oct 2026): site.js leaves a
-                                    lesson's baked "On this page" box
-                                    alone instead of adding a second. */
+const CACHE_VERSION = "sc-v65";  /* P39 run 26 (Oct 2026): two QUIPS
+                                    lines in site.js changed. */
 const CACHE = CACHE_VERSION;
 
 /* absolute URL of the offline fallback, resolved against this SW's location

@@ -288,6 +288,56 @@ function checkLinks(file) {
     }
   }
   checkToolkitSectionLinks(file);
+  checkSectionNumbers(file);
+}
+
+/* CHECK 14 — a link that names a section number must land on that section.
+   Section numbers are typed by hand into link text ("Section 2.9", "§3.2",
+   a bare "1.5" chip) and nothing tied them to curriculum.js, so a renumber
+   left them behind: P39 run 26 found §3.13's "Section 2.8" pointing at
+   Assumptions of Regression, which has been §2.13 since the restructure.
+   CHECK 2 only compares each lesson's own eyebrow. This compares the number
+   in the text with the curriculum number of the lesson the href resolves
+   to; when the text holds several numbers ("§2.7–§2.8"), one must match.
+   On a lesson page it also checks the relative references: a link whose
+   text says "the previous lesson" or "the next lesson" must point at the
+   adjacent ready lesson in the same course, and "the one after it" at the
+   lesson two on, which is how the causal lessons hand off to each other.
+   Static links only, like the rest of CHECK 4. */
+let secNumLinks = 0, relLinks = 0;
+function checkSectionNumbers(file) {
+  const src = read(file).replace(/<script\b(?![^>]*\ssrc=)[^>]*>[\s\S]*?<\/script>/gi, ' ');
+  const plain = (x) => x.replace(/<[^>]*>/g, '').replace(/&sect;/g, '§').replace(/&ndash;/g, '–')
+    .replace(/&nbsp;|&#160;/g, ' ').replace(/\s+/g, ' ').trim();
+  const dir = path.dirname(file);
+  const here = path.relative(ROOT, dir).split(path.sep).filter(Boolean);
+  const hereCourse = here.length === 2 ? courseBySlug[here[0]] : null;
+  const hereReady = hereCourse ? hereCourse.sections.filter((s) => s.ready) : [];
+  const hereIdx = hereCourse ? hereReady.findIndex((s) => s.slug === here[1]) : -1;
+  for (const m of src.matchAll(/<a\b[^>]*\bhref\s*=\s*"([^"#?]*)[^"]*"[^>]*>([\s\S]*?)<\/a>/gi)) {
+    if (/^(https?:)?\/\//i.test(m[1]) || /^(mailto:|tel:)/i.test(m[1])) continue;
+    const text = plain(m[2]);
+    const parts = path.relative(ROOT, path.resolve(dir, m[1] || '.')).split(path.sep).filter(Boolean);
+    if (parts[parts.length - 1] === 'index.html') parts.pop();
+    if (parts.length !== 2 || !courseBySlug[parts[0]]) continue;
+    const lesson = courseBySlug[parts[0]].sections.find((s) => s.slug === parts[1]);
+    if (!lesson) continue;
+    const nums = [...text.matchAll(/(?:Section|§)\s*(\d+\.\d+)/g)].map((x) => x[1]);
+    if (/^\d+\.\d+$/.test(text)) nums.push(text);
+    if (nums.length) {
+      secNumLinks++;
+      if (!nums.includes(lesson.n))
+        err(`${rel(file)} → "${text}" links to ${parts.join('/')}, which is §${lesson.n} in curriculum.js; fix the number in the text or the link`);
+    }
+    if (hereIdx < 0) continue;
+    const t = text.toLowerCase();
+    const step = /\b(previous|last) lesson\b/.test(t) ? -1 : /\bnext lesson\b/.test(t) ? 1 : /\bthe one after it\b/.test(t) ? 2 : 0;
+    if (!step) continue;
+    relLinks++;
+    const want = hereReady[hereIdx + step];
+    if (!want || parts[0] !== here[0] || parts[1] !== want.slug)
+      err(`${rel(file)} → "${text}" points at ${parts.join('/')}, but that is ${want ? `${here[0]}/${want.slug}` : 'no ready lesson'} in curriculum.js`);
+  }
 }
 
 /* A section number on a link to a Methods, Data, Writing or Ethics lesson is
@@ -800,6 +850,7 @@ for (const slug of COURSE_PAGES) {
   const file = path.join(ROOT, slug, 'index.html');
   if (fs.existsSync(file)) checkLinks(file);
 }
+info(`CHECK 14: ${secNumLinks} links that name a section number and ${relLinks} "previous/next lesson" links checked against curriculum.js`);
 
 /* ============================================================
    CHECK 5 — search index freshness + coverage

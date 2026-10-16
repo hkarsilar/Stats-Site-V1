@@ -199,8 +199,8 @@ window.SOFTWARE = {
     spss: [
       '<strong>Analyze → Compare Means → Independent-Samples T Test…</strong> (in SPSS 29+ the submenu is named <em>Compare Means and Proportions</em>).',
       'Move the outcome into <em>Test Variable(s)</em> and the group variable into <em>Grouping Variable</em>; click <em>Define Groups…</em> and enter the two codes.',
-      'Tick <em>Estimate effect sizes</em> for Cohen’s d. <strong>In SPSS 31+ also tick the homogeneity-of-variance option</strong> in the same dialog: Levene’s test used to print automatically and is now opt-in.',
-      'The output shows two rows. They are two degrees-of-freedom conventions, not two tests: <em>Equal variances assumed</em> is the pooled t with df = n₁ + n₂ − 2, and <em>Equal variances not assumed</em> is Welch, with a fractional df of its own. Check Levene’s test first; if it is significant, read the Welch row. Many statisticians recommend simply always reading that row.',
+      'Tick <em>Estimate effect sizes</em> for Cohen’s d. Levene’s test used to print automatically and is opt-in from SPSS 31, through the homogeneity-of-variance option in the same dialog.',
+      'The output shows two rows. They are two degrees-of-freedom conventions, not two tests: <em>Equal variances assumed</em> is the pooled t with df = n₁ + n₂ − 2, and <em>Equal variances not assumed</em> is Welch, with a fractional df of its own. Choose a row before you look at either, and make it the Welch row unless you have a reason not to. Letting Levene’s test pick the row can push the false-positive rate of the whole procedure above 5%, as the assumptions lesson in Stats 2 shows.',
       'Scroll right in that same table for <em>Mean Difference</em> and the <em>95% Confidence Interval of the Difference</em>. That interval is the one APA asks you to report beside the effect size.'
     ],
     jasp: [
@@ -273,7 +273,7 @@ window.SOFTWARE = {
       'The output’s <em>Multiple Comparisons</em> table gives each pair’s mean difference, adjusted p, and CI.',
       'Read that <em>Sig.</em> column the right way round. Under Bonferroni, SPSS has already multiplied each p-value by the number of comparisons, so it is compared against .05 like any other p-value. Dividing .05 by the number of comparisons first and testing against that would apply the same correction twice. The lesson above covers the two conventions.',
       'For a planned comparison, use <strong>One-Way ANOVA → Contrasts…</strong> instead of the Post Hoc button. Type a coefficient for every group in the order the factor levels are listed, and press <em>Next</em> for a second contrast. SPSS prints two tables. <em>Contrast Coefficients</em> repeats your coefficients so you can check they went to the groups you meant. <em>Contrast Tests</em> gives the estimate, its standard error, t and Sig.',
-      'The <em>Contrast Tests</em> table has two rows per contrast. <em>Assume equal variances</em> is the pooled version taught here, with df = N minus the number of groups; <em>Does not assume equal variances</em> is the Welch analogue, with fractional df. Use the first when Levene\'s test is not significant and the second when it is, and say which you used.'
+      'The <em>Contrast Tests</em> table has two rows per contrast. <em>Assume equal variances</em> is the pooled version taught here, with df = N minus the number of groups; <em>Does not assume equal variances</em> is the Welch analogue, with fractional df. The first matches the hand calculation. When the groups differ noticeably in size or spread, the second keeps the error rate near α, as Welch’s t does. Choose before you look at either row, and say which you used.'
     ],
     jasp: [
       'In <strong>ANOVA → Post Hoc Tests</strong>, move your factor to the right panel.',
@@ -355,7 +355,7 @@ window.SOFTWARE = {
       'For a look before you test anything: <strong>Descriptives → Plots</strong> gives Q-Q plots and distribution plots side by side.',
       'In <strong>Regression → Linear Regression → Plots</strong>, tick <em>Residuals vs. predicted</em> and <em>Q-Q plot standardized residuals</em>.'
     ],
-    apa: '<p>Assumptions were checked before analysis. Q-Q plots of the residuals showed no marked departure from normality, and Levene’s test indicated unequal variances, <em>F</em>(1, 58) = 8.42, <em>p</em> = .005, so Welch’s correction was applied throughout.</p>',
+    apa: '<p>Welch’s <em>t</em>-test was planned in advance and used throughout, because the groups were expected to differ in spread. Q-Q plots of the residuals showed no marked departure from normality, and Levene’s test also indicated unequal variances, <em>F</em>(1, 58) = 8.42, <em>p</em> = .005.</p>',
     tips: [
       'Report the assumption check only when it changed what you did, or when a reader would otherwise wonder. A paragraph listing four non-significant tests adds nothing.',
       'For ANOVA and regression the normality assumption applies to the <strong>residuals</strong>, not to the raw outcome, and never to the predictors.',
@@ -881,7 +881,7 @@ window.SOFTWARE = {
     jasp: [
       'JASP needs the same long file and the same three computed columns. Build them with <strong>Compute column</strong>, using <em>treated * post</em> for the interaction, then run <strong>Regression → Linear Regression</strong> with all three predictors and tick <em>Statistics → Confidence intervals</em>.',
       'For clustering, <strong>Mixed Models → Linear Mixed Models</strong> takes the unit id as a random-effects grouping factor, which is the closest built-in equivalent and reports standard errors that account for repeated observations of the same unit.',
-      'The <strong>Rj</strong> module from the <strong>+</strong> menu runs the published version over the loaded data: <em>library(fixest); feols(score ~ i(post, treated) | school + term, data = dataset, cluster = ~school)</em> gives the estimate and a clustered standard error in one line, and <em>i(term, treated, ref = 4)</em> in place of the first term gives the event study.'
+      'The <strong>Rj</strong> module from the <strong>+</strong> menu runs the published version over the loaded data: <em>library(fixest); feols(score ~ treated:post | school + term, data = dataset, cluster = ~school)</em> gives the estimate and a clustered standard error in one line, and <em>i(term, treated, ref = 4)</em> in place of <em>treated:post</em> gives the event study.'
     ],
     apa: '<p>Twenty-five of the 50 schools began the tutoring scheme in term 5, and all 50 were observed for four terms before and four terms after. A difference-in-differences regression with school and term fixed effects estimated the effect on mean end-of-term score at 2.60 points, <em>SE</em> = 0.63, <em>t</em>(48) = 4.13, <em>p</em> &lt; .001, 95% CI [1.33, 3.87], with standard errors clustered by school. An event study using term 4 as the reference gave pre-treatment coefficients of −0.21, 0.14 and −0.08, none of them distinguishable from zero, consistent with parallel trends over the observed pre-period.</p>',
     tips: [
